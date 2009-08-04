@@ -97,6 +97,7 @@
      <exports symbol='virDomainEventResumedDetailType' type='typedef'/>
      <exports symbol='virDomainBlockStatsPtr' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
+     <exports symbol='virSecretPtr' type='typedef'/>
      <exports symbol='virDomainEventStartedDetailType' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='virStoragePoolDeleteFlags' type='typedef'/>
@@ -105,6 +106,7 @@
      <exports symbol='virDomainEventType' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsStruct' type='typedef'/>
      <exports symbol='virStoragePoolInfo' type='typedef'/>
+     <exports symbol='virSecret' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsPtr' type='typedef'/>
@@ -164,16 +166,18 @@
      <exports symbol='_virSchedParameter' type='struct'/>
      <exports symbol='virConnectAuthPtrDefault' type='variable'/>
      <exports symbol='virStoragePoolGetXMLDesc' type='function'/>
+     <exports symbol='virSecretGetUUIDString' type='function'/>
      <exports symbol='virStorageVolGetKey' type='function'/>
      <exports symbol='virEventUpdateTimeoutFunc' type='function'/>
-     <exports symbol='virConnectClose' type='function'/>
+     <exports symbol='virDomainUndefine' type='function'/>
      <exports symbol='virDomainDefineXML' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
-     <exports symbol='virConnectListStoragePools' type='function'/>
+     <exports symbol='virConnectListDefinedInterfaces' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virNodeGetCellsFreeMemory' type='function'/>
      <exports symbol='virInitialize' type='function'/>
      <exports symbol='virNodeDeviceGetName' type='function'/>
+     <exports symbol='virConnectNumOfSecrets' type='function'/>
      <exports symbol='virStoragePoolSetAutostart' type='function'/>
      <exports symbol='virConnectDomainXMLFromNative' type='function'/>
      <exports symbol='virNodeDeviceDettach' type='function'/>
@@ -182,7 +186,7 @@
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
      <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
-     <exports symbol='virConnectListDefinedInterfaces' type='function'/>
+     <exports symbol='virConnectListStoragePools' type='function'/>
      <exports symbol='virNetworkGetUUID' type='function'/>
      <exports symbol='virInterfaceGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetConnect' type='function'/>
@@ -206,6 +210,7 @@
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
      <exports symbol='virStoragePoolLookupByUUIDString' type='function'/>
+     <exports symbol='virSecretGetConnect' type='function'/>
      <exports symbol='virInterfaceCreate' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virStoragePoolGetUUID' type='function'/>
@@ -232,6 +237,7 @@
      <exports symbol='virStoragePoolCreate' type='function'/>
      <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virNetworkSetAutostart' type='function'/>
+     <exports symbol='virSecretLookupByUUIDString' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virStoragePoolFree' type='function'/>
      <exports symbol='virConnectNumOfDefinedInterfaces' type='function'/>
@@ -241,7 +247,7 @@
      <exports symbol='virDomainBlockStats' type='function'/>
      <exports symbol='virConnectOpenAuth' type='function'/>
      <exports symbol='virStoragePoolDelete' type='function'/>
-     <exports symbol='virEventRemoveHandleFunc' type='function'/>
+     <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virStorageVolGetName' type='function'/>
      <exports symbol='virStoragePoolGetAutostart' type='function'/>
      <exports symbol='virDomainGetAutostart' type='function'/>
@@ -254,10 +260,12 @@
      <exports symbol='virConnectNumOfStoragePools' type='function'/>
      <exports symbol='virInterfaceGetConnect' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
+     <exports symbol='virSecretGetXMLDesc' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virConnectGetCapabilities' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virConnectFindStoragePoolSources' type='function'/>
+     <exports symbol='virStorageVolFree' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virNodeGetSecurityModel' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
@@ -267,7 +275,7 @@
      <exports symbol='virConnectDomainEventCallback' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virStorageVolDelete' type='function'/>
-     <exports symbol='virStorageVolFree' type='function'/>
+     <exports symbol='virSecretUndefine' type='function'/>
      <exports symbol='virConnectListInterfaces' type='function'/>
      <exports symbol='virDomainMemoryPeek' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
@@ -280,14 +288,14 @@
      <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virNodeDeviceLookupByName' type='function'/>
      <exports symbol='virStoragePoolGetInfo' type='function'/>
-     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virEventRemoveHandleFunc' type='function'/>
      <exports symbol='virInterfaceRef' type='function'/>
      <exports symbol='virInterfaceGetMACString' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virStoragePoolRefresh' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virStorageVolCreateXMLFrom' type='function'/>
-     <exports symbol='virDomainUndefine' type='function'/>
+     <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
      <exports symbol='virNetworkLookupByName' type='function'/>
@@ -304,6 +312,7 @@
      <exports symbol='virDomainAttachDevice' type='function'/>
      <exports symbol='virConnectGetURI' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
+     <exports symbol='virSecretDefineXML' type='function'/>
      <exports symbol='virNetworkFree' type='function'/>
      <exports symbol='virStoragePoolLookupByUUID' type='function'/>
      <exports symbol='virEventAddHandleFunc' type='function'/>
@@ -316,6 +325,7 @@
      <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNodeGetFreeMemory' type='function'/>
      <exports symbol='virInterfaceDestroy' type='function'/>
+     <exports symbol='virSecretSetValue' type='function'/>
      <exports symbol='virStorageVolGetConnect' type='function'/>
      <exports symbol='virNodeNumOfDevices' type='function'/>
      <exports symbol='virStoragePoolDestroy' type='function'/>
@@ -327,6 +337,7 @@
      <exports symbol='virDomainGetUUIDString' type='function'/>
      <exports symbol='virDomainGetConnect' type='function'/>
      <exports symbol='virConnectNumOfDefinedStoragePools' type='function'/>
+     <exports symbol='virSecretFree' type='function'/>
      <exports symbol='virNodeListDevices' type='function'/>
      <exports symbol='virNodeDeviceGetParent' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
@@ -335,13 +346,16 @@
      <exports symbol='virInterfaceUndefine' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainRef' type='function'/>
+     <exports symbol='virConnectListSecrets' type='function'/>
      <exports symbol='virConnectNumOfInterfaces' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
+     <exports symbol='virSecretRef' type='function'/>
      <exports symbol='virDomainBlockPeek' type='function'/>
      <exports symbol='virEventAddTimeoutFunc' type='function'/>
      <exports symbol='virInterfaceLookupByName' type='function'/>
      <exports symbol='virDomainInterfaceStats' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
+     <exports symbol='virSecretGetValue' type='function'/>
      <exports symbol='virStorageVolLookupByKey' type='function'/>
     </file>
     <file name='virterror'>
@@ -355,6 +369,7 @@
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
      <exports symbol='VIR_WAR_NO_NODE' type='enum'/>
      <exports symbol='VIR_ERR_NO_STORAGE_VOL' type='enum'/>
+     <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_FROM_CONF' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
@@ -383,6 +398,7 @@
      <exports symbol='VIR_FROM_STATS_LINUX' type='enum'/>
      <exports symbol='VIR_FROM_OPENVZ' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
+     <exports symbol='VIR_WAR_NO_SECRET' type='enum'/>
      <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_FROM_UML' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
@@ -413,9 +429,10 @@
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
      <exports symbol='VIR_FROM_DOMAIN' type='enum'/>
-     <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_SECRET' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
+     <exports symbol='VIR_FROM_SECRET' type='enum'/>
      <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
      <exports symbol='VIR_FROM_XEN' type='enum'/>
      <exports symbol='VIR_ERR_RPC' type='enum'/>
@@ -587,9 +604,10 @@
     <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC address'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
     <enum name='VIR_ERR_INVALID_NODE_DEVICE' file='virterror' value='52' type='virErrorNumber' info='invalid node device object'/>
+    <enum name='VIR_ERR_INVALID_SECRET' file='virterror' value='61' type='virErrorNumber' info=' invalid secret'/>
     <enum name='VIR_ERR_INVALID_STORAGE_POOL' file='virterror' value='46' type='virErrorNumber' info='invalid storage pool object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_VOL' file='virterror' value='47' type='virErrorNumber' info='invalid storage vol object'/>
-    <enum name='VIR_ERR_MULTIPLE_INTERFACES' file='virterror' value='59' type='virErrorNumber' info=' more than one matching interface found'/>
+    <enum name='VIR_ERR_MULTIPLE_INTERFACES' file='virterror' value='59' type='virErrorNumber' info='more than one matching interface found'/>
     <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info='the network already exist'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
@@ -645,11 +663,12 @@
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_ONE' file='virterror' value='27' type='virErrorDomain' info='Error from OpenNebula driver'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
-    <enum name='VIR_FROM_PHYP' file='virterror' value='29' type='virErrorDomain' info=' Error from IBM power hypervisor'/>
+    <enum name='VIR_FROM_PHYP' file='virterror' value='29' type='virErrorDomain' info='Error from IBM power hypervisor'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
     <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
+    <enum name='VIR_FROM_SECRET' file='virterror' value='30' type='virErrorDomain' info=' Error from secret storage'/>
     <enum name='VIR_FROM_SECURITY' file='virterror' value='24' type='virErrorDomain' info='Error from security framework'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
@@ -685,6 +704,7 @@
     <enum name='VIR_WAR_NO_INTERFACE' file='virterror' value='56' type='virErrorNumber' info='failed to start interface driver'/>
     <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
     <enum name='VIR_WAR_NO_NODE' file='virterror' value='51' type='virErrorNumber' info='failed to start node driver'/>
+    <enum name='VIR_WAR_NO_SECRET' file='virterror' value='60' type='virErrorNumber' info='failed to start secret storage'/>
     <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info='failed to start storage'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <struct name='virConnectAuth' file='libvirt' type='struct _virConnectAuth'>
@@ -812,6 +832,8 @@ see note above'/>
       <info>a virSchedParameterPtr is a pointer to a virSchedParameter structure.</info>
     </typedef>
     <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
+    <struct name='virSecret' file='libvirt' type='struct _virSecret'/>
+    <typedef name='virSecretPtr' file='libvirt' type='virSecret *'/>
     <struct name='virSecurityLabel' file='libvirt' type='struct _virSecurityLabel'/>
     <typedef name='virSecurityLabelPtr' file='libvirt' type='virSecurityLabel *'>
       <info>a virSecurityLabelPtr is a pointer to a virSecurityLabel.</info>
@@ -1018,6 +1040,13 @@ see note above'/>
       <arg name='names' type='char ** const' info='array to collect the list of names of active networks'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
+    <function name='virConnectListSecrets' file='libvirt' module='libvirt'>
+      <info>List UUIDs of defined secrets, store pointers to names in uuids.</info>
+      <return type='int' info='the number of UUIDs provided in the array, or -1 on failure.'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='uuids' type='char **' info='Pointer to an array to store the UUIDs'/>
+      <arg name='maxuuids' type='int' info='size of the array.'/>
+    </function>
     <function name='virConnectListStoragePools' file='libvirt' module='libvirt'>
       <info>Provides the list of names of active storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</info>
       <return type='int' info='0 on success, -1 on error'/>
@@ -1059,6 +1088,11 @@ see note above'/>
       <info>Provides the number of active networks.</info>
       <return type='int' info='the number of network found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectNumOfSecrets' file='libvirt' module='libvirt'>
+      <info>Fetch number of currently defined secrets.</info>
+      <return type='int' info='the number currently defined secrets.'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
     </function>
     <function name='virConnectNumOfStoragePools' file='libvirt' module='libvirt'>
       <info>Provides the number of active storage pools</info>
@@ -1775,6 +1809,65 @@ see note above'/>
     <function name='virSaveLastError' file='virterror' module='virterror'>
       <info>Save the last error into a new error object.</info>
       <return type='virErrorPtr' info='a pointer to the copied error or NULL if allocation failed. It is the caller&apos;s responsibility to free the error with virFreeError().'/>
+    </function>
+    <function name='virSecretDefineXML' file='libvirt' module='libvirt'>
+      <info>If XML specifies an UUID, locates the specified secret and replaces all attributes of the secret specified by UUID by attributes specified in xml (any attributes not specified in xml are discarded).  Otherwise, creates a new secret with an automatically chosen UUID, and initializes its attributes from xml.</info>
+      <return type='virSecretPtr' info='a the secret on success, NULL on failure.'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='xml' type='const char *' info='XML describing the secret.'/>
+      <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
+    </function>
+    <function name='virSecretFree' file='libvirt' module='libvirt'>
+      <info>Release the secret handle. The underlying secret continues to exist.</info>
+      <return type='int' info='0 on success, or -1 on error'/>
+      <arg name='secret' type='virSecretPtr' info='pointer to a secret'/>
+    </function>
+    <function name='virSecretGetConnect' file='libvirt' module='libvirt'>
+      <info>Provides the connection pointer associated with a secret.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the secret object together.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
+    </function>
+    <function name='virSecretGetUUIDString' file='libvirt' module='libvirt'>
+      <info>Fetches the UUID of the secret.</info>
+      <return type='char *' info='ID of the secret (not necessarily in the UUID format) on success, NULL on failure.  The caller must free() the ID.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
+    </function>
+    <function name='virSecretGetValue' file='libvirt' module='libvirt'>
+      <info>Fetches the value of a secret.</info>
+      <return type='unsigned char *' info='the secret value on success, NULL on failure.  The caller must free() the secret value.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret connection'/>
+      <arg name='value_size' type='size_t *' info='Place for storing size of the secret value'/>
+      <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
+    </function>
+    <function name='virSecretGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Fetches an XML document describing attributes of the secret.</info>
+      <return type='char *' info='the XML document on success, NULL on failure.  The caller must free() the XML.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
+      <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
+    </function>
+    <function name='virSecretLookupByUUIDString' file='libvirt' module='libvirt'>
+      <info>Fetches a secret based on uuid.</info>
+      <return type='virSecretPtr' info='the secret on success, or NULL on failure.'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='uuid' type='const char *' info='ID of a secret'/>
+    </function>
+    <function name='virSecretRef' file='libvirt' module='libvirt'>
+      <info>Increment the reference count on the secret. For each additional call to this method, there shall be a corresponding call to virSecretFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a secret would increment the reference count.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='secret' type='virSecretPtr' info='the secret to hold a reference on'/>
+    </function>
+    <function name='virSecretSetValue' file='libvirt' module='libvirt'>
+      <info>Sets the value of a secret.</info>
+      <return type='int' info='0 on success, -1 on failure.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
+      <arg name='value' type='const unsigned char *' info='Value of the secret'/>
+      <arg name='value_size' type='size_t' info='Size of the value'/>
+      <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
+    </function>
+    <function name='virSecretUndefine' file='libvirt' module='libvirt'>
+      <info>Deletes the specified secret.  This does not free the associated virSecretPtr object.</info>
+      <return type='int' info='0 on success, -1 on failure.'/>
+      <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
     </function>
     <function name='virSetErrorFunc' file='virterror' module='virterror'>
       <info>Set a library global error handling function, if @handler is NULL, it will reset to default printing on stderr. The error raised there are those for which no handler at the connection level could caught.</info>

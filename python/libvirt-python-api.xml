@@ -172,5 +172,23 @@
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
       <return type='str *' info='the list of Names or None in case of error'/>
     </function>
+    <function name='virSecretGetValue' file='libvirt' module='libvirt'>
+      <info>Fetches the value associated with a secret.</info>
+      <return type='char *' info='the secret value or None in case of error'/>
+      <arg name='secret' type='virSecretPtr' info='virSecret secret'/>
+      <arg name='flags' type='unsigned int' info='flags (unused; pass 0)'/>
+    </function>
+    <function name='virConnectListSecrets' file='libvirt' module='libvirt'>
+      <info>List the defined secret IDs</info>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <return type='str *' info='the list of secret IDs or None in case of error'/>
+    </function>
+    <function name='virSecretSetValue' file='libvirt' module='libvirt'>
+      <info>Associates a value with a secret.</info>
+      <return type='int' info='0 on success, -1 on failure.'/>
+      <arg name='secret' type='virSecretPtr' info='virSecret secret'/>
+      <arg name='value' type='const char *' info='The secret value'/>
+      <arg name='flags' type='unsigned int' info='flags (unused; pass 0)'/>
+    </function>
   </symbols>
 </api>

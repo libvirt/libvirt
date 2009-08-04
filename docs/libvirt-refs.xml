@@ -71,6 +71,7 @@
     <reference name='VIR_ERR_INVALID_MAC' href='html/libvirt-virterror.html#VIR_ERR_INVALID_MAC'/>
     <reference name='VIR_ERR_INVALID_NETWORK' href='html/libvirt-virterror.html#VIR_ERR_INVALID_NETWORK'/>
     <reference name='VIR_ERR_INVALID_NODE_DEVICE' href='html/libvirt-virterror.html#VIR_ERR_INVALID_NODE_DEVICE'/>
+    <reference name='VIR_ERR_INVALID_SECRET' href='html/libvirt-virterror.html#VIR_ERR_INVALID_SECRET'/>
     <reference name='VIR_ERR_INVALID_STORAGE_POOL' href='html/libvirt-virterror.html#VIR_ERR_INVALID_STORAGE_POOL'/>
     <reference name='VIR_ERR_INVALID_STORAGE_VOL' href='html/libvirt-virterror.html#VIR_ERR_INVALID_STORAGE_VOL'/>
     <reference name='VIR_ERR_MULTIPLE_INTERFACES' href='html/libvirt-virterror.html#VIR_ERR_MULTIPLE_INTERFACES'/>
@@ -134,6 +135,7 @@
     <reference name='VIR_FROM_QEMU' href='html/libvirt-virterror.html#VIR_FROM_QEMU'/>
     <reference name='VIR_FROM_REMOTE' href='html/libvirt-virterror.html#VIR_FROM_REMOTE'/>
     <reference name='VIR_FROM_RPC' href='html/libvirt-virterror.html#VIR_FROM_RPC'/>
+    <reference name='VIR_FROM_SECRET' href='html/libvirt-virterror.html#VIR_FROM_SECRET'/>
     <reference name='VIR_FROM_SECURITY' href='html/libvirt-virterror.html#VIR_FROM_SECURITY'/>
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
     <reference name='VIR_FROM_STATS_LINUX' href='html/libvirt-virterror.html#VIR_FROM_STATS_LINUX'/>
@@ -178,6 +180,7 @@
     <reference name='VIR_WAR_NO_INTERFACE' href='html/libvirt-virterror.html#VIR_WAR_NO_INTERFACE'/>
     <reference name='VIR_WAR_NO_NETWORK' href='html/libvirt-virterror.html#VIR_WAR_NO_NETWORK'/>
     <reference name='VIR_WAR_NO_NODE' href='html/libvirt-virterror.html#VIR_WAR_NO_NODE'/>
+    <reference name='VIR_WAR_NO_SECRET' href='html/libvirt-virterror.html#VIR_WAR_NO_SECRET'/>
     <reference name='VIR_WAR_NO_STORAGE' href='html/libvirt-virterror.html#VIR_WAR_NO_STORAGE'/>
     <reference name='_virConnectAuth' href='html/libvirt-libvirt.html#_virConnectAuth'/>
     <reference name='_virConnectCredential' href='html/libvirt-libvirt.html#_virConnectCredential'/>
@@ -225,6 +228,7 @@
     <reference name='virConnectListDomains' href='html/libvirt-libvirt.html#virConnectListDomains'/>
     <reference name='virConnectListInterfaces' href='html/libvirt-libvirt.html#virConnectListInterfaces'/>
     <reference name='virConnectListNetworks' href='html/libvirt-libvirt.html#virConnectListNetworks'/>
+    <reference name='virConnectListSecrets' href='html/libvirt-libvirt.html#virConnectListSecrets'/>
     <reference name='virConnectListStoragePools' href='html/libvirt-libvirt.html#virConnectListStoragePools'/>
     <reference name='virConnectNumOfDefinedDomains' href='html/libvirt-libvirt.html#virConnectNumOfDefinedDomains'/>
     <reference name='virConnectNumOfDefinedInterfaces' href='html/libvirt-libvirt.html#virConnectNumOfDefinedInterfaces'/>
@@ -233,6 +237,7 @@
     <reference name='virConnectNumOfDomains' href='html/libvirt-libvirt.html#virConnectNumOfDomains'/>
     <reference name='virConnectNumOfInterfaces' href='html/libvirt-libvirt.html#virConnectNumOfInterfaces'/>
     <reference name='virConnectNumOfNetworks' href='html/libvirt-libvirt.html#virConnectNumOfNetworks'/>
+    <reference name='virConnectNumOfSecrets' href='html/libvirt-libvirt.html#virConnectNumOfSecrets'/>
     <reference name='virConnectNumOfStoragePools' href='html/libvirt-libvirt.html#virConnectNumOfStoragePools'/>
     <reference name='virConnectOpen' href='html/libvirt-libvirt.html#virConnectOpen'/>
     <reference name='virConnectOpenAuth' href='html/libvirt-libvirt.html#virConnectOpenAuth'/>
@@ -392,6 +397,18 @@
     <reference name='virSchedParameter' href='html/libvirt-libvirt.html#virSchedParameter'/>
     <reference name='virSchedParameterPtr' href='html/libvirt-libvirt.html#virSchedParameterPtr'/>
     <reference name='virSchedParameterType' href='html/libvirt-libvirt.html#virSchedParameterType'/>
+    <reference name='virSecret' href='html/libvirt-libvirt.html#virSecret'/>
+    <reference name='virSecretDefineXML' href='html/libvirt-libvirt.html#virSecretDefineXML'/>
+    <reference name='virSecretFree' href='html/libvirt-libvirt.html#virSecretFree'/>
+    <reference name='virSecretGetConnect' href='html/libvirt-libvirt.html#virSecretGetConnect'/>
+    <reference name='virSecretGetUUIDString' href='html/libvirt-libvirt.html#virSecretGetUUIDString'/>
+    <reference name='virSecretGetValue' href='html/libvirt-libvirt.html#virSecretGetValue'/>
+    <reference name='virSecretGetXMLDesc' href='html/libvirt-libvirt.html#virSecretGetXMLDesc'/>
+    <reference name='virSecretLookupByUUIDString' href='html/libvirt-libvirt.html#virSecretLookupByUUIDString'/>
+    <reference name='virSecretPtr' href='html/libvirt-libvirt.html#virSecretPtr'/>
+    <reference name='virSecretRef' href='html/libvirt-libvirt.html#virSecretRef'/>
+    <reference name='virSecretSetValue' href='html/libvirt-libvirt.html#virSecretSetValue'/>
+    <reference name='virSecretUndefine' href='html/libvirt-libvirt.html#virSecretUndefine'/>
     <reference name='virSecurityLabel' href='html/libvirt-libvirt.html#virSecurityLabel'/>
     <reference name='virSecurityLabelPtr' href='html/libvirt-libvirt.html#virSecurityLabelPtr'/>
     <reference name='virSecurityModel' href='html/libvirt-libvirt.html#virSecurityModel'/>
@@ -526,6 +543,7 @@
       <ref name='VIR_ERR_INVALID_MAC'/>
       <ref name='VIR_ERR_INVALID_NETWORK'/>
       <ref name='VIR_ERR_INVALID_NODE_DEVICE'/>
+      <ref name='VIR_ERR_INVALID_SECRET'/>
       <ref name='VIR_ERR_INVALID_STORAGE_POOL'/>
       <ref name='VIR_ERR_INVALID_STORAGE_VOL'/>
       <ref name='VIR_ERR_MULTIPLE_INTERFACES'/>
@@ -589,6 +607,7 @@
       <ref name='VIR_FROM_QEMU'/>
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
+      <ref name='VIR_FROM_SECRET'/>
       <ref name='VIR_FROM_SECURITY'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_STATS_LINUX'/>
@@ -633,6 +652,7 @@
       <ref name='VIR_WAR_NO_INTERFACE'/>
       <ref name='VIR_WAR_NO_NETWORK'/>
       <ref name='VIR_WAR_NO_NODE'/>
+      <ref name='VIR_WAR_NO_SECRET'/>
       <ref name='VIR_WAR_NO_STORAGE'/>
     </letter>
     <letter name='_'>
@@ -684,6 +704,7 @@
       <ref name='virConnectListDomains'/>
       <ref name='virConnectListInterfaces'/>
       <ref name='virConnectListNetworks'/>
+      <ref name='virConnectListSecrets'/>
       <ref name='virConnectListStoragePools'/>
       <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDefinedInterfaces'/>
@@ -692,6 +713,7 @@
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectNumOfInterfaces'/>
       <ref name='virConnectNumOfNetworks'/>
+      <ref name='virConnectNumOfSecrets'/>
       <ref name='virConnectNumOfStoragePools'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenAuth'/>
@@ -851,6 +873,18 @@
       <ref name='virSchedParameter'/>
       <ref name='virSchedParameterPtr'/>
       <ref name='virSchedParameterType'/>
+      <ref name='virSecret'/>
+      <ref name='virSecretDefineXML'/>
+      <ref name='virSecretFree'/>
+      <ref name='virSecretGetConnect'/>
+      <ref name='virSecretGetUUIDString'/>
+      <ref name='virSecretGetValue'/>
+      <ref name='virSecretGetXMLDesc'/>
+      <ref name='virSecretLookupByUUIDString'/>
+      <ref name='virSecretPtr'/>
+      <ref name='virSecretRef'/>
+      <ref name='virSecretSetValue'/>
+      <ref name='virSecretUndefine'/>
       <ref name='virSecurityLabel'/>
       <ref name='virSecurityLabelPtr'/>
       <ref name='virSecurityModel'/>
@@ -913,6 +947,9 @@
     </letter>
   </alpha>
   <constructors>
+    <type name='unsigned char *'>
+      <ref name='virSecretGetValue'/>
+    </type>
     <type name='unsigned int'>
       <ref name='virDomainGetID'/>
     </type>
@@ -929,6 +966,7 @@
       <ref name='virDomainGetConnect'/>
       <ref name='virInterfaceGetConnect'/>
       <ref name='virNetworkGetConnect'/>
+      <ref name='virSecretGetConnect'/>
       <ref name='virStoragePoolGetConnect'/>
       <ref name='virStorageVolGetConnect'/>
     </type>
@@ -963,6 +1001,10 @@
       <ref name='virNodeDeviceCreateXML'/>
       <ref name='virNodeDeviceLookupByName'/>
     </type>
+    <type name='virSecretPtr'>
+      <ref name='virSecretDefineXML'/>
+      <ref name='virSecretLookupByUUIDString'/>
+    </type>
     <type name='virStoragePoolPtr'>
       <ref name='virStoragePoolCreateXML'/>
       <ref name='virStoragePoolDefineXML'/>
@@ -980,6 +1022,9 @@
     </type>
   </constructors>
   <functions>
+    <type name='char **'>
+      <ref name='virConnectListSecrets'/>
+    </type>
     <type name='char ** const'>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDefinedInterfaces'/>
@@ -995,6 +1040,7 @@
     <type name='const unsigned char *'>
       <ref name='virDomainLookupByUUID'/>
       <ref name='virNetworkLookupByUUID'/>
+      <ref name='virSecretSetValue'/>
       <ref name='virStoragePoolLookupByUUID'/>
     </type>
     <type name='int *'>
@@ -1010,6 +1056,10 @@
       <ref name='virDomainBlockStats'/>
       <ref name='virDomainInterfaceStats'/>
       <ref name='virDomainMemoryPeek'/>
+      <ref name='virSecretSetValue'/>
+    </type>
+    <type name='size_t *'>
+      <ref name='virSecretGetValue'/>
     </type>
     <type name='unsigned char *'>
       <ref name='virDomainGetUUID'/>
@@ -1038,6 +1088,10 @@
       <ref name='virNodeDeviceGetXMLDesc'/>
       <ref name='virNodeListDevices'/>
       <ref name='virNodeNumOfDevices'/>
+      <ref name='virSecretDefineXML'/>
+      <ref name='virSecretGetValue'/>
+      <ref name='virSecretGetXMLDesc'/>
+      <ref name='virSecretSetValue'/>
       <ref name='virStoragePoolBuild'/>
       <ref name='virStoragePoolCreate'/>
       <ref name='virStoragePoolCreateXML'/>
@@ -1101,6 +1155,7 @@
       <ref name='virConnectListDomains'/>
       <ref name='virConnectListInterfaces'/>
       <ref name='virConnectListNetworks'/>
+      <ref name='virConnectListSecrets'/>
       <ref name='virConnectListStoragePools'/>
       <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDefinedInterfaces'/>
@@ -1109,6 +1164,7 @@
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectNumOfInterfaces'/>
       <ref name='virConnectNumOfNetworks'/>
+      <ref name='virConnectNumOfSecrets'/>
       <ref name='virConnectNumOfStoragePools'/>
       <ref name='virConnectRef'/>
       <ref name='virDomainCreateLinux'/>
@@ -1136,6 +1192,8 @@
       <ref name='virNodeGetSecurityModel'/>
       <ref name='virNodeListDevices'/>
       <ref name='virNodeNumOfDevices'/>
+      <ref name='virSecretDefineXML'/>
+      <ref name='virSecretLookupByUUIDString'/>
       <ref name='virStoragePoolCreateXML'/>
       <ref name='virStoragePoolDefineXML'/>
       <ref name='virStoragePoolLookupByName'/>
@@ -1281,6 +1339,16 @@
     <type name='virSchedParameterPtr'>
       <ref name='virDomainGetSchedulerParameters'/>
       <ref name='virDomainSetSchedulerParameters'/>
+    </type>
+    <type name='virSecretPtr'>
+      <ref name='virSecretFree'/>
+      <ref name='virSecretGetConnect'/>
+      <ref name='virSecretGetUUIDString'/>
+      <ref name='virSecretGetValue'/>
+      <ref name='virSecretGetXMLDesc'/>
+      <ref name='virSecretRef'/>
+      <ref name='virSecretSetValue'/>
+      <ref name='virSecretUndefine'/>
     </type>
     <type name='virSecurityLabelPtr'>
       <ref name='virDomainGetSecurityLabel'/>
@@ -1477,6 +1545,7 @@
       <ref name='virConnectListDomains'/>
       <ref name='virConnectListInterfaces'/>
       <ref name='virConnectListNetworks'/>
+      <ref name='virConnectListSecrets'/>
       <ref name='virConnectListStoragePools'/>
       <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDefinedInterfaces'/>
@@ -1485,6 +1554,7 @@
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectNumOfInterfaces'/>
       <ref name='virConnectNumOfNetworks'/>
+      <ref name='virConnectNumOfSecrets'/>
       <ref name='virConnectNumOfStoragePools'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenAuth'/>
@@ -1631,6 +1701,18 @@
       <ref name='virSchedParameter'/>
       <ref name='virSchedParameterPtr'/>
       <ref name='virSchedParameterType'/>
+      <ref name='virSecret'/>
+      <ref name='virSecretDefineXML'/>
+      <ref name='virSecretFree'/>
+      <ref name='virSecretGetConnect'/>
+      <ref name='virSecretGetUUIDString'/>
+      <ref name='virSecretGetValue'/>
+      <ref name='virSecretGetXMLDesc'/>
+      <ref name='virSecretLookupByUUIDString'/>
+      <ref name='virSecretPtr'/>
+      <ref name='virSecretRef'/>
+      <ref name='virSecretSetValue'/>
+      <ref name='virSecretUndefine'/>
       <ref name='virSecurityLabel'/>
       <ref name='virSecurityLabelPtr'/>
       <ref name='virSecurityModel'/>
@@ -1708,6 +1790,7 @@
       <ref name='VIR_ERR_INVALID_MAC'/>
       <ref name='VIR_ERR_INVALID_NETWORK'/>
       <ref name='VIR_ERR_INVALID_NODE_DEVICE'/>
+      <ref name='VIR_ERR_INVALID_SECRET'/>
       <ref name='VIR_ERR_INVALID_STORAGE_POOL'/>
       <ref name='VIR_ERR_INVALID_STORAGE_VOL'/>
       <ref name='VIR_ERR_MULTIPLE_INTERFACES'/>
@@ -1767,6 +1850,7 @@
       <ref name='VIR_FROM_QEMU'/>
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
+      <ref name='VIR_FROM_SECRET'/>
       <ref name='VIR_FROM_SECURITY'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_STATS_LINUX'/>
@@ -1783,6 +1867,7 @@
       <ref name='VIR_WAR_NO_INTERFACE'/>
       <ref name='VIR_WAR_NO_NETWORK'/>
       <ref name='VIR_WAR_NO_NODE'/>
+      <ref name='VIR_WAR_NO_SECRET'/>
       <ref name='VIR_WAR_NO_STORAGE'/>
       <ref name='_virError'/>
       <ref name='virConnCopyLastError'/>
@@ -1966,6 +2051,9 @@
           <ref name='virStoragePoolDelete'/>
           <ref name='virStorageVolDelete'/>
         </word>
+        <word name='Deletes'>
+          <ref name='virSecretUndefine'/>
+        </word>
         <word name='Depending'>
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
@@ -2042,6 +2130,7 @@
       </letter>
       <letter name='F'>
         <word name='Fetch'>
+          <ref name='virConnectNumOfSecrets'/>
           <ref name='virNodeDeviceGetXMLDesc'/>
           <ref name='virStoragePoolGetName'/>
           <ref name='virStoragePoolGetUUID'/>
@@ -2062,6 +2151,10 @@
           <ref name='virStorageVolLookupByPath'/>
         </word>
         <word name='Fetches'>
+          <ref name='virSecretGetUUIDString'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
+          <ref name='virSecretLookupByUUIDString'/>
           <ref name='virStoragePoolGetAutostart'/>
           <ref name='virStorageVolGetInfo'/>
         </word>
@@ -2081,6 +2174,7 @@
           <ref name='virNetworkGetUUIDString'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -2139,6 +2233,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -2156,6 +2251,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -2199,6 +2295,7 @@
         </word>
         <word name='List'>
           <ref name='_virConnectAuth'/>
+          <ref name='virConnectListSecrets'/>
         </word>
         <word name='Lists'>
           <ref name='virNodeDeviceListCaps'/>
@@ -2297,6 +2394,9 @@
         <word name='Optional'>
           <ref name='_virConnectCredential'/>
         </word>
+        <word name='Otherwise'>
+          <ref name='virSecretDefineXML'/>
+        </word>
       </letter>
       <letter name='P'>
         <word name='PCI'>
@@ -2309,6 +2409,12 @@
           <ref name='virEventRemoveTimeoutFunc'/>
           <ref name='virEventUpdateHandleFunc'/>
           <ref name='virEventUpdateTimeoutFunc'/>
+        </word>
+        <word name='Place'>
+          <ref name='virSecretGetValue'/>
+        </word>
+        <word name='Pointer'>
+          <ref name='virConnectListSecrets'/>
         </word>
         <word name='Power'>
           <ref name='virNodeDeviceReset'/>
@@ -2345,6 +2451,7 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetConnect'/>
           <ref name='virNodeNumOfDevices'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -2378,6 +2485,7 @@
           <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='Release'>
+          <ref name='virSecretFree'/>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='Remaining'>
@@ -2431,6 +2539,7 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='Sets'>
+          <ref name='virSecretSetValue'/>
           <ref name='virStoragePoolSetAutostart'/>
         </word>
         <word name='Shutdown'>
@@ -2443,6 +2552,9 @@
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='Size'>
+          <ref name='virSecretSetValue'/>
         </word>
         <word name='Some'>
           <ref name='virDomainMigrate'/>
@@ -2519,6 +2631,11 @@
           <ref name='virNetworkGetUUIDString'/>
           <ref name='virNetworkLookupByUUID'/>
           <ref name='virNetworkLookupByUUIDString'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretGetUUIDString'/>
+        </word>
+        <word name='UUIDs'>
+          <ref name='virConnectListSecrets'/>
         </word>
         <word name='UUId'>
           <ref name='virDomainLookupByID'/>
@@ -2578,6 +2695,9 @@
           <ref name='virNetworkGetUUIDString'/>
           <ref name='virStoragePoolGetUUIDString'/>
         </word>
+        <word name='Value'>
+          <ref name='virSecretSetValue'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk2'>
@@ -2586,6 +2706,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -2596,6 +2717,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -2690,6 +2812,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -2739,6 +2862,8 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceGetXMLDesc'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolFree'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRef'/>
@@ -2806,6 +2931,7 @@
         </word>
         <word name='any'>
           <ref name='virNodeDeviceDettach'/>
+          <ref name='virSecretDefineXML'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='anymore'>
@@ -2827,6 +2953,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -2842,34 +2969,6 @@
         </word>
         <word name='archives'>
           <ref name='virConnectGetType'/>
-        </word>
-        <word name='are'>
-          <ref name='virConnCopyLastError'/>
-          <ref name='virConnGetLastError'/>
-          <ref name='virConnectClose'/>
-          <ref name='virConnectGetHostname'/>
-          <ref name='virConnectListDefinedStoragePools'/>
-          <ref name='virConnectListStoragePools'/>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenAuth'/>
-          <ref name='virConnectOpenReadOnly'/>
-          <ref name='virConnectRef'/>
-          <ref name='virDomainBlockPeek'/>
-          <ref name='virDomainDestroy'/>
-          <ref name='virDomainMemoryPeek'/>
-          <ref name='virDomainMigrate'/>
-          <ref name='virDomainPinVcpu'/>
-          <ref name='virDomainRef'/>
-          <ref name='virEventAddHandleFunc'/>
-          <ref name='virInterfaceRef'/>
-          <ref name='virNetworkDestroy'/>
-          <ref name='virNetworkRef'/>
-          <ref name='virNodeDeviceRef'/>
-          <ref name='virNodeDeviceReset'/>
-          <ref name='virSetErrorFunc'/>
-          <ref name='virStoragePoolRef'/>
-          <ref name='virStorageVolCreateXMLFrom'/>
-          <ref name='virStorageVolRef'/>
         </word>
         <word name='area'>
           <ref name='virDomainBlockPeek'/>
@@ -2900,6 +2999,8 @@
           <ref name='virInterfaceUndefine'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
+          <ref name='virSecretUndefine'/>
           <ref name='virStoragePoolDestroy'/>
           <ref name='virStoragePoolFree'/>
           <ref name='virStoragePoolGetConnect'/>
@@ -2927,6 +3028,10 @@
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainBlockStats'/>
         </word>
+        <word name='attributes'>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretGetXMLDesc'/>
+        </word>
         <word name='authentication'>
           <ref name='virConnectOpenAuth'/>
         </word>
@@ -2939,6 +3044,7 @@
           <ref name='virDomainSetAutostart'/>
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkSetAutostart'/>
+          <ref name='virSecretDefineXML'/>
           <ref name='virStoragePoolGetAutostart'/>
         </word>
         <word name='autostart'>
@@ -2995,6 +3101,7 @@
           <ref name='virNetworkLookupByName'/>
           <ref name='virNetworkLookupByUUID'/>
           <ref name='virNetworkLookupByUUIDString'/>
+          <ref name='virSecretLookupByUUIDString'/>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolLookupByName'/>
@@ -3045,6 +3152,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -3156,6 +3264,10 @@
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
           <ref name='virSaveLastError'/>
+          <ref name='virSecretGetUUIDString'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -3263,6 +3375,9 @@
         </word>
         <word name='choose'>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='chosen'>
+          <ref name='virSecretDefineXML'/>
         </word>
         <word name='clean'>
           <ref name='virResetError'/>
@@ -3385,6 +3500,7 @@
           <ref name='virDomainSave'/>
         </word>
         <word name='continues'>
+          <ref name='virSecretFree'/>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='control'>
@@ -3414,6 +3530,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -3435,6 +3552,7 @@
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeListDevices'/>
           <ref name='virNodeNumOfDevices'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -3442,6 +3560,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -3474,6 +3593,9 @@
         <word name='created'>
           <ref name='virNodeDeviceCreateXML'/>
         </word>
+        <word name='creates'>
+          <ref name='virSecretDefineXML'/>
+        </word>
         <word name='creation'>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
@@ -3491,6 +3613,7 @@
         <word name='currently'>
           <ref name='virConnectDomainXMLFromNative'/>
           <ref name='virConnectDomainXMLToNative'/>
+          <ref name='virConnectNumOfSecrets'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
@@ -3554,8 +3677,10 @@
         <word name='defined'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedInterfaces'/>
+          <ref name='virConnectListSecrets'/>
           <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDefinedInterfaces'/>
+          <ref name='virConnectNumOfSecrets'/>
           <ref name='virDomainCreate'/>
           <ref name='virDomainUndefine'/>
           <ref name='virInterfaceCreate'/>
@@ -3595,6 +3720,8 @@
           <ref name='virConnectDomainXMLFromNative'/>
           <ref name='virConnectDomainXMLToNative'/>
           <ref name='virNodeDeviceGetXMLDesc'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretGetXMLDesc'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -3674,6 +3801,9 @@
           <ref name='virDomainCreateXML'/>
           <ref name='virStoragePoolCreateXML'/>
         </word>
+        <word name='discarded'>
+          <ref name='virSecretDefineXML'/>
+        </word>
         <word name='discover'>
           <ref name='virConnectFindStoragePoolSources'/>
         </word>
@@ -3701,6 +3831,7 @@
           <ref name='virConnectDomainXMLToNative'/>
           <ref name='virConnectFindStoragePoolSources'/>
           <ref name='virNodeDeviceGetXMLDesc'/>
+          <ref name='virSecretGetXMLDesc'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -3725,6 +3856,7 @@
           <ref name='virNetworkDefineXML'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkUndefine'/>
+          <ref name='virSecretUndefine'/>
           <ref name='virStoragePoolDestroy'/>
         </word>
         <word name='doi'>
@@ -3807,6 +3939,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -3900,6 +4033,7 @@
           <ref name='virConnectDomainEventRegister'/>
         </word>
         <word name='exist'>
+          <ref name='virSecretFree'/>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='existing'>
@@ -4031,6 +4165,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -4047,35 +4182,6 @@
           <ref name='virStoragePoolGetAutostart'/>
           <ref name='virStoragePoolSetAutostart'/>
         </word>
-        <word name='flags'>
-          <ref name='_virStoragePoolInfo'/>
-          <ref name='_virStorageVolInfo'/>
-          <ref name='virConnectFindStoragePoolSources'/>
-          <ref name='virConnectOpenAuth'/>
-          <ref name='virDomainCoreDump'/>
-          <ref name='virDomainMemoryPeek'/>
-          <ref name='virDomainMigrate'/>
-          <ref name='virDomainReboot'/>
-          <ref name='virInterfaceCreate'/>
-          <ref name='virInterfaceDefineXML'/>
-          <ref name='virInterfaceDestroy'/>
-          <ref name='virInterfaceGetXMLDesc'/>
-          <ref name='virNetworkGetXMLDesc'/>
-          <ref name='virNodeDeviceGetXMLDesc'/>
-          <ref name='virNodeListDevices'/>
-          <ref name='virNodeNumOfDevices'/>
-          <ref name='virStoragePoolBuild'/>
-          <ref name='virStoragePoolCreate'/>
-          <ref name='virStoragePoolCreateXML'/>
-          <ref name='virStoragePoolDefineXML'/>
-          <ref name='virStoragePoolDelete'/>
-          <ref name='virStoragePoolGetXMLDesc'/>
-          <ref name='virStoragePoolRefresh'/>
-          <ref name='virStorageVolCreateXML'/>
-          <ref name='virStorageVolCreateXMLFrom'/>
-          <ref name='virStorageVolDelete'/>
-          <ref name='virStorageVolGetXMLDesc'/>
-        </word>
         <word name='following:'>
           <ref name='virDomainMigrate'/>
         </word>
@@ -4089,34 +4195,8 @@
           <ref name='virGetVersion'/>
           <ref name='virInterfaceGetMACString'/>
           <ref name='virInterfaceLookupByMACString'/>
+          <ref name='virSecretGetUUIDString'/>
           <ref name='virStoragePoolGetXMLDesc'/>
-        </word>
-        <word name='free'>
-          <ref name='_virStoragePoolInfo'/>
-          <ref name='virConnCopyLastError'/>
-          <ref name='virConnectDomainXMLFromNative'/>
-          <ref name='virConnectDomainXMLToNative'/>
-          <ref name='virConnectGetCapabilities'/>
-          <ref name='virCopyLastError'/>
-          <ref name='virDomainDestroy'/>
-          <ref name='virDomainGetSchedulerType'/>
-          <ref name='virDomainGetXMLDesc'/>
-          <ref name='virEventAddHandleFunc'/>
-          <ref name='virEventAddTimeoutFunc'/>
-          <ref name='virFreeError'/>
-          <ref name='virInterfaceDestroy'/>
-          <ref name='virInterfaceGetXMLDesc'/>
-          <ref name='virInterfaceUndefine'/>
-          <ref name='virNetworkDestroy'/>
-          <ref name='virNetworkGetBridgeName'/>
-          <ref name='virNetworkGetXMLDesc'/>
-          <ref name='virNodeGetCellsFreeMemory'/>
-          <ref name='virNodeGetFreeMemory'/>
-          <ref name='virSaveLastError'/>
-          <ref name='virStoragePoolDelete'/>
-          <ref name='virStoragePoolDestroy'/>
-          <ref name='virStoragePoolFree'/>
-          <ref name='virStoragePoolGetInfo'/>
         </word>
         <word name='freeMems'>
           <ref name='virNodeGetCellsFreeMemory'/>
@@ -4158,6 +4238,7 @@
           <ref name='virNodeDeviceDestroy'/>
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
+          <ref name='virSecretDefineXML'/>
           <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetKey'/>
         </word>
@@ -4260,8 +4341,6 @@
           <ref name='virNodeDeviceReset'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk6'>
       <letter name='h'>
         <word name='handle'>
           <ref name='virConnectDomainEventRegister'/>
@@ -4271,6 +4350,7 @@
           <ref name='virEventRemoveHandleFunc'/>
           <ref name='virEventRemoveTimeoutFunc'/>
           <ref name='virEventTimeoutCallback'/>
+          <ref name='virSecretFree'/>
           <ref name='virStorageVolFree'/>
         </word>
         <word name='handler'>
@@ -4316,6 +4396,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolGetKey'/>
           <ref name='virStorageVolRef'/>
@@ -4329,6 +4410,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -4382,6 +4464,8 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk6'>
       <letter name='i'>
         <word name='iSCSI'>
           <ref name='virConnectFindStoragePoolSources'/>
@@ -4442,6 +4526,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -4451,6 +4536,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -4501,6 +4587,9 @@
         <word name='initialized'>
           <ref name='virDomainGetSecurityLabel'/>
           <ref name='virNodeGetSecurityModel'/>
+        </word>
+        <word name='initializes'>
+          <ref name='virSecretDefineXML'/>
         </word>
         <word name='initializing'>
           <ref name='virInitialize'/>
@@ -4593,6 +4682,7 @@
           <ref name='virNetworkLookupByUUIDString'/>
           <ref name='virNodeDeviceLookupByName'/>
           <ref name='virNodeDeviceReAttach'/>
+          <ref name='virSecretDefineXML'/>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolLookupByName'/>
@@ -4610,8 +4700,6 @@
           <ref name='virStoragePoolDelete'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk7'>
       <letter name='j'>
         <word name='join'>
           <ref name='virNetworkGetBridgeName'/>
@@ -4663,6 +4751,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -4753,6 +4842,7 @@
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
           <ref name='virNodeGetFreeMemory'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -4832,6 +4922,9 @@
           <ref name='virStoragePoolGetName'/>
           <ref name='virStorageVolLookupByPath'/>
         </word>
+        <word name='locates'>
+          <ref name='virSecretDefineXML'/>
+        </word>
         <word name='location'>
           <ref name='virStoragePoolGetAutostart'/>
         </word>
@@ -4846,6 +4939,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -4870,6 +4964,8 @@
           <ref name='virDomainPinVcpu'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk7'>
       <letter name='m'>
         <word name='machine'>
           <ref name='virDomainGetAutostart'/>
@@ -4983,6 +5079,7 @@
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -5070,6 +5167,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5094,13 +5192,14 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virSecretGetUUIDString'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
         </word>
         <word name='mysterious'>
           <ref name='_virDomainBlockStats'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk8'>
       <letter name='n'>
         <word name='names'>
           <ref name='virConnectListDefinedDomains'/>
@@ -5109,6 +5208,7 @@
           <ref name='virConnectListDefinedStoragePools'/>
           <ref name='virConnectListInterfaces'/>
           <ref name='virConnectListNetworks'/>
+          <ref name='virConnectListSecrets'/>
           <ref name='virConnectListStoragePools'/>
           <ref name='virNodeDeviceListCaps'/>
           <ref name='virNodeListDevices'/>
@@ -5124,6 +5224,9 @@
         <word name='native'>
           <ref name='virConnectDomainXMLFromNative'/>
           <ref name='virConnectDomainXMLToNative'/>
+        </word>
+        <word name='necessarily'>
+          <ref name='virSecretGetUUIDString'/>
         </word>
         <word name='necessary'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
@@ -5151,6 +5254,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5208,6 +5312,10 @@
           <ref name='virEventUpdateHandleFunc'/>
         </word>
         <word name='now'>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
+          <ref name='virSecretSetValue'/>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolCreate'/>
           <ref name='virStoragePoolCreateXML'/>
@@ -5223,6 +5331,8 @@
           <ref name='virInterfaceLookupByMACString'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk8'>
       <letter name='o'>
         <word name='objects'>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -5261,6 +5371,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5303,6 +5414,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5358,6 +5470,7 @@
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
           <ref name='virNodeDeviceReset'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -5514,6 +5627,7 @@
         <word name='pointers'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
+          <ref name='virConnectListSecrets'/>
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='pools'>
@@ -5603,6 +5717,7 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
+          <ref name='virConnectListSecrets'/>
           <ref name='virErrorFunc'/>
           <ref name='virEventAddHandleFunc'/>
           <ref name='virSetErrorFunc'/>
@@ -5734,6 +5849,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5753,6 +5869,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -5787,6 +5904,9 @@
         </word>
         <word name='renaming'>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='replaces'>
+          <ref name='virSecretDefineXML'/>
         </word>
         <word name='reported'>
           <ref name='virConnCopyLastError'/>
@@ -5827,6 +5947,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6021,6 +6142,10 @@
           <ref name='virDomainMigrate'/>
           <ref name='virStorageVolGetName'/>
         </word>
+        <word name='secrets'>
+          <ref name='virConnectListSecrets'/>
+          <ref name='virConnectNumOfSecrets'/>
+        </word>
         <word name='security'>
           <ref name='virDomainGetSecurityLabel'/>
           <ref name='virNodeGetSecurityModel'/>
@@ -6079,6 +6204,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6171,6 +6297,11 @@
           <ref name='virDomainMigrate'/>
           <ref name='virNodeListDevices'/>
           <ref name='virNodeNumOfDevices'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretUndefine'/>
+        </word>
+        <word name='specifies'>
+          <ref name='virSecretDefineXML'/>
         </word>
         <word name='specify'>
           <ref name='virDomainMigrate'/>
@@ -6255,12 +6386,14 @@
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListInterfaces'/>
           <ref name='virConnectListNetworks'/>
+          <ref name='virConnectListSecrets'/>
           <ref name='virConnectOpen'/>
           <ref name='virDomainGetConnect'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
           <ref name='virNodeListDevices'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetAutostart'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStoragePoolGetInfo'/>
@@ -6273,6 +6406,9 @@
         <word name='stores'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
+        </word>
+        <word name='storing'>
+          <ref name='virSecretGetValue'/>
         </word>
         <word name='structure'>
           <ref name='virDomainBlockStats'/>
@@ -6452,6 +6588,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virSetErrorFunc'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -6477,6 +6614,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virResetLastError'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6493,6 +6631,7 @@
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
           <ref name='virResetLastError'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6520,6 +6659,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -6570,6 +6710,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6594,6 +6735,7 @@
           <ref name='virDomainMigrate'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virDomainSetVcpus'/>
+          <ref name='virSecretFree'/>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolDelete'/>
           <ref name='virStorageVolFree'/>
@@ -6639,6 +6781,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
@@ -6700,6 +6843,11 @@
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceReAttach'/>
           <ref name='virNodeDeviceReset'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretGetConnect'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
+          <ref name='virSecretSetValue'/>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStoragePoolCreate'/>
           <ref name='virStoragePoolCreateXML'/>
@@ -6716,6 +6864,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -6755,6 +6904,7 @@
           <ref name='virNodeDeviceCreateXML'/>
           <ref name='virNodeDeviceDettach'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolCreateXMLFrom'/>
           <ref name='virStorageVolRef'/>
@@ -6762,35 +6912,18 @@
         <word name='usual'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='uuid'>
+          <ref name='virSecretLookupByUUIDString'/>
+        </word>
+        <word name='uuids'>
+          <ref name='virConnectListSecrets'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk12'>
       <letter name='v'>
         <word name='valid'>
           <ref name='virConnectDomainEventRegister'/>
-        </word>
-        <word name='value'>
-          <ref name='VIR_CPU_USABLE'/>
-          <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
-          <ref name='_virVcpuInfo'/>
-          <ref name='virConnectDomainXMLFromNative'/>
-          <ref name='virConnectDomainXMLToNative'/>
-          <ref name='virConnectGetMaxVcpus'/>
-          <ref name='virConnectGetVersion'/>
-          <ref name='virDomainGetAutostart'/>
-          <ref name='virDomainGetSchedulerParameters'/>
-          <ref name='virDomainGetSchedulerType'/>
-          <ref name='virDomainGetXMLDesc'/>
-          <ref name='virDomainSetSchedulerParameters'/>
-          <ref name='virEventAddTimeoutFunc'/>
-          <ref name='virEventUpdateTimeoutFunc'/>
-          <ref name='virGetVersion'/>
-          <ref name='virInterfaceGetXMLDesc'/>
-          <ref name='virNetworkGetAutostart'/>
-          <ref name='virNetworkGetBridgeName'/>
-          <ref name='virNetworkGetXMLDesc'/>
-          <ref name='virNodeGetFreeMemory'/>
-          <ref name='virStoragePoolGetAutostart'/>
         </word>
         <word name='values'>
           <ref name='_virConnectAuth'/>
@@ -6823,6 +6956,10 @@
         </word>
         <word name='virConnect'>
           <ref name='virConnectDomainEventCallback'/>
+          <ref name='virConnectListSecrets'/>
+          <ref name='virConnectNumOfSecrets'/>
+          <ref name='virSecretDefineXML'/>
+          <ref name='virSecretLookupByUUIDString'/>
         </word>
         <word name='virConnectClose'>
           <ref name='virConnectRef'/>
@@ -6849,6 +6986,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -6986,6 +7124,20 @@
         </word>
         <word name='virSchedParameter'>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+        </word>
+        <word name='virSecret'>
+          <ref name='virSecretGetConnect'/>
+          <ref name='virSecretGetUUIDString'/>
+          <ref name='virSecretGetValue'/>
+          <ref name='virSecretGetXMLDesc'/>
+          <ref name='virSecretSetValue'/>
+          <ref name='virSecretUndefine'/>
+        </word>
+        <word name='virSecretFree'>
+          <ref name='virSecretRef'/>
+        </word>
+        <word name='virSecretPtr'>
+          <ref name='virSecretUndefine'/>
         </word>
         <word name='virSecurityLabel'>
           <ref name='VIR_SECURITY_LABEL_BUFLEN'/>
@@ -7128,6 +7280,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -7183,6 +7336,7 @@
           <ref name='virInterfaceRef'/>
           <ref name='virNetworkRef'/>
           <ref name='virNodeDeviceRef'/>
+          <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
@@ -7193,6 +7347,7 @@
           <ref name='virDomainGetConnect'/>
           <ref name='virInterfaceGetConnect'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virSecretGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -7212,6 +7367,7 @@
         </word>
         <word name='xml'>
           <ref name='virConnectFindStoragePoolSources'/>
+          <ref name='virSecretDefineXML'/>
         </word>
         <word name='xvda'>
           <ref name='virDomainBlockStats'/>
@@ -7252,10 +7408,10 @@
       <chunk name='chunk2' start='W' end='a'/>
       <chunk name='chunk3' start='b' end='c'/>
       <chunk name='chunk4' start='d' end='e'/>
-      <chunk name='chunk5' start='f' end='g'/>
-      <chunk name='chunk6' start='h' end='i'/>
-      <chunk name='chunk7' start='j' end='m'/>
-      <chunk name='chunk8' start='n' end='p'/>
+      <chunk name='chunk5' start='f' end='h'/>
+      <chunk name='chunk6' start='i' end='l'/>
+      <chunk name='chunk7' start='m' end='n'/>
+      <chunk name='chunk8' start='o' end='p'/>
       <chunk name='chunk9' start='q' end='r'/>
       <chunk name='chunk10' start='s' end='s'/>
       <chunk name='chunk11' start='t' end='u'/>

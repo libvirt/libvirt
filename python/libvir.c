@@ -1562,6 +1562,103 @@ libvirt_virNodeDeviceListCaps(PyObject *self ATTRIBUTE_UNUSED,
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virConnectListSecrets(PyObject *self ATTRIBUTE_UNUSED,
+                              PyObject *args) {
+    PyObject *py_retval;
+    char **uuids = NULL;
+    virConnectPtr conn;
+    int c_retval, i;
+    PyObject *pyobj_conn;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectListSecrets", &pyobj_conn))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virConnectNumOfSecrets(conn);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        uuids = malloc(sizeof(*uuids) * c_retval);
+        if (!uuids)
+            return VIR_PY_NONE;
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        c_retval = virConnectListSecrets(conn, uuids, c_retval);
+        LIBVIRT_END_ALLOW_THREADS;
+        if (c_retval < 0) {
+            free(uuids);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+
+    if (uuids) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(uuids[i]));
+            free(uuids[i]);
+        }
+        free(uuids);
+    }
+
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virSecretGetValue(PyObject *self ATTRIBUTE_UNUSED,
+                          PyObject *args) {
+    PyObject *py_retval;
+    unsigned char *c_retval;
+    size_t size;
+    virSecretPtr secret;
+    PyObject *pyobj_secret;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oi:virSecretGetValue", &pyobj_secret,
+                          &flags))
+        return NULL;
+    secret = (virSecretPtr) PyvirSecret_Get(pyobj_secret);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virSecretGetValue(secret, &size, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == NULL)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromStringAndSize((const char *)c_retval, size);
+    memset(c_retval, 0, size);
+    free(c_retval);
+
+    return py_retval;
+}
+
+static PyObject *
+libvirt_virSecretSetValue(PyObject *self ATTRIBUTE_UNUSED,
+                          PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virSecretPtr secret;
+    PyObject *pyobj_secret;
+    const char *value;
+    int size;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oz#i:virSecretSetValue", &pyobj_secret,
+                          &value, &size, &flags))
+        return NULL;
+    secret = (virSecretPtr) PyvirSecret_Get(pyobj_secret);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virSecretSetValue(secret, (const unsigned char *)value, size,
+                                 flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    py_retval = libvirt_intWrap(c_retval);
+    return py_retval;
+}
 
 /*******************************************
  * Helper functions to avoid importing modules
@@ -2261,6 +2358,9 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virEventInvokeTimeoutCallback", libvirt_virEventInvokeTimeoutCallback, METH_VARARGS, NULL},
     {(char *) "virNodeListDevices", libvirt_virNodeListDevices, METH_VARARGS, NULL},
     {(char *) "virNodeDeviceListCaps", libvirt_virNodeDeviceListCaps, METH_VARARGS, NULL},
+    {(char *) "virConnectListSecrets", libvirt_virConnectListSecrets, METH_VARARGS, NULL},
+    {(char *) "virSecretGetValue", libvirt_virSecretGetValue, METH_VARARGS, NULL},
+    {(char *) "virSecretSetValue", libvirt_virSecretSetValue, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

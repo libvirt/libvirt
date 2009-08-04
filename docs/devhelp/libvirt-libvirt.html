@@ -59,6 +59,7 @@ typedef struct _virNetwork <a href="#virNetwork">virNetwork</a>;
 typedef enum <a href="#virDomainEventResumedDetailType">virDomainEventResumedDetailType</a>;
 typedef <a href="libvirt-libvirt.html#virDomainBlockStatsStruct">virDomainBlockStatsStruct</a> * <a href="#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a>;
 typedef struct _virConnect <a href="#virConnect">virConnect</a>;
+typedef <a href="libvirt-libvirt.html#virSecret">virSecret</a> * <a href="#virSecretPtr">virSecretPtr</a>;
 typedef enum <a href="#virDomainEventStartedDetailType">virDomainEventStartedDetailType</a>;
 typedef struct _virDomainInfo <a href="#virDomainInfo">virDomainInfo</a>;
 typedef enum <a href="#virStoragePoolDeleteFlags">virStoragePoolDeleteFlags</a>;
@@ -67,6 +68,7 @@ typedef struct _virStoragePool <a href="#virStoragePool">virStoragePool</a>;
 typedef enum <a href="#virDomainEventType">virDomainEventType</a>;
 typedef struct _virDomainInterfaceStats <a href="#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a>;
 typedef struct _virStoragePoolInfo <a href="#virStoragePoolInfo">virStoragePoolInfo</a>;
+typedef struct _virSecret <a href="#virSecret">virSecret</a>;
 typedef enum <a href="#virDomainState">virDomainState</a>;
 typedef struct _virDomain <a href="#virDomain">virDomain</a>;
 typedef <a href="libvirt-libvirt.html#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a> * <a href="#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a>;
@@ -113,16 +115,18 @@ typedef enum <a href="#virDomainCreateFlags">virDomainCreateFlags</a>;
 typedef <a href="libvirt-libvirt.html#virSecurityLabel">virSecurityLabel</a> * <a href="#virSecurityLabelPtr">virSecurityLabelPtr</a>;
 typedef struct _virSecurityModel <a href="#virSecurityModel">virSecurityModel</a>;
 char *	<a href="#virStoragePoolGetXMLDesc">virStoragePoolGetXMLDesc</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
+char *	<a href="#virSecretGetUUIDString">virSecretGetUUIDString</a>		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret);
 const char *	<a href="#virStorageVolGetKey">virStorageVolGetKey</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 typedef void <a href="#virEventUpdateTimeoutFunc">virEventUpdateTimeoutFunc</a>	(int timer, <br/>					 int timeout);
-int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
+int	<a href="#virDomainUndefine">virDomainUndefine</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainDefineXML">virDomainDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml);
 int	<a href="#virDomainShutdown">virDomainShutdown</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
-int	<a href="#virConnectListStoragePools">virConnectListStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
+int	<a href="#virConnectListDefinedInterfaces">virConnectListDefinedInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 int	<a href="#virGetVersion">virGetVersion</a>			(unsigned long * libVer, <br/>					 const char * type, <br/>					 unsigned long * typeVer);
 int	<a href="#virNodeGetCellsFreeMemory">virNodeGetCellsFreeMemory</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 unsigned long long * freeMems, <br/>					 int startCell, <br/>					 int maxCells);
 int	<a href="#virInitialize">virInitialize</a>			(void);
 const char *	<a href="#virNodeDeviceGetName">virNodeDeviceGetName</a>	(<a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a> dev);
+int	<a href="#virConnectNumOfSecrets">virConnectNumOfSecrets</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virStoragePoolSetAutostart">virStoragePoolSetAutostart</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 int autostart);
 char *	<a href="#virConnectDomainXMLFromNative">virConnectDomainXMLFromNative</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * nativeFormat, <br/>					 const char * nativeConfig, <br/>					 unsigned int flags);
 int	<a href="#virNodeDeviceDettach">virNodeDeviceDettach</a>		(<a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a> dev);
@@ -131,7 +135,7 @@ int	<a href="#virConnectDomainEventDeregister">virConnectDomainEventDeregister</
 int	<a href="#virDomainGetSchedulerParameters">virDomainGetSchedulerParameters</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virSchedParameterPtr">virSchedParameterPtr</a> params, <br/>					 int * nparams);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByUUIDString">virDomainLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr);
 int	<a href="#virConnectNumOfDefinedNetworks">virConnectNumOfDefinedNetworks</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
-int	<a href="#virConnectListDefinedInterfaces">virConnectListDefinedInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
+int	<a href="#virConnectListStoragePools">virConnectListStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 int	<a href="#virNetworkGetUUID">virNetworkGetUUID</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 unsigned char * uuid);
 char *	<a href="#virInterfaceGetXMLDesc">virInterfaceGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virStoragePoolGetConnect">virStoragePoolGetConnect</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
@@ -155,6 +159,7 @@ typedef void <a href="#virEventUpdateHandleFunc">virEventUpdateHandleFunc</a>	(i
 int	<a href="#virDomainDestroy">virDomainDestroy</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virConnectNumOfNetworks">virConnectNumOfNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByUUIDString">virStoragePoolLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * uuidstr);
+<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virSecretGetConnect">virSecretGetConnect</a>	(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret);
 int	<a href="#virInterfaceCreate">virInterfaceCreate</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface, <br/>					 unsigned int flags);
 char *	<a href="#virDomainGetXMLDesc">virDomainGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int flags);
 int	<a href="#virStoragePoolGetUUID">virStoragePoolGetUUID</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned char * uuid);
@@ -181,6 +186,7 @@ const char *	<a href="#virInterfaceGetName">virInterfaceGetName</a>	(<a href="li
 int	<a href="#virStoragePoolCreate">virStoragePoolCreate</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
 int	<a href="#virNodeGetInfo">virNodeGetInfo</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virNodeInfoPtr">virNodeInfoPtr</a> info);
 int	<a href="#virNetworkSetAutostart">virNetworkSetAutostart</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int autostart);
+<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a>	<a href="#virSecretLookupByUUIDString">virSecretLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuid);
 unsigned long	<a href="#virDomainGetMaxMemory">virDomainGetMaxMemory</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virStoragePoolFree">virStoragePoolFree</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
 int	<a href="#virConnectNumOfDefinedInterfaces">virConnectNumOfDefinedInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
@@ -190,7 +196,7 @@ int	<a href="#virNodeDeviceListCaps">virNodeDeviceListCaps</a>		(<a href="libvir
 int	<a href="#virDomainBlockStats">virDomainBlockStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a> stats, <br/>					 size_t size);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenAuth">virConnectOpenAuth</a>	(const char * name, <br/>					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br/>					 int flags);
 int	<a href="#virStoragePoolDelete">virStoragePoolDelete</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
-typedef int <a href="#virEventRemoveHandleFunc">virEventRemoveHandleFunc</a>	(int watch);
+int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 const char *	<a href="#virStorageVolGetName">virStorageVolGetName</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 int	<a href="#virStoragePoolGetAutostart">virStoragePoolGetAutostart</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 int * autostart);
 int	<a href="#virDomainGetAutostart">virDomainGetAutostart</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int * autostart);
@@ -203,10 +209,12 @@ char *	<a href="#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a>		(<a href="libvi
 int	<a href="#virConnectNumOfStoragePools">virConnectNumOfStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virInterfaceGetConnect">virInterfaceGetConnect</a>	(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
 const char *	<a href="#virNetworkGetName">virNetworkGetName</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+char *	<a href="#virSecretGetXMLDesc">virSecretGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 unsigned int flags);
 int	<a href="#virConnectListDefinedDomains">virConnectListDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 char *	<a href="#virConnectGetCapabilities">virConnectGetCapabilities</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByName">virDomainLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
 char *	<a href="#virConnectFindStoragePoolSources">virConnectFindStoragePoolSources</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * type, <br/>						 const char * srcSpec, <br/>						 unsigned int flags);
+int	<a href="#virStorageVolFree">virStorageVolFree</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 int	<a href="#virDomainPinVcpu">virDomainPinVcpu</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int vcpu, <br/>					 unsigned char * cpumap, <br/>					 int maplen);
 int	<a href="#virNodeGetSecurityModel">virNodeGetSecurityModel</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virSecurityModelPtr">virSecurityModelPtr</a> secmodel);
 int	<a href="#virDomainRestore">virDomainRestore</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * from);
@@ -216,7 +224,7 @@ char *	<a href="#virStorageVolGetPath">virStorageVolGetPath</a>		(<a href="libvi
 typedef int <a href="#virConnectDomainEventCallback">virConnectDomainEventCallback</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 int event, <br/>					 int detail, <br/>					 void * opaque);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByID">virDomainLookupByID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 int id);
 int	<a href="#virStorageVolDelete">virStorageVolDelete</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol, <br/>					 unsigned int flags);
-int	<a href="#virStorageVolFree">virStorageVolFree</a>		(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
+int	<a href="#virSecretUndefine">virSecretUndefine</a>		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret);
 int	<a href="#virConnectListInterfaces">virConnectListInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 int	<a href="#virDomainMemoryPeek">virDomainMemoryPeek</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 unsigned long long start, <br/>					 size_t size, <br/>					 void * buffer, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByUUID">virNetworkLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const unsigned char * uuid);
@@ -229,14 +237,14 @@ int	<a href="#virConnectDomainEventRegister">virConnectDomainEventRegister</a>	(
 int	<a href="#virDomainGetVcpus">virDomainGetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a> info, <br/>					 int maxinfo, <br/>					 unsigned char * cpumaps, <br/>					 int maplen);
 <a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a>	<a href="#virNodeDeviceLookupByName">virNodeDeviceLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * name);
 int	<a href="#virStoragePoolGetInfo">virStoragePoolGetInfo</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 <a href="libvirt-libvirt.html#virStoragePoolInfoPtr">virStoragePoolInfoPtr</a> info);
-int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+typedef int <a href="#virEventRemoveHandleFunc">virEventRemoveHandleFunc</a>	(int watch);
 int	<a href="#virInterfaceRef">virInterfaceRef</a>			(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
 const char *	<a href="#virInterfaceGetMACString">virInterfaceGetMACString</a>	(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
 int	<a href="#virConnectNumOfDomains">virConnectNumOfDomains</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virStoragePoolRefresh">virStoragePoolRefresh</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
 int	<a href="#virConnectNumOfDefinedDomains">virConnectNumOfDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolCreateXMLFrom">virStorageVolCreateXMLFrom</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>							 const char * xmldesc, <br/>							 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> clonevol, <br/>							 unsigned int flags);
-int	<a href="#virDomainUndefine">virDomainUndefine</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainReboot">virDomainReboot</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int flags);
 int	<a href="#virNetworkGetUUIDString">virNetworkGetUUIDString</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 char * buf);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByName">virNetworkLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
@@ -253,6 +261,7 @@ typedef int <a href="#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>	(
 int	<a href="#virDomainAttachDevice">virDomainAttachDevice</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 const char * xml);
 char *	<a href="#virConnectGetURI">virConnectGetURI</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenReadOnly">virConnectOpenReadOnly</a>	(const char * name);
+<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a>	<a href="#virSecretDefineXML">virSecretDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml, <br/>					 unsigned int flags);
 int	<a href="#virNetworkFree">virNetworkFree</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByUUID">virStoragePoolLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const unsigned char * uuid);
 typedef int <a href="#virEventAddHandleFunc">virEventAddHandleFunc</a>		(int fd, <br/>					 int event, <br/>					 <a href="libvirt-libvirt.html#virEventHandleCallback">virEventHandleCallback</a> cb, <br/>					 void * opaque, <br/>					 <a href="libvirt-libvirt.html#virFreeCallback">virFreeCallback</a> ff);
@@ -265,6 +274,7 @@ int	<a href="#virNodeDeviceNumOfCaps">virNodeDeviceNumOfCaps</a>		(<a href="libv
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virNetworkGetConnect">virNetworkGetConnect</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net);
 unsigned long long	<a href="#virNodeGetFreeMemory">virNodeGetFreeMemory</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virInterfaceDestroy">virInterfaceDestroy</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface, <br/>					 unsigned int flags);
+int	<a href="#virSecretSetValue">virSecretSetValue</a>		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 const unsigned char * value, <br/>					 size_t value_size, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virStorageVolGetConnect">virStorageVolGetConnect</a>	(<a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> vol);
 int	<a href="#virNodeNumOfDevices">virNodeNumOfDevices</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * cap, <br/>					 unsigned int flags);
 int	<a href="#virStoragePoolDestroy">virStoragePoolDestroy</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
@@ -276,6 +286,7 @@ int	<a href="#virConnectGetMaxVcpus">virConnectGetMaxVcpus</a>		(<a href="libvir
 int	<a href="#virDomainGetUUIDString">virDomainGetUUIDString</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 char * buf);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virDomainGetConnect">virDomainGetConnect</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom);
 int	<a href="#virConnectNumOfDefinedStoragePools">virConnectNumOfDefinedStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
+int	<a href="#virSecretFree">virSecretFree</a>			(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret);
 int	<a href="#virNodeListDevices">virNodeListDevices</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * cap, <br/>					 char ** const names, <br/>					 int maxnames, <br/>					 unsigned int flags);
 const char *	<a href="#virNodeDeviceGetParent">virNodeDeviceGetParent</a>	(<a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a> dev);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpen">virConnectOpen</a>		(const char * name);
@@ -284,13 +295,16 @@ int	<a href="#virNodeDeviceRef">virNodeDeviceRef</a>		(<a href="libvirt-libvirt.
 int	<a href="#virInterfaceUndefine">virInterfaceUndefine</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
 int	<a href="#virDomainSetVcpus">virDomainSetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int nvcpus);
 int	<a href="#virDomainRef">virDomainRef</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+int	<a href="#virConnectListSecrets">virConnectListSecrets</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** uuids, <br/>					 int maxuuids);
 int	<a href="#virConnectNumOfInterfaces">virConnectNumOfInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 unsigned int	<a href="#virDomainGetID">virDomainGetID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+int	<a href="#virSecretRef">virSecretRef</a>			(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret);
 int	<a href="#virDomainBlockPeek">virDomainBlockPeek</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 unsigned long long offset, <br/>					 size_t size, <br/>					 void * buffer, <br/>					 unsigned int flags);
 typedef int <a href="#virEventAddTimeoutFunc">virEventAddTimeoutFunc</a>		(int timeout, <br/>					 <a href="libvirt-libvirt.html#virEventTimeoutCallback">virEventTimeoutCallback</a> cb, <br/>					 void * opaque, <br/>					 <a href="libvirt-libvirt.html#virFreeCallback">virFreeCallback</a> ff);
 <a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a>	<a href="#virInterfaceLookupByName">virInterfaceLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * name);
 int	<a href="#virDomainInterfaceStats">virDomainInterfaceStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a> stats, <br/>					 size_t size);
 int	<a href="#virConnectListNetworks">virConnectListNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
+unsigned char *	<a href="#virSecretGetValue">virSecretGetValue</a>	(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 size_t * value_size, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolLookupByKey">virStorageVolLookupByKey</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * key);
 </pre>
     </div>
@@ -642,6 +656,16 @@ The content of this structure is not made public by the API.
 </pre><p/>
 </div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecret">Structure </a>virSecret</h3><pre class="programlisting">struct _virSecret {
+The content of this structure is not made public by the API.
+} virSecret;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretPtr">Typedef </a>virSecretPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virSecret">virSecret</a> * virSecretPtr;
+</pre><p/>
+</div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virSecurityLabel">Structure </a>virSecurityLabel</h3><pre class="programlisting">struct _virSecurityLabel {
 The content of this structure is not made public by the API.
 } virSecurityLabel;
@@ -890,6 +914,10 @@ The content of this structure is not made public by the API.
 </pre><p>Collect the list of active networks, and store their names in @names</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>array to collect the list of names of active networks</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of @names</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of networks found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectListSecrets"/>virConnectListSecrets ()</h3><pre class="programlisting">int	virConnectListSecrets		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** uuids, <br/>					 int maxuuids)<br/>
+</pre><p>List UUIDs of defined secrets, store pointers to names in uuids.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>uuids</tt></i>:</span></td><td>Pointer to an array to store the UUIDs</td></tr><tr><td><span class="term"><i><tt>maxuuids</tt></i>:</span></td><td>size of the array.</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of UUIDs provided in the array, or -1 on failure.</td></tr></tbody></table></div></div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectListStoragePools"/>virConnectListStoragePools ()</h3><pre class="programlisting">int	virConnectListStoragePools	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames)<br/>
 </pre><p>Provides the list of names of active storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>array of char * to fill with pool names (allocated by caller)</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of the names array</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on error</td></tr></tbody></table></div></div>
@@ -921,6 +949,10 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virConnectNumOfNetworks"/>virConnectNumOfNetworks ()</h3><pre class="programlisting">int	virConnectNumOfNetworks		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Provides the number of active networks.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of network found or -1 in case of error</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectNumOfSecrets"/>virConnectNumOfSecrets ()</h3><pre class="programlisting">int	virConnectNumOfSecrets		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
+</pre><p>Fetch number of currently defined secrets.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number currently defined secrets.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectNumOfStoragePools"/>virConnectNumOfStoragePools ()</h3><pre class="programlisting">int	virConnectNumOfStoragePools	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Provides the number of active storage pools</p>
@@ -1337,6 +1369,46 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virNodeNumOfDevices"/>virNodeNumOfDevices ()</h3><pre class="programlisting">int	virNodeNumOfDevices		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * cap, <br/>					 unsigned int flags)<br/>
 </pre><p>Provides the number of node devices. If the optional 'cap' argument is non-NULL, then the count will be restricted to devices with the specified capability</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>cap</tt></i>:</span></td><td>capability name</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>flags (unused, pass 0)</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of node devices or -1 in case of error</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretDefineXML"/>virSecretDefineXML ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a>	virSecretDefineXML	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml, <br/>					 unsigned int flags)<br/>
+</pre><p>If XML specifies an UUID, locates the specified secret and replaces all attributes of the secret specified by UUID by attributes specified in xml (any attributes not specified in xml are discarded). Otherwise, creates a new secret with an automatically chosen UUID, and initializes its attributes from xml.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>xml</tt></i>:</span></td><td>XML describing the secret.</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>flags, use 0 for now</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a the secret on success, NULL on failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretFree"/>virSecretFree ()</h3><pre class="programlisting">int	virSecretFree			(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret)<br/>
+</pre><p>Release the secret handle. The underlying secret continues to exist.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>pointer to a secret</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, or -1 on error</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretGetConnect"/>virSecretGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virSecretGetConnect	(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret)<br/>
+</pre><p>Provides the connection pointer associated with a secret. The reference counter on the connection is not increased by this call. WARNING: When writing libvirt bindings in other languages, do not use this function. Instead, store the connection and the secret object together.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> secret</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretGetUUIDString"/>virSecretGetUUIDString ()</h3><pre class="programlisting">char *	virSecretGetUUIDString		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret)<br/>
+</pre><p>Fetches the UUID of the secret.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> secret</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>ID of the secret (not necessarily in the UUID format) on success, NULL on failure. The caller must free() the ID.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretGetValue"/>virSecretGetValue ()</h3><pre class="programlisting">unsigned char *	virSecretGetValue	(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 size_t * value_size, <br/>					 unsigned int flags)<br/>
+</pre><p>Fetches the value of a secret.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> connection</td></tr><tr><td><span class="term"><i><tt>value_size</tt></i>:</span></td><td>Place for storing size of the secret value</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>flags, use 0 for now</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the secret value on success, NULL on failure. The caller must free() the secret value.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretGetXMLDesc"/>virSecretGetXMLDesc ()</h3><pre class="programlisting">char *	virSecretGetXMLDesc		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 unsigned int flags)<br/>
+</pre><p>Fetches an XML document describing attributes of the secret.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> secret</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>flags, use 0 for now</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the XML document on success, NULL on failure. The caller must free() the XML.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretLookupByUUIDString"/>virSecretLookupByUUIDString ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a>	virSecretLookupByUUIDString	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuid)<br/>
+</pre><p>Fetches a secret based on uuid.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virConnect">virConnect</a> connection</td></tr><tr><td><span class="term"><i><tt>uuid</tt></i>:</span></td><td>ID of a secret</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the secret on success, or NULL on failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretRef"/>virSecretRef ()</h3><pre class="programlisting">int	virSecretRef			(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret)<br/>
+</pre><p>Increment the reference count on the secret. For each additional call to this method, there shall be a corresponding call to <a href="libvirt-libvirt.html#virSecretFree">virSecretFree</a> to release the reference count, once the caller no longer needs the reference to this object. This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a secret would increment the reference count.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>the secret to hold a reference on</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success, -1 in case of failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretSetValue"/>virSecretSetValue ()</h3><pre class="programlisting">int	virSecretSetValue		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret, <br/>					 const unsigned char * value, <br/>					 size_t value_size, <br/>					 unsigned int flags)<br/>
+</pre><p>Sets the value of a secret.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> secret</td></tr><tr><td><span class="term"><i><tt>value</tt></i>:</span></td><td>Value of the secret</td></tr><tr><td><span class="term"><i><tt>value_size</tt></i>:</span></td><td>Size of the value</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>flags, use 0 for now</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virSecretUndefine"/>virSecretUndefine ()</h3><pre class="programlisting">int	virSecretUndefine		(<a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> secret)<br/>
+</pre><p>Deletes the specified secret. This does not free the associated <a href="libvirt-libvirt.html#virSecretPtr">virSecretPtr</a> object.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>secret</tt></i>:</span></td><td>A <a href="libvirt-libvirt.html#virSecret">virSecret</a> secret</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virStoragePoolBuild"/>virStoragePoolBuild ()</h3><pre class="programlisting">int	virStoragePoolBuild		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags)<br/>
 </pre><p>Build the underlying storage pool</p>

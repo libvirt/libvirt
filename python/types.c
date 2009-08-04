@@ -194,6 +194,19 @@ libvirt_virNodeDevicePtrWrap(virNodeDevicePtr node)
 }
 
 PyObject *
+libvirt_virSecretPtrWrap(virSecretPtr node)
+{
+    PyObject *ret;
+
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    ret = PyCObject_FromVoidPtrAndDesc(node, (char *) "virSecretPtr", NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
 {
     PyObject *ret;
