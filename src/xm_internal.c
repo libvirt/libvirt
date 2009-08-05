@@ -122,18 +122,18 @@ struct xenUnifiedDriver xenXMDriver = {
         virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
                                __FUNCTION__, __LINE__, fmt)
 
+#ifndef WITH_XEN_INOTIFY
+static int xenInotifyActive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+   return 0;
+}
+#else
 static int xenInotifyActive(virConnectPtr conn)
 {
-    int ret;
-#ifndef WITH_XEN_INOTIFY
-    ret = 0;
-#else
-    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
-    ret = (priv->inotifyWatch > 0);
-#endif
-
-    return ret;
+   xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+   return priv->inotifyWatch > 0;
 }
+#endif
 
 /* Convenience method to grab a int from the config file object */
 static int xenXMConfigGetBool(virConnectPtr conn,
