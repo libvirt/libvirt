@@ -1,7 +1,6 @@
-<!-- A Relax NG schema for the libvirt node device XML format -->
+<!-- A Relax NG schema for the libvirt storage pool XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <!-- We handle only document defining a domain -->
   <start>
     <ref name='pool'/>
   </start>

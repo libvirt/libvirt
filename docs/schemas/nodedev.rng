@@ -1,14 +1,10 @@
 <!-- A Relax NG schema for the libvirt node device XML format -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <!-- We handle only document defining a domain -->
   <start>
     <ref name='device'/>
   </start>
 
-  <!--
-      We handle only document defining a domain
-    -->
   <define name='device'>
     <element name="device">
       <!-- The name of the network, used to refer to it through the API

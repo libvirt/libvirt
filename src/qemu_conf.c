@@ -1970,7 +1970,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (def->nvideos) {
         if (def->nvideos > 1) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("only one video card is currentely supported"));
+                             "%s", _("only one video card is currently supported"));
             goto error;
         }
 
