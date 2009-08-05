@@ -446,7 +446,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 
 
     /* Size in KB */
-    snprintf(size, sizeof(size), "%llu", vol->capacity/1024);
+    snprintf(size, sizeof(size), "%lluK", vol->capacity/1024);
 
     if (virRun(conn, imgargv, NULL) < 0) {
         VIR_FREE(imgargv[0]);
