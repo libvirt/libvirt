@@ -198,7 +198,7 @@ AC_ARG_WITH([lxc],
 AC_ARG_WITH([one],
 [  --with-one              add ONE support (on)],[],[with_one=check])
 AC_ARG_WITH([esx],
-[  --with-esx              add ESX support (on)],[],[with_esx=yes])
+[  --with-esx              add ESX support (on)],[],[with_esx=check])
 AC_ARG_WITH([test],
 [  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH([remote],
@@ -1139,7 +1139,7 @@ AC_SUBST([LIBPARTED_CFLAGS])
 AC_SUBST([LIBPARTED_LIBS])
 
 dnl
-dnl check for libcurl
+dnl check for libcurl (ESX)
 dnl
 
 LIBCURL_CFLAGS=""
@@ -1147,13 +1147,18 @@ LIBCURL_LIBS=""
 LIBCURL_REQUIRED="7.18.0"
 LIBCURL_FOUND="no"
 
-if test "$with_esx" = "yes" ; then
-  PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [LIBCURL_FOUND=yes], [LIBCURL_FOUND=no])
-
-  if test "$LIBCURL_FOUND" = "no"; then
-    AC_MSG_CHECKING(for libcurl libraries >= $LIBCURL_REQUIRED)
-    AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the ESX driver])
-  fi
+if test "$with_esx" = "yes" -o "$with_esx" = "check"; then
+    PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [
+        LIBCURL_FOUND=yes
+        with_esx="yes"
+    ], [
+        if test "$with_esx" = "check"; then
+            with_esx=no
+            AC_MSG_NOTICE([libcurl is required for ESX driver, disabling it])
+        else
+            AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the ESX driver])
+        fi
+    ])
 fi
 
 AC_SUBST([LIBCURL_CFLAGS])
@@ -1595,15 +1600,15 @@ AC_MSG_NOTICE([  dlopen: $DRIVER_MODULES_CFLAGS $DRIVER_MODULES_LIBS])
 else
 AC_MSG_NOTICE([  dlopen: no])
 fi
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Libraries])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 if test "$with_esx" = "yes" ; then
 AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
 else
 AC_MSG_NOTICE([ libcurl: no])
 fi
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([Libraries])
-AC_MSG_NOTICE([])
-AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 if test "$with_libssh" != "no" ; then
 AC_MSG_NOTICE([  libssh: $LIBSSH_CFLAGS $LIBSSH_LIBS])
 else
