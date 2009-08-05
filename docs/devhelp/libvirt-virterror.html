@@ -109,7 +109,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_SECURITY">VIR_FROM_SECURITY</a> = 24 /* Error from security framework */
     <a name="VIR_FROM_VBOX">VIR_FROM_VBOX</a> = 25 /* Error from VirtualBox driver */
     <a name="VIR_FROM_INTERFACE">VIR_FROM_INTERFACE</a> = 26 /* Error when operating on an interface */
-    <a name="VIR_FROM_ONE">VIR_FROM_ONE</a> = 27 /*  Error from OpenNebula driver */
+    <a name="VIR_FROM_ONE">VIR_FROM_ONE</a> = 27 /* Error from OpenNebula driver */
+    <a name="VIR_FROM_ESX">VIR_FROM_ESX</a> = 28 /* Error from ESX driver */
+    <a name="VIR_FROM_PHYP">VIR_FROM_PHYP</a> = 29 /*  Error from IBM power hypervisor */
 };
 </pre><p/>
 </div>
@@ -181,7 +183,8 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_OPERATION_INVALID">VIR_ERR_OPERATION_INVALID</a> = 55 /* operation is not applicable at this time */
     <a name="VIR_WAR_NO_INTERFACE">VIR_WAR_NO_INTERFACE</a> = 56 /* failed to start interface driver */
     <a name="VIR_ERR_NO_INTERFACE">VIR_ERR_NO_INTERFACE</a> = 57 /* interface driver not running */
-    <a name="VIR_ERR_INVALID_INTERFACE">VIR_ERR_INVALID_INTERFACE</a> = 58 /*  invalid interface object */
+    <a name="VIR_ERR_INVALID_INTERFACE">VIR_ERR_INVALID_INTERFACE</a> = 58 /* invalid interface object */
+    <a name="VIR_ERR_MULTIPLE_INTERFACES">VIR_ERR_MULTIPLE_INTERFACES</a> = 59 /*  more than one matching interface found */
 };
 </pre><p/>
 </div>

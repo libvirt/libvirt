@@ -131,7 +131,7 @@ int	<a href="#virConnectDomainEventDeregister">virConnectDomainEventDeregister</
 int	<a href="#virDomainGetSchedulerParameters">virDomainGetSchedulerParameters</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virSchedParameterPtr">virSchedParameterPtr</a> params, <br/>					 int * nparams);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByUUIDString">virDomainLookupByUUIDString</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr);
 int	<a href="#virConnectNumOfDefinedNetworks">virConnectNumOfDefinedNetworks</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
-int	<a href="#virConnectNumOfDomains">virConnectNumOfDomains</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
+int	<a href="#virConnectListDefinedInterfaces">virConnectListDefinedInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 int	<a href="#virNetworkGetUUID">virNetworkGetUUID</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 unsigned char * uuid);
 char *	<a href="#virInterfaceGetXMLDesc">virInterfaceGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface, <br/>					 unsigned int flags);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virStoragePoolGetConnect">virStoragePoolGetConnect</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
@@ -183,6 +183,7 @@ int	<a href="#virNodeGetInfo">virNodeGetInfo</a>			(<a href="libvirt-libvirt.htm
 int	<a href="#virNetworkSetAutostart">virNetworkSetAutostart</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int autostart);
 unsigned long	<a href="#virDomainGetMaxMemory">virDomainGetMaxMemory</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virStoragePoolFree">virStoragePoolFree</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool);
+int	<a href="#virConnectNumOfDefinedInterfaces">virConnectNumOfDefinedInterfaces</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 typedef void <a href="#virFreeCallback">virFreeCallback</a>			(void * opaque);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkDefineXML">virNetworkDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml);
 int	<a href="#virNodeDeviceListCaps">virNodeDeviceListCaps</a>		(<a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a> dev, <br/>					 char ** const names, <br/>					 int maxnames);
@@ -223,6 +224,7 @@ int	<a href="#virConnectListDefinedNetworks">virConnectListDefinedNetworks</a>	(
 int	<a href="#virConnectRef">virConnectRef</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainGetUUID">virDomainGetUUID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned char * uuid);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkCreateXML">virNetworkCreateXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc);
+int	<a href="#virNetworkUndefine">virNetworkUndefine</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 int	<a href="#virConnectDomainEventRegister">virConnectDomainEventRegister</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 <a href="libvirt-libvirt.html#virConnectDomainEventCallback">virConnectDomainEventCallback</a> cb, <br/>					 void * opaque, <br/>					 <a href="libvirt-libvirt.html#virFreeCallback">virFreeCallback</a> freecb);
 int	<a href="#virDomainGetVcpus">virDomainGetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a> info, <br/>					 int maxinfo, <br/>					 unsigned char * cpumaps, <br/>					 int maplen);
 <a href="libvirt-libvirt.html#virNodeDevicePtr">virNodeDevicePtr</a>	<a href="#virNodeDeviceLookupByName">virNodeDeviceLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const char * name);
@@ -230,7 +232,7 @@ int	<a href="#virStoragePoolGetInfo">virStoragePoolGetInfo</a>		(<a href="libvir
 int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virInterfaceRef">virInterfaceRef</a>			(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
 const char *	<a href="#virInterfaceGetMACString">virInterfaceGetMACString</a>	(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
-int	<a href="#virNetworkRef">virNetworkRef</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+int	<a href="#virConnectNumOfDomains">virConnectNumOfDomains</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virStoragePoolRefresh">virStoragePoolRefresh</a>		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>					 unsigned int flags);
 int	<a href="#virConnectNumOfDefinedDomains">virConnectNumOfDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	<a href="#virStorageVolCreateXMLFrom">virStorageVolCreateXMLFrom</a>	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>							 const char * xmldesc, <br/>							 <a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a> clonevol, <br/>							 unsigned int flags);
@@ -254,7 +256,7 @@ char *	<a href="#virConnectGetURI">virConnectGetURI</a>		(<a href="libvirt-libvi
 int	<a href="#virNetworkFree">virNetworkFree</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a>	<a href="#virStoragePoolLookupByUUID">virStoragePoolLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>							 const unsigned char * uuid);
 typedef int <a href="#virEventAddHandleFunc">virEventAddHandleFunc</a>		(int fd, <br/>					 int event, <br/>					 <a href="libvirt-libvirt.html#virEventHandleCallback">virEventHandleCallback</a> cb, <br/>					 void * opaque, <br/>					 <a href="libvirt-libvirt.html#virFreeCallback">virFreeCallback</a> ff);
-int	<a href="#virNetworkUndefine">virNetworkUndefine</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+int	<a href="#virNetworkRef">virNetworkRef</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 int	<a href="#virConnectListDefinedStoragePools">virConnectListDefinedStoragePools</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 char ** const names, <br/>						 int maxnames);
 typedef void <a href="#virEventTimeoutCallback">virEventTimeoutCallback</a>		(int timer, <br/>					 void * opaque);
 int	<a href="#virInterfaceFree">virInterfaceFree</a>		(<a href="libvirt-libvirt.html#virInterfacePtr">virInterfacePtr</a> iface);
@@ -527,7 +529,8 @@ The content of this structure is not made public by the API.
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainMemoryFlags">Enum </a>virDomainMemoryFlags</h3><pre class="programlisting">enum <a href="#virDomainMemoryFlags">virDomainMemoryFlags</a> {
-    <a name="VIR_MEMORY_VIRTUAL">VIR_MEMORY_VIRTUAL</a> = 1 /*  addresses are virtual addresses */
+    <a name="VIR_MEMORY_VIRTUAL">VIR_MEMORY_VIRTUAL</a> = 1 /* addresses are virtual addresses */
+    <a name="VIR_MEMORY_PHYSICAL">VIR_MEMORY_PHYSICAL</a> = 2 /*  addresses are physical addresses */
 };
 </pre><p/>
 </div>
@@ -863,6 +866,10 @@ The content of this structure is not made public by the API.
 </pre><p>list the defined but inactive domains, stores the pointers to the names in @names</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>pointer to an array to store the names</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of the array</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of names provided in the array or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectListDefinedInterfaces"/>virConnectListDefinedInterfaces ()</h3><pre class="programlisting">int	virConnectListDefinedInterfaces	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames)<br/>
+</pre><p>Collect the list of defined (inactive) physical host interfaces, and store their names in @names.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>array to collect the list of names of interfaces</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of @names</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of interfaces found or -1 in case of error</td></tr></tbody></table></div></div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectListDefinedNetworks"/>virConnectListDefinedNetworks ()</h3><pre class="programlisting">int	virConnectListDefinedNetworks	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames)<br/>
 </pre><p>list the inactive networks, stores the pointers to the names in @names</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>pointer to an array to store the names</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of the array</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of names provided in the array or -1 in case of error</td></tr></tbody></table></div></div>
@@ -876,7 +883,7 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>ids</tt></i>:</span></td><td>array to collect the list of IDs of active domains</td></tr><tr><td><span class="term"><i><tt>maxids</tt></i>:</span></td><td>size of @ids</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of domain found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectListInterfaces"/>virConnectListInterfaces ()</h3><pre class="programlisting">int	virConnectListInterfaces	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames)<br/>
-</pre><p>Collect the list of physical host interfaces, and store their names in @names</p>
+</pre><p>Collect the list of active physical host interfaces, and store their names in @names</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>names</tt></i>:</span></td><td>array to collect the list of names of interfaces</td></tr><tr><td><span class="term"><i><tt>maxnames</tt></i>:</span></td><td>size of @names</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of interfaces found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectListNetworks"/>virConnectListNetworks ()</h3><pre class="programlisting">int	virConnectListNetworks		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames)<br/>
@@ -891,6 +898,10 @@ The content of this structure is not made public by the API.
 </pre><p>Provides the number of defined but inactive domains.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of domain found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectNumOfDefinedInterfaces"/>virConnectNumOfDefinedInterfaces ()</h3><pre class="programlisting">int	virConnectNumOfDefinedInterfaces	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
+</pre><p>Provides the number of defined (inactive) interfaces on the physical host.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of defined interface found or -1 in case of error</td></tr></tbody></table></div></div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectNumOfDefinedNetworks"/>virConnectNumOfDefinedNetworks ()</h3><pre class="programlisting">int	virConnectNumOfDefinedNetworks	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Provides the number of inactive networks.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of networks found or -1 in case of error</td></tr></tbody></table></div></div>
@@ -904,8 +915,8 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of domain found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectNumOfInterfaces"/>virConnectNumOfInterfaces ()</h3><pre class="programlisting">int	virConnectNumOfInterfaces	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
-</pre><p>Provides the number of interfaces on the physical host.</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of interface found or -1 in case of error</td></tr></tbody></table></div></div>
+</pre><p>Provides the number of active interfaces on the physical host.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of active interfaces found or -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectNumOfNetworks"/>virConnectNumOfNetworks ()</h3><pre class="programlisting">int	virConnectNumOfNetworks		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Provides the number of active networks.</p>
@@ -917,14 +928,14 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectOpen"/>virConnectOpen ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpen		(const char * name)<br/>
 </pre><p>This function should be called first to get a connection to the Hypervisor and xen store</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error If @name is NULL then probing will be done to determine a suitable default driver to activate. This involves trying each hypervisor in turn until one successfully opens. If the LIBVIRT_DEFAULT_URI environment variable is set, then it will be used in preference to probing for a driver. If connecting to an unprivileged hypervisor driver which requires the libvirtd daemon to be active, it will automatically be launched if not already running. This can be prevented by setting the environment variable LIBVIRT_AUTOSTART=0 URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectOpenAuth"/>virConnectOpenAuth ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenAuth	(const char * name, <br/>					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br/>					 int flags)<br/>
-</pre><p>This function should be called first to get a connection to the Hypervisor. If necessary, authentication will be performed fetching credentials via the callback</p>
+</pre><p>This function should be called first to get a connection to the Hypervisor. If necessary, authentication will be performed fetching credentials via the callback See <a href="libvirt-libvirt.html#virConnectOpen">virConnectOpen</a> for notes about environment variables which can have an effect on opening drivers</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>auth</tt></i>:</span></td><td>Authenticate callback parameters</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>Open flags</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectOpenReadOnly"/>virConnectOpenReadOnly ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenReadOnly	(const char * name)<br/>
-</pre><p>This function should be called first to get a restricted connection to the library functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</p>
+</pre><p>This function should be called first to get a restricted connection to the library functionalities. The set of APIs usable are then restricted on the available methods to control the domains. See <a href="libvirt-libvirt.html#virConnectOpen">virConnectOpen</a> for notes about environment variables which can have an effect on opening drivers</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectRef"/>virConnectRef ()</h3><pre class="programlisting">int	virConnectRef			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
@@ -1421,7 +1432,7 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virStoragePoolUndefine"/>virStoragePoolUndefine ()</h3><pre class="programlisting">int	virStoragePoolUndefine		(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool)<br/>
 </pre><p>Undefine an inactive storage pool</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>pool</tt></i>:</span></td><td>pointer to storage pool</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a <a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> object, or NULL if creation failed</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>pool</tt></i>:</span></td><td>pointer to storage pool</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 on success, -1 on failure</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virStorageVolCreateXML"/>virStorageVolCreateXML ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virStorageVolPtr">virStorageVolPtr</a>	virStorageVolCreateXML	(<a href="libvirt-libvirt.html#virStoragePoolPtr">virStoragePoolPtr</a> pool, <br/>						 const char * xmldesc, <br/>						 unsigned int flags)<br/>
 </pre><p>Create a storage volume within a pool based on an XML description. Not all pools support creation of volumes</p>

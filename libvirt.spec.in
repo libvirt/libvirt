@@ -605,6 +605,15 @@ fi
 %endif
 
 %changelog
+* Wed Aug  5 2009 Daniel Veillard <veillard@redhat.com> - 0.7.0-1
+- ESX, VBox3, Power Hypervisor drivers
+- new net filesystem glusterfs
+- Storage cloning for LVM and Disk backends
+- interface implementation based on netcf
+- Support cgroups in QEMU driver
+- QEmu hotplug NIC support
+- a lot of fixes
+
 * Fri Jul  3 2009 Daniel Veillard <veillard@redhat.com> - 0.6.5-1
 - release of 0.6.5
 
