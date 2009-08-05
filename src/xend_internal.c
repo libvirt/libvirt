@@ -2110,7 +2110,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
             } else {
                 int port;
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
-                const char *vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");;
+                const char *vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
                 const char *unused = sexpr_node(node, "device/vfb/vncunused");
 
