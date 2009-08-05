@@ -194,7 +194,7 @@ AC_ARG_WITH([phyp],
 AC_ARG_WITH([vbox],
 [  --with-vbox             add VirtualBox support (on)],[],[with_vbox=yes])
 AC_ARG_WITH([lxc],
-[  --with-lxc              add Linux Container support (on)],[],[with_lxc=yes])
+[  --with-lxc              add Linux Container support (on)],[],[with_lxc=check])
 AC_ARG_WITH([one],
 [  --with-one              add ONE support (on)],[],[with_one=check])
 AC_ARG_WITH([esx],
@@ -428,6 +428,40 @@ dnl
 dnl check for kvm headers
 dnl
 AC_CHECK_HEADERS([linux/kvm.h])
+
+dnl
+dnl check for sufficient headers for LXC
+dnl
+if test "$with_lxc" = "yes" -o "$with_lxc" = "check"; then
+    AC_CHECK_HEADER([sched.h],
+    dnl Header is there, check for unshare()
+    [
+        AC_TRY_LINK([#define _GNU_SOURCE
+            #include <sched.h>], [
+            unshare (1);
+	], [
+            with_lxc=yes
+	], [
+            if test "$with_lxc" = "check"; then
+	        with_lxc=no
+		AC_MSG_NOTICE([Function unshare() not present in <sched.h> header but required for LXC driver, disabling it])
+            else
+	        AC_MSG_ERROR([Function unshare() not present in <sched.h> header, but required for LXC driver])
+            fi
+
+        ])
+
+    dnl Header is not there
+    ],[
+        if test "$with_lxc" = "check"; then
+            with_lxc=no
+            AC_MSG_NOTICE([Header <sched.h> not found but required for LXC driver, disabling it])
+        else
+            AC_MSG_ERROR([Header <sched.h> not found but required for LXC driver])
+        fi
+
+    ])
+fi
 
 dnl OpenNebula driver Compilation setting
 dnl
