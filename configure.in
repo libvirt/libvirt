@@ -184,7 +184,7 @@ AC_ARG_WITH([xen-inotify],
 AC_ARG_WITH([qemu],
 [  --with-qemu             add QEMU/KVM support (on)],[],[with_qemu=yes])
 AC_ARG_WITH([uml],
-[  --with-uml              add UML support (on)],[],[with_uml=yes])
+[  --with-uml              add UML support (on)],[],[with_uml=check])
 AC_ARG_WITH([openvz],
 [  --with-openvz           add OpenVZ support (on)],[],[with_openvz=yes])
 AC_ARG_WITH([libssh],
@@ -779,6 +779,29 @@ fi
 AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
+
+
+dnl
+dnl Checks for the UML driver
+dnl
+
+if test "$with_uml" = "yes" -o "$with_uml" = "check"; then
+    AC_CHECK_HEADER([sys/inotify.h], [
+        with_uml=yes
+    ], [
+        if test "$with_uml" = "check"; then
+            with_uml=no
+            AC_MSG_NOTICE([<sys/inotify.h> is required for the UML driver, disabling it])
+        else
+            AC_MSG_ERROR([The <sys/inotify.h> is required for the UML driver. Upgrade your libc6.])
+        fi
+    ])
+fi
+
+
+dnl
+dnl libssh checks
+dnl
 
 if test "$with_libssh" != "yes" -a "$with_libssh" != "no"; then
 		libssh_path="$with_libssh"
