@@ -2640,9 +2640,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto error;
     }
 
-    if ((ret = virGetDomain(conn, def->name, def->uuid)))
-        ret->id = -1;
-
+    ret = virGetDomain(conn, def->name, def->uuid);
     xenUnifiedUnlock(priv);
     return (ret);
 
