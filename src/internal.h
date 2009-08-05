@@ -73,7 +73,13 @@
 #else
 #define __GNUC_PREREQ(maj,min) 0
 #endif
+
+/* Work around broken limits.h on debian etch */
+#if defined _GCC_LIMITS_H_ && ! defined ULLONG_MAX
+#define ULLONG_MAX   ULONG_LONG_MAX
 #endif
+
+#endif /* __GNUC__ */
 
 /**
  * ATTRIBUTE_UNUSED:

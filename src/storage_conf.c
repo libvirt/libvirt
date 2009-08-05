@@ -45,11 +45,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-/* Work around broken limits.h on debian etch */
-#if defined __GNUC__ && defined _GCC_LIMITS_H_ && ! defined ULLONG_MAX
-# define ULLONG_MAX   ULONG_LONG_MAX
-#endif
-
 #define virStorageError(conn, code, fmt...)                             \
             virReportErrorHelper(conn, VIR_FROM_STORAGE, code, __FILE__,\
                                   __FUNCTION__, __LINE__, fmt)
