@@ -122,6 +122,19 @@ struct xenUnifiedDriver xenXMDriver = {
         virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
                                __FUNCTION__, __LINE__, fmt)
 
+static int xenInotifyActive(virConnectPtr conn)
+{
+    int ret;
+#ifndef WITH_XEN_INOTIFY
+    ret = 0;
+#else
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+    ret = (priv->inotifyWatch > 0);
+#endif
+
+    return ret;
+}
+
 /* Convenience method to grab a int from the config file object */
 static int xenXMConfigGetBool(virConnectPtr conn,
                               virConfPtr conf,
@@ -1737,10 +1750,8 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-#ifndef WITH_XEN_INOTIFY
-    if (xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
         goto cleanup;
-#endif
 
     if (!(filename = virHashLookup(priv->nameConfigMap, domname)))
         goto cleanup;
@@ -1795,10 +1806,8 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-#ifndef WITH_XEN_INOTIFY
-    if (xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
         goto cleanup;
-#endif
 
     if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID, (const void *)uuid)))
         goto cleanup;
@@ -2551,12 +2560,10 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     xenUnifiedLock(priv);
 
-#ifndef WITH_XEN_INOTIFY
-    if (xenXMConfigCacheRefresh (conn) < 0) {
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0) {
         xenUnifiedUnlock(priv);
         return (NULL);
     }
-#endif
 
     if (!(def = virDomainDefParseString(conn, priv->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
@@ -2739,10 +2746,8 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-#ifndef WITH_XEN_INOTIFY
-    if (xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
         goto cleanup;
-#endif
 
     if (maxnames > virHashSize(priv->configCache))
         maxnames = virHashSize(priv->configCache);
@@ -2755,9 +2760,7 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
     virHashForEach(priv->nameConfigMap, xenXMListIterator, &ctx);
     ret = ctx.count;
 
-#ifndef WITH_XEN_INOTIFY
 cleanup:
-#endif
     xenUnifiedUnlock(priv);
     return ret;
 }
@@ -2778,16 +2781,12 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
     priv = conn->privateData;
     xenUnifiedLock(priv);
 
-#ifndef WITH_XEN_INOTIFY
-    if (xenXMConfigCacheRefresh (conn) < 0)
+    if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh (conn) < 0)
         goto cleanup;
-#endif
 
     ret = virHashSize(priv->nameConfigMap);
 
-#ifndef WITH_XEN_INOTIFY
 cleanup:
-#endif
     xenUnifiedUnlock(priv);
     return ret;
 }
