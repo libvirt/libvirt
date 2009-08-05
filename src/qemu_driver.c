@@ -6597,7 +6597,18 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
      */
     if (retcode == 0) {
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
+
+        /* run 'cont' on the destination, which allows migration on qemu
+         * >= 0.10.6 to work properly.  This isn't strictly necessary on
+         * older qemu's, but it also doesn't hurt anything there
+         */
+        if (qemudMonitorCommand(vm, "cont", &info) < 0) {
+            qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("resume operation failed"));
+            goto cleanup;
+        }
         VIR_FREE(info);
+
         vm->state = VIR_DOMAIN_RUNNING;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
