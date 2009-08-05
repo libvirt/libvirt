@@ -406,7 +406,8 @@ def->parallels[0]...
 
 
 virDomainDefPtr
-esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion)
+esxVMX_ParseConfig(virConnectPtr conn, const char *vmx,
+                   esxVI_APIVersion apiVersion)
 {
     virConfPtr conf = NULL;
     virDomainDefPtr def = NULL;
@@ -453,28 +454,28 @@ esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion)
         goto failure;
     }
 
-    switch (serverVersion) {
-      case 35:
+    switch (apiVersion) {
+      case esxVI_APIVersion_25:
         if (virtualHW_version != 4) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Expecting VMX entry 'virtualHW.version' to be 4 for "
-                      "server version 3.5 but found %lld", virtualHW_version);
+                      "VI API version 2.5 but found %lld", virtualHW_version);
             goto failure;
         }
 
         break;
 
-      case 40:
+      case esxVI_APIVersion_40:
         if (virtualHW_version != 7) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Expecting VMX entry 'virtualHW.version' to be 7 for "
-                      "server version 4.0 but found %lld", virtualHW_version);
+                      "VI API version 4.0 but found %lld", virtualHW_version);
             goto failure;
         }
 
         break;
 
-      case -1:
+      case esxVI_APIVersion_Unknown:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
@@ -486,8 +487,7 @@ esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion)
 
       default:
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Expecting server version 3.5 or 4.0 but got %d",
-                  serverVersion);
+                  "Expecting VI API version 2.5 or 4.0");
         goto failure;
     }
 
@@ -1343,6 +1343,7 @@ esxVMX_ParseEthernet(virConnectPtr conn, virConfPtr conf, int controller,
     ESX_BUILD_VMX_NAME(generatedAddress);
     ESX_BUILD_VMX_NAME(address);
     ESX_BUILD_VMX_NAME(virtualDev);
+    ESX_BUILD_VMX_NAME(vnet);
 
     /* vmx:present */
     if (esxUtil_GetConfigBoolean(conn, conf, present_name,

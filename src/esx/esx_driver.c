@@ -67,8 +67,15 @@ typedef struct _esxPrivate {
 
 
 /*
- * URI format: esx://[<user>@]<server>[?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}]
+ * URI format: {esx|gsx}://[<user>@]<server>[:<port>][?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}]
  *             esx:///phantom
+ *
+ * If no port is specified the default port is set dependent on the scheme and
+ * transport parameter:
+ * - esx+http  80
+ * - esx+https 433
+ * - gsx+http  8222
+ * - gsx+https 8333
  *
  * If no transport parameter is specified https is used.
  *
@@ -76,7 +83,7 @@ typedef struct _esxPrivate {
  * server is in charge to initiate a migration between two ESX hosts.
  *
  * If the no_verify parameter is set to 1, this disables libcurl client checks
- * of the server's certificate.
+ * of the server's certificate. The default value it 0.
  *
  * The esx:///phantom URI may be used for tasks that don't require an actual
  * connection to the hypervisor like domxml-{from,to}-native:
@@ -95,9 +102,10 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     char *password = NULL;
     int phantom = 0; // boolean
 
-    /* Decline if the URI is NULL or the scheme is not 'esx' */
+    /* Decline if the URI is NULL or the scheme is neither 'esx' nor 'gsx' */
     if (conn->uri == NULL || conn->uri->scheme == NULL ||
-        STRNEQ(conn->uri->scheme, "esx")) {
+        (STRCASENEQ(conn->uri->scheme, "esx") &&
+         STRCASENEQ(conn->uri->scheme, "gsx"))) {
         return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -147,8 +155,30 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        if (virAsprintf(&url, "%s://%s/sdk", priv->transport,
-                        conn->uri->server) < 0) {
+        /*
+         * Set the port dependent on the transport protocol if no port is
+         * specified. This allows us to rely on the port parameter being
+         * correctly set when building URIs later on, without the need to
+         * distinguish between the situations port == 0 and port != 0
+         */
+        if (conn->uri->port == 0) {
+            if (STRCASEEQ(conn->uri->scheme, "esx")) {
+                if (STRCASEEQ(priv->transport, "https")) {
+                    conn->uri->port = 443;
+                } else {
+                    conn->uri->port = 80;
+                }
+            } else { /* GSX */
+                if (STRCASEEQ(priv->transport, "https")) {
+                    conn->uri->port = 8333;
+                } else {
+                    conn->uri->port = 8222;
+                }
+            }
+        }
+
+        if (virAsprintf(&url, "%s://%s:%d/sdk", priv->transport,
+                        conn->uri->server, conn->uri->port) < 0) {
             virReportOOMError(conn);
             goto failure;
         }
@@ -185,6 +215,22 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
 
+        if (STRCASEEQ(conn->uri->scheme, "esx")) {
+            if (priv->host->productVersion != esxVI_ProductVersion_ESX35 &&
+                priv->host->productVersion != esxVI_ProductVersion_ESX40) {
+                ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                          "%s is neither an ESX 3.5 host nor an ESX 4.0 host",
+                          conn->uri->server);
+                goto failure;
+            }
+        } else { /* GSX */
+            if (priv->host->productVersion != esxVI_ProductVersion_GSX20) {
+                ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                          "%s isn't a GSX 2.0 host", conn->uri->server);
+                goto failure;
+            }
+        }
+
         VIR_FREE(url);
         VIR_FREE(password);
         VIR_FREE(username);
@@ -218,6 +264,15 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
             if (esxVI_Context_Connect(conn, priv->vcenter, url, username,
                                       password, noVerify) < 0) {
+                goto failure;
+            }
+
+            if (priv->vcenter->productVersion != esxVI_ProductVersion_VPX25 &&
+                priv->vcenter->productVersion != esxVI_ProductVersion_VPX40) {
+                ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                          "%s is neither a vCenter 2.5 server nor a vCenter "
+                          "4.0 server",
+                          conn->uri->server);
                 goto failure;
             }
 
@@ -1996,10 +2051,10 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto failure;
     }
 
-    if (virAsprintf(&url, "%s://%s/folder/%s?dcPath=%s&dsName=%s",
+    if (virAsprintf(&url, "%s://%s:%d/folder/%s?dcPath=%s&dsName=%s",
                     priv->transport, domain->conn->uri->server,
-                    vmxPath, priv->host->datacenter->value,
-                    datastoreName) < 0) {
+                    domain->conn->uri->port, vmxPath,
+                    priv->host->datacenter->value, datastoreName) < 0) {
         virReportOOMError(domain->conn);
         goto failure;
     }
@@ -2008,7 +2063,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(domain->conn, vmx, priv->host->serverVersion);
+    def = esxVMX_ParseConfig(domain->conn, vmx, priv->host->apiVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(domain->conn, def, flags);
@@ -2039,7 +2094,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = (esxPrivate *)conn->privateData;
-    int serverVersion = -1;
+    esxVI_APIVersion apiVersion = esxVI_APIVersion_Unknown;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
@@ -2050,10 +2105,10 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     if (! priv->phantom) {
-        serverVersion = priv->host->serverVersion;
+        apiVersion = priv->host->apiVersion;
     }
 
-    def = esxVMX_ParseConfig(conn, nativeConfig, serverVersion);
+    def = esxVMX_ParseConfig(conn, nativeConfig, apiVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
@@ -2581,8 +2636,8 @@ esxDomainMigratePrepare(virConnectPtr dconn,
             return -1;
         }
 
-        if (virAsprintf(uri_out, "%s://%s/sdk", transport,
-                        dconn->uri->server) < 0) {
+        if (virAsprintf(uri_out, "%s://%s:%d/sdk", transport,
+                        dconn->uri->server, dconn->uri->port) < 0) {
             virReportOOMError(dconn);
             goto failure;
         }

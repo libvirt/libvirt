@@ -25,13 +25,15 @@
 
 #include "internal.h"
 #include "domain_conf.h"
+#include "esx_vi.h"
 
 virDomainDefPtr
-esxVMX_ParseConfig(virConnectPtr conn, const char *vmx, int serverVersion);
+esxVMX_ParseConfig(virConnectPtr conn, const char *vmx,
+                   esxVI_APIVersion apiVersion);
 
 int
 esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf,
-                          int controller, int *present, char **virtualDev);
+                           int controller, int *present, char **virtualDev);
 
 char *
 esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix);

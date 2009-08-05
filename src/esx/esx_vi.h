@@ -31,12 +31,32 @@
 #include "datatypes.h"
 #include "esx_vi_types.h"
 
+typedef enum _esxVI_APIVersion esxVI_APIVersion;
+typedef enum _esxVI_ProductVersion esxVI_ProductVersion;
 typedef struct _esxVI_Context esxVI_Context;
 typedef struct _esxVI_RemoteResponse esxVI_RemoteResponse;
 typedef struct _esxVI_RemoteRequest esxVI_RemoteRequest;
 typedef struct _esxVI_Enumeration esxVI_Enumeration;
 typedef struct _esxVI_EnumerationValue esxVI_EnumerationValue;
 typedef struct _esxVI_List esxVI_List;
+
+
+
+enum _esxVI_APIVersion {
+    esxVI_APIVersion_Undefined = 0,
+    esxVI_APIVersion_Unknown,
+    esxVI_APIVersion_25,
+    esxVI_APIVersion_40
+};
+
+enum _esxVI_ProductVersion {
+    esxVI_ProductVersion_Undefined = 0,
+    esxVI_ProductVersion_GSX20,
+    esxVI_ProductVersion_ESX35,
+    esxVI_ProductVersion_ESX40,
+    esxVI_ProductVersion_VPX25,
+    esxVI_ProductVersion_VPX40
+};
 
 
 
@@ -52,8 +72,8 @@ struct _esxVI_Context {
     char *username;
     char *password;
     esxVI_ServiceContent *service;
-    int apiVersion;
-    int serverVersion;
+    esxVI_APIVersion apiVersion;
+    esxVI_ProductVersion productVersion;
     esxVI_UserSession *session;
     esxVI_ManagedObjectReference *datacenter;
     esxVI_ManagedObjectReference *vmFolder;

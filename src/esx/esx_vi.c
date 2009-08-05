@@ -270,9 +270,9 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     if (STREQ(ctx->service->about->apiType, "HostAgent") ||
         STREQ(ctx->service->about->apiType, "VirtualCenter")) {
         if (STRPREFIX(ctx->service->about->apiVersion, "2.5")) {
-            ctx->apiVersion = 25;
+            ctx->apiVersion = esxVI_APIVersion_25;
         } else if (STRPREFIX(ctx->service->about->apiVersion, "4.0")) {
-            ctx->apiVersion = 40;
+            ctx->apiVersion = esxVI_APIVersion_40;
         } else {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                          "Expecting VI API major/minor version '2.5' or '4.0' "
@@ -280,14 +280,44 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
             goto failure;
         }
 
-        if (STRPREFIX(ctx->service->about->version, "3.5")) {
-            ctx->serverVersion = 35;
-        } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
-            ctx->serverVersion = 40;
+        if (STREQ(ctx->service->about->productLineId, "gsx")) {
+            if (STRPREFIX(ctx->service->about->version, "2.0")) {
+                ctx->productVersion = esxVI_ProductVersion_GSX20;
+            } else {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Expecting GSX major/minor version '2.0' but "
+                             "found '%s'", ctx->service->about->version);
+                goto failure;
+            }
+        } else if (STREQ(ctx->service->about->productLineId, "esx") ||
+                   STREQ(ctx->service->about->productLineId, "embeddedEsx")) {
+            if (STRPREFIX(ctx->service->about->version, "3.5")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX35;
+            } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX40;
+            } else {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Expecting ESX major/minor version '3.5' or "
+                             "'4.0' but found '%s'",
+                             ctx->service->about->version);
+                goto failure;
+            }
+        } else if (STREQ(ctx->service->about->productLineId, "vpx")) {
+            if (STRPREFIX(ctx->service->about->version, "2.5")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX25;
+            } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX40;
+            } else {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Expecting VPX major/minor version '2.5' or '4.0' "
+                             "but found '%s'", ctx->service->about->version);
+                goto failure;
+            }
         } else {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Expecting server major/minor version '3.5' or '4.0' "
-                         "but found '%s'", ctx->service->about->version);
+                         "Expecting product 'gsx' or 'esx' or 'embeddedEsx' "
+                         "or 'vpx' but found '%s'",
+                         ctx->service->about->productLineId);
             goto failure;
         }
     } else {
