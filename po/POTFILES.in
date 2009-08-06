@@ -10,6 +10,7 @@ src/interface_conf.c
 src/interface_driver.c
 src/iptables.c
 src/libvirt.c
+src/logging.c
 src/lxc_container.c
 src/lxc_controller.c
 src/lxc_driver.c

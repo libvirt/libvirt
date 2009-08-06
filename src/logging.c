@@ -314,8 +314,10 @@ error:
  * Returns 0 if successful, -1 in case of error.
  */
 int virLogSetDefaultPriority(int priority) {
-    if ((priority < VIR_LOG_DEBUG) || (priority > VIR_LOG_ERROR))
+    if ((priority < VIR_LOG_DEBUG) || (priority > VIR_LOG_ERROR)) {
+        VIR_WARN0(_("Ignoring invalid log level setting."));
         return(-1);
+    }
     if (!virLogInitialized)
         virLogStartup();
     virLogDefaultPriority = priority;
@@ -681,7 +683,8 @@ int virLogParseOutputs(const char *outputs) {
     const char *cur = outputs, *str;
     char *name;
     int prio;
-    int ret = 0;
+    int ret = -1;
+    int count = 0;
 
     if (cur == NULL)
         return(-1);
@@ -690,53 +693,57 @@ int virLogParseOutputs(const char *outputs) {
     while (*cur != 0) {
         prio= virParseNumber(&cur);
         if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
-            return(-1);
+            goto cleanup;
         if (*cur != ':')
-            return(-1);
+            goto cleanup;
         cur++;
         if (STREQLEN(cur, "stderr", 6)) {
             cur += 6;
             if (virLogAddOutputToStderr(prio) == 0)
-                ret++;
+                count++;
         } else if (STREQLEN(cur, "syslog", 6)) {
             cur += 6;
             if (*cur != ':')
-                return(-1);
+                goto cleanup;
             cur++;
             str = cur;
             while ((*cur != 0) && (!IS_SPACE(cur)))
                 cur++;
             if (str == cur)
-                return(-1);
+                goto cleanup;
 #if HAVE_SYSLOG_H
             name = strndup(str, cur - str);
             if (name == NULL)
-                return(-1);
+                goto cleanup;
             if (virLogAddOutputToSyslog(prio, name) == 0)
-                ret++;
+                count++;
             VIR_FREE(name);
 #endif /* HAVE_SYSLOG_H */
         } else if (STREQLEN(cur, "file", 4)) {
             cur += 4;
             if (*cur != ':')
-                return(-1);
+                goto cleanup;
             cur++;
             str = cur;
             while ((*cur != 0) && (!IS_SPACE(cur)))
                 cur++;
             if (str == cur)
-                return(-1);
+                goto cleanup;
             name = strndup(str, cur - str);
             if (name == NULL)
-                return(-1);
+                goto cleanup;
             if (virLogAddOutputToFile(prio, name) == 0)
-                ret++;
+                count++;
             VIR_FREE(name);
         } else {
-            return(-1);
+            goto cleanup;
         }
         virSkipSpaces(&cur);
     }
+    ret = count;
+cleanup:
+    if (ret == -1)
+        VIR_WARN0(_("Ignoring invalid log output setting."));
     return(ret);
 }
 
@@ -762,7 +769,8 @@ int virLogParseFilters(const char *filters) {
     const char *cur = filters, *str;
     char *name;
     int prio;
-    int ret = 0;
+    int ret = -1;
+    int count = 0;
 
     if (cur == NULL)
         return(-1);
@@ -771,22 +779,26 @@ int virLogParseFilters(const char *filters) {
     while (*cur != 0) {
         prio= virParseNumber(&cur);
         if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
-            return(-1);
+            goto cleanup;
         if (*cur != ':')
-            return(-1);
+            goto cleanup;
         cur++;
         str = cur;
         while ((*cur != 0) && (!IS_SPACE(cur)))
             cur++;
         if (str == cur)
-            return(-1);
+            goto cleanup;
         name = strndup(str, cur - str);
         if (name == NULL)
-            return(-1);
+            goto cleanup;
         if (virLogDefineFilter(name, prio, 0) >= 0)
-            ret++;
+            count++;
         VIR_FREE(name);
         virSkipSpaces(&cur);
     }
+    ret = count;
+cleanup:
+    if (ret == -1)
+        VIR_WARN0(_("Ignoring invalid log filter setting."));
     return(ret);
 }
