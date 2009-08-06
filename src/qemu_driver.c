@@ -1684,18 +1684,18 @@ static int qemuDomainSetHostdevOwnership(virConnectPtr conn,
 
 }
 
-static int qemuDomainSetDiskOwnership(virConnectPtr conn,
-                                      virDomainDiskDefPtr def,
+static int qemuDomainSetFileOwnership(virConnectPtr conn,
+                                      const char *path,
                                       uid_t uid, gid_t gid)
 {
 
-    if (!def->src)
+    if (!path)
         return 0;
 
-    VIR_DEBUG("Setting ownership on %s to %d:%d", def->src, uid, gid);
-    if (chown(def->src, uid, gid) < 0) {
+    VIR_DEBUG("Setting ownership on %s to %d:%d", path, uid, gid);
+    if (chown(path, uid, gid) < 0) {
         virReportSystemError(conn, errno, _("cannot set ownership on %s"),
-                             def->src);
+                             path);
         return -1;
     }
     return 0;
@@ -1725,7 +1725,7 @@ static int qemuDomainSetDeviceOwnership(virConnectPtr conn,
             (def->data.disk->readonly || def->data.disk->shared))
             return 0;
 
-        return qemuDomainSetDiskOwnership(conn, def->data.disk, uid, gid);
+        return qemuDomainSetFileOwnership(conn, def->data.disk->src, uid, gid);
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         return qemuDomainSetHostdevOwnership(conn, def->data.hostdev, uid, gid);
@@ -1753,12 +1753,16 @@ static int qemuDomainSetAllDeviceOwnership(virConnectPtr conn,
     uid = restore ? 0 : driver->user;
     gid = restore ? 0 : driver->group;
 
+    if (qemuDomainSetFileOwnership(conn, def->os.kernel, uid, gid) < 0 ||
+        qemuDomainSetFileOwnership(conn, def->os.initrd, uid, gid) < 0)
+        return -1;
+
     for (i = 0 ; i < def->ndisks ; i++) {
         if (restore &&
             (def->disks[i]->readonly || def->disks[i]->shared))
             continue;
 
-        if (qemuDomainSetDiskOwnership(conn, def->disks[i], uid, gid) < 0)
+        if (qemuDomainSetFileOwnership(conn, def->disks[i]->src, uid, gid) < 0)
             return -1;
     }
 
