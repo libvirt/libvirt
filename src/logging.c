@@ -802,3 +802,30 @@ cleanup:
         VIR_WARN0(_("Ignoring invalid log filter setting."));
     return(ret);
 }
+
+/**
+ * virLogGetDefaultPriority:
+ *
+ * Returns the current logging priority level.
+ */
+int virLogGetDefaultPriority(void) {
+    return (virLogDefaultPriority);
+}
+
+/**
+ * virLogGetNbFilters:
+ *
+ * Returns the current number of defined log filters.
+ */
+int virLogGetNbFilters(void) {
+    return (virLogNbFilters);
+}
+
+/**
+ * virLogGetNbOutputs:
+ *
+ * Returns the current number of defined log outputs.
+ */
+int virLogGetNbOutputs(void) {
+    return (virLogNbOutputs);
+}

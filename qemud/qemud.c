@@ -132,11 +132,6 @@ static int timeout = -1;        /* -t: Shutdown timeout */
 static int sigwrite = -1;       /* Signal handler pipe */
 static int ipsock = 0;          /* -l  Listen for TCP/IP */
 
-/* Defaults for logging */
-static int log_level = VIR_LOG_DEFAULT;
-static char *log_filters = NULL;
-static char *log_outputs = NULL;
-
 /* Defaults for configuration file elements */
 static int listen_tls = 1;
 static int listen_tcp = 0;
@@ -2494,6 +2489,9 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
 static int
 qemudSetLogging(virConfPtr conf, const char *filename) {
     char *debugEnv;
+    int log_level;
+    char *log_filters = NULL;
+    char *log_outputs = NULL;
     int ret = -1;
 
     virLogReset();
@@ -2503,54 +2501,70 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
      * then from environment variable and finally from command
      * line options
      */
+    /*
+     * GET_CONF_INT returns 0 when there is no log_level setting in
+     * the config file. The conditional below eliminates a false
+     * warning in that case, but also has the side effect of missing
+     * a warning if the user actually does say log_level=0.
+     */
     GET_CONF_INT (conf, filename, log_level);
+    if (log_level != 0)
+        virLogSetDefaultPriority(log_level);
+
     debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv && *debugEnv != '0') {
-        if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
-            log_level = VIR_LOG_INFO;
+    if (debugEnv && *debugEnv) {
+        if (STREQ(debugEnv, "1") || STREQ(debugEnv, "debug"))
+            virLogSetDefaultPriority(VIR_LOG_DEBUG);
+        else if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
+            virLogSetDefaultPriority(VIR_LOG_INFO);
         else if (STREQ(debugEnv, "3") || STREQ(debugEnv, "warning"))
-            log_level = VIR_LOG_WARN;
+            virLogSetDefaultPriority(VIR_LOG_WARN);
         else if (STREQ(debugEnv, "4") || STREQ(debugEnv, "error"))
-            log_level = VIR_LOG_ERROR;
+            virLogSetDefaultPriority(VIR_LOG_ERROR);
         else
-            log_level = VIR_LOG_DEBUG;
+            VIR_WARN0(_("Ignoring invalid log level setting."));
     }
-    if ((verbose) && (log_level >= VIR_LOG_WARN))
-        log_level = VIR_LOG_INFO;
-    virLogSetDefaultPriority(log_level);
+
+    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
+        virLogSetDefaultPriority(VIR_LOG_INFO);
+
+    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
+    if (debugEnv && *debugEnv)
+        virLogParseFilters(strdup(debugEnv));
+
+    if (virLogGetNbFilters() == 0) {
+        GET_CONF_STR (conf, filename, log_filters);
+        virLogParseFilters(log_filters);
+    }
 
     /* there is no default filters */
-    GET_CONF_STR (conf, filename, log_filters);
-    if (!log_filters) {
-        debugEnv = getenv("LIBVIRT_LOG_FILTERS");
-        if (debugEnv)
-            log_filters = strdup(debugEnv);
+
+    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
+    if (debugEnv && *debugEnv)
+        virLogParseOutputs(strdup(debugEnv));
+
+    if (virLogGetNbOutputs() == 0) {
+        GET_CONF_STR (conf, filename, log_outputs);
+        virLogParseOutputs(log_outputs);
     }
-    virLogParseFilters(log_filters);
 
     /*
-     * by default save all warning and errors to syslog or
-     * all logs to stderr if not running as daemon
+     * If no defined outputs, then direct to syslog when running
+     * as daemon. Otherwise the default output is stderr.
      */
-    GET_CONF_STR (conf, filename, log_outputs);
-    if (!log_outputs) {
-        debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
-        if (debugEnv)
-            log_outputs = strdup(debugEnv);
-    }
-    if (!log_outputs) {
+    if (virLogGetNbOutputs() == 0) {
         char *tmp = NULL;
         if (godaemon) {
-            if (virAsprintf (&tmp, "%d:syslog:libvirtd", log_level) < 0)
+            if (virAsprintf (&tmp, "%d:syslog:libvirtd",
+                             virLogGetDefaultPriority()) < 0)
                 goto free_and_fail;
         } else {
-            if (virAsprintf(&tmp, "%d:stderr", log_level) < 0)
+            if (virAsprintf (&tmp, "%d:stderr",
+                             virLogGetDefaultPriority()) < 0)
                 goto free_and_fail;
         }
         virLogParseOutputs(tmp);
         VIR_FREE(tmp);
-    } else {
-        virLogParseOutputs(log_outputs);
     }
     ret = 0;
 

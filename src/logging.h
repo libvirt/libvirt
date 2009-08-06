@@ -105,6 +105,9 @@ typedef int (*virLogOutputFunc) (const char *category, int priority,
  */
 typedef void (*virLogCloseFunc) (void *data);
 
+extern int virLogGetNbFilters(void);
+extern int virLogGetNbOutputs(void);
+extern int virLogGetDefaultPriority(void);
 extern int virLogSetDefaultPriority(int priority);
 extern int virLogDefineFilter(const char *match, int priority, int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,

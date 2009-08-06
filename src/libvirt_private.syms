@@ -213,6 +213,9 @@ virRegisterDeviceMonitor;
 
 # logging.h
 virLogMessage;
+virLogGetNbFilters;
+virLogGetNbOutputs;
+virLogGetDefaultPriority;
 virLogSetDefaultPriority;
 virLogDefineFilter;
 virLogDefineOutput;
