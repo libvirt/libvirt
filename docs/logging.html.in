@@ -44,6 +44,10 @@
       <li>LIBVIRT_LOG_FILTERS: allow to define logging filters</li>
       <li>LIBVIRT_LOG_OUTPUTS: allow to define logging outputs</li>
     </ul>
+    <p>Note that, for example, setting LIBVIRT_DEBUG= is the same as unset. If
+       you specify an invalid value, it will be ignored with a warning. If you
+       have an error in a filter or output string, some of the settings may be
+       applied up to the point at which libvirt encountered the error.</p>
     <p>Similary the daemon logging behaviour can be tuned using 3 config
     variables, stored in the configuration file:
     <ul>
@@ -57,7 +61,17 @@
       <li>log_filters: allow to define logging filters</li>
       <li>log_outputs: allow to define logging outputs</li>
     </ul>
-    <p>In both case the syntax for filters and outputs is similar.</p>
+    <p>When starting the libvirt daemon, any logging environment variable
+       settings will override settings in the config file. Command line options
+       take precedence over all. If no outputs are defined for libvirtd, it
+       defaults to logging to syslog when it is running as a daemon, or to
+       stderr when it is running in the foreground.</p>
+    <p>Libvirtd does not reload its logging configuration when issued a SIGHUP.
+       If you want to reload the configuration, you must do a <code>service
+       libvirtd restart</code> or manually stop and restart the daemon
+       yourself.</p>
+    <p>The syntax for filters and outputs is the same for both types of
+       variables.</p>
     <p>The format for a filter is:</p>
     <pre>x:name</pre>
     <p>where <code>name</code> is a match string e.g. <code>remote</code> or
@@ -69,10 +83,14 @@
       <li>3: WARNING</li>
       <li>4: ERROR</li>
     </ul>
-    <p>Multiple filter can be defined in a single string, they just need to be
+    <p>Multiple filters can be defined in a single string, they just need to be
     separated by spaces, e.g: <code>"3:remote 4:event"</code> to only get
     warning or errors from the remote layer and only errors from the event
     layer.<p>
+    <p>If you specify a log priority in a filter that is below the default log
+       priority level, messages that match that filter will still be logged,
+       while others will not. In order to see those messages, you must also have
+       an output defined that includes the priority level of your filter.</p>
     <p>The format for an output can be one of those 3 forms:</p>
     <ul>
       <li><code>x:stderr</code> output goes to stderr</li>
