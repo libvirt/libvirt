@@ -109,6 +109,7 @@ extern int virLogGetNbFilters(void);
 extern int virLogGetNbOutputs(void);
 extern int virLogGetDefaultPriority(void);
 extern int virLogSetDefaultPriority(int priority);
+extern void virLogSetFromEnv(void);
 extern int virLogDefineFilter(const char *match, int priority, int flags);
 extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,
                               void *data, int priority, int flags);
@@ -120,6 +121,7 @@ extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,
 extern int virLogStartup(void);
 extern int virLogReset(void);
 extern void virLogShutdown(void);
+extern int virLogParseDefaultPriority(const char *priority);
 extern int virLogParseFilters(const char *filters);
 extern int virLogParseOutputs(const char *output);
 extern void virLogMessage(const char *category, int priority,

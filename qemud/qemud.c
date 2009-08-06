@@ -2488,7 +2488,6 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
  */
 static int
 qemudSetLogging(virConfPtr conf, const char *filename) {
-    char *debugEnv;
     int log_level;
     char *log_filters = NULL;
     char *log_outputs = NULL;
@@ -2497,9 +2496,18 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
     virLogReset();
 
     /*
-     * look for default logging level first from config file,
-     * then from environment variable and finally from command
-     * line options
+     * Libvirtd's order of precedence is:
+     * cmdline > environment > config
+     *
+     * In order to achieve this, we must process configuration in
+     * different order for the log level versus the filters and
+     * outputs. Because filters and outputs append, we have to look at
+     * the environment first and then only check the config file if
+     * there was no result from the environment. The default output is
+     * then applied only if there was no setting from either of the
+     * first two. Because we don't have a way to determine if the log
+     * level has been set, we must process variables in the opposite
+     * order, each one overriding the previous.
      */
     /*
      * GET_CONF_INT returns 0 when there is no log_level setting in
@@ -2511,37 +2519,12 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
     if (log_level != 0)
         virLogSetDefaultPriority(log_level);
 
-    debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv) {
-        if (STREQ(debugEnv, "1") || STREQ(debugEnv, "debug"))
-            virLogSetDefaultPriority(VIR_LOG_DEBUG);
-        else if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
-            virLogSetDefaultPriority(VIR_LOG_INFO);
-        else if (STREQ(debugEnv, "3") || STREQ(debugEnv, "warning"))
-            virLogSetDefaultPriority(VIR_LOG_WARN);
-        else if (STREQ(debugEnv, "4") || STREQ(debugEnv, "error"))
-            virLogSetDefaultPriority(VIR_LOG_ERROR);
-        else
-            VIR_WARN0(_("Ignoring invalid log level setting."));
-    }
-
-    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
-        virLogSetDefaultPriority(VIR_LOG_INFO);
-
-    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
-    if (debugEnv && *debugEnv)
-        virLogParseFilters(strdup(debugEnv));
+    virLogSetFromEnv();
 
     if (virLogGetNbFilters() == 0) {
         GET_CONF_STR (conf, filename, log_filters);
         virLogParseFilters(log_filters);
     }
-
-    /* there is no default filters */
-
-    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
-    if (debugEnv && *debugEnv)
-        virLogParseOutputs(strdup(debugEnv));
 
     if (virLogGetNbOutputs() == 0) {
         GET_CONF_STR (conf, filename, log_outputs);
@@ -2566,6 +2549,13 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
         virLogParseOutputs(tmp);
         VIR_FREE(tmp);
     }
+
+    /*
+     * Command line override for --verbose
+     */
+    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
+        virLogSetDefaultPriority(VIR_LOG_INFO);
+
     ret = 0;
 
 free_and_fail:

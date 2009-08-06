@@ -262,7 +262,6 @@ winsock_init (void)
 int
 virInitialize(void)
 {
-    char *debugEnv;
     if (initialized)
         return(0);
 
@@ -273,26 +272,7 @@ virInitialize(void)
         virRandomInitialize(time(NULL) ^ getpid()))
         return -1;
 
-    debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv) {
-        if (STREQ(debugEnv, "1") || STREQ(debugEnv, "debug"))
-            virLogSetDefaultPriority(VIR_LOG_DEBUG);
-        else if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
-            virLogSetDefaultPriority(VIR_LOG_INFO);
-        else if (STREQ(debugEnv, "3") || STREQ(debugEnv, "warning"))
-            virLogSetDefaultPriority(VIR_LOG_WARN);
-        else if (STREQ(debugEnv, "4") || STREQ(debugEnv, "error"))
-            virLogSetDefaultPriority(VIR_LOG_ERROR);
-        else
-            VIR_WARN0(_("Ignoring invalid log level setting."));
-    }
-    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
-    if (debugEnv && *debugEnv)
-        virLogParseFilters(debugEnv);
-
-    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
-    if (debugEnv && *debugEnv)
-        virLogParseOutputs(debugEnv);
+    virLogSetFromEnv();
 
     DEBUG0("register drivers");
 
