@@ -272,15 +272,19 @@ mymain(int argc, char **argv)
     if (virThreadInitialize() < 0)
         return EXIT_FAILURE;
     char *debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv && *debugEnv != '0') {
-        if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
+    if (debugEnv && *debugEnv) {
+        if (STREQ(debugEnv, "1") || STREQ(debugEnv, "debug"))
+            virLogSetDefaultPriority(VIR_LOG_DEBUG);
+        else if (STREQ(debugEnv, "2") || STREQ(debugEnv, "info"))
             virLogSetDefaultPriority(VIR_LOG_INFO);
         else if (STREQ(debugEnv, "3") || STREQ(debugEnv, "warning"))
             virLogSetDefaultPriority(VIR_LOG_WARN);
         else if (STREQ(debugEnv, "4") || STREQ(debugEnv, "error"))
             virLogSetDefaultPriority(VIR_LOG_ERROR);
-        else
-            virLogSetDefaultPriority(VIR_LOG_DEBUG);
+        else {
+            fprintf(stderr, "Invalid log level setting.\n");
+            return EXIT_FAILURE;
+        }
     }
 
     virEventInit();
