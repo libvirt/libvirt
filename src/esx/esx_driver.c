@@ -298,6 +298,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         esxVI_Context_Free(&priv->host);
         esxVI_Context_Free(&priv->vcenter);
 
+        VIR_FREE(priv->transport);
         VIR_FREE(priv);
     }
 
