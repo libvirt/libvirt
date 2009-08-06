@@ -1395,9 +1395,16 @@ esxDomainDestroy(virDomainPtr domain)
 
 
 static char *
-esxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
+esxDomainGetOSType(virDomainPtr domain)
 {
-    return strdup("hvm");
+    char *osType = strdup("hvm");
+
+    if (osType == NULL) {
+        virReportOOMError(domain->conn);
+        return NULL;
+    }
+
+    return osType;
 }
 
 
