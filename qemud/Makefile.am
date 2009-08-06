@@ -21,7 +21,8 @@ EXTRA_DIST =						\
 	remote_protocol.x				\
 	libvirtd.conf					\
 	libvirtd.init.in				\
-	libvirtd.policy					\
+	libvirtd.policy-0				\
+	libvirtd.policy-1				\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
 	libvirtd.aug                                    \
@@ -147,7 +148,13 @@ endif
 libvirtd_LDADD += ../src/libvirt.la
 
 if HAVE_POLKIT
+if HAVE_POLKIT0
 policydir = $(datadir)/PolicyKit/policy
+policyfile = libvirtd.policy-0
+else
+policydir = $(datadir)/polkit-1/actions
+policyfile = libvirtd.policy-1
+endif
 endif
 
 if HAVE_AVAHI
@@ -197,7 +204,7 @@ endif
 if HAVE_POLKIT
 install-data-polkit:: install-init
 	mkdir -p $(DESTDIR)$(policydir)
-	$(INSTALL_DATA) $(srcdir)/libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+	$(INSTALL_DATA) $(srcdir)/$(policyfile) $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 uninstall-data-polkit:: install-init
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 else

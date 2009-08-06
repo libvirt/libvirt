@@ -890,7 +890,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
     }
 #endif
 
-#ifdef HAVE_POLKIT
+#if HAVE_POLKIT0
     if (auth_unix_rw == REMOTE_AUTH_POLKIT ||
         auth_unix_ro == REMOTE_AUTH_POLKIT) {
         DBusError derr;
@@ -977,7 +977,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
             sock = sock->next;
         }
 
-#ifdef HAVE_POLKIT
+#if HAVE_POLKIT0
         if (server->sysbus)
             dbus_connection_unref(server->sysbus);
 #endif

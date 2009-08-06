@@ -641,40 +641,61 @@ AC_SUBST([SASL_LIBS])
 dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
+PKCHECK_PATH=
 AC_ARG_WITH([polkit],
   [  --with-polkit         use PolicyKit for UNIX socket access checks],
   [],
   [with_polkit=check])
 
+with_polkit0=no
+with_polkit1=no
 if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
-  PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED,
-    [with_polkit=yes], [
-    if test "x$with_polkit" = "xcheck" ; then
-       with_polkit=no
-    else
-       AC_MSG_ERROR(
-         [You must install PolicyKit >= $POLKIT_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "x$with_polkit" = "xyes" ; then
+  dnl Check for new polkit first - just a binary
+  AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
+  if test "x$PKCHECK_PATH" != "x" ; then
+    AC_DEFINE_UNQUOTED([PKCHECK_PATH],["$PKCHECK_PATH"],[Location of pkcheck program])
     AC_DEFINE_UNQUOTED([HAVE_POLKIT], 1,
-      [use PolicyKit for UNIX socket access checks])
+        [use PolicyKit for UNIX socket access checks])
+    AC_DEFINE_UNQUOTED([HAVE_POLKIT1], 1,
+        [use PolicyKit for UNIX socket access checks])
+    with_polkit="yes"
+    with_polkit1="yes"
+  else
+    dnl Check for old polkit second - library + binary
+    PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED,
+      [with_polkit=yes], [
+      if test "x$with_polkit" = "xcheck" ; then
+         with_polkit=no
+      else
+         AC_MSG_ERROR(
+           [You must install PolicyKit >= $POLKIT_REQUIRED to compile libvirt])
+      fi
+    ])
+    if test "x$with_polkit" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_POLKIT], 1,
+        [use PolicyKit for UNIX socket access checks])
+      AC_DEFINE_UNQUOTED([HAVE_POLKIT0], 1,
+        [use PolicyKit for UNIX socket access checks])
 
-    old_CFLAGS=$CFLAGS
-    old_LDFLAGS=$LDFLAGS
-    CFLAGS="$CFLAGS $POLKIT_CFLAGS"
-    LDFLAGS="$LDFLAGS $POLKIT_LIBS"
-    AC_CHECK_FUNCS([polkit_context_is_caller_authorized])
-    CFLAGS="$old_CFLAGS"
-    LDFLAGS="$old_LDFLAGS"
+      old_CFLAGS=$CFLAGS
+      old_LDFLAGS=$LDFLAGS
+      CFLAGS="$CFLAGS $POLKIT_CFLAGS"
+      LDFLAGS="$LDFLAGS $POLKIT_LIBS"
+      AC_CHECK_FUNCS([polkit_context_is_caller_authorized])
+      CFLAGS="$old_CFLAGS"
+      LDFLAGS="$old_LDFLAGS"
 
-    AC_PATH_PROG([POLKIT_AUTH], [polkit-auth])
-    if test "x$POLKIT_AUTH" != "x"; then
-      AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])
+      AC_PATH_PROG([POLKIT_AUTH], [polkit-auth])
+      if test "x$POLKIT_AUTH" != "x"; then
+        AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])
+      fi
+      with_polkit0="yes"
     fi
   fi
 fi
 AM_CONDITIONAL([HAVE_POLKIT], [test "x$with_polkit" = "xyes"])
+AM_CONDITIONAL([HAVE_POLKIT0], [test "x$with_polkit0" = "xyes"])
+AM_CONDITIONAL([HAVE_POLKIT1], [test "x$with_polkit1" = "xyes"])
 AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
 
@@ -1695,7 +1716,11 @@ else
 AC_MSG_NOTICE([   avahi: no])
 fi
 if test "$with_polkit" = "yes" ; then
-AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS])
+if test "$with_polkit0" = "yes" ; then
+AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS (version 0)])
+else
+AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
+fi
 else
 AC_MSG_NOTICE([  polkit: no])
 fi

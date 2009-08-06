@@ -43,7 +43,7 @@
 #include <fnmatch.h>
 #include "virterror_internal.h"
 
-#ifdef HAVE_POLKIT
+#if HAVE_POLKIT0
 #include <polkit/polkit.h>
 #include <polkit-dbus/polkit-dbus.h>
 #endif
@@ -3106,7 +3106,80 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
 #endif /* HAVE_SASL */
 
 
-#if HAVE_POLKIT
+#if HAVE_POLKIT1
+static int
+remoteDispatchAuthPolkit (struct qemud_server *server,
+                          struct qemud_client *client,
+                          virConnectPtr conn ATTRIBUTE_UNUSED,
+                          remote_error *rerr,
+                          void *args ATTRIBUTE_UNUSED,
+                          remote_auth_polkit_ret *ret)
+{
+    pid_t callerPid;
+    uid_t callerUid;
+    const char *action;
+    int status = -1;
+    char pidbuf[50];
+    int rv;
+
+    virMutexLock(&server->lock);
+    virMutexLock(&client->lock);
+    virMutexUnlock(&server->lock);
+
+    action = client->readonly ?
+        "org.libvirt.unix.monitor" :
+        "org.libvirt.unix.manage";
+
+    const char * const pkcheck [] = {
+      PKCHECK_PATH,
+      "--action-id", action,
+      "--process", pidbuf,
+      "--allow-user-interaction",
+      NULL
+    };
+
+    REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
+    if (client->auth != REMOTE_AUTH_POLKIT) {
+        VIR_ERROR0(_("client tried invalid PolicyKit init request"));
+        goto authfail;
+    }
+
+    if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
+        VIR_ERROR0(_("cannot get peer socket identity"));
+        goto authfail;
+    }
+
+    VIR_INFO(_("Checking PID %d running as %d"), callerPid, callerUid);
+
+    rv = snprintf(pidbuf, sizeof pidbuf, "%d", callerPid);
+    if (rv < 0 || rv >= sizeof pidbuf) {
+        VIR_ERROR(_("Caller PID was too large %d"), callerPid);
+	goto authfail;
+    }
+
+    if (virRun(NULL, pkcheck, &status) < 0) {
+        VIR_ERROR(_("Cannot invoke %s"), PKCHECK_PATH);
+	goto authfail;
+    }
+    if (status != 0) {
+        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d\n"),
+                  action, callerPid, callerUid, status);
+        goto authfail;
+    }
+    VIR_INFO(_("Policy allowed action %s from pid %d, uid %d"),
+             action, callerPid, callerUid);
+    ret->complete = 1;
+    client->auth = REMOTE_AUTH_NONE;
+
+    virMutexUnlock(&client->lock);
+    return 0;
+
+authfail:
+    remoteDispatchAuthError(rerr);
+    virMutexUnlock(&client->lock);
+    return -1;
+}
+#elif HAVE_POLKIT0
 static int
 remoteDispatchAuthPolkit (struct qemud_server *server,
                           struct qemud_client *client,
@@ -3217,7 +3290,7 @@ authfail:
     return -1;
 }
 
-#else /* HAVE_POLKIT */
+#else /* !HAVE_POLKIT0 & !HAVE_POLKIT1*/
 
 static int
 remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -3231,7 +3304,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
     remoteDispatchAuthError(rerr);
     return -1;
 }
-#endif /* HAVE_POLKIT */
+#endif /* HAVE_POLKIT1 */
 
 
 /***************************************************************

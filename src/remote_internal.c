@@ -6201,6 +6201,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth)
 {
     remote_auth_polkit_ret ret;
+#if HAVE_POLKIT0
     int i, allowcb = 0;
     virConnectCredential cred = {
         VIR_CRED_EXTERNAL,
@@ -6210,8 +6211,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         NULL,
         0,
     };
+#endif
     DEBUG0("Client initialize PolicyKit authentication");
 
+#if HAVE_POLKIT0
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
         for (i = 0 ; i < auth->ncredtype ; i++) {
@@ -6220,6 +6223,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         }
 
         if (allowcb) {
+            DEBUG0("Client run callback for PolicyKit authentication");
             /* Run the authentication callback */
             if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
                 virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
@@ -6233,6 +6237,9 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     } else {
         DEBUG0("No auth callback provided");
     }
+#else
+    DEBUG0("No auth callback required for PolicyKit-1");
+#endif
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,

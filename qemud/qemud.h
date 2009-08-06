@@ -34,7 +34,7 @@
 #include <sasl/sasl.h>
 #endif
 
-#ifdef HAVE_POLKIT
+#if HAVE_POLKIT0
 #include <dbus/dbus.h>
 #endif
 
@@ -253,7 +253,7 @@ struct qemud_server {
 #if HAVE_SASL
     char **saslUsernameWhitelist;
 #endif
-#if HAVE_POLKIT
+#if HAVE_POLKIT0
     DBusConnection *sysbus;
 #endif
 };

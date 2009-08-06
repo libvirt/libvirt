@@ -95,7 +95,11 @@ Requires: iptables
 # needed for device enumeration
 Requires: hal
 %if %{with_polkit}
+%if 0%{?fedora} >= 12
+Requires: polkit >= 0.93
+%else
 Requires: PolicyKit >= 0.6
+%endif
 %endif
 %if %{with_storage_fs}
 # For mount/umount in FS driver
@@ -150,7 +154,12 @@ BuildRequires: bridge-utils
 BuildRequires: cyrus-sasl-devel
 %endif
 %if %{with_polkit}
+%if 0%{?fedora} >= 12
+# Only need the binary, not -devel
+BuildRequires: polkit >= 0.93
+%else
 BuildRequires: PolicyKit-devel >= 0.6
+%endif
 %endif
 %if %{with_storage_fs}
 # For mount/umount in FS driver
@@ -525,7 +534,11 @@ fi
 %endif
 
 %if %{with_polkit}
+%if 0%{?fedora} >= 12
+%{_datadir}/polkit-1/actions/org.libvirt.unix.policy
+%else
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
+%endif
 %endif
 
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
