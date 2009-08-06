@@ -377,7 +377,7 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     if (ctx->vmFolder == NULL || ctx->hostFolder == NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "The 'datacenter' object is missing the "
-                     "'vmFolder'/'hostFolder' propoerty");
+                     "'vmFolder'/'hostFolder' property");
         goto failure;
     }
 
@@ -398,8 +398,8 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
                        char **content)
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    CURLcode error_code;
-    long response_code;
+    CURLcode errorCode;
+    long responseCode;
 
     if (content == NULL || *content != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -412,22 +412,22 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, &buffer);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPGET, 1);
 
-    error_code = curl_easy_perform(ctx->curl_handle);
+    errorCode = curl_easy_perform(ctx->curl_handle);
 
-    if (error_code != CURLE_OK) {
+    if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(error_code), error_code);
+                     curl_easy_strerror(errorCode), errorCode);
         goto unlock;
     }
 
-    error_code = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
-                                   &response_code);
+    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
+                                  &responseCode);
 
-    if (error_code != CURLE_OK) {
+    if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "curl_easy_getinfo() returned an error: %s (%d)",
-                     curl_easy_strerror(error_code), error_code);
+                     curl_easy_strerror(errorCode), errorCode);
         goto unlock;
     }
 
@@ -440,9 +440,9 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
 
     *content = virBufferContentAndReset(&buffer);
 
-    if (response_code != 200) {
+    if (responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d", (int)response_code);
+                     "HTTP response code %d", (int)responseCode);
         goto failure;
     }
 
@@ -482,7 +482,7 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
-    CURLcode error_code;
+    CURLcode errorCode;
 
     if (remoteRequest == NULL || remoteRequest->request == NULL ||
         remoteResponse == NULL || *remoteResponse != NULL) {
@@ -503,22 +503,22 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDSIZE,
                      strlen(remoteRequest->request));
 
-    error_code = curl_easy_perform(ctx->curl_handle);
+    errorCode = curl_easy_perform(ctx->curl_handle);
 
-    if (error_code != CURLE_OK) {
+    if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(error_code), error_code);
+                     curl_easy_strerror(errorCode), errorCode);
         goto unlock;
     }
 
-    error_code = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
-                                   &(*remoteResponse)->response_code);
+    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
+                                  &(*remoteResponse)->responseCode);
 
-    if (error_code != CURLE_OK) {
+    if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "curl_easy_getinfo() returned an error: %s (%d)",
-                     curl_easy_strerror(error_code), error_code);
+                     curl_easy_strerror(errorCode), errorCode);
         goto unlock;
     }
 
@@ -531,9 +531,9 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
 
     (*remoteResponse)->response = virBufferContentAndReset(&buffer);
 
-    if ((*remoteResponse)->response_code == 500 ||
+    if ((*remoteResponse)->responseCode == 500 ||
         (remoteRequest->xpathExpression != NULL &&
-         (*remoteResponse)->response_code == 200)) {
+         (*remoteResponse)->responseCode == 200)) {
         (*remoteResponse)->document =
           xmlReadDoc(BAD_CAST(*remoteResponse)->response, "", NULL,
                      XML_PARSE_NONET);
@@ -564,7 +564,7 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
         xmlXPathRegisterNs((*remoteResponse)->xpathContext, BAD_CAST "vim",
                            BAD_CAST "urn:vim25");
 
-        if ((*remoteResponse)->response_code == 500) {
+        if ((*remoteResponse)->responseCode == 500) {
             (*remoteResponse)->xpathObject =
                 xmlXPathEval(BAD_CAST
                              "/soapenv:Envelope/soapenv:Body/soapenv:Fault",
@@ -580,7 +580,7 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
 
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                          "HTTP response code %d. VI Fault: %s - %s",
-                         (int)(*remoteResponse)->response_code,
+                         (int)(*remoteResponse)->responseCode,
                          fault->faultcode, fault->faultstring);
 
             goto failure;
@@ -589,10 +589,10 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
               xmlXPathEval(BAD_CAST remoteRequest->xpathExpression,
                            (*remoteResponse)->xpathContext);
         }
-    } else if ((*remoteResponse)->response_code != 200) {
+    } else if ((*remoteResponse)->responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "HTTP response code %d",
-                     (int)(*remoteResponse)->response_code);
+                     (int)(*remoteResponse)->responseCode);
 
         goto failure;
     }

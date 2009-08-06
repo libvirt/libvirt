@@ -114,7 +114,7 @@ int esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
  */
 
 struct _esxVI_RemoteResponse {
-    long response_code;                               /* required */
+    long responseCode;                                /* required */
     char *response;                                   /* required */
     xmlDocPtr document;                               /* optional */
     xmlXPathContextPtr xpathContext;                  /* optional */

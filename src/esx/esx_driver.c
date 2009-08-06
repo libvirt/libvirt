@@ -56,11 +56,11 @@ static int esxDomainGetMaxVcpus(virDomainPtr domain);
 
 typedef struct _esxPrivate {
     esxVI_Context *host;
-    esxVI_Context *vcenter;
+    esxVI_Context *vCenter;
     int phantom; // boolean
     char *transport;
-    int32_t nvcpus_max;
-    esxVI_Boolean supports_vmotion;
+    int32_t maxVcpus;
+    esxVI_Boolean supportsVMotion;
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
 
@@ -94,9 +94,9 @@ static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = NULL;
-    char dummy_string[NI_MAXHOST] = "";
+    char ipAddress[NI_MAXHOST] = "";
     char *url = NULL;
-    char *vcenter = NULL;
+    char *vCenter = NULL;
     int noVerify = 0; // boolean
     char *username = NULL;
     char *password = NULL;
@@ -133,24 +133,24 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     }
 
     priv->phantom = phantom;
-    priv->nvcpus_max = -1;
-    priv->supports_vmotion = esxVI_Boolean_Undefined;
+    priv->maxVcpus = -1;
+    priv->supportsVMotion = esxVI_Boolean_Undefined;
     priv->usedCpuTimeCounterId = -1;
 
     /* Request credentials and login to non-phantom host/vCenter */
     if (! phantom) {
-        if (esxUtil_ParseQuery(conn, &priv->transport, &vcenter,
+        if (esxUtil_ParseQuery(conn, &priv->transport, &vCenter,
                                &noVerify) < 0) {
             goto failure;
         }
 
-        if (esxUtil_ResolveHostname(conn, conn->uri->server, dummy_string,
+        if (esxUtil_ResolveHostname(conn, conn->uri->server, ipAddress,
                                     NI_MAXHOST) < 0) {
             goto failure;
         }
 
-        if (vcenter != NULL &&
-            esxUtil_ResolveHostname(conn, vcenter, dummy_string,
+        if (vCenter != NULL &&
+            esxUtil_ResolveHostname(conn, vCenter, ipAddress,
                                     NI_MAXHOST) < 0) {
             goto failure;
         }
@@ -235,18 +235,18 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(password);
         VIR_FREE(username);
 
-        if (vcenter != NULL) {
+        if (vCenter != NULL) {
             if (virAsprintf(&url, "%s://%s/sdk", priv->transport,
-                            vcenter) < 0) {
+                            vCenter) < 0) {
                 virReportOOMError(conn);
                 goto failure;
             }
 
-            if (esxVI_Context_Alloc(conn, &priv->vcenter) < 0) {
+            if (esxVI_Context_Alloc(conn, &priv->vCenter) < 0) {
                 goto failure;
             }
 
-            username = esxUtil_RequestUsername(auth, "administrator", vcenter);
+            username = esxUtil_RequestUsername(auth, "administrator", vCenter);
 
             if (username == NULL) {
                 ESX_ERROR(conn, VIR_ERR_AUTH_FAILED,
@@ -254,7 +254,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                 goto failure;
             }
 
-            password = esxUtil_RequestPassword(auth, username, vcenter);
+            password = esxUtil_RequestPassword(auth, username, vCenter);
 
             if (password == NULL) {
                 ESX_ERROR(conn, VIR_ERR_AUTH_FAILED,
@@ -262,13 +262,13 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                 goto failure;
             }
 
-            if (esxVI_Context_Connect(conn, priv->vcenter, url, username,
+            if (esxVI_Context_Connect(conn, priv->vCenter, url, username,
                                       password, noVerify) < 0) {
                 goto failure;
             }
 
-            if (priv->vcenter->productVersion != esxVI_ProductVersion_VPX25 &&
-                priv->vcenter->productVersion != esxVI_ProductVersion_VPX40) {
+            if (priv->vCenter->productVersion != esxVI_ProductVersion_VPX25 &&
+                priv->vCenter->productVersion != esxVI_ProductVersion_VPX40) {
                 ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                           "%s is neither a vCenter 2.5 server nor a vCenter "
                           "4.0 server",
@@ -281,7 +281,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             VIR_FREE(username);
         }
 
-        VIR_FREE(vcenter);
+        VIR_FREE(vCenter);
     }
 
     conn->privateData = priv;
@@ -290,13 +290,13 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
   failure:
     VIR_FREE(url);
-    VIR_FREE(vcenter);
+    VIR_FREE(vCenter);
     VIR_FREE(password);
     VIR_FREE(username);
 
     if (priv != NULL) {
         esxVI_Context_Free(&priv->host);
-        esxVI_Context_Free(&priv->vcenter);
+        esxVI_Context_Free(&priv->vCenter);
 
         VIR_FREE(priv->transport);
         VIR_FREE(priv);
@@ -318,11 +318,11 @@ esxClose(virConnectPtr conn)
         esxVI_Logout(conn, priv->host);
         esxVI_Context_Free(&priv->host);
 
-        if (priv->vcenter != NULL) {
-            esxVI_EnsureSession(conn, priv->vcenter);
+        if (priv->vCenter != NULL) {
+            esxVI_EnsureSession(conn, priv->vCenter);
 
-            esxVI_Logout(conn, priv->vcenter);
-            esxVI_Context_Free(&priv->vcenter);
+            esxVI_Logout(conn, priv->vCenter);
+            esxVI_Context_Free(&priv->vCenter);
         }
     }
 
@@ -350,8 +350,8 @@ esxSupportsVMotion(virConnectPtr conn)
         goto failure;
     }
 
-    if (priv->supports_vmotion != esxVI_Boolean_Undefined) {
-        return priv->supports_vmotion;
+    if (priv->supportsVMotion != esxVI_Boolean_Undefined) {
+        return priv->supportsVMotion;
     }
 
     if (esxVI_EnsureSession(conn, priv->host) < 0) {
@@ -380,7 +380,7 @@ esxSupportsVMotion(virConnectPtr conn)
                 goto failure;
             }
 
-            priv->supports_vmotion = dynamicProperty->val->boolean;
+            priv->supportsVMotion = dynamicProperty->val->boolean;
             break;
         } else {
             VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
@@ -391,10 +391,10 @@ esxSupportsVMotion(virConnectPtr conn)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
-    return priv->supports_vmotion;
+    return priv->supportsVMotion;
 
   failure:
-    priv->supports_vmotion = esxVI_Boolean_Undefined;
+    priv->supportsVMotion = esxVI_Boolean_Undefined;
 
     goto cleanup;
 }
@@ -405,7 +405,7 @@ static int
 esxSupportsFeature(virConnectPtr conn, int feature)
 {
     esxPrivate *priv = (esxPrivate *)conn->privateData;
-    esxVI_Boolean supports_vmotion = esxVI_Boolean_Undefined;
+    esxVI_Boolean supportsVMotion = esxVI_Boolean_Undefined;
 
     if (priv->phantom) {
         ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
@@ -415,18 +415,15 @@ esxSupportsFeature(virConnectPtr conn, int feature)
 
     switch (feature) {
       case VIR_DRV_FEATURE_MIGRATION_V1:
-        supports_vmotion = esxSupportsVMotion(conn);
+        supportsVMotion = esxSupportsVMotion(conn);
 
-        if (supports_vmotion == esxVI_Boolean_Undefined) {
+        if (supportsVMotion == esxVI_Boolean_Undefined) {
             return -1;
         }
 
-        /*
-         * Migration is only possible via a Virtual Center and if VMotion is
-         * enabled
-         */
-        return priv->vcenter != NULL &&
-               supports_vmotion == esxVI_Boolean_True ? 1 : 0;
+        /* Migration is only possible via a vCenter and if VMotion is enabled */
+        return priv->vCenter != NULL &&
+               supportsVMotion == esxVI_Boolean_True ? 1 : 0;
 
       default:
         return 0;
@@ -838,9 +835,9 @@ esxDomainLookupByID(virConnectPtr conn, int id)
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    int id_ = -1;
-    char *name_ = NULL;
-    unsigned char uuid_[VIR_UUID_BUFLEN];
+    int id_candidate = -1;
+    char *name_candidate = NULL;
+    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
     virDomainPtr domain = NULL;
 
     if (priv->phantom) {
@@ -875,18 +872,19 @@ esxDomainLookupByID(virConnectPtr conn, int id)
             continue;
         }
 
-        VIR_FREE(name_);
+        VIR_FREE(name_candidate);
 
-        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine, &id_,
-                                            &name_, uuid_) < 0) {
+        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine,
+                                            &id_candidate, &name_candidate,
+                                            uuid_candidate) < 0) {
             goto failure;
         }
 
-        if (id_ != id) {
+        if (id != id_candidate) {
             continue;
         }
 
-        domain = virGetDomain(conn, name_, uuid_);
+        domain = virGetDomain(conn, name_candidate, uuid_candidate);
 
         if (domain == NULL) {
             goto failure;
@@ -904,7 +902,7 @@ esxDomainLookupByID(virConnectPtr conn, int id)
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_);
+    VIR_FREE(name_candidate);
 
     return domain;
 
@@ -924,9 +922,9 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    int id_ = -1;
-    char *name_ = NULL;
-    unsigned char uuid_[VIR_UUID_BUFLEN];
+    int id_candidate = -1;
+    char *name_candidate = NULL;
+    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     virDomainPtr domain = NULL;
 
@@ -952,19 +950,20 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     for (virtualMachine = virtualMachineList; virtualMachine != NULL;
          virtualMachine = virtualMachine->_next) {
-        VIR_FREE(name_);
+        VIR_FREE(name_candidate);
 
-        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine, &id_,
-                                            &name_, uuid_) < 0) {
+        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine,
+                                            &id_candidate, &name_candidate,
+                                            uuid_candidate) < 0) {
             goto failure;
         }
 
-        if (memcmp(uuid, uuid_,
+        if (memcmp(uuid, uuid_candidate,
                    VIR_UUID_BUFLEN * sizeof (unsigned char)) != 0) {
             continue;
         }
 
-        domain = virGetDomain(conn, name_, uuid);
+        domain = virGetDomain(conn, name_candidate, uuid_candidate);
 
         if (domain == NULL) {
             goto failure;
@@ -977,7 +976,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
         /* Only running/suspended virtual machines have an ID != -1 */
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-            domain->id = id_;
+            domain->id = id_candidate;
         } else {
             domain->id = -1;
         }
@@ -995,7 +994,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_);
+    VIR_FREE(name_candidate);
 
     return domain;
 
@@ -1015,9 +1014,9 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    int id_ = -1;
-    char *name_ = NULL;
-    unsigned char uuid_[VIR_UUID_BUFLEN];
+    int id_candidate = -1;
+    char *name_candidate = NULL;
+    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
     virDomainPtr domain = NULL;
 
     if (priv->phantom) {
@@ -1042,18 +1041,19 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 
     for (virtualMachine = virtualMachineList; virtualMachine != NULL;
          virtualMachine = virtualMachine->_next) {
-        VIR_FREE(name_);
+        VIR_FREE(name_candidate);
 
-        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine, &id_,
-                                            &name_, uuid_) < 0) {
+        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine,
+                                            &id_candidate, &name_candidate,
+                                            uuid_candidate) < 0) {
             goto failure;
         }
 
-        if (STRNEQ(name_, name)) {
+        if (STRNEQ(name, name_candidate)) {
             continue;
         }
 
-        domain = virGetDomain(conn, name, uuid_);
+        domain = virGetDomain(conn, name_candidate, uuid_candidate);
 
         if (domain == NULL) {
             goto failure;
@@ -1066,7 +1066,7 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 
         /* Only running/suspended virtual machines have an ID != -1 */
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-            domain->id = id_;
+            domain->id = id_candidate;
         } else {
             domain->id = -1;
         }
@@ -1081,7 +1081,7 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_);
+    VIR_FREE(name_candidate);
 
     return domain;
 
@@ -1865,7 +1865,7 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
     int result = 0;
     esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
-    int nvcpus_max;
+    int maxVcpus;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
@@ -1887,17 +1887,17 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         goto failure;
     }
 
-    nvcpus_max = esxDomainGetMaxVcpus(domain);
+    maxVcpus = esxDomainGetMaxVcpus(domain);
 
-    if (nvcpus_max < 0) {
+    if (maxVcpus < 0) {
         goto failure;
     }
 
-    if (nvcpus > nvcpus_max) {
+    if (nvcpus > maxVcpus) {
         ESX_ERROR(domain->conn, VIR_ERR_INVALID_ARG,
                   "Requested number of virtual CPUs is greater than max "
                   "allowable number of virtual CPUs for the domain: %d > %d",
-                  nvcpus, nvcpus_max);
+                  nvcpus, maxVcpus);
         goto failure;
     }
 
@@ -1953,8 +1953,8 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
         goto failure;
     }
 
-    if (priv->nvcpus_max > 0) {
-        return priv->nvcpus_max;
+    if (priv->maxVcpus > 0) {
+        return priv->maxVcpus;
     }
 
     if (esxVI_EnsureSession(domain->conn, priv->host) < 0) {
@@ -1984,7 +1984,7 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
                 goto failure;
             }
 
-            priv->nvcpus_max = dynamicProperty->val->int32;
+            priv->maxVcpus = dynamicProperty->val->int32;
             break;
         } else {
             VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
@@ -1995,10 +1995,10 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
-    return priv->nvcpus_max;
+    return priv->maxVcpus;
 
   failure:
-    priv->nvcpus_max = -1;
+    priv->maxVcpus = -1;
 
     goto cleanup;
 }
@@ -2676,7 +2676,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     int result = 0;
     esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
     xmlURIPtr xmlUri = NULL;
-    char host_ip_string[NI_MAXHOST] = "";
+    char hostIpAddress[NI_MAXHOST] = "";
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
@@ -2694,9 +2694,9 @@ esxDomainMigratePerform(virDomainPtr domain,
         goto failure;
     }
 
-    if (priv->vcenter == NULL) {
+    if (priv->vCenter == NULL) {
         ESX_ERROR(domain->conn, VIR_ERR_INVALID_ARG,
-                  "Migration not possible without a Virtual Center");
+                  "Migration not possible without a vCenter");
         goto failure;
     }
 
@@ -2706,7 +2706,7 @@ esxDomainMigratePerform(virDomainPtr domain,
         goto failure;
     }
 
-    if (esxVI_EnsureSession(domain->conn, priv->vcenter) < 0) {
+    if (esxVI_EnsureSession(domain->conn, priv->vCenter) < 0) {
         goto failure;
     }
 
@@ -2718,13 +2718,13 @@ esxDomainMigratePerform(virDomainPtr domain,
         goto failure;
     }
 
-    if (esxUtil_ResolveHostname(domain->conn, xmlUri->server, host_ip_string,
+    if (esxUtil_ResolveHostname(domain->conn, xmlUri->server, hostIpAddress,
                                 NI_MAXHOST) < 0) {
         goto failure;
     }
 
     /* Lookup VirtualMachine, HostSystem and ResourcePool */
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->vcenter,
+    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->vCenter,
                                          domain->uuid, NULL,
                                          &virtualMachine) < 0) {
         goto failure;
@@ -2732,8 +2732,8 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "parent") < 0 ||
-        esxVI_LookupHostSystemByIp(domain->conn, priv->vcenter,
-                                   host_ip_string, propertyNameList,
+        esxVI_LookupHostSystemByIp(domain->conn, priv->vCenter,
+                                   hostIpAddress, propertyNameList,
                                    &hostSystem) < 0) {
         goto failure;
     }
@@ -2763,7 +2763,7 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "resourcePool") < 0 ||
-        esxVI_GetObjectContent(domain->conn, priv->vcenter,
+        esxVI_GetObjectContent(domain->conn, priv->vCenter,
                                managedObjectReference, "ComputeResource",
                                propertyNameList, esxVI_Boolean_False,
                                &computeResource) < 0) {
@@ -2799,7 +2799,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Validate the purposed migration */
-    if (esxVI_ValidateMigration(domain->conn, priv->vcenter,
+    if (esxVI_ValidateMigration(domain->conn, priv->vCenter,
                                 virtualMachine->obj,
                                 esxVI_VirtualMachinePowerState_Undefined,
                                 NULL, resourcePool, hostSystem->obj,
@@ -2826,9 +2826,9 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Perform the purposed migration */
-    if (esxVI_MigrateVM_Task(domain->conn, priv->vcenter, virtualMachine->obj,
+    if (esxVI_MigrateVM_Task(domain->conn, priv->vCenter, virtualMachine->obj,
                              resourcePool, hostSystem->obj, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(domain->conn, priv->vcenter, task,
+        esxVI_WaitForTaskCompletion(domain->conn, priv->vCenter, task,
                                     &taskInfoState) < 0) {
         goto failure;
     }

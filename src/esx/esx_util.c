@@ -48,7 +48,7 @@
 
 
 char *
-esxUtil_RequestUsername(virConnectAuthPtr auth, const char *default_username,
+esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
                         const char *server)
 {
     unsigned int ncred;
@@ -58,7 +58,7 @@ esxUtil_RequestUsername(virConnectAuthPtr auth, const char *default_username,
     memset(&cred, 0, sizeof(virConnectCredential));
 
     if (virAsprintf(&prompt, "Enter username for %s [%s]", server,
-                    default_username) < 0) {
+                    defaultUsername) < 0) {
         return NULL;
     }
 
@@ -70,7 +70,7 @@ esxUtil_RequestUsername(virConnectAuthPtr auth, const char *default_username,
         cred.type = VIR_CRED_AUTHNAME;
         cred.prompt = prompt;
         cred.challenge = NULL;
-        cred.defresult = default_username;
+        cred.defresult = defaultUsername;
         cred.result = NULL;
         cred.resultlen = 0;
 
@@ -131,7 +131,7 @@ esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
 
 
 int
-esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
+esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
                    int *noVerify)
 {
     int result = 0;
@@ -143,8 +143,8 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
         *transport = NULL;
     }
 
-    if (vcenter != NULL) {
-        *vcenter = NULL;
+    if (vCenter != NULL) {
+        *vCenter = NULL;
     }
 
 #ifdef HAVE_XMLURI_QUERY_RAW
@@ -174,10 +174,10 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
                           "'%s' (should be http|https)", *transport);
                 goto failure;
             }
-        } else if (STRCASEEQ(queryParam->name, "vcenter") && vcenter != NULL) {
-            *vcenter = strdup(queryParam->value);
+        } else if (STRCASEEQ(queryParam->name, "vcenter") && vCenter != NULL) {
+            *vCenter = strdup(queryParam->value);
 
-            if (*vcenter == NULL) {
+            if (*vCenter == NULL) {
                 virReportOOMError(conn);
                 goto failure;
             }
@@ -217,8 +217,8 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
         VIR_FREE(*transport);
     }
 
-    if (vcenter != NULL) {
-        VIR_FREE(*vcenter);
+    if (vCenter != NULL) {
+        VIR_FREE(*vCenter);
     }
 
     result = -1;
@@ -253,7 +253,7 @@ esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 
 int
 esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
-                        char *ip_address, size_t ip_address_length)
+                        char *ipAddress, size_t ipAddress_length)
 {
     struct addrinfo hints;
     struct addrinfo *result = NULL;
@@ -282,8 +282,8 @@ esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
         return -1;
     }
 
-    errcode = getnameinfo(result->ai_addr, result->ai_addrlen, ip_address,
-                          ip_address_length, NULL, 0, NI_NUMERICHOST);
+    errcode = getnameinfo(result->ai_addr, result->ai_addrlen, ipAddress,
+                          ipAddress_length, NULL, 0, NI_NUMERICHOST);
 
     if (errcode != 0) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,

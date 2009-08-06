@@ -29,19 +29,19 @@
 #include "conf.h"
 
 char *esxUtil_RequestUsername(virConnectAuthPtr auth,
-                              const char *default_username,
+                              const char *defaultUsername,
                               const char *server);
 
 char *esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
                               const char *server);
 
-int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vcenter,
+int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
                        int *noVerify);
 
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 
 int esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
-                            char *ip_address, size_t ip_address_length);
+                            char *ipAddress, size_t ipAddress_length);
 
 int esxUtil_GetConfigString(virConnectPtr conn, virConfPtr conf,
                             const char *name, char **string, int optional);
