@@ -89,6 +89,14 @@
 	with FreeIPA for Kerberos authentication, and in the future,
 	certificate management.
       </dd>
+      <dt><a href="http://community.abiquo.com/display/AbiCloud">AbiCloud</a></dt>
+      <dd>
+	AbiCloud is an open source cloud platform manager which allows to
+	easily deploy a private cloud in your datacenter. One of the key
+	differences of AbiCloud is the the web rich interface for managing the
+	infrastructure. You can deploy a new service just dragging and
+	dropping a VM.
+      </dd>
     </dl>
 
     <h2>LiveCD / Appliances</h2>
