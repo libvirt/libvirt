@@ -279,6 +279,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         driver->cgroupDeviceACL[i] = NULL;
     }
 
+    p = virConfGetValue (conf, "save_image_format");
+    CHECK_TYPE ("save_image_format", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->saveImageFormat);
+        if (!(driver->saveImageFormat = strdup(p->str))) {
+            virReportOOMError(NULL);
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
     virConfFree (conf);
     return 0;
 }

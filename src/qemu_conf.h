@@ -109,6 +109,8 @@ struct qemud_driver {
 
     char *securityDriverName;
     virSecurityDriverPtr securityDriver;
+
+    char *saveImageFormat;
 };
 
 

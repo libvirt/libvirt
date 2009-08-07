@@ -3485,18 +3485,27 @@ static char *qemudEscapeShellArg(const char *in)
 }
 
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
-#define QEMUD_SAVE_VERSION 1
+#define QEMUD_SAVE_VERSION 2
+
+enum qemud_save_formats {
+    QEMUD_SAVE_FORMAT_RAW,
+    QEMUD_SAVE_FORMAT_GZIP,
+    QEMUD_SAVE_FORMAT_BZIP2,
+    QEMUD_SAVE_FORMAT_LZMA,
+};
 
 struct qemud_save_header {
     char magic[sizeof(QEMUD_SAVE_MAGIC)-1];
     int version;
     int xml_len;
     int was_running;
-    int unused[16];
+    int compressed;
+    int unused[15];
 };
 
 static int qemudDomainSave(virDomainPtr dom,
-                           const char *path) {
+                           const char *path)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *command = NULL;
@@ -3507,10 +3516,27 @@ static int qemudDomainSave(virDomainPtr dom,
     struct qemud_save_header header;
     int ret = -1;
     virDomainEventPtr event = NULL;
+    int internalret;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
     header.version = QEMUD_SAVE_VERSION;
+
+    if (driver->saveImageFormat == NULL)
+        header.compressed = QEMUD_SAVE_FORMAT_RAW;
+    else if (STREQ(driver->saveImageFormat, "raw"))
+        header.compressed = QEMUD_SAVE_FORMAT_RAW;
+    else if (STREQ(driver->saveImageFormat, "gzip"))
+        header.compressed = QEMUD_SAVE_FORMAT_GZIP;
+    else if (STREQ(driver->saveImageFormat, "bzip2"))
+        header.compressed = QEMUD_SAVE_FORMAT_BZIP2;
+    else if (STREQ(driver->saveImageFormat, "lzma"))
+        header.compressed = QEMUD_SAVE_FORMAT_LZMA;
+    else {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("Invalid save image format specified in configuration file"));
+        return -1;
+    }
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3584,11 +3610,28 @@ static int qemudDomainSave(virDomainPtr dom,
         virReportOOMError(dom->conn);
         goto cleanup;
     }
-    if (virAsprintf(&command, "migrate \"exec:"
-                  "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
-                  "\"", safe_path) == -1) {
+
+    if (header.compressed == QEMUD_SAVE_FORMAT_RAW)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
+                                  "\"", safe_path);
+    else if (header.compressed == QEMUD_SAVE_FORMAT_GZIP)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "gzip -c >> '%s' 2>/dev/null\"", safe_path);
+    else if (header.compressed == QEMUD_SAVE_FORMAT_BZIP2)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "bzip2 -c >> '%s' 2>/dev/null\"", safe_path);
+    else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "lzma -c >> '%s' 2>/dev/null\"", safe_path);
+    else {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid compress format %d"),
+                         header.compressed);
+        goto cleanup;
+    }
+    if (internalret < 0) {
         virReportOOMError(dom->conn);
-        command = NULL;
         goto cleanup;
     }
 
@@ -4103,6 +4146,9 @@ static int qemudDomainRestore(virConnectPtr conn,
     char *xml = NULL;
     struct qemud_save_header header;
     virDomainEventPtr event = NULL;
+    int intermediatefd = -1;
+    pid_t intermediate_pid = -1;
+    int childstat;
 
     qemuDriverLock(driver);
     /* Verify the header and read the XML */
@@ -4192,8 +4238,41 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
     def = NULL;
 
+    if (header.version == 2) {
+        const char *intermediate_argv[3] = { NULL, "-dc", NULL };
+        if (header.compressed == QEMUD_SAVE_FORMAT_GZIP)
+            intermediate_argv[0] = "gzip";
+        else if (header.compressed == QEMUD_SAVE_FORMAT_BZIP2)
+            intermediate_argv[0] = "bzip2";
+        else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
+            intermediate_argv[0] = "lzma";
+        else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("Unknown compressed save format %d"),
+                             header.compressed);
+            goto cleanup;
+        }
+        if (intermediate_argv[0] != NULL) {
+            intermediatefd = fd;
+            fd = -1;
+            if (virExec(conn, intermediate_argv, NULL, NULL,
+                        &intermediate_pid, intermediatefd, &fd, NULL, 0) < 0) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("Failed to start decompression binary %s"),
+                                 intermediate_argv[0]);
+                goto cleanup;
+            }
+        }
+    }
     /* Set the migration source and start it up. */
     ret = qemudStartVMDaemon(conn, driver, vm, "stdio", fd);
+    if (intermediate_pid != -1) {
+        /* Wait for intermediate process to exit */
+        while (waitpid(intermediate_pid, &childstat, 0) == -1 &&
+               errno == EINTR);
+    }
+    if (intermediatefd != -1)
+        close(intermediatefd);
     close(fd);
     fd = -1;
     if (ret < 0) {
