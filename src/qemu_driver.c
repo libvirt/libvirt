@@ -4098,6 +4098,7 @@ static int qemudDomainRestore(virConnectPtr conn,
         }
         VIR_FREE(info);
         vm->state = VIR_DOMAIN_RUNNING;
+        virDomainSaveStatus(conn, driver->stateDir, vm);
     }
     ret = 0;
 
