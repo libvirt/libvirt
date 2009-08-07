@@ -78,7 +78,7 @@ int vshRunConsole(const char *tty) {
         return -1;
     }
 
-    /* Put  STDIN into raw mode so that stuff typed
+    /* Put STDIN into raw mode so that stuff typed
        does not echo to the screen (the TTY reads will
        result in it being echoed back already), and
        also ensure Ctrl-C, etc is blocked, and misc
