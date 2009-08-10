@@ -801,6 +801,12 @@ static int networkDisableIPV6(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (access(field, W_OK) < 0 && errno == ENOENT) {
+        VIR_DEBUG("ipv6 appears to already be disabled on %s", network->def->bridge);
+        ret = 0;
+        goto cleanup;
+    }
+
     if (virFileWriteStr(field, "1") < 0) {
         virReportSystemError(conn, errno,
                              _("cannot enable %s"), field);
