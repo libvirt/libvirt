@@ -140,7 +140,7 @@ we are currently connected to. This includes a section on the host
 capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
-  L<http://libvirt.org/format.html#Capa1>
+  L<http://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
 =item B<list>
@@ -424,7 +424,7 @@ is not available the processes will provide an exit code of 1.
 The following commands manipulate devices associated to domains.
 The domain-id can be specified as an short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
-reading the documentation at L<http://libvirt.org/format.html> on the
+reading the documentation at L<http://libvirt.org/formatdomain.html> on the
 format of the device sections to get the most accurate set of accepted values.
 
 =over 4
@@ -476,7 +476,7 @@ if more than one are present on the domain.
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
+see the documentation at L<http://libvirt.org/formatnetwork.html> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or UUID.
 

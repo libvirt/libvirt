@@ -132,7 +132,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2009-07-02" "libvirt-0.6.4" "Virtualization Support"
+.TH VIRSH 1 "2009-08-11" "libvirt-0.7.0" "Virtualization Support"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -263,7 +263,7 @@ we are currently connected to. This includes a section on the host
 capabilities in terms of \s-1CPU\s0 and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
-  <http://libvirt.org/format.html#Capa1>
+  <http://libvirt.org/formatcaps.html>
 The \s-1XML\s0 also show the \s-1NUMA\s0 topology information if available.
 .IP "\fBlist\fR" 4
 .IX Item "list"
@@ -501,7 +501,7 @@ is not available the processes will provide an exit code of 1.
 The following commands manipulate devices associated to domains.
 The domain-id can be specified as an short integer, a name or a full \s-1UUID\s0.
 To better understand the values allowed as options for the command
-reading the documentation at <http://libvirt.org/format.html> on the
+reading the documentation at <http://libvirt.org/formatdomain.html> on the
 format of the device sections to get the most accurate set of accepted values.
 .IP "\fBattach-device\fR \fIdomain-id\fR \fI\s-1FILE\s0\fR" 4
 .IX Item "attach-device domain-id FILE"
@@ -542,7 +542,7 @@ if more than one are present on the domain.
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at <http://libvirt.org/format.html#Net1> . A lot
+see the documentation at <http://libvirt.org/formatnetwork.html> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or \s-1UUID\s0.
 .IP "\fBnet-autostart\fR \fInetwork\fR optional \fI\-\-disable\fR" 4
