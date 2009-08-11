@@ -1099,8 +1099,6 @@ do_open (const char *name,
     return ret;
 
 failed:
-    if (ret->driver) ret->driver->close (ret);
-
     /* Ensure a global error is set in case driver forgot */
     virSetGlobalError();
 
@@ -1221,19 +1219,7 @@ virConnectClose(virConnectPtr conn)
         return (-1);
     }
 
-    if (conn->networkDriver)
-        conn->networkDriver->close (conn);
-    if (conn->interfaceDriver)
-        conn->interfaceDriver->close (conn);
-    if (conn->storageDriver)
-        conn->storageDriver->close (conn);
-    if (conn->deviceMonitor)
-        conn->deviceMonitor->close (conn);
-    conn->driver->close (conn);
-
-    if (virUnrefConnect(conn) < 0)
-        return (-1);
-    return (0);
+    return virUnrefConnect(conn);
 }
 
 /**
