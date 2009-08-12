@@ -1439,10 +1439,12 @@ static int lxcStartup(int privileged)
     lxcDriverLock(lxc_driver);
 
     /* Check that this is a container enabled kernel */
-    if(lxcContainerAvailable(0) < 0)
+    if (lxcContainerAvailable(0) < 0) {
+        VIR_INFO0("LXC support not available in this kernel, disabling driver");
         goto cleanup;
+    }
 
-    if(VIR_ALLOC(lxc_driver->domainEventCallbacks) < 0)
+    if (VIR_ALLOC(lxc_driver->domainEventCallbacks) < 0)
         goto cleanup;
     if (!(lxc_driver->domainEventQueue = virDomainEventQueueNew()))
         goto cleanup;

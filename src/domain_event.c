@@ -38,6 +38,9 @@ void
 virDomainEventCallbackListFree(virDomainEventCallbackListPtr list)
 {
     int i;
+    if (!list)
+        return;
+
     for (i=0; i<list->count; i++) {
         virFreeCallback freecb = list->callbacks[i]->freecb;
         if (freecb)

@@ -532,6 +532,9 @@ void virDomainObjListFree(virDomainObjListPtr vms)
 {
     unsigned int i;
 
+    if (!vms)
+        return;
+
     for (i = 0 ; i < vms->count ; i++)
         virDomainObjFree(vms->objs[i]);
 
