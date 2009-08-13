@@ -45,6 +45,7 @@
 #include "nodeinfo.h"
 #include "verify.h"
 #include "bridge.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -63,8 +64,14 @@ virCapsPtr umlCapsInit(void) {
                                    0, 0)) == NULL)
         goto no_memory;
 
-    if (nodeCapsInitNUMA(caps) < 0)
-        goto no_memory;
+    /* Some machines have problematic NUMA toplogy causing
+     * unexpected failures. We don't want to break the QEMU
+     * driver in this scenario, so log errors & carry on
+     */
+    if (nodeCapsInitNUMA(caps) < 0) {
+        virCapabilitiesFreeNUMAInfo(caps);
+        VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+    }
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "uml",

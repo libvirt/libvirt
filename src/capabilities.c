@@ -139,6 +139,7 @@ virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
     for (i = 0 ; i < caps->host.nnumaCell ; i++)
         virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
     VIR_FREE(caps->host.numaCell);
+    caps->host.nnumaCell = 0;
 }
 
 /**
