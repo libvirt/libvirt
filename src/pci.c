@@ -926,3 +926,18 @@ pciFreeDevice(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
         close(dev->fd);
     VIR_FREE(dev);
 }
+
+int
+pciDeviceEquals(virConnectPtr  conn ATTRIBUTE_UNUSED,
+                pciDevice     *dev,
+                unsigned       domain,
+                unsigned       bus,
+                unsigned       slot,
+                unsigned       function)
+{
+    return
+        dev->domain   == domain &&
+        dev->bus      == bus &&
+        dev->slot     == slot &&
+        dev->function == function;
+}

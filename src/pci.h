@@ -52,4 +52,11 @@ int pciResetDevice(virConnectPtr      conn,
                    pciDevice         *dev,
                    pciResetCheckFunc  check);
 
+int pciDeviceEquals(virConnectPtr  conn,
+                    pciDevice     *dev,
+                    unsigned       domain,
+                    unsigned       bus,
+                    unsigned       slot,
+                    unsigned       function);
+
 #endif /* __VIR_PCI_H__ */
