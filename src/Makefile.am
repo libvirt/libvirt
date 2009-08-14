@@ -182,6 +182,9 @@ NETWORK_DRIVER_SOURCES =					\
 INTERFACE_DRIVER_SOURCES =					\
 		interface_driver.h interface_driver.c
 
+SECRET_DRIVER_SOURCES =						\
+		secret_driver.h secret_driver.c
+
 # Storage backend specific impls
 STORAGE_DRIVER_SOURCES =					\
 		storage_driver.h storage_driver.c		\
@@ -457,6 +460,17 @@ libvirt_driver_interface_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
 endif
+
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_secret.la
+else
+noinst_LTLIBRARIES += libvirt_driver_secret.la
+libvirt_la_LIBADD += libvirt_driver_secret.la
+endif
+if WITH_DRIVER_MODULES
+libvirt_driver_secret_la_LDFLAGS = -module -avoid-version
+endif
+libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =

@@ -31,6 +31,7 @@ src/qemu_conf.c
 src/qemu_driver.c
 src/remote_internal.c
 src/secret_conf.c
+src/secret_driver.c
 src/security.c
 src/security_selinux.c
 src/storage_backend.c

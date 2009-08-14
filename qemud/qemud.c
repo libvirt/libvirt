@@ -92,6 +92,7 @@
 #ifdef WITH_NODE_DEVICES
 #include "node_device.h"
 #endif
+#include "secret_driver.h"
 #endif
 
 
@@ -814,6 +815,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     virDriverLoadModule("network");
     virDriverLoadModule("storage");
     virDriverLoadModule("nodedev");
+    virDriverLoadModule("secret");
     virDriverLoadModule("qemu");
     virDriverLoadModule("lxc");
     virDriverLoadModule("uml");
@@ -832,6 +834,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     (defined(HAVE_HAL) || defined(HAVE_DEVKIT))
     nodedevRegister();
 #endif
+    secretRegister();
 #ifdef WITH_QEMU
     qemuRegister();
 #endif

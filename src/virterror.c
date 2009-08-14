@@ -1082,6 +1082,11 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Invalid secret");
             else
                 errmsg = _("Invalid secret: %s");
+        case VIR_ERR_NO_SECRET:
+            if (info == NULL)
+                errmsg = _("Secret not found");
+            else
+                errmsg = _("Secret not found: %s");
             break;
     }
     return (errmsg);
