@@ -88,6 +88,8 @@ virDomainGetRootFilesystem;
 virDomainGraphicsTypeFromString;
 virDomainGraphicsDefFree;
 virDomainHostdevDefFree;
+virDomainHostdevModeTypeToString;
+virDomainHostdevSubsysTypeToString;
 virDomainInputDefFree;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;

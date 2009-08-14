@@ -5148,9 +5148,9 @@ cleanup:
     return -1;
 }
 
-static int qemudDomainAttachHostDevice(virConnectPtr conn,
-                                       virDomainObjPtr vm,
-                                       virDomainDeviceDefPtr dev)
+static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
+                                          virDomainObjPtr vm,
+                                          virDomainDeviceDefPtr dev)
 {
     int ret;
     char *cmd, *reply;
@@ -5198,6 +5198,34 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
     VIR_FREE(reply);
     VIR_FREE(cmd);
     return 0;
+}
+
+static int qemudDomainAttachHostDevice(virConnectPtr conn,
+                                       struct qemud_driver *driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDeviceDefPtr dev)
+{
+    virDomainHostdevDefPtr hostdev = dev->data.hostdev;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         _("hostdev mode '%s' not supported"),
+                         virDomainHostdevModeTypeToString(hostdev->mode));
+        return -1;
+    }
+
+    if (qemuDomainSetDeviceOwnership(conn, driver, dev, 0) < 0)
+        return -1;
+
+    switch (hostdev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        return qemudDomainAttachHostUsbDevice(conn, vm, dev);
+    default:
+        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         _("hostdev subsys type '%s' not supported"),
+                         virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+        return -1;
+    }
 }
 
 static int qemudDomainAttachDevice(virDomainPtr dom,
@@ -5301,13 +5329,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainAttachNetDevice(dom->conn, driver, vm, dev, qemuCmdFlags);
-    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-               dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-               dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-        if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
-            goto cleanup;
-
-        ret = qemudDomainAttachHostDevice(dom->conn, vm, dev);
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        ret = qemudDomainAttachHostDevice(dom->conn, driver, vm, dev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          _("device type '%s' cannot be attached"),
