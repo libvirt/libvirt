@@ -411,6 +411,10 @@ virGetUserID;
 virGetGroupID;
 virFileFindMountPoint;
 
+# usb.h
+usbGetDevice;
+usbFreeDevice;
+usbDeviceFileIterate;
 
 # uuid.h
 virUUIDFormat;

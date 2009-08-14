@@ -51,6 +51,7 @@ UTIL_SOURCES =							\
 		logging.c logging.h				\
 		memory.c memory.h				\
 		pci.c pci.h					\
+		hostusb.c hostusb.h				\
 		qparams.c qparams.h				\
 		storage_encryption_conf.h storage_encryption_conf.c	\
 		threads.c threads.h				\
