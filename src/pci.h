@@ -22,7 +22,6 @@
 #ifndef __VIR_PCI_H__
 #define __VIR_PCI_H__
 
-#include <config.h>
 #include "internal.h"
 
 typedef struct _pciDevice pciDevice;
@@ -61,5 +60,20 @@ void           pciDeviceListDel  (virConnectPtr conn,
                                   pciDevice *dev);
 pciDevice *    pciDeviceListFind (pciDeviceList *list,
                                   pciDevice *dev);
+
+/*
+ * Callback that will be invoked once for each file
+ * associated with / used for PCI host device access.
+ *
+ * Should return 0 if successfully processed, or
+ * -1 to indicate error and abort iteration
+ */
+typedef int (*pciDeviceFileActor)(virConnectPtr conn, pciDevice *dev,
+                                  const char *path, void *opaque);
+
+int pciDeviceFileIterate(virConnectPtr conn,
+                         pciDevice *dev,
+                         pciDeviceFileActor actor,
+                         void *opaque);
 
 #endif /* __VIR_PCI_H__ */

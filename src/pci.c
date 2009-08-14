@@ -1022,3 +1022,55 @@ pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
             return list->devs[i];
     return NULL;
 }
+
+
+int pciDeviceFileIterate(virConnectPtr conn,
+                         pciDevice *dev,
+                         pciDeviceFileActor actor,
+                         void *opaque)
+{
+    char *pcidir = NULL;
+    char *file = NULL;
+    DIR *dir = NULL;
+    int ret = -1;
+    struct dirent *ent;
+
+    if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
+                    dev->domain, dev->bus, dev->slot, dev->function) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (!(dir = opendir(pcidir))) {
+        virReportSystemError(conn, errno,
+                             _("cannot open %s"), pcidir);
+        goto cleanup;
+    }
+
+    while ((ent = readdir(dir)) != NULL) {
+        /* Device assignment requires:
+         *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN, $PCIDIR/rom
+         */
+        if (STREQ(ent->d_name, "config") ||
+            STRPREFIX(ent->d_name, "resource") ||
+            STREQ(ent->d_name, "rom")) {
+            if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0) {
+                virReportOOMError(conn);
+                goto cleanup;
+            }
+            if ((actor)(conn, dev, file, opaque) < 0)
+                goto cleanup;
+
+            VIR_FREE(file);
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    if (dir)
+        closedir(dir);
+    VIR_FREE(file);
+    VIR_FREE(pcidir);
+    return ret;
+}

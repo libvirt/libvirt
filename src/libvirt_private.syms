@@ -294,6 +294,8 @@ pciDeviceListNew;
 pciDeviceListFree;
 pciDeviceListAdd;
 pciDeviceListDel;
+pciDeviceFileIterate;
+
 
 # qparams.h
 qparam_get_query;
