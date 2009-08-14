@@ -24,6 +24,7 @@
 
 #include <config.h>
 #include "internal.h"
+#include "domain_conf.h"
 
 typedef struct _pciDevice pciDevice;
 
@@ -38,7 +39,17 @@ int        pciDettachDevice  (virConnectPtr  conn,
                               pciDevice     *dev);
 int        pciReAttachDevice (virConnectPtr  conn,
                               pciDevice     *dev);
-int        pciResetDevice    (virConnectPtr  conn,
-                              pciDevice     *dev);
+
+/* pciResetDevice() may cause other devices to be reset;
+ * The check function is called for each other device to
+ * be reset and by returning zero may cause the reset to
+ * fail if it is not safe to reset the supplied device.
+ */
+typedef int (*pciResetCheckFunc)(virConnectPtr, virDomainObjPtr, pciDevice *);
+
+int pciResetDevice(virConnectPtr      conn,
+                   virDomainObjPtr    vm,
+                   pciDevice         *dev,
+                   pciResetCheckFunc  check);
 
 #endif /* __VIR_PCI_H__ */
