@@ -1104,6 +1104,18 @@ qemu-kvm -net nic,model=? /dev/null
   in clear text. The <code>keymap</code> attribute specifies the keymap
   to use.
           </dd>
+          <dt><code>"spice"</code></dt>
+          <dd>
+  Starts a SPICE server. The <code>port</code> attribute specifies the TCP
+  port number (with -1 as legacy syntax indicating that it should be
+  auto-allocated), while <code>tlsPort</code> gives an alternative
+  secure port number. The <code>autoport</code> attribute is the new
+  preferred syntax for indicating autoallocation of both port numbers.
+  The <code>listen</code> attribute is an IP address for the server to
+  listen on. The <code>passwd</code> attribute provides a SPICE password
+  in clear text. The <code>keymap</code> attribute specifies the keymap
+  to use.
+          </dd>
           <dt><code>"rdp"</code></dt>
           <dd>
   Starts a RDP server. The <code>port</code> attribute

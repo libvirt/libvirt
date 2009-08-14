@@ -268,7 +268,8 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
               "vnc",
               "rdp",
-              "desktop")
+              "desktop",
+              "spice")
 
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
@@ -450,6 +451,12 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         VIR_FREE(def->data.desktop.display);
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        VIR_FREE(def->data.spice.listenAddr);
+        VIR_FREE(def->data.spice.keymap);
+        VIR_FREE(def->data.spice.passwd);
         break;
     }
 
@@ -3204,6 +3211,50 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
             def->data.desktop.fullscreen = 0;
 
         def->data.desktop.display = virXMLPropString(node, "display");
+    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        char *port = virXMLPropString(node, "port");
+        char *tlsPort;
+        char *autoport;
+
+        if (port) {
+            if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("cannot parse spice port %s"), port);
+                VIR_FREE(port);
+                goto error;
+            }
+            VIR_FREE(port);
+        } else {
+            def->data.spice.port = 5900;
+        }
+
+        tlsPort = virXMLPropString(node, "tlsPort");
+        if (tlsPort) {
+            if (virStrToLong_i(tlsPort, NULL, 10, &def->data.spice.tlsPort) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("cannot parse spice tlsPort %s"), tlsPort);
+                VIR_FREE(tlsPort);
+                goto error;
+            }
+            VIR_FREE(tlsPort);
+        } else {
+            def->data.spice.tlsPort = 0;
+        }
+
+        if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+            if (STREQ(autoport, "yes")) {
+                if (flags & VIR_DOMAIN_XML_INACTIVE) {
+                    def->data.spice.port = 0;
+                    def->data.spice.tlsPort = 0;
+                }
+                def->data.spice.autoport = 1;
+            }
+            VIR_FREE(autoport);
+        }
+
+        def->data.spice.listenAddr = virXMLPropString(node, "listen");
+        def->data.spice.passwd = virXMLPropString(node, "passwd");
+        def->data.spice.keymap = virXMLPropString(node, "keymap");
     }
 
 cleanup:
@@ -6514,6 +6565,33 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
         if (def->data.desktop.fullscreen)
             virBufferAddLit(buf, " fullscreen='yes'");
+
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (def->data.spice.port)
+            virBufferVSprintf(buf, " port='%d'",
+                              def->data.spice.port);
+
+        if (def->data.spice.tlsPort)
+            virBufferVSprintf(buf, " tlsPort='%d'",
+                              def->data.spice.tlsPort);
+
+        virBufferVSprintf(buf, " autoport='%s'",
+                          def->data.spice.autoport ? "yes" : "no");
+
+        if (def->data.spice.listenAddr)
+            virBufferVSprintf(buf, " listen='%s'",
+                              def->data.spice.listenAddr);
+
+        if (def->data.spice.keymap)
+            virBufferEscapeString(buf, " keymap='%s'",
+                                  def->data.spice.keymap);
+
+        if (def->data.spice.passwd &&
+            (flags & VIR_DOMAIN_XML_SECURE))
+            virBufferEscapeString(buf, " passwd='%s'",
+                                  def->data.spice.passwd);
 
         break;
 

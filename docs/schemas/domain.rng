@@ -1096,6 +1096,44 @@
         </group>
         <group>
           <attribute name="type">
+            <value>spice</value>
+          </attribute>
+          <optional>
+            <attribute name="port">
+              <ref name="PortNumber"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="tlsPort">
+              <ref name="PortNumber"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="autoport">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="listen">
+              <ref name="addrIP"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="passwd">
+              <text/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="keymap">
+              <text/>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="type">
             <value>rdp</value>
           </attribute>
           <optional>

@@ -5072,7 +5072,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (def->nvideos) {
         if (def->nvideos > 1) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             "%s", _("only one video card is currently supported"));
             goto error;
         }

@@ -512,6 +512,7 @@ enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_VNC,
     VIR_DOMAIN_GRAPHICS_TYPE_RDP,
     VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP,
+    VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
 
     VIR_DOMAIN_GRAPHICS_TYPE_LAST,
 };
@@ -544,6 +545,14 @@ struct _virDomainGraphicsDef {
             char *display;
             unsigned int fullscreen :1;
         } desktop;
+        struct {
+            int port;
+            int tlsPort;
+            char *listenAddr;
+            char *keymap;
+            char *passwd;
+            unsigned int autoport :1;
+        } spice;
     } data;
 };
 
