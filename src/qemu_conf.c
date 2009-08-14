@@ -810,6 +810,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_VGA;
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
+    if (strstr(help, "serial=s"))
+        flags |= QEMUD_CMD_FLAG_DRIVE_SERIAL;
     if (strstr(help, "-pcidevice"))
         flags |= QEMUD_CMD_FLAG_PCIDEVICE;
     if (strstr(help, "-mem-path"))
@@ -1405,6 +1407,23 @@ static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
     return 0;
 }
 
+#define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+
+static int
+qemuSafeSerialParamValue(virConnectPtr conn,
+                         const char *value)
+{
+    if (strspn(value, QEMU_SERIAL_PARAM_ACCEPTED_CHARS) != strlen (value)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("driver serial '%s' contains unsafe characters"),
+                         value);
+        return -1;
+    }
+
+    return 0;
+}
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -1804,6 +1823,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (disk->driverType &&
                 qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
                 virBufferVSprintf(&opt, ",format=%s", disk->driverType);
+            if (disk->serial &&
+                (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_SERIAL)) {
+                if (qemuSafeSerialParamValue(conn, disk->serial) < 0)
+                    goto error;
+                virBufferVSprintf(&opt, ",serial=%s", disk->serial);
+            }
 
             if (disk->cachemode) {
                 const char *mode =

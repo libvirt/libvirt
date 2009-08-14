@@ -110,6 +110,7 @@ struct _virDomainDiskDef {
     char *dst;
     char *driverName;
     char *driverType;
+    char *serial;
     int cachemode;
     unsigned int readonly : 1;
     unsigned int shared : 1;

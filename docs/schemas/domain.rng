@@ -348,6 +348,11 @@
       </element>
     </optional>
     <optional>
+      <element name="serial">
+        <ref name="diskSerial"/>
+      </element>
+    </optional>
+    <optional>
       <ref name="encryption"/>
     </optional>
   </define>
@@ -1167,6 +1172,11 @@
   <define name="domainName">
     <data type="string">
       <param name="pattern">[A-Za-z0-9_\.\+\-&amp;:/]+</param>
+    </data>
+  </define>
+  <define name="diskSerial">
+    <data type="string">
+      <param name="pattern">[A-Za-z0-9_\.\+\-]+</param>
     </data>
   </define>
   <define name="genericName">

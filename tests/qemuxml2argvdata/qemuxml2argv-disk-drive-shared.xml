@@ -19,6 +19,7 @@
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <shareable/>
+      <serial>XYZXYZXYZYXXYZYZYXYZY</serial>
     </disk>
     <disk type='block' device='cdrom'>
       <driver name='qemu' type='raw'/>

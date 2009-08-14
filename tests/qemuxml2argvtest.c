@@ -209,7 +209,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT);
+            QEMUD_CMD_FLAG_DRIVE_FORMAT | QEMUD_CMD_FLAG_DRIVE_SERIAL);
     DO_TEST("disk-drive-cache-v1-wt", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v1-wb", QEMUD_CMD_FLAG_DRIVE |

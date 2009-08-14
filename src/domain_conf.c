@@ -284,6 +284,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     if (!def)
         return;
 
+    VIR_FREE(def->serial);
     VIR_FREE(def->src);
     VIR_FREE(def->dst);
     VIR_FREE(def->driverName);
@@ -653,6 +654,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     char *cachetag = NULL;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
+    char *serial = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -716,6 +718,9 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                                                            cur);
                 if (encryption == NULL)
                     goto error;
+            } else if ((serial == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "serial"))) {
+                serial = (char *)xmlNodeGetContent(cur);
             }
         }
         cur = cur->next;
@@ -836,6 +841,8 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     driverType = NULL;
     def->encryption = encryption;
     encryption = NULL;
+    def->serial = serial;
+    serial = NULL;
 
 cleanup:
     VIR_FREE(bus);
@@ -847,6 +854,7 @@ cleanup:
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
     VIR_FREE(devaddr);
+    VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
 
     return def;
@@ -3616,6 +3624,9 @@ virDomainDiskDefFormat(virConnectPtr conn,
         virBufferAddLit(buf, "      <readonly/>\n");
     if (def->shared)
         virBufferAddLit(buf, "      <shareable/>\n");
+    if (def->serial)
+        virBufferEscapeString(buf, "      <serial>%s</serial>\n",
+                              def->serial);
     if (def->encryption != NULL &&
         virStorageEncryptionFormat(conn, buf, def->encryption) < 0)
         return -1;

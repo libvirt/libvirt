@@ -119,6 +119,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_DRIVE_SERIAL |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10,
             10005, 0,  0);
@@ -135,6 +136,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_KVM |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_DRIVE_SERIAL |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
             QEMUD_CMD_FLAG_PCIDEVICE |
@@ -153,6 +155,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
             QEMUD_CMD_FLAG_KVM |
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_DRIVE_SERIAL |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
             QEMUD_CMD_FLAG_PCIDEVICE,
