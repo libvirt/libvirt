@@ -402,29 +402,6 @@ pciBusContainsOtherDevices(virConnectPtr conn, pciDevice *dev)
     return 1;
 }
 
-/* Any other functions on this device ? */
-static int
-pciSharesDevice(pciDevice *a, pciDevice *b)
-{
-    return
-        a->domain == b->domain &&
-        a->bus == b->bus &&
-        a->slot == b->slot &&
-        a->function != b->function;
-}
-
-static int
-pciDeviceContainsOtherFunctions(virConnectPtr conn, pciDevice *dev)
-{
-    pciDevice *matched = NULL;
-    if (pciIterDevices(conn, pciSharesDevice, dev, &matched) < 0)
-        return 1;
-    if (!matched)
-        return 0;
-    pciFreeDevice(conn, matched);
-    return 1;
-}
-
 /* Is @a the parent of @b ? */
 static int
 pciIsParent(pciDevice *a, pciDevice *b)
@@ -529,23 +506,13 @@ out:
  * above we require the device supports a full internal reset.
  */
 static int
-pciTryPowerManagementReset(virConnectPtr conn, pciDevice *dev)
+pciTryPowerManagementReset(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 {
     uint8_t config_space[PCI_CONF_LEN];
     uint32_t ctl;
 
     if (!dev->pci_pm_cap_pos)
         return -1;
-
-    /* For now, we just refuse to do a power management reset
-     * if there are other functions on this device.
-     * In future, we could allow it so long as those functions
-     * are not in use by the host or other guests.
-     */
-    if (pciDeviceContainsOtherFunctions(conn, dev)) {
-        VIR_WARN("%s contains other functions, not resetting", dev->name);
-        return -1;
-    }
 
     /* Save and restore the device's config space. */
     if (pciRead(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
@@ -604,13 +571,16 @@ pciResetDevice(virConnectPtr conn, pciDevice *dev)
     if (dev->has_flr)
         return 0;
 
-    /* Bus reset is not an option with the root bus */
-    if (dev->bus != 0)
-        ret = pciTrySecondaryBusReset(conn, dev);
-
-    /* Next best option is a PCI power management reset */
-    if (ret < 0 && dev->has_pm_reset)
+    /* If the device supports PCI power management reset,
+     * that's the next best thing because it only resets
+     * the function, not the whole device.
+     */
+    if (dev->has_pm_reset)
         ret = pciTryPowerManagementReset(conn, dev);
+
+    /* Bus reset is not an option with the root bus */
+    if (ret < 0 && dev->bus != 0)
+        ret = pciTrySecondaryBusReset(conn, dev);
 
     if (ret < 0)
         pciReportError(conn, VIR_ERR_NO_SUPPORT,
