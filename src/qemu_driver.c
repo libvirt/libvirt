@@ -1402,6 +1402,80 @@ error:
     return -1;
 }
 
+static void
+qemuDomainReAttachHostDevices(virConnectPtr conn, virDomainDefPtr def)
+{
+    int i;
+
+    /* Again 2 loops; reset all the devices before re-attach */
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        pciDevice *dev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        dev = pciGetDevice(conn,
+                           hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+        if (!dev) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to allocate pciDevice: %s\n"),
+                      err ? err->message : "");
+            virResetError(err);
+            continue;
+        }
+
+        if (pciResetDevice(conn, dev) < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to reset PCI device: %s\n"),
+                      err ? err->message : "");
+            virResetError(err);
+        }
+
+        pciFreeDevice(conn, dev);
+    }
+
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        pciDevice *dev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+        if (!hostdev->managed)
+            continue;
+
+        dev = pciGetDevice(conn,
+                           hostdev->source.subsys.u.pci.domain,
+                           hostdev->source.subsys.u.pci.bus,
+                           hostdev->source.subsys.u.pci.slot,
+                           hostdev->source.subsys.u.pci.function);
+        if (!dev) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to allocate pciDevice: %s\n"),
+                      err ? err->message : "");
+            virResetError(err);
+            continue;
+        }
+
+        if (pciDettachDevice(conn, dev) < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to reset PCI device: %s\n"),
+                      err ? err->message : "");
+            virResetError(err);
+        }
+
+        pciFreeDevice(conn, dev);
+    }
+}
+
 static const char *const defaultDeviceACL[] = {
     "/dev/null", "/dev/full", "/dev/zero",
     "/dev/random", "/dev/urandom",
@@ -2108,6 +2182,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     if (qemuDomainSetAllDeviceOwnership(conn, driver, vm->def, 1) < 0)
         VIR_WARN("Failed to restore all device ownership for %s",
                  vm->def->name);
+
+    qemuDomainReAttachHostDevices(conn, vm->def);
 
 retry:
     if ((ret = qemuRemoveCgroup(conn, driver, vm)) < 0) {
