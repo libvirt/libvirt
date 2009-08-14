@@ -9066,6 +9066,8 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
         goto error;
     }
 
+    flags &= VIR_SECRET_GET_VALUE_FLAGS_MASK;
+
     if (conn->secretDriver != NULL && conn->secretDriver->getValue != NULL) {
         unsigned char *ret;
 

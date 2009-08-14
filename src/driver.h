@@ -802,6 +802,22 @@ struct _virDeviceMonitor {
     virDrvNodeDeviceDestroy deviceDestroy;
 };
 
+/* bits 16 and above of virDomainXMLFlags are for internal use */
+#define VIR_DOMAIN_XML_FLAGS_MASK 0xffff
+
+/* Bits 16 and above of virSecretGetValue flags are for internal use */
+#define VIR_SECRET_GET_VALUE_FLAGS_MASK 0xffff
+
+enum {
+    /* This getValue call is inside libvirt, override the "private" flag.
+       This flag can not be set by outside callers. */
+    VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 16
+};
+
+/* Make sure ... INTERNAL_CALL can not be set by the caller */
+verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &
+        VIR_SECRET_GET_VALUE_FLAGS_MASK) == 0);
+
 typedef virSecretPtr
     (*virDrvSecretLookupByUUIDString)        (virConnectPtr conn,
                                               const char *uuid);
