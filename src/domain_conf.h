@@ -391,6 +391,11 @@ struct _virDomainHostdevDef {
                      unsigned bus;
                      unsigned slot;
                      unsigned function;
+                    struct {
+                        unsigned domain;
+                        unsigned bus;
+                        unsigned slot;
+                    } guest_addr;
                 } pci;
             } u;
         } subsys;
@@ -403,6 +408,14 @@ struct _virDomainHostdevDef {
     } source;
     char* target;
 };
+
+static inline int
+virHostdevHasValidGuestAddr(virDomainHostdevDefPtr def)
+{
+    return def->source.subsys.u.pci.guest_addr.domain ||
+           def->source.subsys.u.pci.guest_addr.bus ||
+           def->source.subsys.u.pci.guest_addr.slot;
+}
 
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {

@@ -1977,7 +1977,8 @@ out:
 static int
 virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
                                      const xmlNodePtr node,
-                                     virDomainHostdevDefPtr def) {
+                                     virDomainHostdevDefPtr def,
+                                     int flags) {
 
     int ret = -1;
     xmlNodePtr cur;
@@ -2047,6 +2048,20 @@ virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
                 } else {
                     virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                          _("pci address needs function id"));
+                    goto out;
+                }
+            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
+                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                char *devaddr = virXMLPropString(cur, "devaddr");
+                if (devaddr &&
+                    sscanf(devaddr, "%x:%x:%x",
+                           &def->source.subsys.u.pci.guest_addr.domain,
+                           &def->source.subsys.u.pci.guest_addr.bus,
+                           &def->source.subsys.u.pci.guest_addr.slot) < 3) {
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         _("Unable to parse devaddr parameter '%s'"),
+                                         devaddr);
+                    VIR_FREE(devaddr);
                     goto out;
                 }
             } else {
@@ -2123,7 +2138,7 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
                 }
                 if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                     def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-                        if (virDomainHostdevSubsysPciDefParseXML(conn, cur, def) < 0)
+                        if (virDomainHostdevSubsysPciDefParseXML(conn, cur, def, flags) < 0)
                             goto error;
                 }
             } else {
@@ -3937,7 +3952,8 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
 static int
 virDomainHostdevDefFormat(virConnectPtr conn,
                           virBufferPtr buf,
-                          virDomainHostdevDefPtr def)
+                          virDomainHostdevDefPtr def,
+                          int flags)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     const char *type;
@@ -3978,6 +3994,15 @@ virDomainHostdevDefFormat(virConnectPtr conn,
                           def->source.subsys.u.pci.bus,
                           def->source.subsys.u.pci.slot,
                           def->source.subsys.u.pci.function);
+        if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
+            virBufferAddLit(buf, "      <state");
+            if (virHostdevHasValidGuestAddr(def))
+                virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
+                                  def->source.subsys.u.pci.guest_addr.domain,
+                                  def->source.subsys.u.pci.guest_addr.bus,
+                                  def->source.subsys.u.pci.guest_addr.slot);
+            virBufferAddLit(buf, "/>\n");
+        }
     }
 
     virBufferAddLit(buf, "      </source>\n");
@@ -4192,7 +4217,7 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     for (n = 0 ; n < def->nhostdevs ; n++)
-        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n]) < 0)
+        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n], flags) < 0)
             goto cleanup;
 
     virBufferAddLit(&buf, "  </devices>\n");
