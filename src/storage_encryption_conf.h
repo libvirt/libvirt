@@ -69,4 +69,11 @@ virStorageEncryptionPtr virStorageEncryptionParseNode(virConnectPtr conn,
 int virStorageEncryptionFormat(virConnectPtr conn, virBufferPtr buf,
                                virStorageEncryptionPtr enc);
 
+/* A helper for VIR_STORAGE_ENCRYPTION_FORMAT_QCOW */
+enum {
+  VIR_STORAGE_QCOW_PASSPHRASE_SIZE = 16
+};
+
+int virStorageGenerateQcowPassphrase(virConnectPtr conn, unsigned char *dest);
+
 #endif /* __VIR_STORAGE_ENCRYPTION_H__ */

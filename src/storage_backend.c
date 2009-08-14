@@ -43,11 +43,13 @@
 #include <selinux/selinux.h>
 #endif
 
+#include "datatypes.h"
 #include "virterror_internal.h"
 #include "util.h"
 #include "memory.h"
 #include "node_device.h"
 #include "internal.h"
+#include "secret_conf.h"
 
 #include "storage_backend.h"
 
@@ -336,6 +338,103 @@ cleanup:
 }
 
 static int
+virStorageGenerateQcowEncryption(virConnectPtr conn,
+                                 virStorageVolDefPtr vol)
+{
+    virSecretDefPtr def = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virStorageEncryptionPtr enc;
+    virStorageEncryptionSecretPtr enc_secret = NULL;
+    virSecretPtr secret = NULL;
+    char *uuid = NULL, *xml;
+    unsigned char value[VIR_STORAGE_QCOW_PASSPHRASE_SIZE];
+    int ret = -1;
+
+    if (conn->secretDriver == NULL || conn->secretDriver->defineXML == NULL ||
+        conn->secretDriver->setValue == NULL) {
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
+                              _("secret storage not supported"));
+        goto cleanup;
+    }
+
+    enc = vol->target.encryption;
+    if (enc->nsecrets != 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                              _("secrets already defined"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(enc_secret) < 0 || VIR_REALLOC_N(enc->secrets, 1) < 0 ||
+        VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    def->ephemeral = 0;
+    def->private = 0;
+    def->id = NULL; /* Chosen by the secret driver */
+    if (virAsprintf(&def->description, "qcow passphrase for %s",
+                    vol->target.path) == -1) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+    def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
+    def->usage.volume = strdup(vol->target.path);
+    if (def->usage.volume == NULL) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+    xml = virSecretDefFormat(conn, def);
+    virSecretDefFree(def);
+    def = NULL;
+    if (xml == NULL)
+        goto cleanup;
+
+    secret = conn->secretDriver->defineXML(conn, xml, 0);
+    if (secret == NULL) {
+        VIR_FREE(xml);
+        goto cleanup;
+    }
+    VIR_FREE(xml);
+
+    uuid = strdup(secret->uuid);
+    if (uuid == NULL) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (virStorageGenerateQcowPassphrase(conn, value) < 0)
+        goto cleanup;
+
+    if (conn->secretDriver->setValue(secret, value, sizeof(value), 0) < 0)
+        goto cleanup;
+    secret = NULL;
+
+    enc_secret->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
+    enc_secret->uuid = uuid;
+    uuid = NULL;
+    enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
+    enc->secrets[0] = enc_secret; /* Space for secrets[0] allocated above */
+    enc_secret = NULL;
+    enc->nsecrets = 1;
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(uuid);
+    if (secret != NULL) {
+        if (conn->secretDriver->undefine != NULL)
+            conn->secretDriver->undefine(secret);
+        virSecretFree(secret);
+    }
+    xml = virBufferContentAndReset(&buf);
+    VIR_FREE(xml);
+    virSecretDefFree(def);
+    VIR_FREE(enc_secret);
+    return ret;
+}
+
+static int
 virStorageBackendCreateQemuImg(virConnectPtr conn,
                                virStorageVolDefPtr vol,
                                virStorageVolDefPtr inputvol,
@@ -433,6 +532,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     if (vol->target.encryption != NULL) {
+        virStorageEncryptionPtr enc;
+
         if (vol->target.format != VIR_STORAGE_VOL_FILE_QCOW &&
             vol->target.format != VIR_STORAGE_VOL_FILE_QCOW2) {
             virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
@@ -440,17 +541,23 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                     "volume format %s"), type);
             return -1;
         }
-        if (vol->target.encryption->format !=
-            VIR_STORAGE_ENCRYPTION_FORMAT_QCOW) {
+        enc = vol->target.encryption;
+        if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
+            enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
             virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
                                   _("unsupported volume encryption format %d"),
                                   vol->target.encryption->format);
             return -1;
         }
-        if (vol->target.encryption->nsecrets > 1) {
+        if (enc->nsecrets > 1) {
             virStorageReportError(conn, VIR_ERR_INVALID_STORAGE_VOL,
                                   _("too many secrets for qcow encryption"));
             return -1;
+        }
+        if (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
+            enc->nsecrets == 0) {
+            if (virStorageGenerateQcowEncryption(conn, vol) < 0)
+                return -1;
         }
     }
 
