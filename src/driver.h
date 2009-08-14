@@ -6,6 +6,9 @@
 #ifndef __VIR_DRIVER_H__
 #define __VIR_DRIVER_H__
 
+#include "config.h"
+#include <stdbool.h>
+
 #include <libxml/uri.h>
 
 #include "internal.h"
@@ -799,6 +802,62 @@ struct _virDeviceMonitor {
     virDrvNodeDeviceDestroy deviceDestroy;
 };
 
+typedef virSecretPtr
+    (*virDrvSecretLookupByUUIDString)        (virConnectPtr conn,
+                                              const char *uuid);
+typedef virSecretPtr
+    (*virDrvSecretDefineXML)                 (virConnectPtr conn,
+                                              const char *xml,
+                                              unsigned int flags);
+typedef char *
+    (*virDrvSecretGetXMLDesc)                (virSecretPtr secret,
+                                              unsigned int flags);
+typedef int
+    (*virDrvSecretSetValue)                  (virSecretPtr secret,
+                                              const unsigned char *value,
+                                              size_t value_size,
+                                              unsigned int flags);
+typedef unsigned char *
+    (*virDrvSecretGetValue)                  (virSecretPtr secret,
+                                              size_t *value_size,
+                                              unsigned int flags);
+typedef int
+    (*virDrvSecretUndefine)                  (virSecretPtr secret);
+typedef int
+    (*virDrvSecretNumOfSecrets)              (virConnectPtr conn);
+typedef int
+    (*virDrvSecretListSecrets)               (virConnectPtr conn,
+                                              char **uuids,
+                                              int maxuuids);
+
+typedef struct _virSecretDriver virSecretDriver;
+typedef virSecretDriver *virSecretDriverPtr;
+
+/**
+ * _virSecretDriver:
+ *
+ * Structure associated to a driver for storing secrets, defining the various
+ * entry points for it.
+ *
+ * All drivers must support the following fields/methods:
+ *  - open
+ *  - close
+ */
+struct _virSecretDriver {
+    const char *name;
+    virDrvOpen open;
+    virDrvClose close;
+
+    virDrvSecretNumOfSecrets numOfSecrets;
+    virDrvSecretListSecrets listSecrets;
+    virDrvSecretLookupByUUIDString lookupByUUIDString;
+    virDrvSecretDefineXML defineXML;
+    virDrvSecretGetXMLDesc getXMLDesc;
+    virDrvSecretSetValue setValue;
+    virDrvSecretGetValue getValue;
+    virDrvSecretUndefine undefine;
+};
+
 /*
  * Registration
  * TODO: also need ways to (des)activate a given driver
@@ -809,6 +868,7 @@ int virRegisterNetworkDriver(virNetworkDriverPtr);
 int virRegisterInterfaceDriver(virInterfaceDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
 int virRegisterDeviceMonitor(virDeviceMonitorPtr);
+int virRegisterSecretDriver(virSecretDriverPtr);
 #ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
 #endif

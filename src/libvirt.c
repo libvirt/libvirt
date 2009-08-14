@@ -86,6 +86,8 @@ static virStorageDriverPtr virStorageDriverTab[MAX_DRIVERS];
 static int virStorageDriverTabCount = 0;
 static virDeviceMonitorPtr virDeviceMonitorTab[MAX_DRIVERS];
 static int virDeviceMonitorTabCount = 0;
+static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
+static int virSecretDriverTabCount = 0;
 #ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
@@ -684,6 +686,37 @@ virRegisterDeviceMonitor(virDeviceMonitorPtr driver)
 }
 
 /**
+ * virRegisterSecretDriver:
+ * @driver: pointer to a secret driver block
+ *
+ * Register a secret driver
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterSecretDriver(virSecretDriverPtr driver)
+{
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    if (virSecretDriverTabCount >= MAX_DRIVERS) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    DEBUG ("registering %s as secret driver %d",
+           driver->name, virSecretDriverTabCount);
+
+    virSecretDriverTab[virSecretDriverTabCount] = driver;
+    return virSecretDriverTabCount++;
+}
+
+/**
  * virRegisterDriver:
  * @driver: pointer to a driver block
  *
@@ -1092,6 +1125,26 @@ do_open (const char *name,
             break;
         } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->deviceMonitor = virDeviceMonitorTab[i];
+            break;
+        }
+    }
+
+    /* Secret manipulation driver. Optional */
+    for (i = 0; i < virSecretDriverTabCount; i++) {
+        res = virSecretDriverTab[i]->open (ret, auth, flags);
+        DEBUG("secret driver %d %s returned %s",
+              i, virSecretDriverTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+        if (res == VIR_DRV_OPEN_ERROR) {
+            if (STREQ(virSecretDriverTab[i]->name, "remote")) {
+                virLibConnWarning (NULL, VIR_WAR_NO_SECRET,
+                                   "Is the daemon running ?");
+            }
+            break;
+         } else if (res == VIR_DRV_OPEN_SUCCESS) {
+            ret->secretDriver = virSecretDriverTab[i];
             break;
         }
     }

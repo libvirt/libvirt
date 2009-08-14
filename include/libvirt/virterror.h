@@ -166,6 +166,7 @@ typedef enum {
     VIR_ERR_NO_INTERFACE, /* interface driver not running */
     VIR_ERR_INVALID_INTERFACE, /* invalid interface object */
     VIR_ERR_MULTIPLE_INTERFACES, /* more than one matching interface found */
+    VIR_WAR_NO_SECRET, /* failed to start secret storage */
 } virErrorNumber;
 
 /**

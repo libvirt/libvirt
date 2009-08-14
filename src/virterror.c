@@ -1068,6 +1068,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("multiple matching interfaces found: %s");
             break;
+        case VIR_WAR_NO_SECRET:
+            if (info == NULL)
+                errmsg = _("Failed to find a secret storage driver");
+            else
+                errmsg = _("Failed to find a secret storage driver: %s");
+            break;
     }
     return (errmsg);
 }

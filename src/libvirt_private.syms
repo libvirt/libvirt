@@ -52,10 +52,12 @@ virGetInterface;
 virGetNetwork;
 virGetStoragePool;
 virGetStorageVol;
+virGetSecret;
 virUnrefStorageVol;
 virGetNodeDevice;
 virUnrefDomain;
 virUnrefConnect;
+virUnrefSecret;
 
 
 # domain_conf.h
