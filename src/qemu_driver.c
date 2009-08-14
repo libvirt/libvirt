@@ -5634,6 +5634,9 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
 
     if (qemuDomainSetDeviceOwnership(conn, driver, dev, 0) < 0)
         return -1;
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
+        return -1;
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
@@ -5701,9 +5704,6 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 goto cleanup;
             }
         }
-
-        if (driver->securityDriver)
-            driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
 
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
@@ -6104,8 +6104,12 @@ static int qemudDomainDetachHostDevice(virConnectPtr conn,
         return -1;
     }
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
+        VIR_WARN0("Failed to restore device labelling");
+
     if (qemuDomainSetDeviceOwnership(conn, driver, dev, 1) < 0)
-        VIR_WARN0("Fail to restore disk device ownership");
+        VIR_WARN0("Failed to restore device ownership");
 
     return ret;
 }

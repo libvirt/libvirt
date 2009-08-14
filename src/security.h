@@ -36,6 +36,11 @@ typedef int (*virSecurityDomainRestoreImageLabel) (virConnectPtr conn,
 typedef int (*virSecurityDomainSetImageLabel) (virConnectPtr conn,
                                                virDomainObjPtr vm,
                                                virDomainDiskDefPtr disk);
+typedef int (*virSecurityDomainRestoreHostdevLabel) (virConnectPtr conn,
+                                                     virDomainHostdevDefPtr dev);
+typedef int (*virSecurityDomainSetHostdevLabel) (virConnectPtr conn,
+                                                 virDomainObjPtr vm,
+                                                 virDomainHostdevDefPtr dev);
 typedef int (*virSecurityDomainGenLabel) (virConnectPtr conn,
                                           virDomainObjPtr sec);
 typedef int (*virSecurityDomainReserveLabel) (virConnectPtr conn,
@@ -63,6 +68,8 @@ struct _virSecurityDriver {
     virSecurityDomainGetLabel domainGetSecurityLabel;
     virSecurityDomainSetLabel domainSetSecurityLabel;
     virSecurityDomainRestoreLabel domainRestoreSecurityLabel;
+    virSecurityDomainRestoreHostdevLabel domainRestoreSecurityHostdevLabel;
+    virSecurityDomainSetHostdevLabel domainSetSecurityHostdevLabel;
 
     /*
      * This is internally managed driver state and should only be accessed
