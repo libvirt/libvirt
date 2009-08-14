@@ -685,9 +685,10 @@ char *virDomainCpuSetFormat(virConnectPtr conn,
                             char *cpuset,
                             int maxcpu);
 
-int virDomainDiskQSort(const void *a, const void *b);
-int virDomainDiskCompare(virDomainDiskDefPtr a,
-                         virDomainDiskDefPtr b);
+int virDomainDiskInsert(virDomainDefPtr def,
+                        virDomainDiskDefPtr disk);
+void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
+                                   virDomainDiskDefPtr disk);
 
 int virDomainSaveXML(virConnectPtr conn,
                      const char *configDir,

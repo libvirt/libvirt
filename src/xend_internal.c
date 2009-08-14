@@ -2540,8 +2540,6 @@ xenDaemonParseSxpr(virConnectPtr conn,
             }
         }
     }
-    qsort(def->disks, def->ndisks, sizeof(*def->disks),
-          virDomainDiskQSort);
 
     /* in case of HVM we have USB device emulation */
     if (hvm &&

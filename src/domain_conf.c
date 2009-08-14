@@ -631,19 +631,8 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
     }
 
 }
-#endif /* ! PROXY */
 
 
-int virDomainDiskCompare(virDomainDiskDefPtr a,
-                         virDomainDiskDefPtr b) {
-    if (a->bus == b->bus)
-        return virDiskNameToIndex(a->dst) - virDiskNameToIndex(b->dst);
-    else
-        return a->bus - b->bus;
-}
-
-
-#ifndef PROXY
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
  */
@@ -2343,13 +2332,60 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
 }
 #endif
 
-int virDomainDiskQSort(const void *a, const void *b)
-{
-    const virDomainDiskDefPtr *da = a;
-    const virDomainDiskDefPtr *db = b;
 
-    return virDomainDiskCompare(*da, *db);
+int virDomainDiskInsert(virDomainDefPtr def,
+                        virDomainDiskDefPtr disk)
+{
+
+    if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0)
+        return -1;
+
+    virDomainDiskInsertPreAlloced(def, disk);
+
+    return 0;
 }
+
+void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
+                                   virDomainDiskDefPtr disk)
+{
+    int i;
+    /* Tenatively plan to insert disk at the end. */
+    int insertAt = -1;
+
+    /* Then work backwards looking for disks on
+     * the same bus. If we find a disk with a drive
+     * index greater than the new one, insert at
+     * that position
+     */
+    for (i = (def->ndisks - 1) ; i >= 0 ; i--) {
+        /* If bus matches and current disk is after
+         * new disk, then new disk should go here */
+        if (def->disks[i]->bus == disk->bus &&
+            (virDiskNameToIndex(def->disks[i]->dst) >
+             virDiskNameToIndex(disk->dst))) {
+            insertAt = i;
+        } else if (def->disks[i]->bus == disk->bus &&
+                   insertAt == -1) {
+            /* Last disk with match bus is before the
+             * new disk, then put new disk just after
+             */
+            insertAt = i + 1;
+        }
+    }
+
+    /* No disks with this bus yet, so put at end of list */
+    if (insertAt == -1)
+        insertAt = def->ndisks;
+
+    if (insertAt < def->ndisks)
+        memmove(def->disks + insertAt + 1,
+                def->disks + insertAt,
+                (sizeof(def->disks[0]) * (def->ndisks-insertAt)));
+
+    def->disks[insertAt] = disk;
+    def->ndisks++;
+}
+
 
 #ifndef PROXY
 static char *virDomainDefDefaultEmulator(virConnectPtr conn,
@@ -2657,8 +2693,6 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
         def->disks[def->ndisks++] = disk;
     }
-    qsort(def->disks, def->ndisks, sizeof(*def->disks),
-          virDomainDiskQSort);
     VIR_FREE(nodes);
 
     /* analysis of the filesystems */

@@ -990,8 +990,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             disk = NULL;
         }
     }
-    qsort(def->disks, def->ndisks, sizeof(*def->disks),
-          virDomainDiskQSort);
 
     list = virConfGetValue(conf, "vif");
     if (list && list->type == VIR_CONF_LIST) {
@@ -2839,14 +2837,11 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
     {
-        if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
+        if (virDomainDiskInsert(def, dev->data.disk) < 0) {
             virReportOOMError(domain->conn);
             goto cleanup;
         }
-        def->disks[def->ndisks++] = dev->data.disk;
         dev->data.disk = NULL;
-        qsort(def->disks, def->ndisks, sizeof(*def->disks),
-              virDomainDiskQSort);
     }
     break;
 

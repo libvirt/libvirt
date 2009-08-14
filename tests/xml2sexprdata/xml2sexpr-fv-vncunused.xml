@@ -21,14 +21,14 @@
       <mac address='00:16:3e:1b:b1:47'/>
       <script path='vif-bridge'/>
     </interface>
+    <disk type='file'>
+      <source file='/root/foo.img'/>
+      <target dev='ioemu:hda'/>
+    </disk>
     <disk type='file' device='cdrom'>
       <source file='/root/boot.iso'/>
       <target dev='hdc'/>
       <readonly/>
-    </disk>
-    <disk type='file'>
-      <source file='/root/foo.img'/>
-      <target dev='ioemu:hda'/>
     </disk>
     <graphics type='vnc' port='-1' keymap='ja'/>
   </devices>
