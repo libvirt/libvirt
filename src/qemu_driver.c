@@ -1465,9 +1465,9 @@ qemuDomainReAttachHostDevices(virConnectPtr conn, virDomainDefPtr def)
             continue;
         }
 
-        if (pciDettachDevice(conn, dev) < 0) {
+        if (pciReAttachDevice(conn, dev) < 0) {
             virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to reset PCI device: %s\n"),
+            VIR_ERROR(_("Failed to re-attach PCI device: %s\n"),
                       err ? err->message : "");
             virResetError(err);
         }

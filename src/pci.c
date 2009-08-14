@@ -456,15 +456,18 @@ pciTrySecondaryBusReset(virConnectPtr conn, pciDevice *dev)
      * are not in use by the host or other guests.
      */
     if (pciBusContainsOtherDevices(conn, dev)) {
-        VIR_WARN("Other devices on bus with %s, not doing bus reset",
-                 dev->name);
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Other devices on bus with %s, not doing bus reset"),
+                       dev->name);
         return -1;
     }
 
     /* Find the parent bus */
     parent = pciGetParentDevice(conn, dev);
     if (!parent) {
-        VIR_WARN("Failed to find parent device for %s", dev->name);
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to find parent device for %s"),
+                       dev->name);
         return -1;
     }
 
@@ -475,7 +478,9 @@ pciTrySecondaryBusReset(virConnectPtr conn, pciDevice *dev)
      * are multiple devices/functions
      */
     if (pciRead(dev, 0, config_space, PCI_CONF_LEN) < 0) {
-        VIR_WARN("Failed to save PCI config space for %s", dev->name);
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to save PCI config space for %s"),
+                       dev->name);
         goto out;
     }
 
@@ -492,9 +497,12 @@ pciTrySecondaryBusReset(virConnectPtr conn, pciDevice *dev)
 
     usleep(200 * 1000); /* sleep 200ms */
 
-    if (pciWrite(dev, 0, config_space, PCI_CONF_LEN) < 0)
-        VIR_WARN("Failed to restore PCI config space for %s", dev->name);
-
+    if (pciWrite(dev, 0, config_space, PCI_CONF_LEN) < 0) {
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to restore PCI config space for %s"),
+                       dev->name);
+        goto out;
+    }
     ret = 0;
 out:
     pciFreeDevice(conn, parent);
@@ -516,7 +524,9 @@ pciTryPowerManagementReset(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 
     /* Save and restore the device's config space. */
     if (pciRead(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
-        VIR_WARN("Failed to save PCI config space for %s", dev->name);
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to save PCI config space for %s"),
+                       dev->name);
         return -1;
     }
 
@@ -533,8 +543,12 @@ pciTryPowerManagementReset(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 
     usleep(10 * 1000); /* sleep 10ms */
 
-    if (pciWrite(dev, 0, &config_space[0], PCI_CONF_LEN) < 0)
-        VIR_WARN("Failed to restore PCI config space for %s", dev->name);
+    if (pciWrite(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to restore PCI config space for %s"),
+                       dev->name);
+        return -1;
+    }
 
     return 0;
 }
@@ -582,10 +596,14 @@ pciResetDevice(virConnectPtr conn, pciDevice *dev)
     if (ret < 0 && dev->bus != 0)
         ret = pciTrySecondaryBusReset(conn, dev);
 
-    if (ret < 0)
+    if (ret < 0) {
+        virErrorPtr err = virGetLastError();
         pciReportError(conn, VIR_ERR_NO_SUPPORT,
-                       _("No PCI reset capability available for %s"),
-                       dev->name);
+                       _("Unable to reset PCI device %s: %s"),
+                       dev->name,
+                       err ? err->message : _("no FLR, PM reset or bus reset available"));
+    }
+
     return ret;
 }
 
