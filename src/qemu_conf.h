@@ -64,6 +64,8 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_0_10         = (1 << 16),
     QEMUD_CMD_FLAG_NET_NAME     = QEMUD_CMD_FLAG_0_10, /* -net ...,name=str */
     QEMUD_CMD_FLAG_HOST_NET_ADD = QEMUD_CMD_FLAG_0_10, /* host_net_add monitor command */
+
+    QEMUD_CMD_FLAG_PCIDEVICE     = (1 << 17), /* PCI device assignment only supported by qemu-kvm */
 };
 
 /* Main driver state */

@@ -771,6 +771,9 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_VGA;
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
+    if (strstr(help, "-pcidevice"))
+        flags |= QEMUD_CMD_FLAG_PCIDEVICE;
+
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
 
@@ -2070,6 +2073,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* PCI */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_PCIDEVICE)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
+                                 _("PCI device assignment is not supported by this version of qemu"));
+                goto error;
+            }
             ret = virAsprintf(&pcidev, "host=%.2x:%.2x.%.1x",
                            hostdev->source.subsys.u.pci.bus,
                            hostdev->source.subsys.u.pci.slot,
