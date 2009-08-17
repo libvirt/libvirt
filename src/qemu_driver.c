@@ -5894,6 +5894,7 @@ static int qemudDomainDetachHostDevice(virConnectPtr conn,
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         ret = qemudDomainDetachHostPciDevice(conn, vm, dev);
+        break;
     default:
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          _("hostdev subsys type '%s' not supported"),
