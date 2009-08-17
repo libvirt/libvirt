@@ -7461,7 +7461,7 @@ unsigned long remoteVersion(void)
     return REMOTE_PROTOCOL_VERSION;
 }
 
-static virDriver driver = {
+static virDriver remote_driver = {
     VIR_DRV_REMOTE,
     "remote",
     remoteOpen, /* open */
@@ -7639,7 +7639,7 @@ static virStateDriver state_driver = {
 int
 remoteRegister (void)
 {
-    if (virRegisterDriver (&driver) == -1) return -1;
+    if (virRegisterDriver (&remote_driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
     if (virRegisterInterfaceDriver (&interface_driver) == -1) return -1;
     if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
