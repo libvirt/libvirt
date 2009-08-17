@@ -80,6 +80,8 @@ vnc_sasl = 1
 #
 vnc_sasl_dir = \"/some/directory/sasl2\"
 
+security_driver = \"selinux\"
+
 user = \"root\"
 
 group = \"root\"
@@ -87,6 +89,8 @@ group = \"root\"
 cgroup_controllers = [ \"cpu\", \"devices\" ]
 
 cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
+
+save_image_format = \"gzip\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -170,7 +174,9 @@ cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
 { "#comment" = "" }
 { "vnc_sasl_dir" = "/some/directory/sasl2" }
 { "#empty" }
-{ "user"= "root" }
+{ "security_driver" = "selinux" }
+{ "#empty" }
+{ "user" = "root" }
 { "#empty" }
 { "group" = "root" }
 { "#empty" }
@@ -184,3 +190,5 @@ cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
     { "2" = "/dev/full" }
     { "3" = "/dev/zero" }
 }
+{ "#empty" }
+{ "save_image_format" = "gzip" }

@@ -672,6 +672,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
     VIR_FREE(qemu_driver->vncSASLdir);
+    VIR_FREE(qemu_driver->saveImageFormat);
 
     /* Free domain callback list */
     virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);
