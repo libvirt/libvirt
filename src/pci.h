@@ -44,7 +44,8 @@ int        pciDettachDevice  (virConnectPtr  conn,
 int        pciReAttachDevice (virConnectPtr  conn,
                               pciDevice     *dev);
 int        pciResetDevice    (virConnectPtr  conn,
-                              pciDevice     *dev);
+                              pciDevice     *dev,
+                              pciDeviceList *activeDevs);
 void      pciDeviceSetManaged(pciDevice     *dev,
                               unsigned       managed);
 unsigned  pciDeviceGetManaged(pciDevice     *dev);

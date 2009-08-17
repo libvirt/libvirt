@@ -35,6 +35,7 @@
 #include "threads.h"
 #include "security.h"
 #include "cgroup.h"
+#include "pci.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -111,6 +112,8 @@ struct qemud_driver {
     virSecurityDriverPtr securityDriver;
 
     char *saveImageFormat;
+
+    pciDeviceList *activePciHostdevs;
 };
 
 
