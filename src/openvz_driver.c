@@ -1000,9 +1000,10 @@ cleanup:
     return ret;
 }
 
-static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type) {
-    if (STRCASEEQ(type, "openvz"))
-        return 1028; //OpenVZ has no limitation
+static int openvzGetMaxVCPUs(virConnectPtr conn, const char *type)
+{
+    if (type == NULL || STRCASEEQ(type, "openvz"))
+        return 1028; /* OpenVZ has no limitation */
 
     openvzError(conn, VIR_ERR_INVALID_ARG,
                      _("unknown type '%s'"), type);
