@@ -283,7 +283,6 @@ virNodeDeviceAssignDef;
 pciGetDevice;
 pciFreeDevice;
 pciDettachDevice;
-pciDeviceEquals;
 pciReAttachDevice;
 pciResetDevice;
 
