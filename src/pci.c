@@ -63,6 +63,7 @@ struct _pciDevice {
     unsigned      pci_pm_cap_pos;
     unsigned      has_flr : 1;
     unsigned      has_pm_reset : 1;
+    unsigned      managed : 1;
 };
 
 /* For virReportOOMError()  and virReportSystemError() */
@@ -890,8 +891,116 @@ pciGetDevice(virConnectPtr conn,
 void
 pciFreeDevice(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 {
+    if (!dev)
+        return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     if (dev->fd >= 0)
         close(dev->fd);
     VIR_FREE(dev);
+}
+
+void pciDeviceSetManaged(pciDevice *dev, unsigned managed)
+{
+    dev->managed = !!managed;
+}
+
+unsigned pciDeviceGetManaged(pciDevice *dev)
+{
+    return dev->managed;
+}
+
+pciDeviceList *
+pciDeviceListNew(virConnectPtr conn)
+{
+    pciDeviceList *list;
+
+    if (VIR_ALLOC(list) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    return list;
+}
+
+void
+pciDeviceListFree(virConnectPtr conn,
+                  pciDeviceList *list)
+{
+    int i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->count; i++) {
+        pciFreeDevice(conn, list->devs[i]);
+        list->devs[i] = NULL;
+    }
+
+    list->count = 0;
+    VIR_FREE(list->devs);
+    VIR_FREE(list);
+}
+
+int
+pciDeviceListAdd(virConnectPtr conn,
+                 pciDeviceList *list,
+                 pciDevice *dev)
+{
+    if (pciDeviceListFind(list, dev)) {
+        pciReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("Device %s is already in use"), dev->name);
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(list->devs, list->count+1) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    list->devs[list->count++] = dev;
+
+    return 0;
+}
+
+void
+pciDeviceListDel(virConnectPtr conn ATTRIBUTE_UNUSED,
+                 pciDeviceList *list,
+                 pciDevice *dev)
+{
+    int i;
+
+    for (i = 0; i < list->count; i++) {
+        if (list->devs[i]->domain   != dev->domain ||
+            list->devs[i]->bus      != dev->bus    ||
+            list->devs[i]->slot     != dev->slot   ||
+            list->devs[i]->function != dev->function)
+            continue;
+
+        pciFreeDevice(conn, list->devs[i]);
+
+        if (i != --list->count)
+            memmove(&list->devs[i],
+                    &list->devs[i+1],
+                    sizeof(*list->devs) * (list->count-i));
+
+        if (VIR_REALLOC_N(list->devs, list->count) < 0) {
+            ; /* not fatal */
+        }
+
+        break;
+    }
+}
+
+pciDevice *
+pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
+{
+    int i;
+
+    for (i = 0; i < list->count; i++)
+        if (list->devs[i]->domain   == dev->domain &&
+            list->devs[i]->bus      == dev->bus    &&
+            list->devs[i]->slot     == dev->slot   &&
+            list->devs[i]->function == dev->function)
+            return list->devs[i];
+    return NULL;
 }

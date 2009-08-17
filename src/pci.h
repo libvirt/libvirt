@@ -27,6 +27,11 @@
 
 typedef struct _pciDevice pciDevice;
 
+typedef struct {
+    unsigned count;
+    pciDevice **devs;
+} pciDeviceList;
+
 pciDevice *pciGetDevice      (virConnectPtr  conn,
                               unsigned       domain,
                               unsigned       bus,
@@ -40,5 +45,20 @@ int        pciReAttachDevice (virConnectPtr  conn,
                               pciDevice     *dev);
 int        pciResetDevice    (virConnectPtr  conn,
                               pciDevice     *dev);
+void      pciDeviceSetManaged(pciDevice     *dev,
+                              unsigned       managed);
+unsigned  pciDeviceGetManaged(pciDevice     *dev);
+
+pciDeviceList *pciDeviceListNew  (virConnectPtr conn);
+void           pciDeviceListFree (virConnectPtr conn,
+                                  pciDeviceList *list);
+int            pciDeviceListAdd  (virConnectPtr conn,
+                                  pciDeviceList *list,
+                                  pciDevice *dev);
+void           pciDeviceListDel  (virConnectPtr conn,
+                                  pciDeviceList *list,
+                                  pciDevice *dev);
+pciDevice *    pciDeviceListFind (pciDeviceList *list,
+                                  pciDevice *dev);
 
 #endif /* __VIR_PCI_H__ */

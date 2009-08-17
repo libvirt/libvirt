@@ -285,7 +285,12 @@ pciFreeDevice;
 pciDettachDevice;
 pciReAttachDevice;
 pciResetDevice;
-
+pciDeviceSetManaged;
+pciDeviceGetManaged;
+pciDeviceListNew;
+pciDeviceListFree;
+pciDeviceListAdd;
+pciDeviceListDel;
 
 # qparams.h
 qparam_get_query;
