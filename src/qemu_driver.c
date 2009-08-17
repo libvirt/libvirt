@@ -5310,29 +5310,28 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     char *cmd, *reply;
     unsigned domain, bus, slot;
+    pciDevice *pci;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError(conn);
         return -1;
     }
 
-    if (hostdev->managed) {
-        pciDevice *pci = pciGetDevice(conn,
-                                      hostdev->source.subsys.u.pci.domain,
-                                      hostdev->source.subsys.u.pci.bus,
-                                      hostdev->source.subsys.u.pci.slot,
-                                      hostdev->source.subsys.u.pci.function);
-        if (!dev)
-            return -1;
+    pci = pciGetDevice(conn,
+                       hostdev->source.subsys.u.pci.domain,
+                       hostdev->source.subsys.u.pci.bus,
+                       hostdev->source.subsys.u.pci.slot,
+                       hostdev->source.subsys.u.pci.function);
+    if (!dev)
+        return -1;
 
-        if (pciDettachDevice(conn, pci) < 0 ||
-            pciResetDevice(conn, pci) < 0) {
-            pciFreeDevice(conn, pci);
-            return -1;
-        }
-
+    if ((hostdev->managed && pciDettachDevice(conn, pci) < 0) ||
+        pciResetDevice(conn, pci) < 0) {
         pciFreeDevice(conn, pci);
+        return -1;
     }
+
+    pciFreeDevice(conn, pci);
 
     if (virAsprintf(&cmd, "pci_add auto host host=%.2x:%.2x.%.1x",
                     hostdev->source.subsys.u.pci.bus,
