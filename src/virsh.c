@@ -5370,6 +5370,8 @@ cmdNodeListDevicesPrint(vshControl *ctl,
     if (depth && depth < MAX_DEPTH) {
         indentBuf[indentIdx] = '+';
         indentBuf[indentIdx+1] = '-';
+        indentBuf[indentIdx+2] = ' ';
+        indentBuf[indentIdx+3] = '\0';
     }
 
     /* Print this device */
@@ -5398,7 +5400,7 @@ cmdNodeListDevicesPrint(vshControl *ctl,
     /* If there is a child device, then print another blank line */
     if (nextlastdev != -1) {
         vshPrint(ctl, "%s", indentBuf);
-        vshPrint(ctl, "  |\n");
+        vshPrint(ctl, " |\n");
     }
 
     /* Finally print all children */
