@@ -5333,7 +5333,7 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
 
     pciFreeDevice(conn, pci);
 
-    if (virAsprintf(&cmd, "pci_add auto host host=%.2x:%.2x.%.1x",
+    if (virAsprintf(&cmd, "pci_add pci_addr=auto host host=%.2x:%.2x.%.1x",
                     hostdev->source.subsys.u.pci.bus,
                     hostdev->source.subsys.u.pci.slot,
                     hostdev->source.subsys.u.pci.function) < 0) {
