@@ -5704,18 +5704,17 @@ try_command:
         goto cleanup;
     }
 
-    if (vm->def->ndisks > 1) {
-        vm->def->disks[i] = vm->def->disks[--vm->def->ndisks];
-        if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks) < 0) {
-            virReportOOMError(conn);
-            goto cleanup;
-        }
-        qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
-              virDomainDiskQSort);
-    } else {
-        VIR_FREE(vm->def->disks[0]);
-        vm->def->ndisks = 0;
+    if (i != --vm->def->ndisks)
+        memmove(&vm->def->disks[i],
+                &vm->def->disks[i+1],
+                sizeof(*vm->def->disks) * (vm->def->ndisks-i));
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
     }
+    qsort(vm->def->disks, vm->def->ndisks, sizeof(*vm->def->disks),
+          virDomainDiskQSort);
+
     ret = 0;
 
 cleanup:
@@ -5803,16 +5802,15 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
 
     DEBUG("%s: host_net_remove reply: %s", vm->def->name,  reply);
 
-    if (vm->def->nnets > 1) {
-        vm->def->nets[i] = vm->def->nets[--vm->def->nnets];
-        if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
-            virReportOOMError(conn);
-            goto cleanup;
-        }
-    } else {
-        VIR_FREE(vm->def->nets[0]);
-        vm->def->nnets = 0;
+    if (i != --vm->def->nnets)
+        memmove(&vm->def->nets[i],
+                &vm->def->nets[i+1],
+                sizeof(*vm->def->nets) * (vm->def->nnets-i));
+    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
     }
+
     ret = 0;
 
 cleanup:
@@ -5908,15 +5906,13 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
             pciFreeDevice(conn, pci);
     }
 
-    if (vm->def->nhostdevs > 1) {
-        vm->def->hostdevs[i] = vm->def->hostdevs[--vm->def->nhostdevs];
-        if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs) < 0) {
-            virReportOOMError(conn);
-            ret = -1;
-        }
-    } else {
-        VIR_FREE(vm->def->hostdevs[0]);
-        vm->def->nhostdevs = 0;
+    if (i != --vm->def->nhostdevs)
+        memmove(&vm->def->hostdevs[i],
+                &vm->def->hostdevs[i+1],
+                sizeof(*vm->def->hostdevs) * (vm->def->nhostdevs-i));
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs) < 0) {
+        virReportOOMError(conn);
+        ret = -1;
     }
 
     return ret;
