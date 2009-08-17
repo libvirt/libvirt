@@ -5780,6 +5780,7 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
     virDomainHostdevDefPtr detach;
     char *cmd, *reply;
     int i, ret;
+    pciDevice *pci;
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         unsigned domain   = vm->def->hostdevs[i]->source.subsys.u.pci.domain;
@@ -5848,16 +5849,19 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
 
     ret = 0;
 
-    if (detach->managed) {
-        pciDevice *pci = pciGetDevice(conn,
-                                      detach->source.subsys.u.pci.domain,
-                                      detach->source.subsys.u.pci.bus,
-                                      detach->source.subsys.u.pci.slot,
-                                      detach->source.subsys.u.pci.function);
-        if (!pci || pciReAttachDevice(conn, pci) < 0)
+    pci = pciGetDevice(conn,
+                       detach->source.subsys.u.pci.domain,
+                       detach->source.subsys.u.pci.bus,
+                       detach->source.subsys.u.pci.slot,
+                       detach->source.subsys.u.pci.function);
+    if (!pci)
+        ret = -1;
+    else {
+        if (pciResetDevice(conn, pci) < 0)
             ret = -1;
-        if (pci)
-            pciFreeDevice(conn, pci);
+        if (detach->managed && pciReAttachDevice(conn, pci) < 0)
+            ret = -1;
+        pciFreeDevice(conn, pci);
     }
 
     if (i != --vm->def->nhostdevs)
