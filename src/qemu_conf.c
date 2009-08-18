@@ -1038,6 +1038,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     int err;
     int tapfd = -1;
     int vnet_hdr = 0;
+    int template_ifname = 0;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         virNetworkPtr network = virNetworkLookupByName(conn,
@@ -1059,6 +1060,14 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         return -1;
     }
 
+    char ebuf[1024];
+    if (!driver->brctl && (err = brInit(&driver->brctl))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot initialize bridge support: %s"),
+                         virStrerror(err, ebuf, sizeof ebuf));
+        return -1;
+    }
+
     if (!net->ifname ||
         STRPREFIX(net->ifname, "vnet") ||
         strchr(net->ifname, '%')) {
@@ -1067,14 +1076,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             virReportOOMError(conn);
             return -1;
         }
-    }
-
-    char ebuf[1024];
-    if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot initialize bridge support: %s"),
-                         virStrerror(err, ebuf, sizeof ebuf));
-        return -1;
+        /* avoid exposing vnet%d in dumpxml or error outputs */
+        template_ifname = 1;
     }
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
@@ -1088,12 +1091,18 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Failed to add tap interface to bridge. "
                                "%s is not a bridge device"), brname);
+        } else if (template_ifname) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Failed to add tap interface to bridge '%s' : %s"),
+                             brname, virStrerror(err, ebuf, sizeof ebuf));
         } else {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("Failed to add tap interface '%s' "
                                "to bridge '%s' : %s"),
                              net->ifname, brname, virStrerror(err, ebuf, sizeof ebuf));
         }
+        if (template_ifname)
+            VIR_FREE(net->ifname);
         return -1;
     }
 

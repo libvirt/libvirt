@@ -104,17 +104,10 @@ umlConnectTapDevice(virConnectPtr conn,
                     virDomainNetDefPtr net,
                     const char *bridge)
 {
-    int tapfd = -1;
-    int err;
     brControl *brctl = NULL;
-
-    if (!net->ifname ||
-        STRPREFIX(net->ifname, "vnet") ||
-        strchr(net->ifname, '%')) {
-        VIR_FREE(net->ifname);
-        if (!(net->ifname = strdup("vnet%d")))
-            goto no_memory;
-    }
+    int tapfd = -1;
+    int template_ifname = 0;
+    int err;
 
     if ((err = brInit(&brctl))) {
         char ebuf[1024];
@@ -124,6 +117,16 @@ umlConnectTapDevice(virConnectPtr conn,
         goto error;
     }
 
+    if (!net->ifname ||
+        STRPREFIX(net->ifname, "vnet") ||
+        strchr(net->ifname, '%')) {
+        VIR_FREE(net->ifname);
+        if (!(net->ifname = strdup("vnet%d")))
+            goto no_memory;
+        /* avoid exposing vnet%d in dumpxml or error outputs */
+        template_ifname = 1;
+    }
+
     if ((err = brAddTap(brctl, bridge,
                         &net->ifname, BR_TAP_PERSIST, &tapfd))) {
         if (errno == ENOTSUP) {
@@ -131,6 +134,11 @@ umlConnectTapDevice(virConnectPtr conn,
             umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                            _("Failed to add tap interface to bridge. "
                              "%s is not a bridge device"), bridge);
+        } else if (template_ifname) {
+            char ebuf[1024];
+            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to add tap interface to bridge '%s' : %s"),
+                           bridge, virStrerror(err, ebuf, sizeof ebuf));
         } else {
             char ebuf[1024];
             umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -138,6 +146,8 @@ umlConnectTapDevice(virConnectPtr conn,
                              "to bridge '%s' : %s"),
                            net->ifname, bridge, virStrerror(err, ebuf, sizeof ebuf));
         }
+        if (template_ifname)
+            VIR_FREE(net->ifname);
         goto error;
     }
     close(tapfd);
