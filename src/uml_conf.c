@@ -110,10 +110,8 @@ umlConnectTapDevice(virConnectPtr conn,
     int err;
 
     if ((err = brInit(&brctl))) {
-        char ebuf[1024];
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot initialize bridge support: %s"),
-                       virStrerror(err, ebuf, sizeof ebuf));
+        virReportSystemError(conn, err, "%s",
+                             _("cannot initialize bridge support"));
         goto error;
     }
 
@@ -135,16 +133,13 @@ umlConnectTapDevice(virConnectPtr conn,
                            _("Failed to add tap interface to bridge. "
                              "%s is not a bridge device"), bridge);
         } else if (template_ifname) {
-            char ebuf[1024];
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to add tap interface to bridge '%s' : %s"),
-                           bridge, virStrerror(err, ebuf, sizeof ebuf));
+            virReportSystemError(conn, err,
+                                 _("Failed to add tap interface to bridge '%s'"),
+                                 bridge);
         } else {
-            char ebuf[1024];
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to add tap interface '%s' "
-                             "to bridge '%s' : %s"),
-                           net->ifname, bridge, virStrerror(err, ebuf, sizeof ebuf));
+            virReportSystemError(conn, err,
+                                 _("Failed to add tap interface '%s' to bridge '%s'"),
+                                 net->ifname, bridge);
         }
         if (template_ifname)
             VIR_FREE(net->ifname);

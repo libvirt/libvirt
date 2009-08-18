@@ -1060,11 +1060,9 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         return -1;
     }
 
-    char ebuf[1024];
     if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot initialize bridge support: %s"),
-                         virStrerror(err, ebuf, sizeof ebuf));
+        virReportSystemError(conn, err, "%s",
+                             _("cannot initialize bridge support"));
         return -1;
     }
 
@@ -1092,14 +1090,13 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                              _("Failed to add tap interface to bridge. "
                                "%s is not a bridge device"), brname);
         } else if (template_ifname) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to add tap interface to bridge '%s' : %s"),
-                             brname, virStrerror(err, ebuf, sizeof ebuf));
+            virReportSystemError(conn, err,
+                                 _("Failed to add tap interface to bridge '%s'"),
+                                 brname);
         } else {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Failed to add tap interface '%s' "
-                               "to bridge '%s' : %s"),
-                             net->ifname, brname, virStrerror(err, ebuf, sizeof ebuf));
+            virReportSystemError(conn, err,
+                                 _("Failed to add tap interface '%s' to bridge '%s'"),
+                                 net->ifname, brname);
         }
         if (template_ifname)
             VIR_FREE(net->ifname);
