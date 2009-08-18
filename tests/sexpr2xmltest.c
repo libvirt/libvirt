@@ -129,6 +129,7 @@ mymain(int argc, char **argv)
     DO_TEST("pv-vfb-orig", "pv-vfb-orig", 2);
     DO_TEST("pv-vfb-new", "pv-vfb-new", 3);
     DO_TEST("pv-vfb-new-vncdisplay", "pv-vfb-new-vncdisplay", 3);
+    DO_TEST("pv-vfb-type-crash", "pv-vfb-type-crash", 3);
     DO_TEST("fv-autoport", "fv-autoport", 3);
     DO_TEST("pv-bootloader", "pv-bootloader", 1);
 
