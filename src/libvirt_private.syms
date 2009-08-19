@@ -344,6 +344,11 @@ virStoragePartedFsTypeTypeToString;
 virStoragePoolObjLock;
 virStoragePoolObjUnlock;
 
+virStorageEncryptionFree;
+virStorageEncryptionDropSecrets;
+virStorageEncryptionParseNode;
+virStorageEncryptionFormat;
+
 
 # threads.h
 virMutexInit;

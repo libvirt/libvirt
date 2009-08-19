@@ -52,6 +52,7 @@ UTIL_SOURCES =							\
 		memory.c memory.h				\
 		pci.c pci.h					\
 		qparams.c qparams.h				\
+		storage_encryption_conf.h storage_encryption_conf.c	\
 		threads.c threads.h				\
 		threads-pthread.h				\
 		threads-win32.h					\

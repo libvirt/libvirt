@@ -95,6 +95,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_datadir}/libvirt/schemas/capability.rng
 %{_mingw32_datadir}/libvirt/schemas/interface.rng
 %{_mingw32_datadir}/libvirt/schemas/secret.rng
+%{_mingw32_datadir}/libvirt/schemas/storageencryption.rng
 
 %{_mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 

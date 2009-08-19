@@ -582,6 +582,7 @@ fi
 %{_datadir}/libvirt/schemas/capability.rng
 %{_datadir}/libvirt/schemas/interface.rng
 %{_datadir}/libvirt/schemas/secret.rng
+%{_datadir}/libvirt/schemas/storageencryption.rng
 
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf

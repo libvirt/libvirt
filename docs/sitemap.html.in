@@ -99,6 +99,10 @@
                 <span>The storage pool and volume XML format</span>
               </li>
               <li>
+                <a href="formatstorageencryption.html">Storage Encryption</a>
+                <span>Storage volume encryption XML format</span>
+              </li>
+              <li>
                 <a href="formatcaps.html">Capabilities</a>
                 <span>The driver capabilities XML format</span>
               </li>
