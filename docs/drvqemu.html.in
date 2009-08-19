@@ -85,11 +85,11 @@
       elevated privileges.
     </p>
 
-    <h3><a name="securitydac">POSIX DAC users/groups</a></h3>
+    <h3><a name="securitydac">POSIX users/groups</a></h3>
 
     <p>
-      In the "session" instance, the POSIX DAC model restricts QEMU virtual
-      machines (and libvirtd in general) to only have access to resources
+      In the "session" instance, the POSIX users/groups model restricts QEMU
+      virtual machines (and libvirtd in general) to only have access to resources
       with the same user/group ID as the client application. There is no
       finer level of configuration possible for the "session" instances.
     </p>
@@ -116,7 +116,7 @@
       run as non-root, there will be greater restrictions on what
       host resources the QEMU process will be able to access. The
       libvirtd daemon will attempt to manage permissions on resources
-      to minise the likelihood of unintentionale security denials,
+      to minimise the likelihood of unintentional security denials,
       but the administrator / application developer must be aware of
       some of the consequences / restrictions.
     </p>
@@ -138,9 +138,9 @@
       </li>
       <li>
         <p>
-          When attaching PCI and USB devices to a QEMU guest,
+          When attaching USB and PCI devices to a QEMU guest,
           QEMU will need to access files in <code>/dev/bus/usb</code>
-          and <code>/sys/bus/devices</code>. The libvirtd daemon
+          and <code>/sys/bus/pci/devices</code> respectively. The libvirtd daemon
           will automatically set the ownership on specific devices
           that are assigned to a guest at start time. There should
           not be any need for administrator changes in this respect.
@@ -162,7 +162,7 @@
         <p>
           The simplest option is the latter one, of just enabling
           the 'execute/search' bit. For any directory to be used
-          for storing disk images, this can be achived by running
+          for storing disk images, this can be achieved by running
           the following command on the directory itself, and any
           parent directories
         </p>
@@ -178,7 +178,7 @@
       </li>
     </ul>
 
-    <h3><a name="securitycap">Linux DAC capabilities</a></h3>
+    <h3><a name="securitycap">Linux process capabilities</a></h3>
 
     <p>
       The libvirt QEMU driver has a build time option allowing it to use
@@ -215,7 +215,7 @@
       to changing the <code>/etc/libvirt/qemu.conf</code> settings.
     </p>
 
-    <h3><a name="securityselinux">SELinux MAC basic confinement</a></h3>
+    <h3><a name="securityselinux">SELinux basic confinement</a></h3>
 
     <p>
       The basic SELinux protection for QEMU virtual machines is intended to
@@ -246,7 +246,7 @@
       SELinux boolean.
     </p>
 
-    <h3><a name="securitysvirt">SELinux MAC sVirt confinement</a></h3>
+    <h3><a name="securitysvirt">SELinux sVirt confinement</a></h3>
 
     <p>
       The SELinux sVirt protection for QEMU virtual machines builds to the
@@ -286,7 +286,7 @@
     </p>
 
     <p>
-      If the sVirt security model is active, then the node capabilties
+      If the sVirt security model is active, then the node capabilities
       XML will include its details. If a virtual machine is currently
       protected by the security model, then the guest XML will include
       its assigned labels. If enabled at compile time, the sVirt security
