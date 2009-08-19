@@ -143,6 +143,21 @@
           </li><li>
             <a href="#uris">Connections to QEMU driver</a>
           </li><li>
+            <a href="#security">Driver security architecture</a>
+            <ul><li>
+                <a href="#securitydriver">Driver instances</a>
+              </li><li>
+                <a href="#securitydac">POSIX DAC users/groups</a>
+              </li><li>
+                <a href="#securitycap">Linux DAC capabilities</a>
+              </li><li>
+                <a href="#securityselinux">SELinux MAC basic confinement</a>
+              </li><li>
+                <a href="#securitysvirt">SELinux MAC sVirt confinement</a>
+              </li><li>
+                <a href="#securityacl">Cgroups device ACLs</a>
+              </li></ul>
+          </li><li>
             <a href="#imex">Import and export of libvirt domain XML configs</a>
             <ul><li>
                 <a href="#xmlimport">Converting from QEMU args to domain XML</a>
@@ -196,6 +211,271 @@
     qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
     qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
     </pre>
+        <h2>
+          <a name="security" id="security">Driver security architecture</a>
+        </h2>
+        <p>
+      There are multiple layers to security in the QEMU driver, allowing for
+      flexibility in the use of QEMU based virtual machines.
+    </p>
+        <h3>
+          <a name="securitydriver" id="securitydriver">Driver instances</a>
+        </h3>
+        <p>
+      As explained above there are two ways to access the QEMU driver
+      in libvirt. The "qemu:///session" family of URIs connect to a
+      libvirtd instance running as the same user/group ID as the client
+      application. Thus the QEMU instances spawned from this driver will
+      share the same privileges as the client application. The intended
+      use case for this driver is desktop virtualization, with virtual
+      machines storing their disk imags in the user's home directory and
+      being managed from the local desktop login session.
+    </p>
+        <p>
+      The "qemu:///system" family of URIs connect to a
+      libvirtd instance running as the privileged system account 'root'.
+      Thus the QEMU instances spawned from this driver may have much
+      higher privileges than the client application managing them.
+      The intended use case for this driver is server virtualization,
+      where the virtual machines may need to be connected to host
+      resources (block, PCI, USB, network devices) whose access requires
+      elevated privileges.
+    </p>
+        <h3>
+          <a name="securitydac" id="securitydac">POSIX DAC users/groups</a>
+        </h3>
+        <p>
+      In the "session" instance, the POSIX DAC model restricts QEMU virtual
+      machines (and libvirtd in general) to only have access to resources
+      with the same user/group ID as the client application. There is no
+      finer level of configuration possible for the "session" instances.
+    </p>
+        <p>
+      In the "system" instance, libvirt releases from 0.7.0 onwards allow
+      control over the user/group that the QEMU virtual machines are run
+      as. A build of libvirt with no configuration parameters set will
+      still run QEMU processes as root:root. It is possible to change
+      this default by using the --with-qemu-user=$USERNAME and
+      --with-qemu-group=$GROUPNAME arguments to 'configure' during
+      build. It is strongly recommended that vendors build with both
+      of these arguments set to 'qemu'. Regardless of this build time
+      default, administrators can set a per-host default setting in
+      the <code>/etc/libvirt/qemu.conf</code> configuration file via
+      the <code>user=$USERNAME</code> and <code>group=$GROUPNAME</code>
+      parameters. When a non-root user or group is configured, the
+      libvirt QEMU driver will change uid/gid to match immediately
+      before executing the QEMU binary for a virtual machine.
+    </p>
+        <p>
+      If QEMU virtual machines from the "system" instance are being
+      run as non-root, there will be greater restrictions on what
+      host resources the QEMU process will be able to access. The
+      libvirtd daemon will attempt to manage permissions on resources
+      to minise the likelihood of unintentionale security denials,
+      but the administrator / application developer must be aware of
+      some of the consequences / restrictions.
+    </p>
+        <ul><li>
+        <p>
+          The directories <code>/var/run/libvirt/qemu/</code>,
+          <code>/var/lib/libvirt/qemu/</code> and
+          <code>/var/cache/libvirt/qemu/</code> must all have their
+          ownership set to match the user / group ID that QEMU
+          guests will be run as. If the vendor has set a non-root
+          user/group for the QEMU driver at build time, the
+          permissions should be set automatically at install time.
+          If a host administrator customizes user/group in
+          <code>/etc/libvirt/qemu.conf</code>, they will need to
+          manually set the ownership on these directories.
+        </p>
+      </li><li>
+        <p>
+          When attaching PCI and USB devices to a QEMU guest,
+          QEMU will need to access files in <code>/dev/bus/usb</code>
+          and <code>/sys/bus/devices</code>. The libvirtd daemon
+          will automatically set the ownership on specific devices
+          that are assigned to a guest at start time. There should
+          not be any need for administrator changes in this respect.
+        </p>
+      </li><li>
+        <p>
+          Any files/devices used as guest disk images must be
+          accessible to the user/group ID that QEMU guests are
+          configured to run as. The libvirtd daemon will automatically
+          set the ownership of the file/device path to the correct
+          user/group ID. Applications / administrators must be aware
+          though that the parent directory permissions may still
+          deny access. The directories containing disk images
+          must either have their ownership set to match the user/group
+          configured for QEMU, or their UNIX file permissions must
+          have the 'execute/search' bit enabled for 'others'.
+        </p>
+        <p>
+          The simplest option is the latter one, of just enabling
+          the 'execute/search' bit. For any directory to be used
+          for storing disk images, this can be achived by running
+          the following command on the directory itself, and any
+          parent directories
+        </p>
+<pre>
+  chmod o+x  /path/to/directory
+</pre>
+        <p>
+          In particular note that if using the "system" instance
+          and attempting to store disk images in a user home
+          directory, the default permissions on $HOME are typically
+          too restrictive to allow access.
+        </p>
+      </li></ul>
+        <h3>
+          <a name="securitycap" id="securitycap">Linux DAC capabilities</a>
+        </h3>
+        <p>
+      The libvirt QEMU driver has a build time option allowing it to use
+      the <a href="http://people.redhat.com/sgrubb/libcap-ng/index.html">libcap-ng</a>
+      library to manage process capabilities. If this build option is
+      enabled, then the QEMU driver will use this to ensure that all
+      process capabilities are dropped before executing a QEMU virtual
+      machine. Process capabilities are what gives the 'root' account
+      its high power, in particular the CAP_DAC_OVERRIDE capability
+      is what allows a process running as 'root' to access files owned
+      by any user.
+    </p>
+        <p>
+      If the QEMU driver is configured to run virtual machines as non-root,
+      then they will already loose all their process capabilities at time
+      of startup. The Linux capability feature is thus aimed primarily at
+      the scenario where the QEMU processes are running as root. In this
+      case, before launching a QEMU virtual machine, libvirtd will use
+      libcap-ng APIs to drop all process capabilities. It is important
+      for administrators to note that this implies the QEMU process will
+      <strong>only</strong> be able to access files owned by root, and
+      not files owned by any other user.
+    </p>
+        <p>
+      Thus, if a vendor / distributor has configured their libvirt package
+      to run as 'qemu' by default, a number of changes will be required
+      before an administrator can change a host to run guests as root.
+      In particular it will be neccessary to change ownership on the
+      directories <code>/var/run/libvirt/qemu/</code>,
+      <code>/var/lib/libvirt/qemu/</code> and
+      <code>/var/cache/libvirt/qemu/</code> back to root, in addition
+      to changing the <code>/etc/libvirt/qemu.conf</code> settings.
+    </p>
+        <h3>
+          <a name="securityselinux" id="securityselinux">SELinux MAC basic confinement</a>
+        </h3>
+        <p>
+      The basic SELinux protection for QEMU virtual machines is intended to
+      protect the host OS from a compromised virtual machine process. There
+      is no protection between guests.
+    </p>
+        <p>
+      In the basic model, all QEMU virtual machines run under the confined
+      domain <code>root:system_r:qemu_t</code>. It is required that any
+      disk image assigned to a QEMU virtual machine is labelled with
+      <code>system_u:object_r:virt_image_t</code>. In a default deployment,
+      package vendors/distributor will typically ensure that the directory
+      <code>/var/lib/libvirt/images</code> has this label, such that any
+      disk images created in this directory will automatically inherit the
+      correct labelling. If attempting to use disk images in another
+      location, the user/administrator must ensure the directory has be
+      given this requisite label. Likewise physical block devices must
+      be labelled <code>system_u:object_r:virt_image_t</code>.
+    </p>
+        <p>
+      Not all filesystems allow for labelling of individual files. In
+      particular NFS, VFat and NTFS have no support for labelling. In
+      these cases administrators must use the 'context' option when
+      mounting the filesystem to set the default label to
+      <code>system_u:object_r:virt_image_t</code>. In the case of
+      NFS, there is an alternative option, of enabling the <code>virt_use_nfs</code>
+      SELinux boolean.
+    </p>
+        <h3>
+          <a name="securitysvirt" id="securitysvirt">SELinux MAC sVirt confinement</a>
+        </h3>
+        <p>
+      The SELinux sVirt protection for QEMU virtual machines builds to the
+      basic level of protection, to also allow individual guests to be
+      protected from each other.
+    </p>
+        <p>
+      In the sVirt model, each QEMU virtual machine runs under its own
+      confined domain, which is based on <code>system_u:system_r:svirt_t:s0</code>
+      with a unique category appended, eg, <code>system_u:system_r:svirt_t:s0:c34,c44</code>.
+      The rules are setup such that a domain can only access files which are
+      labelled with the matching category level, eg
+      <code>system_u:object_r:svirt_image_t:s0:c34,c44</code>. This prevents one
+      QEMU process accessing any file resources that are prevent to another QEMU
+      process.
+    </p>
+        <p>
+      There are two ways of assigning labels to virtual machines under sVirt.
+      In the default setup, if sVirt is enabled, guests will get an automatically
+      assigned unique label each time they are booted. The libvirtd daemon will
+      also automatically relabel exclusive access disk images to match this
+      label.  Disks that are marked as &lt;shared&gt; will get a generic
+      label <code>system_u:system_r:svirt_image_t:s0</code> allowing all guests
+      read/write access them, while disks marked as &lt;readonly&gt; will
+      get a generic label <code>system_u:system_r:svirt_content_t:s0</code>
+      which allows all guests read-only access.
+    </p>
+        <p>
+      With statically assigned labels, the application should include the
+      desired guest and file labels in the XML at time of creating the
+      guest with libvirt. In this scenario the application is responsible
+      for ensuring the disk images &amp; similar resources are suitably
+      labelled to match, libvirtd will not attempt any relabelling.
+    </p>
+        <p>
+      If the sVirt security model is active, then the node capabilties
+      XML will include its details. If a virtual machine is currently
+      protected by the security model, then the guest XML will include
+      its assigned labels. If enabled at compile time, the sVirt security
+      model will always be activated if SELinux is available on the host
+      OS. To disable sVirt, and revert to the basic level of SELinux
+      protection (host protection only), the <code>/etc/libvirt/qemu.conf</code>
+      file can be used to change the setting to <code>security_driver="none"</code>
+    </p>
+        <h3>
+          <a name="securityacl" id="securityacl">Cgroups device ACLs</a>
+        </h3>
+        <p>
+      Recent Linux kernels have a capability known as "cgroups" which is used
+      for resource management. It is implemented via a number of "controllers",
+      each controller covering a specific task/functional area. One of the
+      available controllers is the "devices" controller, which is able to
+      setup whitelists of block/character devices that a cgroup should be
+      allowed to access. If the "devices" controller is mounted on a host,
+      then libvirt will automatically create a dedicated cgroup for each
+      QEMU virtual machine and setup the device whitelist so that the QEMU
+      process can only access shared devices, and explicitly disks images
+      backed by block devices.
+    </p>
+        <p>
+      The list of shared devices a guest is allowed access to is
+    </p>
+        <pre>
+      /dev/null, /dev/full, /dev/zero,
+      /dev/random, /dev/urandom,
+      /dev/ptmx, /dev/kvm, /dev/kqemu,
+      /dev/rtc, /dev/hpet, /dev/net/tun
+    </pre>
+        <p>
+      In the event of unanticipated needs arising, this can be customized
+      via the <code>/etc/libvirt/qemu.conf</code> file.
+      To mount the cgroups device controller, the following command
+      should be run as root, prior to starting libvirtd
+    </p>
+        <pre>
+      mkdir /dev/cgroup
+      mount -t cgroup none /dev/cgroup -o devices
+    </pre>
+        <p>
+      libvirt will then place each virtual machine in a cgroup at
+      <code>/dev/cgroup/libvirt/qemu/$VMNAME/</code>
+    </p>
         <h2>
           <a name="imex" id="imex">Import and export of libvirt domain XML configs</a>
         </h2>
