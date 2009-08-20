@@ -63,24 +63,17 @@ static virDrvOpenStatus
 phypOpen(virConnectPtr conn,
          virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
-    SSH_SESSION *session;
-    ConnectionData *connection_data;
-    char string[strlen(conn->uri->path)];
+    SSH_SESSION *session = NULL;
+    ConnectionData *connection_data = NULL;
+    char *string;
 
     uuid_dbPtr uuid_db = NULL;
-
-    if (VIR_ALLOC(uuid_db) < 0)
-        virReportOOMError(conn);
-
-    if (VIR_ALLOC(connection_data) < 0)
-        virReportOOMError(conn);
 
     if (!conn || !conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->scheme == NULL || STRNEQ(conn->uri->scheme, "phyp"))
         return VIR_DRV_OPEN_DECLINED;
-
 
     if (conn->uri->server == NULL) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
@@ -96,20 +89,36 @@ phypOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
+    if (VIR_ALLOC(uuid_db) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    if (VIR_ALLOC(connection_data) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    if (VIR_ALLOC_N(string, strlen(conn->uri->path) + 1) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
     if (escape_specialcharacters(conn->uri->path, string, sizeof(string)) == -1) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
                       _("Error parsing 'path'. Invalid characters."));
-        return VIR_DRV_OPEN_ERROR;
+        goto failure;
     }
 
     if ((session = openSSHSession(conn, auth)) == NULL) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
                       _("Error while opening SSH session."));
-        return VIR_DRV_OPEN_ERROR;
+        goto failure;
     }
 
+    VIR_FREE(conn->uri->path);
     conn->uri->path = string;
     connection_data->session = session;
     connection_data->auth = auth;
@@ -122,6 +131,13 @@ phypOpen(virConnectPtr conn,
     init_uuid_db(conn);
 
     return VIR_DRV_OPEN_SUCCESS;
+
+failure:
+    VIR_FREE(uuid_db);
+    VIR_FREE(connection_data);
+    VIR_FREE(string);
+
+    return VIR_DRV_OPEN_ERROR;
 }
 
 static int
