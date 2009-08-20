@@ -66,7 +66,7 @@ phypOpen(virConnectPtr conn,
     SSH_SESSION *session = NULL;
     ConnectionData *connection_data = NULL;
     char *string;
-
+    size_t len = 0;
     uuid_dbPtr uuid_db = NULL;
 
     if (!conn || !conn->uri)
@@ -99,12 +99,14 @@ phypOpen(virConnectPtr conn,
         goto failure;
     }
 
-    if (VIR_ALLOC_N(string, strlen(conn->uri->path) + 1) < 0) {
+    len = strlen(conn->uri->path) + 1;
+
+    if (VIR_ALLOC_N(string, len) < 0) {
         virReportOOMError(conn);
         goto failure;
     }
 
-    if (escape_specialcharacters(conn->uri->path, string, sizeof(string)) == -1) {
+    if (escape_specialcharacters(conn->uri->path, string, len) == -1) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
                       _("Error parsing 'path'. Invalid characters."));
