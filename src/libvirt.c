@@ -4615,7 +4615,7 @@ error:
  *
  * This call returns the amount of free memory in one or more NUMA cells.
  * The @freeMems array must be allocated by the caller and will be filled
- * with the amount of free memory in kilobytes for each cell requested,
+ * with the amount of free memory in bytes for each cell requested,
  * starting with startCell (in freeMems[0]), up to either
  * (startCell + maxCells), or the number of additional cells in the node,
  * whichever is smaller.

@@ -1723,7 +1723,7 @@ see note above'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
-      <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in kilobytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
+      <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in bytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
       <return type='int' info='the number of entries filled in freeMems, or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='freeMems' type='unsigned long long *' info='pointer to the array of unsigned long long'/>
