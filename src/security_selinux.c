@@ -323,6 +323,8 @@ SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
     if (setfilecon(path, tcon) < 0) {
+        int setfilecon_errno = errno;
+
         if (getfilecon(path, &econ) >= 0) {
             if (STREQ(tcon, econ)) {
                 freecon(econ);
@@ -331,14 +333,21 @@ SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
             }
             freecon(econ);
         }
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: unable to set security context "
-                                 "'\%s\' on %s: %s."), __func__,
-                               tcon,
-                               path,
-                               virStrerror(errno, ebuf, sizeof ebuf));
-        if (security_getenforce() == 1)
-            return -1;
+
+        /* if the error complaint is related to an image hosted on
+         * an nfs mount, then ignore it.
+         * rhbz 517157
+         */
+        if (setfilecon_errno != EOPNOTSUPP) {
+            virSecurityReportError(conn, VIR_ERR_ERROR,
+                                 _("%s: unable to set security context "
+                                   "'\%s\' on %s: %s."), __func__,
+                                 tcon,
+                                 path,
+                                 virStrerror(errno, ebuf, sizeof ebuf));
+            if (security_getenforce() == 1)
+                return -1;
+        }
     }
     return 0;
 }
