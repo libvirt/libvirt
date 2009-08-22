@@ -269,7 +269,7 @@ qemudRemoveDomainStatus(virConnectPtr conn,
                         struct qemud_driver *driver,
                         virDomainObjPtr vm)
 {
-    int rc = -1;
+    char ebuf[1024];
     char *file = NULL;
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
@@ -277,19 +277,14 @@ qemudRemoveDomainStatus(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR) {
-        qemudReportError(conn, vm, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Failed to unlink status file %s"), file);
-        goto cleanup;
-    }
+    if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
+        VIR_WARN(_("Failed to remove domain XML for %s: %s"),
+                 vm->def->name, virStrerror(errno, buf, sizeof(ebuf)));
+    if (virFileDeletePid(driver->stateDir, vm->def->name) != 0)
+        VIR_WARN(_("Failed to remove PID file for %s: %s"),
+                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
 
-    if(virFileDeletePid(driver->stateDir, vm->def->name))
-        goto cleanup;
-
-    rc = 0;
-cleanup:
-    VIR_FREE(file);
-    return rc;
+    return 0;
 }
 
 
@@ -2224,15 +2219,7 @@ retry:
                  vm->def->name);
     }
 
-    if (qemudRemoveDomainStatus(conn, driver, vm) < 0) {
-        VIR_WARN(_("Failed to remove domain status for %s"),
-                 vm->def->name);
-    }
-    if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
-        char ebuf[1024];
-        VIR_WARN(_("Failed to remove PID file for %s: %s"),
-                 vm->def->name, virStrerror(errno, ebuf, sizeof ebuf));
-    }
+    qemudRemoveDomainStatus(conn, driver, vm);
 
     vm->pid = -1;
     vm->def->id = -1;
