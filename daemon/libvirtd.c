@@ -1898,7 +1898,9 @@ void
 qemudClientMessageRelease(struct qemud_client *client,
                           struct qemud_client_message *msg)
 {
-    if (!msg->async)
+    if (msg->streamTX) {
+        remoteStreamMessageFinished(client, msg);
+    } else if (!msg->async)
         client->nrequests--;
 
     /* See if the recv queue is currently throttled */

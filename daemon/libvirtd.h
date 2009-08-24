@@ -130,6 +130,7 @@ struct qemud_client_message {
     unsigned int bufferOffset;
 
     unsigned int async : 1;
+    unsigned int streamTX : 1;
 
     remote_message_header hdr;
 

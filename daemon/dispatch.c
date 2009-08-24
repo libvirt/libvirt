@@ -636,6 +636,8 @@ remoteSendStreamData(struct qemud_client *client,
 
         DEBUG("Total %d", msg->bufferOffset);
     }
+    if (data)
+        msg->streamTX = 1;
 
     /* Reset ready for I/O */
     msg->bufferLength = msg->bufferOffset;

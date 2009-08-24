@@ -46,4 +46,8 @@ int
 remoteRemoveClientStream(struct qemud_client *client,
                          struct qemud_client_stream *stream);
 
+void
+remoteStreamMessageFinished(struct qemud_client *client,
+                            struct qemud_client_message *msg);
+
 #endif /* __LIBVIRTD_STREAM_H__ */
