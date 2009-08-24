@@ -430,6 +430,25 @@ mymain(int argc, char **argv)
     for (i = 0 ; i < NUM_TIME ; i++)
         virEventRemoveTimeoutImpl(timers[i].timer);
 
+    resetAll();
+
+    /* Final test, register same FD twice, once with no
+     * events, and make sure the right callback runs */
+    handles[0].pipeFD[0] = handles[1].pipeFD[0];
+    handles[0].pipeFD[1] = handles[1].pipeFD[1];
+
+    handles[0].watch = virEventAddHandleImpl(handles[0].pipeFD[0],
+                                             0,
+                                             testPipeReader,
+                                             &handles[0], NULL);
+    handles[1].watch = virEventAddHandleImpl(handles[1].pipeFD[0],
+                                             VIR_EVENT_HANDLE_READABLE,
+                                             testPipeReader,
+                                             &handles[1], NULL);
+    startJob("Write duplicate", &test);
+    ret = safewrite(handles[1].pipeFD[1], &one, 1);
+    if (finishJob(1, -1) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
 
     //pthread_kill(eventThread, SIGTERM);
 
