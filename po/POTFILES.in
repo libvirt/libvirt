@@ -1,6 +1,7 @@
 daemon/dispatch.c
 daemon/libvirtd.c
 daemon/remote.c
+daemon/stream.c
 src/conf/domain_conf.c
 src/conf/interface_conf.c
 src/conf/network_conf.c
