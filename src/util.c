@@ -511,10 +511,6 @@ __virExec(virConnectPtr conn,
         childerr != childout)
         close(childerr);
 
-    if (hook)
-        if ((hook)(data) != 0)
-            _exit(1);
-
     /* Daemonize as late as possible, so the parent process can detect
      * the above errors with wait* */
     if (flags & VIR_EXEC_DAEMON) {
@@ -550,6 +546,10 @@ __virExec(virConnectPtr conn,
             _exit(0);
         }
     }
+
+    if (hook)
+        if ((hook)(data) != 0)
+            _exit(1);
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */

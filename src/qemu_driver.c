@@ -71,9 +71,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-/* For storing short-lived temporary files. */
-#define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt/qemu"
-
 #define QEMU_CMD_PROMPT "\n(qemu) "
 #define QEMU_PASSWD_PROMPT "Password: "
 
@@ -490,6 +487,14 @@ qemudStartup(int privileged) {
         if (virAsprintf(&qemu_driver->stateDir,
                       "%s/run/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
+
+        if (virAsprintf(&qemu_driver->libDir,
+                      "%s/lib/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+            goto out_of_memory;
+
+        if (virAsprintf(&qemu_driver->cacheDir,
+                      "%s/cache/libvirt/qemu", LOCAL_STATE_DIR) == -1)
+            goto out_of_memory;
     } else {
         uid_t uid = geteuid();
         char *userdir = virGetUserDirectory(NULL, uid);
@@ -510,12 +515,28 @@ qemudStartup(int privileged) {
 
         if (virAsprintf(&qemu_driver->stateDir, "%s/qemu/run", base) == -1)
             goto out_of_memory;
+        if (virAsprintf(&qemu_driver->libDir, "%s/qemu/lib", base) == -1)
+            goto out_of_memory;
+        if (virAsprintf(&qemu_driver->cacheDir, "%s/qemu/cache", base) == -1)
+            goto out_of_memory;
     }
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s\n"),
                   qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
+        goto error;
+    }
+    if (virFileMakePath(qemu_driver->libDir) < 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create lib dir '%s': %s\n"),
+                  qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
+        goto error;
+    }
+    if (virFileMakePath(qemu_driver->cacheDir) < 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create cache dir '%s': %s\n"),
+                  qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -712,6 +733,8 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->configDir);
     VIR_FREE(qemu_driver->autostartDir);
     VIR_FREE(qemu_driver->stateDir);
+    VIR_FREE(qemu_driver->libDir);
+    VIR_FREE(qemu_driver->cacheDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
@@ -1988,7 +2011,7 @@ qemuPrepareMonitorChr(virConnectPtr conn,
     monitor_chr->data.nix.listen = 1;
 
     if (virAsprintf(&monitor_chr->data.nix.path, "%s/%s.monitor",
-                    driver->stateDir, vm) < 0) {
+                    driver->libDir, vm) < 0) {
         virReportOOMError(conn);
         return -1;
     }
@@ -6648,7 +6671,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char cmd[256], *info = NULL;
-    char tmp[] = TEMPDIR "/qemu.mem.XXXXXX";
+    char *tmp = NULL;
     int fd = -1, ret = -1;
 
     qemuDriverLock(driver);
@@ -6672,6 +6695,11 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     if (!virDomainIsActive(vm)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&tmp, driver->cacheDir,  "/qemu.mem.XXXXXX") < 0) {
+        virReportOOMError(dom->conn);
         goto cleanup;
     }
 
@@ -6708,6 +6736,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    VIR_FREE(tmp);
     VIR_FREE(info);
     if (fd >= 0) close (fd);
     unlink (tmp);

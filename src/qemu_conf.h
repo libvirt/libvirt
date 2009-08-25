@@ -90,10 +90,16 @@ struct qemud_driver {
     virDomainObjList domains;
 
     brControl *brctl;
+    /* These four directories are ones libvirtd uses (so must be root:root
+     * to avoid security risk from QEMU processes */
     char *configDir;
     char *autostartDir;
     char *logDir;
     char *stateDir;
+    /* These two directories are ones QEMU processes use (so must match
+     * the QEMU user/group */
+    char *libDir;
+    char *cacheDir;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;
     unsigned int vncSASL : 1;

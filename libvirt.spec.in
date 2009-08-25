@@ -505,7 +505,7 @@ fi
 %dir %attr(0700, root, root) %{_localstatedir}/cache/libvirt/
 
 %if %{with_qemu}
-%dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/run/libvirt/qemu/
+%dir %attr(0700, root, root) %{_localstatedir}/run/libvirt/qemu/
 %dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
 %dir %attr(0700, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
 %endif
