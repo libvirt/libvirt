@@ -255,6 +255,10 @@ sexpr2string(const struct sexpr * sexpr, char *buffer, size_t n_buffer)
             ret += tmp;
             break;
         case SEXPR_NIL:
+            tmp = snprintf(buffer + ret, n_buffer - ret, "()");
+            if (tmp == 0)
+                goto error;
+            ret += tmp;
             break;
         default:
             goto error;
