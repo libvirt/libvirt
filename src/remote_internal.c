@@ -6194,6 +6194,25 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
 
 
 #if HAVE_POLKIT
+#if HAVE_POLKIT1
+static int
+remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
+                  virConnectAuthPtr auth ATTRIBUTE_UNUSED)
+{
+    remote_auth_polkit_ret ret;
+    DEBUG0("Client initialize PolicyKit-1 authentication");
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
+              (xdrproc_t) xdr_void, (char *)NULL,
+              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
+        return -1; /* virError already set by call */
+    }
+
+    DEBUG0("PolicyKit-1 authentication complete");
+    return 0;
+}
+#elif HAVE_POLKIT0
 /* Perform the PolicyKit authentication process
  */
 static int
@@ -6201,7 +6220,6 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth)
 {
     remote_auth_polkit_ret ret;
-#if HAVE_POLKIT0
     int i, allowcb = 0;
     virConnectCredential cred = {
         VIR_CRED_EXTERNAL,
@@ -6211,10 +6229,8 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         NULL,
         0,
     };
-#endif
-    DEBUG0("Client initialize PolicyKit authentication");
+    DEBUG0("Client initialize PolicyKit-0 authentication");
 
-#if HAVE_POLKIT0
     if (auth && auth->cb) {
         /* Check if the necessary credential type for PolicyKit is supported */
         for (i = 0 ; i < auth->ncredtype ; i++) {
@@ -6237,9 +6253,6 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     } else {
         DEBUG0("No auth callback provided");
     }
-#else
-    DEBUG0("No auth callback required for PolicyKit-1");
-#endif
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
@@ -6248,9 +6261,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    DEBUG0("PolicyKit authentication complete");
+    DEBUG0("PolicyKit-0 authentication complete");
     return 0;
 }
+#endif /* HAVE_POLKIT0 */
 #endif /* HAVE_POLKIT */
 /*----------------------------------------------------------------------*/
 

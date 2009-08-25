@@ -3154,12 +3154,12 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     rv = snprintf(pidbuf, sizeof pidbuf, "%d", callerPid);
     if (rv < 0 || rv >= sizeof pidbuf) {
         VIR_ERROR(_("Caller PID was too large %d"), callerPid);
-	goto authfail;
+        goto authfail;
     }
 
     if (virRun(NULL, pkcheck, &status) < 0) {
         VIR_ERROR(_("Cannot invoke %s"), PKCHECK_PATH);
-	goto authfail;
+        goto authfail;
     }
     if (status != 0) {
         VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d\n"),
