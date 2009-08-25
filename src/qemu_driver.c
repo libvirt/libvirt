@@ -7031,6 +7031,21 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto cleanup;
     }
 
+    /* it is also possible that the migrate didn't fail initially, but
+     * rather failed later on.  Check the output of "info migrate"
+     */
+    VIR_FREE(info);
+    if (qemudMonitorCommand(vm, "info migrate", &info) < 0) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("could not get info about migration"));
+        goto cleanup;
+    }
+    if (strstr(info, "fail") != NULL) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("migrate failed: %s"), info);
+        goto cleanup;
+    }
+
     /* Clean up the source domain. */
     qemudShutdownVMDaemon (dom->conn, driver, vm);
     paused = 0;

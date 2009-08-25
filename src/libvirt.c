@@ -3040,8 +3040,6 @@ virDomainMigrateVersion2 (virDomainPtr domain,
      */
     ret = domain->conn->driver->domainMigratePerform
         (domain, cookie, cookielen, uri, flags, dname, bandwidth);
-    if (ret == -1)
-        goto done;
 
     /* In version 2 of the migration protocol, we pass the
      * status code from the sender to the destination host,
