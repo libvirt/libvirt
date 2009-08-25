@@ -2537,6 +2537,10 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (virXPathULong(conn, "string(./currentMemory[1])", ctxt, &def->memory) < 0)
         def->memory = def->maxmem;
 
+    node = virXPathNode(conn, "./memoryBacking/hugepages", ctxt);
+    if (node)
+        def->hugepage_backed = 1;
+
     if (virXPathULong(conn, "string(./vcpu[1])", ctxt, &def->vcpus) < 0)
         def->vcpus = 1;
 
@@ -4161,7 +4165,11 @@ char *virDomainDefFormat(virConnectPtr conn,
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n",
                       def->memory);
-
+    if (def->hugepage_backed) {
+        virBufferAddLit(&buf, "  <memoryBacking>\n");
+        virBufferAddLit(&buf, "    <hugepages/>\n");
+        virBufferAddLit(&buf, "  </memoryBacking>\n");
+    }
     for (n = 0 ; n < def->cpumasklen ; n++)
         if (def->cpumask[n] != 1)
             allones = 0;

@@ -246,6 +246,15 @@
         </element>
       </optional>
       <optional>
+	<element name="memoryBacking">
+	  <optional>
+	    <element name="hugepages">
+	      <empty/>
+	    </element>
+	  </optional>
+	</element>
+      </optional>
+      <optional>
         <element name="vcpu">
           <optional>
             <attribute name="cpuset"/>

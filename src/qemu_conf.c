@@ -35,6 +35,7 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <sys/utsname.h>
+#include <mntent.h>
 
 #include "c-ctype.h"
 #include "virterror_internal.h"
@@ -87,6 +88,7 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               NULL, /* no arg needed for xen */
               NULL /* don't support vbox */);
 
+#define PROC_MOUNT_BUF_LEN 255
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
@@ -105,6 +107,21 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virReportOOMError(NULL);
         return -1;
     }
+
+#ifdef HAVE_MNTENT_H
+    /* For privileged driver, try and find hugepage mount automatically.
+     * Non-privileged driver requires admin to create a dir for the
+     * user, chown it, and then let user configure it manually */
+    if (driver->privileged &&
+        !(driver->hugetlbfs_mount = virFileFindMountPoint("hugetlbfs"))) {
+        if (errno != ENOENT) {
+            virReportSystemError(NULL, errno, "%s",
+                                 _("unable to find hugetlbfs mountpoint"));
+            return -1;
+        }
+    }
+#endif
+
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -289,6 +306,17 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             return -1;
         }
     }
+
+     p = virConfGetValue (conf, "hugetlbfs_mount");
+     CHECK_TYPE ("hugetlbfs_mount", VIR_CONF_STRING);
+     if (p && p->str) {
+         VIR_FREE(driver->hugetlbfs_mount);
+         if (!(driver->hugetlbfs_mount = strdup(p->str))) {
+             virReportOOMError(NULL);
+             virConfFree(conf);
+             return -1;
+         }
+     }
 
     virConfFree (conf);
     return 0;
@@ -784,6 +812,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (strstr(help, "-pcidevice"))
         flags |= QEMUD_CMD_FLAG_PCIDEVICE;
+    if (strstr(help, "-mem-path"))
+        flags |= QEMUD_CMD_FLAG_MEM_PATH;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
@@ -1583,6 +1613,26 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-no-kvm");
     ADD_ARG_LIT("-m");
     ADD_ARG_LIT(memory);
+    if (def->hugepage_backed) {
+        if (!driver->hugetlbfs_mount) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("hugetlbfs filesystem is not mounted"));
+            goto error;
+        }
+        if (!driver->hugepage_path) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("hugepages are disabled by administrator config"));
+            goto error;
+        }
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MEM_PATH)) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("hugepage backing not supported by '%s'"),
+                             def->emulator);
+            goto error;
+        }
+        ADD_ARG_LIT("-mem-path");
+        ADD_ARG_LIT(driver->hugepage_path);
+    }
     ADD_ARG_LIT("-smp");
     ADD_ARG_LIT(vcpus);
 

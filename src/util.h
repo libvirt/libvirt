@@ -233,4 +233,8 @@ int virGetGroupID(virConnectPtr conn,
 int virRandomInitialize(unsigned int seed);
 int virRandom(int max);
 
+#ifdef HAVE_MNTENT_H
+char *virFileFindMountPoint(const char *type);
+#endif
+
 #endif /* __VIR_UTIL_H__ */

@@ -67,6 +67,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_HOST_NET_ADD = QEMUD_CMD_FLAG_0_10, /* host_net_add monitor command */
 
     QEMUD_CMD_FLAG_PCIDEVICE     = (1 << 17), /* PCI device assignment only supported by qemu-kvm */
+    QEMUD_CMD_FLAG_MEM_PATH      = (1 << 18), /* mmap'ped guest backing supported */
 };
 
 /* Main driver state */
@@ -99,6 +100,8 @@ struct qemud_driver {
     char *vncListen;
     char *vncPassword;
     char *vncSASLdir;
+    char *hugetlbfs_mount;
+    char *hugepage_path;
 
     virCapsPtr caps;
 

@@ -91,6 +91,8 @@ cgroup_controllers = [ \"cpu\", \"devices\" ]
 cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
 
 save_image_format = \"gzip\"
+
+hugetlbfs_mount = \"/dev/hugepages\"
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -192,3 +194,5 @@ save_image_format = \"gzip\"
 }
 { "#empty" }
 { "save_image_format" = "gzip" }
+{ "#empty" }
+{ "hugetlbfs_mount" = "/dev/hugepages" }

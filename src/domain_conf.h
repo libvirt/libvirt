@@ -535,6 +535,7 @@ struct _virDomainDef {
 
     unsigned long memory;
     unsigned long maxmem;
+    unsigned char hugepage_backed;
     unsigned long vcpus;
     int cpumasklen;
     char *cpumask;

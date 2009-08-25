@@ -555,6 +555,37 @@ qemudStartup(int privileged) {
         goto error;
     }
 
+    /* If hugetlbfs is present, then we need to create a sub-directory within
+     * it, since we can't assume the root mount point has permissions that
+     * will let our spawned QEMU instances use it.
+     *
+     * NB the check for '/', since user may config "" to disable hugepages
+     * even when mounted
+     */
+    if (qemu_driver->hugetlbfs_mount &&
+        qemu_driver->hugetlbfs_mount[0] == '/') {
+        char *mempath = NULL;
+        if (virAsprintf(&mempath, "%s/libvirt/qemu", qemu_driver->hugetlbfs_mount) < 0)
+            goto out_of_memory;
+
+        if ((rc = virFileMakePath(mempath)) != 0) {
+            virReportSystemError(NULL, rc,
+                                 _("unable to create hugepage path %s"), mempath);
+            VIR_FREE(mempath);
+            goto error;
+        }
+        if (qemu_driver->privileged &&
+            chown(mempath, qemu_driver->user, qemu_driver->group) < 0) {
+            virReportSystemError(NULL, errno,
+                                 _("unable to set ownership on %s to %d:%d"),
+                                 mempath, qemu_driver->user, qemu_driver->group);
+            VIR_FREE(mempath);
+            goto error;
+        }
+
+        qemu_driver->hugepage_path = mempath;
+    }
+
     /* Get all the running persistent or transient configs first */
     if (virDomainLoadAllConfigs(NULL,
                                 qemu_driver->caps,
@@ -686,6 +717,8 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->vncPassword);
     VIR_FREE(qemu_driver->vncSASLdir);
     VIR_FREE(qemu_driver->saveImageFormat);
+    VIR_FREE(qemu_driver->hugetlbfs_mount);
+    VIR_FREE(qemu_driver->hugepage_path);
 
     /* Free domain callback list */
     virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);

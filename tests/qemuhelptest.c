@@ -105,7 +105,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_VNET_HDR |
             QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO |
             QEMUD_CMD_FLAG_KVM |
-            QEMUD_CMD_FLAG_DRIVE_FORMAT,
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_MEM_PATH,
             9001,  1, 74);
     DO_TEST("qemu-0.10.5",
             QEMUD_CMD_FLAG_KQEMU |
@@ -136,7 +137,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_FORMAT |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
-            QEMUD_CMD_FLAG_PCIDEVICE,
+            QEMUD_CMD_FLAG_PCIDEVICE |
+            QEMUD_CMD_FLAG_MEM_PATH,
             10005, 1,  0);
     DO_TEST("kvm-86",
             QEMUD_CMD_FLAG_VNC_COLON |

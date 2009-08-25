@@ -160,7 +160,11 @@ mymain(int argc, char **argv)
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
-    if((driver.stateDir = strdup("/nowhere")) == NULL)
+    if ((driver.stateDir = strdup("/nowhere")) == NULL)
+        return EXIT_FAILURE;
+    if ((driver.hugetlbfs_mount = strdup("/dev/hugepages")) == NULL)
+        return EXIT_FAILURE;
+    if ((driver.hugepage_path = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
         return EXIT_FAILURE;
 
 #define DO_TEST_FULL(name, extraFlags, migrateFrom)                     \
@@ -189,6 +193,7 @@ mymain(int argc, char **argv)
     DO_TEST("bootloader", 0);
     DO_TEST("clock-utc", 0);
     DO_TEST("clock-localtime", 0);
+    DO_TEST("hugepages", QEMUD_CMD_FLAG_MEM_PATH);
     DO_TEST("disk-cdrom", 0);
     DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE);
     DO_TEST("disk-floppy", 0);

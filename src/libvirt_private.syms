@@ -408,6 +408,7 @@ virGetUserDirectory;
 virGetUserName;
 virGetUserID;
 virGetGroupID;
+virFileFindMountPoint;
 
 
 # uuid.h

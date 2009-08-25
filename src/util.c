@@ -60,7 +60,9 @@
 #if HAVE_CAPNG
 #include <cap-ng.h>
 #endif
-
+#ifdef HAVE_MNTENT_H
+#include <mntent.h>
+#endif
 
 #include "virterror_internal.h"
 #include "logging.h"
@@ -1981,5 +1983,39 @@ int virGetGroupID(virConnectPtr conn,
     VIR_FREE(strbuf);
 
     return 0;
+}
+#endif
+
+
+#ifdef HAVE_MNTENT_H
+/* search /proc/mounts for mount point of *type; return pointer to
+ * malloc'ed string of the path if found, otherwise return NULL
+ * with errno set to an appropriate value.
+ */
+char *virFileFindMountPoint(const char *type)
+{
+    FILE *f;
+    struct mntent mb;
+    char mntbuf[1024];
+    char *ret = NULL;
+
+    f = setmntent("/proc/mounts", "r");
+    if (!f)
+        return NULL;
+
+    while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
+        if (STREQ(mb.mnt_type, type)) {
+            ret = strdup(mb.mnt_dir);
+            goto cleanup;
+        }
+    }
+
+    if (!ret)
+        errno = ENOENT;
+
+cleanup:
+    endmntent(f);
+
+    return ret;
 }
 #endif

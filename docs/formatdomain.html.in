@@ -176,6 +176,9 @@
         ...
 	&lt;memory&gt;524288&lt;/memory&gt;
 	&lt;currentMemory&gt;524288&lt;/currentMemory&gt;
+	&lt;memoryBacking&gt;
+	  &lt;hugepages/&gt;
+        &lt;/memoryBacking&gt;
 	&lt;vcpu&gt;1&lt;/vcpu&gt;
 	...</pre>
 
@@ -188,6 +191,11 @@
 	be less than the maximum allocation, to allow for ballooning
 	up the guests memory on the fly. If this is omitted, it defaults
 	to the same value as the <code>memory<code> element</dd>
+      <dt><code>memoryBacking</code></dt>
+      <dd>The optional <code>memoryBacking</code> element, may have an
+	<code>hugepages</code> element set within it. This tells the
+	hypervisor that the guest should have its memory allocated using
+	hugepages instead of the normal native page size.</dd>
       <dt><code>vcpu</code></dt>
       <dd>The content of this element defines the number of virtual
 	CPUs allocated for the guest OS.</dd>
