@@ -69,6 +69,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_PCIDEVICE     = (1 << 17), /* PCI device assignment only supported by qemu-kvm */
     QEMUD_CMD_FLAG_MEM_PATH      = (1 << 18), /* mmap'ped guest backing supported */
     QEMUD_CMD_FLAG_DRIVE_SERIAL  = (1 << 19), /* -driver serial=  available */
+    QEMUD_CMD_FLAG_XEN_DOMID     = (1 << 20), /* -xen-domid (new style xen integration) */
 };
 
 /* Main driver state */

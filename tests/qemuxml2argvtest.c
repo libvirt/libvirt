@@ -195,7 +195,7 @@ mymain(int argc, char **argv)
     DO_TEST("boot-cdrom", 0);
     DO_TEST("boot-network", 0);
     DO_TEST("boot-floppy", 0);
-    DO_TEST("bootloader", 0);
+    DO_TEST("bootloader", QEMUD_CMD_FLAG_DOMID);
     DO_TEST("clock-utc", 0);
     DO_TEST("clock-localtime", 0);
     DO_TEST("hugepages", QEMUD_CMD_FLAG_MEM_PATH);
@@ -246,11 +246,11 @@ mymain(int argc, char **argv)
     DO_TEST("graphics-sdl-fullscreen", 0);
     DO_TEST("input-usbmouse", 0);
     DO_TEST("input-usbtablet", 0);
-    DO_TEST("input-xen", 0);
+    DO_TEST("input-xen", QEMUD_CMD_FLAG_DOMID);
     DO_TEST("misc-acpi", 0);
     DO_TEST("misc-no-reboot", 0);
     DO_TEST("misc-uuid", QEMUD_CMD_FLAG_NAME |
-        QEMUD_CMD_FLAG_UUID | QEMUD_CMD_FLAG_DOMID);
+            QEMUD_CMD_FLAG_UUID);
     DO_TEST("net-user", 0);
     DO_TEST("net-virtio", 0);
     DO_TEST("net-eth", 0);

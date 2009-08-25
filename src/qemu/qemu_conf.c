@@ -851,7 +851,9 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_NAME;
     if (strstr(help, "-uuid"))
         flags |= QEMUD_CMD_FLAG_UUID;
-    if (strstr(help, "-domid"))
+    if (strstr(help, "-xen-domid"))
+        flags |= QEMUD_CMD_FLAG_XEN_DOMID;
+    else if (strstr(help, "-domid"))
         flags |= QEMUD_CMD_FLAG_DOMID;
     if (strstr(help, "-drive")) {
         flags |= QEMUD_CMD_FLAG_DRIVE;
@@ -1720,9 +1722,22 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-uuid");
         ADD_ARG_LIT(uuid);
     }
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DOMID) {
-        ADD_ARG_LIT("-domid");
-        ADD_ARG_LIT(domid);
+    if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
+        STREQ(def->os.type, "xen") ||
+        STREQ(def->os.type, "linux")) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DOMID) {
+            ADD_ARG_LIT("-domid");
+            ADD_ARG_LIT(domid);
+        } else if (qemuCmdFlags & QEMUD_CMD_FLAG_XEN_DOMID) {
+            ADD_ARG_LIT("-xen-attach");
+            ADD_ARG_LIT("-xen-domid");
+            ADD_ARG_LIT(domid);
+        } else {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("qemu emulator '%s' does not support xen"),
+                             def->emulator);
+            goto error;
+        }
     }
 
     /*
@@ -1775,9 +1790,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
         }
-        boot[def->os.nBootDevs] = '\0';
-        ADD_ARG_LIT("-boot");
-        ADD_ARG_LIT(boot);
+        if (def->os.nBootDevs) {
+            boot[def->os.nBootDevs] = '\0';
+            ADD_ARG_LIT("-boot");
+            ADD_ARG_LIT(boot);
+        }
 
         if (def->os.kernel) {
             ADD_ARG_LIT("-kernel");
