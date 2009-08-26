@@ -572,6 +572,21 @@ qemudStartup(int privileged) {
         goto error;
     }
 
+    if (privileged) {
+        if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
+            virReportSystemError(NULL, errno,
+                                 _("unable to set ownership of '%s' to user %d:%d"),
+                                 qemu_driver->libDir, qemu_driver->user, qemu_driver->group);
+            goto error;
+        }
+        if (chown(qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group) < 0) {
+            virReportSystemError(NULL, errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group);
+            goto error;
+        }
+    }
+
     if (qemudSecurityInit(qemu_driver) < 0) {
         goto error;
     }
