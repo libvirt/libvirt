@@ -2285,6 +2285,13 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
         close(vm->monitor);
     vm->monitor = -1;
 
+    if (vm->monitor_chr) {
+        if (vm->monitor_chr->type == VIR_DOMAIN_CHR_TYPE_UNIX)
+            unlink(vm->monitor_chr->data.nix.path);
+        virDomainChrDefFree(vm->monitor_chr);
+        vm->monitor_chr = NULL;
+    }
+
     /* shut it off for sure */
     virKillProcess(vm->pid, SIGKILL);
 
