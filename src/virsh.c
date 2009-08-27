@@ -5206,7 +5206,7 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", NULL, NULL,
+    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
                                    VSH_BYUUID)))
         return FALSE;
 
