@@ -1844,8 +1844,8 @@ static virDriver umlDriver = {
     NULL, /* domainInterfaceStats */
     umlDomainBlockPeek, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
-    virNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
-    virNodeGetFreeMemory,  /* getFreeMemory */
+    nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
+    nodeGetFreeMemory,  /* getFreeMemory */
     NULL, /* domainEventRegister */
     NULL, /* domainEventDeregister */
     NULL, /* domainMigratePrepare2 */
