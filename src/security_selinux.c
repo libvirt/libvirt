@@ -106,24 +106,21 @@ SELinuxInitialize(virConnectPtr conn)
 {
     char *ptr = NULL;
     int fd = 0;
-    char ebuf[1024];
 
     virRandomInitialize(time(NULL) ^ getpid());
 
     fd = open(selinux_virtual_domain_context_path(), O_RDONLY);
     if (fd < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: cannot open SELinux virtual domain context file %s: %s"),
-                               __func__,selinux_virtual_domain_context_path(),
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("cannot open SELinux virtual domain context file '%s'"),
+                             selinux_virtual_domain_context_path());
         return -1;
     }
 
     if (saferead(fd, default_domain_context, sizeof(default_domain_context)) < 0) {
-       virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: cannot read SELinux virtual domain context file %s: %s"),
-                               __func__,selinux_virtual_domain_context_path(),
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("cannot read SELinux virtual domain context file %s"),
+                             selinux_virtual_domain_context_path());
         close(fd);
         return -1;
     }
@@ -133,18 +130,16 @@ SELinuxInitialize(virConnectPtr conn)
     *ptr = '\0';
 
     if ((fd = open(selinux_virtual_image_context_path(), O_RDONLY)) < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: cannot open SELinux virtual image context file %s: %s"),
-                               __func__,selinux_virtual_image_context_path(),
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("cannot open SELinux virtual image context file %s"),
+                             selinux_virtual_image_context_path());
         return -1;
     }
 
     if (saferead(fd, default_image_context, sizeof(default_image_context)) < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: cannot read SELinux virtual image context file %s: %s"),
-                               __func__,selinux_virtual_image_context_path(),
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("cannot read SELinux virtual image context file %s"),
+                             selinux_virtual_image_context_path());
         close(fd);
         return -1;
     }
@@ -232,10 +227,8 @@ SELinuxReserveSecurityLabel(virConnectPtr conn,
     const char *mcs;
 
     if (getpidcon(vm->pid, &pctx) == -1) {
-        char ebuf[1024];
-        virSecurityReportError(conn, VIR_ERR_ERROR, _("%s: error calling "
-                               "getpidcon(): %s"), __func__,
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("unable to get PID %d security context"), vm->pid);
         return -1;
     }
 
@@ -286,17 +279,16 @@ SELinuxGetSecurityLabel(virConnectPtr conn,
     security_context_t ctx;
 
     if (getpidcon(vm->pid, &ctx) == -1) {
-        char ebuf[1024];
-        virSecurityReportError(conn, VIR_ERR_ERROR, _("%s: error calling "
-                               "getpidcon(): %s"), __func__,
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("unable to get PID %d security context"),
+                             vm->pid);
         return -1;
     }
 
     if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
         virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: security label exceeds "
-                               "maximum lenth: %d"), __func__,
+                               _("security label exceeds "
+                                 "maximum lenth: %d"),
                                VIR_SECURITY_LABEL_BUFLEN - 1);
         return -1;
     }
@@ -306,10 +298,8 @@ SELinuxGetSecurityLabel(virConnectPtr conn,
 
     sec->enforcing = security_getenforce();
     if (sec->enforcing == -1) {
-        char ebuf[1024];
-        virSecurityReportError(conn, VIR_ERR_ERROR, _("%s: error calling "
-                               "security_getenforce(): %s"), __func__,
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno, "%s",
+                             _("error calling security_getenforce()"));
         return -1;
     }
 
@@ -319,7 +309,6 @@ SELinuxGetSecurityLabel(virConnectPtr conn,
 static int
 SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
 {
-    char ebuf[1024];
     security_context_t econ;
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
@@ -343,14 +332,14 @@ SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
          * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
          */
         if (setfilecon_errno != EOPNOTSUPP) {
-            virSecurityReportError(conn, VIR_ERR_ERROR,
-                                 _("%s: unable to set security context "
-                                   "'\%s\' on %s: %s."), __func__,
-                                 tcon,
-                                 path,
-                                 virStrerror(errno, ebuf, sizeof ebuf));
+            virReportSystemError(conn, setfilecon_errno,
+                                 _("unable to set security context '%s' on '%s'"),
+                                 tcon, path);
             if (security_getenforce() == 1)
                 return -1;
+        } else {
+            VIR_INFO("Setting security context '%s' on '%s' not supported",
+                     tcon, path);
         }
     }
     return 0;
@@ -365,6 +354,8 @@ SELinuxRestoreSecurityFileLabel(virConnectPtr conn,
     int rc = -1;
     int err;
     char *newpath = NULL;
+
+    VIR_INFO("Restoring SELinux context on '%s'", path);
 
     if ((err = virFileResolveLink(path, &newpath)) < 0) {
         virReportSystemError(conn, err,
@@ -581,6 +572,9 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
     int rc = 0;
+
+    VIR_DEBUG("Restoring security label on %s", vm->def->name);
+
     if (secdef->imagelabel) {
         for (i = 0 ; i < vm->def->nhostdevs ; i++) {
             if (SELinuxRestoreSecurityHostdevLabel(conn, vm->def->hostdevs[i]) < 0)
@@ -624,25 +618,23 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
     /* TODO: verify DOI */
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
-    char ebuf[1024];
 
     if (!STREQ(drv->name, secdef->model)) {
         virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: security label driver mismatch: "
-                                 "\'%s\' model configured for domain, but "
-                                 "hypervisor driver is \'%s\'."),
-                                 __func__, secdef->model, drv->name);
+                               _("security label driver mismatch: "
+                                 "'%s' model configured for domain, but "
+                                 "hypervisor driver is '%s'."),
+                               secdef->model, drv->name);
         if (security_getenforce() == 1)
-                return -1;
+            return -1;
     }
 
     if (setexeccon(secdef->label) == -1) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
-                               _("%s: unable to set security context "
-                               "'\%s\': %s."), __func__, secdef->label,
-                               virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("unable to set security context '%s'"),
+                             secdef->label);
         if (security_getenforce() == 1)
-                return -1;
+            return -1;
     }
 
     if (secdef->imagelabel) {

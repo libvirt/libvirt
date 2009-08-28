@@ -1780,6 +1780,8 @@ static int qemuDomainSetHostdevUSBOwnershipActor(virConnectPtr conn,
 {
     struct qemuFileOwner *owner = opaque;
 
+    VIR_DEBUG("Setting ownership on %s to %d:%d", file, owner->uid, owner->gid);
+
     if (chown(file, owner->uid, owner->gid) < 0) {
         virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
         return -1;
@@ -1820,6 +1822,8 @@ static int qemuDomainSetHostdevPCIOwnershipActor(virConnectPtr conn,
                                                  const char *file, void *opaque)
 {
     struct qemuFileOwner *owner = opaque;
+
+    VIR_DEBUG("Setting ownership on %s to %d:%d", file, owner->uid, owner->gid);
 
     if (chown(file, owner->uid, owner->gid) < 0) {
         virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
@@ -1985,17 +1989,14 @@ static int qemudSecurityHook(void *data) {
     if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
         return -1;
 
-    if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0) {
-        qemudReportError(h->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Failed to set security label"));
+    if (qemudDomainSetSecurityLabel(h->conn, h->driver, h->vm) < 0)
         return -1;
-    }
 
     if (h->driver->privileged) {
-        DEBUG("Dropping privileges of VM to %d:%d", h->driver->user, h->driver->group);
-
         if (qemuDomainSetAllDeviceOwnership(h->conn, h->driver, h->vm->def, 0) < 0)
             return -1;
+
+        DEBUG("Dropping privileges of VM to %d:%d", h->driver->user, h->driver->group);
 
         if (h->driver->group) {
             if (setregid(h->driver->group, h->driver->group) < 0) {
