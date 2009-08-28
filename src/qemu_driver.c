@@ -3483,6 +3483,7 @@ enum qemud_save_formats {
     QEMUD_SAVE_FORMAT_GZIP,
     QEMUD_SAVE_FORMAT_BZIP2,
     QEMUD_SAVE_FORMAT_LZMA,
+    QEMUD_SAVE_FORMAT_LZOP,
 };
 
 struct qemud_save_header {
@@ -3523,6 +3524,8 @@ static int qemudDomainSave(virDomainPtr dom,
         header.compressed = QEMUD_SAVE_FORMAT_BZIP2;
     else if (STREQ(driver->saveImageFormat, "lzma"))
         header.compressed = QEMUD_SAVE_FORMAT_LZMA;
+    else if (STREQ(driver->saveImageFormat, "lzop"))
+        header.compressed = QEMUD_SAVE_FORMAT_LZOP;
     else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("Invalid save image format specified in configuration file"));
@@ -3615,6 +3618,9 @@ static int qemudDomainSave(virDomainPtr dom,
     else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
         internalret = virAsprintf(&command, "migrate \"exec:"
                                   "lzma -c >> '%s' 2>/dev/null\"", safe_path);
+    else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "lzop -c >> '%s' 2>/dev/null\"", safe_path);
     else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid compress format %d"),
@@ -4237,6 +4243,8 @@ static int qemudDomainRestore(virConnectPtr conn,
             intermediate_argv[0] = "bzip2";
         else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
             intermediate_argv[0] = "lzma";
+        else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
+            intermediate_argv[0] = "lzop";
         else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                              _("Unknown compressed save format %d"),
