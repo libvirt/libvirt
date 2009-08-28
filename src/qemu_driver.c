@@ -65,6 +65,7 @@
 #include "domain_conf.h"
 #include "node_device_conf.h"
 #include "pci.h"
+#include "hostusb.h"
 #include "security.h"
 #include "cgroup.h"
 
@@ -1768,31 +1769,62 @@ static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *
 
 
 #ifdef __linux__
+struct qemuFileOwner {
+    uid_t uid;
+    gid_t gid;
+};
+
+static int qemuDomainSetHostdevUSBOwnershipActor(virConnectPtr conn,
+                                                 usbDevice *dev ATTRIBUTE_UNUSED,
+                                                 const char *file, void *opaque)
+{
+    struct qemuFileOwner *owner = opaque;
+
+    if (chown(file, owner->uid, owner->gid) < 0) {
+        virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemuDomainSetHostdevUSBOwnership(virConnectPtr conn,
                                             virDomainHostdevDefPtr def,
                                             uid_t uid, gid_t gid)
 {
-    char *usbpath = NULL;
+    struct qemuFileOwner owner = { uid, gid };
+    int ret = -1;
 
     /* XXX what todo for USB devs assigned based on product/vendor ? Doom :-( */
     if (!def->source.subsys.u.usb.bus ||
         !def->source.subsys.u.usb.device)
         return 0;
 
-    if (virAsprintf(&usbpath, "/dev/bus/usb/%03d/%03d",
-                    def->source.subsys.u.usb.bus,
-                    def->source.subsys.u.usb.device) < 0) {
-        virReportOOMError(conn);
-        return -1;
-    }
+    usbDevice *dev = usbGetDevice(conn,
+                                  def->source.subsys.u.usb.bus,
+                                  def->source.subsys.u.usb.device);
 
-    VIR_DEBUG("Setting ownership on %s to %d:%d", usbpath, uid, gid);
-    if (chown(usbpath, uid, gid) < 0) {
-        virReportSystemError(conn, errno, _("cannot set ownership on %s"), usbpath);
-        VIR_FREE(usbpath);
+    if (!dev)
+        goto cleanup;
+
+    ret = usbDeviceFileIterate(conn, dev,
+                               qemuDomainSetHostdevUSBOwnershipActor, &owner);
+
+    usbFreeDevice(conn, dev);
+cleanup:
+    return ret;
+}
+
+static int qemuDomainSetHostdevPCIOwnershipActor(virConnectPtr conn,
+                                                 pciDevice *dev ATTRIBUTE_UNUSED,
+                                                 const char *file, void *opaque)
+{
+    struct qemuFileOwner *owner = opaque;
+
+    if (chown(file, owner->uid, owner->gid) < 0) {
+        virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
         return -1;
     }
-    VIR_FREE(usbpath);
 
     return 0;
 }
@@ -1801,54 +1833,23 @@ static int qemuDomainSetHostdevPCIOwnership(virConnectPtr conn,
                                             virDomainHostdevDefPtr def,
                                             uid_t uid, gid_t gid)
 {
-    char *pcidir = NULL;
-    char *file = NULL;
-    DIR *dir = NULL;
+    struct qemuFileOwner owner = { uid, gid };
     int ret = -1;
-    struct dirent *ent;
 
-    if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
-                    def->source.subsys.u.pci.domain,
-                    def->source.subsys.u.pci.bus,
-                    def->source.subsys.u.pci.slot,
-                    def->source.subsys.u.pci.function) < 0) {
-        virReportOOMError(conn);
+    pciDevice *dev = pciGetDevice(conn,
+                                  def->source.subsys.u.pci.domain,
+                                  def->source.subsys.u.pci.bus,
+                                  def->source.subsys.u.pci.slot,
+                                  def->source.subsys.u.pci.function);
+
+    if (!dev)
         goto cleanup;
-    }
 
-    if (!(dir = opendir(pcidir))) {
-        virReportSystemError(conn, errno,
-                             _("cannot open %s"), pcidir);
-        goto cleanup;
-    }
+    ret = pciDeviceFileIterate(conn, dev,
+                               qemuDomainSetHostdevPCIOwnershipActor, &owner);
 
-    while ((ent = readdir(dir)) != NULL) {
-        /* QEMU device assignment requires:
-         *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN, $PCIDIR/rom
-         */
-        if (STREQ(ent->d_name, "config") ||
-            STRPREFIX(ent->d_name, "resource") ||
-            STREQ(ent->d_name, "rom")) {
-            if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0) {
-                virReportOOMError(conn);
-                goto cleanup;
-            }
-            VIR_DEBUG("Setting ownership on %s to %d:%d", file, uid, gid);
-            if (chown(file, uid, gid) < 0) {
-                virReportSystemError(conn, errno, _("cannot set ownership on %s"), file);
-                goto cleanup;
-            }
-            VIR_FREE(file);
-        }
-    }
-
-    ret = 0;
-
+    pciFreeDevice(conn, dev);
 cleanup:
-    if (dir)
-        closedir(dir);
-    VIR_FREE(file);
-    VIR_FREE(pcidir);
     return ret;
 }
 #endif
