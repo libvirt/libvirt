@@ -313,6 +313,11 @@ qparam_get_query;
 qparam_query_parse;
 free_qparam_set;
 
+# secret_conf.h
+virSecretDefFree;
+virSecretDefParseString;
+virSecretDefParseFile;
+virSecretDefFormat;
 
 # security.h
 virSecurityDriverVerify;

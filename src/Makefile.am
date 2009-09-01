@@ -92,6 +92,10 @@ STORAGE_CONF_SOURCES =						\
 INTERFACE_CONF_SOURCES =					\
 		interface_conf.c interface_conf.h
 
+# Secret driver generic impl APIs
+SECRET_CONF_SOURCES =						\
+		secret_conf.h secret_conf.c
+
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
@@ -251,7 +255,8 @@ libvirt_driver_la_SOURCES =					\
 		$(NETWORK_CONF_SOURCES)				\
 		$(STORAGE_CONF_SOURCES)				\
 		$(INTERFACE_CONF_SOURCES)			\
-		$(NODE_DEVICE_CONF_SOURCES)
+		$(NODE_DEVICE_CONF_SOURCES)			\
+		$(SECRET_CONF_SOURCES)
 
 libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
 libvirt_driver_la_LDFLAGS = $(XEN_LIBS) $(NUMACTL_LIBS)
