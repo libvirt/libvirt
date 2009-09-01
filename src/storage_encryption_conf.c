@@ -64,6 +64,8 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
     VIR_FREE(enc);
 }
 
+#ifndef PROXY
+
 static virStorageEncryptionSecretPtr
 virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
                                 xmlNodePtr node)
@@ -191,6 +193,8 @@ virStorageEncryptionParseNode(virConnectPtr conn,
     xmlXPathFreeContext(ctxt);
     return enc;
 }
+#endif /* ! PROXY */
+
 
 static int
 virStorageEncryptionSecretFormat(virConnectPtr conn,

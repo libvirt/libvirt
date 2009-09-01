@@ -4173,6 +4173,20 @@ static void testDomainEventQueue(testConnPtr driver,
         virEventUpdateTimeout(driver->domainEventTimer, 0);
 }
 
+static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
+                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                       int flags ATTRIBUTE_UNUSED) {
+    if (STRNEQ(conn->driver->name, "Test"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    conn->secretPrivateData = conn->privateData;
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int testSecretClose(virConnectPtr conn) {
+    conn->secretPrivateData = NULL;
+    return 0;
+}
 
 static virDriver testDriver = {
     VIR_DRV_TEST,
@@ -4328,6 +4342,11 @@ static virDeviceMonitor testDevMonitor = {
     .close = testDevMonClose,
 };
 
+static virSecretDriver testSecretDriver = {
+    .name = "Test",
+    .open = testSecretOpen,
+    .close = testSecretClose,
+};
 
 
 /**
@@ -4347,6 +4366,8 @@ testRegister(void)
     if (virRegisterStorageDriver(&testStorageDriver) < 0)
         return -1;
     if (virRegisterDeviceMonitor(&testDevMonitor) < 0)
+        return -1;
+    if (virRegisterSecretDriver(&testSecretDriver) < 0)
         return -1;
 
     return 0;
