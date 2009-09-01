@@ -24,7 +24,6 @@
 
 #include "internal.h"
 
-#include "base64.h"
 #include "buf.h"
 #include "memory.h"
 #include "storage_conf.h"
