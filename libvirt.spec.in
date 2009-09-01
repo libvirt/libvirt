@@ -108,7 +108,9 @@ BuildRequires: util-linux
 BuildRequires: nfs-utils
 Requires: nfs-utils
 # For glusterfs
+%if 0%{?fedora} >= 11
 Requires: glusterfs-client >= 2.0.1
+%endif
 %endif
 %if %{with_qemu}
 # From QEMU RPMs
