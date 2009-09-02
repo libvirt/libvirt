@@ -1606,7 +1606,7 @@ virConnectNumOfDomains(virConnectPtr conn)
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
+        return -1;
     }
 
     if (conn->driver->numOfDomains) {
@@ -6451,7 +6451,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
+        return NULL;
     }
     if (type == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -7339,7 +7339,7 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
 
     if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
         virLibStoragePoolError(NULL, VIR_ERR_INVALID_STORAGE_POOL, __FUNCTION__);
-        goto error;
+        return -1;
     }
 
     if (pool->conn->flags & VIR_CONNECT_RO) {
