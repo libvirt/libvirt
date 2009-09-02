@@ -919,12 +919,6 @@ virStorageSize(virConnectPtr conn,
                 1024ull;
             break;
 
-        case 'z':
-        case 'Z':
-            mult = 1024ull * 1024ull * 1024ull * 1024ull * 1024ull *
-                1024ull * 1024ull;
-            break;
-
         default:
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
                                   _("unknown size units '%s'"), unit);
