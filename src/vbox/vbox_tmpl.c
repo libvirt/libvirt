@@ -1527,6 +1527,82 @@ cleanup:
     return ret;
 }
 
+static int vboxDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
+    nsresult rc;
+    vboxGlobalData *data = dom->conn->privateData;
+    IMachine *machine    = NULL;
+    vboxIID  *iid        = NULL;
+    PRUint32  CPUCount   = nvcpus;
+    int       ret        = -1;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError(dom->conn);
+        goto cleanup;
+    }
+#endif
+
+    if(data->vboxObj) {
+
+        vboxIIDFromUUID(dom->uuid, iid);
+
+        rc = data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, iid);
+        if (NS_SUCCEEDED(rc)) {
+            data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
+            if (machine) {
+                rc = machine->vtbl->SetCPUCount(machine, CPUCount);
+                if (NS_SUCCEEDED(rc)) {
+                    machine->vtbl->SaveSettings(machine);
+                    ret = 0;
+                } else {
+                    vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s: %u, rc=%08x",
+                              "could not set the number of cpus of the domain to",
+                              CPUCount, (unsigned)rc);
+                }
+                machine->vtbl->nsisupports.Release((nsISupports *)machine);
+            } else {
+                vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN,
+                          "no domain with matching id %d", dom->id);
+            }
+        } else {
+            vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN,
+                      "can't open session to the domain with id %d", dom->id);
+        }
+        data->vboxSession->vtbl->Close(data->vboxSession);
+    }
+
+#if VBOX_API_VERSION == 2002
+cleanup:
+#endif
+    vboxIIDFree(iid);
+    return ret;
+}
+
+static int vboxDomainGetMaxVcpus(virDomainPtr dom) {
+    vboxGlobalData *data = dom->conn->privateData;
+    PRUint32 maxCPUCount = 0;
+    int ret = -1;
+
+    /* Currently every domain supports the same number of max cpus
+     * as that supported by vbox and thus take it directly from
+     * the systemproperties.
+     */
+    if(data->vboxObj) {
+        ISystemProperties *systemProperties = NULL;
+
+        data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
+        if (systemProperties) {
+            systemProperties->vtbl->GetMaxGuestCPUCount(systemProperties, &maxCPUCount);
+            systemProperties->vtbl->nsisupports.Release((nsISupports *)systemProperties);
+        }
+    }
+
+    if (maxCPUCount > 0)
+        ret = maxCPUCount;
+
+    return ret;
+}
+
 static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
     nsresult rc;
     vboxGlobalData *data = dom->conn->privateData;
@@ -5579,10 +5655,10 @@ virDriver NAME(Driver) = {
     vboxDomainSave, /* domainSave */
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
-    NULL, /* domainSetVcpus */
+    vboxDomainSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
+    vboxDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     vboxDomainDumpXML, /* domainDumpXML */
