@@ -128,7 +128,8 @@ let driverLockMethods = [
     "umlDriverLock";
     "nodedevDriverLock";
     "networkDriverLock";
-    "storageDriverLock"
+    "storageDriverLock";
+    "oneDriverLock"
 ]
 
 (*
@@ -142,7 +143,8 @@ let driverUnlockMethods = [
     "umlDriverUnlock";
     "nodedevDriverUnlock";
     "networkDriverUnlock";
-    "storageDriverUnlock"
+    "storageDriverUnlock";
+    "oneDriverUnlock"
 ]
 
 (*
@@ -159,6 +161,7 @@ let lockableDrivers = [
       "virStorageDriverStatePtr";
       "network_driver";
       "virDeviceMonitorState";
+      "one_driver_t";
 ]
 
 

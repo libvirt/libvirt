@@ -3660,7 +3660,7 @@ static int qemudDomainSave(virDomainPtr dom,
                            const char *path)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     char *command = NULL;
     char *info = NULL;
     int fd = -1;
@@ -3675,6 +3675,7 @@ static int qemudDomainSave(virDomainPtr dom,
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
     header.version = QEMUD_SAVE_VERSION;
 
+    qemuDriverLock(driver);
     if (driver->saveImageFormat == NULL)
         header.compressed = QEMUD_SAVE_FORMAT_RAW;
     else {
@@ -3684,11 +3685,10 @@ static int qemudDomainSave(virDomainPtr dom,
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                              "%s", _("Invalid save image format specified "
                                      "in configuration file"));
-          return -1;
+            goto cleanup;
         }
     }
 
-    qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
@@ -4510,7 +4510,9 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
+    qemuDriverLock(driver);
     def = qemuParseCommandLineString(conn, driver->caps, config);
+    qemuDriverUnlock(driver);
     if (!def)
         goto cleanup;
 
@@ -6266,12 +6268,13 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
                                   int *nparams)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    char *ret;
+    char *ret = NULL;
 
+    qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
-        return NULL;
+        goto cleanup;
     }
 
     if (nparams)
@@ -6280,6 +6283,9 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
     ret = strdup("posix");
     if (!ret)
         virReportOOMError(dom->conn);
+
+cleanup:
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -6293,15 +6299,14 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
+    qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
-    qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (vm == NULL) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -6344,6 +6349,7 @@ cleanup:
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -6358,21 +6364,20 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
     int ret = -1;
     int rc;
 
+    qemuDriverLock(driver);
     if (!qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_CPU)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          __FUNCTION__);
-        return -1;
+        goto cleanup;
     }
 
     if ((*nparams) != 1) {
         qemudReportError(dom->conn, domain, NULL, VIR_ERR_INVALID_ARG,
                          "%s", _("Invalid parameter count"));
-        return -1;
+        goto cleanup;
     }
 
-    qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (vm == NULL) {
         qemudReportError(dom->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -6402,6 +6407,7 @@ cleanup:
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 

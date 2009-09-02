@@ -310,6 +310,8 @@ static int oneDomainUndefine(virDomainPtr dom)
     ret=0;
 
 return_point:
+    if (vm)
+        virDomainObjUnlock(vm);
     oneDriverUnlock(driver);
     return ret;
 }
@@ -392,9 +394,9 @@ static int oneDomainGetInfo(virDomainPtr dom,
 
 static char *oneGetOSType(virDomainPtr dom)
 {
-
     one_driver_t *driver = (one_driver_t *)dom->conn->privateData;
     virDomainObjPtr vm = NULL;
+    char *ret = NULL;
 
     oneDriverLock(driver);
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -402,11 +404,17 @@ static char *oneGetOSType(virDomainPtr dom)
     if (!vm) {
         oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
                  "%s", _("no domain with matching uuid"));
-        return NULL;
+        goto cleanup;
     }
 
-    virDomainObjUnlock(vm);
-    return strdup(vm->def->os.type);
+    ret = strdup(vm->def->os.type);
+    if (!ret)
+        virReportOOMError(dom->conn);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
 }
 
 static int oneDomainStart(virDomainPtr dom)
@@ -499,24 +507,25 @@ static int oneDomainShutdown(virDomainPtr dom)
     int ret=-1;
 
     oneDriverLock(driver);
-    if((vm=virDomainFindByID(&driver->domains, dom->id))) {
-        if(!(c_oneShutdown(vm->pid) ) ) {
-            vm->state=VIR_DOMAIN_SHUTDOWN;
-            ret= 0;
-            goto return_point;
-        }
+    if (!(vm=virDomainFindByID(&driver->domains, dom->id))) {
+        oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
+                 _("no domain with id %d"), dom->id);
+        goto return_point;
+    }
+
+    if (c_oneShutdown(vm->pid)) {
         oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                  _("Wrong state to perform action"));
         goto return_point;
     }
-    oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
-             _("no domain with id %d"), dom->id);
-    goto return_point;
+    vm->state=VIR_DOMAIN_SHUTDOWN;
+    ret= 0;
 
     if (!vm->persistent) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
     }
+
 return_point:
     if(vm)
         virDomainObjUnlock(vm);

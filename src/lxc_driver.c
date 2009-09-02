@@ -439,7 +439,6 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    lxcDriverUnlock(driver);
 
     if (!vm) {
         lxcError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
@@ -470,6 +469,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     ret = 0;
 
 cleanup:
+    lxcDriverUnlock(driver);
     if (cgroup)
         virCgroupFree(&cgroup);
     if (vm)
@@ -1667,7 +1667,6 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
-    lxcDriverUnlock(driver);
 
     if (vm == NULL) {
         lxcError(NULL, domain, VIR_ERR_INTERNAL_ERROR,
@@ -1698,6 +1697,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
     ret = 0;
 
 cleanup:
+    lxcDriverUnlock(driver);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
@@ -1725,7 +1725,6 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
-    lxcDriverUnlock(driver);
 
     if (vm == NULL) {
         lxcError(NULL, domain, VIR_ERR_INTERNAL_ERROR,
@@ -1745,6 +1744,7 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     ret = 0;
 
 cleanup:
+    lxcDriverUnlock(driver);
     virCgroupFree(&group);
     if (vm)
         virDomainObjUnlock(vm);
