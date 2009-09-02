@@ -983,7 +983,8 @@ no_memory:
     /* fallthrough */
 
  cleanup:
-    closedir(dir);
+    if (dir)
+        closedir(dir);
     virStorageVolDefFree(vol);
     virStoragePoolObjClearVols(pool);
     return -1;
