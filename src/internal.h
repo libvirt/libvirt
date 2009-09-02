@@ -116,6 +116,14 @@
 #endif
 #endif
 
+#ifndef ATTRIBUTE_NONNULL
+# if __GNUC_PREREQ (3, 3)
+#  define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))
+# else
+#  define ATTRIBUTE_NONNULL(m)
+# endif
+#endif
+
 #else
 #ifndef ATTRIBUTE_UNUSED
 #define ATTRIBUTE_UNUSED
