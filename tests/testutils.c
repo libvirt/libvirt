@@ -367,10 +367,7 @@ int virtTestMain(int argc,
         }
     }
 
-    if (testOOM)
-        virAllocTestInit();
-
-    /* Run once to count allocs, and ensure it passes :-) */
+    /* Run once to prime any static allocations & ensure it passes */
     ret = (func)(argc, argv);
     if (ret != EXIT_SUCCESS)
         goto cleanup;
@@ -384,6 +381,13 @@ int virtTestMain(int argc,
         /* Makes next test runs quiet... */
         testOOM++;
         virSetErrorFunc(NULL, virtTestErrorFuncQuiet);
+
+        virAllocTestInit();
+
+        /* Run again to count allocs, and ensure it passes :-) */
+        ret = (func)(argc, argv);
+        if (ret != EXIT_SUCCESS)
+            goto cleanup;
 
         approxAlloc = virAllocTestCount();
         testCounter++;

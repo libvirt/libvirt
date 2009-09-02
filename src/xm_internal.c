@@ -2046,6 +2046,9 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         virBufferVSprintf(&buf, ",vifname=%s",
                           net->ifname);
 
+    if (virBufferError(&buf))
+        goto cleanup;
+
     if (VIR_ALLOC(val) < 0) {
         virReportOOMError(conn);
         goto cleanup;
