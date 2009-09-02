@@ -3278,7 +3278,7 @@ done:
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteNetworkOpen (virConnectPtr conn,
                    virConnectAuthPtr auth,
                    int flags)
@@ -3286,8 +3286,7 @@ remoteNetworkOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn &&
-        conn->driver &&
+    if (conn->driver &&
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv;
 
@@ -3768,16 +3767,15 @@ done:
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteInterfaceOpen (virConnectPtr conn,
-                   virConnectAuthPtr auth,
-                   int flags)
+                     virConnectAuthPtr auth,
+                     int flags)
 {
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn &&
-        conn->driver &&
+    if (conn->driver &&
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv;
 
@@ -4159,7 +4157,7 @@ done:
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteStorageOpen (virConnectPtr conn,
                    virConnectAuthPtr auth,
                    int flags)
@@ -4167,8 +4165,7 @@ remoteStorageOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn &&
-        conn->driver &&
+    if (conn->driver &&
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv = conn->privateData;
         /* If we're here, the remote driver is already
@@ -5127,7 +5124,7 @@ done:
 
 /*----------------------------------------------------------------------*/
 
-static virDrvOpenStatus
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteDevMonOpen(virConnectPtr conn,
                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                  int flags ATTRIBUTE_UNUSED)
@@ -5135,8 +5132,7 @@ remoteDevMonOpen(virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn &&
-        conn->driver &&
+    if (conn->driver &&
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv = conn->privateData;
         /* If we're here, the remote driver is already
@@ -6342,7 +6338,7 @@ done:
     return rv;
 }
 
-static virDrvOpenStatus
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteSecretOpen (virConnectPtr conn,
                   virConnectAuthPtr auth,
                   int flags)
@@ -6350,8 +6346,7 @@ remoteSecretOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (conn &&
-        conn->driver &&
+    if (conn->driver &&
         STREQ (conn->driver->name, "remote")) {
         struct private_data *priv;
 
