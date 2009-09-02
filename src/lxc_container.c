@@ -546,8 +546,9 @@ static int lxcContainerUnmountOldFS(void)
     }
     endmntent(procmnt);
 
-    qsort(mounts, nmounts, sizeof(mounts[0]),
-          lxcContainerChildMountSort);
+    if (mounts)
+        qsort(mounts, nmounts, sizeof(mounts[0]),
+              lxcContainerChildMountSort);
 
     for (i = 0 ; i < nmounts ; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
