@@ -803,7 +803,8 @@ cleanup:
     if (def)
         virFileDeletePid(LXC_STATE_DIR, def->name);
     lxcControllerCleanupInterfaces(nveths, veths);
-    unlink(sockpath);
+    if (sockpath)
+        unlink(sockpath);
     VIR_FREE(sockpath);
 
     return rc;
