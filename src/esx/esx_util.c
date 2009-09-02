@@ -47,6 +47,7 @@
 #endif
 
 
+
 char *
 esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
                         const char *server)
@@ -160,7 +161,11 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
     for (i = 0; i < queryParamSet->n; i++) {
         queryParam = &queryParamSet->p[i];
 
-        if (STRCASEEQ(queryParam->name, "transport") && transport != NULL) {
+        if (STRCASEEQ(queryParam->name, "transport")) {
+            if (transport == NULL) {
+                continue;
+            }
+
             *transport = strdup(queryParam->value);
 
             if (*transport == NULL) {
@@ -174,15 +179,22 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
                           "'%s' (should be http|https)", *transport);
                 goto failure;
             }
-        } else if (STRCASEEQ(queryParam->name, "vcenter") && vCenter != NULL) {
+        } else if (STRCASEEQ(queryParam->name, "vcenter")) {
+            if (vCenter == NULL) {
+                continue;
+            }
+
             *vCenter = strdup(queryParam->value);
 
             if (*vCenter == NULL) {
                 virReportOOMError(conn);
                 goto failure;
             }
-        } else if (STRCASEEQ(queryParam->name, "no_verify") &&
-                   noVerify != NULL) {
+        } else if (STRCASEEQ(queryParam->name, "no_verify")) {
+            if (noVerify == NULL) {
+                continue;
+            }
+
             if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
                 (*noVerify != 0 && *noVerify != 1)) {
                 ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
