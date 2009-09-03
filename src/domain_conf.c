@@ -391,6 +391,7 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
     if (!def)
         return;
 
+    VIR_FREE(def->accel);
     VIR_FREE(def);
 }
 
@@ -1777,6 +1778,52 @@ virDomainVideoDefaultType(virDomainDefPtr def)
     }
 }
 
+static virDomainVideoAccelDefPtr
+virDomainVideoAccelDefParseXML(virConnectPtr conn, const xmlNodePtr node) {
+    xmlNodePtr cur;
+    virDomainVideoAccelDefPtr def;
+    char *support3d = NULL;
+    char *support2d = NULL;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if ((support3d == NULL) && (support2d == NULL) &&
+                xmlStrEqual(cur->name, BAD_CAST "acceleration")) {
+                support3d = virXMLPropString(cur, "accel3d");
+                support2d = virXMLPropString(cur, "accel2d");
+            }
+        }
+        cur = cur->next;
+    }
+
+    if ((support3d == NULL) && (support2d == NULL))
+        return(NULL);
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    if (support3d) {
+        if (STREQ(support3d, "yes"))
+            def->support3d = 1;
+        else
+            def->support3d = 0;
+        VIR_FREE(support3d);
+    }
+
+    if (support2d) {
+        if (STREQ(support2d, "yes"))
+            def->support2d = 1;
+        else
+            def->support2d = 0;
+        VIR_FREE(support2d);
+    }
+
+    return def;
+}
+
 static virDomainVideoDefPtr
 virDomainVideoDefParseXML(virConnectPtr conn,
                           const xmlNodePtr node,
@@ -1801,6 +1848,7 @@ virDomainVideoDefParseXML(virConnectPtr conn,
                 type = virXMLPropString(cur, "type");
                 vram = virXMLPropString(cur, "vram");
                 heads = virXMLPropString(cur, "heads");
+                def->accel = virDomainVideoAccelDefParseXML(conn, cur);
             }
         }
         cur = cur->next;
@@ -3852,6 +3900,19 @@ virDomainSoundDefFormat(virConnectPtr conn,
     return 0;
 }
 
+
+static void
+virDomainVideoAccelDefFormat(virBufferPtr buf,
+                             virDomainVideoAccelDefPtr def)
+{
+    virBufferVSprintf(buf, "        <acceleration accel3d='%s'",
+                      def->support3d ? "yes" : "no");
+    virBufferVSprintf(buf, " accel2d='%s'",
+                      def->support2d ? "yes" : "no");
+    virBufferAddLit(buf, "/>\n");
+}
+
+
 static int
 virDomainVideoDefFormat(virConnectPtr conn,
                         virBufferPtr buf,
@@ -3872,7 +3933,14 @@ virDomainVideoDefFormat(virConnectPtr conn,
         virBufferVSprintf(buf, " vram='%u'", def->vram);
     if (def->heads)
         virBufferVSprintf(buf, " heads='%u'", def->heads);
-    virBufferAddLit(buf, "/>\n");
+    if (def->accel) {
+        virBufferAddLit(buf, ">\n");
+        virDomainVideoAccelDefFormat(buf, def->accel);
+        virBufferAddLit(buf, "      </model>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
     virBufferAddLit(buf, "    </video>\n");
 
     return 0;

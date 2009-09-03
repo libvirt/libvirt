@@ -819,6 +819,26 @@
               <ref name="unsignedInt"/>
             </attribute>
           </optional>
+          <optional>
+            <element name="acceleration">
+              <optional>
+                <attribute name="accel3d">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="accel2d">
+                  <choice>
+                    <value>yes</value>
+                    <value>no</value>
+                  </choice>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
 	</element>
       </optional>
     </element>

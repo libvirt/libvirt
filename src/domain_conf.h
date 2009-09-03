@@ -309,12 +309,21 @@ enum virDomainVideoType {
 };
 
 
+typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
+typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
+struct _virDomainVideoAccelDef {
+    int support3d : 1;
+    int support2d : 1;
+};
+
+
 typedef struct _virDomainVideoDef virDomainVideoDef;
 typedef virDomainVideoDef *virDomainVideoDefPtr;
 struct _virDomainVideoDef {
     int type;
     unsigned int vram;
     unsigned int heads;
+    virDomainVideoAccelDefPtr accel;
 };
 
 /* 3 possible graphics console modes */
