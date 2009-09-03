@@ -213,7 +213,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                              const virNodeDeviceDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virNodeDevCapsDefPtr caps = def->caps;
+    virNodeDevCapsDefPtr caps;
     char *tmp;
 
     virBufferAddLit(&buf, "<device>\n");
