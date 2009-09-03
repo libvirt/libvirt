@@ -240,7 +240,7 @@ static void virLogStr(const char *str, int len) {
         tmp = LOG_BUFFER_SIZE - virLogEnd;
         memcpy(&virLogBuffer[virLogEnd], str, tmp);
         virLogBuffer[LOG_BUFFER_SIZE] = 0;
-        memcpy(&virLogBuffer[0], &str[len], len - tmp);
+        memcpy(&virLogBuffer[0], &str[tmp], len - tmp);
         virLogEnd = len - tmp;
     } else {
         memcpy(&virLogBuffer[virLogEnd], str, len);
