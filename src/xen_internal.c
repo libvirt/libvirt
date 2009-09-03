@@ -1299,9 +1299,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
             TODO
             return(-1);
         case XEN_SCHEDULER_CREDIT: {
-            int weight_set = 0;
-            int cap_set = 0;
-
             memset(&op_dom, 0, sizeof(op_dom));
             op_dom.cmd = XEN_V2_OP_SCHEDULER;
             op_dom.domain = (domid_t) domain->id;
@@ -1326,7 +1323,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.weight = val;
-                    weight_set = 1;
                 } else if (STREQ (params[i].field, str_cap) &&
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
                     val = params[i].value.ui;
@@ -1336,7 +1332,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                         return(-1);
                     }
                     op_dom.u.getschedinfo.u.credit.cap = val;
-                    cap_set = 1;
                 } else {
                     virXenErrorFunc (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                                      "Credit scheduler accepts 'cap' and 'weight' integer parameters",
