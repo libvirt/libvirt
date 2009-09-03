@@ -435,7 +435,7 @@ static int testOpenVolumesForPool(virConnectPtr conn,
     char *vol_xpath;
     int i, ret, func_ret = -1;
     xmlNodePtr *vols = NULL;
-    virStorageVolDefPtr def;
+    virStorageVolDefPtr def = NULL;
 
     /* Find storage volumes */
     if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", poolidx) < 0) {
