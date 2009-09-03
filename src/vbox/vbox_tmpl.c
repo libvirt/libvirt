@@ -1750,6 +1750,33 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                  * so locatime is always true here */
                 def->localtime = 1;
 
+                /* dump video options vram/2d/3d/directx/etc. */
+                {
+                    /* Currently supports only one graphics card */
+                    def->nvideos = 1;
+                    if (VIR_ALLOC_N(def->videos, def->nvideos) >= 0) {
+                        if (VIR_ALLOC(def->videos[0]) >= 0) {
+                            /* the default is: vram is 8MB, One monitor, 3dAccel Off */
+                            PRUint32 VRAMSize          = 8 * 1024;
+                            PRUint32 monitorCount      = 1;
+                            PRBool accelerate3DEnabled = PR_FALSE;
+
+                            machine->vtbl->GetVRAMSize(machine, &VRAMSize);
+                            machine->vtbl->GetMonitorCount(machine, &monitorCount);
+                            machine->vtbl->GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
+
+                            def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
+                            def->videos[0]->vram            = VRAMSize;
+                            def->videos[0]->heads           = monitorCount;
+                            if (VIR_ALLOC(def->videos[0]->accel)) {
+                                def->videos[0]->accel->support3d = accelerate3DEnabled;
+                                /* Not supported yet, but should be in 3.1 soon */
+                                def->videos[0]->accel->support2d = 0;
+                            }
+                        }
+                    }
+                }
+
                 /* dump display options vrdp/gui/sdl */
                 {
                     int vrdpPresent           = 0;
@@ -3535,6 +3562,17 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 }
             }
         }   /* Finished:Block to attach the Parallel Port to the VM */
+
+        {   /* Started:Block to specify video card settings */
+            if ((def->nvideos == 1) && (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VBOX)) {
+                machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram);
+                machine->vtbl->SetMonitorCount(machine, def->videos[0]->heads);
+                if (def->videos[0]->accel)
+                    machine->vtbl->SetAccelerate3DEnabled(machine, def->videos[0]->accel->support3d);
+                else
+                    machine->vtbl->SetAccelerate3DEnabled(machine, 0);
+            }
+        }   /* Finished:Block to specify video card settings */
 
         {   /* Started:Block to attach the Remote Display to VM */
             int vrdpPresent  = 0;
