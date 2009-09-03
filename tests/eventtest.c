@@ -248,7 +248,6 @@ resetAll(void)
 static int
 mymain(int argc, char **argv)
 {
-    int ret = 0;
     char *progname;
     int i;
     pthread_t eventThread;
@@ -304,7 +303,8 @@ mymain(int argc, char **argv)
     /* First time, is easy - just try triggering one of our
      * registered handles */
     startJob("Simple write", &test);
-    ret = safewrite(handles[1].pipeFD[1], &one, 1);
+    if (safewrite(handles[1].pipeFD[1], &one, 1) != 1)
+        return EXIT_FAILURE;
     if (finishJob(1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -314,7 +314,8 @@ mymain(int argc, char **argv)
      * try triggering another handle */
     virEventRemoveHandleImpl(handles[0].watch);
     startJob("Deleted before poll", &test);
-    ret = safewrite(handles[1].pipeFD[1], &one, 1);
+    if (safewrite(handles[1].pipeFD[1], &one, 1) != 1)
+        return EXIT_FAILURE;
     if (finishJob(1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -346,8 +347,9 @@ mymain(int argc, char **argv)
      * about */
     startJob("Deleted during dispatch", &test);
     handles[2].delete = handles[3].watch;
-    ret = safewrite(handles[2].pipeFD[1], &one, 1);
-    ret = safewrite(handles[3].pipeFD[1], &one, 1);
+    if (safewrite(handles[2].pipeFD[1], &one, 1) != 1
+        || safewrite(handles[3].pipeFD[1], &one, 1) != 1)
+        return EXIT_FAILURE;
     if (finishJob(2, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -356,7 +358,8 @@ mymain(int argc, char **argv)
     /* Extreme fun, lets delete ourselves during dispatch */
     startJob("Deleted during dispatch", &test);
     handles[2].delete = handles[2].watch;
-    ret = safewrite(handles[2].pipeFD[1], &one, 1);
+    if (safewrite(handles[2].pipeFD[1], &one, 1) != 1)
+        return EXIT_FAILURE;
     if (finishJob(2, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
@@ -446,7 +449,8 @@ mymain(int argc, char **argv)
                                              testPipeReader,
                                              &handles[1], NULL);
     startJob("Write duplicate", &test);
-    ret = safewrite(handles[1].pipeFD[1], &one, 1);
+    if (safewrite(handles[1].pipeFD[1], &one, 1) != 1)
+        return EXIT_FAILURE;
     if (finishJob(1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
