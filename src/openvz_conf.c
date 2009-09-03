@@ -183,7 +183,7 @@ openvzReadNetworkConf(virConnectPtr conn,
                       virDomainDefPtr def,
                       int veid) {
     int ret;
-    virDomainNetDefPtr net;
+    virDomainNetDefPtr net = NULL;
     char temp[4096];
     char *token, *saveptr = NULL;
 
