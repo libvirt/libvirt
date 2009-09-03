@@ -4,7 +4,7 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2005, 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -1812,7 +1812,7 @@ libvirt_virConnectDomainEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 cleanup:
     LIBVIRT_RELEASE_THREAD_STATE;
-    return -1;
+    return ret;
 }
 
 static PyObject *
