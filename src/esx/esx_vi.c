@@ -856,9 +856,8 @@ esxVI_Enumeration_Deserialize(virConnectPtr conn,
     return result;
 
   failure:
-    goto cleanup;
-
     result = -1;
+    goto cleanup;
 }
 
 
