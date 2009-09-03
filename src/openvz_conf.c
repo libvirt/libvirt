@@ -692,7 +692,6 @@ openvz_copyfile(char* from_path, char* to_path)
     fd = -1;
     if (close(copy_fd) < 0)
         goto error;
-    copy_fd = -1;
 
     return 0;
 
