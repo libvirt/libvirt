@@ -275,7 +275,7 @@ umlBuildCommandLineChr(virConnectPtr conn,
                        virDomainChrDefPtr def,
                        const char *dev)
 {
-    char *ret;
+    char *ret = NULL;
 
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
