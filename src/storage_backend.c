@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2009 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -47,6 +47,7 @@
 #include "util.h"
 #include "memory.h"
 #include "node_device.h"
+#include "internal.h"
 
 #include "storage_backend.h"
 
@@ -103,7 +104,7 @@ enum {
     TOOL_QCOW_CREATE,
 };
 
-static int
+static int ATTRIBUTE_NONNULL (3)
 virStorageBackendCopyToFD(virConnectPtr conn,
                           virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
@@ -119,13 +120,11 @@ virStorageBackendCopyToFD(virConnectPtr conn,
     char zerobuf[512];
     char *buf = NULL;
 
-    if (inputvol) {
-        if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
-            virReportSystemError(conn, errno,
-                                 _("could not open input path '%s'"),
-                                 inputvol->target.path);
-            goto cleanup;
-        }
+    if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
+        virReportSystemError(conn, errno,
+                             _("could not open input path '%s'"),
+                             inputvol->target.path);
+        goto cleanup;
     }
 
     bzero(&zerobuf, sizeof(zerobuf));
