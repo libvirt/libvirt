@@ -5226,6 +5226,9 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
         break;
     }
 
+    if (virBufferError(buf))
+        return -1;
+
     return 0;
 }
 
@@ -5548,6 +5551,9 @@ xenDaemonFormatSxprSound(virConnectPtr conn,
         }
         virBufferVSprintf(buf, "%s%s", i ? "," : "", str);
     }
+
+    if (virBufferError(buf))
+        return -1;
 
     return 0;
 }

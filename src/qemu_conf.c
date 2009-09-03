@@ -1848,6 +1848,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 continue;
             }
 
+            ADD_ARG_SPACE;
+
             if (idx < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  _("unsupported disk type '%s'"), disk->dst);
@@ -1905,7 +1907,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             optstr = virBufferContentAndReset(&opt);
 
-            ADD_ARG_LIT("-drive");
+            if ((qargv[qargc++] = strdup("-drive")) == NULL) {
+                VIR_FREE(optstr);
+                goto no_memory;
+            }
             ADD_ARG(optstr);
         }
     } else {
@@ -1961,6 +1966,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             net->vlan = i;
 
+            ADD_ARG_SPACE;
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
                 qemuAssignNetNames(def, net) < 0)
                 goto no_memory;
@@ -1968,9 +1974,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (qemuBuildNicStr(conn, net, NULL, ',', net->vlan, &nic) < 0)
                 goto error;
 
-            ADD_ARG_LIT("-net");
+            if ((qargv[qargc++] = strdup("-net")) == NULL) {
+                VIR_FREE(nic);
+                goto no_memory;
+            }
             ADD_ARG(nic);
 
+
+            ADD_ARG_SPACE;
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 int tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags);
@@ -1994,7 +2005,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            ADD_ARG_LIT("-net");
+            if ((qargv[qargc++] = strdup("-net")) == NULL) {
+                VIR_FREE(host);
+                goto no_memory;
+            }
             ADD_ARG(host);
 
             VIR_FREE(tapfd_name);
@@ -2362,6 +2376,7 @@ static int qemuStringToArgvEnv(const char *args,
             goto no_memory;
         for (i = 0 ; i < envend ; i++) {
             progenv[i] = arglist[i];
+            arglist[i] = NULL;
         }
         progenv[i] = NULL;
     }
