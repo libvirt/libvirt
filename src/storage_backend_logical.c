@@ -437,7 +437,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
             goto cleanup;
     }
 
-    vgargv[n++] = NULL;
+    vgargv[n] = NULL;
 
     /* Now create the volume group itself */
     if (virRun(conn, vgargv, NULL) < 0)
