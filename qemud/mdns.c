@@ -178,7 +178,7 @@ static void libvirtd_mdns_create_services(struct libvirtd_mdns_group *group) {
 
 static void libvirtd_mdns_client_callback(AvahiClient *c, AvahiClientState state, void *userdata) {
     struct libvirtd_mdns *mdns = (struct libvirtd_mdns *)userdata;
-    struct libvirtd_mdns_group *group = mdns->group;
+    struct libvirtd_mdns_group *group;
     if (!mdns->client)
         mdns->client = c;
 
