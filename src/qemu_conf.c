@@ -1272,7 +1272,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
             if (net->hostnet_name) {
                 virBufferVSprintf(&buf, "%cname=%s", type_sep,
                                   net->hostnet_name);
-                type_sep = ',';
+                type_sep = ','; /* dead-store, but leave it, in case... */
             }
             if (virBufferError(&buf)) {
                 virReportOOMError(conn);
