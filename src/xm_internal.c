@@ -1851,10 +1851,10 @@ int xenXMDomainCreate(virDomainPtr domain) {
         goto error;
     domain->id = ret;
 
-    if ((ret = xend_wait_for_devices(domain->conn, domain->name)) < 0)
+    if (xend_wait_for_devices(domain->conn, domain->name) < 0)
         goto error;
 
-    if ((ret = xenDaemonDomainResume(domain)) < 0)
+    if (xenDaemonDomainResume(domain) < 0)
         goto error;
 
     xenUnifiedUnlock(priv);
