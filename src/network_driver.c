@@ -1428,9 +1428,7 @@ static int networkSetAutostart(virNetworkPtr net,
             goto cleanup;
 
         if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->networkAutostartDir))) {
+            if (virFileMakePath(driver->networkAutostartDir)) {
                 virReportSystemError(net->conn, errno,
                                      _("cannot create autostart directory '%s'"),
                                      driver->networkAutostartDir);
