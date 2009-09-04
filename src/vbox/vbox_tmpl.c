@@ -245,6 +245,7 @@ typedef nsID vboxIID;
 #define vboxIIDToUUID(uuid, iid) nsIDtoChar((uuid), (iid))
 #define vboxIIDUnalloc(iid) data->pFuncs->pfnComUnallocMem(iid)
 #define vboxIIDFree(iid) VIR_FREE(iid)
+#define DEBUGIID(msg, iid) DEBUGUUID(msg, iid)
 
 #else /* !(VBOX_API_VERSION == 2002) */
 
@@ -267,6 +268,8 @@ typedef PRUnichar vboxIID;
 }
 
 #define vboxIIDFree(iid) data->pFuncs->pfnUtf16Free(iid)
+#define vboxIIDUnalloc(iid) data->pFuncs->pfnUtf16Free(iid)
+#define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
 
 #endif /* !(VBOX_API_VERSION == 2002) */
 
@@ -744,11 +747,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id) {
 
                         machines[id]->vtbl->GetId(machines[id], &iid);
                         vboxIIDToUUID(iidl, iid);
-#if VBOX_API_VERSION == 2002
                         vboxIIDUnalloc(iid);
-#else
-                        vboxIIDFree(iid);
-#endif
 
                         /* get a new domain pointer from virGetDomain, if it fails
                          * then no need to assign the id, else assign the id, cause
@@ -812,11 +811,7 @@ static virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn, const unsigned ch
                 if (!iid)
                     continue;
                 vboxIIDToUUID(iidl, iid);
-#if VBOX_API_VERSION == 2002
                 vboxIIDUnalloc(iid);
-#else
-                vboxIIDFree(iid);
-#endif
 
                 if (memcmp(uuid, iidl, VIR_UUID_BUFLEN) == 0) {
 
@@ -908,11 +903,7 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
                     machine->vtbl->GetId(machine, &iid);
                     vboxIIDToUUID(iidl, iid);
-#if VBOX_API_VERSION == 2002
                     vboxIIDUnalloc(iid);
-#else
-                    vboxIIDFree(iid);
-#endif
 
                     machine->vtbl->GetState(machine, &state);
 
@@ -1514,11 +1505,7 @@ static int vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED) {
             data->vboxSession->vtbl->Close(data->vboxSession);
         }
 
-#if VBOX_API_VERSION == 2002
-        DEBUGUUID("UUID of machine being saved:", iid);
-#else
-        DEBUGPRUnichar("UUID of machine being saved:", iid);
-#endif
+        DEBUGIID("UUID of machine being saved:", iid);
     }
 
 #if VBOX_API_VERSION == 2002
@@ -2845,11 +2832,7 @@ static int vboxDomainCreate(virDomainPtr dom) {
                         ret = -1;
                     }
                 }
-#if VBOX_API_VERSION == 2002
                 vboxIIDUnalloc(iid);
-#else
-                vboxIIDFree(iid);
-#endif
                 if (ret != -1)
                     break;
             }
@@ -3082,21 +3065,13 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                       "could not attach the file to cdrom",
                                                       def->disks[i]->src, (unsigned)rc);
                                         } else {
-#if VBOX_API_VERSION == 2002
-                                            DEBUGUUID("CD/DVDImage UUID:", dvduuid);
-#else
-                                            DEBUGPRUnichar("CD/DVDImage UUID:", dvduuid);
-#endif
+                                            DEBUGIID("CD/DVDImage UUID:", dvduuid);
                                         }
                                     }
 
                                     dvdImage->vtbl->imedium.nsisupports.Release((nsISupports *)dvdImage);
                                 }
-#if VBOX_API_VERSION == 2002
                                 vboxIIDUnalloc(dvduuid);
-#else
-                                vboxIIDFree(dvduuid);
-#endif
                                 data->pFuncs->pfnUtf16Free(dvdfileUtf16);
                                 dvdDrive->vtbl->nsisupports.Release((nsISupports *)dvdDrive);
                             }
@@ -3185,22 +3160,14 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                           "could not attach the file as harddisk",
                                                           def->disks[i]->src, (unsigned)rc);
                                             } else {
-#if VBOX_API_VERSION == 2002
-                                                DEBUGUUID("Attached HDD with UUID", hdduuid);
-#else
-                                                DEBUGPRUnichar("Attached HDD with UUID", hdduuid);
-#endif
+                                                DEBUGIID("Attached HDD with UUID", hdduuid);
                                             }
                                         }
                                     }
                                 }
                                 hardDisk->vtbl->imedium.nsisupports.Release((nsISupports *)hardDisk);
                             }
-#if VBOX_API_VERSION == 2002
                             vboxIIDUnalloc(hdduuid);
-#else
-                            vboxIIDFree(hdduuid);
-#endif
                             data->pFuncs->pfnUtf16Free(hddfileUtf16);
                         } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
@@ -3251,20 +3218,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                           "could not attach the file to floppy drive",
                                                           def->disks[i]->src, (unsigned)rc);
                                             } else {
-#if VBOX_API_VERSION == 2002
-                                                DEBUGUUID("floppyImage UUID", fduuid);
-#else
-                                                DEBUGPRUnichar("floppyImage UUID", fduuid);
-#endif
+                                                DEBUGIID("floppyImage UUID", fduuid);
                                             }
                                         }
                                         floppyImage->vtbl->imedium.nsisupports.Release((nsISupports *)floppyImage);
                                     }
-#if VBOX_API_VERSION == 2002
                                     vboxIIDUnalloc(fduuid);
-#else
-                                    vboxIIDFree(fduuid);
-#endif
                                     data->pFuncs->pfnUtf16Free(fdfileUtf16);
                                 }
                                 floppyDrive->vtbl->nsisupports.Release((nsISupports *)floppyDrive);
@@ -3820,11 +3779,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
          */
         rc = machine->vtbl->SaveSettings(machine);
         data->vboxSession->vtbl->Close(data->vboxSession);
-#if VBOX_API_VERSION == 2002
         vboxIIDUnalloc(mchiid);
-#else
-        vboxIIDFree(mchiid);
-#endif
 
         dom = virGetDomain(conn, def->name, def->uuid);
         if(machine) {
@@ -3894,11 +3849,7 @@ static int vboxDomainUndefine(virDomainPtr dom) {
         }
 
         rc = data->vboxObj->vtbl->UnregisterMachine(data->vboxObj, iid, &machine);
-#if VBOX_API_VERSION == 2002
-        DEBUGUUID("UUID of machine being undefined", iid);
-#else
-        DEBUGPRUnichar("UUID of machine being undefined", iid);
-#endif
+        DEBUGIID("UUID of machine being undefined", iid);
 
         if (NS_SUCCEEDED(rc) && machine){
             machine->vtbl->DeleteSettings(machine);
@@ -4015,21 +3966,13 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                                           dev->data.disk->src, (unsigned)rc);
                                             } else {
                                                 ret = 0;
-#if VBOX_API_VERSION == 2002
-                                                DEBUGUUID("CD/DVD Image UUID:", dvduuid);
-#else
-                                                DEBUGPRUnichar("CD/DVD Image UUID:", dvduuid);
-#endif
+                                                DEBUGIID("CD/DVD Image UUID:", dvduuid);
                                             }
                                         }
 
                                         dvdImage->vtbl->imedium.nsisupports.Release((nsISupports *)dvdImage);
                                     }
-#if VBOX_API_VERSION == 2002
                                     vboxIIDUnalloc(dvduuid);
-#else
-                                    vboxIIDFree(dvduuid);
-#endif
                                     data->pFuncs->pfnUtf16Free(dvdfileUtf16);
                                     dvdDrive->vtbl->nsisupports.Release((nsISupports *)dvdDrive);
                                 }
@@ -4082,20 +4025,12 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                                               dev->data.disk->src, (unsigned)rc);
                                                 } else {
                                                     ret = 0;
-#if VBOX_API_VERSION == 2002
-                                                    DEBUGUUID("attached floppy, UUID:", fduuid);
-#else
-                                                    DEBUGPRUnichar("attached floppy, UUID:", fduuid);
-#endif
+                                                    DEBUGIID("attached floppy, UUID:", fduuid);
                                                 }
                                             }
                                             floppyImage->vtbl->imedium.nsisupports.Release((nsISupports *)floppyImage);
                                         }
-#if VBOX_API_VERSION == 2002
                                         vboxIIDUnalloc(fduuid);
-#else
-                                        vboxIIDFree(fduuid);
-#endif
                                         data->pFuncs->pfnUtf16Free(fdfileUtf16);
                                     }
                                     floppyDrive->vtbl->nsisupports.Release((nsISupports *)floppyDrive);
@@ -4973,11 +4908,7 @@ static virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned 
                     ret = virGetNetwork(conn, nameUtf8, uuid);
 
                     DEBUG("Network Name: %s", nameUtf8);
-#if VBOX_API_VERSION == 2002
-                    DEBUGUUID("Network UUID", iid);
-#else
-                    DEBUGPRUnichar("Network UUID", iid);
-#endif
+                    DEBUGIID("Network UUID", iid);
 
                     data->pFuncs->pfnUtf8Free(nameUtf8);
                     data->pFuncs->pfnUtf16Free(nameUtf16);
@@ -5027,13 +4958,8 @@ static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *nam
                     ret = virGetNetwork(conn, name, uuid);
                     DEBUG("Network Name: %s", name);
 
-#if VBOX_API_VERSION == 2002
-                    DEBUGUUID("Network UUID", iid);
+                    DEBUGIID("Network UUID", iid);
                     vboxIIDUnalloc(iid);
-#else
-                    DEBUGPRUnichar("Network UUID", iid);
-                    vboxIIDFree(iid);
-#endif
                 }
 
                 networkInterface->vtbl->nsisupports.Release((nsISupports *) networkInterface);
@@ -5195,13 +5121,8 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
                 networkInterface->vtbl->GetId(networkInterface, &vboxnetiid);
                 if (vboxnetiid) {
                     vboxIIDToUUID(uuid, vboxnetiid);
-#if VBOX_API_VERSION == 2002
-                    DEBUGUUID("Real Network UUID", vboxnetiid);
+                    DEBUGIID("Real Network UUID", vboxnetiid);
                     vboxIIDUnalloc(vboxnetiid);
-#else /* VBOX_API_VERSION != 2002 */
-                    DEBUGPRUnichar("Real Network UUID", vboxnetiid);
-                    vboxIIDFree(vboxnetiid);
-#endif /* VBOX_API_VERSION != 2002 */
                     ret = virGetNetwork(conn, networkInterfaceNameUtf8, uuid);
                 }
 
@@ -5530,13 +5451,8 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                             data->pFuncs->pfnUtf16Free(ipAddressUtf16);
                         }
 
-#if VBOX_API_VERSION == 2002
-                        DEBUGUUID("Network UUID", vboxnet0IID);
+                        DEBUGIID("Network UUID", vboxnet0IID);
                         vboxIIDUnalloc(vboxnet0IID);
-#else
-                        DEBUGPRUnichar("Network UUID", vboxnet0IID);
-                        vboxIIDFree(vboxnet0IID);
-#endif
                         data->pFuncs->pfnUtf16Free(networkNameUtf16);
                     } else {
                         vboxError(network->conn, VIR_ERR_SYSTEM_ERROR,
