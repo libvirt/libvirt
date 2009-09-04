@@ -521,6 +521,57 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
+                   esxVI_ManagedObjectReference *virtualMachine)
+{
+    int result = 0;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *request = NULL;
+    esxVI_Response *response = NULL;
+
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
+    virBufferAddLit(&buffer, "<UnregisterVM xmlns=\"urn:vim25\">");
+
+    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
+                                               &buffer,
+                                               esxVI_Boolean_True) < 0) {
+        goto failure;
+    }
+
+    virBufferAddLit(&buffer, "</UnregisterVM>");
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    request = virBufferContentAndReset(&buffer);
+
+    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
+                              esxVI_Boolean_False) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    VIR_FREE(request);
+    esxVI_Response_Free(&response);
+
+    return result;
+
+  failure:
+    if (request == NULL) {
+        request = virBufferContentAndReset(&buffer);
+    }
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
                    esxVI_PropertyFilterSpec *propertyFilterSpec,
                    esxVI_Boolean partialUpdates,

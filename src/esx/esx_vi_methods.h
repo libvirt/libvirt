@@ -72,6 +72,9 @@ int esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
                           esxVI_VirtualMachineConfigSpec *spec,
                           esxVI_ManagedObjectReference **task);
 
+int esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
+                       esxVI_ManagedObjectReference *virtualMachine);
+
 int esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
                        esxVI_PropertyFilterSpec *propertyFilterSpec,
                        esxVI_Boolean partialUpdates,

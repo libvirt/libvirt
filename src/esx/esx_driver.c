@@ -2399,6 +2399,60 @@ esxDomainCreate(virDomainPtr domain)
 
 
 
+static int
+esxDomainUndefine(virDomainPtr domain)
+{
+    int result = 0;
+    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+
+    if (priv->phantom) {
+        ESX_ERROR(domain->conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        goto failure;
+    }
+
+    if (esxVI_EnsureSession(domain->conn, priv->host) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
+                                         domain->uuid, propertyNameList,
+                                         &virtualMachine) < 0 ||
+        esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
+                                          &powerState) < 0) {
+        goto failure;
+    }
+
+    if (powerState != esxVI_VirtualMachinePowerState_Suspended &&
+        powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+        ESX_ERROR(domain->conn, VIR_ERR_OPERATION_INVALID,
+                  "Domain is not suspended or powered off");
+        goto failure;
+    }
+
+    if (esxVI_UnregisterVM(domain->conn, priv->host, virtualMachine->obj) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_String_Free(&propertyNameList);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
 /*
  * The scheduler interface exposes basically the CPU ResourceAllocationInfo:
  *
@@ -3010,7 +3064,7 @@ static virDriver esxDriver = {
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */
     NULL,                            /* domainDefineXML */
-    NULL,                            /* domainUndefine */
+    esxDomainUndefine,               /* domainUndefine */
     NULL,                            /* domainAttachDevice */
     NULL,                            /* domainDetachDevice */
     NULL,                            /* domainGetAutostart */
