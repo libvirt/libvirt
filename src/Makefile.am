@@ -6,7 +6,7 @@ INCLUDES = \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
-	   $(LIBSSH_CFLAGS) \
+	   $(LIBSSH2_CFLAGS) \
 	   $(XEN_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
 	   $(DRIVER_MODULE_CFLAGS) \
@@ -308,8 +308,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_phyp.la
 libvirt_la_LIBADD += libvirt_driver_phyp.la
 endif
-libvirt_driver_phyp_la_LDFLAGS = $(LIBSSH_LIBS)
-libvirt_driver_phyp_la_CFLAGS = $(LIBSSH_CFLAGS)
+libvirt_driver_phyp_la_LDFLAGS = $(LIBSSH2_LIBS)
+libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS)
 libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
 endif
 

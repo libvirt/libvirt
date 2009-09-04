@@ -1,5 +1,5 @@
 #include <config.h>
-#include <libssh/libssh.h>
+#include <libssh2.h>
 
 #define LPAR_EXEC_ERR -1
 #define SSH_CONN_ERR -2         /* error while trying to connect to remote host */
@@ -8,8 +8,9 @@
 typedef struct _ConnectionData ConnectionData;
 typedef ConnectionData *ConnectionDataPtr;
 struct _ConnectionData {
-    SSH_SESSION *session;
+    LIBSSH2_SESSION *session;
     virConnectAuthPtr auth;
+    int sock;
 };
 
 /* This is the lpar (domain) struct that relates
@@ -42,8 +43,6 @@ void stripPath(char *striped_path, char *path);
 
 void stripNewline(char *striped_string, char *string);
 
-int buffer_add_u8(struct buffer_struct *buffer, u8 data);
-
 int phypGetLparState(virConnectPtr conn, unsigned int lpar_id);
 
 unsigned long phypGetLparMem(virConnectPtr conn,
@@ -61,4 +60,6 @@ char *phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
 
 int phypDiskType(virConnectPtr conn, char *backing_device);
 
-SSH_SESSION *openSSHSession(virConnectPtr conn, virConnectAuthPtr auth);
+LIBSSH2_SESSION *openSSHSession(virConnectPtr conn, virConnectAuthPtr auth, int *internal_socket);
+
+int waitsocket(int socket_fd, LIBSSH2_SESSION * session);

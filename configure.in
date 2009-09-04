@@ -187,8 +187,8 @@ AC_ARG_WITH([uml],
 [  --with-uml              add UML support (on)],[],[with_uml=check])
 AC_ARG_WITH([openvz],
 [  --with-openvz           add OpenVZ support (on)],[],[with_openvz=yes])
-AC_ARG_WITH([libssh],
-[  --with-libssh=[PFX]       libssh location],[],[with_libssh=yes])
+AC_ARG_WITH([libssh2],
+[  --with-libssh2=[PFX]       libssh2 location],[],[with_libssh2=yes])
 AC_ARG_WITH([phyp],
 [  --with-phyp=[PFX]         add PHYP support (on)],[],[with_phyp=check])
 AC_ARG_WITH([vbox],
@@ -866,45 +866,45 @@ dnl
 dnl libssh checks
 dnl
 
-if test "$with_libssh" != "yes" -a "$with_libssh" != "no"; then
-		libssh_path="$with_libssh"
-elif test "$with_libssh" = "yes"; then
-		libssh_path="/usr/local/lib/"
-elif test "$with_libssh" = "no"; then
+if test "$with_libssh2" != "yes" -a "$with_libssh2" != "no"; then
+		libssh2_path="$with_libssh2"
+elif test "$with_libssh2" = "yes"; then
+		libssh2_path="/usr/local/lib/"
+elif test "$with_libssh2" = "no"; then
 		with_phyp="no";
 fi
 
 if test "$with_phyp" = "check"; then
-  AC_CHECK_LIB([ssh],[ssh_new],[
-        LIBSSH_LIBS="$LIBSSH_LIBS -lssh -L$libssh_path"
-        AC_SUBST([LIBSSH_LIBS])],[
+  AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
+        LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
+        AC_SUBST([LIBSSH2_LIBS])],[
         with_phyp="no"
-		    with_libssh="no";
+		    with_libssh2="no";
 				],[])
 
 	if test "$with_phyp" != "no"; then
-  AC_CHECK_HEADERS([libssh/libssh.h],[
+  AC_CHECK_HEADERS([libssh2.h],[
 		    with_phyp="yes"
-        LIBSSH_CFLAGS="-I/usr/local/include/libssh"
-        AC_SUBST([LIBSSH_CFLAGS])
+        LIBSSH2_CFLAGS="-I/usr/local/include"
+        AC_SUBST([LIBSSH2_CFLAGS])
 	      AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
         [whether IBM HMC / IVM driver is enabled])
 				],[
         with_phyp="no"
-		    with_libssh="no";
+		    with_libssh2="no";
 				],[])
 	fi
 elif test "$with_phyp" = "yes"; then
-  AC_CHECK_LIB([ssh],[ssh_new],[
-        LIBSSH_LIBS="$LIBSSH_LIBS -lssh -L$libssh_path"
-        AC_SUBST([LIBSSH_LIBS])],[
-        AC_MSG_ERROR([You must install the libssh to compile Phype driver.])
+  AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
+        LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
+        AC_SUBST([LIBSSH2_LIBS])],[
+        AC_MSG_ERROR([You must install the libssh2 to compile Phype driver.])
 				])
 
-  AC_CHECK_HEADERS([libssh/libssh.h],[
-        LIBSSH_CFLAGS="-I/usr/local/include/libssh"
-        AC_SUBST([LIBSSH_CFLAGS])],[
-        AC_MSG_ERROR([Cannot find libssh headers.Is libssh installed ?])
+  AC_CHECK_HEADERS([libssh2.h],[
+        LIBSSH2_CFLAGS="-I/usr/local/include"
+        AC_SUBST([LIBSSH2_CFLAGS])],[
+        AC_MSG_ERROR([Cannot find libssh2 headers.Is libssh2 installed ?])
 				],[])
   AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
         [whether IBM HMC / IVM driver is enabled])
@@ -1699,10 +1699,10 @@ AC_MSG_NOTICE([ libcurl: $LIBCURL_CFLAGS $LIBCURL_LIBS])
 else
 AC_MSG_NOTICE([ libcurl: no])
 fi
-if test "$with_libssh" != "no" ; then
-AC_MSG_NOTICE([  libssh: $LIBSSH_CFLAGS $LIBSSH_LIBS])
+if test "$with_libssh2" != "no" ; then
+AC_MSG_NOTICE([  libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
 else
-AC_MSG_NOTICE([  libssh: no])
+AC_MSG_NOTICE([  libssh2: no])
 fi
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
 if test "$with_sasl" != "no" ; then
