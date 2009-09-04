@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007 Red Hat
+ * Copyright (C) 2006-2007, 2009 Red Hat
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -995,7 +995,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
-            int type = -1;
             char script[PATH_MAX];
             char model[10];
             char ip[16];
@@ -1031,7 +1030,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     mac[len] = '\0';
                 } else if (STRPREFIX(key, "bridge=")) {
                     int len = nextkey ? (nextkey - data) : sizeof(bridge)-1;
-                    type = 1;
                     if (len > (sizeof(bridge)-1))
                         len = sizeof(bridge)-1;
                     strncpy(bridge, data, len);
@@ -1067,11 +1065,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                                    nextkey[0] == '\t'))
                     nextkey++;
                 key = nextkey;
-            }
-
-            /* XXX Forcing to pretend its a bridge */
-            if (type == -1) {
-                type = 1;
             }
 
             if (VIR_ALLOC(net) < 0)
