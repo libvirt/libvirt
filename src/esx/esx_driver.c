@@ -851,9 +851,10 @@ esxDomainLookupByID(virConnectPtr conn, int id)
     }
 
     if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
+                                           "configStatus\0"
                                            "name\0"
                                            "runtime.powerState\0"
-                                           "summary.config.uuid\0") < 0 ||
+                                           "config.uuid\0") < 0 ||
         esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
                                "VirtualMachine", propertyNameList,
                                esxVI_Boolean_True, &virtualMachineList) < 0) {
@@ -939,9 +940,10 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
 
     if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
+                                           "configStatus\0"
                                            "name\0"
                                            "runtime.powerState\0"
-                                           "summary.config.uuid\0") < 0 ||
+                                           "config.uuid\0") < 0 ||
         esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
                                "VirtualMachine", propertyNameList,
                                esxVI_Boolean_True, &virtualMachineList) < 0) {
@@ -1030,9 +1032,10 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
     }
 
     if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
+                                           "configStatus\0"
                                            "name\0"
                                            "runtime.powerState\0"
-                                           "summary.config.uuid\0") < 0 ||
+                                           "config.uuid\0") < 0 ||
         esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
                                "VirtualMachine", propertyNameList,
                                esxVI_Boolean_True, &virtualMachineList) < 0) {

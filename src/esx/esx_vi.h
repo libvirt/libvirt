@@ -232,6 +232,11 @@ int esxVI_GetObjectContent(virConnectPtr conn, esxVI_Context *ctx,
                            esxVI_Boolean recurse,
                            esxVI_ObjectContent **objectContentList);
 
+int esxVI_GetManagedEntityStatus
+      (virConnectPtr conn, esxVI_ObjectContent *objectContent,
+       const char *propertyName,
+       esxVI_ManagedEntityStatus *managedEntityStatus);
+
 int esxVI_GetVirtualMachinePowerState
       (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachinePowerState *powerState);

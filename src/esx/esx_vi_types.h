@@ -52,6 +52,7 @@ typedef struct _esxVI_DateTime esxVI_DateTime;
  * VI Enums
  */
 
+typedef enum _esxVI_ManagedEntityStatus esxVI_ManagedEntityStatus;
 typedef enum _esxVI_ObjectUpdateKind esxVI_ObjectUpdateKind;
 typedef enum _esxVI_PerfSummaryType esxVI_PerfSummaryType;
 typedef enum _esxVI_PerfStatsType esxVI_PerfStatsType;
@@ -273,6 +274,24 @@ int esxVI_DateTime_Serialize(virConnectPtr conn, esxVI_DateTime *dateTime,
                              esxVI_Boolean required);
 int esxVI_DateTime_Deserialize(virConnectPtr conn, xmlNodePtr node,
                                esxVI_DateTime **dateTime);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Enum: ManagedEntityStatus
+ */
+
+enum _esxVI_ManagedEntityStatus {
+    esxVI_ManagedEntityStatus_Undefined = 0,
+    esxVI_ManagedEntityStatus_Gray,
+    esxVI_ManagedEntityStatus_Green,
+    esxVI_ManagedEntityStatus_Yellow,
+    esxVI_ManagedEntityStatus_Red,
+};
+
+int esxVI_ManagedEntityStatus_CastFromAnyType
+      (virConnectPtr conn, esxVI_AnyType *anyType,
+       esxVI_ManagedEntityStatus *managedEntityStatus);
 
 
 

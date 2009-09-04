@@ -1054,6 +1054,25 @@ esxVI_DateTime_Deserialize(virConnectPtr conn, xmlNodePtr node,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Enum: ManagedEntityStatus
+ */
+
+static const esxVI_Enumeration _esxVI_ManagedEntityStatus_Enumeration = {
+    "ManagedEntityStatus", {
+        { "gray", esxVI_ManagedEntityStatus_Gray },
+        { "green", esxVI_ManagedEntityStatus_Green },
+        { "yellow", esxVI_ManagedEntityStatus_Yellow },
+        { "red", esxVI_ManagedEntityStatus_Red },
+        { NULL, -1 },
+    },
+};
+
+/* esxVI_ManagedEntityStatus_CastFromAnyType */
+ESX_VI__TEMPLATE__ENUMERATION__CAST_FROM_ANY_TYPE(ManagedEntityStatus);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Enum: ObjectUpdateKind
  */
 

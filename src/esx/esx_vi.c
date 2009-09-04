@@ -1359,6 +1359,30 @@ esxVI_GetObjectContent(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_GetManagedEntityStatus(virConnectPtr conn,
+                             esxVI_ObjectContent *objectContent,
+                             const char *propertyName,
+                             esxVI_ManagedEntityStatus *managedEntityStatus)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            return esxVI_ManagedEntityStatus_CastFromAnyType
+                     (conn, dynamicProperty->val, managedEntityStatus);
+        }
+    }
+
+    ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                 "Missing '%s' property", propertyName);
+
+    return -1;
+}
+
+
+
+int
 esxVI_GetVirtualMachinePowerState(virConnectPtr conn,
                                   esxVI_ObjectContent *virtualMachine,
                                   esxVI_VirtualMachinePowerState *powerState)
@@ -1445,6 +1469,7 @@ esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
 {
     const char *uuid_string = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_ManagedEntityStatus configStatus = esxVI_ManagedEntityStatus_Undefined;
 
     if (STRNEQ(virtualMachine->obj->type, "VirtualMachine")) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1496,30 +1521,43 @@ esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
     }
 
     if (uuid != NULL) {
-        for (dynamicProperty = virtualMachine->propSet;
-             dynamicProperty != NULL;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "summary.config.uuid")) {
-                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
-                                             esxVI_Type_String) < 0) {
-                    goto failure;
+        if (esxVI_GetManagedEntityStatus(conn, virtualMachine, "configStatus",
+                                         &configStatus) < 0) {
+            goto failure;
+        }
+
+        if (configStatus == esxVI_ManagedEntityStatus_Green) {
+            for (dynamicProperty = virtualMachine->propSet;
+                 dynamicProperty != NULL;
+                 dynamicProperty = dynamicProperty->_next) {
+                if (STREQ(dynamicProperty->name, "config.uuid")) {
+                    if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                                 esxVI_Type_String) < 0) {
+                        goto failure;
+                    }
+
+                    uuid_string = dynamicProperty->val->string;
+                    break;
                 }
-
-                uuid_string = dynamicProperty->val->string;
-                break;
             }
-        }
 
-        if (uuid_string == NULL) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Could not get UUID of virtual machine");
-            goto failure;
-        }
+            if (uuid_string == NULL) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Could not get UUID of virtual machine");
+                goto failure;
+            }
 
-        if (virUUIDParse(uuid_string, uuid) < 0) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Could not parse UUID from string '%s'", uuid_string);
-            goto failure;
+            if (virUUIDParse(uuid_string, uuid) < 0) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Could not parse UUID from string '%s'",
+                             uuid_string);
+                goto failure;
+            }
+        } else {
+            memset(uuid, 0, VIR_UUID_BUFLEN);
+
+            VIR_WARN0("Cannot access UUID, because 'configStatus' property "
+                      "indicates a config problem");
         }
     }
 
