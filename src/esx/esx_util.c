@@ -393,7 +393,11 @@ esxUtil_GetConfigUUID(virConnectPtr conn, virConfPtr conf, const char *name,
         }
     }
 
-    virUUIDParse(value->str, uuid);
+    if (virUUIDParse(value->str, uuid) < 0) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Could not parse UUID from string '%s'", value->str);
+        return -1;
+    }
 
     return 0;
 }
