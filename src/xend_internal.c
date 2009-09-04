@@ -4535,6 +4535,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
 int xenDaemonDomainCreate(virDomainPtr domain)
 {
     xenUnifiedPrivatePtr priv;
+    int ret;
+    virDomainPtr tmp;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -4547,7 +4549,17 @@ int xenDaemonDomainCreate(virDomainPtr domain)
     if (priv->xendConfigVersion < 3)
         return(-1);
 
-    return xend_op(domain->conn, domain->name, "op", "start", NULL);
+    ret = xend_op(domain->conn, domain->name, "op", "start", NULL);
+
+    if (ret != -1) {
+        /* Need to force a refresh of this object's ID */
+        tmp = virDomainLookupByName(domain->conn, domain->name);
+        if (tmp) {
+            domain->id = tmp->id;
+            virDomainFree(tmp);
+        }
+    }
+    return ret;
 }
 
 int xenDaemonDomainUndefine(virDomainPtr domain)
