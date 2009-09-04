@@ -1,7 +1,7 @@
 /*
  * network_conf.c: network XML handling
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -329,8 +329,7 @@ virNetworkDefParseXML(virConnectPtr conn,
     /* Extract network uuid */
     tmp = virXPathString(conn, "string(./uuid[1])", ctxt);
     if (!tmp) {
-        int err;
-        if ((err = virUUIDGenerate(def->uuid))) {
+        if (virUUIDGenerate(def->uuid)) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("Failed to generate UUID"));
             goto error;
