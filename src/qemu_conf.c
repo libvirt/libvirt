@@ -1066,7 +1066,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                          virDomainNetDefPtr net,
                          int qemuCmdFlags)
 {
-    char *brname;
+    char *brname = NULL;
     int err;
     int tapfd = -1;
     int vnet_hdr = 0;
@@ -1085,7 +1085,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         if (brname == NULL)
             return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        brname = net->data.bridge.brname;
+        brname = strdup(net->data.bridge.brname);
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Network type %d is not supported"), net->type);
@@ -1095,7 +1095,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (!driver->brctl && (err = brInit(&driver->brctl))) {
         virReportSystemError(conn, err, "%s",
                              _("cannot initialize bridge support"));
-        return -1;
+        goto cleanup;
     }
 
     if (!net->ifname ||
@@ -1104,7 +1104,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         VIR_FREE(net->ifname);
         if (!(net->ifname = strdup("vnet%d"))) {
             virReportOOMError(conn);
-            return -1;
+            goto cleanup;
         }
         /* avoid exposing vnet%d in dumpxml or error outputs */
         template_ifname = 1;
@@ -1132,8 +1132,11 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         }
         if (template_ifname)
             VIR_FREE(net->ifname);
-        return -1;
+        tapfd = -1;
     }
+
+cleanup:
+    VIR_FREE(brname);
 
     return tapfd;
 }

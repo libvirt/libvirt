@@ -820,6 +820,7 @@ int virNetworkDeleteConfig(virConnectPtr conn,
 {
     char *configFile = NULL;
     char *autostartLink = NULL;
+    int ret = -1;
 
     if ((configFile = virNetworkConfigFile(conn, configDir, net->def->name)) == NULL)
         goto error;
@@ -836,12 +837,12 @@ int virNetworkDeleteConfig(virConnectPtr conn,
         goto error;
     }
 
-    return 0;
+    ret = 0;
 
 error:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
-    return -1;
+    return ret;
 }
 
 char *virNetworkConfigFile(virConnectPtr conn,

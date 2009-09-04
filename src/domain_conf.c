@@ -4496,6 +4496,7 @@ int virDomainSaveXML(virConnectPtr conn,
  cleanup:
     if (fd != -1)
         close(fd);
+    VIR_FREE(configFile);
     return ret;
 }
 

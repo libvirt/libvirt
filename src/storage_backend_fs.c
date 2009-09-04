@@ -1056,6 +1056,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 
     vol->type = VIR_STORAGE_VOL_FILE;
 
+    VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
                     vol->name) == -1) {
@@ -1063,6 +1064,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         return -1;
     }
 
+    VIR_FREE(vol->key);
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
         virReportOOMError(conn);
