@@ -519,13 +519,12 @@ storagePoolDefine(virConnectPtr conn,
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
-    virStorageBackendPtr backend;
 
     storageDriverLock(driver);
     if (!(def = virStoragePoolDefParseString(conn, xml)))
         goto cleanup;
 
-    if ((backend = virStorageBackendForType(def->type)) == NULL)
+    if (virStorageBackendForType(def->type) == NULL)
         goto cleanup;
 
     if (!(pool = virStoragePoolObjAssignDef(conn, &driver->pools, def)))
@@ -847,7 +846,6 @@ storagePoolGetInfo(virStoragePoolPtr obj,
                    virStoragePoolInfoPtr info) {
     virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
     virStoragePoolObjPtr pool;
-    virStorageBackendPtr backend;
     int ret = -1;
 
     storageDriverLock(driver);
@@ -860,7 +858,7 @@ storagePoolGetInfo(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
+    if (virStorageBackendForType(pool->def->type) == NULL)
         goto cleanup;
 
     memset(info, 0, sizeof(virStoragePoolInfo));
