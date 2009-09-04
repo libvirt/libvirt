@@ -56,9 +56,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
-#ifdef ENABLE_DEBUG
-#define PHYP_CMD_DEBUG fprintf(stdout,"%s:%d - COMMAND:%s\n",__FUNCTION__,__LINE__,cmd);
-#endif
+#define PHYP_CMD_DEBUG VIR_DEBUG("COMMAND:%s\n",cmd);
 
 static int escape_specialcharacters(char *src, char *dst, size_t dstlen);
 

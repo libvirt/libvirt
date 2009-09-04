@@ -12,6 +12,7 @@
 %define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_uml           0%{!?_without_uml:1}
 %define with_one           0%{!?_without_one:1}
+%define with_phyp          0%{!?_without_phyp:1}
 %define with_network       0%{!?_without_network:1}
 %define with_storage_fs    0%{!?_without_storage_fs:1}
 %define with_storage_lvm   0%{!?_without_storage_lvm:1}
@@ -23,9 +24,6 @@
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_capng         0%{!?_without_capng:0}
 %define with_netcf         0%{!?_without_netcf:0}
-
-# default to off
-%define with_phyp          0%{!?_without_phyp:0}
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
@@ -196,7 +194,7 @@ BuildRequires: numactl-devel
 BuildRequires: libcap-ng-devel >= 0.5.0
 %endif
 %if %{with_phyp}
-BuildRequires: libssh-devel >= 0.3.1
+BuildRequires: libssh2-devel
 %endif
 %if %{with_netcf}
 BuildRequires: netcf-devel
