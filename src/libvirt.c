@@ -619,9 +619,9 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
 
 /**
  * virRegisterInterfaceDriver:
- * @driver: pointer to a interface driver block
+ * @driver: pointer to an interface driver block
  *
- * Register a interface virtualization driver
+ * Register an interface virtualization driver
  *
  * Returns the driver priority or -1 in case of error.
  */
@@ -5441,7 +5441,7 @@ error:
 /**
  * virNetworkGetXMLDesc:
  * @network: a network object
- * @flags: and OR'ed set of extraction flags, not used yet
+ * @flags: an OR'ed set of extraction flags, not used yet
  *
  * Provide an XML description of the network. The description may be reused
  * later to relaunch the network with virNetworkCreateXML().
@@ -5621,7 +5621,7 @@ error:
 
 /**
  * virInterfaceGetConnect:
- * @iface: pointer to a interface
+ * @iface: pointer to an interface
  *
  * Provides the connection pointer associated with an interface.  The
  * reference counter on the connection is not increased by this
@@ -5895,7 +5895,7 @@ error:
 
 /**
  * virInterfaceGetName:
- * @iface: a interface object
+ * @iface: an interface object
  *
  * Get the public name for that interface
  *
@@ -5918,9 +5918,9 @@ virInterfaceGetName(virInterfacePtr iface)
 
 /**
  * virInterfaceGetMACString:
- * @iface: a interface object
+ * @iface: an interface object
  *
- * Get the MAC for a interface as string. For more information about
+ * Get the MAC for an interface as string. For more information about
  * MAC see RFC4122.
  *
  * Returns a pointer to the MAC address (in null-terminated ASCII
@@ -5943,11 +5943,11 @@ virInterfaceGetMACString(virInterfacePtr iface)
 
 /**
  * virInterfaceGetXMLDesc:
- * @iface: a interface object
- * @flags: and OR'ed set of extraction flags, not used yet
+ * @iface: an interface object
+ * @flags: an OR'ed set of extraction flags, not used yet
  *
  * Provide an XML description of the interface. The description may be reused
- * later to recreate the interface with virInterfaceCreateXML().
+ * later to redefine the interface with virInterfaceDefineXML().
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
@@ -6176,7 +6176,7 @@ error:
  * This method is typically useful for applications where multiple
  * threads are using a connection, and it is required that the
  * connection remain open until all threads have finished using
- * it. ie, each new thread using a interface would increment
+ * it. ie, each new thread using an interface would increment
  * the reference count.
  *
  * Returns 0 in case of success, -1 in case of failure.
@@ -6197,7 +6197,7 @@ virInterfaceRef(virInterfacePtr iface)
 
 /**
  * virInterfaceFree:
- * @iface: a interface object
+ * @iface: an interface object
  *
  * Free the interface object. The interface itself is unaltered.
  * The data structure is freed and should not be used thereafter.
