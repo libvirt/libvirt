@@ -4028,10 +4028,10 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
     if (!(dom = virDomainLookupByName(conn, def->name)))
         goto error;
 
-    if ((ret = xend_wait_for_devices(conn, def->name)) < 0)
+    if (xend_wait_for_devices(conn, def->name) < 0)
         goto error;
 
-    if ((ret = xenDaemonDomainResume(dom)) < 0)
+    if (xenDaemonDomainResume(dom) < 0)
         goto error;
 
     virDomainDefFree(def);
