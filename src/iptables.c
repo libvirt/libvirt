@@ -398,7 +398,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         1;  /*   arg           */
 
     va_start(args, arg);
-    while ((s = va_arg(args, const char *)))
+    while (va_arg(args, const char *))
         n++;
 
     va_end(args);
