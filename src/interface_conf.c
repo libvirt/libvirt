@@ -228,11 +228,9 @@ static int
 virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceDefPtr def,
                          xmlNodePtr dhcp, xmlXPathContextPtr ctxt) {
     char *tmp;
-    xmlNodePtr old;
     int ret = 0;
 
     def->proto.dhcp = 1;
-    old = ctxt->node;
     ctxt->node = dhcp;
     /* Not much to do in the current version */
     tmp = virXPathString(conn, "string(./@peerdns)", ctxt);
