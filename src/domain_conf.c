@@ -2520,8 +2520,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     /* Extract domain uuid */
     tmp = virXPathString(conn, "string(./uuid[1])", ctxt);
     if (!tmp) {
-        int err;
-        if ((err = virUUIDGenerate(def->uuid))) {
+        if (virUUIDGenerate(def->uuid)) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("Failed to generate UUID"));
             goto error;
@@ -4456,12 +4455,11 @@ int virDomainSaveXML(virConnectPtr conn,
     char *configFile = NULL;
     int fd = -1, ret = -1;
     size_t towrite;
-    int err;
 
     if ((configFile = virDomainConfigFile(conn, configDir, def->name)) == NULL)
         goto cleanup;
 
-    if ((err = virFileMakePath(configDir))) {
+    if (virFileMakePath(configDir)) {
         virReportSystemError(conn, errno,
                              _("cannot create config directory '%s'"),
                              configDir);
