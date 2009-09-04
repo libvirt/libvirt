@@ -663,7 +663,7 @@ int virExecDaemonize(virConnectPtr conn,
 
     ret = virExecWithHook(conn, argv, envp, keepfd, retpid,
                           infd, outfd, errfd,
-                          flags |= VIR_EXEC_DAEMON,
+                          flags | VIR_EXEC_DAEMON,
                           hook, data, pidfile);
 
     /* __virExec should have set an error */
