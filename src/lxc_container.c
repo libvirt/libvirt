@@ -1,6 +1,6 @@
 /*
  * Copyright IBM Corp. 2008
- * Copyright Red Hat 2008
+ * Copyright Red Hat 2008-2009
  *
  * lxc_container.c: file description
  *
@@ -384,12 +384,12 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
         { "none", "/selinux", "selinuxfs" },
 #endif
     };
-    int i, rc;
+    int i, rc = -1;
     char *devpts;
 
     if (virAsprintf(&devpts, "/.oldroot%s/dev/pts", root->src) < 0) {
         virReportOOMError(NULL);
-        return -1;
+        return rc;
     }
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
@@ -397,31 +397,35 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
             virReportSystemError(NULL, errno,
                                  _("failed to mkdir %s"),
                                  mnts[i].src);
-            return -1;
+            goto cleanup;
         }
         if (mount(mnts[i].src, mnts[i].dst, mnts[i].type, 0, NULL) < 0) {
             virReportSystemError(NULL, errno,
                                  _("failed to mount %s on %s"),
                                  mnts[i].type, mnts[i].type);
-            return -1;
+            goto cleanup;
         }
     }
 
     if ((rc = virFileMakePath("/dev/pts") < 0)) {
         virReportSystemError(NULL, rc, "%s",
                              _("cannot create /dev/pts"));
-        return -1;
+        goto cleanup;
     }
 
     VIR_DEBUG("Trying to move %s to %s", devpts, "/dev/pts");
     if ((rc = mount(devpts, "/dev/pts", NULL, MS_MOVE, NULL)) < 0) {
         virReportSystemError(NULL, errno, "%s",
                              _("failed to mount /dev/pts in container"));
-        return -1;
+        goto cleanup;
     }
+
+    rc = 0;
+
+ cleanup:
     VIR_FREE(devpts);
 
-    return 0;
+    return rc;
 }
 
 static int lxcContainerPopulateDevices(void)
