@@ -5521,6 +5521,7 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
 {
     const char *name;
     virNodeDevicePtr device;
+    char *xml;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -5531,7 +5532,14 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    vshPrint(ctl, "%s\n", virNodeDeviceGetXMLDesc(device, 0));
+    xml = virNodeDeviceGetXMLDesc(device, 0);
+    if (!xml) {
+        virNodeDeviceFree(device);
+        return FALSE;
+    }
+
+    vshPrint(ctl, "%s\n", xml);
+    free(xml);
     virNodeDeviceFree(device);
     return TRUE;
 }
