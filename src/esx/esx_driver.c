@@ -58,11 +58,56 @@ typedef struct _esxPrivate {
     esxVI_Context *host;
     esxVI_Context *vCenter;
     int phantom; // boolean
+    virCapsPtr caps;
     char *transport;
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
+
+
+
+static virCapsPtr
+esxCapsInit(virConnectPtr conn)
+{
+    virCapsPtr caps = NULL;
+    virCapsGuestPtr guest = NULL;
+
+    /* FIXME: Need to detect real host architecture */
+    caps = virCapabilitiesNew("i686", 1, 1);
+
+    if (caps == NULL) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x50, 0x56 });
+    virCapabilitiesAddHostMigrateTransport(caps, "esx");
+
+    /* FIXME: Need to detect real host architecture and word size */
+    guest =
+      virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0, NULL);
+
+    if (guest == NULL) {
+        goto failure;
+    }
+
+    /*
+     * FIXME: Maybe distinguish betwen ESX and GSX here, see
+     * esxVMX_ParseConfig() and VIR_DOMAIN_VIRT_VMWARE
+     */
+    if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+                                      NULL) == NULL) {
+        goto failure;
+    }
+
+    return caps;
+
+  failure:
+    virCapabilitiesFree(caps);
+
+    return NULL;
+}
 
 
 
@@ -177,6 +222,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             }
         }
 
+        /* Login to host */
         if (virAsprintf(&url, "%s://%s:%d/sdk", priv->transport,
                         conn->uri->server, conn->uri->port) < 0) {
             virReportOOMError(conn);
@@ -235,6 +281,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(password);
         VIR_FREE(username);
 
+        /* Login to vCenter */
         if (vCenter != NULL) {
             if (virAsprintf(&url, "%s://%s/sdk", priv->transport,
                             vCenter) < 0) {
@@ -282,6 +329,13 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         VIR_FREE(vCenter);
+
+        /* Setup capabilities */
+        priv->caps = esxCapsInit(conn);
+
+        if (priv->caps == NULL) {
+            goto failure;
+        }
     }
 
     conn->privateData = priv;
@@ -297,6 +351,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     if (priv != NULL) {
         esxVI_Context_Free(&priv->host);
         esxVI_Context_Free(&priv->vCenter);
+
+        virCapabilitiesFree(priv->caps);
 
         VIR_FREE(priv->transport);
         VIR_FREE(priv);
@@ -325,6 +381,8 @@ esxClose(virConnectPtr conn)
             esxVI_Context_Free(&priv->vCenter);
         }
     }
+
+    virCapabilitiesFree(priv->caps);
 
     VIR_FREE(priv->transport);
     VIR_FREE(priv);
@@ -724,6 +782,30 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
     result = -1;
 
     goto cleanup;
+}
+
+
+
+static char *
+esxGetCapabilities(virConnectPtr conn)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    char *xml = NULL;
+
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        return NULL;
+    }
+
+    xml = virCapabilitiesFormatXML(priv->caps);
+
+    if (xml == NULL) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    return xml;
 }
 
 
@@ -2895,7 +2977,7 @@ static virDriver esxDriver = {
     esxGetHostname,                  /* hostname */
     NULL,                            /* getMaxVcpus */
     esxNodeGetInfo,                  /* nodeGetInfo */
-    NULL,                            /* getCapabilities */
+    esxGetCapabilities,              /* getCapabilities */
     esxListDomains,                  /* listDomains */
     esxNumberOfDomains,              /* numOfDomains */
     NULL,                            /* domainCreateXML */
