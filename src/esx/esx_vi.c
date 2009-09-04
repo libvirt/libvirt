@@ -442,7 +442,8 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
 
     if (responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d", (int)responseCode);
+                     "HTTP response code %d while trying to download '%s'",
+                     (int)responseCode, url);
         goto failure;
     }
 

@@ -2015,6 +2015,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     const char *vmPathName = NULL;
     char *datastoreName = NULL;
     char *vmxPath = NULL;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *vmx = NULL;
     virDomainDefPtr def = NULL;
@@ -2052,20 +2053,27 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     }
 
     /* expected format: "[<datastoreName>] <vmxPath>" */
-    if (sscanf(vmPathName, "[%a[^]%]] %as", &datastoreName, &vmxPath) != 2) {
+    if (sscanf(vmPathName, "[%a[^]%]] %a[^\n]", &datastoreName, &vmxPath) != 2) {
         ESX_ERROR(domain->conn, VIR_ERR_OPERATION_INVALID,
                   "'config.files.vmPathName' property '%s' doesn't have "
                   "expected format '[<datastore>] <vmx>'", vmPathName);
         goto failure;
     }
 
-    if (virAsprintf(&url, "%s://%s:%d/folder/%s?dcPath=%s&dsName=%s",
-                    priv->transport, domain->conn->uri->server,
-                    domain->conn->uri->port, vmxPath,
-                    priv->host->datacenter->value, datastoreName) < 0) {
+    virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->transport,
+                      domain->conn->uri->server, domain->conn->uri->port);
+    virBufferURIEncodeString(&buffer, vmxPath);
+    virBufferAddLit(&buffer, "?dcPath=");
+    virBufferURIEncodeString(&buffer, priv->host->datacenter->value);
+    virBufferAddLit(&buffer, "&dsName=");
+    virBufferURIEncodeString(&buffer, datastoreName);
+
+    if (virBufferError(&buffer)) {
         virReportOOMError(domain->conn);
         goto failure;
     }
+
+    url = virBufferContentAndReset(&buffer);
 
     if (esxVI_Context_Download(domain->conn, priv->host, url, &vmx) < 0) {
         goto failure;
