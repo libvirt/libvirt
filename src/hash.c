@@ -231,7 +231,6 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
                 inside_table = 0;
                 iter = next;
             }
-            inside_table = 0;
         }
         VIR_FREE(table->table);
     }
