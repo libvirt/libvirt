@@ -34,6 +34,7 @@
 #include "util.h"
 #include "uuid.h"
 #include "virterror_internal.h"
+#include "xml.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
@@ -479,7 +480,8 @@ ESX_VI__TEMPLATE__FREE(RemoteRequest,
 int
 esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
                             esxVI_RemoteRequest *remoteRequest,
-                            esxVI_RemoteResponse **remoteResponse)
+                            esxVI_RemoteResponse **remoteResponse,
+                            esxVI_Boolean expectList)
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
@@ -566,16 +568,24 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
                            BAD_CAST "urn:vim25");
 
         if ((*remoteResponse)->responseCode == 500) {
-            (*remoteResponse)->xpathObject =
-                xmlXPathEval(BAD_CAST
-                             "/soapenv:Envelope/soapenv:Body/soapenv:Fault",
-                             (*remoteResponse)->xpathContext);
+            (*remoteResponse)->node =
+              virXPathNode(conn, "/soapenv:Envelope/soapenv:Body/soapenv:Fault",
+                           (*remoteResponse)->xpathContext);
 
-            if (esxVI_RemoteResponse_DeserializeXPathObject
-                  (conn, *remoteResponse,
-                   (esxVI_RemoteResponse_DeserializeFunc)
-                     esxVI_Fault_Deserialize,
-                   (void **)&fault) < 0) {
+            if ((*remoteResponse)->node == NULL) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "HTTP response code %d. VI Fault is unknown, "
+                             "XPath evaluation failed",
+                             (int)(*remoteResponse)->responseCode);
+                goto failure;
+            }
+
+            if (esxVI_Fault_Deserialize(conn, (*remoteResponse)->node,
+                                        &fault) < 0) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "HTTP response code %d. VI Fault is unknown, "
+                             "deserialization failed",
+                             (int)(*remoteResponse)->responseCode);
                 goto failure;
             }
 
@@ -585,10 +595,37 @@ esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
                          fault->faultcode, fault->faultstring);
 
             goto failure;
+        } else if (expectList == esxVI_Boolean_True) {
+            xmlNodePtr *nodeSet = NULL;
+            int nodeSet_size;
+
+            nodeSet_size = virXPathNodeSet(conn, remoteRequest->xpathExpression,
+                                           (*remoteResponse)->xpathContext,
+                                           &nodeSet);
+
+            if (nodeSet_size < 0) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "XPath evaluation of '%s' failed",
+                             remoteRequest->xpathExpression);
+                goto failure;
+            } else if (nodeSet_size == 0) {
+                (*remoteResponse)->node = NULL;
+            } else {
+                (*remoteResponse)->node = nodeSet[0];
+            }
+
+            VIR_FREE(nodeSet);
         } else {
-            (*remoteResponse)->xpathObject =
-              xmlXPathEval(BAD_CAST remoteRequest->xpathExpression,
+            (*remoteResponse)->node =
+              virXPathNode(conn, remoteRequest->xpathExpression,
                            (*remoteResponse)->xpathContext);
+
+            if ((*remoteResponse)->node == NULL) {
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "XPath evaluation of '%s' failed",
+                             remoteRequest->xpathExpression);
+                goto failure;
+            }
         }
     } else if ((*remoteResponse)->responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
@@ -627,119 +664,12 @@ ESX_VI__TEMPLATE__FREE(RemoteResponse,
 {
     VIR_FREE(item->response);
 
-    xmlXPathFreeObject(item->xpathObject);
     xmlXPathFreeContext(item->xpathContext);
 
     if (item->document != NULL) {
         xmlFreeDoc(item->document);
     }
 });
-
-int
-esxVI_RemoteResponse_DeserializeXPathObject
-  (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-   esxVI_RemoteResponse_DeserializeFunc deserializeFunc, void **item)
-{
-    xmlNodePtr node = NULL;
-
-    if (remoteResponse->xpathObject != NULL &&
-        remoteResponse->xpathObject->type == XPATH_NODESET) {
-        if (remoteResponse->xpathObject->nodesetval->nodeNr != 1) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Expecting 1 XML node but found '%d'",
-                         remoteResponse->xpathObject->nodesetval->nodeNr);
-            return -1;
-        }
-
-        node = remoteResponse->xpathObject->nodesetval->nodeTab[0];
-
-        if (node->type != XML_ELEMENT_NODE) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Wrong XML element type %d", node->type);
-            return -1;
-        }
-
-        if (deserializeFunc(conn, node, item) < 0) {
-            return -1;
-        }
-    } else {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "XPath error");
-        return -1;
-    }
-
-    return 0;
-}
-
-int
-esxVI_RemoteResponse_DeserializeXPathObjectList
-  (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-   esxVI_RemoteResponse_DeserializeListFunc deserializeListFunc,
-   esxVI_List **list)
-{
-    xmlNodePtr node = NULL;
-
-    if (remoteResponse->xpathObject != NULL &&
-        remoteResponse->xpathObject->type == XPATH_NODESET) {
-        if (remoteResponse->xpathObject->nodesetval->nodeNr > 0) {
-            node = remoteResponse->xpathObject->nodesetval->nodeTab[0];
-
-            if (node->type != XML_ELEMENT_NODE) {
-                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                             "Wrong XML element type %d", node->type);
-                return -1;
-            }
-        } else {
-            node = NULL;
-        }
-
-        if (deserializeListFunc(conn, node, list) < 0) {
-            return -1;
-        }
-    } else {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "XPath error");
-        return -1;
-    }
-
-    return 0;
-}
-
-int
-esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-  (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-   esxVI_ManagedObjectReference **managedObjectReference,
-   const char *expectedType)
-{
-    xmlNodePtr node = NULL;
-
-    if (remoteResponse->xpathObject != NULL &&
-        remoteResponse->xpathObject->type == XPATH_NODESET) {
-        if (remoteResponse->xpathObject->nodesetval->nodeNr != 1) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Expecting 1 XML node but found '%d'",
-                         remoteResponse->xpathObject->nodesetval->nodeNr);
-            return -1;
-        }
-
-        node = remoteResponse->xpathObject->nodesetval->nodeTab[0];
-
-        if (node->type != XML_ELEMENT_NODE) {
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Wrong XML element type %d", node->type);
-            return -1;
-        }
-
-        if (esxVI_ManagedObjectReference_Deserialize(conn, node,
-                                                     managedObjectReference,
-                                                     expectedType) < 0) {
-            return -1;
-        }
-    } else {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "XPath error");
-        return -1;
-    }
-
-    return 0;
-}
 
 
 
@@ -1669,10 +1599,10 @@ esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
         goto failure;
     }
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-          (conn, remoteResponse, task, "Task") < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Deserialize
+          (conn, remoteResponse->node, task, "Task") < 0) {
         goto failure;
     }
 
@@ -1789,8 +1719,8 @@ esxVI_SimpleVirtualMachineMethod(virConnectPtr conn, esxVI_Context *ctx,
 
     remoteRequest->request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0) {
         goto failure;
     }
 

@@ -91,13 +91,10 @@ esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("RetrieveServiceContent");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObject
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeFunc)
-             esxVI_ServiceContent_Deserialize,
-           (void **)serviceContent) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_ServiceContent_Deserialize(conn, remoteResponse->node,
+                                         serviceContent) < 0) {
         goto failure;
     }
 
@@ -170,13 +167,10 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->request = virBufferContentAndReset(&buffer);
     remoteRequest->xpathExpression = ESX_VI__SOAP__RESPONSE_XPATH("Login");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObject
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeFunc)
-             esxVI_UserSession_Deserialize,
-           (void **)userSession) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_UserSession_Deserialize(conn, remoteResponse->node,
+                                      userSession) < 0) {
         goto failure;
     }
 
@@ -238,8 +232,8 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
 
     remoteRequest->request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0) {
         goto failure;
     }
 
@@ -306,17 +300,9 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("SessionIsActive");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObject
-          (conn, remoteResponse,
-           /*
-            * FIXME: esxVI_Boolean_Deserialize expects *boolean,
-            *        esxVI_RemoteResponse_DeserializeFunc expects void **,
-            *        passing *boolean casted to void * to it
-            */
-           (esxVI_RemoteResponse_DeserializeFunc)esxVI_Boolean_Deserialize,
-           (void *)active) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_Boolean_Deserialize(conn, remoteResponse->node, active) < 0) {
         goto failure;
     }
 
@@ -390,13 +376,10 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("RetrieveProperties");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectList
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeListFunc)
-             esxVI_ObjectContent_DeserializeList,
-           (esxVI_List **)objectContentList) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_ObjectContent_DeserializeList(conn, remoteResponse->node,
+                                            objectContentList) < 0) {
         goto failure;
     }
 
@@ -625,10 +608,10 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("CreateFilter");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-          (conn, remoteResponse, propertyFilter, "PropertyFilter") < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Deserialize
+          (conn, remoteResponse->node, propertyFilter, "PropertyFilter") < 0) {
         goto failure;
     }
 
@@ -690,8 +673,8 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
 
     remoteRequest->request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0) {
         goto failure;
     }
 
@@ -755,12 +738,10 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("WaitForUpdates");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObject
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeFunc)esxVI_UpdateSet_Deserialize,
-           (void **)updateSet) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_UpdateSet_Deserialize(conn, remoteResponse->node,
+                                    updateSet) < 0) {
         goto failure;
     }
 
@@ -870,13 +851,10 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("ValidateMigration");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectList
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeListFunc)
-             esxVI_Event_DeserializeList,
-           (esxVI_List **)eventList) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_Event_DeserializeList(conn, remoteResponse->node,
+                                    eventList) < 0) {
         goto failure;
     }
 
@@ -954,10 +932,10 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("FindByIp");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-          (conn, remoteResponse, managedObjectReference,
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Deserialize
+          (conn, remoteResponse->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
         goto failure;
@@ -1040,10 +1018,10 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("FindByUuid");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-          (conn, remoteResponse, managedObjectReference,
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Deserialize
+          (conn, remoteResponse->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
         goto failure;
@@ -1126,13 +1104,10 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("QueryAvailablePerfMetric");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectList
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeListFunc)
-             esxVI_PerfMetricId_DeserializeList,
-           (esxVI_List **)perfMetricIdList) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_PerfMetricId_DeserializeList(conn, remoteResponse->node,
+                                           perfMetricIdList) < 0) {
         goto failure;
     }
 
@@ -1204,13 +1179,10 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->xpathExpression =
       ESX_VI__SOAP__RESPONSE_XPATH("QueryPerfCounter");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectList
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeListFunc)
-             esxVI_PerfCounterInfo_DeserializeList,
-           (esxVI_List **)perfCounterInfoList) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_PerfCounterInfo_DeserializeList(conn, remoteResponse->node,
+                                              perfCounterInfoList) < 0) {
         goto failure;
     }
 
@@ -1282,13 +1254,10 @@ esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
     remoteRequest->request = virBufferContentAndReset(&buffer);
     remoteRequest->xpathExpression = ESX_VI__SOAP__RESPONSE_XPATH("QueryPerf");
 
-    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest,
-                                    &remoteResponse) < 0 ||
-        esxVI_RemoteResponse_DeserializeXPathObjectList
-          (conn, remoteResponse,
-           (esxVI_RemoteResponse_DeserializeListFunc)
-             esxVI_PerfEntityMetric_DeserializeList,
-           (esxVI_List **)perfEntityMetricList) < 0) {
+    if (esxVI_RemoteRequest_Execute(conn, ctx, remoteRequest, &remoteResponse,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_PerfEntityMetric_DeserializeList(conn, remoteResponse->node,
+                                               perfEntityMetricList) < 0) {
         goto failure;
     }
 

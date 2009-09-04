@@ -105,7 +105,8 @@ int esxVI_RemoteRequest_Alloc(virConnectPtr conn,
 void esxVI_RemoteRequest_Free(esxVI_RemoteRequest **remoteRequest);
 int esxVI_RemoteRequest_Execute(virConnectPtr conn, esxVI_Context *ctx,
                                 esxVI_RemoteRequest *remoteRequest,
-                                esxVI_RemoteResponse **remoteResponse);
+                                esxVI_RemoteResponse **remoteResponse,
+                                esxVI_Boolean expectList);
 
 
 
@@ -118,30 +119,12 @@ struct _esxVI_RemoteResponse {
     char *response;                                   /* required */
     xmlDocPtr document;                               /* optional */
     xmlXPathContextPtr xpathContext;                  /* optional */
-    xmlXPathObjectPtr xpathObject;                    /* optional */
+    xmlNodePtr node;                                  /* optional, list */
 };
-
-typedef int (*esxVI_RemoteResponse_DeserializeFunc) (virConnectPtr conn,
-                                                     xmlNodePtr node,
-                                                     void **item);
-typedef int (*esxVI_RemoteResponse_DeserializeListFunc) (virConnectPtr conn,
-                                                         xmlNodePtr node,
-                                                         esxVI_List **list);
 
 int esxVI_RemoteResponse_Alloc(virConnectPtr conn,
                                esxVI_RemoteResponse **remoteResponse);
 void esxVI_RemoteResponse_Free(esxVI_RemoteResponse **remoteResponse);
-int esxVI_RemoteResponse_DeserializeXPathObject
-      (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-       esxVI_RemoteResponse_DeserializeFunc deserializeFunc, void **item);
-int esxVI_RemoteResponse_DeserializeXPathObjectList
-      (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-       esxVI_RemoteResponse_DeserializeListFunc deserializeListFunc,
-       esxVI_List **list);
-int esxVI_RemoteResponse_DeserializeXPathObjectAsManagedObjectReference
-    (virConnectPtr conn, esxVI_RemoteResponse *remoteResponse,
-     esxVI_ManagedObjectReference **managedObjectReference,
-     const char *expectedType);
 
 
 
