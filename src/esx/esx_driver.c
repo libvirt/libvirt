@@ -3061,8 +3061,8 @@ static virDriver esxDriver = {
     NULL,                            /* domainGetSecurityLabel */
     NULL,                            /* nodeGetSecurityModel */
     esxDomainDumpXML,                /* domainDumpXML */
-    esxDomainXMLFromNative,          /* domainXmlFromNative */
-    NULL,                            /* domainXmlToNative */
+    esxDomainXMLFromNative,          /* domainXMLFromNative */
+    NULL,                            /* domainXMLToNative */
     esxListDefinedDomains,           /* listDefinedDomains */
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */

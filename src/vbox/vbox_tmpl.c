@@ -6426,8 +6426,8 @@ virDriver NAME(Driver) = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     vboxDomainDumpXML, /* domainDumpXML */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    NULL, /* domainXMLFromNative */
+    NULL, /* domainXMLToNative */
     vboxListDefinedDomains, /* listDefinedDomains */
     vboxNumOfDefinedDomains, /* numOfDefinedDomains */
     vboxDomainCreate, /* domainCreate */

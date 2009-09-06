@@ -1347,8 +1347,8 @@ virDriver phypDriver = {
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
     phypDomainDumpXML,          /* domainDumpXML */
-    NULL,                       /* domainXmlFromNative */
-    NULL,                       /* domainXmlToNative */
+    NULL,                       /* domainXMLFromNative */
+    NULL,                       /* domainXMLToNative */
     phypListDefinedDomains,     /* listDefinedDomains */
     phypNumDefinedDomains,      /* numOfDefinedDomains */
     NULL,                       /* domainCreate */

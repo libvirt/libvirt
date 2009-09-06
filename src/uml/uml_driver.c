@@ -1824,8 +1824,8 @@ static virDriver umlDriver = {
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     umlDomainDumpXML, /* domainDumpXML */
-    NULL, /* domainXmlFromNative */
-    NULL, /* domainXmlToNative */
+    NULL, /* domainXMLFromNative */
+    NULL, /* domainXMLToNative */
     umlListDefinedDomains, /* listDefinedDomains */
     umlNumDefinedDomains, /* numOfDefinedDomains */
     umlDomainStart, /* domainCreate */
