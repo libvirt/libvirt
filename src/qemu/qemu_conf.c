@@ -2363,7 +2363,7 @@ static int qemuStringToArgvEnv(const char *args,
         curr = next;
     }
 
-    /* Iterate over list of args, finding first arg not containining
+    /* Iterate over list of args, finding first arg not containing
      * the '=' character (eg, skip over env vars FOO=bar) */
     for (envend = 0 ; ((envend < argcount) &&
                        (strchr(arglist[envend], '=') != NULL));
