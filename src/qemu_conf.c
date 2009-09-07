@@ -554,11 +554,21 @@ qemudGetOldMachines(const char *ostype,
 
     for (i = 0; i < old_caps->nguests; i++) {
         virCapsGuestPtr guest = old_caps->guests[i];
+        int j;
 
         if (!STREQ(ostype, guest->ostype) ||
             !STREQ(arch, guest->arch.name) ||
             wordsize != guest->arch.wordsize)
             continue;
+
+        for (j = 0; j < guest->arch.ndomains; j++) {
+            virCapsGuestDomainPtr dom = guest->arch.domains[j];
+
+            if (qemudGetOldMachinesFromInfo(&dom->info,
+                                            emulator, emulator_mtime,
+                                            machines, nmachines))
+                return 1;
+        }
 
         if (qemudGetOldMachinesFromInfo(&guest->arch.defaultInfo,
                                         emulator, emulator_mtime,
