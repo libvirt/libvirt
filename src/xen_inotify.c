@@ -424,6 +424,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
             if (xenInotifyAddDomainConfigInfo(conn, path) < 0 ) {
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Error adding file to config list"));
+                closedir(dh);
                 return -1;
             }
         }
