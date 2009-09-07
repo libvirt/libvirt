@@ -1836,13 +1836,16 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
                             def->videos[0]->vram            = VRAMSize;
                             def->videos[0]->heads           = monitorCount;
-                            if (VIR_ALLOC(def->videos[0]->accel)) {
+                            if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
                                 def->videos[0]->accel->support3d = accelerate3DEnabled;
                                 /* Not supported yet, but should be in 3.1 soon */
                                 def->videos[0]->accel->support2d = 0;
-                            }
-                        }
-                    }
+                            } else
+                                virReportOOMError(dom->conn);
+                        } else
+                            virReportOOMError(dom->conn);
+                    } else
+                        virReportOOMError(dom->conn);
                 }
 
                 /* dump display options vrdp/gui/sdl */
@@ -1996,7 +1999,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 }
 
                                 def->ngraphics++;
-                            }
+                            } else
+                                virReportOOMError(dom->conn);
                         }
                         VRDPServer->vtbl->nsisupports.Release((nsISupports *)VRDPServer);
                     }
@@ -2027,7 +2031,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             def->disks[i]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                             def->disks[i]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                             def->disks[i]->type = VIR_DOMAIN_DISK_TYPE_FILE;
-                        }
+                        } else
+                            virReportOOMError(dom->conn);
                     }
                 }
 
@@ -2117,7 +2122,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 if ((def->nnets > 0) && (VIR_ALLOC_N(def->nets, def->nnets) >= 0)) {
                     for (i = 0; i < def->nnets; i++) {
                         if (VIR_ALLOC(def->nets[i]) >= 0) {
-                        }
+                        } else
+                            virReportOOMError(dom->conn);
                     }
                 }
 
@@ -2250,9 +2256,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             } else {
                                 VIR_FREE(def->sounds);
                                 def->nsounds = 0;
+                                virReportOOMError(dom->conn);
                             }
                         } else {
                             def->nsounds = 0;
+                            virReportOOMError(dom->conn);
                         }
                     }
                     audioAdapter->vtbl->nsisupports.Release((nsISupports *)audioAdapter);
@@ -2286,9 +2294,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                     def->disks[def->ndisks - 1]->dst = strdup("hdc");
                                 } else {
                                     def->ndisks--;
+                                    virReportOOMError(dom->conn);
                                 }
                             } else {
                                 def->ndisks--;
+                                virReportOOMError(dom->conn);
                             }
 
                             data->pFuncs->pfnUtf8Free(location);
@@ -2331,9 +2341,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                         def->disks[def->ndisks - 1]->dst = strdup("fda");
                                     } else {
                                         def->ndisks--;
+                                        virReportOOMError(dom->conn);
                                     }
                                 } else {
                                     def->ndisks--;
+                                    virReportOOMError(dom->conn);
                                 }
 
                                 data->pFuncs->pfnUtf8Free(location);
@@ -2369,7 +2381,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 if ((def->nserials > 0) && (VIR_ALLOC_N(def->serials, def->nserials) >= 0)) {
                     for (i = 0; i < def->nserials; i++) {
                         if (VIR_ALLOC(def->serials[i]) >= 0) {
-                        }
+                        } else
+                            virReportOOMError(dom->conn);
                     }
                 }
 
@@ -2444,7 +2457,8 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 if ((def->nparallels > 0) && (VIR_ALLOC_N(def->parallels, def->nparallels) >= 0)) {
                     for (i = 0; i < def->nparallels; i++) {
                         if (VIR_ALLOC(def->parallels[i]) >= 0) {
-                        }
+                        } else
+                            virReportOOMError(dom->conn);
                     }
                 }
 
@@ -2560,10 +2574,12 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                                 data->pFuncs->pfnUtf8Free(productIdUtf8);
 
                                                 USBFilterCount++;
-                                            }
+                                            } else
+                                                virReportOOMError(dom->conn);
                                         }
                                     }
-                                }
+                                } else
+                                    virReportOOMError(dom->conn);
                             }
                         }
 
@@ -3670,25 +3686,29 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
                 if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) && (guiPresent == 0)) {
                     guiPresent = 1;
-                    guiDisplay = strdup(def->graphics[i]->data.desktop.display);
-                    if (guiDisplay == NULL) {
-                        vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
-                        /* just don't go to cleanup yet as it is ok to have
-                         * guiDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
+                    if (def->graphics[i]->data.desktop.display) {
+                        guiDisplay = strdup(def->graphics[i]->data.desktop.display);
+                        if (guiDisplay == NULL) {
+                            virReportOOMError(conn);
+                            /* just don't go to cleanup yet as it is ok to have
+                             * guiDisplay as NULL and we check it below if it
+                             * exist and then only use it there
+                             */
+                        }
                     }
                 }
 
                 if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) && (sdlPresent == 0)) {
                     sdlPresent = 1;
-                    sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
-                    if (sdlDisplay == NULL) {
-                        vboxError(conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
-                        /* just don't go to cleanup yet as it is ok to have
-                         * sdlDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
+                    if (def->graphics[i]->data.sdl.display) {
+                        sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
+                        if (sdlDisplay == NULL) {
+                            virReportOOMError(conn);
+                            /* just don't go to cleanup yet as it is ok to have
+                             * sdlDisplay as NULL and we check it below if it
+                             * exist and then only use it there
+                             */
+                        }
                     }
                 }
             }
@@ -5488,6 +5508,7 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
                                 data->pFuncs->pfnUtf16Free(toIPAddressUtf16);
                             } else {
                                 def->nranges = 0;
+                                virReportOOMError(network->conn);
                             }
 
                             def->nhosts = 1;
