@@ -710,14 +710,48 @@ qemudCapsInitGuest(virCapsPtr caps,
                                           NULL) == NULL)
             return -1;
 
-        if (haskvm &&
-            virCapabilitiesAddGuestDomain(guest,
-                                          "kvm",
-                                          kvmbin,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
-            return -1;
+        if (haskvm) {
+            virCapsGuestDomainPtr dom;
+
+            if (stat(kvmbin, &st) == 0) {
+                binary_mtime = st.st_mtime;
+            } else {
+                char ebuf[1024];
+                VIR_WARN(_("Failed to stat %s, most peculiar : %s"),
+                         binary, virStrerror(errno, ebuf, sizeof(ebuf)));
+                binary_mtime = 0;
+            }
+
+            machines = NULL;
+            nmachines = 0;
+
+            if (!STREQ(binary, kvmbin)) {
+                int probe = 1;
+                if (old_caps && binary_mtime)
+                    probe = !qemudGetOldMachines("hvm", info->arch, info->wordsize,
+                                                 kvmbin, binary_mtime,
+                                                 old_caps, &machines, &nmachines);
+                if (probe &&
+                    qemudProbeMachineTypes(kvmbin, &machines, &nmachines) < 0)
+                    return -1;
+            }
+
+            if ((dom = virCapabilitiesAddGuestDomain(guest,
+                                                     "kvm",
+                                                     kvmbin,
+                                                     NULL,
+                                                     nmachines,
+                                                     machines)) == NULL) {
+                for (i = 0; i < nmachines; i++) {
+                    VIR_FREE(machines[i]->name);
+                    VIR_FREE(machines[i]);
+                }
+                VIR_FREE(machines);
+                return -1;
+            }
+
+            dom->info.emulator_mtime = binary_mtime;
+        }
     } else {
         if (virCapabilitiesAddGuestDomain(guest,
                                           "kvm",
