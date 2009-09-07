@@ -1314,7 +1314,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
 
                 if (!(data = strchr(key, '=')) || (data[0] == '\0'))
                     break;
-                data++;
 
                 if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
                     if (STRPREFIX(key, "vncunused=")) {
