@@ -137,7 +137,7 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity)
 {
-    int fd, i;
+    int fd, i, ret = -1;
     off_t start;
     unsigned char buffer[1024];
     ssize_t bytes;
@@ -154,7 +154,7 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
                                                fd,
                                                allocation,
                                                capacity) < 0)
-        return -1;
+        goto cleanup;
 
     /* make sure to set the target format "unknown" to begin with */
     target->format = VIR_STORAGE_POOL_DISK_UNKNOWN;
@@ -164,14 +164,14 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("cannot seek to beginning of file '%s'"),
                              target->path);
-        return -1;
+        goto cleanup;
     }
     bytes = saferead(fd, buffer, sizeof(buffer));
     if (bytes < 0) {
         virReportSystemError(conn, errno,
                              _("cannot read beginning of file '%s'"),
                              target->path);
-        return -1;
+        goto cleanup;
     }
 
     for (i = 0; disk_types[i].part_table_type != -1; i++) {
@@ -184,7 +184,12 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
         }
     }
 
-    return 0;
+    ret = 0;
+
+  cleanup:
+    close(fd);
+
+    return ret;
 }
 
 static int

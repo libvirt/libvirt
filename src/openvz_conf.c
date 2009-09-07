@@ -822,8 +822,10 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 
     while(1) {
         ret = openvz_readline(fd, line, sizeof(line));
-        if(ret == -1)
+        if(ret == -1) {
+            close(fd);
             return -1;
+        }
 
         if(ret == 0) { /* EoF, UUID was not found */
             uuidstr[0] = 0;
