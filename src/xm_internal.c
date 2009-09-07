@@ -862,7 +862,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
              */
 
             /* Extract the source file path*/
-            if (!(offset = strchr(head, ',')) || offset[0] == '\0')
+            if (!(offset = strchr(head, ',')))
                 goto skipdisk;
             if ((offset - head) >= (PATH_MAX-1))
                 goto skipdisk;
@@ -882,7 +882,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 head = head + 6;
 
             /* Extract the dest device name */
-            if (!(offset = strchr(head, ',')) || offset[0] == '\0')
+            if (!(offset = strchr(head, ',')))
                 goto skipdisk;
             if (VIR_ALLOC_N(disk->dst, (offset - head) + 1) < 0)
                 goto no_memory;
@@ -1018,7 +1018,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 char *data;
                 char *nextkey = strchr(key, ',');
 
-                if (!(data = strchr(key, '=')) || (data[0] == '\0'))
+                if (!(data = strchr(key, '=')))
                     goto skipnic;
                 data++;
 
@@ -1312,7 +1312,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     nextkey++;
                 }
 
-                if (!(data = strchr(key, '=')) || (data[0] == '\0'))
+                if (!(data = strchr(key, '=')))
                     break;
 
                 if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
