@@ -496,6 +496,51 @@ rewait:
 }
 
 static int
+qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
+                            const char *emulator,
+                            time_t emulator_mtime,
+                            virCapsGuestMachinePtr **machines,
+                            int *nmachines)
+{
+    virCapsGuestMachinePtr *list;
+    int i;
+
+    if (!info->emulator || !STREQ(emulator, info->emulator))
+        return 0;
+
+    if (emulator_mtime != info->emulator_mtime) {
+        VIR_DEBUG("mtime on %s has changed, refreshing machine types",
+                  info->emulator);
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(list, info->nmachines) < 0)
+        return 0;
+
+    for (i = 0; i < info->nmachines; i++) {
+        if (VIR_ALLOC(list[i]) < 0) {
+            virCapabilitiesFreeMachines(list, info->nmachines);
+            return 0;
+        }
+        if (info->machines[i]->name &&
+            !(list[i]->name = strdup(info->machines[i]->name))) {
+            virCapabilitiesFreeMachines(list, info->nmachines);
+            return 0;
+        }
+        if (info->machines[i]->canonical &&
+            !(list[i]->canonical = strdup(info->machines[i]->canonical))) {
+            virCapabilitiesFreeMachines(list, info->nmachines);
+            return 0;
+        }
+    }
+
+    *machines = list;
+    *nmachines = info->nmachines;
+
+    return 1;
+}
+
+static int
 qemudGetOldMachines(const char *ostype,
                     const char *arch,
                     int wordsize,
@@ -509,51 +554,16 @@ qemudGetOldMachines(const char *ostype,
 
     for (i = 0; i < old_caps->nguests; i++) {
         virCapsGuestPtr guest = old_caps->guests[i];
-        virCapsGuestDomainInfoPtr info = &guest->arch.defaultInfo;
-        virCapsGuestMachinePtr *list;
 
         if (!STREQ(ostype, guest->ostype) ||
             !STREQ(arch, guest->arch.name) ||
-            wordsize != guest->arch.wordsize ||
-            !STREQ(emulator, info->emulator))
+            wordsize != guest->arch.wordsize)
             continue;
 
-        if (emulator_mtime != info->emulator_mtime) {
-            VIR_DEBUG("mtime on %s has changed, refreshing machine types",
-                      info->emulator);
-            return 0;
-        }
-
-        /* It sucks to have to dup these, when we're most likely going
-         * to free the old caps anyway - except if an error occurs, we'll
-         * stick with the old caps.
-         * Also, if we get OOM here, just let the caller try and probe
-         * the binary directly, which will probably fail too.
-         */
-        if (VIR_ALLOC_N(list, info->nmachines) < 0)
-            return 0;
-
-        for (i = 0; i < info->nmachines; i++) {
-            if (VIR_ALLOC(list[i]) < 0) {
-                virCapabilitiesFreeMachines(list, info->nmachines);
-                return 0;
-            }
-            if (info->machines[i]->name &&
-                !(list[i]->name = strdup(info->machines[i]->name))) {
-                virCapabilitiesFreeMachines(list, info->nmachines);
-                return 0;
-            }
-            if (info->machines[i]->canonical &&
-                !(list[i]->canonical = strdup(info->machines[i]->canonical))) {
-                virCapabilitiesFreeMachines(list, info->nmachines);
-                return 0;
-            }
-        }
-
-        *machines = list;
-        *nmachines = info->nmachines;
-
-        return 1;
+        if (qemudGetOldMachinesFromInfo(&guest->arch.defaultInfo,
+                                        emulator, emulator_mtime,
+                                        machines, nmachines))
+            return 1;
     }
 
     return 0;
