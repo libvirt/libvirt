@@ -713,7 +713,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
             for (k = 0 ; k < caps->guests[i]->arch.domains[j]->info.nmachines ; k++) {
                 virCapsGuestMachinePtr machine = caps->guests[i]->arch.domains[j]->info.machines[k];
-                virBufferAddLit(&xml, "      <machine");
+                virBufferAddLit(&xml, "        <machine");
                 if (machine->canonical)
                     virBufferVSprintf(&xml, " canonical='%s'", machine->canonical);
                 virBufferVSprintf(&xml, ">%s</machine>\n", machine->name);
