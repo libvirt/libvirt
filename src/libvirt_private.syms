@@ -345,6 +345,7 @@ virStoragePartedFsTypeTypeToString;
 virStoragePoolObjLock;
 virStoragePoolObjUnlock;
 
+# storage_encryption_conf.h
 virStorageEncryptionFree;
 virStorageEncryptionDropSecrets;
 virStorageEncryptionParseNode;
