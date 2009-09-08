@@ -3723,7 +3723,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
     }
 
     ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) return NULL;
+    if (ret == NULL) goto error;
 
     ret->id = id;
     VIR_FREE(name);
