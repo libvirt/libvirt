@@ -239,15 +239,14 @@ openvzReadNetworkConf(virConnectPtr conn,
 
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
-            char *p = token, *next = token;
+            char *p = token;
             char cpy_temp[32];
             int len;
 
             /*parse string*/
             do {
-                while (*next != '\0' && *next != ',') next++;
+                char *next = strchrnul (token, ',');
                 if (STRPREFIX(p, "ifname=")) {
-                    p += 7;
                     /* skip in libvirt */
                 } else if (STRPREFIX(p, "host_ifname=")) {
                     p += 12;

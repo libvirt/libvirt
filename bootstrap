@@ -89,6 +89,7 @@ send
 setsockopt
 socket
 stpcpy
+strchrnul
 strndup
 strerror
 strsep
