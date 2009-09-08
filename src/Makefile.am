@@ -199,6 +199,9 @@ STORAGE_DRIVER_ISCSI_SOURCES =					\
 STORAGE_DRIVER_SCSI_SOURCES =					\
 		storage_backend_scsi.h storage_backend_scsi.c
 
+STORAGE_DRIVER_MPATH_SOURCES =					\
+		storage_backend_mpath.h storage_backend_mpath.c
+
 STORAGE_DRIVER_DISK_SOURCES =					\
 		storage_backend_disk.h storage_backend_disk.c
 
@@ -451,6 +454,7 @@ endif
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =
+libvirt_driver_storage_la_CFLAGS =
 if WITH_STORAGE_DIR
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
@@ -476,6 +480,11 @@ endif
 
 if WITH_STORAGE_SCSI
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SCSI_SOURCES)
+endif
+
+if WITH_STORAGE_MPATH
+libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_MPATH_SOURCES)
+libvirt_driver_storage_la_CFLAGS += $(DEVMAPPER_CFLAGS)
 endif
 
 if WITH_STORAGE_DISK
@@ -539,6 +548,7 @@ EXTRA_DIST +=							\
 		$(STORAGE_DRIVER_LVM_SOURCES)			\
 		$(STORAGE_DRIVER_ISCSI_SOURCES)			\
 		$(STORAGE_DRIVER_SCSI_SOURCES)			\
+		$(STORAGE_DRIVER_MPATH_SOURCES)			\
 		$(STORAGE_DRIVER_DISK_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
@@ -607,6 +617,7 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) $(SELINUX_LIBS) \
 		    $(XEN_LIBS) $(DRIVER_MODULE_LIBS) \
+		    $(DEVMAPPER_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt.syms

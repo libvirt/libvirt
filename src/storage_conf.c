@@ -53,7 +53,7 @@ VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
-              "scsi")
+              "scsi", "mpath")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
@@ -194,6 +194,11 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
       .poolOptions = {
             .flags = (VIR_STORAGE_POOL_SOURCE_ADAPTER),
         },
+      .volOptions = {
+            .formatToString = virStoragePoolFormatDiskTypeToString,
+        }
+    },
+    { .poolType = VIR_STORAGE_POOL_MPATH,
       .volOptions = {
             .formatToString = virStoragePoolFormatDiskTypeToString,
         }

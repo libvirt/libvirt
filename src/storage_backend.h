@@ -91,7 +91,10 @@ int virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
                                            int fd,
                                            unsigned long long *allocation,
                                            unsigned long long *capacity);
-
+int
+virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
+                                         virStorageVolTargetPtr target,
+                                         int fd);
 void virStorageBackendWaitForDevices(virConnectPtr conn);
 
 char *virStorageBackendStablePath(virConnectPtr conn,
