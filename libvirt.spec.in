@@ -18,6 +18,7 @@
 %define with_storage_lvm   0%{!?_without_storage_lvm:1}
 %define with_storage_iscsi 0%{!?_without_storage_iscsi:1}
 %define with_storage_disk  0%{!?_without_storage_disk:1}
+%define with_storage_mpath 0%{!?_without_storage_mpath:1}
 %define with_numactl       0%{!?_without_numactl:1}
 
 # default to off - selectively enabled below
@@ -131,6 +132,10 @@ Requires: iscsi-initiator-utils
 # For disk driver
 Requires: parted
 %endif
+%if %{with_storage_mpath}
+# For multipath support
+Requires: device-mapper
+%endif
 %if %{with_xen}
 BuildRequires: xen-devel
 %endif
@@ -185,6 +190,10 @@ BuildRequires: iscsi-initiator-utils
 %if %{with_storage_disk}
 # For disk driver
 BuildRequires: parted-devel
+%endif
+%if %{with_storage_mpath}
+# For Multipath support
+BuildRequires: device-mapper-devel
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
@@ -333,6 +342,10 @@ of recent versions of Linux (and other OSes).
 %define _without_storage_disk --without-storage-disk
 %endif
 
+%if ! %{with_storage_mpath}
+%define _without_storage_mpath --without-storage-mpath
+%endif
+
 %if ! %{with_numactl}
 %define _without_numactl --without-numactl
 %endif
@@ -364,6 +377,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_storage_lvm} \
            %{?_without_storage_iscsi} \
            %{?_without_storage_disk} \
+           %{?_without_storage_mpath} \
            %{?_without_numactl} \
            %{?_without_capng} \
            %{?_without_netcf} \
