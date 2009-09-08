@@ -202,35 +202,34 @@ out:
 static int
 virStorageBackendGetMinorNumber(const char *devname, uint32_t *minor)
 {
-	int ret = -1;
-	struct dm_task *dmt;
-	struct dm_info info;
+    int ret = -1;
+    struct dm_task *dmt;
+    struct dm_info info;
 
-	if (!(dmt = dm_task_create(DM_DEVICE_INFO))) {
-		goto out;
-	}
+    if (!(dmt = dm_task_create(DM_DEVICE_INFO))) {
+        goto out;
+    }
 
-	if (!dm_task_set_name(dmt, devname)) {
-		goto out;
-	}
+    if (!dm_task_set_name(dmt, devname)) {
+        goto out;
+    }
 
-	if (!dm_task_run(dmt)) {
-		goto out;
-	}
+    if (!dm_task_run(dmt)) {
+        goto out;
+    }
 
-	if (!dm_task_get_info(dmt, &info)) {
-		goto out;
-	}
+    if (!dm_task_get_info(dmt, &info)) {
+        goto out;
+    }
 
-	*minor = info.minor;
-	ret = 0;
+    *minor = info.minor;
+    ret = 0;
 
 out:
-	if (dmt != NULL) {
-		dm_task_destroy(dmt);
-	}
+    if (dmt != NULL)
+        dm_task_destroy(dmt);
 
-	return ret;
+    return ret;
 }
 
 
