@@ -3619,11 +3619,15 @@ static char *qemudEscapeShellArg(const char *in)
 #define QEMUD_SAVE_VERSION 2
 
 enum qemud_save_formats {
-    QEMUD_SAVE_FORMAT_RAW,
-    QEMUD_SAVE_FORMAT_GZIP,
-    QEMUD_SAVE_FORMAT_BZIP2,
-    QEMUD_SAVE_FORMAT_LZMA,
-    QEMUD_SAVE_FORMAT_LZOP,
+    QEMUD_SAVE_FORMAT_RAW = 0,
+    QEMUD_SAVE_FORMAT_GZIP = 1,
+    QEMUD_SAVE_FORMAT_BZIP2 = 2,
+    QEMUD_SAVE_FORMAT_LZMA = 3,  /* deprecated, in favor of xz */
+    QEMUD_SAVE_FORMAT_LZOP = 4,
+    QEMUD_SAVE_FORMAT_XZ = 5,
+    /* Note: add new members only at the end.
+       These values are used in the on-disk format.
+       Do not change or re-use numbers. */
 };
 
 struct qemud_save_header {
@@ -3666,6 +3670,8 @@ static int qemudDomainSave(virDomainPtr dom,
         header.compressed = QEMUD_SAVE_FORMAT_LZMA;
     else if (STREQ(driver->saveImageFormat, "lzop"))
         header.compressed = QEMUD_SAVE_FORMAT_LZOP;
+    else if (STREQ(driver->saveImageFormat, "xz"))
+        header.compressed = QEMUD_SAVE_FORMAT_XZ;
     else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("Invalid save image format specified in configuration file"));
@@ -3761,6 +3767,9 @@ static int qemudDomainSave(virDomainPtr dom,
     else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
         internalret = virAsprintf(&command, "migrate \"exec:"
                                   "lzop -c >> '%s' 2>/dev/null\"", safe_path);
+    else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "xz -c >> '%s' 2>/dev/null\"", safe_path);
     else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Invalid compress format %d"),
@@ -4385,6 +4394,8 @@ static int qemudDomainRestore(virConnectPtr conn,
             intermediate_argv[0] = "lzma";
         else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
             intermediate_argv[0] = "lzop";
+        else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
+            intermediate_argv[0] = "xz";
         else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                              _("Unknown compressed save format %d"),
