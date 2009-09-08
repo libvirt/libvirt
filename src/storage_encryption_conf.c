@@ -1,5 +1,5 @@
 /*
- * storage_encryption_conf.h: volume encryption information
+ * storage_encryption_conf.c: volume encryption information
  *
  * Copyright (C) 2009 Red Hat, Inc.
  *
