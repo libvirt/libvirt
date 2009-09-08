@@ -3975,9 +3975,11 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return (NULL);
 
     ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) return NULL;
+    if (ret == NULL) goto cleanup;
 
     ret->id = id;
+
+  cleanup:
     VIR_FREE(name);
     return (ret);
 }
