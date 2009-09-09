@@ -875,37 +875,61 @@ elif test "$with_libssh2" = "no"; then
 fi
 
 if test "$with_phyp" = "check"; then
-  AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
+    AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
         LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
-        AC_SUBST([LIBSSH2_LIBS])],[
+        AC_SUBST([LIBSSH2_LIBS])
+    ],[
         with_phyp="no"
-		    with_libssh2="no";
-				],[])
+        with_libssh2="no";
+    ],[])
 
-	if test "$with_phyp" != "no"; then
-  AC_CHECK_HEADERS([libssh2.h],[
-		    with_phyp="yes"
-        LIBSSH2_CFLAGS="-I/usr/local/include"
-        AC_SUBST([LIBSSH2_CFLAGS])
-	      AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
-        [whether IBM HMC / IVM driver is enabled])
-				],[
-        with_phyp="no"
-		    with_libssh2="no";
-				],[])
-	fi
+    if test "$with_phyp" != "no"; then
+        AC_CHECK_HEADERS([libssh2.h],[
+            with_phyp="yes"
+            LIBSSH2_CFLAGS="-I/usr/local/include"
+            AC_SUBST([LIBSSH2_CFLAGS])
+        ],[
+            with_phyp="no"
+            with_libssh2="no";
+        ],[
+        ])
+    fi
+
+    if test "$with_phyp" != "no"; then
+        saved_libs="$LIBS"
+        LIBS="$LIBS -lssh2"
+        AC_TRY_LINK([#include <libssh2.h>], [
+            (void) libssh2_session_block_directions(NULL);
+        ], [
+            AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
+        ], [
+            with_phyp=no
+            AC_MSG_NOTICE([Function libssh2_session_block_directions() not present in  your version of libssh2 but required for Phyp driver, disabling it])
+        ])
+        LIBS="$saved_libs"
+    fi
 elif test "$with_phyp" = "yes"; then
   AC_CHECK_LIB([ssh2],[libssh2_session_startup],[
         LIBSSH2_LIBS="$LIBSSH2_LIBS -lssh2 -L$libssh2_path"
         AC_SUBST([LIBSSH2_LIBS])],[
-        AC_MSG_ERROR([You must install the libssh2 to compile Phype driver.])
+        AC_MSG_ERROR([You must install the libssh2 to compile Phyp driver.])
 				])
 
   AC_CHECK_HEADERS([libssh2.h],[
         LIBSSH2_CFLAGS="-I/usr/local/include"
         AC_SUBST([LIBSSH2_CFLAGS])],[
-        AC_MSG_ERROR([Cannot find libssh2 headers.Is libssh2 installed ?])
+        AC_MSG_ERROR([Cannot find libssh2 headers. Is libssh2 installed ?])
 				],[])
+
+  saved_libs="$LIBS"
+  LIBS="$LIBS -lssh2"
+  AC_TRY_LINK([#include <libssh2.h>], [
+  (void) libssh2_session_block_directions(NULL);
+  ], [], [
+  AC_MSG_ERROR([Function libssh2_session_block_directions() not present in your version of libssh2. Need >= 1.0])
+  ])
+  LIBS="$saved_libs"
+
   AC_DEFINE_UNQUOTED([WITH_PHYP], 1,
         [whether IBM HMC / IVM driver is enabled])
 fi
