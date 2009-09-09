@@ -3622,9 +3622,12 @@ enum qemud_save_formats {
     QEMUD_SAVE_FORMAT_RAW = 0,
     QEMUD_SAVE_FORMAT_GZIP = 1,
     QEMUD_SAVE_FORMAT_BZIP2 = 2,
-    QEMUD_SAVE_FORMAT_LZMA = 3,  /* deprecated, in favor of xz */
-    QEMUD_SAVE_FORMAT_LZOP = 4,
-    QEMUD_SAVE_FORMAT_XZ = 5,
+    /*
+     * Deprecated by xz and never used as part of a release
+     * QEMUD_SAVE_FORMAT_LZMA,
+     * QEMUD_SAVE_FORMAT_LZOP,
+     */
+    QEMUD_SAVE_FORMAT_XZ = 3,
     /* Note: add new members only at the end.
        These values are used in the on-disk format.
        Do not change or re-use numbers. */
@@ -3637,8 +3640,6 @@ VIR_ENUM_IMPL(qemudSaveCompression, QEMUD_SAVE_FORMAT_LAST,
               "raw",
               "gzip",
               "bzip2",
-              "lzma",
-              "lzop",
               "xz")
 
 struct qemud_save_header {
@@ -4381,10 +4382,6 @@ static int qemudDomainRestore(virConnectPtr conn,
             intermediate_argv[0] = "gzip";
         else if (header.compressed == QEMUD_SAVE_FORMAT_BZIP2)
             intermediate_argv[0] = "bzip2";
-        else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
-            intermediate_argv[0] = "lzma";
-        else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
-            intermediate_argv[0] = "lzop";
         else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
             intermediate_argv[0] = "xz";
         else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {

@@ -114,6 +114,10 @@ Requires: glusterfs-client >= 2.0.1
 %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
+# For image compression
+Requires: gzip
+Requires: bzip2
+Requires: xz
 %else
 %if %{with_xen}
 # From Xen RPMs
