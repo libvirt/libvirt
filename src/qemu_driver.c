@@ -3628,7 +3628,18 @@ enum qemud_save_formats {
     /* Note: add new members only at the end.
        These values are used in the on-disk format.
        Do not change or re-use numbers. */
+
+    QEMUD_SAVE_FORMAT_LAST
 };
+
+VIR_ENUM_DECL(qemudSaveCompression)
+VIR_ENUM_IMPL(qemudSaveCompression, QEMUD_SAVE_FORMAT_LAST,
+              "raw",
+              "gzip",
+              "bzip2",
+              "lzma",
+              "lzop",
+              "xz")
 
 struct qemud_save_header {
     char magic[sizeof(QEMUD_SAVE_MAGIC)-1];
@@ -3660,22 +3671,15 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (driver->saveImageFormat == NULL)
         header.compressed = QEMUD_SAVE_FORMAT_RAW;
-    else if (STREQ(driver->saveImageFormat, "raw"))
-        header.compressed = QEMUD_SAVE_FORMAT_RAW;
-    else if (STREQ(driver->saveImageFormat, "gzip"))
-        header.compressed = QEMUD_SAVE_FORMAT_GZIP;
-    else if (STREQ(driver->saveImageFormat, "bzip2"))
-        header.compressed = QEMUD_SAVE_FORMAT_BZIP2;
-    else if (STREQ(driver->saveImageFormat, "lzma"))
-        header.compressed = QEMUD_SAVE_FORMAT_LZMA;
-    else if (STREQ(driver->saveImageFormat, "lzop"))
-        header.compressed = QEMUD_SAVE_FORMAT_LZOP;
-    else if (STREQ(driver->saveImageFormat, "xz"))
-        header.compressed = QEMUD_SAVE_FORMAT_XZ;
     else {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("Invalid save image format specified in configuration file"));
-        return -1;
+        header.compressed =
+            qemudSaveCompressionTypeFromString(driver->saveImageFormat);
+        if (header.compressed < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("Invalid save image format specified "
+                                     "in configuration file"));
+          return -1;
+        }
     }
 
     qemuDriverLock(driver);
@@ -3751,31 +3755,18 @@ static int qemudDomainSave(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (header.compressed == QEMUD_SAVE_FORMAT_RAW)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
-                                  "\"", safe_path);
-    else if (header.compressed == QEMUD_SAVE_FORMAT_GZIP)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "gzip -c >> '%s' 2>/dev/null\"", safe_path);
-    else if (header.compressed == QEMUD_SAVE_FORMAT_BZIP2)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "bzip2 -c >> '%s' 2>/dev/null\"", safe_path);
-    else if (header.compressed == QEMUD_SAVE_FORMAT_LZMA)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "lzma -c >> '%s' 2>/dev/null\"", safe_path);
-    else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "lzop -c >> '%s' 2>/dev/null\"", safe_path);
-    else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "xz -c >> '%s' 2>/dev/null\"", safe_path);
-    else {
+    const char *prog = qemudSaveCompressionTypeToString(header.compressed);
+    if (prog == NULL) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Invalid compress format %d"),
-                         header.compressed);
+                         _("Invalid compress format %d"), header.compressed);
         goto cleanup;
     }
+
+    if (STREQ (prog, "raw"))
+        prog = "cat";
+    internalret = virAsprintf(&command, "migrate \"exec:"
+                              "%s -c >> '%s' 2>/dev/null\"", prog, safe_path);
+
     if (internalret < 0) {
         virReportOOMError(dom->conn);
         goto cleanup;
