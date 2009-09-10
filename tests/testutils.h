@@ -43,4 +43,6 @@ int virtTestMain(int argc,
         return virtTestMain(argc,argv, func);   \
     }
 
+extern unsigned int testDebug;
+
 #endif /* __VIT_TEST_UTILS_H__ */

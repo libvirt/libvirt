@@ -45,8 +45,9 @@
     ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 +	\
       ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
 
+unsigned int testDebug = 0;
+
 static unsigned int testOOM = 0;
-static unsigned int testDebug = 0;
 static unsigned int testCounter = 0;
 
 double

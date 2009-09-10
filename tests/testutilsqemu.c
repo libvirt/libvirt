@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 #include "testutilsqemu.h"
+#include "testutils.h"
+#include "memory.h"
 
 virCapsPtr testQemuCapsInit(void) {
     struct utsname utsname;
@@ -83,6 +85,18 @@ virCapsPtr testQemuCapsInit(void) {
                                       0,
                                       NULL) == NULL)
         goto cleanup;
+
+    if (testDebug) {
+        char *caps_str;
+
+        caps_str = virCapabilitiesFormatXML(caps);
+        if (!caps_str)
+            goto cleanup;
+
+        fprintf(stderr, "QEMU driver capabilities:\n%s", caps_str);
+
+        VIR_FREE(caps_str);
+    }
 
     return caps;
 
