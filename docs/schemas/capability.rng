@@ -79,6 +79,8 @@
 	  <oneOrMore>
 	    <element name='uri_transport'>
 	      <choice>
+		<value>esx</value>
+		<value>tcp</value>
 		<value>xenmigr</value>
 	      </choice>
 	    </element>
