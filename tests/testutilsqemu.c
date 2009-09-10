@@ -7,15 +7,29 @@
 #include "testutils.h"
 #include "memory.h"
 
+static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
+{
+    virCapsGuestMachinePtr *machines;
+    static const char *const x86_machines[] = {
+        "pc", "isapc"
+    };
+
+    machines = virCapabilitiesAllocMachines(x86_machines,
+                                            ARRAY_CARDINALITY(x86_machines));
+    if (machines == NULL)
+        return NULL;
+
+    *nmachines = ARRAY_CARDINALITY(x86_machines);
+
+    return machines;
+}
+
 virCapsPtr testQemuCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
     virCapsGuestMachinePtr *machines;
     int nmachines;
-    static const char *const x86_machines[] = {
-        "pc", "isapc"
-    };
     static const char *const xen_machines[] = {
         "xenner"
     };
@@ -25,8 +39,7 @@ virCapsPtr testQemuCapsInit(void) {
                                    0, 0)) == NULL)
         return NULL;
 
-    nmachines = 2;
-    if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
+    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32,
@@ -43,8 +56,7 @@ virCapsPtr testQemuCapsInit(void) {
                                       NULL) == NULL)
         goto cleanup;
 
-    nmachines = 2;
-    if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
+    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64,
@@ -68,13 +80,13 @@ virCapsPtr testQemuCapsInit(void) {
                                       NULL) == NULL)
         goto cleanup;
 
-    nmachines = 1;
+    nmachines = ARRAY_CARDINALITY(xen_machines);
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "xen", "x86_64", 64,
                                          "/usr/bin/xenner", NULL,
-                                         1, machines)) == NULL)
+                                         nmachines, machines)) == NULL)
         goto cleanup;
     machines = NULL;
 
