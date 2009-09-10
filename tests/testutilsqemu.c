@@ -101,13 +101,18 @@ virCapsPtr testQemuCapsInit(void) {
                                       0,
                                       NULL) == NULL)
         goto cleanup;
+
+    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
+        goto cleanup;
+
     if (virCapabilitiesAddGuestDomain(guest,
                                       "kvm",
                                       "/usr/bin/kvm",
                                       NULL,
-                                      0,
-                                      NULL) == NULL)
+                                      nmachines,
+                                      machines) == NULL)
         goto cleanup;
+    machines = NULL;
 
     nmachines = ARRAY_CARDINALITY(xen_machines);
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)

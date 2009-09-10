@@ -191,6 +191,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("minimal", QEMUD_CMD_FLAG_NAME);
     DO_TEST("machine-aliases1", 0);
+    DO_TEST("machine-aliases2", 0);
     DO_TEST("boot-cdrom", 0);
     DO_TEST("boot-network", 0);
     DO_TEST("boot-floppy", 0);
