@@ -279,15 +279,16 @@
 
   <define name='archnames'>
     <choice>
+      <value>arm</value>
       <value>i686</value>
-      <value>x86_64</value>
-      <value>ppc</value>
-      <value>ppc64</value>
       <value>ia64</value>
-      <value>s390</value>
       <value>mips</value>
       <value>mipsel</value>
+      <value>ppc64</value>
+      <value>ppc</value>
+      <value>s390</value>
       <value>sparc</value>
+      <value>x86_64</value>
     </choice>
   </define>
 
