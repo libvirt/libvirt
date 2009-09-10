@@ -160,6 +160,25 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_0_10 |
             QEMUD_CMD_FLAG_PCIDEVICE,
             10050, 1,  0);
+    DO_TEST("qemu-kvm-0.11.0-rc2",
+            QEMUD_CMD_FLAG_VNC_COLON |
+            QEMUD_CMD_FLAG_NO_REBOOT |
+            QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DRIVE_BOOT |
+            QEMUD_CMD_FLAG_NAME |
+            QEMUD_CMD_FLAG_UUID |
+            QEMUD_CMD_FLAG_VNET_HDR |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP |
+            QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 |
+            QEMUD_CMD_FLAG_KVM |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT |
+            QEMUD_CMD_FLAG_DRIVE_SERIAL |
+            QEMUD_CMD_FLAG_VGA |
+            QEMUD_CMD_FLAG_0_10 |
+            QEMUD_CMD_FLAG_PCIDEVICE |
+            QEMUD_CMD_FLAG_MEM_PATH,
+            10092, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
