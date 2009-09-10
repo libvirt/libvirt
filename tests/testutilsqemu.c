@@ -24,6 +24,35 @@ static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
     return machines;
 }
 
+/* Newer versions of qemu have versioned machine types to allow
+ * compatibility with older releases.
+ * The 'pc' machine type is an alias of the newest machine type.
+ */
+static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
+{
+    virCapsGuestMachinePtr *machines;
+    char *canonical;
+    static const char *const x86_machines[] = {
+        "pc-0.11", "pc", "pc-0.10", "isapc"
+    };
+
+    if ((canonical = strdup(x86_machines[0])) == NULL)
+        return NULL;
+
+    machines = virCapabilitiesAllocMachines(x86_machines,
+                                            ARRAY_CARDINALITY(x86_machines));
+    if (machines == NULL) {
+        VIR_FREE(canonical);
+        return NULL;
+    }
+
+    machines[1]->canonical = canonical;
+
+    *nmachines = ARRAY_CARDINALITY(x86_machines);
+
+    return machines;
+}
+
 virCapsPtr testQemuCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
@@ -56,7 +85,7 @@ virCapsPtr testQemuCapsInit(void) {
                                       NULL) == NULL)
         goto cleanup;
 
-    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
+    if ((machines = testQemuAllocNewerMachines(&nmachines)) == NULL)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64,
