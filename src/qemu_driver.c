@@ -4781,10 +4781,9 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     return 0;
 }
 
-static int
-qemudCanonicalizeMachine(virConnectPtr conn, virDomainDefPtr def)
+int
+qemudCanonicalizeMachine(struct qemud_driver *driver, virDomainDefPtr def)
 {
-    struct qemud_driver *driver = conn->privateData;
     char *canonical = NULL;
     int i;
 
@@ -4875,7 +4874,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         }
     }
 
-    if (qemudCanonicalizeMachine(conn, def) < 0)
+    if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,

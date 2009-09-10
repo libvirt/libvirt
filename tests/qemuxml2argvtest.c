@@ -56,6 +56,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
         QEMUD_CMD_FLAG_NO_REBOOT |
         extraFlags;
 
+    if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
+        goto fail;
+
     if (qemudBuildCommandLine(NULL, &driver,
                               vmdef, &monitor_chr, flags,
                               &argv, &qenv,

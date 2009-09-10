@@ -194,6 +194,9 @@ int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,
                                          int *nmachines);
 
+int         qemudCanonicalizeMachine    (struct qemud_driver *driver,
+                                         virDomainDefPtr def);
+
 virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                                      virCapsPtr caps,
                                      const char **progenv,
