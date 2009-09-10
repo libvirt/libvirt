@@ -977,7 +977,8 @@ qemudOpenMonitorCommon(virConnectPtr conn,
     if (ret != 0)
         return ret;
 
-    if ((vm->monitorWatch = virEventAddHandle(vm->monitor, 0,
+    if ((vm->monitorWatch = virEventAddHandle(vm->monitor,
+                                              VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
                                               qemudDispatchVMEvent,
                                               driver, NULL)) < 0)
         return -1;
