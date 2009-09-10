@@ -117,6 +117,7 @@ Requires: /usr/bin/qemu-img
 # For image compression
 Requires: gzip
 Requires: bzip2
+Requires: lzop
 Requires: xz
 %else
 %if %{with_xen}

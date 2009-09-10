@@ -3624,10 +3624,10 @@ enum qemud_save_formats {
     QEMUD_SAVE_FORMAT_BZIP2 = 2,
     /*
      * Deprecated by xz and never used as part of a release
-     * QEMUD_SAVE_FORMAT_LZMA,
-     * QEMUD_SAVE_FORMAT_LZOP,
+     * QEMUD_SAVE_FORMAT_LZMA
      */
     QEMUD_SAVE_FORMAT_XZ = 3,
+    QEMUD_SAVE_FORMAT_LZOP = 4,
     /* Note: add new members only at the end.
        These values are used in the on-disk format.
        Do not change or re-use numbers. */
@@ -3640,7 +3640,8 @@ VIR_ENUM_IMPL(qemudSaveCompression, QEMUD_SAVE_FORMAT_LAST,
               "raw",
               "gzip",
               "bzip2",
-              "xz")
+              "xz",
+              "lzop")
 
 struct qemud_save_header {
     char magic[sizeof(QEMUD_SAVE_MAGIC)-1];
@@ -4384,6 +4385,8 @@ static int qemudDomainRestore(virConnectPtr conn,
             intermediate_argv[0] = "bzip2";
         else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
             intermediate_argv[0] = "xz";
+        else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
+            intermediate_argv[0] = "lzop";
         else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                              _("Unknown compressed save format %d"),
