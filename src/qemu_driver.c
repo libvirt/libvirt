@@ -4789,30 +4789,27 @@ qemudCanonicalizeMachine(struct qemud_driver *driver, virDomainDefPtr def)
 
     for (i = 0; i < driver->caps->nguests; i++) {
         virCapsGuestPtr guest = driver->caps->guests[i];
+        virCapsGuestDomainInfoPtr info;
         int j;
 
         for (j = 0; j < guest->arch.ndomains; j++) {
-            virCapsGuestDomainPtr dom = guest->arch.domains[j];
+            info = &guest->arch.domains[j]->info;
 
-            if (dom->info.emulator &&
-                STREQ(dom->info.emulator, def->emulator)) {
-                if (qemudCanonicalizeMachineFromInfo(def, &dom->info,
-                                                     &canonical) < 0)
-                    return -1;
-                if (canonical)
-                    goto out;
-                break;
-            }
+            if (!info->emulator || !STREQ(info->emulator, def->emulator))
+                continue;
+
+            if (!info->nmachines)
+                info = &guest->arch.defaultInfo;
+
+            if (qemudCanonicalizeMachineFromInfo(def, info, &canonical) < 0)
+                return -1;
+            goto out;
         }
 
-        /* if we matched one of the domain's emulators, or if
-         * we match the default emulator
-         */
-        if (j < guest->arch.ndomains ||
-            (guest->arch.defaultInfo.emulator &&
-             STREQ(guest->arch.defaultInfo.emulator, def->emulator))) {
-            if (qemudCanonicalizeMachineFromInfo(def, &guest->arch.defaultInfo,
-                                                 &canonical) < 0)
+        info = &guest->arch.defaultInfo;
+
+        if (info->emulator && STREQ(info->emulator, def->emulator)) {
+            if (qemudCanonicalizeMachineFromInfo(def, info, &canonical) < 0)
                 return -1;
             goto out;
         }
