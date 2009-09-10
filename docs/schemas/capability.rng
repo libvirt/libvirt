@@ -224,9 +224,9 @@
       <optional>
 	<ref name='emulator'/>
       </optional>
-      <optional>
+      <zeroOrMore>
 	<ref name='machine'/>
-      </optional>
+      </zeroOrMore>
     </element>
   </define>
 
