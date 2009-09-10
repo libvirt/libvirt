@@ -463,6 +463,9 @@ if test "$with_qemu" = "yes" -o "$with_lxc" = "yes" ; then
 fi
 
 
+dnl Need to test if pkg-config exists
+PKG_PROG_PKG_CONFIG
+
 dnl OpenNebula driver Compilation setting
 dnl
 
@@ -490,9 +493,6 @@ AM_CONDITIONAL([WITH_ONE], [test "x$with_one" = "xyes"])
 AC_SUBST([XMLRPC_CFLAGS])
 AC_SUBST([XMLRPC_LIBS])
 
-
-dnl Need to test if pkg-config exists
-PKG_PROG_PKG_CONFIG
 
 dnl ==========================================================================
 dnl find libxml2 library, borrowed from xmlsec

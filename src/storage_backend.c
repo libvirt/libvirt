@@ -630,31 +630,6 @@ virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
         return virStorageBackendCreateRaw;
 }
 
-#if defined(UDEVADM) || defined(UDEVSETTLE)
-void virWaitForDevices(virConnectPtr conn)
-{
-#ifdef UDEVADM
-    const char *const settleprog[] = { UDEVADM, "settle", NULL };
-#else
-    const char *const settleprog[] = { UDEVSETTLE, NULL };
-#endif
-    int exitstatus;
-
-    if (access(settleprog[0], X_OK) != 0)
-        return;
-
-    /*
-     * NOTE: we ignore errors here; this is just to make sure that any device
-     * nodes that are being created finish before we try to scan them.
-     * If this fails for any reason, we still have the backup of polling for
-     * 5 seconds for device nodes.
-     */
-    virRun(conn, settleprog, &exitstatus);
-}
-#else
-void virWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
-#endif
-
 
 virStorageBackendPtr
 virStorageBackendForType(int type) {
@@ -892,12 +867,6 @@ virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
     return 0;
 }
 
-
-void virStorageBackendWaitForDevices(virConnectPtr conn)
-{
-    virWaitForDevices(conn);
-    return;
-}
 
 /*
  * Given a volume path directly in /dev/XXX, iterate over the

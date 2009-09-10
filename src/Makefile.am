@@ -397,8 +397,8 @@ noinst_LTLIBRARIES += libvirt_driver_one.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD  += libvirt_driver_one.la
 endif
-libvirt_driver_one_la_CFLAGS = $(ONE_LIBS)
-libvirt_driver_one_la_LDFLAGS = $(ONE_LIBS)
+libvirt_driver_one_la_CFLAGS = $(XMLRPC_CFLAGS)
+libvirt_driver_one_la_LDFLAGS = $(XMLRPC_LIBS)
 #libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
 if WITH_DRIVER_MODULES
 libvirt_driver_one_la_LDFLAGS += -module -avoid-version

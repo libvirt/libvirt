@@ -10,6 +10,7 @@ virBufferAdd;
 virBufferAddChar;
 virBufferContentAndReset;
 virBufferError;
+virBufferURIEncodeString;
 
 
 # caps.h
@@ -167,7 +168,16 @@ virHashSize;
 virInterfaceDefFormat;
 virInterfaceDefParseFile;
 virInterfaceDefParseString;
+virInterfaceDefParseNode;
 virInterfaceDefFree;
+virInterfaceFindByName;
+virInterfaceFindByMACString;
+virInterfaceAssignDef;
+virInterfaceRemove;
+virInterfaceObjLock;
+virInterfaceObjUnlock;
+virInterfaceObjListFree;
+
 
 # interface_driver.h
 interfaceRegister;
@@ -214,6 +224,7 @@ virRegisterNetworkDriver;
 virRegisterStateDriver;
 virRegisterStorageDriver;
 virRegisterDeviceMonitor;
+virRegisterSecretDriver;
 
 
 # logging.h
@@ -412,6 +423,7 @@ virGetUserName;
 virGetUserID;
 virGetGroupID;
 virFileFindMountPoint;
+virFileWaitForDevices;
 
 # usb.h
 usbGetDevice;
@@ -427,7 +439,7 @@ virUUIDParse;
 # virterror_internal.h
 virReportErrorHelper;
 virErrorMsg;
-virRaiseError;
+virRaiseErrorFull;
 virReportSystemErrorFull;
 virReportOOMErrorFull;
 virStrerror;

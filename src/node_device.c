@@ -35,7 +35,7 @@
 #include "node_device_conf.h"
 #include "node_device_hal.h"
 #include "node_device.h"
-#include "storage_backend.h" /* For virWaitForDevices */
+#include "util.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -599,7 +599,7 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 
     while ((now - start) < LINUX_NEW_DEVICE_WAIT_TIME) {
 
-        virWaitForDevices(conn);
+        virFileWaitForDevices(conn);
 
         dev = nodeDeviceLookupByWWN(conn, wwnn, wwpn);
 

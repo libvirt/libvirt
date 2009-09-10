@@ -494,7 +494,7 @@ virStorageBackendSCSIFindLUs(virConnectPtr conn,
 
     VIR_DEBUG(_("Discovering LUs on host %u"), scanhost);
 
-    virStorageBackendWaitForDevices(conn);
+    virFileWaitForDevices(conn);
 
     if (virAsprintf(&device_path, "/sys/bus/scsi/devices") < 0) {
         virReportOOMError(conn);
@@ -542,7 +542,7 @@ virStorageBackendSCSIGetHostNumber(virConnectPtr conn,
 
     VIR_DEBUG(_("Finding host number from '%s'"), sysfs_path);
 
-    virStorageBackendWaitForDevices(conn);
+    virFileWaitForDevices(conn);
 
     sysdir = opendir(sysfs_path);
 

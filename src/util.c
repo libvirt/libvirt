@@ -2019,3 +2019,30 @@ cleanup:
     return ret;
 }
 #endif
+
+#ifndef PROXY
+#if defined(UDEVADM) || defined(UDEVSETTLE)
+void virFileWaitForDevices(virConnectPtr conn)
+{
+#ifdef UDEVADM
+    const char *const settleprog[] = { UDEVADM, "settle", NULL };
+#else
+    const char *const settleprog[] = { UDEVSETTLE, NULL };
+#endif
+    int exitstatus;
+
+    if (access(settleprog[0], X_OK) != 0)
+        return;
+
+    /*
+     * NOTE: we ignore errors here; this is just to make sure that any device
+     * nodes that are being created finish before we try to scan them.
+     * If this fails for any reason, we still have the backup of polling for
+     * 5 seconds for device nodes.
+     */
+    virRun(conn, settleprog, &exitstatus);
+}
+#else
+void virFileWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
+#endif
+#endif

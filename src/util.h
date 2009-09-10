@@ -237,4 +237,6 @@ int virRandom(int max);
 char *virFileFindMountPoint(const char *type);
 #endif
 
+void virFileWaitForDevices(virConnectPtr conn);
+
 #endif /* __VIR_UTIL_H__ */
