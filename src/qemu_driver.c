@@ -4382,21 +4382,17 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     if (header.version == 2) {
         const char *intermediate_argv[3] = { NULL, "-dc", NULL };
-        if (header.compressed == QEMUD_SAVE_FORMAT_GZIP)
-            intermediate_argv[0] = "gzip";
-        else if (header.compressed == QEMUD_SAVE_FORMAT_BZIP2)
-            intermediate_argv[0] = "bzip2";
-        else if (header.compressed == QEMUD_SAVE_FORMAT_XZ)
-            intermediate_argv[0] = "xz";
-        else if (header.compressed == QEMUD_SAVE_FORMAT_LZOP)
-            intermediate_argv[0] = "lzop";
-        else if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
+        const char *prog = qemudSaveCompressionTypeToString(header.compressed);
+        if (prog == NULL) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("Unknown compressed save format %d"),
+                             _("Invalid compressed save format %d"),
                              header.compressed);
             goto cleanup;
         }
-        if (intermediate_argv[0] != NULL) {
+
+        if (header.compressed != QEMUD_SAVE_FORMAT_RAW)
+            intermediate_argv[0] = prog;
+        else {
             intermediatefd = fd;
             fd = -1;
             if (virExec(conn, intermediate_argv, NULL, NULL,
