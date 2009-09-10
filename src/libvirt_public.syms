@@ -298,8 +298,10 @@ LIBVIRT_0.7.1 {
         virSecretGetConnect;
         virConnectNumOfSecrets;
         virConnectListSecrets;
+        virSecretLookupByUUID;
         virSecretLookupByUUIDString;
         virSecretDefineXML;
+        virSecretGetUUID;
         virSecretGetUUIDString;
         virSecretGetXMLDesc;
         virSecretSetValue;

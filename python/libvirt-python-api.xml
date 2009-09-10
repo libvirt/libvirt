@@ -190,5 +190,21 @@
       <arg name='value' type='const char *' info='The secret value'/>
       <arg name='flags' type='unsigned int' info='flags (unused; pass 0)'/>
     </function>
+    <function name='virSecretLookupByUUID' file='python'>
+      <info>Try to lookup a secret on the given hypervisor based on its UUID.</info>
+      <return type='virSecretPtr' info='a new secret object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='the UUID string for the secret, must be 16 bytes'/>
+    </function>
+    <function name='virSecretGetUUID' file='python'>
+      <info>Extract the UUID unique Identifier of a secret.</info>
+      <return type='char *' info='the 16 bytes string or None in case of error'/>
+      <arg name='secret' type='virSecretPtr' info='a secret object'/>
+    </function>
+    <function name='virSecretGetUUIDString' file='python'>
+      <info>Fetch globally unique ID of the secret as a string.</info>
+      <return type='char *' info='the UUID string or None in case of error'/>
+      <arg name='secret' type='virSecretPtr' info='a secret object'/>
+    </function>
   </symbols>
 </api>

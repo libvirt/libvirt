@@ -107,7 +107,7 @@ bool_t
 xdr_remote_nonnull_secret (XDR *xdrs, remote_nonnull_secret *objp)
 {
 
-         if (!xdr_remote_nonnull_string (xdrs, &objp->uuid))
+         if (!xdr_remote_uuid (xdrs, objp->uuid))
                  return FALSE;
         return TRUE;
 }
@@ -2572,16 +2572,16 @@ xdr_remote_list_secrets_ret (XDR *xdrs, remote_list_secrets_ret *objp)
 }
 
 bool_t
-xdr_remote_secret_lookup_by_uuid_string_args (XDR *xdrs, remote_secret_lookup_by_uuid_string_args *objp)
+xdr_remote_secret_lookup_by_uuid_args (XDR *xdrs, remote_secret_lookup_by_uuid_args *objp)
 {
 
-         if (!xdr_remote_nonnull_string (xdrs, &objp->uuid))
+         if (!xdr_remote_uuid (xdrs, objp->uuid))
                  return FALSE;
         return TRUE;
 }
 
 bool_t
-xdr_remote_secret_lookup_by_uuid_string_ret (XDR *xdrs, remote_secret_lookup_by_uuid_string_ret *objp)
+xdr_remote_secret_lookup_by_uuid_ret (XDR *xdrs, remote_secret_lookup_by_uuid_ret *objp)
 {
 
          if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))

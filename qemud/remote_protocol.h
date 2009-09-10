@@ -86,7 +86,7 @@ struct remote_nonnull_node_device {
 typedef struct remote_nonnull_node_device remote_nonnull_node_device;
 
 struct remote_nonnull_secret {
-        remote_nonnull_string uuid;
+        remote_uuid uuid;
 };
 typedef struct remote_nonnull_secret remote_nonnull_secret;
 
@@ -1453,15 +1453,15 @@ struct remote_list_secrets_ret {
 };
 typedef struct remote_list_secrets_ret remote_list_secrets_ret;
 
-struct remote_secret_lookup_by_uuid_string_args {
-        remote_nonnull_string uuid;
+struct remote_secret_lookup_by_uuid_args {
+        remote_uuid uuid;
 };
-typedef struct remote_secret_lookup_by_uuid_string_args remote_secret_lookup_by_uuid_string_args;
+typedef struct remote_secret_lookup_by_uuid_args remote_secret_lookup_by_uuid_args;
 
-struct remote_secret_lookup_by_uuid_string_ret {
+struct remote_secret_lookup_by_uuid_ret {
         remote_nonnull_secret secret;
 };
-typedef struct remote_secret_lookup_by_uuid_string_ret remote_secret_lookup_by_uuid_string_ret;
+typedef struct remote_secret_lookup_by_uuid_ret remote_secret_lookup_by_uuid_ret;
 
 struct remote_secret_define_xml_args {
         remote_nonnull_string xml;
@@ -1657,7 +1657,7 @@ enum remote_procedure {
         REMOTE_PROC_LIST_DEFINED_INTERFACES = 138,
         REMOTE_PROC_NUM_OF_SECRETS = 139,
         REMOTE_PROC_LIST_SECRETS = 140,
-        REMOTE_PROC_SECRET_LOOKUP_BY_UUID_STRING = 141,
+        REMOTE_PROC_SECRET_LOOKUP_BY_UUID = 141,
         REMOTE_PROC_SECRET_DEFINE_XML = 142,
         REMOTE_PROC_SECRET_GET_XML_DESC = 143,
         REMOTE_PROC_SECRET_SET_VALUE = 144,
@@ -1929,8 +1929,8 @@ extern  bool_t xdr_remote_domain_xml_to_native_ret (XDR *, remote_domain_xml_to_
 extern  bool_t xdr_remote_num_of_secrets_ret (XDR *, remote_num_of_secrets_ret*);
 extern  bool_t xdr_remote_list_secrets_args (XDR *, remote_list_secrets_args*);
 extern  bool_t xdr_remote_list_secrets_ret (XDR *, remote_list_secrets_ret*);
-extern  bool_t xdr_remote_secret_lookup_by_uuid_string_args (XDR *, remote_secret_lookup_by_uuid_string_args*);
-extern  bool_t xdr_remote_secret_lookup_by_uuid_string_ret (XDR *, remote_secret_lookup_by_uuid_string_ret*);
+extern  bool_t xdr_remote_secret_lookup_by_uuid_args (XDR *, remote_secret_lookup_by_uuid_args*);
+extern  bool_t xdr_remote_secret_lookup_by_uuid_ret (XDR *, remote_secret_lookup_by_uuid_ret*);
 extern  bool_t xdr_remote_secret_define_xml_args (XDR *, remote_secret_define_xml_args*);
 extern  bool_t xdr_remote_secret_define_xml_ret (XDR *, remote_secret_define_xml_ret*);
 extern  bool_t xdr_remote_secret_get_xml_desc_args (XDR *, remote_secret_get_xml_desc_args*);
@@ -2181,8 +2181,8 @@ extern bool_t xdr_remote_domain_xml_to_native_ret ();
 extern bool_t xdr_remote_num_of_secrets_ret ();
 extern bool_t xdr_remote_list_secrets_args ();
 extern bool_t xdr_remote_list_secrets_ret ();
-extern bool_t xdr_remote_secret_lookup_by_uuid_string_args ();
-extern bool_t xdr_remote_secret_lookup_by_uuid_string_ret ();
+extern bool_t xdr_remote_secret_lookup_by_uuid_args ();
+extern bool_t xdr_remote_secret_lookup_by_uuid_ret ();
 extern bool_t xdr_remote_secret_define_xml_args ();
 extern bool_t xdr_remote_secret_define_xml_ret ();
 extern bool_t xdr_remote_secret_get_xml_desc_args ();

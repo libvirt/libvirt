@@ -34,6 +34,7 @@
 #include "util.h"
 #include "xml.h"
 #include "virterror_internal.h"
+#include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -49,7 +50,6 @@ virStorageEncryptionSecretFree(virStorageEncryptionSecretPtr secret)
 {
     if (!secret)
         return;
-    VIR_FREE(secret->uuid);
     VIR_FREE(secret);
 }
 
@@ -77,6 +77,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     virStorageEncryptionSecretPtr ret;
     char *type_str;
     int type;
+    char *uuidstr = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError(conn);
@@ -103,12 +104,25 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     VIR_FREE(type_str);
     ret->type = type;
 
-    ret->uuid = virXPathString(conn, "string(./@uuid)", ctxt);
+    uuidstr = virXPathString(conn, "string(./@uuid)", ctxt);
+    if (uuidstr) {
+        if (virUUIDParse(uuidstr, ret->uuid) < 0) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("malformed volume encryption uuid '%s'"),
+                                  uuidstr);
+            goto cleanup;
+        }
+    } else {
+        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
+                              _("missing volume encryption uuid"));
+        goto cleanup;
+    }
     ctxt->node = old_node;
     return ret;
 
   cleanup:
     virStorageEncryptionSecretFree(ret);
+    VIR_FREE(uuidstr);
     ctxt->node = old_node;
     return NULL;
 }
@@ -205,6 +219,7 @@ virStorageEncryptionSecretFormat(virConnectPtr conn,
                                  virStorageEncryptionSecretPtr secret)
 {
     const char *type;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     type = virStorageEncryptionSecretTypeTypeToString(secret->type);
     if (!type) {
@@ -213,10 +228,8 @@ virStorageEncryptionSecretFormat(virConnectPtr conn,
         return -1;
     }
 
-    virBufferVSprintf(buf, "    <secret type='%s'", type);
-    if (secret->uuid != NULL)
-        virBufferEscapeString(buf, " uuid='%s'", secret->uuid);
-    virBufferAddLit(buf, "/>\n");
+    virUUIDFormat(secret->uuid, uuidstr);
+    virBufferVSprintf(buf, "      <secret type='%s' uuid='%s'/>\n", type, uuidstr);
     return 0;
 }
 
@@ -234,14 +247,14 @@ virStorageEncryptionFormat(virConnectPtr conn,
                               "%s", _("unexpected encryption format"));
         return -1;
     }
-    virBufferVSprintf(buf, "  <encryption format='%s'>\n", format);
+    virBufferVSprintf(buf, "    <encryption format='%s'>\n", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
         if (virStorageEncryptionSecretFormat(conn, buf, enc->secrets[i]) < 0)
             return -1;
     }
 
-    virBufferAddLit(buf, "  </encryption>\n");
+    virBufferAddLit(buf, "    </encryption>\n");
 
     return 0;
 }

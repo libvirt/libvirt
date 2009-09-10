@@ -819,8 +819,8 @@ verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &
         VIR_SECRET_GET_VALUE_FLAGS_MASK) == 0);
 
 typedef virSecretPtr
-    (*virDrvSecretLookupByUUIDString)        (virConnectPtr conn,
-                                              const char *uuid);
+    (*virDrvSecretLookupByUUID)        (virConnectPtr conn,
+                                        const unsigned char *uuid);
 typedef virSecretPtr
     (*virDrvSecretDefineXML)                 (virConnectPtr conn,
                                               const char *xml,
@@ -866,7 +866,7 @@ struct _virSecretDriver {
 
     virDrvSecretNumOfSecrets numOfSecrets;
     virDrvSecretListSecrets listSecrets;
-    virDrvSecretLookupByUUIDString lookupByUUIDString;
+    virDrvSecretLookupByUUID lookupByUUID;
     virDrvSecretDefineXML defineXML;
     virDrvSecretGetXMLDesc getXMLDesc;
     virDrvSecretSetValue setValue;

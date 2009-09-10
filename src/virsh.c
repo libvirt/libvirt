@@ -5270,8 +5270,9 @@ static const vshCmdOptDef opts_secret_define[] = {
 static int
 cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    char *from, *buffer, *uuid;
+    char *from, *buffer;
     virSecretPtr res;
+    char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -5290,15 +5291,13 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, FALSE, _("Failed to set attributes from %s"), from);
         return FALSE;
     }
-    uuid = virSecretGetUUIDString(res);
-    if (uuid == NULL) {
+    if (virSecretGetUUIDString(res, &(uuid[0])) < 0) {
         vshError(ctl, FALSE, "%s",
                  _("Failed to get UUID of created secret"));
         virSecretFree(res);
         return FALSE;
     }
     vshPrint(ctl, _("Secret %s created\n"), uuid);
-    free(uuid);
     virSecretFree(res);
     return TRUE;
 }

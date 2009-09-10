@@ -31,6 +31,7 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "xml.h"
+#include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -42,7 +43,6 @@ virSecretDefFree(virSecretDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->id);
     VIR_FREE(def->description);
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
@@ -105,6 +105,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
     xmlXPathContextPtr ctxt = NULL;
     virSecretDefPtr def = NULL, ret = NULL;
     char *prop = NULL;
+    char *uuidstr = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "secret")) {
         virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
@@ -152,7 +153,22 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         VIR_FREE(prop);
     }
 
-    def->id = virXPathString(conn, "string(./uuid)", ctxt);
+    uuidstr = virXPathString(conn, "string(./uuid)", ctxt);
+    if (!uuidstr) {
+        if (virUUIDGenerate(def->uuid)) {
+            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("Failed to generate UUID"));
+            goto cleanup;
+        }
+    } else {
+        if (virUUIDParse(uuidstr, def->uuid) < 0) {
+            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("malformed uuid element"));
+            goto cleanup;
+        }
+        VIR_FREE(uuidstr);
+    }
+
     def->description = virXPathString(conn, "string(./description)", ctxt);
     if (virXPathNode(conn, "./usage", ctxt) != NULL
         && virSecretDefParseUsage(conn, ctxt, def) < 0)
@@ -280,13 +296,17 @@ char *
 virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *tmp;
 
     virBufferVSprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
                       def->ephemeral ? "yes" : "no",
                       def->private ? "yes" : "no");
-    if (def->id != NULL)
-        virBufferEscapeString(&buf, "  <uuid>%s</uuid>\n", def->id);
+
+    uuid = def->uuid;
+    virUUIDFormat(uuid, uuidstr);
+    virBufferEscapeString(&buf, "  <uuid>%s</uuid>\n", uuidstr);
     if (def->description != NULL)
         virBufferEscapeString(&buf, "  <description>%s</description>\n",
                               def->description);

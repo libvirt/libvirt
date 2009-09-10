@@ -8811,36 +8811,37 @@ error:
 }
 
 /**
- * virSecretLookupByUUIDString:
- * @conn: virConnect connection
- * @uuid: ID of a secret
+ * virSecretLookupByUUID:
+ * @conn: pointer to the hypervisor connection
+ * @uuid: the raw UUID for the secret
  *
- * Fetches a secret based on uuid.
+ * Try to lookup a secret on the given hypervisor based on its UUID.
+ * Uses the 16 bytes of raw data to describe the UUID
  *
- * Returns the secret on success, or NULL on failure.
+ * Returns a new secret object or NULL in case of failure.  If the
+ * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
  */
 virSecretPtr
-virSecretLookupByUUIDString(virConnectPtr conn, const char *uuid)
+virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    VIR_DEBUG("conn=%p, uuid=%s", conn, uuid);
+    DEBUG("conn=%p, uuid=%s", conn, uuid);
 
     virResetLastError();
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return NULL;
+        return (NULL);
     }
     if (uuid == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
 
-    if (conn->secretDriver != NULL &&
-        conn->secretDriver->lookupByUUIDString != NULL) {
+    if (conn->secretDriver &&
+        conn->secretDriver->lookupByUUID) {
         virSecretPtr ret;
-
-        ret = conn->secretDriver->lookupByUUIDString(conn, uuid);
-        if (ret == NULL)
+        ret = conn->secretDriver->lookupByUUID (conn, uuid);
+        if (!ret)
             goto error;
         return ret;
     }
@@ -8852,6 +8853,66 @@ error:
     virSetConnError(conn);
     return NULL;
 }
+
+/**
+ * virSecretLookupByUUIDString:
+ * @conn: pointer to the hypervisor connection
+ * @uuidstr: the string UUID for the secret
+ *
+ * Try to lookup a secret on the given hypervisor based on its UUID.
+ * Uses the printable string value to describe the UUID
+ *
+ * Returns a new secret object or NULL in case of failure.  If the
+ * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
+ */
+virSecretPtr
+virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
+{
+    int raw[VIR_UUID_BUFLEN], i;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    int ret;
+
+    DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (uuidstr == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format.
+     *      We needn't it here. Right?
+     */
+    ret = sscanf(uuidstr,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x%02x%02x%02x%02x",
+                 raw + 0, raw + 1, raw + 2, raw + 3,
+                 raw + 4, raw + 5, raw + 6, raw + 7,
+                 raw + 8, raw + 9, raw + 10, raw + 11,
+                 raw + 12, raw + 13, raw + 14, raw + 15);
+
+    if (ret!=VIR_UUID_BUFLEN) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    for (i = 0; i < VIR_UUID_BUFLEN; i++)
+        uuid[i] = raw[i] & 0xFF;
+
+    return virSecretLookupByUUID(conn, &uuid[0]);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
 
 /**
  * virSecretDefineXML:
@@ -8906,36 +8967,77 @@ error:
 }
 
 /**
- * virSecretGetUUIDString:
+ * virSecretGetUUID:
  * @secret: A virSecret secret
+ * @uuid: buffer of VIR_UUID_BUFLEN bytes in size
  *
  * Fetches the UUID of the secret.
  *
- * Returns ID of the secret (not necessarily in the UUID format) on success,
- * NULL on failure.  The caller must free() the ID.
+ * Returns 0 on success with the uuid buffer being filled, or
+ * -1 upon failure.
  */
-char *
-virSecretGetUUIDString(virSecretPtr secret)
+int
+virSecretGetUUID(virSecretPtr secret, unsigned char *uuid)
 {
-    char *ret;
-
     VIR_DEBUG("secret=%p", secret);
 
     virResetLastError();
 
     if (!VIR_IS_CONNECTED_SECRET(secret)) {
         virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
-        return NULL;
+        return -1;
+    }
+    if (uuid == NULL) {
+        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        /* Copy to connection error object for back compatability */
+        virSetConnError(secret->conn);
+        return -1;
     }
 
-    ret = strdup(secret->uuid);
-    if (ret != NULL)
-        return ret;
+    memcpy(uuid, &secret->uuid[0], VIR_UUID_BUFLEN);
 
-    virReportOOMError(secret->conn);
-    virSetConnError(secret->conn);
-    return NULL;
+    return 0;
 }
+
+/**
+ * virSecretGetUUIDString:
+ * @secret: a secret object
+ * @buf: pointer to a VIR_UUID_STRING_BUFLEN bytes array
+ *
+ * Get the UUID for a secret as string. For more information about
+ * UUID see RFC4122.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virSecretGetUUIDString(virSecretPtr secret, char *buf)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    DEBUG("secret=%p, buf=%p", secret, buf);
+
+    virResetLastError();
+
+    if (!VIR_IS_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return (-1);
+    }
+    if (buf == NULL) {
+        virLibSecretError(secret, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (virSecretGetUUID(secret, &uuid[0]))
+        goto error;
+
+    virUUIDFormat(uuid, buf);
+    return (0);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(secret->conn);
+    return -1;
+}
+
 
 /**
  * virSecretGetXMLDesc:

@@ -6475,25 +6475,25 @@ done:
 }
 
 static virSecretPtr
-remoteSecretLookupByUUIDString (virConnectPtr conn, const char *uuid)
+remoteSecretLookupByUUID (virConnectPtr conn, const unsigned char *uuid)
 {
     virSecretPtr rv = NULL;
-    remote_secret_lookup_by_uuid_string_args args;
-    remote_secret_lookup_by_uuid_string_ret ret;
+    remote_secret_lookup_by_uuid_args args;
+    remote_secret_lookup_by_uuid_ret ret;
     struct private_data *priv = conn->secretPrivateData;
 
     remoteDriverLock (priv);
 
-    args.uuid = (char *) uuid;
+    memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
 
     memset (&ret, 0, sizeof (ret));
-    if (call (conn, priv, 0, REMOTE_PROC_SECRET_LOOKUP_BY_UUID_STRING,
-              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_args, (char *) &args,
-              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret, (char *) &ret) == -1)
+    if (call (conn, priv, 0, REMOTE_PROC_SECRET_LOOKUP_BY_UUID,
+              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_lookup_by_uuid_ret, (char *) &ret) == -1)
         goto done;
 
     rv = get_nonnull_secret (conn, ret.secret);
-    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_uuid_ret,
               (char *) &ret);
 
 done:
@@ -6506,7 +6506,7 @@ remoteSecretDefineXML (virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virSecretPtr rv = NULL;
     remote_secret_define_xml_args args;
-    remote_secret_lookup_by_uuid_string_ret ret;
+    remote_secret_define_xml_ret ret;
     struct private_data *priv = conn->secretPrivateData;
 
     remoteDriverLock (priv);
@@ -6521,7 +6521,7 @@ remoteSecretDefineXML (virConnectPtr conn, const char *xml, unsigned int flags)
         goto done;
 
     rv = get_nonnull_secret (conn, ret.secret);
-    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+    xdr_free ((xdrproc_t) xdr_remote_secret_define_xml_ret,
               (char *) &ret);
 
 done:
@@ -7733,7 +7733,7 @@ get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev)
 static virSecretPtr
 get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
 {
-    return virGetSecret(conn, secret.uuid);
+    return virGetSecret(conn, BAD_CAST secret.uuid);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
@@ -7778,7 +7778,7 @@ make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr 
 static void
 make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
-    secret_dst->uuid = secret_src->uuid;
+    memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
 }
 
 /*----------------------------------------------------------------------*/
@@ -7940,7 +7940,7 @@ static virSecretDriver secret_driver = {
     .close = remoteSecretClose,
     .numOfSecrets = remoteSecretNumOfSecrets,
     .listSecrets = remoteSecretListSecrets,
-    .lookupByUUIDString = remoteSecretLookupByUUIDString,
+    .lookupByUUID = remoteSecretLookupByUUID,
     .defineXML = remoteSecretDefineXML,
     .getXMLDesc = remoteSecretGetXMLDesc,
     .setValue = remoteSecretSetValue,

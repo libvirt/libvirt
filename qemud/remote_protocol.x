@@ -188,7 +188,7 @@ struct remote_nonnull_node_device {
 
 /* A secret which may not be null. */
 struct remote_nonnull_secret {
-    remote_nonnull_string uuid;
+    remote_uuid uuid;
 };
 
 /* A domain or network which may be NULL. */
@@ -1293,11 +1293,11 @@ struct remote_list_secrets_ret {
     remote_nonnull_string uuids<REMOTE_SECRET_UUID_LIST_MAX>;
 };
 
-struct remote_secret_lookup_by_uuid_string_args {
-    remote_nonnull_string uuid;
+struct remote_secret_lookup_by_uuid_args {
+    remote_uuid uuid;
 };
 
-struct remote_secret_lookup_by_uuid_string_ret {
+struct remote_secret_lookup_by_uuid_ret {
     remote_nonnull_secret secret;
 };
 
@@ -1500,7 +1500,7 @@ enum remote_procedure {
 
     REMOTE_PROC_NUM_OF_SECRETS = 139,
     REMOTE_PROC_LIST_SECRETS = 140,
-    REMOTE_PROC_SECRET_LOOKUP_BY_UUID_STRING = 141,
+    REMOTE_PROC_SECRET_LOOKUP_BY_UUID = 141,
     REMOTE_PROC_SECRET_DEFINE_XML = 142,
     REMOTE_PROC_SECRET_GET_XML_DESC = 143,
     REMOTE_PROC_SECRET_SET_VALUE = 144,

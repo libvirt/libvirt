@@ -1467,12 +1467,17 @@ int                     virConnectNumOfSecrets  (virConnectPtr conn);
 int                     virConnectListSecrets   (virConnectPtr conn,
                                                  char **uuids,
                                                  int maxuuids);
+virSecretPtr            virSecretLookupByUUID(virConnectPtr conn,
+                                              const unsigned char *uuid);
 virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
                                                     const char *uuid);
 virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
                                                  const char *xml,
                                                  unsigned int flags);
-char *                  virSecretGetUUIDString  (virSecretPtr secret);
+int                     virSecretGetUUID        (virSecretPtr secret,
+                                                 unsigned char *buf);
+int                     virSecretGetUUIDString  (virSecretPtr secret,
+                                                 char *buf);
 char *                  virSecretGetXMLDesc     (virSecretPtr secret,
                                                  unsigned int flags);
 int                     virSecretSetValue       (virSecretPtr secret,

@@ -111,13 +111,13 @@ secretFree(virSecretEntryPtr secret)
 }
 
 static virSecretEntryPtr *
-secretFind(virSecretDriverStatePtr driver, const char *uuid)
+secretFind(virSecretDriverStatePtr driver, const unsigned char *uuid)
 {
     virSecretEntryPtr *pptr, s;
 
     for (pptr = &driver->secrets; *pptr != NULL; pptr = &s->next) {
         s = *pptr;
-        if (STREQ(s->def->id, uuid))
+        if (memcmp(s->def->uuid, uuid, VIR_UUID_BUFLEN) == 0)
             return pptr;
     }
     return NULL;
@@ -125,15 +125,13 @@ secretFind(virSecretDriverStatePtr driver, const char *uuid)
 
 static virSecretEntryPtr
 secretCreate(virConnectPtr conn, virSecretDriverStatePtr driver,
-             const char *uuid)
+             const unsigned char *uuid)
 {
     virSecretEntryPtr secret = NULL;
 
     if (VIR_ALLOC(secret) < 0 || VIR_ALLOC(secret->def))
         goto no_memory;
-    secret->def->id = strdup(uuid);
-    if (secret->def->id == NULL)
-        goto no_memory;
+    memcpy(secret->def->uuid, uuid, VIR_UUID_BUFLEN);
     listInsert(&driver->secrets, secret);
     return secret;
 
@@ -145,7 +143,7 @@ secretCreate(virConnectPtr conn, virSecretDriverStatePtr driver,
 
 static virSecretEntryPtr
 secretFindOrCreate(virConnectPtr conn, virSecretDriverStatePtr driver,
-                   const char *uuid, bool *created_new)
+                   const unsigned char *uuid, bool *created_new)
 {
     virSecretEntryPtr *pptr, secret;
 
@@ -223,18 +221,15 @@ static char *
 secretComputePath(virConnectPtr conn, virSecretDriverStatePtr driver,
                   const virSecretEntry *secret, const char *suffix)
 {
-    char *ret, *base64_id;
+    char *ret;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    base64_encode_alloc(secret->def->id, strlen(secret->def->id), &base64_id);
-    if (base64_id == NULL) {
-        virReportOOMError(conn);
-        return NULL;
-    }
+    virUUIDFormat(secret->def->uuid, uuidstr);
 
-    if (virAsprintf(&ret, "%s/%s%s", driver->directory, base64_id, suffix) < 0)
+    if (virAsprintf(&ret, "%s/%s%s", driver->directory, uuidstr, suffix) < 0)
         /* ret is NULL */
         virReportOOMError(conn);
-    VIR_FREE(base64_id);
+
     return ret;
 }
 
@@ -357,28 +352,16 @@ static int
 secretLoadValidateUUID(virConnectPtr conn, virSecretDefPtr def,
                        const char *xml_basename)
 {
-    char *base64_id;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (def->id == NULL) {
-        virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("<uuid> missing in secret description in '%s'"),
-                             xml_basename);
-        return -1;
-    }
+    virUUIDFormat(def->uuid, uuidstr);
 
-    base64_encode_alloc(def->id, strlen(def->id), &base64_id);
-    if (base64_id == NULL) {
-        virReportOOMError(conn);
-        return -1;
-    }
-    if (!virFileMatchesNameSuffix(xml_basename, base64_id, ".xml")) {
+    if (!virFileMatchesNameSuffix(xml_basename, uuidstr, ".xml")) {
         virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("<uuid> does not match secret file name '%s'"),
                              xml_basename);
-        VIR_FREE(base64_id);
         return -1;
     }
-    VIR_FREE(base64_id);
 
     return 0;
 }
@@ -604,11 +587,13 @@ secretListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
 
     i = 0;
     for (secret = driver->secrets; secret != NULL; secret = secret->next) {
+        char *uuidstr;
         if (i == maxuuids)
             break;
-        uuids[i] = strdup(secret->def->id);
-        if (uuids[i] == NULL)
+        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0)
             goto cleanup;
+        virUUIDFormat(secret->def->uuid, uuidstr);
+        uuids[i] = uuidstr;
         i++;
     }
 
@@ -625,7 +610,7 @@ cleanup:
 }
 
 static virSecretPtr
-secretLookupByUUIDString(virConnectPtr conn, const char *uuid)
+secretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virSecretDriverStatePtr driver = conn->secretPrivateData;
     virSecretPtr ret = NULL;
@@ -635,49 +620,20 @@ secretLookupByUUIDString(virConnectPtr conn, const char *uuid)
 
     pptr = secretFind(driver, uuid);
     if (pptr == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
         virSecretReportError(conn, VIR_ERR_NO_SECRET,
-                             _("no secret with matching id '%s'"), uuid);
+                             _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
-    ret = virGetSecret(conn, (*pptr)->def->id);
+    ret = virGetSecret(conn, (*pptr)->def->uuid);
 
 cleanup:
     secretDriverUnlock(driver);
     return ret;
 }
 
-static char *
-secretGenerateUUID(virConnectPtr conn, virSecretDriverStatePtr driver)
-{
-    char *uuid = NULL;
-    unsigned attempt;
-
-    if (VIR_ALLOC_N(uuid, VIR_UUID_STRING_BUFLEN) < 0) {
-        virReportOOMError(conn);
-        goto error;
-    }
-
-    for (attempt = 0; attempt < 65536; attempt++) {
-        unsigned char uuid_data[VIR_UUID_BUFLEN];
-
-        if (virUUIDGenerate(uuid_data) < 0) {
-            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("unable to generate uuid"));
-            goto error;
-        }
-        virUUIDFormat(uuid_data, uuid);
-        if (secretFind(driver, uuid) == NULL)
-            return uuid;
-    }
-    virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("too many conflicts when generating an uuid"));
-    goto error;
-
-error:
-    VIR_FREE(uuid);
-    return NULL;
-}
 
 static virSecretPtr
 secretDefineXML(virConnectPtr conn, const char *xml,
@@ -695,16 +651,8 @@ secretDefineXML(virConnectPtr conn, const char *xml,
 
     secretDriverLock(driver);
 
-    if (new_attrs->id != NULL)
-        secret = secretFindOrCreate(conn, driver, new_attrs->id,
-                                    &secret_is_new);
-    else {
-        new_attrs->id = secretGenerateUUID(conn, driver);
-        if (new_attrs->id == NULL)
-            goto cleanup;
-        secret = secretCreate(conn, driver, new_attrs->id);
-        secret_is_new = true;
-    }
+    secret = secretFindOrCreate(conn, driver, new_attrs->uuid,
+                                &secret_is_new);
     if (secret == NULL)
         goto cleanup;
 
@@ -743,7 +691,7 @@ secretDefineXML(virConnectPtr conn, const char *xml,
     new_attrs = NULL;
     virSecretDefFree(backup);
 
-    ret = virGetSecret(conn, secret->def->id);
+    ret = virGetSecret(conn, secret->def->uuid);
     goto cleanup;
 
 restore_backup:
@@ -776,8 +724,10 @@ secretGetXMLDesc(virSecretPtr obj, unsigned int flags ATTRIBUTE_UNUSED)
 
     pptr = secretFind(driver, obj->uuid);
     if (pptr == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->uuid, uuidstr);
         virSecretReportError(obj->conn, VIR_ERR_NO_SECRET,
-                             _("no secret with matching id '%s'"), obj->uuid);
+                             _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -808,8 +758,10 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
 
     pptr = secretFind(driver, obj->uuid);
     if (pptr == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->uuid, uuidstr);
         virSecretReportError(obj->conn, VIR_ERR_NO_SECRET,
-                             _("no secret with matching id '%s'"), obj->uuid);
+                             _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     secret = *pptr;
@@ -859,14 +811,18 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags)
 
     pptr = secretFind(driver, obj->uuid);
     if (pptr == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->uuid, uuidstr);
         virSecretReportError(obj->conn, VIR_ERR_NO_SECRET,
-                             _("no secret with matching id '%s'"), obj->uuid);
+                             _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     secret = *pptr;
     if (secret->value == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->uuid, uuidstr);
         virSecretReportError(obj->conn, VIR_ERR_NO_SECRET,
-                             _("secret '%s' does not have a value"), obj->uuid);
+                             _("secret '%s' does not have a value"), uuidstr);
         goto cleanup;
     }
 
@@ -901,8 +857,10 @@ secretUndefine(virSecretPtr obj)
 
     pptr = secretFind(driver, obj->uuid);
     if (pptr == NULL) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(obj->uuid, uuidstr);
         virSecretReportError(obj->conn, VIR_ERR_NO_SECRET,
-                             _("no secret with matching id '%s'"), obj->uuid);
+                             _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1036,7 +994,7 @@ static virSecretDriver secretDriver = {
     .close = secretClose,
     .numOfSecrets = secretNumOfSecrets,
     .listSecrets = secretListSecrets,
-    .lookupByUUIDString = secretLookupByUUIDString,
+    .lookupByUUID = secretLookupByUUID,
     .defineXML = secretDefineXML,
     .getXMLDesc = secretGetXMLDesc,
     .setValue = secretSetValue,

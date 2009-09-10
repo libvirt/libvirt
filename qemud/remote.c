@@ -4710,15 +4710,15 @@ remoteDispatchSecretGetXmlDesc (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteDispatchSecretLookupByUuidString (struct qemud_server *server ATTRIBUTE_UNUSED,
-                                        struct qemud_client *client ATTRIBUTE_UNUSED,
-                                        virConnectPtr conn, remote_error *err,
-                                        remote_secret_lookup_by_uuid_string_args *args,
-                                        remote_secret_lookup_by_uuid_string_ret *ret)
+remoteDispatchSecretLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn, remote_error *err,
+                                  remote_secret_lookup_by_uuid_args *args,
+                                  remote_secret_lookup_by_uuid_ret *ret)
 {
     virSecretPtr secret;
 
-    secret = virSecretLookupByUUIDString (conn, args->uuid);
+    secret = virSecretLookupByUUID (conn, (unsigned char *)args->uuid);
     if (secret == NULL) {
         remoteDispatchConnError (err, conn);
         return -1;
@@ -4828,7 +4828,7 @@ get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol)
 static virSecretPtr
 get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
 {
-    return virGetSecret (conn, secret.uuid);
+    return virGetSecret (conn, BAD_CAST secret.uuid);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
@@ -4879,5 +4879,5 @@ make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr 
 static void
 make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
-    secret_dst->uuid = strdup(secret_src->uuid);
+    memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
 }

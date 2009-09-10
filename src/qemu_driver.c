@@ -2692,7 +2692,7 @@ findVolumeQcowPassphrase(virConnectPtr conn, virDomainObjPtr vm,
     size_t size;
 
     if (conn->secretDriver == NULL ||
-        conn->secretDriver->lookupByUUIDString == NULL ||
+        conn->secretDriver->lookupByUUID == NULL ||
         conn->secretDriver->getValue == NULL) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
                          _("secret storage not supported"));
@@ -2712,13 +2712,8 @@ findVolumeQcowPassphrase(virConnectPtr conn, virDomainObjPtr vm,
         return NULL;
     }
 
-    if (enc->secrets[0]->uuid == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("missing secret uuid for volume %s"), path);
-        return NULL;
-    }
-    secret = conn->secretDriver->lookupByUUIDString(conn,
-                                                    enc->secrets[0]->uuid);
+    secret = conn->secretDriver->lookupByUUID(conn,
+                                              enc->secrets[0]->uuid);
     if (secret == NULL)
         return NULL;
     data = conn->secretDriver->getValue(secret, &size,

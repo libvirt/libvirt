@@ -25,6 +25,7 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "memory.h"
+#include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -1169,9 +1170,10 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
  * Returns a pointer to the secret, or NULL in case of failure
  */
 virSecretPtr
-virGetSecret(virConnectPtr conn, const char *uuid)
+virGetSecret(virConnectPtr conn, const unsigned char *uuid)
 {
     virSecretPtr ret = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!VIR_IS_CONNECT(conn) || uuid == NULL) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -1179,7 +1181,9 @@ virGetSecret(virConnectPtr conn, const char *uuid)
     }
     virMutexLock(&conn->lock);
 
-    ret = virHashLookup(conn->secrets, uuid);
+    virUUIDFormat(uuid, uuidstr);
+
+    ret = virHashLookup(conn->secrets, uuidstr);
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
@@ -1188,14 +1192,9 @@ virGetSecret(virConnectPtr conn, const char *uuid)
         }
         ret->magic = VIR_SECRET_MAGIC;
         ret->conn = conn;
-        ret->uuid = strdup(uuid);
-        if (ret->uuid == NULL) {
-            virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
-            goto error;
-        }
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
-        if (virHashAddEntry(conn->secrets, uuid, ret) < 0) {
+        if (virHashAddEntry(conn->secrets, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                             "%s", _("failed to add secret to conn hash table"));
@@ -1229,9 +1228,11 @@ error:
 static void
 virReleaseSecret(virSecretPtr secret) {
     virConnectPtr conn = secret->conn;
-    DEBUG("release secret %p %s", secret, secret->uuid);
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    DEBUG("release secret %p %p", secret, secret->uuid);
 
-    if (virHashRemoveEntry(conn->secrets, secret->uuid, NULL) < 0) {
+    virUUIDFormat(secret->uuid, uuidstr);
+    if (virHashRemoveEntry(conn->secrets, uuidstr, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("secret missing from connection hash table"));
@@ -1239,7 +1240,6 @@ virReleaseSecret(virSecretPtr secret) {
     }
 
     secret->magic = -1;
-    VIR_FREE(secret->uuid);
     VIR_FREE(secret);
 
     if (conn) {
@@ -1272,7 +1272,7 @@ virUnrefSecret(virSecretPtr secret) {
         return -1;
     }
     virMutexLock(&secret->conn->lock);
-    DEBUG("unref secret %p %s %d", secret, secret->uuid, secret->refs);
+    DEBUG("unref secret %p %p %d", secret, secret->uuid, secret->refs);
     secret->refs--;
     refs = secret->refs;
     if (refs == 0) {

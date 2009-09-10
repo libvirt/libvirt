@@ -50,8 +50,9 @@
 #include "node_device.h"
 #include "internal.h"
 #include "secret_conf.h"
-
+#include "uuid.h"
 #include "storage_backend.h"
+#include "logging.h"
 
 #if WITH_STORAGE_LVM
 #include "storage_backend_logical.h"
@@ -338,6 +339,32 @@ cleanup:
 }
 
 static int
+virStorageGenerateSecretUUID(virConnectPtr conn,
+                             unsigned char *uuid)
+{
+    unsigned attempt;
+
+    for (attempt = 0; attempt < 65536; attempt++) {
+        virSecretPtr tmp;
+        if (virUUIDGenerate(uuid) < 0) {
+            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("unable to generate uuid"));
+            return -1;
+        }
+        tmp = conn->secretDriver->lookupByUUID(conn, uuid);
+        if (tmp == NULL)
+            return 0;
+
+        virSecretFree(tmp);
+    }
+
+    virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("too many conflicts when generating an uuid"));
+
+    return -1;
+}
+
+static int
 virStorageGenerateQcowEncryption(virConnectPtr conn,
                                  virStorageVolDefPtr vol)
 {
@@ -346,11 +373,13 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
     virStorageEncryptionPtr enc;
     virStorageEncryptionSecretPtr enc_secret = NULL;
     virSecretPtr secret = NULL;
-    char *uuid = NULL, *xml;
+    char *xml;
     unsigned char value[VIR_STORAGE_QCOW_PASSPHRASE_SIZE];
     int ret = -1;
 
-    if (conn->secretDriver == NULL || conn->secretDriver->defineXML == NULL ||
+    if (conn->secretDriver == NULL ||
+        conn->secretDriver->lookupByUUID == NULL ||
+        conn->secretDriver->defineXML == NULL ||
         conn->secretDriver->setValue == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
                               _("secret storage not supported"));
@@ -372,12 +401,9 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
 
     def->ephemeral = 0;
     def->private = 0;
-    def->id = NULL; /* Chosen by the secret driver */
-    if (virAsprintf(&def->description, "qcow passphrase for %s",
-                    vol->target.path) == -1) {
-        virReportOOMError(conn);
+    if (virStorageGenerateSecretUUID(conn, def->uuid) < 0)
         goto cleanup;
-    }
+
     def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
     def->usage.volume = strdup(vol->target.path);
     if (def->usage.volume == NULL) {
@@ -397,22 +423,14 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
     }
     VIR_FREE(xml);
 
-    uuid = strdup(secret->uuid);
-    if (uuid == NULL) {
-        virReportOOMError(conn);
-        goto cleanup;
-    }
-
     if (virStorageGenerateQcowPassphrase(conn, value) < 0)
         goto cleanup;
 
     if (conn->secretDriver->setValue(secret, value, sizeof(value), 0) < 0)
         goto cleanup;
-    secret = NULL;
 
     enc_secret->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
-    enc_secret->uuid = uuid;
-    uuid = NULL;
+    memcpy(enc_secret->uuid, secret->uuid, VIR_UUID_BUFLEN);
     enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
     enc->secrets[0] = enc_secret; /* Space for secrets[0] allocated above */
     enc_secret = NULL;
@@ -421,9 +439,9 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
     ret = 0;
 
 cleanup:
-    VIR_FREE(uuid);
     if (secret != NULL) {
-        if (conn->secretDriver->undefine != NULL)
+        if (ret != 0 &&
+            conn->secretDriver->undefine != NULL)
             conn->secretDriver->undefine(secret);
         virSecretFree(secret);
     }

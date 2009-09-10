@@ -43,7 +43,7 @@ typedef virSecretDef *virSecretDefPtr;
 struct _virSecretDef {
     unsigned ephemeral : 1;
     unsigned private : 1;
-    char *id;                   /* May be NULL */
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char *description;          /* May be NULL */
     int usage_type;
     union {

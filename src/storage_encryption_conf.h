@@ -41,7 +41,7 @@ typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
 typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;
 struct _virStorageEncryptionSecret {
     int type;                   /* enum virStorageEncryptionSecretType */
-    char *uuid;
+    unsigned char uuid[VIR_UUID_BUFLEN];
 };
 
 enum virStorageEncryptionFormat {
@@ -63,6 +63,7 @@ struct _virStorageEncryption {
 };
 
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
+
 virStorageEncryptionPtr virStorageEncryptionParseNode(virConnectPtr conn,
                                                       xmlDocPtr xml,
                                                       xmlNodePtr root);

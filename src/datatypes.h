@@ -255,7 +255,7 @@ struct _virSecret {
     unsigned int magic;                  /* specific value to check */
     int refs;                            /* reference count */
     virConnectPtr conn;                  /* pointer back to the connection */
-    char *uuid;                          /* ID of the secret */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
 };
 
 
@@ -296,7 +296,7 @@ virNodeDevicePtr virGetNodeDevice(virConnectPtr conn,
 int virUnrefNodeDevice(virNodeDevicePtr dev);
 
 virSecretPtr virGetSecret(virConnectPtr conn,
-                          const char *uuid);
+                          const unsigned char *uuid);
 int virUnrefSecret(virSecretPtr secret);
 
 #endif

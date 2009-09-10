@@ -707,10 +707,10 @@
     .args_filter = (xdrproc_t) xdr_remote_list_secrets_args,
     .ret_filter = (xdrproc_t) xdr_remote_list_secrets_ret,
 },
-{   /* SecretLookupByUuidString => 141 */
-    .fn = (dispatch_fn) remoteDispatchSecretLookupByUuidString,
-    .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_args,
-    .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_string_ret,
+{   /* SecretLookupByUuid => 141 */
+    .fn = (dispatch_fn) remoteDispatchSecretLookupByUuid,
+    .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_uuid_ret,
 },
 {   /* SecretDefineXml => 142 */
     .fn = (dispatch_fn) remoteDispatchSecretDefineXml,
