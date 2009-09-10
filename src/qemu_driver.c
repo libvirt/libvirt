@@ -2239,6 +2239,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         /* No need for 'goto cleanup' now since qemudShutdownVMDaemon does enough */
     }
 
+    if (logfile != -1)
+        close(logfile);
+
     return ret;
 
 cleanup:
