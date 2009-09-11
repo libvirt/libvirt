@@ -336,10 +336,6 @@ qemuReconnectDomain(struct qemud_driver *driver,
         goto error;
     }
 
-    if (qemudDetectVcpuPIDs(NULL, obj) < 0) {
-        goto error;
-    }
-
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
         goto error;
     }
@@ -2519,6 +2515,7 @@ qemudMonitorCommandWithHandler(const virDomainObjPtr vm,
 
     qemuMonitorDiscardPendingData(vm);
 
+    VIR_DEBUG("Send '%s'", cmd);
     if (qemudMonitorSend(vm, cmd, scm_fd) < 0)
         return -1;
 

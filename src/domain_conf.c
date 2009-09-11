@@ -3061,6 +3061,8 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     xmlNodePtr oldnode;
     virDomainObjPtr obj;
     char *monitorpath;
+    xmlNodePtr *nodes = NULL;
+    int n, i;
 
     if (!(obj = virDomainObjNew(conn)))
         return NULL;
@@ -3133,9 +3135,32 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
         break;
     }
 
+    n = virXPathNodeSet(conn, "./vcpus/vcpu", ctxt, &nodes);
+    if (n < 0)
+        goto error;
+    if (n) {
+        obj->nvcpupids = n;
+        if (VIR_REALLOC_N(obj->vcpupids, obj->nvcpupids) < 0)
+            goto error;
+
+        for (i = 0 ; i < n ; i++) {
+            char *pidstr = virXMLPropString(nodes[i], "pid");
+            if (!pidstr)
+                goto error;
+
+            if (virStrToLong_i(pidstr, NULL, 10, &(obj->vcpupids[i])) < 0) {
+                VIR_FREE(pidstr);
+                goto error;
+            }
+            VIR_FREE(pidstr);
+        }
+        VIR_FREE(nodes);
+    }
+
     return obj;
 
 error:
+    VIR_FREE(nodes);
     virDomainChrDefFree(obj->monitor_chr);
     virDomainObjFree(obj);
     return NULL;
@@ -4421,6 +4446,16 @@ char *virDomainObjFormat(virConnectPtr conn,
     virBufferEscapeString(&buf, "  <monitor path='%s'", monitorpath);
     virBufferVSprintf(&buf, " type='%s'/>\n",
                       virDomainChrTypeToString(obj->monitor_chr->type));
+
+
+    if (obj->nvcpupids) {
+        int i;
+        virBufferAddLit(&buf, "  <vcpus>\n");
+        for (i = 0 ; i < obj->nvcpupids ; i++) {
+            virBufferVSprintf(&buf, "    <vcpu pid='%d'/>\n", obj->vcpupids[i]);
+        }
+        virBufferAddLit(&buf, "  </vcpus>\n");
+    }
 
     if (!(config_xml = virDomainDefFormat(conn,
                                           obj->def,
