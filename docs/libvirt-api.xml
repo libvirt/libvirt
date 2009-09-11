@@ -45,6 +45,7 @@
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_DEFINED_ADDED' type='enum'/>
+     <exports symbol='VIR_SECRET_USAGE_TYPE_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STARTED_MIGRATED' type='enum'/>
      <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_MEMORY_VIRTUAL' type='enum'/>
@@ -68,6 +69,7 @@
      <exports symbol='VIR_CRED_REALM' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STARTED' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_FILE' type='enum'/>
+     <exports symbol='VIR_SECRET_USAGE_TYPE_VOLUME' type='enum'/>
      <exports symbol='VIR_EVENT_HANDLE_HANGUP' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
      <exports symbol='VIR_STORAGE_POOL_DEGRADED' type='enum'/>
@@ -152,6 +154,7 @@
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='virSecurityLabelPtr' type='typedef'/>
      <exports symbol='virSecurityModel' type='typedef'/>
+     <exports symbol='virSecretUsageType' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virConnectAuth' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
@@ -199,6 +202,7 @@
      <exports symbol='virStorageVolLookupByPath' type='function'/>
      <exports symbol='virStorageVolLookupByName' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
+     <exports symbol='virSecretLookupByUUID' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virEventRegisterImpl' type='function'/>
      <exports symbol='virInterfaceDefineXML' type='function'/>
@@ -213,9 +217,10 @@
      <exports symbol='virSecretGetConnect' type='function'/>
      <exports symbol='virInterfaceCreate' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
+     <exports symbol='virSecretLookupByUsage' type='function'/>
      <exports symbol='virStoragePoolGetUUID' type='function'/>
      <exports symbol='virNodeDeviceFree' type='function'/>
-     <exports symbol='virStorageVolGetInfo' type='function'/>
+     <exports symbol='virSecretGetUsageType' type='function'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virNodeDeviceCreateXML' type='function'/>
      <exports symbol='virNetworkDestroy' type='function'/>
@@ -254,11 +259,13 @@
      <exports symbol='virStoragePoolListVolumes' type='function'/>
      <exports symbol='virConnectGetHostname' type='function'/>
      <exports symbol='virEventRemoveTimeoutFunc' type='function'/>
+     <exports symbol='virStorageVolGetInfo' type='function'/>
      <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virStoragePoolRef' type='function'/>
      <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virConnectNumOfStoragePools' type='function'/>
      <exports symbol='virInterfaceGetConnect' type='function'/>
+     <exports symbol='virStoragePoolNumOfVolumes' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
      <exports symbol='virSecretGetXMLDesc' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
@@ -269,6 +276,7 @@
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virNodeGetSecurityModel' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
+     <exports symbol='virSecretGetUUID' type='function'/>
      <exports symbol='virNodeDeviceDestroy' type='function'/>
      <exports symbol='virStorageVolGetPath' type='function'/>
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
@@ -304,7 +312,7 @@
      <exports symbol='virDomainGetSchedulerType' type='function'/>
      <exports symbol='virNodeDeviceReset' type='function'/>
      <exports symbol='virDomainDetachDevice' type='function'/>
-     <exports symbol='virStoragePoolNumOfVolumes' type='function'/>
+     <exports symbol='virSecretGetUsageID' type='function'/>
      <exports symbol='virStoragePoolGetUUIDString' type='function'/>
      <exports symbol='virNodeDeviceReAttach' type='function'/>
      <exports symbol='virStoragePoolUndefine' type='function'/>
@@ -376,6 +384,7 @@
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
+     <exports symbol='VIR_FROM_XEN' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
@@ -424,7 +433,6 @@
      <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
-     <exports symbol='VIR_ERR_INVALID_INTERFACE' type='enum'/>
      <exports symbol='VIR_FROM_STORAGE' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
@@ -434,12 +442,13 @@
      <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_SECRET' type='enum'/>
      <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
-     <exports symbol='VIR_FROM_XEN' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_INTERFACE' type='enum'/>
      <exports symbol='VIR_ERR_RPC' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
      <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_SECRET' type='enum'/>
      <exports symbol='VIR_WAR_NO_INTERFACE' type='enum'/>
      <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
      <exports symbol='VIR_FROM_LXC' type='enum'/>
@@ -604,7 +613,7 @@
     <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC address'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
     <enum name='VIR_ERR_INVALID_NODE_DEVICE' file='virterror' value='52' type='virErrorNumber' info='invalid node device object'/>
-    <enum name='VIR_ERR_INVALID_SECRET' file='virterror' value='61' type='virErrorNumber' info=' invalid secret'/>
+    <enum name='VIR_ERR_INVALID_SECRET' file='virterror' value='61' type='virErrorNumber' info='invalid secret'/>
     <enum name='VIR_ERR_INVALID_STORAGE_POOL' file='virterror' value='46' type='virErrorNumber' info='invalid storage pool object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_VOL' file='virterror' value='47' type='virErrorNumber' info='invalid storage vol object'/>
     <enum name='VIR_ERR_MULTIPLE_INTERFACES' file='virterror' value='59' type='virErrorNumber' info='more than one matching interface found'/>
@@ -621,6 +630,7 @@
     <enum name='VIR_ERR_NO_NODE_DEVICE' file='virterror' value='53' type='virErrorNumber' info='node device not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
+    <enum name='VIR_ERR_NO_SECRET' file='virterror' value='62' type='virErrorNumber' info=' secret not found'/>
     <enum name='VIR_ERR_NO_SECURITY_MODEL' file='virterror' value='54' type='virErrorNumber' info='security model not found'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
     <enum name='VIR_ERR_NO_STORAGE_POOL' file='virterror' value='49' type='virErrorNumber' info='storage pool not found'/>
@@ -685,6 +695,8 @@
     <enum name='VIR_MEMORY_PHYSICAL' file='libvirt' value='2' type='virDomainMemoryFlags' info=' addresses are physical addresses'/>
     <enum name='VIR_MEMORY_VIRTUAL' file='libvirt' value='1' type='virDomainMemoryFlags' info='addresses are virtual addresses'/>
     <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
+    <enum name='VIR_SECRET_USAGE_TYPE_NONE' file='libvirt' value='0' type='virSecretUsageType'/>
+    <enum name='VIR_SECRET_USAGE_TYPE_VOLUME' file='libvirt' value='1' type='virSecretUsageType' info=' Expect more owner types later...'/>
     <enum name='VIR_STORAGE_POOL_BUILDING' file='libvirt' value='1' type='virStoragePoolState' info='Initializing pool, not available'/>
     <enum name='VIR_STORAGE_POOL_BUILD_NEW' file='libvirt' value='0' type='virStoragePoolBuildFlags' info='Regular build from scratch'/>
     <enum name='VIR_STORAGE_POOL_BUILD_REPAIR' file='libvirt' value='1' type='virStoragePoolBuildFlags' info='Repair / reinitialize'/>
@@ -834,6 +846,7 @@ see note above'/>
     <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
     <struct name='virSecret' file='libvirt' type='struct _virSecret'/>
     <typedef name='virSecretPtr' file='libvirt' type='virSecret *'/>
+    <typedef name='virSecretUsageType' file='libvirt' type='enum'/>
     <struct name='virSecurityLabel' file='libvirt' type='struct _virSecurityLabel'/>
     <typedef name='virSecurityLabelPtr' file='libvirt' type='virSecurityLabel *'>
       <info>a virSecurityLabelPtr is a pointer to a virSecurityLabel.</info>
@@ -1540,28 +1553,28 @@ see note above'/>
     <function name='virInterfaceFree' file='libvirt' module='libvirt'>
       <info>Free the interface object. The interface itself is unaltered. The data structure is freed and should not be used thereafter.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
-      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetConnect' file='libvirt' module='libvirt'>
       <info>Provides the connection pointer associated with an interface.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the interface object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
-      <arg name='iface' type='virInterfacePtr' info='pointer to a interface'/>
+      <arg name='iface' type='virInterfacePtr' info='pointer to an interface'/>
     </function>
     <function name='virInterfaceGetMACString' file='libvirt' module='libvirt'>
-      <info>Get the MAC for a interface as string. For more information about MAC see RFC4122.</info>
+      <info>Get the MAC for an interface as string. For more information about MAC see RFC4122.</info>
       <return type='const char *' info='a pointer to the MAC address (in null-terminated ASCII format) or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
-      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetName' file='libvirt' module='libvirt'>
       <info>Get the public name for that interface</info>
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
-      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
+      <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Provide an XML description of the interface. The description may be reused later to recreate the interface with virInterfaceCreateXML().</info>
+      <info>Provide an XML description of the interface. The description may be reused later to redefine the interface with virInterfaceDefineXML().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
-      <arg name='iface' type='virInterfacePtr' info='a interface object'/>
-      <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+      <arg name='iface' type='virInterfacePtr' info='an interface object'/>
+      <arg name='flags' type='unsigned int' info='an OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceLookupByMACString' file='libvirt' module='libvirt'>
       <info>Try to lookup an interface on the given hypervisor based on its MAC.</info>
@@ -1576,7 +1589,7 @@ see note above'/>
       <arg name='name' type='const char *' info='name for the interface'/>
     </function>
     <function name='virInterfaceRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the interface. For each additional call to this method, there shall be a corresponding call to virInterfaceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a interface would increment the reference count.</info>
+      <info>Increment the reference count on the interface. For each additional call to this method, there shall be a corresponding call to virInterfaceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using an interface would increment the reference count.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='iface' type='virInterfacePtr' info='the interface to hold a reference on'/>
     </function>
@@ -1649,7 +1662,7 @@ see note above'/>
       <info>Provide an XML description of the network. The description may be reused later to relaunch the network with virNetworkCreateXML().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
-      <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+      <arg name='flags' type='int' info='an OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virNetworkLookupByName' file='libvirt' module='libvirt'>
       <info>Try to lookup a network on the given hypervisor based on its name.</info>
@@ -1827,10 +1840,27 @@ see note above'/>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
     </function>
-    <function name='virSecretGetUUIDString' file='libvirt' module='libvirt'>
+    <function name='virSecretGetUUID' file='libvirt' module='libvirt'>
       <info>Fetches the UUID of the secret.</info>
-      <return type='char *' info='ID of the secret (not necessarily in the UUID format) on success, NULL on failure.  The caller must free() the ID.'/>
+      <return type='int' info='0 on success with the uuid buffer being filled, or -1 upon failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
+      <arg name='uuid' type='unsigned char *' info='buffer of VIR_UUID_BUFLEN bytes in size'/>
+    </function>
+    <function name='virSecretGetUUIDString' file='libvirt' module='libvirt'>
+      <info>Get the UUID for a secret as string. For more information about UUID see RFC4122.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
+      <arg name='secret' type='virSecretPtr' info='a secret object'/>
+      <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
+    </function>
+    <function name='virSecretGetUsageID' file='libvirt' module='libvirt'>
+      <info>Get the unique identifier of the object with which this secret is to be used</info>
+      <return type='const char *' info='a string identifying the object using the secret, or NULL upon error'/>
+      <arg name='secret' type='virSecretPtr' info='a secret object'/>
+    </function>
+    <function name='virSecretGetUsageType' file='libvirt' module='libvirt'>
+      <info>Get the type of object which uses this secret</info>
+      <return type='int' info='a positive integer identifying the type of object, or -1 upon error.'/>
+      <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
     <function name='virSecretGetValue' file='libvirt' module='libvirt'>
       <info>Fetches the value of a secret.</info>
@@ -1845,11 +1875,24 @@ see note above'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
+    <function name='virSecretLookupByUUID' file='libvirt' module='libvirt'>
+      <info>Try to lookup a secret on the given hypervisor based on its UUID.</info>
+      <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='the raw UUID for the secret'/>
+    </function>
     <function name='virSecretLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Fetches a secret based on uuid.</info>
-      <return type='virSecretPtr' info='the secret on success, or NULL on failure.'/>
-      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
-      <arg name='uuid' type='const char *' info='ID of a secret'/>
+      <info>Try to lookup a secret on the given hypervisor based on its UUID.</info>
+      <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuidstr' type='const char *' info='the string UUID for the secret'/>
+    </function>
+    <function name='virSecretLookupByUsage' file='libvirt' module='libvirt'>
+      <info>Try to lookup a secret on the given hypervisor based on its usage</info>
+      <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='usageType' type='int' info='the type of secret usage'/>
+      <arg name='usageID' type='const char *' info='identifier of the object using the secret'/>
     </function>
     <function name='virSecretRef' file='libvirt' module='libvirt'>
       <info>Increment the reference count on the secret. For each additional call to this method, there shall be a corresponding call to virSecretFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a secret would increment the reference count.</info>
