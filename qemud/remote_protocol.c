@@ -109,6 +109,10 @@ xdr_remote_nonnull_secret (XDR *xdrs, remote_nonnull_secret *objp)
 
          if (!xdr_remote_uuid (xdrs, objp->uuid))
                  return FALSE;
+         if (!xdr_int (xdrs, &objp->usageType))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->usageID))
+                 return FALSE;
         return TRUE;
 }
 
@@ -2666,6 +2670,26 @@ xdr_remote_secret_get_value_ret (XDR *xdrs, remote_secret_get_value_ret *objp)
 
 bool_t
 xdr_remote_secret_undefine_args (XDR *xdrs, remote_secret_undefine_args *objp)
+{
+
+         if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_lookup_by_usage_args (XDR *xdrs, remote_secret_lookup_by_usage_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->usageType))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->usageID))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_secret_lookup_by_usage_ret (XDR *xdrs, remote_secret_lookup_by_usage_ret *objp)
 {
 
          if (!xdr_remote_nonnull_secret (xdrs, &objp->secret))

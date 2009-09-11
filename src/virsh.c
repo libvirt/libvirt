@@ -5527,11 +5527,33 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     qsort(uuids, maxuuids, sizeof(char *), namesorter);
 
-    vshPrintExtra(ctl, "%s\n", _("UUID"));
-    vshPrintExtra(ctl, "-----------------------------------------\n");
+    vshPrintExtra(ctl, "%-36s %s\n", _("UUID"), _("Usage"));
+    vshPrintExtra(ctl, "-----------------------------------------------------------\n");
 
     for (i = 0; i < maxuuids; i++) {
-        vshPrint(ctl, "%-36s\n", uuids[i]);
+        virSecretPtr sec = virSecretLookupByUUIDString(ctl->conn, uuids[i]);
+        const char *usageType = NULL;
+
+        if (!sec) {
+            free(uuids[i]);
+            continue;
+        }
+
+        switch (virSecretGetUsageType(sec)) {
+        case VIR_SECRET_USAGE_TYPE_VOLUME:
+            usageType = _("Volume");
+            break;
+        }
+
+        if (usageType) {
+            vshPrint(ctl, "%-36s %s %s\n",
+                     uuids[i], usageType,
+                     virSecretGetUsageID(sec));
+        } else {
+            vshPrint(ctl, "%-36s %s\n",
+                     uuids[i], _("Unused"));
+        }
+        virSecretFree(sec);
         free(uuids[i]);
     }
     free(uuids);

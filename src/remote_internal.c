@@ -6502,6 +6502,34 @@ done:
 }
 
 static virSecretPtr
+remoteSecretLookupByUsage (virConnectPtr conn, int usageType, const char *usageID)
+{
+    virSecretPtr rv = NULL;
+    remote_secret_lookup_by_usage_args args;
+    remote_secret_lookup_by_usage_ret ret;
+    struct private_data *priv = conn->secretPrivateData;
+
+    remoteDriverLock (priv);
+
+    args.usageType = usageType;
+    args.usageID = (char *)usageID;
+
+    memset (&ret, 0, sizeof (ret));
+    if (call (conn, priv, 0, REMOTE_PROC_SECRET_LOOKUP_BY_USAGE,
+              (xdrproc_t) xdr_remote_secret_lookup_by_usage_args, (char *) &args,
+              (xdrproc_t) xdr_remote_secret_lookup_by_usage_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = get_nonnull_secret (conn, ret.secret);
+    xdr_free ((xdrproc_t) xdr_remote_secret_lookup_by_usage_ret,
+              (char *) &ret);
+
+done:
+    remoteDriverUnlock (priv);
+    return rv;
+}
+
+static virSecretPtr
 remoteSecretDefineXML (virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virSecretPtr rv = NULL;
@@ -7733,7 +7761,7 @@ get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev)
 static virSecretPtr
 get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
 {
-    return virGetSecret(conn, BAD_CAST secret.uuid);
+    return virGetSecret(conn, BAD_CAST secret.uuid, secret.usageType, secret.usageID);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
@@ -7779,6 +7807,8 @@ static void
 make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
     memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
+    secret_dst->usageType = secret_src->usageType;
+    secret_dst->usageID = secret_src->usageID;
 }
 
 /*----------------------------------------------------------------------*/
@@ -7941,6 +7971,7 @@ static virSecretDriver secret_driver = {
     .numOfSecrets = remoteSecretNumOfSecrets,
     .listSecrets = remoteSecretListSecrets,
     .lookupByUUID = remoteSecretLookupByUUID,
+    .lookupByUsage = remoteSecretLookupByUsage,
     .defineXML = remoteSecretDefineXML,
     .getXMLDesc = remoteSecretGetXMLDesc,
     .setValue = remoteSecretSetValue,

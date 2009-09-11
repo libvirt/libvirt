@@ -30,12 +30,6 @@
     virReportErrorHelper(conn, VIR_FROM_SECRET, code, __FILE__, \
                          __FUNCTION__, __LINE__, fmt)
 
-enum virSecretUsageType {
-    VIR_SECRET_USAGE_TYPE_NONE = 0, /* default when zero-initialized */
-    VIR_SECRET_USAGE_TYPE_VOLUME,
-
-    VIR_SECRET_USAGE_TYPE_LAST
-};
 VIR_ENUM_DECL(virSecretUsageType)
 
 typedef struct _virSecretDef virSecretDef;

@@ -669,6 +669,8 @@ functions_noexcept = {
     'virStorageVolGetkey': True,
     'virNodeDeviceGetName': True,
     'virNodeDeviceGetParent': True,
+    'virSecretGetUsageType': True,
+    'virSecretGetUsageID': True,
 }
 
 reference_keepers = {

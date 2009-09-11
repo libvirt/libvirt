@@ -256,6 +256,8 @@ struct _virSecret {
     int refs;                            /* reference count */
     virConnectPtr conn;                  /* pointer back to the connection */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
+    int usageType;                       /* the type of usage */
+    char *usageID;                       /* the usage's unique identifier */
 };
 
 
@@ -296,7 +298,9 @@ virNodeDevicePtr virGetNodeDevice(virConnectPtr conn,
 int virUnrefNodeDevice(virNodeDevicePtr dev);
 
 virSecretPtr virGetSecret(virConnectPtr conn,
-                          const unsigned char *uuid);
+                          const unsigned char *uuid,
+                          int usageType,
+                          const char *usageID);
 int virUnrefSecret(virSecretPtr secret);
 
 #endif

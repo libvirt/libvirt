@@ -189,6 +189,8 @@ struct remote_nonnull_node_device {
 /* A secret which may not be null. */
 struct remote_nonnull_secret {
     remote_uuid uuid;
+    int usageType;
+    remote_nonnull_string usageID;
 };
 
 /* A domain or network which may be NULL. */
@@ -1338,6 +1340,15 @@ struct remote_secret_undefine_args {
     remote_nonnull_secret secret;
 };
 
+struct remote_secret_lookup_by_usage_args {
+    int usageType;
+    remote_nonnull_string usageID;
+};
+
+struct remote_secret_lookup_by_usage_ret {
+    remote_nonnull_secret secret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1505,7 +1516,8 @@ enum remote_procedure {
     REMOTE_PROC_SECRET_GET_XML_DESC = 143,
     REMOTE_PROC_SECRET_SET_VALUE = 144,
     REMOTE_PROC_SECRET_GET_VALUE = 145,
-    REMOTE_PROC_SECRET_UNDEFINE = 146
+    REMOTE_PROC_SECRET_UNDEFINE = 146,
+    REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147
 };
 
 

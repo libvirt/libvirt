@@ -35,7 +35,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
-VIR_ENUM_IMPL(virSecretUsageType, VIR_SECRET_USAGE_TYPE_LAST, "none", "volume")
+VIR_ENUM_IMPL(virSecretUsageType, VIR_SECRET_USAGE_TYPE_VOLUME + 1, "none", "volume")
 
 void
 virSecretDefFree(virSecretDefPtr def)
@@ -88,6 +88,11 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
     case VIR_SECRET_USAGE_TYPE_VOLUME:
         def->usage.volume = virXPathString(conn, "string(./usage/volume)",
                                            ctxt);
+        if (!def->usage.volume) {
+            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("volume usage specified, but volume path is missing"));
+            return -1;
+        }
         break;
 
     default:

@@ -105,3 +105,4 @@
     remote_secret_define_xml_ret val_remote_secret_define_xml_ret;
     remote_secret_get_xml_desc_ret val_remote_secret_get_xml_desc_ret;
     remote_secret_get_value_ret val_remote_secret_get_value_ret;
+    remote_secret_lookup_by_usage_ret val_remote_secret_lookup_by_usage_ret;

@@ -4778,6 +4778,26 @@ remoteDispatchSecretUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+remoteDispatchSecretLookupByUsage (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   struct qemud_client *client ATTRIBUTE_UNUSED,
+                                   virConnectPtr conn, remote_error *err,
+                                   remote_secret_lookup_by_usage_args *args,
+                                   remote_secret_lookup_by_usage_ret *ret)
+{
+    virSecretPtr secret;
+
+    secret = virSecretLookupByUsage (conn, args->usageType, args->usageID);
+    if (secret == NULL) {
+        remoteDispatchConnError (err, conn);
+        return -1;
+    }
+
+    make_nonnull_secret (&ret->secret, secret);
+    virSecretFree (secret);
+    return 0;
+}
+
 
 /*----- Helpers. -----*/
 
@@ -4828,7 +4848,7 @@ get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol)
 static virSecretPtr
 get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
 {
-    return virGetSecret (conn, BAD_CAST secret.uuid);
+    return virGetSecret (conn, BAD_CAST secret.uuid, secret.usageType, secret.usageID);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
@@ -4880,4 +4900,6 @@ static void
 make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
     memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
+    secret_dst->usageType = secret_src->usageType;
+    secret_dst->usageID = strdup (secret_src->usageID);
 }

@@ -1170,12 +1170,13 @@ virUnrefNodeDevice(virNodeDevicePtr dev) {
  * Returns a pointer to the secret, or NULL in case of failure
  */
 virSecretPtr
-virGetSecret(virConnectPtr conn, const unsigned char *uuid)
+virGetSecret(virConnectPtr conn, const unsigned char *uuid,
+             int usageType, const char *usageID)
 {
     virSecretPtr ret = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!VIR_IS_CONNECT(conn) || uuid == NULL) {
+    if (!VIR_IS_CONNECT(conn) || uuid == NULL || usageID == NULL) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return NULL;
     }
@@ -1193,7 +1194,12 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid)
         ret->magic = VIR_SECRET_MAGIC;
         ret->conn = conn;
         memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
-
+        ret->usageType = usageType;
+        if (!(ret->usageID = strdup(usageID))) {
+            virMutexUnlock(&conn->lock);
+            virReportOOMError(conn);
+            goto error;
+        }
         if (virHashAddEntry(conn->secrets, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
             virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1208,6 +1214,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid)
 
 error:
     if (ret != NULL) {
+        VIR_FREE(ret->usageID);
         VIR_FREE(ret->uuid);
         VIR_FREE(ret);
     }
@@ -1239,6 +1246,7 @@ virReleaseSecret(virSecretPtr secret) {
         conn = NULL;
     }
 
+    VIR_FREE(secret->usageID);
     secret->magic = -1;
     VIR_FREE(secret);
 

@@ -8915,6 +8915,55 @@ error:
 
 
 /**
+ * virSecretLookupByUsage:
+ * @conn: pointer to the hypervisor connection
+ * @usageType: the type of secret usage
+ * @usageID: identifier of the object using the secret
+ *
+ * Try to lookup a secret on the given hypervisor based on its usage
+ * The usageID is unique within the set of secrets sharing the
+ * same usageType value.
+ *
+ * Returns a new secret object or NULL in case of failure.  If the
+ * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
+ */
+virSecretPtr
+virSecretLookupByUsage(virConnectPtr conn,
+                       int usageType,
+                       const char *usageID)
+{
+    DEBUG("conn=%p, usageType=%d usageID=%s", conn, usageType, NULLSTR(usageID));
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (usageID == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->secretDriver &&
+        conn->secretDriver->lookupByUsage) {
+        virSecretPtr ret;
+        ret = conn->secretDriver->lookupByUsage (conn, usageType, usageID);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return NULL;
+}
+
+
+/**
  * virSecretDefineXML:
  * @conn: virConnect connection
  * @xml: XML describing the secret.
@@ -9036,6 +9085,63 @@ error:
     /* Copy to connection error object for back compatability */
     virSetConnError(secret->conn);
     return -1;
+}
+
+/**
+ * virSecretGetUsageType:
+ * @secret: a secret object
+ *
+ * Get the type of object which uses this secret. The returned
+ * value is one of the constants defined in the virSecretUsageType
+ * enumeration. More values may be added to this enumeration in
+ * the future, so callers should expect to see usage types they
+ * do not explicitly know about.
+ *
+ * Returns a positive integer identifying the type of object,
+ * or -1 upon error.
+ */
+int
+virSecretGetUsageType(virSecretPtr secret)
+{
+    DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return (-1);
+    }
+    return (secret->usageType);
+}
+
+/**
+ * virSecretGetUsageID:
+ * @secret: a secret object
+ *
+ * Get the unique identifier of the object with which this
+ * secret is to be used. The format of the identifier is
+ * dependant on the usage type of the secret. For a secret
+ * with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the
+ * identifier will be a fully qualfied path name. The
+ * identifiers are intended to be unique within the set of
+ * all secrets sharing the same usage type. ie, there shall
+ * only ever be one secret for each volume path.
+ *
+ * Returns a string identifying the object using the secret,
+ * or NULL upon error
+ */
+const char *
+virSecretGetUsageID(virSecretPtr secret)
+{
+    DEBUG("secret=%p", secret);
+
+    virResetLastError();
+
+    if (!VIR_IS_SECRET(secret)) {
+        virLibSecretError(NULL, VIR_ERR_INVALID_SECRET, __FUNCTION__);
+        return (NULL);
+    }
+    return (secret->usageID);
 }
 
 

@@ -87,6 +87,8 @@ typedef struct remote_nonnull_node_device remote_nonnull_node_device;
 
 struct remote_nonnull_secret {
         remote_uuid uuid;
+        int usageType;
+        remote_nonnull_string usageID;
 };
 typedef struct remote_nonnull_secret remote_nonnull_secret;
 
@@ -1513,6 +1515,17 @@ struct remote_secret_undefine_args {
         remote_nonnull_secret secret;
 };
 typedef struct remote_secret_undefine_args remote_secret_undefine_args;
+
+struct remote_secret_lookup_by_usage_args {
+        int usageType;
+        remote_nonnull_string usageID;
+};
+typedef struct remote_secret_lookup_by_usage_args remote_secret_lookup_by_usage_args;
+
+struct remote_secret_lookup_by_usage_ret {
+        remote_nonnull_secret secret;
+};
+typedef struct remote_secret_lookup_by_usage_ret remote_secret_lookup_by_usage_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1663,6 +1676,7 @@ enum remote_procedure {
         REMOTE_PROC_SECRET_SET_VALUE = 144,
         REMOTE_PROC_SECRET_GET_VALUE = 145,
         REMOTE_PROC_SECRET_UNDEFINE = 146,
+        REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1939,6 +1953,8 @@ extern  bool_t xdr_remote_secret_set_value_args (XDR *, remote_secret_set_value_
 extern  bool_t xdr_remote_secret_get_value_args (XDR *, remote_secret_get_value_args*);
 extern  bool_t xdr_remote_secret_get_value_ret (XDR *, remote_secret_get_value_ret*);
 extern  bool_t xdr_remote_secret_undefine_args (XDR *, remote_secret_undefine_args*);
+extern  bool_t xdr_remote_secret_lookup_by_usage_args (XDR *, remote_secret_lookup_by_usage_args*);
+extern  bool_t xdr_remote_secret_lookup_by_usage_ret (XDR *, remote_secret_lookup_by_usage_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2191,6 +2207,8 @@ extern bool_t xdr_remote_secret_set_value_args ();
 extern bool_t xdr_remote_secret_get_value_args ();
 extern bool_t xdr_remote_secret_get_value_ret ();
 extern bool_t xdr_remote_secret_undefine_args ();
+extern bool_t xdr_remote_secret_lookup_by_usage_args ();
+extern bool_t xdr_remote_secret_lookup_by_usage_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

@@ -1462,6 +1462,12 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
 typedef struct _virSecret virSecret;
 typedef virSecret *virSecretPtr;
 
+typedef enum {
+    VIR_SECRET_USAGE_TYPE_NONE = 0,
+    VIR_SECRET_USAGE_TYPE_VOLUME = 1,
+    /* Expect more owner types later... */
+} virSecretUsageType;
+
 virConnectPtr           virSecretGetConnect     (virSecretPtr secret);
 int                     virConnectNumOfSecrets  (virConnectPtr conn);
 int                     virConnectListSecrets   (virConnectPtr conn,
@@ -1471,6 +1477,9 @@ virSecretPtr            virSecretLookupByUUID(virConnectPtr conn,
                                               const unsigned char *uuid);
 virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
                                                     const char *uuid);
+virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
+                                               int usageType,
+                                               const char *usageID);
 virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
                                                  const char *xml,
                                                  unsigned int flags);
@@ -1478,6 +1487,8 @@ int                     virSecretGetUUID        (virSecretPtr secret,
                                                  unsigned char *buf);
 int                     virSecretGetUUIDString  (virSecretPtr secret,
                                                  char *buf);
+int                     virSecretGetUsageType   (virSecretPtr secret);
+const char *            virSecretGetUsageID     (virSecretPtr secret);
 char *                  virSecretGetXMLDesc     (virSecretPtr secret,
                                                  unsigned int flags);
 int                     virSecretSetValue       (virSecretPtr secret,

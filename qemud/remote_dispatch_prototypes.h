@@ -807,6 +807,13 @@ static int remoteDispatchSecretGetXmlDesc(
     remote_error *err,
     remote_secret_get_xml_desc_args *args,
     remote_secret_get_xml_desc_ret *ret);
+static int remoteDispatchSecretLookupByUsage(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_error *err,
+    remote_secret_lookup_by_usage_args *args,
+    remote_secret_lookup_by_usage_ret *ret);
 static int remoteDispatchSecretLookupByUuid(
     struct qemud_server *server,
     struct qemud_client *client,

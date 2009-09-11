@@ -822,6 +822,10 @@ typedef virSecretPtr
     (*virDrvSecretLookupByUUID)        (virConnectPtr conn,
                                         const unsigned char *uuid);
 typedef virSecretPtr
+    (*virDrvSecretLookupByUsage)       (virConnectPtr conn,
+                                        int usageType,
+                                        const char *usageID);
+typedef virSecretPtr
     (*virDrvSecretDefineXML)                 (virConnectPtr conn,
                                               const char *xml,
                                               unsigned int flags);
@@ -867,6 +871,7 @@ struct _virSecretDriver {
     virDrvSecretNumOfSecrets numOfSecrets;
     virDrvSecretListSecrets listSecrets;
     virDrvSecretLookupByUUID lookupByUUID;
+    virDrvSecretLookupByUsage lookupByUsage;
     virDrvSecretDefineXML defineXML;
     virDrvSecretGetXMLDesc getXMLDesc;
     virDrvSecretSetValue setValue;

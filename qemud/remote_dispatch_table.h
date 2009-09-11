@@ -737,3 +737,8 @@
     .args_filter = (xdrproc_t) xdr_remote_secret_undefine_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* SecretLookupByUsage => 147 */
+    .fn = (dispatch_fn) remoteDispatchSecretLookupByUsage,
+    .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_usage_args,
+    .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_usage_ret,
+},
