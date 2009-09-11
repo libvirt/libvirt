@@ -471,6 +471,9 @@ fi
 %endif
 
 /sbin/chkconfig --add libvirtd
+if [ "$1" -ge "1" ]; then
+	/sbin/service libvirtd condrestart > /dev/null 2>&1
+fi
 %endif
 
 %preun
