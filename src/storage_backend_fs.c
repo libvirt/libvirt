@@ -430,6 +430,11 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
             }
             enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
             *encryption = enc;
+            /* XXX ideally we'd fill in secret UUID here
+             * but we cannot guarentee 'conn' is non-NULL
+             * at this point in time :-(  So we only fill
+             * in secrets when someone first queries a vol
+             */
         }
         return 0;
     }
@@ -1230,8 +1235,42 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
                                       virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                       virStorageVolDefPtr vol)
 {
+    int ret;
+
     /* Refresh allocation / permissions info in case its changed */
-    return virStorageBackendUpdateVolInfo(conn, vol, 0);
+    ret = virStorageBackendUpdateVolInfo(conn, vol, 0);
+    if (ret < 0)
+        return ret;
+
+    /* Load any secrets if posible */
+    if (vol->target.encryption &&
+        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
+        vol->target.encryption->nsecrets == 0) {
+        virSecretPtr sec;
+        virStorageEncryptionSecretPtr encsec = NULL;
+
+        sec = virSecretLookupByUsage(conn,
+                                     VIR_SECRET_USAGE_TYPE_VOLUME,
+                                     vol->target.path);
+        if (sec) {
+            if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
+                VIR_ALLOC(encsec) < 0) {
+                VIR_FREE(vol->target.encryption->secrets);
+                virReportOOMError(conn);
+                virSecretFree(sec);
+                return -1;
+            }
+
+            vol->target.encryption->nsecrets = 1;
+            vol->target.encryption->secrets[0] = encsec;
+
+            encsec->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
+            virSecretGetUUID(sec, encsec->uuid);
+            virSecretFree(sec);
+        }
+    }
+
+    return 0;
 }
 
 virStorageBackend virStorageBackendDirectory = {
