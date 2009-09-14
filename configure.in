@@ -1062,6 +1062,17 @@ AM_CONDITIONAL([WITH_NETCF], [test "$with_netcf" = "yes"])
 AC_SUBST([NETCF_CFLAGS])
 AC_SUBST([NETCF_LIBS])
 
+
+with_secrets=yes
+if test "$with_libvirtd" = "no"; then
+  with_secrets=no
+fi
+if test "$with_secrets" = "yes" ; then
+  AC_DEFINE_UNQUOTED([WITH_SECRETS], 1, [whether local secrets management driver is available])
+fi
+AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
+
+
 AC_ARG_WITH([storage-fs],
 [  --with-storage-fs           with FileSystem backend for the storage driver (on)],[],[with_storage_fs=check])
 AC_ARG_WITH([storage-lvm],

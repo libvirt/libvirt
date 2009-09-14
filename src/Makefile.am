@@ -461,6 +461,7 @@ endif
 libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
 endif
 
+if WITH_SECRETS
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_secret.la
 else
@@ -471,6 +472,7 @@ if WITH_DRIVER_MODULES
 libvirt_driver_secret_la_LDFLAGS = -module -avoid-version
 endif
 libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
+endif
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =
@@ -574,6 +576,7 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)		\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
+		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)
 
 #
