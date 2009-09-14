@@ -2118,6 +2118,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT("-k");
             ADD_ARG_LIT(def->graphics[0]->data.vnc.keymap);
         }
+
+        /* QEMU implements a VNC extension for providing audio, so we
+         * set the audio backend to none, to prevent it opening the
+         * host OS audio devices since that causes security issues
+         * and is non-sensical when using VNC.
+         */
+        ADD_ENV_LIT("QEMU_AUDIO_DRV=none");
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *xauth = NULL;
@@ -2140,6 +2147,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ENV(display);
         if (def->graphics[0]->data.sdl.fullscreen)
             ADD_ARG_LIT("-full-screen");
+
+        /* If using SDL for video, then we should just let it
+         * use QEMU's host audio drivers, possibly SDL too
+         * User can set these two before starting libvirtd
+         */
+        ADD_ENV_COPY("QEMU_AUDIO_DRV");
+        ADD_ENV_COPY("SDL_AUDIODRIVER");
     }
 
     if (def->nvideos) {
