@@ -1047,14 +1047,14 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             continue;
         }
 
-        domain = virGetDomain(conn, name_candidate, uuid_candidate);
-
-        if (domain == NULL) {
+        if (esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
+                                              &powerState) < 0) {
             goto failure;
         }
 
-        if (esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
-                                              &powerState) < 0) {
+        domain = virGetDomain(conn, name_candidate, uuid_candidate);
+
+        if (domain == NULL) {
             goto failure;
         }
 
@@ -1138,14 +1138,14 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
             continue;
         }
 
-        domain = virGetDomain(conn, name_candidate, uuid_candidate);
-
-        if (domain == NULL) {
+        if (esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
+                                              &powerState) < 0) {
             goto failure;
         }
 
-        if (esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
-                                              &powerState) < 0) {
+        domain = virGetDomain(conn, name_candidate, uuid_candidate);
+
+        if (domain == NULL) {
             goto failure;
         }
 
