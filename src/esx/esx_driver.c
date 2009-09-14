@@ -744,8 +744,11 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                 if (STRPREFIX (ptr, "  ")) {
                     memmove(ptr, ptr + 1, strlen (ptr + 1) + 1);
                     continue;
-                } else if (STRPREFIX (ptr, "(R)")) {
+                } else if (STRPREFIX(ptr, "(R)") || STRPREFIX(ptr, "(C)")) {
                     memmove(ptr, ptr + 3, strlen (ptr + 3) + 1);
+                    continue;
+                } else if (STRPREFIX(ptr, "(TM)")) {
+                    memmove(ptr, ptr + 4, strlen(ptr + 4) + 1);
                     continue;
                 }
 
