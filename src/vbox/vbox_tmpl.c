@@ -2850,6 +2850,13 @@ static int vboxDomainCreate(virDomainPtr dom) {
                                 vrdpPresent = 1;
                             }
 
+                            if (!vrdpPresent && !sdlPresent && !guiPresent) {
+                                /* if nothing is selected it means either the machine xml
+                                 * file is really old or some values are missing so fallback
+                                 */
+                                guiPresent = 1;
+                            }
+
                             data->pFuncs->pfnUtf8Free(valueTypeUtf8);
 
                         } else {
@@ -2882,12 +2889,12 @@ static int vboxDomainCreate(virDomainPtr dom) {
                             data->pFuncs->pfnUtf8ToUtf16("vrdp", &sessionType);
                         }
 
-                        data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
-                                                               data->vboxSession,
-                                                               iid,
-                                                               sessionType,
-                                                               env,
-                                                               &progress );
+                        rc = data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
+                                                                    data->vboxSession,
+                                                                    iid,
+                                                                    sessionType,
+                                                                    env,
+                                                                    &progress );
                         if (NS_FAILED(rc)) {
                             vboxError(dom->conn, VIR_ERR_OPERATION_FAILED,
                                       "%s", "openremotesession failed, domain can't be started");
