@@ -899,6 +899,7 @@ struct nsIEventQueue {
 
 
 struct IVirtualBoxErrorInfo;
+struct ILocalOwner;
 struct IVirtualBoxCallback;
 struct IDHCPServer;
 struct IVirtualBox;
@@ -954,6 +955,7 @@ struct IPerformanceMetric;
 struct IPerformanceCollector;
 
 typedef struct IVirtualBoxErrorInfo IVirtualBoxErrorInfo;
+typedef struct ILocalOwner ILocalOwner;
 typedef struct IVirtualBoxCallback IVirtualBoxCallback;
 typedef struct IDHCPServer IDHCPServer;
 typedef struct IVirtualBox IVirtualBox;
@@ -1838,6 +1840,30 @@ struct IVirtualBoxErrorInfo
     struct IVirtualBoxErrorInfo_vtbl *vtbl;
 };
 /* End of struct IVirtualBoxErrorInfo Declaration */
+
+
+/* Start of struct ILocalOwner Declaration */
+#define ILOCALOWNER_IID_STR "308FF42A-DC45-49D4-A950-B1EEE5E00BB5"
+#define ILOCALOWNER_IID { \
+    0x308FF42A, 0xDC45, 0x49D4, \
+    { 0xA9, 0x50, 0xB1, 0xEE, 0xE5, 0xE0, 0x0B, 0xB5 } \
+}
+struct ILocalOwner_vtbl
+{
+    struct nsISupports_vtbl nsisupports;
+
+    nsresult (*SetLocalObject)(
+        ILocalOwner *pThis,
+        nsISupports * object
+    );
+
+};
+
+struct ILocalOwner
+{
+    struct ILocalOwner_vtbl *vtbl;
+};
+/* End of struct ILocalOwner Declaration */
 
 
 /* Start of struct IVirtualBoxCallback Declaration */
@@ -5050,9 +5076,9 @@ struct IInternalSessionControl
 
 
 /* Start of struct ISession Declaration */
-#define ISESSION_IID_STR "12F4DCDB-12B2-4ec1-B7CD-DDD9F6C5BF4D"
+#define ISESSION_IID_STR "12F4DCDB-12B2-4EC1-B7CD-DDD9F6C5BF4D"
 #define ISESSION_IID { \
-    0x12F4DCDB, 0x12B2, 0x4ec1, \
+    0x12F4DCDB, 0x12B2, 0x4EC1, \
     { 0xB7, 0xCD, 0xDD, 0xD9, 0xF6, 0xC5, 0xBF, 0x4D } \
 }
 struct ISession_vtbl
@@ -5262,12 +5288,22 @@ struct IPerformanceCollector
 
 
 #define NS_SESSION_CID { \
-    0x3C02F46D, 0xC9D2, 0x4f11, \
+    0x3C02F46D, 0xC9D2, 0x4F11, \
     { 0xA3, 0x84, 0x53, 0xF0, 0xCF, 0x91, 0x72, 0x14 } \
 }
 #define NS_SESSION_CONTRACTID "@virtualbox.org/Session;1"
 /* for compatibility with Win32 */
 #define CLSID_Session (nsCID) NS_SESSION_CID
+
+
+
+#define NS_CALLBACKWRAPPER_CID { \
+    0x49EE8561, 0x5563, 0x4715, \
+    { 0xB1, 0x8C, 0xA4, 0xB1, 0xA4, 0x90, 0xDA, 0xFE } \
+}
+#define NS_CALLBACKWRAPPER_CONTRACTID "@virtualbox.org/CallbackWrapper;1"
+/* for compatibility with Win32 */
+#define CLSID_CallbackWrapper (nsCID) NS_CALLBACKWRAPPER_CID
 
 
 
