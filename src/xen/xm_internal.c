@@ -38,7 +38,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "xm_internal.h"
-#include "xen_unified.h"
+#include "xen_driver.h"
 #include "xend_internal.h"
 #include "hash.h"
 #include "buf.h"

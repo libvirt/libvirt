@@ -41,8 +41,8 @@
 #include "sexpr.h"
 #include "buf.h"
 #include "uuid.h"
-#include "xen_unified.h"
-#include "xen_internal.h"
+#include "xen_driver.h"
+#include "xen_hypervisor.h"
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 #include "memory.h"
 

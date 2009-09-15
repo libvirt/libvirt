@@ -29,8 +29,8 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "xen_unified.h"
-#include "xm_internal.h"
+#include "xen/xen_driver.h"
+#include "xen/xm_internal.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "memory.h"

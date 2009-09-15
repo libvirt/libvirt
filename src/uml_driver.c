@@ -44,6 +44,7 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/inotify.h>
+#include <sys/un.h>
 
 #include "uml_driver.h"
 #include "uml_conf.h"

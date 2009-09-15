@@ -7,8 +7,8 @@
 #include "internal.h"
 #include "xml.h"
 #include "datatypes.h"
-#include "xen_unified.h"
-#include "xend_internal.h"
+#include "xen/xen_driver.h"
+#include "xen/xend_internal.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 

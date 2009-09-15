@@ -47,7 +47,7 @@
 #include "test.h"
 #endif
 #ifdef WITH_XEN
-#include "xen_unified.h"
+#include "xen/xen_driver.h"
 #endif
 #ifdef WITH_REMOTE
 #include "remote_internal.h"

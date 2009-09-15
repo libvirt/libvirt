@@ -33,9 +33,9 @@
 #include "event.h"
 #include "logging.h"
 #include "uuid.h"
-#include "xen_unified.h"
+#include "xen_driver.h"
 #include "xs_internal.h"
-#include "xen_internal.h"
+#include "xen_hypervisor.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 

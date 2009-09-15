@@ -8,7 +8,7 @@
 #include "internal.h"
 #include "xml.h"
 #include "testutils.h"
-#include "xen_internal.h"
+#include "xen/xen_hypervisor.h"
 
 static char *progname;
 static char *abs_srcdir;

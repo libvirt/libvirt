@@ -7,7 +7,6 @@ INCLUDES = \
 	   -I@top_srcdir@/daemon \
 	   $(LIBXML_CFLAGS) \
 	   $(LIBSSH2_CFLAGS) \
-	   $(XEN_CFLAGS) \
 	   $(SELINUX_CFLAGS) \
 	   $(DRIVER_MODULE_CFLAGS) \
 	   -DLIBDIR=\""$(libdir)"\" \
@@ -111,15 +110,16 @@ TEST_DRIVER_SOURCES =						\
 
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES =						\
-		proxy_internal.c proxy_internal.h		\
-		sexpr.c sexpr.h					\
-		xen_internal.c xen_internal.h			\
-		xen_unified.c xen_unified.h			\
-		xend_internal.c xend_internal.h			\
-		xm_internal.c xm_internal.h			\
-		xs_internal.c xs_internal.h
+		xen/proxy_internal.c xen/proxy_internal.h	\
+		xen/sexpr.c xen/sexpr.h				\
+		xen/block_stats.c xen/block_stats.h		\
+		xen/xen_hypervisor.c xen/xen_hypervisor.h	\
+		xen/xen_driver.c xen/xen_driver.h		\
+		xen/xend_internal.c xen/xend_internal.h		\
+		xen/xm_internal.c xen/xm_internal.h		\
+		xen/xs_internal.c xen/xs_internal.h
 if WITH_XEN_INOTIFY
-XEN_DRIVER_SOURCES += xen_inotify.c xen_inotify.h
+XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
 endif
 
 LXC_DRIVER_SOURCES =						\
@@ -261,8 +261,8 @@ libvirt_driver_la_SOURCES =					\
 		$(NODE_DEVICE_CONF_SOURCES)			\
 		$(SECRET_CONF_SOURCES)
 
-libvirt_driver_la_CFLAGS = $(XEN_CFLAGS) $(NUMACTL_CFLAGS)
-libvirt_driver_la_LDFLAGS = $(XEN_LIBS) $(NUMACTL_LIBS)
+libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_la_LDFLAGS = $(NUMACTL_LIBS)
 
 USED_SYM_FILES = libvirt_private.syms
 

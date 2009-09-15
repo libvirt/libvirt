@@ -1,5 +1,5 @@
 /*
- * xen_unified.c: Unified Xen driver.
+ * xen_driver.c: Unified Xen driver.
  *
  * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
  *
@@ -30,9 +30,9 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
-#include "xen_unified.h"
+#include "xen_driver.h"
 
-#include "xen_internal.h"
+#include "xen_hypervisor.h"
 #include "proxy_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"

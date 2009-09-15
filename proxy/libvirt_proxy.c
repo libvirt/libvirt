@@ -27,10 +27,10 @@
 #include "datatypes.h"
 #include "proxy_internal.h"
 #include "util.h"
-#include "xen_internal.h"
+#include "xen_hypervisor.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
-#include "xen_unified.h"
+#include "xen_driver.h"
 
 static int fdServer = -1;
 static int debug = 0;

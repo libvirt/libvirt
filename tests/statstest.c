@@ -6,7 +6,7 @@
 
 #include "stats_linux.h"
 #include "internal.h"
-
+#include "xen/block_stats.h"
 #include "testutils.h"
 
 #if WITH_XEN

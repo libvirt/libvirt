@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "xend_internal.h"
+#include "xen/xend_internal.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 

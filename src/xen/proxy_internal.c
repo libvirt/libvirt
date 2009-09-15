@@ -28,7 +28,7 @@
 #include "driver.h"
 #include "proxy_internal.h"
 #include "util.h"
-#include "xen_unified.h"
+#include "xen_driver.h"
 #include "memory.h"
 
 #define STANDALONE
