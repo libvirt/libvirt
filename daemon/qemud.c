@@ -84,7 +84,7 @@
 #include "network/bridge_driver.h"
 #endif
 #ifdef WITH_NETCF
-#include "interface_driver.h"
+#include "interface/netcf_driver.h"
 #endif
 #ifdef WITH_STORAGE_DIR
 #include "storage/storage_driver.h"

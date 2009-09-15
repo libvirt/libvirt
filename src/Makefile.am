@@ -180,7 +180,7 @@ NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c
 
 INTERFACE_DRIVER_SOURCES =					\
-		interface_driver.h interface_driver.c
+		interface/netcf_driver.h interface/netcf_driver.c
 
 SECRET_DRIVER_SOURCES =						\
 		secret_driver.h secret_driver.c
