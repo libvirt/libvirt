@@ -75,7 +75,7 @@
 #include "lxc/lxc_driver.h"
 #endif
 #ifdef WITH_UML
-#include "uml_driver.h"
+#include "uml/uml_driver.h"
 #endif
 #ifdef WITH_ONE
 #include "opennebula/one_driver.h"

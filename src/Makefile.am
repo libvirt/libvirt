@@ -157,8 +157,8 @@ QEMU_DRIVER_SOURCES =						\
 		cgroup.c cgroup.h
 
 UML_DRIVER_SOURCES =						\
-		uml_conf.c uml_conf.h				\
-		uml_driver.c uml_driver.h
+		uml/uml_conf.c uml/uml_conf.h			\
+		uml/uml_driver.c uml/uml_driver.h
 
 ONE_DRIVER_SOURCES =						\
 		./opennebula/one_conf.c				\
