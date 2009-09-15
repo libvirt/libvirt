@@ -72,7 +72,7 @@
 #include "qemu_driver.h"
 #endif
 #ifdef WITH_LXC
-#include "lxc_driver.h"
+#include "lxc/lxc_driver.h"
 #endif
 #ifdef WITH_UML
 #include "uml_driver.h"

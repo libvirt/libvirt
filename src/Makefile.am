@@ -123,17 +123,17 @@ XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
 endif
 
 LXC_DRIVER_SOURCES =						\
-		lxc_conf.c lxc_conf.h				\
-		lxc_container.c lxc_container.h			\
-		lxc_driver.c lxc_driver.h			\
-		veth.c veth.h					\
+		lxc/lxc_conf.c lxc/lxc_conf.h			\
+		lxc/lxc_container.c lxc/lxc_container.h		\
+		lxc/lxc_driver.c lxc/lxc_driver.h		\
+		lxc/veth.c lxc/veth.h				\
 		cgroup.c cgroup.h
 
 LXC_CONTROLLER_SOURCES =					\
-		lxc_conf.c lxc_conf.h				\
-		lxc_container.c lxc_container.h			\
-		lxc_controller.c				\
-		veth.c veth.h                                   \
+		lxc/lxc_conf.c lxc/lxc_conf.h			\
+		lxc/lxc_container.c lxc/lxc_container.h		\
+		lxc/lxc_controller.c				\
+		lxc/veth.c lxc/veth.h				\
 		cgroup.c cgroup.h
 
 PHYP_DRIVER_SOURCES =						\
