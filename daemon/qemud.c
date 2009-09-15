@@ -92,7 +92,7 @@
 #ifdef WITH_NODE_DEVICES
 #include "node_device/node_device_driver.h"
 #endif
-#include "secret_driver.h"
+#include "secret/secret_driver.h"
 #endif
 
 
