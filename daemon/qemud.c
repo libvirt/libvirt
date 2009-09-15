@@ -87,7 +87,7 @@
 #include "interface_driver.h"
 #endif
 #ifdef WITH_STORAGE_DIR
-#include "storage_driver.h"
+#include "storage/storage_driver.h"
 #endif
 #ifdef WITH_NODE_DEVICES
 #include "node_device.h"

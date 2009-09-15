@@ -187,34 +187,34 @@ SECRET_DRIVER_SOURCES =						\
 
 # Storage backend specific impls
 STORAGE_DRIVER_SOURCES =					\
-		storage_driver.h storage_driver.c		\
-		storage_backend.h storage_backend.c
+		storage/storage_driver.h storage/storage_driver.c		\
+		storage/storage_backend.h storage/storage_backend.c
 
 # Network driver generic impl APIs
 NODE_DEVICE_CONF_SOURCES =					\
 		node_device_conf.c node_device_conf.h
 
 STORAGE_DRIVER_FS_SOURCES =					\
-		storage_backend_fs.h storage_backend_fs.c
+		storage/storage_backend_fs.h storage/storage_backend_fs.c
 
 STORAGE_DRIVER_LVM_SOURCES =					\
-		storage_backend_logical.h			\
-		storage_backend_logical.c
+		storage/storage_backend_logical.h			\
+		storage/storage_backend_logical.c
 
 STORAGE_DRIVER_ISCSI_SOURCES =					\
-		storage_backend_iscsi.h storage_backend_iscsi.c
+		storage/storage_backend_iscsi.h storage/storage_backend_iscsi.c
 
 STORAGE_DRIVER_SCSI_SOURCES =					\
-		storage_backend_scsi.h storage_backend_scsi.c
+		storage/storage_backend_scsi.h storage/storage_backend_scsi.c
 
 STORAGE_DRIVER_MPATH_SOURCES =					\
-		storage_backend_mpath.h storage_backend_mpath.c
+		storage/storage_backend_mpath.h storage/storage_backend_mpath.c
 
 STORAGE_DRIVER_DISK_SOURCES =					\
-		storage_backend_disk.h storage_backend_disk.c
+		storage/storage_backend_disk.h storage/storage_backend_disk.c
 
 STORAGE_HELPER_DISK_SOURCES =					\
-		parthelper.c
+		storage/parthelper.c
 
 
 # Security framework and drivers for various models
