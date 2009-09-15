@@ -226,15 +226,15 @@ SECURITY_DRIVER_SELINUX_SOURCES =				\
 
 
 NODE_DEVICE_DRIVER_SOURCES =					\
-		node_device.c node_device.h
+		node_device/node_device_driver.c node_device/node_device_driver.h
 
 NODE_DEVICE_DRIVER_HAL_SOURCES =				\
-		node_device_hal.c				\
-		node_device_hal.h				\
-		node_device_hal_linux.c
+		node_device/node_device_hal.c			\
+		node_device/node_device_hal.h			\
+		node_device/node_device_hal_linux.c
 
 NODE_DEVICE_DRIVER_DEVKIT_SOURCES =				\
-		node_device_devkit.c
+		node_device/node_device_devkit.c
 
 
 #########################

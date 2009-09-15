@@ -24,7 +24,7 @@
 
 #include <fcntl.h>
 
-#include "node_device.h"
+#include "node_device_driver.h"
 #include "node_device_hal.h"
 #include "virterror_internal.h"
 #include "memory.h"

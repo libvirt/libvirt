@@ -36,7 +36,7 @@
 #include "memory.h"
 #include "uuid.h"
 #include "logging.h"
-#include "node_device.h"
+#include "node_device_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 

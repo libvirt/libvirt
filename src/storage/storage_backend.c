@@ -47,7 +47,6 @@
 #include "virterror_internal.h"
 #include "util.h"
 #include "memory.h"
-#include "node_device.h"
 #include "internal.h"
 #include "secret_conf.h"
 #include "uuid.h"

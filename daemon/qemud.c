@@ -90,7 +90,7 @@
 #include "storage/storage_driver.h"
 #endif
 #ifdef WITH_NODE_DEVICES
-#include "node_device.h"
+#include "node_device/node_device_driver.h"
 #endif
 #include "secret_driver.h"
 #endif
