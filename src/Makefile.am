@@ -177,7 +177,7 @@ ESX_DRIVER_SOURCES =						\
 		esx/esx_vmx.c esx/esx_vmx.h
 
 NETWORK_DRIVER_SOURCES =					\
-		network_driver.h network_driver.c
+		network/bridge_driver.h network/bridge_driver.c
 
 INTERFACE_DRIVER_SOURCES =					\
 		interface_driver.h interface_driver.c

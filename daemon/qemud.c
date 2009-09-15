@@ -81,7 +81,7 @@
 #include "opennebula/one_driver.h"
 #endif
 #ifdef WITH_NETWORK
-#include "network_driver.h"
+#include "network/bridge_driver.h"
 #endif
 #ifdef WITH_NETCF
 #include "interface_driver.h"
