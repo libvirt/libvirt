@@ -642,6 +642,15 @@ fi
 %endif
 
 %changelog
+* Tue Sep 15 2009 Daniel Veillard <veillard@redhat.com> - 0.7.1-1
+- ESX, VBox driver updates
+- mutipath support
+- support for encrypted (qcow) volume
+- compressed save image format for Qemu/KVM
+- QEmu host PCI device hotplug support
+- configuration of huge pages in guests
+- a lot of fixes
+
 * Wed Aug  5 2009 Daniel Veillard <veillard@redhat.com> - 0.7.0-1
 - ESX, VBox3, Power Hypervisor drivers
 - new net filesystem glusterfs

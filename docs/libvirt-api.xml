@@ -1853,12 +1853,12 @@ see note above'/>
       <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virSecretGetUsageID' file='libvirt' module='libvirt'>
-      <info>Get the unique identifier of the object with which this secret is to be used</info>
+      <info>Get the unique identifier of the object with which this secret is to be used. The format of the identifier is dependant on the usage type of the secret. For a secret with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the identifier will be a fully qualfied path name. The identifiers are intended to be unique within the set of all secrets sharing the same usage type. ie, there shall only ever be one secret for each volume path.</info>
       <return type='const char *' info='a string identifying the object using the secret, or NULL upon error'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
     <function name='virSecretGetUsageType' file='libvirt' module='libvirt'>
-      <info>Get the type of object which uses this secret</info>
+      <info>Get the type of object which uses this secret. The returned value is one of the constants defined in the virSecretUsageType enumeration. More values may be added to this enumeration in the future, so callers should expect to see usage types they do not explicitly know about.</info>
       <return type='int' info='a positive integer identifying the type of object, or -1 upon error.'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
@@ -1876,19 +1876,19 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
     <function name='virSecretLookupByUUID' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its UUID.</info>
+      <info>Try to lookup a secret on the given hypervisor based on its UUID. Uses the 16 bytes of raw data to describe the UUID</info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the secret'/>
     </function>
     <function name='virSecretLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its UUID.</info>
+      <info>Try to lookup a secret on the given hypervisor based on its UUID. Uses the printable string value to describe the UUID</info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the secret'/>
     </function>
     <function name='virSecretLookupByUsage' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its usage</info>
+      <info>Try to lookup a secret on the given hypervisor based on its usage The usageID is unique within the set of secrets sharing the same usageType value.</info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='usageType' type='int' info='the type of secret usage'/>
