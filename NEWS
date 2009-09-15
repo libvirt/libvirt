@@ -145,7 +145,7 @@
         Detect KVM's PCI device assignment support (Mark McLoughlin),
         Split virDomainMigrate into functions. (Chris Lalancette),
         Consolidate code for parsing the logging env (Amy Griffis)
-      
+
    - Cleanups:
         Remove accidentally added UUID re-definition in storage schema (Daniel P. Berrange),
         ESX cleanup of CPU model strings (Matthias Bolte),
@@ -232,7 +232,7 @@
         Tighten libvirt's parsing of logging env (Amy Griffis),
         Cleanup structure name naming (Matthias Bolte),
         Add proper OOM reporting for esxDomainGetOSType (Matthias Bolte)
-      
+
 
 
 0.7.0: Aug  5 2009:
