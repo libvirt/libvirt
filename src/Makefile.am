@@ -140,8 +140,8 @@ PHYP_DRIVER_SOURCES =						\
 		phyp/phyp_driver.c phyp/phyp_driver.h
 
 OPENVZ_DRIVER_SOURCES =						\
-		openvz_conf.c openvz_conf.h			\
-		openvz_driver.c openvz_driver.h
+		openvz/openvz_conf.c openvz/openvz_conf.h	\
+		openvz/openvz_driver.c openvz/openvz_driver.h
 
 VBOX_DRIVER_SOURCES =						\
         vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h		\

@@ -53,7 +53,7 @@
 #include "remote_internal.h"
 #endif
 #ifdef WITH_OPENVZ
-#include "openvz_driver.h"
+#include "openvz/openvz_driver.h"
 #endif
 #ifdef WITH_PHYP
 #include "phyp/phyp_driver.h"
