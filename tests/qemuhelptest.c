@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "testutils.h"
-#include "qemu_conf.h"
+#include "qemu/qemu_conf.h"
 
 #define MAX_HELP_OUTPUT_SIZE 1024*64
 

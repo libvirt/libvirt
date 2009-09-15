@@ -12,7 +12,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "qemu_conf.h"
+#include "qemu/qemu_conf.h"
 #include "testutilsqemu.h"
 
 static char *progname;

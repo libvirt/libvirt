@@ -69,7 +69,7 @@
 #include "driver.h"
 #else
 #ifdef WITH_QEMU
-#include "qemu_driver.h"
+#include "qemu/qemu_driver.h"
 #endif
 #ifdef WITH_LXC
 #include "lxc/lxc_driver.h"

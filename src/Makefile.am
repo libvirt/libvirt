@@ -152,8 +152,8 @@ VBOX_DRIVER_SOURCES =						\
 VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
 
 QEMU_DRIVER_SOURCES =						\
-		qemu_conf.c qemu_conf.h				\
-		qemu_driver.c qemu_driver.h			\
+		qemu/qemu_conf.c qemu/qemu_conf.h				\
+		qemu/qemu_driver.c qemu/qemu_driver.h			\
 		cgroup.c cgroup.h
 
 UML_DRIVER_SOURCES =						\
