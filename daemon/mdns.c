@@ -41,7 +41,6 @@
 #include "qemud.h"
 #include "mdns.h"
 #include "event.h"
-#include "remote_internal.h"
 #include "memory.h"
 
 #define AVAHI_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)

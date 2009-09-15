@@ -97,8 +97,8 @@ SECRET_CONF_SOURCES =						\
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_SOURCES =						\
-		gnutls_1_0_compat.h				\
-		remote_internal.c remote_internal.h		\
+		gnutls_1_0_compat.h			\
+		remote/remote_driver.c remote/remote_driver.h	\
 		../daemon/remote_protocol.c			\
 		../daemon/remote_protocol.h
 

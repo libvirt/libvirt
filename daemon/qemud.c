@@ -57,7 +57,7 @@
 #include "dispatch.h"
 
 #include "util.h"
-#include "remote_internal.h"
+#include "remote/remote_driver.h"
 #include "conf.h"
 #include "event.h"
 #include "memory.h"

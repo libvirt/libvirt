@@ -50,7 +50,7 @@
 #include "xen/xen_driver.h"
 #endif
 #ifdef WITH_REMOTE
-#include "remote_internal.h"
+#include "remote/remote_driver.h"
 #endif
 #ifdef WITH_OPENVZ
 #include "openvz/openvz_driver.h"

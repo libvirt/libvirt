@@ -83,7 +83,7 @@
 #include "driver.h"
 #include "buf.h"
 #include "qparams.h"
-#include "remote_internal.h"
+#include "remote_driver.h"
 #include "remote_protocol.h"
 #include "memory.h"
 #include "util.h"
