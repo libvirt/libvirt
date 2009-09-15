@@ -1694,7 +1694,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           po/Makefile.in \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
-          qemud/Makefile \
+          daemon/Makefile \
           tools/Makefile \
           tests/Makefile proxy/Makefile \
           tests/xml2sexprdata/Makefile \

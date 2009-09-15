@@ -3,7 +3,7 @@
 LCOV = lcov
 GENHTML = genhtml
 
-SUBDIRS = gnulib/lib include src qemud tools proxy docs gnulib/tests \
+SUBDIRS = gnulib/lib include src daemon tools proxy docs gnulib/tests \
   python tests po examples/domain-events/events-c examples/hellolibvirt
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
@@ -40,7 +40,7 @@ tests:
 
 cov: clean-cov
 	mkdir $(top_builddir)/coverage
-	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp -d $(top_srcdir)/src  -d $(top_srcdir)/qemud -d $(top_srcdir)/tests
+	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp -d $(top_srcdir)/src  -d $(top_srcdir)/daemon -d $(top_srcdir)/tests
 	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp -o $(top_builddir)/coverage/libvirt.info *usr*
 	rm $(top_builddir)/coverage/libvirt.info.tmp
 	$(GENHTML) -s -t "libvirt" -o $(top_builddir)/coverage --legend $(top_builddir)/coverage/libvirt.info

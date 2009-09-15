@@ -31,7 +31,7 @@
 #include "threads.h"
 #include "logging.h"
 #include "util.h"
-#include "../qemud/event.h"
+#include "../daemon/event.h"
 
 #define NUM_FDS 5
 #define NUM_TIME 5

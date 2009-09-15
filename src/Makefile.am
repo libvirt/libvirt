@@ -4,7 +4,7 @@ INCLUDES = \
 	   -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	   -I../include \
 	   -I@top_srcdir@/include \
-	   -I@top_srcdir@/qemud \
+	   -I@top_srcdir@/daemon \
 	   $(LIBXML_CFLAGS) \
 	   $(LIBSSH2_CFLAGS) \
 	   $(XEN_CFLAGS) \
@@ -100,8 +100,8 @@ SECRET_CONF_SOURCES =						\
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h				\
 		remote_internal.c remote_internal.h		\
-		../qemud/remote_protocol.c			\
-		../qemud/remote_protocol.h
+		../daemon/remote_protocol.c			\
+		../daemon/remote_protocol.h
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\

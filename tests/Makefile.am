@@ -147,7 +147,7 @@ TESTS += nodedevxml2xmltest
 
 TESTS += interfacexml2xmltest
 
-path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
+path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/daemon
 
 # NB, automake < 1.10 does not provide the real
 # abs_top_{src/build}dir variables, so don't rely
@@ -261,7 +261,7 @@ qparamtest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
-	eventtest.c testutils.h testutils.c ../qemud/event.c
+	eventtest.c testutils.h testutils.c ../daemon/event.c
 eventtest_LDADD = -lrt $(LDADDS)
 endif
 

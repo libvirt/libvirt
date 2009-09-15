@@ -13,7 +13,7 @@ test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
 grep '^#define WITH_QEMU 1' $CONFIG_HEADER > /dev/null ||
   skip_test_ "configured without QEMU support"
 
-conf="$abs_top_srcdir/qemud/libvirtd.conf"
+conf="$abs_top_srcdir/daemon/libvirtd.conf"
 
 # Ensure that each commented out PARAMETER = VALUE line has the expected form.
 grep '[a-z_]  *=  *[^ ]' "$conf" | grep -vE '^#[a-z_]+ = ' \

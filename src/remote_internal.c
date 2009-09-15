@@ -5650,7 +5650,7 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
 
 #if HAVE_SASL
 /*
- * NB, keep in sync with similar method in qemud/remote.c
+ * NB, keep in sync with similar method in remote/remote.c
  */
 static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
 {
