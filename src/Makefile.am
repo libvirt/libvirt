@@ -469,7 +469,7 @@ noinst_LTLIBRARIES += libvirt_driver_secret.la
 libvirt_la_LIBADD += libvirt_driver_secret.la
 endif
 if WITH_DRIVER_MODULES
-libvirt_driver_secret_la_LDFLAGS = -module -avoid-version
+libvirt_driver_secret_la_LDFLAGS = -module -avoid-version ../gnulib/lib/libgnu.la
 endif
 libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
 endif

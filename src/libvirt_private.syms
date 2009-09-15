@@ -433,6 +433,8 @@ virGetUserID;
 virGetGroupID;
 virFileFindMountPoint;
 virFileWaitForDevices;
+virFileMatchesNameSuffix;
+
 
 # usb.h
 usbGetDevice;
