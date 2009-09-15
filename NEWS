@@ -16,7 +16,7 @@
         Compressed save image format for Qemu (Chris Lalancette, Charles Duffy
         and Jim Meyering),
         QEmu add host PCI device hotplug support (Mark McLoughlin)
-      
+
    - Documentation:
         Minor comment changes (Laine Stump),
         Fix up virNodeGetCellsFreeMemory (Chris Lalancette),
@@ -26,10 +26,10 @@
         Fix some URLs in virsh manpage (Mark McLoughlin),
         Add link to AbiCloud web management system (Daniel P. Berrange),
         Update logging documentation (Amy Griffis)
-      
+
    - Portability:
         Fix win32 platform build (Daniel P. Berrange)
-      
+
    - Bug fixes:
         VBox bug when starting machine from old versions (Pritesh Kothari),
         ESX avoid potential leaks (Matthias Bolte),
@@ -79,7 +79,7 @@
         chown kernel/initrd before spawning qemu (Mark McLoughlin),
         Several fixes to libvirtd's log setup (Amy Griffis),
         Fix memleak if esxOpen fails (Matthias Bolte)
-      
+
    - Improvement:
         support lzop save compression for qemu (Charles Duffy),
         VBox 3.0.6 API change support (Pritesh Kothari),
