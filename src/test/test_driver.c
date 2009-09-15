@@ -34,7 +34,7 @@
 
 #include "virterror_internal.h"
 #include "datatypes.h"
-#include "test.h"
+#include "test_driver.h"
 #include "buf.h"
 #include "util.h"
 #include "uuid.h"

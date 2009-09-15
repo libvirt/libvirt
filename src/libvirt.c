@@ -44,7 +44,7 @@
 
 #ifndef WITH_DRIVER_MODULES
 #ifdef WITH_TEST
-#include "test.h"
+#include "test/test_driver.h"
 #endif
 #ifdef WITH_XEN
 #include "xen/xen_driver.h"

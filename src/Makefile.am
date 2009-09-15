@@ -104,7 +104,7 @@ REMOTE_DRIVER_SOURCES =						\
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
-		test.c test.h
+		test/test_driver.c test/test_driver.h
 
 
 
