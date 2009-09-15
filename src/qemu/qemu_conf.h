@@ -33,7 +33,7 @@
 #include "domain_conf.h"
 #include "domain_event.h"
 #include "threads.h"
-#include "security.h"
+#include "security/security_driver.h"
 #include "cgroup.h"
 #include "pci.h"
 

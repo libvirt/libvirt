@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "security.h"
+#include "security_driver.h"
 #include "security_selinux.h"
 #include "virterror_internal.h"
 #include "util.h"

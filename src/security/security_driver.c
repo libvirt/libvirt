@@ -15,7 +15,7 @@
 
 #include "virterror_internal.h"
 
-#include "security.h"
+#include "security_driver.h"
 #ifdef WITH_SECDRIVER_SELINUX
 #include "security_selinux.h"
 #endif

@@ -219,10 +219,10 @@ STORAGE_HELPER_DISK_SOURCES =					\
 
 # Security framework and drivers for various models
 SECURITY_DRIVER_SOURCES =					\
-		security.h security.c
+		security/security_driver.h security/security_driver.c
 
 SECURITY_DRIVER_SELINUX_SOURCES =				\
-		security_selinux.h security_selinux.c
+		security/security_selinux.h security/security_selinux.c
 
 
 NODE_DEVICE_DRIVER_SOURCES =					\
