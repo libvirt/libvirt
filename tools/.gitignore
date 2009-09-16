@@ -1,4 +1,10 @@
 virt-xml-validate
-virt-xml-validate.1
+*.1
 Makefile
 Makefile.in
+virsh-net-edit.c
+virsh-pool-edit.c
+virsh
+*.exe
+.libs
+.deps

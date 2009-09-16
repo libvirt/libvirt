@@ -72,14 +72,9 @@ EXTRA_DIST=					\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(xml) $(fig) $(png) \
   $(patches) \
-  virsh.pod ChangeLog.awk
+  ChangeLog.awk
 
 all: web $(top_builddir)/NEWS $(man_MANS)
-
-virsh.1: virsh.pod
-	pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)" $(srcdir)/virsh.pod > $@-t
-	mv $@-t $@
-	cp $@ $(top_builddir)
 
 api: libvirt-api.xml libvirt-refs.xml $(srcdir)/html/index.html
 

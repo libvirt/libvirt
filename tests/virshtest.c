@@ -82,13 +82,13 @@ static int testCompareOutput(const char *expect_rel, const char *filter,
 }
 #endif
 
-#define VIRSH_DEFAULT     "../src/virsh", \
+#define VIRSH_DEFAULT     "../tools/virsh", \
     "--connect", \
     "test:///default"
 
 static char *custom_uri;
 
-#define VIRSH_CUSTOM     "../src/virsh", \
+#define VIRSH_CUSTOM     "../tools/virsh", \
     "--connect", \
     custom_uri
 

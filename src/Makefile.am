@@ -22,14 +22,7 @@ INCLUDES = \
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = qemu.conf
 
-ICON_FILES = \
-	libvirt_win_icon_16x16.ico \
-	libvirt_win_icon_32x32.ico \
-	libvirt_win_icon_48x48.ico \
-	libvirt_win_icon_64x64.ico \
-	virsh_win_icon.rc
-
-EXTRA_DIST = $(conf_DATA) $(ICON_FILES)
+EXTRA_DIST = $(conf_DATA)
 
 
 lib_LTLIBRARIES = libvirt.la
@@ -617,6 +610,8 @@ EXTRA_DIST += \
   libvirt_bridge.syms		\
   libvirt_linux.syms
 
+BUILT_SOURCES = libvirt.syms
+
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	rm -f $@-tmp $@
 	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp
@@ -662,82 +657,6 @@ libvirt_test_la_LIBADD = $(libvirt_la_LIBADD)
 libvirt_test_la_LDFLAGS = $(test_LDFLAGS)
 libvirt_test_la_CFLAGS = $(COVERAGE_CFLAGS)
 
-bin_PROGRAMS = virsh
-
-virsh_SOURCES =							\
-		console.c console.h				\
-		virsh.c
-
-virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
-virsh_LDADD =							\
-		$(STATIC_BINARIES)				\
-		$(WARN_CFLAGS)					\
-		$(NUMACTL_LIBS)					\
-		libvirt.la					\
-		../gnulib/lib/libgnu.la				\
-		$(VIRSH_LIBS)
-virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS) $(NUMACTL_CFLAGS)
-BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c libvirt.syms
-
-virsh-net-edit.c: virsh.c Makefile.am
-	rm -f $@-tmp
-	echo '/* Automatically generated from: $^ */' > $@-tmp
-	echo 'static int' >> $@-tmp
-	awk '/^cmdEdit/, /^}/' $< \
-	  | sed -e 's/domain/network/g' \
-	      -e 's/Domain/Network/g' \
-	      -e 's/cmdEdit/cmdNetworkEdit/g' \
-	      -e 's/dom/network/g' \
-	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp
-	chmod a-w $@-tmp
-	rm -f $@
-	mv $@-tmp $@
-
-virsh-pool-edit.c: virsh.c Makefile.am
-	rm -f $@-tmp
-	echo '/* Automatically generated from: $^ */' > $@-tmp
-	echo 'static int' >> $@-tmp
-	awk '/^cmdEdit/, /^}/' $< \
-	  | sed -e 's/domain/pool/g' \
-	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
-	      -e 's/Domain %s/Pool %s/g' \
-	      -e 's/(ctl, cmd, NULL);/(ctl, cmd, "pool", NULL);/' \
-	      -e 's/Domain/StoragePool/g' \
-	      -e 's/cmdEdit/cmdPoolEdit/g' \
-	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \
-	      -e 's/dom/pool/g' \
-	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp
-	chmod a-w $@-tmp
-	rm -f $@
-	mv $@-tmp $@
-
-if WITH_WIN_ICON
-virsh_LDADD += virsh_win_icon.$(OBJEXT)
-
-# Before you edit virsh_win_icon.rc, please note the following
-# limitations of the resource file format:
-#
-# (1) '..' is not permitted in the icon filename field.
-# (2) '-' is not permitted in the icon filename field.
-# (3) Comments are not permitted in the file.
-#
-# Windows appears to choose the first <= 32x32 icon it finds
-# in the resource file.  Therefore you should list the available
-# icons from largest to smallest, and make sure that the 32x32
-# icon is the most legible.
-#
-# Windows .ICO is a special MS-only format.  GIMP and other
-# tools can write it.  However there are several variations,
-# and Windows seems to do its own colour quantization.  More
-# information is needed in this area.
-
-virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
-	$(WINDRES) \
-	  --input-format rc --input $< \
-	  --output-format coff --output $@
-endif
 
 libexec_PROGRAMS =
 

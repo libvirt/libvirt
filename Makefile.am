@@ -13,7 +13,7 @@ EXTRA_DIST = \
   libvirt.spec libvirt.spec.in \
   mingw32-libvirt.spec.in \
   libvirt.pc libvirt.pc.in \
-  $(man_MANS) autobuild.sh \
+  autobuild.sh \
   .x-sc_avoid_if_before_free \
   .x-sc_require_config_h_first \
   .x-sc_prohibit_strcmp \
@@ -22,8 +22,6 @@ EXTRA_DIST = \
   .x-sc_prohibit_nonreentrant \
   Makefile.nonreentrant \
   autogen.sh
-
-man_MANS = virsh.1
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc
