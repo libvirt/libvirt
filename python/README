@@ -1,0 +1,27 @@
+    libvirt Python Bindings README
+    ==============================
+
+Most of the libvirt python binding code is automatically generated
+using the script  generator.py, and the API description from
+docs/libvirt-api.xml
+
+
+Manually written files:
+
+ - libvirt-override.c: methods where the C binding needs to be hand crafted
+ - libvirt-override.py: global methods where the C and python bindings have different args
+ - libvirt-override-api.xml: methods where the auto-extracted API docs are not
+   suitable for python auto-generator. Overriding this if the method is going
+   into libvirt-override.c, but we still want auto-generated libvirt-override.py
+ - libvirt-override-virConnect.py: virConnect class methods
+ - typewrappers.h,.c: Python object wrappers for each libvirt C object
+
+
+Auto-generated files:
+
+  - libvirt.py: The main python binding. Comprises auto-generated code, along
+    with contents from libvirt-override.py and libvirt-override-virConnect.py
+  - libvirt.c, libvirt.h: The C glue layer for the python binding. Comprises
+    auto-generated code, along with libvirt-override.c
+  - libvirt-export.c: List of auto-generated C methods, included into
+    the libvirt-override.c method table

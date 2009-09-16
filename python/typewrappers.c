@@ -14,7 +14,7 @@
  *       which has over 180 autoconf-style HAVE_* definitions.  Shame on them.  */
 #undef HAVE_PTHREAD_H
 
-#include "libvirt_wrap.h"
+#include "typewrappers.h"
 
 PyObject *
 libvirt_intWrap(int val)

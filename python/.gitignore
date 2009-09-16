@@ -7,9 +7,7 @@ Makefile.in
 *.loT
 libvirt.py
 libvirt-export.c
-libvirtclass.txt
-libvirt-py.[ch]
-libvirtclass.py
-gen_prog
+libvirt.c
+libvirt.h
 *.pyc
 generated.stamp

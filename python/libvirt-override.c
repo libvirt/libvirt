@@ -19,8 +19,8 @@
 #include <Python.h>
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
-#include "libvirt_wrap.h"
-#include "libvirt-py.h"
+#include "typewrappers.h"
+#include "libvirt.h"
 
 #ifndef __CYGWIN__
 extern void initlibvirtmod(void);
