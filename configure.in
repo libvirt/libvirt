@@ -1685,8 +1685,7 @@ test "x$srcdir" = x. && ! test -f COPYING &&
 cp -f COPYING.LIB COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
-          docs/examples/Makefile docs/devhelp/Makefile \
-	  docs/examples/python/Makefile \
+          docs/devhelp/Makefile \
 	  docs/schemas/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \
@@ -1703,6 +1702,9 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           tests/xencapsdata/Makefile \
           tests/confdata/Makefile \
           examples/domain-events/events-c/Makefile \
+          examples/domsuspend/Makefile \
+          examples/dominfo/Makefile \
+          examples/python/Makefile \
           examples/hellolibvirt/Makefile)
 
 AC_MSG_NOTICE([])

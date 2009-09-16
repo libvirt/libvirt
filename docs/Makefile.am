@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-SUBDIRS= schemas examples devhelp
+SUBDIRS= schemas devhelp
 
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
