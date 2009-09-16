@@ -19,11 +19,11 @@ INCLUDES = \
 	   $(WARN_CFLAGS) \
 	   $(LOCK_CHECKING_CFLAGS)
 
-confdir = $(sysconfdir)/libvirt/
-conf_DATA = qemu.conf
-
 EXTRA_DIST = $(conf_DATA)
 
+if WITH_NETWORK
+UUID=$(shell uuidgen 2>/dev/null)
+endif
 
 lib_LTLIBRARIES = libvirt.la
 
@@ -358,7 +358,23 @@ if WITH_DRIVER_MODULES
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
+
+confdir = $(sysconfdir)/libvirt/
+conf_DATA = qemu/qemu.conf
+
+augeasdir = $(datadir)/augeas/lenses
+augeas_DATA = qemu/libvirtd_qemu.aug
+
+augeastestdir = $(datadir)/augeas/lenses/tests
+augeastest_DATA = qemu/test_libvirtd_qemu.aug
+
+check-local:
+	test -x '$(AUGPARSE)' \
+	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd_qemu.aug || :
+
 endif
+EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug qemu/test_libvirtd_qemu.aug
+
 
 if WITH_LXC
 if WITH_DRIVER_MODULES
@@ -438,6 +454,10 @@ libvirt_driver_network_la_LDFLAGS = -module -avoid-version
 endif
 libvirt_driver_network_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 endif
+EXTRA_DIST += network/default.xml
+
+
+
 
 if WITH_NETCF
 libvirt_driver_interface_la_LDFLAGS = $(NETCF_LIBS)
@@ -688,7 +708,7 @@ endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
 
-install-exec-local:
+install-data-local:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
@@ -696,6 +716,7 @@ if WITH_QEMU
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/qemu"
 endif
 if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
@@ -710,8 +731,46 @@ if WITH_NETWORK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/nat"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart"
+	$(INSTALL_DATA) $(srcdir)/network/default.xml \
+	  $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	test -z "$(UUID)" || \
+	  sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
+	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
+           ln -s ../default.xml \
+	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 endif
 
+uninstall-local::
+	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
+if WITH_QEMU
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/qemu" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/qemu" ||:
+endif
+if WITH_LXC
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
+endif
+if WITH_UML
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/uml" ||:
+endif
+if WITH_NETWORK
+	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
+	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	rmdir "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart" || :
+	rmdir "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks" || :
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/filter" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/nat" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
+endif
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
 CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES = $(BUILT_SOURCES)

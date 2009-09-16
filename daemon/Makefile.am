@@ -16,7 +16,6 @@ AVAHI_SOURCES =						\
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
-	default-network.xml				\
 	remote_generate_stubs.pl rpcgen_fix.pl		\
 	remote_protocol.x				\
 	libvirtd.conf					\
@@ -26,10 +25,8 @@ EXTRA_DIST =						\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
 	libvirtd.aug                                    \
-	libvirtd_qemu.aug                               \
 	libvirtd.logrotate.in                           \
 	test_libvirtd.aug                               \
-	test_libvirtd_qemu.aug                          \
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
@@ -69,18 +66,16 @@ remote_protocol.c: remote_protocol.h
 
 if WITH_LIBVIRTD
 
-UUID=$(shell uuidgen 2>/dev/null)
-
 sbin_PROGRAMS = libvirtd
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
 
 augeasdir = $(datadir)/augeas/lenses
-augeas_DATA = libvirtd.aug libvirtd_qemu.aug
+augeas_DATA = libvirtd.aug
 
 augeastestsdir = $(datadir)/augeas/lenses/tests
-augeastests_DATA = test_libvirtd.aug test_libvirtd_qemu.aug
+augeastests_DATA = test_libvirtd.aug
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
 
@@ -164,27 +159,14 @@ libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
 
-default_xml_dest = libvirt/qemu/networks/default.xml
 install-data-local: install-init install-data-sasl install-data-polkit \
                     install-logrotate
-	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
-	$(INSTALL_DATA) $(srcdir)/default-network.xml \
-	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
-	test -z "$(UUID)" || \
-	  sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
-	    $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
-	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
-           ln -s ../default.xml \
-	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
-	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu
+	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init install-data-sasl install-data-polkit
-	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
-	rm -f $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
-	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
-	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/qemu || :
+uninstall-local:: uninstall-init uninstall-data-sasl uninstall-data-polkit
+	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
@@ -257,8 +239,6 @@ libvirtd.init: libvirtd.init.in
 check-local:
 	test -x '$(AUGPARSE)' \
 	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd.aug || :
-	test -x '$(AUGPARSE)' \
-	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd_qemu.aug || :
 
 else
 
