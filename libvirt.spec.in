@@ -704,8 +704,10 @@ fi
 
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
+%{_mandir}/man1/virt-pki-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
+%{_bindir}/virt-pki-validate
 %{_libdir}/lib*.so.*
 
 %dir %{_datadir}/libvirt/

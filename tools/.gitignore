@@ -1,4 +1,5 @@
 virt-xml-validate
+virt-pki-validate
 *.1
 Makefile
 Makefile.in

@@ -8,12 +8,12 @@ ICON_FILES = \
 	libvirt_win_icon_64x64.ico \
 	virsh_win_icon.rc
 
-EXTRA_DIST = $(ICON_FILES) virt-xml-validate.in virsh.pod
+EXTRA_DIST = $(ICON_FILES) virt-xml-validate.in virt-pki-validate.in virsh.pod
 
-bin_SCRIPTS = virt-xml-validate
+bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh
 
-man1_MANS = virt-xml-validate.1 virsh.1
+man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
 
 
 virt-xml-validate: virt-xml-validate.in Makefile
@@ -23,7 +23,12 @@ virt-xml-validate: virt-xml-validate.in Makefile
 virt-xml-validate.1: virt-xml-validate
 	$(POD2MAN) $< $@
 
+virt-pki-validate: virt-pki-validate.in Makefile
+	sed -e 's,@SYSCONFDIR@,$(sysconfdir),' < $< > $@ || (rm $@ && exit 1)
+	chmod +x $@
 
+virt-pki-validate.1: virt-pki-validate
+	$(POD2MAN) $< $@
 
 virsh_SOURCES =							\
 		console.c console.h				\

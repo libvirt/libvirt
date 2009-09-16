@@ -80,6 +80,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_bindir}/libvirt-0.dll
 %{_mingw32_bindir}/virsh.exe
 %{_mingw32_bindir}/virt-xml-validate
+%{_mingw32_bindir}/virt-pki-validate
 
 %{_mingw32_libdir}/libvirt.dll.a
 %{_mingw32_libdir}/libvirt.la
@@ -105,6 +106,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mingw32_mandir}/man1/virsh.1*
 %{_mingw32_mandir}/man1/virt-xml-validate.1*
+%{_mingw32_mandir}/man1/virt-pki-validate.1*
 
 
 %changelog
