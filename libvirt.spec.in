@@ -7,13 +7,6 @@
 
 # Now turn off server build in certain cases
 
-# RHEL-6 builds are client-only except for x86_64
-%if 0%{?rhel} >= 6
-%ifnarch x86_64
-%define client_only        1
-%endif
-%endif
-
 # RHEL-5 builds are client-only for s390, ppc
 %if 0%{?rhel} == 5
 %ifnarch i386 i586 i686 x86_64 ia64
@@ -36,7 +29,7 @@
 %define with_libvirtd      0%{!?_without_libvirtd:%{server_drivers}}
 %define with_avahi         0%{!?_without_avahi:%{server_drivers}}
 
-# Then the hypervisor drivers
+# Then the hypervisor drivers that run on local host
 %define with_xen           0%{!?_without_xen:%{server_drivers}}
 %define with_xen_proxy     0%{!?_without_xen_proxy:%{server_drivers}}
 %define with_qemu          0%{!?_without_qemu:%{server_drivers}}
@@ -44,9 +37,12 @@
 %define with_lxc           0%{!?_without_lxc:%{server_drivers}}
 %define with_vbox          0%{!?_without_vbox:%{server_drivers}}
 %define with_uml           0%{!?_without_uml:%{server_drivers}}
+# XXX this shouldn't be here, but it mistakenly links into libvirtd
 %define with_one           0%{!?_without_one:%{server_drivers}}
-%define with_phyp          0%{!?_without_phyp:%{server_drivers}}
-%define with_esx           0%{!?_without_esx:%{server_drivers}}
+
+# Then the hypervisor drivers that talk a native remote protocol
+%define with_phyp          0%{!?_without_phyp:1}
+%define with_esx           0%{!?_without_esx:1}
 
 # Then the secondary host drivers
 %define with_network       0%{!?_without_network:%{server_drivers}}
@@ -95,8 +91,12 @@
 %define with_lxc 0
 %endif
 
-# RHEL-6 stopped including Xen on all archs
+# RHEL-6 has restricted QEMU to x86_64 only, stopped including Xen
+# on all archs. Other archs all have LXC available though
 %if 0%{?rhel} >= 6
+%ifnarch x86_64
+%define with_qemu 0
+%endif
 %define with_xen 0
 %endif
 
