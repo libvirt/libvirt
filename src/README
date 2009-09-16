@@ -1,0 +1,56 @@
+       libvirt library code README
+       ===========================
+
+The directory provides the bulk of the libvirt codebase. Everything
+except for the libvirtd daemon and client tools. The build uses a
+large number of libtool convenience libraries - one for each child
+directory, and then links them together for the final libvirt.so,
+although some bits get linked directly to libvirtd daemon instead.
+
+The files directly in this directory are supporting the public API
+entry points & data structures.
+
+There are two core shared modules to be aware of:
+
+ * util/  - a collection of shared APIs that can be used by any
+            code. This directory is always in the include path
+            for all things built
+
+ * conf/  - APIs for parsing / manipulating all the official XML
+            files used by the public API. This directory is only
+            in the include path for driver implementation modules
+
+
+Then there are the hypervisor implementations:
+
+ * esx/          - VMware ESX and GSX support using vSphere API over SOAP
+ * lxc/          - Linux Native Containers
+ * opennebula/   - Open Nebula using XMLRPC
+ * openvz/       - OpenVZ containers using cli tools
+ * phyp/         - IBM Power Hypervisor using CLI tools over SSH
+ * qemu/         - QEMU / KVM using qemu CLI/monitor
+ * remote/       - Generic libvirt native RPC client
+ * test/         - A "mock" driver for testing
+ * uml/          - User Mode Linux
+ * vbox/         - Virtual Box using native API
+ * xen/          - Xen using hypercalls, XenD SEXPR & XenStore
+
+
+Finally some secondary drivers that are shared for several HVs.
+Currently these are used by LXC, OpenVZ, QEMU, UML and Xen drivers.
+The ESX, OpenNebula, Power Hypervisor, Remote, Test & VirtualBox
+drivers all implement the secondary drivers directly
+
+ * interface/    - Host network interface management
+ * network/      - Virtual NAT networking
+ * node_device/  - Host device enumeration
+ * secret/       - Secret management
+ * security/     - Mandatory access control drivers
+ * storage/      - Storage management drivers
+
+
+Since both the hypervisor and secondary drivers can be built as
+dlopen()able modules, it is *FORBIDDEN* to have build dependencies
+between these directories. Drivers are only allowed to depend on
+the public API, and the internal APIs in the util/ and conf/
+directories
