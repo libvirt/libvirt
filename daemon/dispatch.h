@@ -25,7 +25,7 @@
 #define __LIBVIRTD_DISPATCH_H__
 
 
-#include "qemud.h"
+#include "libvirtd.h"
 
 
 int

@@ -37,8 +37,7 @@
 #include <avahi-common/error.h>
 #include <avahi-common/timeval.h>
 
-#include "internal.h"
-#include "qemud.h"
+#include "libvirtd.h"
 #include "mdns.h"
 #include "event.h"
 #include "memory.h"

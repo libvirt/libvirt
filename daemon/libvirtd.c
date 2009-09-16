@@ -1,5 +1,5 @@
 /*
- * qemud.c: daemon start of day, guest process & i/o management
+ * libvirtd.c: daemon start of day, guest process & i/o management
  *
  * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
@@ -53,7 +53,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-#include "qemud.h"
+#include "libvirtd.h"
 #include "dispatch.h"
 
 #include "util.h"

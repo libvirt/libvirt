@@ -25,7 +25,7 @@
 #define __LIBVIRTD_REMOTE_H__
 
 
-#include "qemud.h"
+#include "libvirtd.h"
 
 typedef union {
 #include "remote_dispatch_args.h"

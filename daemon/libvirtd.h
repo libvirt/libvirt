@@ -1,5 +1,5 @@
 /*
- * qemud.h: daemon data structure definitions
+ * libvirtd.h: daemon data structure definitions
  *
  * Copyright (C) 2006-2009 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
