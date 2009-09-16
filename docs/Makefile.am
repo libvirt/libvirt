@@ -65,11 +65,13 @@ EXTRA_DIST=					\
   $(patches) \
   ChangeLog.awk
 
+CLEANFILES = $(dot_html) $(apihtml)
+
 all: web $(top_builddir)/NEWS
 
-api: libvirt-api.xml libvirt-refs.xml $(srcdir)/html/index.html
+api: libvirt-api.xml libvirt-refs.xml
 
-web: $(dot_html)
+web: $(dot_html) html/index.html
 
 ChangeLog.xml: ../ChangeLog ChangeLog.awk
 	awk -f ChangeLog.awk < $< > $@
@@ -97,7 +99,7 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
 
-$(srcdir)/html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
+html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )

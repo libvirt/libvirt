@@ -15,6 +15,8 @@ EXTRA_DIST=devhelp.xsl html.xsl libvirt.devhelp $(HTML_FILES) $(EXTRA_FORMAT)
 
 all: libvirt.devhelp $(HTML_FILES)
 
+CLEANFILES = libvirt.devhelp $(HTML_FILES)
+
 libvirt.devhelp $(HTML_FILES): $(srcdir)/devhelp.xsl html.xsl $(top_srcdir)/docs/libvirt-api.xml
 	-@(echo Rebuilding devhelp files)
 	-@(if [ -x $(XSLTPROC) ] ; then \
