@@ -1,23 +1,24 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = \
-	   -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
-	   -I../include \
-	   -I@top_srcdir@/include \
-	   -I@top_srcdir@/daemon \
-	   $(LIBXML_CFLAGS) \
-	   $(LIBSSH2_CFLAGS) \
-	   $(SELINUX_CFLAGS) \
-	   $(DRIVER_MODULE_CFLAGS) \
-	   -DLIBDIR=\""$(libdir)"\" \
-	   -DBINDIR=\""$(libexecdir)"\" \
-	   -DSBINDIR=\""$(sbindir)"\" \
-	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
-	   -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-           -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
-           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
-	   $(WARN_CFLAGS) \
-	   $(LOCK_CHECKING_CFLAGS)
+# No libraries with the exception of LIBXML should be listed
+# here. List them against the individual XXX_la_CFLAGS targets
+# that actually use them
+INCLUDES =							\
+		-I$(top_srcdir)/gnulib/lib			\
+		-I../gnulib/lib					\
+		-I../include					\
+		-I@top_srcdir@/include				\
+		$(DRIVER_MODULE_CFLAGS)				\
+		$(LIBXML_CFLAGS)				\
+		-DLIBDIR=\""$(libdir)"\"			\
+		-DBINDIR=\""$(libexecdir)"\"			\
+		-DSBINDIR=\""$(sbindir)"\"			\
+		-DSYSCONF_DIR="\"$(sysconfdir)\""		\
+		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
+		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
+		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
+		$(WARN_CFLAGS)					\
+		$(LOCK_CHECKING_CFLAGS)
 
 EXTRA_DIST = $(conf_DATA)
 
@@ -45,7 +46,6 @@ UTIL_SOURCES =							\
 		pci.c pci.h					\
 		hostusb.c hostusb.h				\
 		qparams.c qparams.h				\
-		storage_encryption_conf.h storage_encryption_conf.c	\
 		threads.c threads.h				\
 		threads-pthread.h				\
 		threads-win32.h					\
@@ -57,36 +57,57 @@ UTIL_SOURCES =							\
 EXTRA_DIST += threads-pthread.c threads-win32.c
 
 # Internal generic driver infrastructure
+NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c
 DRIVER_SOURCES =						\
 		driver.c driver.h				\
 		internal.h					\
 		datatypes.c datatypes.h				\
-		domain_event.c domain_event.h			\
 		stats_linux.c stats_linux.h			\
+		$(NODE_INFO_SOURCES)				\
 		libvirt.c libvirt_internal.h
 
 
+# XML configuration format handling sources
 # Domain driver generic impl APIs
 DOMAIN_CONF_SOURCES =						\
-		capabilities.c capabilities.h			\
-		domain_conf.c domain_conf.h			\
-		nodeinfo.h nodeinfo.c
+		conf/capabilities.c conf/capabilities.h		\
+		conf/domain_conf.c conf/domain_conf.h
+
+DOMAIN_EVENT_SOURCES =						\
+		conf/domain_event.c conf/domain_event.h
 
 # Network driver generic impl APIs
-NETWORK_CONF_SOURCES =						\
-		network_conf.c network_conf.h
+NETWORK_CONF_SOURCES =                                         \
+		conf/network_conf.c conf/network_conf.h
 
 # Storage driver generic impl APIs
-STORAGE_CONF_SOURCES =						\
-		storage_conf.h storage_conf.c
+STORAGE_CONF_SOURCES =                                         \
+		conf/storage_conf.h conf/storage_conf.c
 
 # Interface driver generic impl APIs
-INTERFACE_CONF_SOURCES =					\
-		interface_conf.c interface_conf.h
+INTERFACE_CONF_SOURCES =                                       \
+		conf/interface_conf.c conf/interface_conf.h
 
 # Secret driver generic impl APIs
-SECRET_CONF_SOURCES =						\
-		secret_conf.h secret_conf.c
+SECRET_CONF_SOURCES =                                          \
+		conf/secret_conf.h conf/secret_conf.c
+
+# Network driver generic impl APIs
+NODE_DEVICE_CONF_SOURCES =                                     \
+		conf/node_device_conf.c conf/node_device_conf.h
+
+ENCRYPTION_CONF_SOURCES =					\
+		conf/storage_encryption_conf.c conf/storage_encryption_conf.h
+
+CONF_SOURCES =							\
+		$(DOMAIN_CONF_SOURCES)				\
+		$(DOMAIN_EVENT_SOURCES)				\
+		$(NETWORK_CONF_SOURCES)				\
+		$(NODE_DEVICE_CONF_SOURCES)			\
+		$(STORAGE_CONF_SOURCES)				\
+		$(ENCRYPTION_CONF_SOURCES)			\
+		$(INTERFACE_CONF_SOURCES)			\
+		$(SECRET_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_SOURCES =						\
@@ -183,10 +204,6 @@ STORAGE_DRIVER_SOURCES =					\
 		storage/storage_driver.h storage/storage_driver.c		\
 		storage/storage_backend.h storage/storage_backend.c
 
-# Network driver generic impl APIs
-NODE_DEVICE_CONF_SOURCES =					\
-		node_device_conf.c node_device_conf.h
-
 STORAGE_DRIVER_FS_SOURCES =					\
 		storage/storage_backend_fs.h storage/storage_backend_fs.c
 
@@ -243,18 +260,20 @@ libvirt_util_la_SOURCES =					\
 libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS)
 libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS)
 
+
+noinst_LTLIBRARIES += libvirt_conf.la
+libvirt_la_LIBADD += libvirt_conf.la
+libvirt_conf_la_SOURCES = $(CONF_SOURCES)
+libvirt_conf_la_CFLAGS =
+libvirt_conf_la_LDFLAGS =
+
+
 noinst_LTLIBRARIES += libvirt_driver.la
 libvirt_la_LIBADD += libvirt_driver.la
-libvirt_driver_la_SOURCES =					\
-		$(DRIVER_SOURCES)				\
-		$(DOMAIN_CONF_SOURCES)				\
-		$(NETWORK_CONF_SOURCES)				\
-		$(STORAGE_CONF_SOURCES)				\
-		$(INTERFACE_CONF_SOURCES)			\
-		$(NODE_DEVICE_CONF_SOURCES)			\
-		$(SECRET_CONF_SOURCES)
+libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
-libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS)	\
+		-I@top_srcdir@/src/conf
 libvirt_driver_la_LDFLAGS = $(NUMACTL_LIBS)
 
 USED_SYM_FILES = libvirt_private.syms
@@ -266,6 +285,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_test.la
 libvirt_la_LIBADD += libvirt_driver_test.la
 endif
+libvirt_driver_test_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_test_la_LDFLAGS = -module -avoid-version
 endif
@@ -279,9 +300,12 @@ else
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_LIBADD += libvirt_driver_remote.la
 endif
+# XXX have this depend on the daemon/ directory is bogus
 libvirt_driver_remote_la_CFLAGS =				\
 		$(GNUTLS_CFLAGS)				\
-		$(SASL_CFLAGS)
+		$(SASL_CFLAGS)					\
+		-I@top_srcdir@/src/conf				\
+		-I@top_srcdir@/daemon
 libvirt_driver_remote_la_LDFLAGS =				\
 		$(GNUTLS_LIBS)					\
 		$(SASL_LIBS)
@@ -298,7 +322,9 @@ else
 noinst_LTLIBRARIES += libvirt_driver_xen.la
 libvirt_la_LIBADD += libvirt_driver_xen.la
 endif
-libvirt_driver_xen_la_CFLAGS = $(XEN_CFLAGS)
+libvirt_driver_xen_la_CFLAGS = 					\
+		$(XEN_CFLAGS)					\
+		-I@top_srcdir@/src/conf
 libvirt_driver_xen_la_LDFLAGS = $(XEN_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_xen_la_LDFLAGS += -module -avoid-version
@@ -314,7 +340,8 @@ noinst_LTLIBRARIES += libvirt_driver_phyp.la
 libvirt_la_LIBADD += libvirt_driver_phyp.la
 endif
 libvirt_driver_phyp_la_LDFLAGS = $(LIBSSH2_LIBS)
-libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS)
+libvirt_driver_phyp_la_CFLAGS = $(LIBSSH2_CFLAGS) \
+		-I@top_srcdir@/src/conf
 libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
 endif
 
@@ -325,6 +352,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_openvz.la
 libvirt_la_LIBADD += libvirt_driver_openvz.la
 endif
+libvirt_driver_openvz_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_openvz_la_LDFLAGS = -module -avoid-version
 endif
@@ -338,6 +367,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_vbox.la
 libvirt_la_LIBADD += libvirt_driver_vbox.la
 endif
+libvirt_driver_vbox_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version
 endif
@@ -352,7 +383,8 @@ noinst_LTLIBRARIES += libvirt_driver_qemu.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_qemu.la
 endif
-libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_qemu_la_CFLAGS = $(NUMACTL_CFLAGS) \
+		-I@top_srcdir@/src/conf
 libvirt_driver_qemu_la_LDFLAGS = $(NUMACTL_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
@@ -384,6 +416,8 @@ noinst_LTLIBRARIES += libvirt_driver_lxc.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_lxc.la
 endif
+libvirt_driver_lxc_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_lxc_la_LDFLAGS = -module -avoid-version
 endif
@@ -398,7 +432,8 @@ noinst_LTLIBRARIES += libvirt_driver_uml.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_uml.la
 endif
-libvirt_driver_uml_la_CFLAGS = $(NUMACTL_CFLAGS)
+libvirt_driver_uml_la_CFLAGS = $(NUMACTL_CFLAGS) \
+		-I@top_srcdir@/src/conf
 libvirt_driver_uml_la_LDFLAGS = $(NUMACTL_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_uml_la_LDFLAGS += -module -avoid-version
@@ -414,7 +449,8 @@ noinst_LTLIBRARIES += libvirt_driver_one.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD  += libvirt_driver_one.la
 endif
-libvirt_driver_one_la_CFLAGS = $(XMLRPC_CFLAGS)
+libvirt_driver_one_la_CFLAGS = $(XMLRPC_CFLAGS) \
+		-I@top_srcdir@/src/conf
 libvirt_driver_one_la_LDFLAGS = $(XMLRPC_LIBS)
 #libvirt_driver_one_la_CFLAGS  = "-DWITH_ONE"
 if WITH_DRIVER_MODULES
@@ -433,7 +469,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_esx.la
 libvirt_la_LIBADD += libvirt_driver_esx.la
 endif
-libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS)
+libvirt_driver_esx_la_CFLAGS = $(LIBCURL_CFLAGS) \
+		-I@top_srcdir@/src/conf
 libvirt_driver_esx_la_LDFLAGS = $(LIBCURL_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_esx_la_LDFLAGS += -module -avoid-version
@@ -449,6 +486,8 @@ noinst_LTLIBRARIES += libvirt_driver_network.la
 # Stateful, so linked to daemon instead
 #libvirt_la_LIBADD += libvirt_driver_network.la
 endif
+libvirt_driver_network_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_network_la_LDFLAGS = -module -avoid-version
 endif
@@ -460,14 +499,15 @@ EXTRA_DIST += network/default.xml
 
 
 if WITH_NETCF
-libvirt_driver_interface_la_LDFLAGS = $(NETCF_LIBS)
-libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS)
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_interface.la
 else
 noinst_LTLIBRARIES += libvirt_driver_interface.la
 libvirt_la_LIBADD += libvirt_driver_interface.la
 endif
+libvirt_driver_interface_la_CFLAGS = $(NETCF_CFLAGS) \
+		-I@top_srcdir@/src/conf
+libvirt_driver_interface_la_LDFLAGS = $(NETCF_LIBS)
 if WITH_DRIVER_MODULES
 libvirt_driver_interface_la_LDFLAGS += -module -avoid-version
 endif
@@ -481,6 +521,8 @@ else
 noinst_LTLIBRARIES += libvirt_driver_secret.la
 libvirt_la_LIBADD += libvirt_driver_secret.la
 endif
+libvirt_driver_secret_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_DRIVER_MODULES
 libvirt_driver_secret_la_LDFLAGS = -module -avoid-version ../gnulib/lib/libgnu.la
 endif
@@ -489,7 +531,8 @@ endif
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_la_SOURCES =
-libvirt_driver_storage_la_CFLAGS =
+libvirt_driver_storage_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_STORAGE_DIR
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
@@ -537,7 +580,8 @@ noinst_LTLIBRARIES += libvirt_driver_nodedev.la
 endif
 libvirt_driver_nodedev_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
 
-libvirt_driver_nodedev_la_CFLAGS =
+libvirt_driver_nodedev_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 libvirt_driver_nodedev_la_LDFLAGS =
 if HAVE_HAL
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
@@ -559,6 +603,8 @@ endif
 libvirt_driver_security_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_driver_security.la
 libvirt_la_LIBADD += libvirt_driver_security.la
+libvirt_driver_security_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
 if WITH_SECDRIVER_SELINUX
 libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
 endif
@@ -653,9 +699,8 @@ libvirt_la_LIBADD += \
 libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
-                    $(LIBXML_LIBS) $(SELINUX_LIBS) \
-		    $(XEN_LIBS) $(DRIVER_MODULE_LIBS) \
-		    $(DEVMAPPER_LIBS) \
+                    $(LIBXML_LIBS) \
+		    $(DRIVER_MODULE_LIBS) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt.syms
@@ -700,10 +745,16 @@ libexec_PROGRAMS += libvirt_lxc
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
 		$(UTIL_SOURCES)					\
+		$(NODE_INFO_SOURCES)				\
+		$(ENCRYPTION_CONF_SOURCES)			\
 		$(DOMAIN_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
-libvirt_lxc_CFLAGS =  $(LIBPARTED_CFLAGS) $(NUMACTL_CFLAGS) $(CAPNG_CFLAGS)
+libvirt_lxc_CFLAGS =				\
+		$(LIBPARTED_CFLAGS)		\
+		$(NUMACTL_CFLAGS)		\
+		$(CAPNG_CFLAGS)			\
+		-I@top_srcdir@/src/conf
 endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)

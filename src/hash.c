@@ -22,7 +22,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <libxml/threads.h>
 
 #include "virterror_internal.h"
 #include "hash.h"

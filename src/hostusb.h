@@ -23,7 +23,6 @@
 #define __VIR_USB_H__
 
 #include "internal.h"
-#include "domain_conf.h"
 
 typedef struct _usbDevice usbDevice;
 

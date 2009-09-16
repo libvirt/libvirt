@@ -8,9 +8,9 @@ SUBDIRS = confdata sexpr2xmldata \
 INCLUDES = \
 	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	-I$(top_builddir)/include \
-	-I$(top_builddir)/src \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/conf \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \

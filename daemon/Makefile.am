@@ -84,6 +84,7 @@ libvirtd_CFLAGS = \
 	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	-I$(top_srcdir)/include -I$(top_builddir)/include \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/conf \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
 	$(POLKIT_CFLAGS) \
 	$(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
