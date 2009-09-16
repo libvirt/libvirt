@@ -4,8 +4,6 @@ SUBDIRS= schemas examples devhelp
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
 
-man_MANS=
-
 apihtml =			\
   html/index.html		\
   html/libvirt-libvirt.html	\
@@ -18,12 +16,9 @@ apipng =	\
   html/right.png
 
 png = \
-  16favicon.png \
   32favicon.png \
   footer_corner.png \
   footer_pattern.png \
-  libvirHeader.png \
-  libvirLogo.png \
   libvirt-header-bg.png \
   libvirt-header-logo.png \
   libvirtLogo.png \
@@ -33,13 +28,9 @@ png = \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
   madeWith.png \
-  windows-cygwin-1.png \
-  windows-cygwin-2.png \
-  windows-cygwin-3.png \
   et.png
 
 gif = \
-  Libxml2-Logo-90x34.gif \
   architecture.gif \
   node.gif
 
@@ -74,7 +65,7 @@ EXTRA_DIST=					\
   $(patches) \
   ChangeLog.awk
 
-all: web $(top_builddir)/NEWS $(man_MANS)
+all: web $(top_builddir)/NEWS
 
 api: libvirt-api.xml libvirt-refs.xml $(srcdir)/html/index.html
 
