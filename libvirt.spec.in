@@ -746,6 +746,7 @@ fi
 %doc examples/domain-events/events-c
 %doc examples/dominfo
 %doc examples/domsuspend
+%doc examples/xml
 
 %if %{with_python}
 %files python

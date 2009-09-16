@@ -41,14 +41,7 @@ patches = $(wildcard api_extension/*.patch)
 
 xml = \
   libvirt-api.xml \
-  libvirt-refs.xml \
-  testdomfc4.xml \
-  testdomfv0.xml \
-  testnetdef.xml \
-  testnetpriv.xml \
-  testnode.xml \
-  testpool.xml \
-  testvol.xml
+  libvirt-refs.xml
 
 fig = \
   libvirt-net-logical.fig \

@@ -9,6 +9,8 @@ SUBDIRS = gnulib/lib include src daemon tools proxy docs gnulib/tests \
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
+XML_EXAMPLES = $(wildcard examples/xml/test/*.xml) $(wildcard examples/xml/storage/*.xml)
+
 EXTRA_DIST = \
   ChangeLog-old \
   libvirt.spec libvirt.spec.in \
@@ -22,7 +24,8 @@ EXTRA_DIST = \
   .x-sc_require_config_h \
   .x-sc_prohibit_nonreentrant \
   Makefile.nonreentrant \
-  autogen.sh
+  autogen.sh \
+  $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libvirt.pc

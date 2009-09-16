@@ -15,7 +15,7 @@ cd "$t_" || fail=1
 
 echo "error: failed to get domain '4294967298'" > exp || fail=1
 echo domname 4294967298 | $abs_top_builddir/tools/virsh --quiet \
-    --connect test://$abs_top_srcdir/docs/testnode.xml \
+    --connect test://$abs_top_srcdir/examples/xml/test/testnode.xml \
     > /dev/null 2> err || fail=1
 diff -u err exp || fail=1
 

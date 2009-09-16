@@ -234,7 +234,7 @@ mymain(int argc, char **argv)
     exit (77); /* means 'test skipped' for automake */
 #endif
 
-    snprintf(buffer, PATH_MAX-1, "test://%s/../docs/testnode.xml", abs_srcdir);
+    snprintf(buffer, PATH_MAX-1, "test://%s/../examples/xml/test/testnode.xml", abs_srcdir);
     buffer[PATH_MAX-1] = '\0';
     progname = argv[0];
     custom_uri = buffer;
