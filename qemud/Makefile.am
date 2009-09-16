@@ -180,26 +180,13 @@ install-data-local: install-init install-data-sasl install-data-polkit \
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init uninstall-data-sasl install-data-polkit
+uninstall-local:: uninstall-init install-data-sasl install-data-polkit
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/qemu || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
-
-if HAVE_SASL
-install-data-sasl:: install-init
-	mkdir -p $(DESTDIR)$(sysconfdir)/sasl2/
-	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-
-uninstall-data-sasl:: install-init
-	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-	rmdir $(DESTDIR)$(sysconfdir)/sasl2/
-else
-install-data-sasl:
-uninstall-data-sasl:
-endif
 
 if HAVE_POLKIT
 install-data-polkit:: install-init
@@ -285,7 +272,23 @@ endif # DBUS_INIT_SCRIPTS_RED_HAT
 # are used by nearly every other library.
 libvirtd_LDADD += ../gnulib/lib/libgnu.la $(LIBSOCKET)
 
+else # WITH_LIBVIRTD
+install-data-local: install-data-sasl
+uninstall-local:: uninstall-data-sasl
 endif # WITH_LIBVIRTD
+
+# This is needed for clients too, so can't wrap in
+# the WITH_LIBVIRTD conditional
+if HAVE_SASL
+install-data-sasl:
+	mkdir -p $(DESTDIR)$(sysconfdir)/sasl2/
+	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+
+uninstall-data-sasl:
+	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+	rmdir $(DESTDIR)$(sysconfdir)/sasl2/
+endif
+
 
 CLEANFILES = $(BUILT_SOURCES)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

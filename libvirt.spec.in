@@ -1,60 +1,136 @@
 # -*- rpm-spec -*-
 
-%define with_xen           0%{!?_without_xen:1}
-%define with_xen_proxy     0%{!?_without_xen_proxy:1}
-%define with_qemu          0%{!?_without_qemu:1}
-%define with_openvz        0%{!?_without_openvz:1}
-%define with_lxc           0%{!?_without_lxc:1}
-%define with_vbox          0%{!?_without_vbox:1}
-%define with_sasl          0%{!?_without_sasl:1}
-%define with_avahi         0%{!?_without_avahi:1}
-%define with_python        0%{!?_without_python:1}
-%define with_libvirtd      0%{!?_without_libvirtd:1}
-%define with_uml           0%{!?_without_uml:1}
-%define with_one           0%{!?_without_one:1}
-%define with_phyp          0%{!?_without_phyp:1}
-%define with_network       0%{!?_without_network:1}
-%define with_storage_fs    0%{!?_without_storage_fs:1}
-%define with_storage_lvm   0%{!?_without_storage_lvm:1}
-%define with_storage_iscsi 0%{!?_without_storage_iscsi:1}
-%define with_storage_disk  0%{!?_without_storage_disk:1}
-%define with_storage_mpath 0%{!?_without_storage_mpath:1}
-%define with_numactl       0%{!?_without_numactl:1}
+# A client only build will create a libvirt.so only containing
+# the generic RPC driver, and test driver and no libvirtd
+# Default to a full server + client build
+%define client_only        0
 
-# default to off - selectively enabled below
+# Now turn off server build in certain cases
+
+# RHEL-6 builds are client-only except for x86_64
+%if 0%{?rhel} >= 6
+%ifnarch x86_64
+%define client_only        1
+%endif
+%endif
+
+# RHEL-5 builds are client-only for s390, ppc
+%if 0%{?rhel} == 5
+%ifnarch i386 i586 i686 x86_64 ia64
+%define client_only        1
+%endif
+%endif
+
+# Disable all server side drivers if client only build requested
+%if %{client_only}
+%define server_drivers     0
+%else
+%define server_drivers     1
+%endif
+
+
+# Now set the defaults for all the important features, independant
+# of any particular OS
+
+# First the daemon itself
+%define with_libvirtd      0%{!?_without_libvirtd:%{server_drivers}}
+%define with_avahi         0%{!?_without_avahi:%{server_drivers}}
+
+# Then the hypervisor drivers
+%define with_xen           0%{!?_without_xen:%{server_drivers}}
+%define with_xen_proxy     0%{!?_without_xen_proxy:%{server_drivers}}
+%define with_qemu          0%{!?_without_qemu:%{server_drivers}}
+%define with_openvz        0%{!?_without_openvz:%{server_drivers}}
+%define with_lxc           0%{!?_without_lxc:%{server_drivers}}
+%define with_vbox          0%{!?_without_vbox:%{server_drivers}}
+%define with_uml           0%{!?_without_uml:%{server_drivers}}
+%define with_one           0%{!?_without_one:%{server_drivers}}
+%define with_phyp          0%{!?_without_phyp:%{server_drivers}}
+%define with_esx           0%{!?_without_esx:%{server_drivers}}
+
+# Then the secondary host drivers
+%define with_network       0%{!?_without_network:%{server_drivers}}
+%define with_storage_fs    0%{!?_without_storage_fs:%{server_drivers}}
+%define with_storage_lvm   0%{!?_without_storage_lvm:%{server_drivers}}
+%define with_storage_iscsi 0%{!?_without_storage_iscsi:%{server_drivers}}
+%define with_storage_disk  0%{!?_without_storage_disk:%{server_drivers}}
+%define with_storage_mpath 0%{!?_without_storage_mpath:%{server_drivers}}
+%define with_numactl       0%{!?_without_numactl:%{server_drivers}}
+%define with_selinux       0%{!?_without_selinux:%{server_drivers}}
+%define with_hal           0%{!?_without_hal:%{server_drivers}}
+
+# A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_capng         0%{!?_without_capng:0}
 %define with_netcf         0%{!?_without_netcf:0}
+
+# Non-server/HV driver defaults which are always enabled
+%define with_python        0%{!?_without_python:1}
+%define with_sasl          0%{!?_without_sasl:1}
+
+
+# Finally set the OS / architecture specific special cases
 
 # Xen is available only on i386 x86_64 ia64
 %ifnarch i386 i586 i686 x86_64 ia64
 %define with_xen 0
 %endif
 
+
+# RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor or ESX
+%if 0%{?rhel}
+%define with_openvz 0
+%define with_vbox 0
+%define with_uml 0
+%define with_one 0
+%define with_phyp 0
+%define with_esx 0
+%endif
+
+# RHEL-5 has restricted QEMU to x86_64 only and is too old for LXC
+%if 0%{?rhel} == 5
+%ifnarch x86_64
+%define with_qemu 0
+%endif
+%define with_lxc 0
+%endif
+
+# RHEL-6 stopped including Xen on all archs
+%if 0%{?rhel} >= 6
+%define with_xen 0
+%endif
+
+# If Xen isn't turned on, we shouldn't build the xen proxy either
 %if ! %{with_xen}
 %define with_xen_proxy 0
 %endif
 
+# Fedora doesn't have any QEMU on ppc64 - only ppc
 %if 0%{?fedora}
 %ifarch ppc64
 %define with_qemu 0
 %endif
 %endif
 
-%if 0%{?fedora} >= 8
+# PolicyKit was introduced in Fedora 8 / RHEL-6 or newer, allowing
+# the setuid Xen proxy to be killed off
+%if 0%{?fedora} >= 8 || 0%{?rhel} >= 6
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_xen_proxy 0
 %endif
 
-%if 0%{?fedora} >= 12
+# libcapng is used to manage capabilities in Fedora 12 / RHEL-6 or newer
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %define with_capng     0%{!?_without_capng:1}
 %endif
 
-%if 0%{?fedora} >= 12
-%define with_netcf     0%{!?_without_netcf:1}
+# netcf is used to manage network interfaces in Fedora 12 / RHEL-6 or newer
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+%define with_netcf     0%{!?_without_netcf:%{server_drivers}}
 %endif
 
-%if 0%{?fedora} >= 12
+# Force QEMU to run as non-root
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %define qemu_user  qemu
 %define qemu_group  qemu
 %else
@@ -62,15 +138,13 @@
 %define qemu_group  root
 %endif
 
-#
-# If building on RHEL switch on the specific support
-#
-%if 0%{?fedora}
-%define with_rhel5  0
-%else
+
+# The RHEL-5 Xen package has some feature backports. This
+# flag is set to enable use of those special bits on RHEL-5
+%if 0%{?rhel} == 5
 %define with_rhel5  1
-%define with_polkit 0
-%define with_one    0
+%else
+%define with_rhel5  0
 %endif
 
 
@@ -88,13 +162,21 @@ BuildRequires: python-devel
 # The client side, i.e. shared libs and virsh are in a subpackage
 Requires: libvirt-client = %{version}-%{release}
 
-Requires: dnsmasq
+# Used by many of the drivers, so turn it on whenever the
+# daemon is present
+%if %{with_libvirtd}
 Requires: bridge-utils
+%endif
+%if %{with_network}
+Requires: dnsmasq
 Requires: iptables
+%endif
 # needed for device enumeration
+%if %{with_hal}
 Requires: hal
+%endif
 %if %{with_polkit}
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >=6
 Requires: polkit >= 0.93
 %else
 Requires: PolicyKit >= 0.6
@@ -153,18 +235,24 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: gnutls-devel
+%if %{with_hal}
 BuildRequires: hal-devel
+%endif
 %if %{with_avahi}
 BuildRequires: avahi-devel
 %endif
+%if %{with_selinux}
 BuildRequires: libselinux-devel
+%endif
+%if %{with_network}
 BuildRequires: dnsmasq
+%endif
 BuildRequires: bridge-utils
 %if %{with_sasl}
 BuildRequires: cyrus-sasl-devel
 %endif
 %if %{with_polkit}
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 # Only need the binary, not -devel
 BuildRequires: polkit >= 0.93
 %else
@@ -195,10 +283,19 @@ BuildRequires: iscsi-initiator-utils
 %if %{with_storage_disk}
 # For disk driver
 BuildRequires: parted-devel
+%if 0%{?rhel} == 5
+# Broken RHEL-5 parted RPM is missing a dep
+BuildRequires: e2fsprogs-devel
+%endif
 %endif
 %if %{with_storage_mpath}
 # For Multipath support
+%if 0%{?rhel} == 5
+# Broken RHEL-5 packaging has header files in main RPM :-(
+BuildRequires: device-mapper
+%else
 BuildRequires: device-mapper-devel
+%endif
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
@@ -303,6 +400,10 @@ of recent versions of Linux (and other OSes).
 %define _without_phyp --without-phyp
 %endif
 
+%if ! %{with_esx}
+%define _without_esx --without-esx
+%endif
+
 %if ! %{with_polkit}
 %define _without_polkit --without-polkit
 %endif
@@ -363,6 +464,14 @@ of recent versions of Linux (and other OSes).
 %define _without_netcf --without-netcf
 %endif
 
+%if ! %{with_selinux}
+%define _without_selinux --without-selinux
+%endif
+
+%if ! %{with_hal}
+%define _without_hal --without-hal
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -376,6 +485,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_uml} \
            %{?_without_one} \
            %{?_without_phyp} \
+           %{?_without_esx} \
            %{?_without_network} \
            %{?_with_rhel5_api} \
            %{?_without_storage_fs} \
@@ -386,6 +496,8 @@ of recent versions of Linux (and other OSes).
            %{?_without_numactl} \
            %{?_without_capng} \
            %{?_without_netcf} \
+           %{?_without_selinux} \
+           %{?_without_hal} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
@@ -406,7 +518,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 
-%if %{with_qemu}
+%if %{with_network}
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
@@ -420,6 +532,8 @@ sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
 %else
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+%endif
+%if ! %{with_qemu}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_qemu.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %endif
@@ -427,6 +541,10 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 
 %if ! %{with_python}
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
+%endif
+
+%if %{client_only}
+rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version}
 %endif
 
 %if ! %{with_qemu}
@@ -441,9 +559,9 @@ chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/libvirtd
 rm -fr %{buildroot}
 
 %pre
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 # Normally 'setup' adds this in /etc/passwd, but this is
-# here for case of upgrades from earlier Fedora. This
+# here for case of upgrades from earlier Fedora/RHEL. This
 # UID/GID pair is reserved for qemu:qemu
 getent group kvm >/dev/null || groupadd -g 36 -r kvm
 getent group qemu >/dev/null || groupadd -g 107 -r qemu
@@ -455,7 +573,7 @@ getent passwd qemu >/dev/null || \
 %post
 
 %if %{with_libvirtd}
-%if %{with_qemu}
+%if %{with_network}
 # We want to install the default network for initial RPM installs
 # or on the first upgrade from a non-network aware libvirt only.
 # We check this by looking to see if the daemon is already installed
@@ -488,31 +606,31 @@ fi
 
 %postun client -p /sbin/ldconfig
 
+%if %{with_libvirtd}
 %files
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog.gz NEWS README COPYING.LIB TODO
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
-%if %{with_qemu}
+%if %{with_network}
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
 %endif
 
-%if %{with_libvirtd}
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
-%endif
 
 %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %endif
 
-%if %{with_qemu}
 %dir %{_datadir}/libvirt/
+
+%if %{with_network}
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 %endif
@@ -550,13 +668,11 @@ fi
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %endif
 
-%if %{with_libvirtd}
 %{_datadir}/augeas/lenses/libvirtd.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
-%endif
 
 %if %{with_polkit}
-%if 0%{?fedora} >= 12
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %else
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
@@ -576,12 +692,11 @@ fi
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %endif
 
-%if %{with_libvirtd}
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %attr(0755, root, root) %{_sbindir}/libvirtd
-%endif
 
 %doc docs/*.xml
+%endif
 
 %files client -f %{name}.lang
 %defattr(-, root, root)
