@@ -1409,10 +1409,11 @@ esxVMX_ParseEthernet(virConnectPtr conn, virConfPtr conf, int controller,
     if (virtualDev != NULL &&
         STRCASENEQ(virtualDev, "vlance") &&
         STRCASENEQ(virtualDev, "vmxnet") &&
+        STRCASENEQ(virtualDev, "vmxnet3") &&
         STRCASENEQ(virtualDev, "e1000")) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                  "'e1000' but found '%s'", virtualDev_name, virtualDev);
+                  "'vmxnet3' or 'e1000' but found '%s'", virtualDev_name, virtualDev);
         goto failure;
     }
 
