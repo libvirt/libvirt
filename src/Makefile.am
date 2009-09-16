@@ -7,6 +7,7 @@ INCLUDES =							\
 		-I$(top_srcdir)/gnulib/lib			\
 		-I../gnulib/lib					\
 		-I../include					\
+		-I@top_srcdir@/src/util				\
 		-I@top_srcdir@/include				\
 		$(DRIVER_MODULE_CFLAGS)				\
 		$(LIBXML_CFLAGS)				\
@@ -35,26 +36,28 @@ mod_LTLIBRARIES =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
-		bridge.c bridge.h				\
-		buf.c buf.h					\
-		conf.c conf.h					\
-		event.c event.h					\
-		hash.c hash.h					\
-		iptables.c iptables.h				\
-		logging.c logging.h				\
-		memory.c memory.h				\
-		pci.c pci.h					\
-		hostusb.c hostusb.h				\
-		qparams.c qparams.h				\
-		threads.c threads.h				\
-		threads-pthread.h				\
-		threads-win32.h					\
-		uuid.c uuid.h					\
-		util.c util.h					\
-		virterror.c virterror_internal.h		\
-		xml.c xml.h
+		util/bridge.c util/bridge.h			\
+		util/buf.c util/buf.h				\
+		util/conf.c util/conf.h				\
+		util/cgroup.c util/cgroup.h			\
+		util/event.c util/event.h			\
+		util/hash.c util/hash.h				\
+		util/iptables.c util/iptables.h			\
+		util/logging.c util/logging.h			\
+		util/memory.c util/memory.h			\
+		util/pci.c util/pci.h				\
+		util/hostusb.c util/hostusb.h			\
+		util/qparams.c util/qparams.h			\
+		util/stats_linux.c util/stats_linux.h		\
+		util/threads.c util/threads.h			\
+		util/threads-pthread.h				\
+		util/threads-win32.h				\
+		util/uuid.c util/uuid.h				\
+		util/util.c util/util.h				\
+		util/xml.c util/xml.h				\
+		util/virterror.c util/virterror_internal.h
 
-EXTRA_DIST += threads-pthread.c threads-win32.c
+EXTRA_DIST += util/threads-pthread.c util/threads-win32.c
 
 # Internal generic driver infrastructure
 NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c
@@ -62,7 +65,6 @@ DRIVER_SOURCES =						\
 		driver.c driver.h				\
 		internal.h					\
 		datatypes.c datatypes.h				\
-		stats_linux.c stats_linux.h			\
 		$(NODE_INFO_SOURCES)				\
 		libvirt.c libvirt_internal.h
 
@@ -140,15 +142,13 @@ LXC_DRIVER_SOURCES =						\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
 		lxc/lxc_driver.c lxc/lxc_driver.h		\
-		lxc/veth.c lxc/veth.h				\
-		cgroup.c cgroup.h
+		lxc/veth.c lxc/veth.h
 
 LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_conf.c lxc/lxc_conf.h			\
 		lxc/lxc_container.c lxc/lxc_container.h		\
 		lxc/lxc_controller.c				\
-		lxc/veth.c lxc/veth.h				\
-		cgroup.c cgroup.h
+		lxc/veth.c lxc/veth.h
 
 PHYP_DRIVER_SOURCES =						\
 		phyp/phyp_driver.c phyp/phyp_driver.h
@@ -166,9 +166,8 @@ VBOX_DRIVER_SOURCES =						\
 VBOX_DRIVER_EXTRA_DIST = vbox/vbox_tmpl.c vbox/README
 
 QEMU_DRIVER_SOURCES =						\
-		qemu/qemu_conf.c qemu/qemu_conf.h				\
-		qemu/qemu_driver.c qemu/qemu_driver.h			\
-		cgroup.c cgroup.h
+		qemu/qemu_conf.c qemu/qemu_conf.h		\
+		qemu/qemu_driver.c qemu/qemu_driver.h
 
 UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\
@@ -533,6 +532,7 @@ endif
 libvirt_driver_storage_la_SOURCES =
 libvirt_driver_storage_la_CFLAGS = \
 		-I@top_srcdir@/src/conf
+libvirt_driver_storage_la_LDFLAGS =
 if WITH_STORAGE_DIR
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_storage.la
@@ -542,7 +542,7 @@ noinst_LTLIBRARIES += libvirt_driver_storage.la
 #libvirt_la_LIBADD += libvirt_driver_storage.la
 endif
 if WITH_DRIVER_MODULES
-libvirt_driver_storage_la_LDFLAGS = -module -avoid-version
+libvirt_driver_storage_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
@@ -563,6 +563,7 @@ endif
 if WITH_STORAGE_MPATH
 libvirt_driver_storage_la_SOURCES += $(STORAGE_DRIVER_MPATH_SOURCES)
 libvirt_driver_storage_la_CFLAGS += $(DEVMAPPER_CFLAGS)
+libvirt_driver_storage_la_LDFLAGS += $(DEVMAPPER_LIBS)
 endif
 
 if WITH_STORAGE_DISK

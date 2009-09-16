@@ -388,8 +388,10 @@ xenStoreClose(virConnectPtr conn)
     if (priv->xshandle == NULL)
         return(-1);
 
+#ifndef PROXY
     if (priv->xsWatch != -1)
         virEventRemoveHandle(priv->xsWatch);
+#endif
     xs_daemon_close(priv->xshandle);
     priv->xshandle = NULL;
 

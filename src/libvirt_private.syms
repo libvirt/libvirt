@@ -47,6 +47,23 @@ virConfWriteFile;
 virConfWriteMem;
 
 
+# cgroup.h
+virCgroupForDomain;
+virCgroupForDriver;
+virCgroupRemove;
+virCgroupFree;
+virCgroupAddTask;
+virCgroupSetCpuShares;
+virCgroupGetCpuShares;
+virCgroupDenyDevicePath;
+virCgroupAllowDevicePath;
+virCgroupDenyAllDevices;
+virCgroupAllowDeviceMajor;
+virCgroupControllerTypeToString;
+virCgroupControllerTypeFromString;
+virCgroupGetCpuacctUsage;
+
+
 # datatypes.h
 virGetDomain;
 virGetInterface;

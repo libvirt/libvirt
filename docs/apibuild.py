@@ -2089,11 +2089,11 @@ def rebuild():
     builder = None
     if glob.glob("../src/libvirt.c") != [] :
         print "Rebuilding API description for libvirt"
-	builder = docBuilder("libvirt", ["../src", "../include/libvirt"],
+	builder = docBuilder("libvirt", ["../src", "../src/util", "../include/libvirt"],
 	                     [])
     elif glob.glob("src/libvirt.c") != [] :
         print "Rebuilding API description for libvir"
-	builder = docBuilder("libvirt", ["src", "include/libvirt"],
+	builder = docBuilder("libvirt", ["src", "src/util", "include/libvirt"],
 	                     [])
     else:
         print "rebuild() failed, unable to guess the module"

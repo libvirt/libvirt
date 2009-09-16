@@ -109,7 +109,7 @@ $(srcdir)/html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 
 libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
-		$(srcdir)/../src/*.h $(srcdir)/../src/*.c
+		$(srcdir)/../src/libvirt.c $(srcdir)/../src/util/virterror.c
 	-(./apibuild.py)
 
 $(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in

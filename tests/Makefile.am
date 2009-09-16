@@ -10,6 +10,7 @@ INCLUDES = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir)/src/conf \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \

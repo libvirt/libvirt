@@ -44,7 +44,8 @@ virsh_LDADD =							\
 virsh_CFLAGS = 							\
 		-I$(top_srcdir)/gnulib/lib -I../gnulib/lib	\
 		-I../include					\
-		-I../src					\
+		-I$(top_srcdir)/src				\
+		-I$(top_srcdir)/src/util			\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
 		$(COVERAGE_CFLAGS)				\
