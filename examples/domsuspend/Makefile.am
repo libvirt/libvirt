@@ -7,4 +7,3 @@ noinst_PROGRAMS=suspend
 suspend_SOURCES=suspend.c
 suspend_LDFLAGS=
 suspend_LDADD= $(LDADDS)
-

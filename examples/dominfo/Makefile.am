@@ -7,4 +7,3 @@ noinst_PROGRAMS=info1
 info1_SOURCES=info1.c
 info1_LDFLAGS=
 info1_LDADD= $(LDADDS)
-

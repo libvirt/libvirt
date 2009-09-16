@@ -140,5 +140,3 @@ def eventInvokeTimeoutCallback (timer, callback, opaque):
     Invoke the Event Impl Timeout Callback in C
     """
     libvirtmod.virEventInvokeTimeoutCallback(timer, callback, opaque);
-
-

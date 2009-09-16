@@ -4,7 +4,7 @@ ChangeLog
 ^Makefile*
 ^docs/
 ^tests/
-^src/virsh\.c
-^src/console\.c
-^src/virterror\.c
+^tools/virsh\.c
+^tools/console\.c
+^src/util/virterror\.c
 ^build-aux/
