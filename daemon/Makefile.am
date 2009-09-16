@@ -9,15 +9,14 @@ DAEMON_SOURCES =					\
 		remote_dispatch_table.h			\
 		remote_dispatch_args.h			\
 		remote_dispatch_ret.h			\
-		remote_protocol.h remote_protocol.c
+		../src/remote/remote_protocol.c
 
 AVAHI_SOURCES =						\
 		mdns.c mdns.h
 
 DISTCLEANFILES =
 EXTRA_DIST =						\
-	remote_generate_stubs.pl rpcgen_fix.pl		\
-	remote_protocol.x				\
+	remote_generate_stubs.pl			\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.policy-0				\
@@ -31,38 +30,6 @@ EXTRA_DIST =						\
 	$(DAEMON_SOURCES)
 
 BUILT_SOURCES =
-
-if HAVE_RPCGEN
-#
-# Maintainer-only target for re-generating the derived .c/.h source
-# files, which are actually derived from the .x file.
-#
-# For committing protocol changes to CVS, the GLIBC rpcgen *must*
-# be used.
-#
-# Support for non-GLIB rpcgen is here as a convenience for
-# non-Linux people needing to test changes during dev.
-#
-rpcgen:
-	rm -f rp.c-t rp.h-t rp.c-t1 rp.c-t2 rp.h-t1
-	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote_protocol.x
-	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote_protocol.x
-if HAVE_GLIBC_RPCGEN
-	perl -w $(srcdir)/rpcgen_fix.pl rp.h-t > rp.h-t1
-	perl -w $(srcdir)/rpcgen_fix.pl rp.c-t > rp.c-t1
-	(echo '#include <config.h>'; cat rp.c-t1) > rp.c-t2
-	chmod 0444 rp.c-t2 rp.h-t1
-	mv -f rp.h-t1 $(srcdir)/remote_protocol.h
-	mv -f rp.c-t2 $(srcdir)/remote_protocol.c
-	rm -f rp.c-t rp.h-t rp.c-t1
-else
-	chmod 0444 rp.c-t rp.h-t
-	mv -f rp.h-t $(srcdir)/remote_protocol.h
-	mv -f rp.c-t $(srcdir)/remote_protocol.c
-endif
-endif
-
-remote_protocol.c: remote_protocol.h
 
 if WITH_LIBVIRTD
 
@@ -86,6 +53,7 @@ libvirtd_CFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir)/src/conf \
+	-I$(top_srcdir)/src/remote \
 	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
 	$(POLKIT_CFLAGS) \
 	$(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
@@ -189,17 +157,19 @@ remote.c: remote_dispatch_prototypes.h \
 	  remote_dispatch_args.h \
 	  remote_dispatch_ret.h
 
-remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -p $(srcdir)/remote_protocol.x > $@
+REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 
-remote_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -t $(srcdir)/remote_protocol.x > $@
+remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
+	perl -w $(srcdir)/remote_generate_stubs.pl -p $(REMOTE_PROTOCOL) > $@
 
-remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -a $(srcdir)/remote_protocol.x > $@
+remote_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
+	perl -w $(srcdir)/remote_generate_stubs.pl -t $(REMOTE_PROTOCOL) > $@
 
-remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
-	perl -w $(srcdir)/remote_generate_stubs.pl -r $(srcdir)/remote_protocol.x > $@
+remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
+	perl -w $(srcdir)/remote_generate_stubs.pl -a $(REMOTE_PROTOCOL) > $@
+
+remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
+	perl -w $(srcdir)/remote_generate_stubs.pl -r $(REMOTE_PROTOCOL) > $@
 
 BUILT_SOURCES += libvirtd.logrotate
 

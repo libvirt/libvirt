@@ -115,8 +115,10 @@ CONF_SOURCES =							\
 REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h			\
 		remote/remote_driver.c remote/remote_driver.h	\
-		../daemon/remote_protocol.c			\
-		../daemon/remote_protocol.h
+		remote/remote_protocol.c			\
+		remote/remote_protocol.h
+
+EXTRA_DIST += remote/remote_protocol.x remote/rpcgen_fix.pl
 
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
@@ -299,12 +301,10 @@ else
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_LIBADD += libvirt_driver_remote.la
 endif
-# XXX have this depend on the daemon/ directory is bogus
 libvirt_driver_remote_la_CFLAGS =				\
 		$(GNUTLS_CFLAGS)				\
 		$(SASL_CFLAGS)					\
-		-I@top_srcdir@/src/conf				\
-		-I@top_srcdir@/daemon
+		-I@top_srcdir@/src/conf
 libvirt_driver_remote_la_LDFLAGS =				\
 		$(GNUTLS_LIBS)					\
 		$(SASL_LIBS)
@@ -312,6 +312,38 @@ if WITH_DRIVER_MODULES
 libvirt_driver_remote_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
+
+if HAVE_RPCGEN
+#
+# Maintainer-only target for re-generating the derived .c/.h source
+# files, which are actually derived from the .x file.
+#
+# For committing protocol changes to CVS, the GLIBC rpcgen *must*
+# be used.
+#
+# Support for non-GLIB rpcgen is here as a convenience for
+# non-Linux people needing to test changes during dev.
+#
+rpcgen:
+	rm -f rp.c-t rp.h-t rp.c-t1 rp.c-t2 rp.h-t1
+	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote/remote_protocol.x
+	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote/remote_protocol.x
+if HAVE_GLIBC_RPCGEN
+	perl -w $(srcdir)/rpcgen_fix.pl rp.h-t > rp.h-t1
+	perl -w $(srcdir)/rpcgen_fix.pl rp.c-t > rp.c-t1
+	(echo '#include <config.h>'; cat rp.c-t1) > rp.c-t2
+	chmod 0444 rp.c-t2 rp.h-t1
+	mv -f rp.h-t1 $(srcdir)/remote/remote_protocol.h
+	mv -f rp.c-t2 $(srcdir)/remote/remote_protocol.c
+	rm -f rp.c-t rp.h-t rp.c-t1
+else
+	chmod 0444 rp.c-t rp.h-t
+	mv -f rp.h-t $(srcdir)/remote/remote_protocol.h
+	mv -f rp.c-t $(srcdir)/remote/remote_protocol.c
+endif
+endif
+
+remote/remote_protocol.c: remote/remote_protocol.h
 endif
 
 if WITH_XEN
