@@ -5998,7 +5998,7 @@ try_command:
             /* ignore, harmless */
         }
     } else {
-        VIR_FREE(vm->def->disks[0]);
+        VIR_FREE(vm->def->disks);
         vm->def->ndisks = 0;
     }
     virDomainDiskDefFree(detach);
@@ -6100,7 +6100,7 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
             /* ignore, harmless */
         }
     } else {
-        VIR_FREE(vm->def->nets[0]);
+        VIR_FREE(vm->def->nets);
         vm->def->nnets = 0;
     }
     virDomainNetDefFree(detach);
