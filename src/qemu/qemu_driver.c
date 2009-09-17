@@ -2382,8 +2382,11 @@ static int
 qemudSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
-    case VIR_DRV_FEATURE_MIGRATION_V2: return 1;
-    default: return 0;
+    case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
+        return 1;
+    default:
+        return 0;
     }
 }
 
@@ -6415,7 +6418,7 @@ static int doNativeMigrate(virDomainPtr dom,
                            unsigned long resource)
 {
     int ret = -1;
-    xmlURIPtr uribits;
+    xmlURIPtr uribits = NULL;
     int status;
     unsigned long long transferred, remaining, total;
 
@@ -6683,6 +6686,57 @@ cleanup:
 }
 
 
+/* This is essentially a simplified re-impl of
+ * virDomainMigrateVersion2 from libvirt.c, but running in source
+ * libvirtd context, instead of client app context */
+static int doNonTunnelMigrate(virDomainPtr dom,
+                              virConnectPtr dconn,
+                              virDomainObjPtr vm,
+                              const char *dom_xml,
+                              const char *uri ATTRIBUTE_UNUSED,
+                              unsigned long flags,
+                              const char *dname,
+                              unsigned long resource)
+{
+    virDomainPtr ddomain = NULL;
+    int retval = -1;
+    char *uri_out = NULL;
+
+    /* NB we don't pass 'uri' into this, since that's the libvirtd
+     * URI in this context - so we let dest pick it */
+    if (dconn->driver->domainMigratePrepare2(dconn,
+                                             NULL, /* cookie */
+                                             0, /* cookielen */
+                                             NULL, /* uri */
+                                             &uri_out,
+                                             flags, dname,
+                                             resource, dom_xml) < 0)
+        /* domainMigratePrepare2 sets the error for us */
+        goto cleanup;
+
+    if (uri_out == NULL) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("domainMigratePrepare2 did not set uri"));
+    }
+
+    if (doNativeMigrate(dom, vm, uri_out, flags, dname, resource) < 0)
+        goto finish;
+
+    retval = 0;
+
+finish:
+    dname = dname ? dname : dom->name;
+    ddomain = dconn->driver->domainMigrateFinish2
+        (dconn, dname, NULL, 0, uri_out, flags, retval);
+
+    if (ddomain)
+        virUnrefDomain(ddomain);
+
+cleanup:
+    return retval;
+}
+
+
 static int doPeer2PeerMigrate(virDomainPtr dom,
                               virDomainObjPtr vm,
                               const char *uri,
@@ -6705,9 +6759,9 @@ static int doPeer2PeerMigrate(virDomainPtr dom,
         return -1;
     }
     if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
+                                  VIR_DRV_FEATURE_MIGRATION_P2P)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "%s",
-                         _("Destination libvirt does not support required migration protocol 2"));
+                         _("Destination libvirt does not support peer-to-peer migration protocol"));
         goto cleanup;
     }
 
@@ -6718,7 +6772,10 @@ static int doPeer2PeerMigrate(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = doTunnelMigrate(dom, dconn, vm, dom_xml, uri, flags, dname, resource);
+    if (flags & VIR_MIGRATE_TUNNELLED)
+        ret = doTunnelMigrate(dom, dconn, vm, dom_xml, uri, flags, dname, resource);
+    else
+        ret = doNonTunnelMigrate(dom, dconn, vm, dom_xml, uri, flags, dname, resource);
 
 cleanup:
     VIR_FREE(dom_xml);

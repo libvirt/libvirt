@@ -35,7 +35,6 @@
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
-#include "libvirt_internal.h"
 #include "driver.h"
 
 #include "uuid.h"
@@ -3044,35 +3043,74 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     return ddomain;
 }
 
-/*
- * Tunnelled migration has the following flow:
- *
- * virDomainMigrate(src, uri)
- *   - virDomainMigratePerform(src, uri)
- *      - dst = virConnectOpen(uri)
- *      - virDomainMigratePrepareTunnel(dst)
- *      - while (1)
- *         - virStreamSend(dst, data)
- *      - virDomainMigrateFinish(dst)
- *      - virConnectClose(dst)
- */
-static virDomainPtr
-virDomainMigrateTunnelled(virDomainPtr domain,
-                          virConnectPtr dconn,
-                          unsigned long flags,
-                          const char *dname,
-                          const char *uri,
-                          unsigned long bandwidth)
+
+ /*
+  * This is sort of a migration v3
+  *
+  * In this version, the client does not talk to the destination
+  * libvirtd. The source libvirtd will still try to talk to the
+  * destination libvirtd though, and will do the prepare/perform/finish
+  * steps.
+  */
+static int
+virDomainMigratePeer2Peer (virDomainPtr domain,
+                           unsigned long flags,
+                           const char *dname,
+                           const char *uri,
+                           unsigned long bandwidth)
 {
+    if (!domain->conn->driver->domainMigratePerform) {
+        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        return -1;
+    }
+
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
-    if (domain->conn->driver->domainMigratePerform
-        (domain, NULL, 0, uri, flags, dname, bandwidth) == -1)
-        return NULL;
-
-    return virDomainLookupByName(dconn, dname ? dname : domain->name);
+    return domain->conn->driver->domainMigratePerform(domain,
+                                                      NULL, /* cookie */
+                                                      0,    /* cookielen */
+                                                      uri,
+                                                      flags,
+                                                      dname,
+                                                      bandwidth);
 }
+
+
+/*
+ * This is a variation on v1 & 2  migration
+ *
+ * This is for hypervisors which can directly handshake
+ * without any libvirtd involvement on destination either
+ * from client, or source libvirt.
+ *
+ * eg, XenD can talk direct to XenD, so libvirtd on dest
+ * does not need to be involved at all, or even running
+ */
+static int
+virDomainMigrateDirect (virDomainPtr domain,
+                        unsigned long flags,
+                        const char *dname,
+                        const char *uri,
+                        unsigned long bandwidth)
+{
+    if (!domain->conn->driver->domainMigratePerform) {
+        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        return -1;
+    }
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    return domain->conn->driver->domainMigratePerform(domain,
+                                                      NULL, /* cookie */
+                                                      0,    /* cookielen */
+                                                      uri,
+                                                      flags,
+                                                      dname,
+                                                      bandwidth);
+}
+
 
 /**
  * virDomainMigrate:
@@ -3087,24 +3125,34 @@ virDomainMigrateTunnelled(virDomainPtr domain,
  * host given by dconn (a connection to the destination host).
  *
  * Flags may be one of more of the following:
- *   VIR_MIGRATE_LIVE   Attempt a live migration.
- *   VIR_MIGRATE_TUNNELLED Attempt to do a migration tunnelled through the
- *                         libvirt RPC mechanism
+ *   VIR_MIGRATE_LIVE      Do not pause the VM during migration
+ *   VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+ *   VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+ *
+ * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+ * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+ * prefer to invoke virDomainMigrateToURI, avoiding the need to
+ * open connection to the destination host themselves.
  *
  * If a hypervisor supports renaming domains during migration,
  * then you may set the dname parameter to the new name (otherwise
  * it keeps the same name).  If this is not supported by the
  * hypervisor, dname must be NULL or else you will get an error.
  *
- * Since typically the two hypervisors connect directly to each
- * other in order to perform the migration, you may need to specify
- * a path from the source to the destination.  This is the purpose
- * of the uri parameter.  If uri is NULL, then libvirt will try to
- * find the best method.  Uri may specify the hostname or IP address
- * of the destination host as seen from the source.  Or uri may be
- * a URI giving transport, hostname, user, port, etc. in the usual
- * form.  Refer to driver documentation for the particular URIs
- * supported.
+ * If the VIR_MIGRATE_PEER2PEER flag is set, the uri parameter
+ * must be a valid libvirt connection URI, by which the source
+ * libvirt driver can connect to the destination libvirt. If
+ * omitted, the dconn connection object will be queried for its
+ * current URI.
+ *
+ * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the URI parameter
+ * takes a hypervisor specific format. The hypervisor capabilities
+ * XML includes details of the support URI schemes. If omitted
+ * the dconn will be asked for a default URI.
+ *
+ * In either case it is typically only neccessary to specify a
+ * URI if the destination host has multiple interfaces and a
+ * specific interface is required to transmit migration data.
  *
  * The maximum bandwidth (in Mbps) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
@@ -3159,18 +3207,35 @@ virDomainMigrate (virDomainPtr domain,
         goto error;
     }
 
-    if (flags & VIR_MIGRATE_TUNNELLED) {
-        char *dstURI = NULL;
-        if (uri == NULL) {
-            dstURI = virConnectGetURI(dconn);
-            if (!uri)
-                return NULL;
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
+            char *dstURI = NULL;
+            if (uri == NULL) {
+                dstURI = virConnectGetURI(dconn);
+                if (!uri)
+                    return NULL;
+            }
+
+            if (virDomainMigratePeer2Peer(domain, flags, dname, uri ? uri : dstURI, bandwidth) < 0) {
+                VIR_FREE(dstURI);
+                goto error;
+            }
+            VIR_FREE(dstURI);
+
+            ddomain = virDomainLookupByName (dconn, dname ? dname : domain->name);
+        } else {
+            /* This driver does not support peer to peer migration */
+            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            goto error;
+        }
+    } else {
+        if (flags & VIR_MIGRATE_TUNNELLED) {
+            virLibConnError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                            _("cannot perform tunnelled migration without using peer2peer flag"));
+            goto error;
         }
 
-        ddomain = virDomainMigrateTunnelled(domain, dconn, flags, dname, uri ? uri : dstURI, bandwidth);
-
-        VIR_FREE(dstURI);
-    } else {
         /* Check that migration is supported by both drivers. */
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_V1) &&
@@ -3183,13 +3248,14 @@ virDomainMigrate (virDomainPtr domain,
                                           VIR_DRV_FEATURE_MIGRATION_V2))
             ddomain = virDomainMigrateVersion2(domain, dconn, flags, dname, uri, bandwidth);
         else {
+            /* This driver does not support any migration method */
             virLibConnError(domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
             goto error;
         }
     }
 
-     if (ddomain == NULL)
-         goto error;
+    if (ddomain == NULL)
+        goto error;
 
     return ddomain;
 
@@ -3198,6 +3264,122 @@ error:
     virSetConnError(domain->conn);
     return NULL;
 }
+
+
+/**
+ * virDomainMigrateToURI:
+ * @domain: a domain object
+ * @duri: mandatory URI for the destination host
+ * @flags: flags
+ * @dname: (optional) rename domain to this at destination
+ * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ *
+ * Migrate the domain object from its current host to the destination
+ * host given by dconn (a connection to the destination host).
+ *
+ * Flags may be one of more of the following:
+ *   VIR_MIGRATE_LIVE      Do not pause the VM during migration
+ *   VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+ *   VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+ *
+ * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+ * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+ * prefer to invoke virDomainMigrateToURI, avoiding the need to
+ * open connection to the destination host themselves.
+ *
+ * If a hypervisor supports renaming domains during migration,
+ * then you may set the dname parameter to the new name (otherwise
+ * it keeps the same name).  If this is not supported by the
+ * hypervisor, dname must be NULL or else you will get an error.
+ *
+ * If the VIR_MIGRATE_PEER2PEER flag is set, the duri parameter
+ * must be a valid libvirt connection URI, by which the source
+ * libvirt driver can connect to the destination libvirt. If
+ * omitted, the dconn connection object will be queried for its
+ * current URI.
+ *
+ * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
+ * takes a hypervisor specific format. The hypervisor capabilities
+ * XML includes details of the support URI schemes. If omitted
+ * the dconn will be asked for a default URI. Not all hypervisors
+ * will support this mode of migration, so if the VIR_MIGRATE_PEER2PEER
+ * flag is not set, then it may be neccessary to use the alternative
+ * virDomainMigrate API providing an explicit virConnectPtr for the
+ * destination host
+ *
+ * The maximum bandwidth (in Mbps) that will be used to do migration
+ * can be specified with the bandwidth parameter.  If set to 0,
+ * libvirt will choose a suitable default.  Some hypervisors do
+ * not support this feature and will return an error if bandwidth
+ * is not 0.
+ *
+ * To see which features are supported by the current hypervisor,
+ * see virConnectGetCapabilities, /capabilities/host/migration_features.
+ *
+ * There are many limitations on migration imposed by the underlying
+ * technology - for example it may not be possible to migrate between
+ * different processors even with the same architecture, or between
+ * different types of hypervisor.
+ *
+ * Returns 0 if the migration succeeded, -1 upon error.
+ */
+int
+virDomainMigrateToURI (virDomainPtr domain,
+                       const char *duri,
+                       unsigned long flags,
+                       const char *dname,
+                       unsigned long bandwidth)
+{
+    DEBUG("domain=%p, duri=%p, flags=%lu, dname=%s, bandwidth=%lu",
+          domain, NULLSTR(duri), flags, NULLSTR(dname), bandwidth);
+
+    virResetLastError();
+
+    /* First checkout the source */
+    if (!VIR_IS_CONNECTED_DOMAIN (domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (duri == NULL) {
+        virLibConnError (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
+            if (virDomainMigratePeer2Peer (domain, flags, dname, duri, bandwidth) < 0)
+                goto error;
+        } else {
+            /* No peer to peer migration supported */
+            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            goto error;
+        }
+    } else {
+        if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
+            if (virDomainMigrateDirect (domain, flags, dname, duri, bandwidth) < 0)
+                goto error;
+        } else {
+            /* Cannot do a migration with only the perform step */
+            virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            goto error;
+        }
+    }
+
+    return 0;
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(domain->conn);
+    return -1;
+}
+
 
 /*
  * Not for public use.  This function is part of the internal

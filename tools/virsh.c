@@ -2462,6 +2462,8 @@ static const vshCmdInfo info_migrate[] = {
 
 static const vshCmdOptDef opts_migrate[] = {
     {"live", VSH_OT_BOOL, 0, gettext_noop("live migration")},
+    {"p2p", VSH_OT_BOOL, 0, gettext_noop("peer-2-peer migration")},
+    {"direct", VSH_OT_BOOL, 0, gettext_noop("direct migration")},
     {"tunnelled", VSH_OT_BOOL, 0, gettext_noop("tunnelled migration")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
@@ -2478,8 +2480,6 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     const char *migrateuri;
     const char *dname;
     int flags = 0, found, ret = FALSE;
-    virConnectPtr dconn = NULL;
-    virDomainPtr ddom = NULL;
 
     if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
         return FALSE;
@@ -2499,40 +2499,41 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool (cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
-
+    if (vshCommandOptBool (cmd, "p2p"))
+        flags |= VIR_MIGRATE_PEER2PEER;
     if (vshCommandOptBool (cmd, "tunnelled"))
         flags |= VIR_MIGRATE_TUNNELLED;
 
-    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
-        /* For regular live migration, temporarily connect to the destination
-         * host.  For tunnelled migration, that will be done by the remote
-         * libvirtd.
-         */
-        dconn = virConnectOpenAuth(desturi, virConnectAuthPtrDefault, 0);
+    if ((flags & VIR_MIGRATE_PEER2PEER) ||
+        vshCommandOptBool (cmd, "direct")) {
+        /* For peer2peer migration or direct migration we only expect one URI
+         * a libvirt URI, or a hypervisor specific URI. */
+
+        if (migrateuri != NULL) {
+            vshError(ctl, FALSE, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
+            goto done;
+        }
+
+        if (virDomainMigrateToURI (dom, desturi, flags, dname, 0) == 0)
+            ret = TRUE;
+    } else {
+        /* For traditional live migration, connect to the destination host directly. */
+        virConnectPtr dconn = NULL;
+        virDomainPtr ddom = NULL;
+
+        dconn = virConnectOpenAuth (desturi, virConnectAuthPtrDefault, 0);
         if (!dconn) goto done;
-    }
-    else {
-        /* when doing tunnelled migration, use migrateuri if it's available,
-         * but if not, fall back to desturi.  This allows both of these
-         * to work:
-         *
-         * virsh migrate guest qemu+tls://dest/system
-         * virsh migrate guest qemu+tls://dest/system qemu+tls://dest-alt/system
-         */
-        if (migrateuri == NULL)
-            migrateuri = desturi;
-    }
 
-    /* Migrate. */
-    ddom = virDomainMigrate(dom, dconn, flags, dname, migrateuri, 0);
-    if (!ddom) goto done;
-
-    ret = TRUE;
+        ddom = virDomainMigrate (dom, dconn, flags, dname, migrateuri, 0);
+        if (ddom) {
+            virDomainFree(ddom);
+            ret = TRUE;
+        }
+        virConnectClose (dconn);
+    }
 
  done:
     if (dom) virDomainFree (dom);
-    if (ddom) virDomainFree (ddom);
-    if (dconn) virConnectClose (dconn);
     return ret;
 }
 

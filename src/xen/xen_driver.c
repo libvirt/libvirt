@@ -455,8 +455,11 @@ static int
 xenUnifiedSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
-    case VIR_DRV_FEATURE_MIGRATION_V1: return 1;
-    default: return 0;
+    case VIR_DRV_FEATURE_MIGRATION_V1:
+    case VIR_DRV_FEATURE_MIGRATION_DIRECT:
+        return 1;
+    default:
+        return 0;
     }
 }
 

@@ -55,6 +55,17 @@ enum {
      * domainMigratePerform/domainMigrateFinish2.
      */
     VIR_DRV_FEATURE_MIGRATION_V2 = 3,
+
+    /* Driver supports peer-2-peer virDomainMigrate ie source host
+     * does all the prepare/perform/finish steps directly
+     */
+    VIR_DRV_FEATURE_MIGRATION_P2P = 4,
+
+    /* Driver supports migration with only the source host involved,
+     * no libvirtd connetions on the destination at all, only the
+     * perform step is used.
+     */
+    VIR_DRV_FEATURE_MIGRATION_DIRECT = 5,
 };
 
 

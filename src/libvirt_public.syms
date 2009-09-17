@@ -326,6 +326,7 @@ LIBVIRT_0.7.2 {
 	virStreamFinish;
 	virStreamAbort;
 	virStreamFree;
+	virDomainMigrateToURI;
 } LIBVIRT_0.7.1;
 
 # .... define new API here using predicted next version number ....

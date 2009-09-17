@@ -4409,6 +4409,8 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         strcpy (live, "1");
         flags &= ~VIR_MIGRATE_LIVE;
     }
+    /* XXX we could easily do tunnelled & peer2peer migration too
+       if we want to. support these... */
     if (flags != 0) {
         virXendError (conn, VIR_ERR_NO_SUPPORT,
                       "%s", _("xenDaemonDomainMigrate: unsupported flag"));

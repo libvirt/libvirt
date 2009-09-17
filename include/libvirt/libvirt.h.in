@@ -336,14 +336,19 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 
 /* Domain migration flags. */
 typedef enum {
-  VIR_MIGRATE_LIVE              = 1, /* live migration */
-  VIR_MIGRATE_TUNNELLED         = 2, /* tunnelled migration */
+    VIR_MIGRATE_LIVE              = (1 << 0), /* live migration */
+    VIR_MIGRATE_PEER2PEER         = (1 << 1), /* direct source -> dest host control channel */
+    VIR_MIGRATE_TUNNELLED         = (1 << 2), /* tunnel migration data over libvirtd connection */
 } virDomainMigrateFlags;
 
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
                                const char *uri, unsigned long bandwidth);
+
+int virDomainMigrateToURI (virDomainPtr domain, const char *duri,
+                           unsigned long flags, const char *dname,
+                           unsigned long bandwidth);
 
 /**
  * VIR_NODEINFO_MAXCPUS:
