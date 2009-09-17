@@ -6206,14 +6206,20 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
         pciFreeDevice(conn, pci);
     }
 
-    if (i != --vm->def->nhostdevs)
-        memmove(&vm->def->hostdevs[i],
-                &vm->def->hostdevs[i+1],
-                sizeof(*vm->def->hostdevs) * (vm->def->nhostdevs-i));
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs) < 0) {
-        virReportOOMError(conn);
-        ret = -1;
+    if (vm->def->nhostdevs > 1) {
+        memmove(vm->def->hostdevs + i,
+                vm->def->hostdevs + i + 1,
+                sizeof(*vm->def->hostdevs) *
+                (vm->def->nhostdevs - (i + 1)));
+        vm->def->nhostdevs--;
+        if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(vm->def->hostdevs);
+        vm->def->nhostdevs = 0;
     }
+    virDomainHostdevDefFree(detach);
 
     return ret;
 }
