@@ -1862,6 +1862,214 @@ static char *lxcGetHostname (virConnectPtr conn)
     return result;
 }
 
+static int lxcFreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
+{
+    int timeout = 1000; /* In milliseconds */
+    int check_interval = 1; /* In milliseconds */
+    int exp = 10;
+    int waited_time = 0;
+    int ret = -1;
+    char *state = NULL;
+    virCgroupPtr cgroup = NULL;
+
+    if (!(driver->cgroup &&
+        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0))
+        return -1;
+
+    while (waited_time < timeout) {
+        int r;
+        /*
+         * Writing "FROZEN" to the "freezer.state" freezes the group,
+         * i.e., the container, temporarily transiting "FREEZING" state.
+         * Once the freezing is completed, the state of the group transits
+         * to "FROZEN".
+         * (see linux-2.6/Documentation/cgroups/freezer-subsystem.txt)
+         */
+        r = virCgroupSetFreezerState(cgroup, "FROZEN");
+
+        /*
+         * Returning EBUSY explicitly indicates that the group is
+         * being freezed but incomplete and other errors are true
+         * errors.
+         */
+        if (r < 0 && r != -EBUSY) {
+            VIR_DEBUG("Writing freezer.state failed with errno: %d", r);
+            goto error;
+        }
+        if (r == -EBUSY)
+            VIR_DEBUG0("Writing freezer.state gets EBUSY");
+
+        /*
+         * Unfortunately, returning 0 (success) is likely to happen
+         * even when the freezing has not been completed. Sometimes
+         * the state of the group remains "FREEZING" like when
+         * returning -EBUSY and even worse may never transit to
+         * "FROZEN" even if writing "FROZEN" again.
+         *
+         * So we don't trust the return value anyway and always
+         * decide that the freezing has been complete only with
+         * the state actually transit to "FROZEN".
+         */
+        usleep(check_interval * 1000);
+
+        r = virCgroupGetFreezerState(cgroup, &state);
+
+        if (r < 0) {
+            VIR_DEBUG("Reading freezer.state failed with errno: %d", r);
+            goto error;
+        }
+        VIR_DEBUG("Read freezer.state: %s", state);
+
+        if (STREQ(state, "FROZEN")) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        waited_time += check_interval;
+        /*
+         * Increasing check_interval exponentially starting with
+         * small initial value treats nicely two cases; One is
+         * a container is under no load and waiting for long period
+         * makes no sense. The other is under heavy load. The container
+         * may stay longer time in FREEZING or never transit to FROZEN.
+         * In that case, eager polling will just waste CPU time.
+         */
+        check_interval *= exp;
+        VIR_FREE(state);
+    }
+    VIR_DEBUG0("lxcFreezeContainer timeout");
+error:
+    /*
+     * If timeout or an error on reading the state occurs,
+     * activate the group again and return an error.
+     * This is likely to fall the group back again gracefully.
+     */
+    virCgroupSetFreezerState(cgroup, "THAWED");
+    ret = -1;
+
+cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
+    VIR_FREE(state);
+    return ret;
+}
+
+static int lxcDomainSuspend(virDomainPtr dom)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainIsActive(vm)) {
+        lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (vm->state != VIR_DOMAIN_PAUSED) {
+        if (lxcFreezeContainer(driver, vm) < 0) {
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("suspend operation failed"));
+            goto cleanup;
+        }
+        vm->state = VIR_DOMAIN_PAUSED;
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_SUSPENDED,
+                                         VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+    }
+
+    if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
+        goto cleanup;
+    ret = 0;
+
+cleanup:
+    if (event)
+        lxcDomainEventQueue(driver, event);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+static int lxcUnfreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
+{
+    int ret;
+    virCgroupPtr cgroup = NULL;
+
+    if (!(driver->cgroup &&
+        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0))
+        return -1;
+
+    ret = virCgroupSetFreezerState(cgroup, "THAWED");
+
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
+static int lxcDomainResume(virDomainPtr dom)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainIsActive(vm)) {
+        lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (vm->state == VIR_DOMAIN_PAUSED) {
+        if (lxcUnfreezeContainer(driver, vm) < 0) {
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                             "%s", _("resume operation failed"));
+            goto cleanup;
+        }
+        vm->state = VIR_DOMAIN_RUNNING;
+
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+    }
+
+    if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
+        goto cleanup;
+    ret = 0;
+
+cleanup:
+    if (event)
+        lxcDomainEventQueue(driver, event);
+    if (vm)
+        virDomainObjUnlock(vm);
+    lxcDriverUnlock(driver);
+    return ret;
+}
+
+
 /* Function Tables */
 static virDriver lxcDriver = {
     VIR_DRV_LXC, /* the number virDrvNo */
@@ -1881,8 +2089,8 @@ static virDriver lxcDriver = {
     lxcDomainLookupByID, /* domainLookupByID */
     lxcDomainLookupByUUID, /* domainLookupByUUID */
     lxcDomainLookupByName, /* domainLookupByName */
-    NULL, /* domainSuspend */
-    NULL, /* domainResume */
+    lxcDomainSuspend, /* domainSuspend */
+    lxcDomainResume, /* domainResume */
     lxcDomainShutdown, /* domainShutdown */
     NULL, /* domainReboot */
     lxcDomainDestroy, /* domainDestroy */

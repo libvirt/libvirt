@@ -21,6 +21,7 @@ enum {
     VIR_CGROUP_CONTROLLER_CPUSET,
     VIR_CGROUP_CONTROLLER_MEMORY,
     VIR_CGROUP_CONTROLLER_DEVICES,
+    VIR_CGROUP_CONTROLLER_FREEZER,
 
     VIR_CGROUP_CONTROLLER_LAST
 };
@@ -67,6 +68,9 @@ int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage);
+
+int virCgroupSetFreezerState(virCgroupPtr group, const char *state);
+int virCgroupGetFreezerState(virCgroupPtr group, char **state);
 
 int virCgroupRemove(virCgroupPtr group);
 

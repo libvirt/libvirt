@@ -4433,19 +4433,22 @@ char *virDomainObjFormat(virConnectPtr conn,
                       virDomainStateTypeToString(obj->state),
                       obj->pid);
 
-    switch (obj->monitor_chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        monitorpath = obj->monitor_chr->data.nix.path;
-        break;
-    default:
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        monitorpath = obj->monitor_chr->data.file.path;
-        break;
-    }
+    /* obj->monitor_chr is set only for qemu */
+    if (obj->monitor_chr) {
+        switch (obj->monitor_chr->type) {
+        case VIR_DOMAIN_CHR_TYPE_UNIX:
+            monitorpath = obj->monitor_chr->data.nix.path;
+            break;
+        default:
+        case VIR_DOMAIN_CHR_TYPE_PTY:
+            monitorpath = obj->monitor_chr->data.file.path;
+            break;
+        }
 
-    virBufferEscapeString(&buf, "  <monitor path='%s'", monitorpath);
-    virBufferVSprintf(&buf, " type='%s'/>\n",
-                      virDomainChrTypeToString(obj->monitor_chr->type));
+        virBufferEscapeString(&buf, "  <monitor path='%s'", monitorpath);
+        virBufferVSprintf(&buf, " type='%s'/>\n",
+                          virDomainChrTypeToString(obj->monitor_chr->type));
+    }
 
 
     if (obj->nvcpupids) {

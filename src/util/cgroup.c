@@ -32,7 +32,8 @@
 #define CGROUP_MAX_VAL 512
 
 VIR_ENUM_IMPL(virCgroupController, VIR_CGROUP_CONTROLLER_LAST,
-              "cpu", "cpuacct", "cpuset", "memory", "devices");
+              "cpu", "cpuacct", "cpuset", "memory", "devices",
+              "freezer");
 
 struct virCgroupController {
     int type;
@@ -895,4 +896,24 @@ int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPUACCT,
                                 "cpuacct.usage", (uint64_t *)usage);
+}
+
+int virCgroupSetFreezerState(virCgroupPtr group, const char *state)
+{
+    return virCgroupSetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "freezer.state", state);
+}
+
+int virCgroupGetFreezerState(virCgroupPtr group, char **state)
+{
+    int ret;
+    ret = virCgroupGetValueStr(group,
+                                VIR_CGROUP_CONTROLLER_CPU,
+                                "freezer.state", state);
+    if (ret == 0) {
+        char *p = strchr(*state, '\n');
+        if (p) *p = '\0';
+    }
+    return ret;
 }
