@@ -53,6 +53,7 @@ EXTRA_DIST =		\
 	capabilityschematest \
 	capabilityschemadata \
 	networkschematest \
+	networkschemadata \
 	domainschematest \
 	domainschemadata \
 	interfaceschemadata \

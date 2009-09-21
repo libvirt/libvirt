@@ -3,7 +3,7 @@
 test -z "$srcdir" && srcdir=`pwd`
 test -z "$abs_srcdir" && abs_srcdir=`pwd`
 
-DIRS="../src/network"
+DIRS="../src/network networkschemadata"
 
 n=0
 f=0

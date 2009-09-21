@@ -115,6 +115,9 @@ void virNetworkDefFree(virNetworkDefPtr def)
     }
     VIR_FREE(def->hosts);
 
+    VIR_FREE(def->tftproot);
+    VIR_FREE(def->bootfile);
+
     VIR_FREE(def);
 }
 
@@ -299,11 +302,53 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             def->hosts[def->nhosts].name = (char *)name;
             def->hosts[def->nhosts].ip = (char *)ip;
             def->nhosts++;
+
+        } else if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "bootp")) {
+            xmlChar *file;
+
+            if (!(file = xmlGetProp(cur, BAD_CAST "file"))) {
+                cur = cur->next;
+                continue;
+            }
+
+            def->bootfile = (char *)file;
         }
 
         cur = cur->next;
     }
 
+    return 0;
+}
+
+static int
+virNetworkIPParseXML(virConnectPtr conn,
+                     virNetworkDefPtr def,
+                     xmlNodePtr node) {
+    xmlNodePtr cur;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
+            int result = virNetworkDHCPRangeDefParseXML(conn, def, cur);
+            if (result)
+                return result;
+
+        } else if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "tftp")) {
+            xmlChar *root;
+
+            if (!(root = xmlGetProp(cur, BAD_CAST "root"))) {
+                cur = cur->next;
+                continue;
+            }
+
+            def->tftproot = (char *)root;
+        }
+
+        cur = cur->next;
+    }
     return 0;
 }
 
@@ -363,7 +408,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         /* XXX someday we want IPv6 too, so inet_aton won't work there */
         struct in_addr inaddress, innetmask;
         char *netaddr;
-        xmlNodePtr dhcp;
+        xmlNodePtr ip;
 
         if (inet_pton(AF_INET, def->ipAddress, &inaddress) <= 0) {
             virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -386,8 +431,8 @@ virNetworkDefParseXML(virConnectPtr conn,
             goto error;
         }
 
-        if ((dhcp = virXPathNode(conn, "./ip[1]/dhcp[1]", ctxt)) &&
-            virNetworkDHCPRangeDefParseXML(conn, def, dhcp) < 0)
+        if ((ip = virXPathNode(conn, "./ip[1]", ctxt)) &&
+            virNetworkIPParseXML(conn, def, ip) < 0)
             goto error;
     }
 
@@ -605,6 +650,10 @@ char *virNetworkDefFormat(virConnectPtr conn,
 
         virBufferAddLit(&buf, ">\n");
 
+        if (def->tftproot) {
+            virBufferEscapeString(&buf, "    <tftp root='%s' />\n",
+                                  def->tftproot);
+        }
         if ((def->nranges || def->nhosts)) {
             int i;
             virBufferAddLit(&buf, "    <dhcp>\n");
@@ -621,6 +670,11 @@ char *virNetworkDefFormat(virConnectPtr conn,
                     virBufferVSprintf(&buf, "ip='%s' ", def->hosts[i].ip);
                 virBufferAddLit(&buf, "/>\n");
             }
+            if (def->bootfile) {
+                virBufferEscapeString(&buf, "      <bootp file='%s' />\n",
+                                      def->bootfile);
+            }
+
             virBufferAddLit(&buf, "    </dhcp>\n");
         }
 

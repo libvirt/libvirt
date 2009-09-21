@@ -400,6 +400,10 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
         (2 * network->def->nhosts) +
+        /* --enable-tftp --tftp-root /srv/tftp */
+        (network->def->tftproot ? 3 : 0) +
+        /* --dhcp-boot pxeboot.img */
+        (network->def->bootfile ? 2 : 0) +
         1;  /* NULL */
 
     if (VIR_ALLOC_N(*argv, len) < 0)
@@ -476,6 +480,16 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
 
         APPEND_ARG(*argv, i++, "--dhcp-host");
         APPEND_ARG(*argv, i++, buf);
+    }
+
+    if (network->def->tftproot) {
+        APPEND_ARG(*argv, i++, "--enable-tftp");
+        APPEND_ARG(*argv, i++, "--tftp-root");
+        APPEND_ARG(*argv, i++, network->def->tftproot);
+    }
+    if (network->def->bootfile) {
+        APPEND_ARG(*argv, i++, "--dhcp-boot");
+        APPEND_ARG(*argv, i++, network->def->bootfile);
     }
 
 #undef APPEND_ARG

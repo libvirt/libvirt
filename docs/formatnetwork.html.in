@@ -113,9 +113,13 @@
 	address will be their default route. The <code>netmask</code>
 	attribute defines the significant bits of the network address,
 	again specified in dotted-decimal format.  <span class="since">Since 0.3.0</span>
-      </dd>
-      <dt><code>dhcp</code></dt>
-      <dd>Immediately within the <code>ip</code> element there is an
+      </dd><dt><code>tftp</code></dt><dd>Immediately within
+	the <code>ip</code> element there is an optional <code>tftp</code>
+	element. The presence of this element and of its attribute
+	<code>root</code> enables TFTP services.  The attribute specifies
+	the path to the root directory served via TFTP.
+	<span class="since">Since 0.7.1</span>
+      </dd><dt><code>dhcp</code></dt><dd>Also within the <code>ip</code> element there is an
 	optional <code>dhcp</code> element. The presence of this element
 	enables DHCP services on the virtual network. It will further
 	contain one or more <code>range</code> elements.
@@ -137,7 +141,12 @@
         assigned to that host (via the <code>ip</code> attribute), and the
 	name to be given that host by the DHCP server (via the
         <code>name</code> attribute).  <span class="since">Since 0.4.5</span>
-      </dd>
+      </dd><dt><code>bootp</code></dt><dd>The optional <code>bootp</code>
+	element specifies BOOTP options to be provided by the DHCP server.
+	Only one attribute is supported, <code>file</code>, giving the file
+	to be used for the boot image).  The BOOTP options currently have to
+	be the same for all address ranges and statically assigned addresses.<span
+	class="since">Since 0.7.1.</span>
     </dl>
 
     <h2><a name="examples">Example configuration</a></h2>

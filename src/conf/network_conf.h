@@ -78,6 +78,9 @@ struct _virNetworkDef {
 
     unsigned int nhosts;         /* Zero or more dhcp hosts */
     virNetworkDHCPHostDefPtr hosts;
+
+    char *tftproot;
+    char *bootfile;
 };
 
 typedef struct _virNetworkObj virNetworkObj;
