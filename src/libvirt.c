@@ -1349,8 +1349,11 @@ virDrvSupportsFeature (virConnectPtr conn, int feature)
     }
 
     ret = VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn, feature);
-    /* Copy to connection error object for back compatability */
-    virSetConnError(conn);
+
+    if (ret < 0)
+        /* Copy to connection error object for back compatability */
+        virSetConnError(conn);
+
     return ret;
 }
 
