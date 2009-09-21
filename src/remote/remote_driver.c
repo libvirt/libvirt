@@ -6942,10 +6942,9 @@ remoteIOReadMessage(virConnectPtr conn, struct private_data *priv,
     if (priv->saslconn) {
         if (priv->saslDecoded == NULL) {
             char encoded[8192];
-            unsigned int encodedLen = sizeof(encoded);
             int ret, err;
             ret = remoteIOReadBuffer(conn, priv, in_open,
-                                     encoded, encodedLen);
+                                     encoded, sizeof(encoded));
             if (ret < 0)
                 return -1;
             if (ret == 0)
