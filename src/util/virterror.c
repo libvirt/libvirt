@@ -641,7 +641,7 @@ virRaiseErrorFull(virConnectPtr conn,
     /*
      * All errors are recorded in thread local storage
      * For compatability, public API calls will copy them
-     * to the per-connection error object when neccessary
+     * to the per-connection error object when necessary
      */
     to = virLastErrorObject();
     if (!to)
