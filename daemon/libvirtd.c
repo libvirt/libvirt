@@ -2270,7 +2270,6 @@ cleanup:
     }
     VIR_FREE(server->workers);
 
-    free(server->workers);
     virMutexUnlock(&server->lock);
     return ret;
 }
