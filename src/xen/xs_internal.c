@@ -1141,8 +1141,6 @@ int xenStoreAddWatch(virConnectPtr conn,
     list->watches[n] = watch;
     list->count++;
 
-    conn->refs++;
-
     return xs_watch(priv->xshandle, watch->path, watch->token);
 }
 
@@ -1192,7 +1190,6 @@ int xenStoreRemoveWatch(virConnectPtr conn,
                 ; /* Failure to reduce memory allocation isn't fatal */
             }
             list->count--;
-            virUnrefConnect(conn);
             return 0;
         }
     }

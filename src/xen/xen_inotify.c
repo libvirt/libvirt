@@ -463,7 +463,6 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
         DEBUG0("Failed to add inotify handle, disabling events");
     }
 
-    virConnectRef(conn);
     return 0;
 }
 
@@ -486,7 +485,6 @@ xenInotifyClose(virConnectPtr conn)
     if (priv->inotifyWatch != -1)
         virEventRemoveHandle(priv->inotifyWatch);
     close(priv->inotifyFD);
-    virUnrefConnect(conn);
 
     return 0;
 }
