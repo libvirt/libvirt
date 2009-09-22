@@ -5,7 +5,7 @@
 
 <h2>Presentation</h2>
     <p>The Java bindings make use of <a href="https://jna.dev.java.net/">JNA</a>
-    to expose the C API in a Java friendly way. The bindings are are based on
+    to expose the C API in a Java friendly way. The bindings are based on
     work initiated by Toth Istvan.</p>
 
 <h2>Getting it</h2>

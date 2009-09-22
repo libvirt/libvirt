@@ -58,7 +58,7 @@ to 0 or NULL if unused</p>
       <li>int1, int2: integer information</li>
     </ul>
     <p>So usually, setting up specific error handling with libvirt consist of
-registering an handler with with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
+registering a handler with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
 with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
 check the value of the code value, take appropriate action, if needed let
 libvirt print the error on stderr by calling <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>.

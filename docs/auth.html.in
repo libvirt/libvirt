@@ -151,7 +151,7 @@ Plugin "gssapiv2" [loaded],     API version: 4
         features: WANT_CLIENT_FIRST|PROXY_AUTHENTICATION|NEED_SERVER_FQDN
 </pre>
     <p>
-Next is is necessary for the administrator of the Kerberos realm to issue a principle
+Next it is necessary for the administrator of the Kerberos realm to issue a principle
 for the libvirt server. There needs to be one principle per host running the libvirt
 daemon. The principle should be named <code>libvirt/full.hostname@KERBEROS.REALM</code>.
 This is typically done by running the <code>kadmin.local</code> command on the Kerberos

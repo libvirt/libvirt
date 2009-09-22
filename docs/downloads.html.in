@@ -60,7 +60,7 @@
     <p> The libvirt build process uses GNU autotools, so after obtaining a
     checkout it is necessary to generate the configure script and Makefile.in
     templates using the <code>autogen.sh</code> command, passing the extra
-    arguments as as for configure. As an example, to do a complete build and
+    arguments as for configure. As an example, to do a complete build and
     install it into your home directory run:</p>
         <pre>
 

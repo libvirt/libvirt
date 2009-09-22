@@ -1605,7 +1605,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
     </ul>
     <h3>0.0.3: Feb 9 2006</h3>
     <ul>
-      <li>Switch name from from 'libvir' to libvirt</li>
+      <li>Switch name from 'libvir' to libvirt</li>
       <li>Starting infrastructure to add code examples</li>
       <li>Update of python bindings for completeness</li>
     </ul>
