@@ -95,22 +95,25 @@ static void cmdExecFree(const char *cmdExec[])
    return -1 - error
            0 - OK
 */
-static int openvzDomainDefineCmd(virConnectPtr conn,
-                                 const char *args[],
-                                 int maxarg,
-                                 virDomainDefPtr vmdef)
+static int
+openvzDomainDefineCmd(virConnectPtr conn,
+                      const char *args[],
+                      int maxarg, virDomainDefPtr vmdef)
 {
     int narg;
+    int veid;
+    int max_veid;
+    char str_id[10];
+    FILE *fp;
 
     for (narg = 0; narg < maxarg; narg++)
         args[narg] = NULL;
 
-    if (vmdef == NULL){
+    if (vmdef == NULL) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("Container is not defined"));
+                    "%s", _("Container is not defined"));
         return -1;
     }
-
 #define ADD_ARG(thisarg)                                                \
     do {                                                                \
         if (narg >= maxarg)                                             \
@@ -130,11 +133,42 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
     ADD_ARG_LIT(VZCTL);
     ADD_ARG_LIT("--quiet");
     ADD_ARG_LIT("create");
+
+    if ((fp = popen(VZLIST " -a -ovpsid -H 2>/dev/null", "r")) == NULL) {
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("popen  failed"));
+        return -1;
+    }
+    max_veid = 0;
+    while (!feof(fp)) {
+        if (fscanf(fp, "%d\n", &veid) != 1) {
+            if (feof(fp))
+                break;
+
+            openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Failed to parse vzlist output"));
+            goto cleanup;
+        }
+        if (veid > max_veid) {
+            max_veid = veid;
+        }
+    }
+    fclose(fp);
+
+    if (max_veid == 0) {
+        max_veid = 100;
+    } else {
+        max_veid++;
+    }
+
+    sprintf(str_id, "%d", max_veid++);
+    ADD_ARG_LIT(str_id);
+
+    ADD_ARG_LIT("--name");
     ADD_ARG_LIT(vmdef->name);
 
     if (vmdef->nfss == 1 &&
-        vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
-    {
+        vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
         ADD_ARG_LIT("--ostemplate");
         ADD_ARG_LIT(vmdef->fss[0]->src);
     }
@@ -147,10 +181,16 @@ static int openvzDomainDefineCmd(virConnectPtr conn,
 
     ADD_ARG(NULL);
     return 0;
- no_memory:
+
+no_memory:
     openvzError(conn, VIR_ERR_INTERNAL_ERROR,
                 _("Could not put argument to %s"), VZCTL);
     return -1;
+
+cleanup:
+    fclose(fp);
+    return -1;
+
 #undef ADD_ARG
 #undef ADD_ARG_LIT
 }
