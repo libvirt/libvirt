@@ -297,7 +297,7 @@ static int virClearCapabilities(void)
 /*
  * @conn Connection to report errors against
  * @argv argv to exec
- * @envp optional enviroment to use for exec
+ * @envp optional environment to use for exec
  * @keepfd options fd_ret to keep open for child process
  * @retpid optional pointer to store child process pid
  * @infd optional file descriptor to use as child input, otherwise /dev/null

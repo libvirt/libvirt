@@ -208,7 +208,7 @@
       Thus, if a vendor / distributor has configured their libvirt package
       to run as 'qemu' by default, a number of changes will be required
       before an administrator can change a host to run guests as root.
-      In particular it will be neccessary to change ownership on the
+      In particular it will be necessary to change ownership on the
       directories <code>/var/run/libvirt/qemu/</code>,
       <code>/var/lib/libvirt/qemu/</code> and
       <code>/var/cache/libvirt/qemu/</code> back to root, in addition

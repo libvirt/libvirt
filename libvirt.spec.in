@@ -22,7 +22,7 @@
 %endif
 
 
-# Now set the defaults for all the important features, independant
+# Now set the defaults for all the important features, independent
 # of any particular OS
 
 # First the daemon itself

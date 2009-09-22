@@ -780,7 +780,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                "%s", _("Error creating intial configuration"));
+                "%s", _("Error creating initial configuration"));
         goto cleanup;
     }
 
@@ -847,7 +847,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
-                "%s", _("Error creating intial configuration"));
+                "%s", _("Error creating initial configuration"));
         goto cleanup;
     }
 

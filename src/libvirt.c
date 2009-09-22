@@ -9423,7 +9423,7 @@ virStreamRef(virStreamPtr stream)
  * Write a series of bytes to the stream. This method may
  * block the calling application for an arbitrary amount
  * of time. Once an application has finished sending data
- * it should call virStreamFinish to wait for succesful
+ * it should call virStreamFinish to wait for successful
  * confirmation from the driver, or detect any error
  *
  * This method may not be used if a stream source has been

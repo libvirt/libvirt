@@ -4761,7 +4761,7 @@ static virDrvOpenStatus vboxNetworkOpen(virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    DEBUG0("network intialized");
+    DEBUG0("network initialized");
     /* conn->networkPrivateData = some network specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -4770,7 +4770,7 @@ cleanup:
 }
 
 static int vboxNetworkClose(virConnectPtr conn) {
-    DEBUG0("network unintialized");
+    DEBUG0("network uninitialized");
     conn->networkPrivateData = NULL;
     return 0;
 }
@@ -5606,7 +5606,7 @@ static virDrvOpenStatus vboxStorageOpen (virConnectPtr conn,
         (data->vboxSession == NULL))
         goto cleanup;
 
-    DEBUG0("vbox storage intialized");
+    DEBUG0("vbox storage initialized");
     /* conn->storagePrivateData = some storage specific data */
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -5615,7 +5615,7 @@ cleanup:
 }
 
 static int vboxStorageClose (virConnectPtr conn) {
-    DEBUG0("vbox storage unintialized");
+    DEBUG0("vbox storage uninitialized");
     conn->storagePrivateData = NULL;
     return 0;
 }

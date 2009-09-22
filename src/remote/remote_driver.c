@@ -7915,7 +7915,7 @@ error:
  * NB(4) This is very complicated. Due to connection cloning, multiple
  * threads can want to use the socket at once. Obviously only one of
  * them can. So if someone's using the socket, other threads are put
- * to sleep on condition variables. THe existing thread may completely
+ * to sleep on condition variables. The existing thread may completely
  * send & receive their RPC call/reply while they're asleep. Or it
  * may only get around to dealing with sending the call. Or it may
  * get around to neither. So upon waking up from slumber, the other

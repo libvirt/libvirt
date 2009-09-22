@@ -1486,7 +1486,7 @@ esxDomainDestroy(virDomainPtr domain)
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_ERROR(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  "Could not destory domain");
+                  "Could not destroy domain");
         goto failure;
     }
 

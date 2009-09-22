@@ -329,7 +329,7 @@ SELinuxSetFilecon(virConnectPtr conn, const char *path, char *tcon)
         /* if the error complaint is related to an image hosted on
          * an nfs mount, or a usbfs/sysfs filesystem not supporting
          * labelling, then just ignore it & hope for the best.
-         * The user hopefully set one of the neccessary SELinux
+         * The user hopefully set one of the necessary SELinux
          * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
          */
         if (setfilecon_errno != EOPNOTSUPP) {

@@ -275,10 +275,10 @@ exit 0
 
 =head1 DESCRIPTION
 
-This tool validates that the neccessary PKI files are configured for
+This tool validates that the necessary PKI files are configured for
 a secure libvirt server or client using the TLS encryption protocol.
 It will report any missing certificate or key files on the host. It
-should be run as root to ensure it can read all the neccessary files
+should be run as root to ensure it can read all the necessary files
 
 =head1 EXIT STATUS
 

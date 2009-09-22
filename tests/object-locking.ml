@@ -332,7 +332,7 @@ let isLockableDriverNull exp =
 
 
 (*
- * Prior to validating a function, intialize these
+ * Prior to validating a function, initialize these
  * to VS.empty
  *
  * They contain the list of driver and object variables

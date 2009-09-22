@@ -59,4 +59,4 @@ for the associated RPC call.
 While the helper method is executing, no locks are held on either
 the client or server, but the ref count on the 'struct qemud_client'
 object is incremented to ensure its not deleted. The helper can
-now safely invoke the neccessary libvirt API call.
+now safely invoke the necessary libvirt API call.
