@@ -687,26 +687,81 @@ qemu-kvm -net nic,model=? /dev/null
 
     <pre>
           ...
+	  &lt;graphics type='sdl' display=':0.0'/&gt;
 	  &lt;graphics type='vnc' port='5904'/&gt;
+	  &lt;graphics type='rdp' autoport='yes' multiUser='yes' /&gt;
+	  &lt;graphics type='desktop' fullscreen='yes'/&gt;
 	  ...</pre>
 
     <dl>
       <dt><code>graphics</code></dt>
       <dd>The <code>graphics</code> element has a mandatory <code>type</code>
-	attribute which takes the value "sdl" or "vnc". The former displays
-	a window on the host desktop, while the latter activates a VNC server.
-        The former accepts 3 optional arguments: a <code>display</code>
-        attribute for the display to use, an <code>xauth</code> attribute for
-        the authentication identifier, and an optional <code>fullscreen</code>
-        attribute accepting values 'yes' or 'no'.
-	If the latter is used the <code>port</code> attribute specifies the TCP
-	port number (with -1 as legacy syntax indicating that it should be
-	auto-allocated). The <code>autoport</code> attribute is the new
-	preferred syntax for indicating autoallocation of the TCP port to use.
-	The <code>listen</code> attribute is an IP address for the server to
-	listen on. The <code>passwd</code> attribute provides a VNC password
-	in clear text. The <code>keymap</code> attribute specifies the keymap
-	to use.</dd>
+  attribute which takes the value "sdl", "vnc", "rdp" or "desktop":
+        <dl>
+          <dt><code>"sdl"</code></dt>
+          <dd>
+  This displays a window on the host desktop, it can take 3 optional arguments:
+  a <code>display</code> attribute for the display to use, an <code>xauth</code>
+  attribute for the authentication identifier, and an optional <code>fullscreen</code>
+  attribute accepting values 'yes' or 'no'.
+          </dd>
+          <dt><code>"vnc"</code></dt>
+          <dd>
+  Starts a VNC server. The <code>port</code> attribute specifies the TCP
+  port number (with -1 as legacy syntax indicating that it should be
+  auto-allocated). The <code>autoport</code> attribute is the new
+  preferred syntax for indicating autoallocation of the TCP port to use.
+  The <code>listen</code> attribute is an IP address for the server to
+  listen on. The <code>passwd</code> attribute provides a VNC password
+  in clear text. The <code>keymap</code> attribute specifies the keymap
+  to use.
+          </dd>
+          <dt><code>"rdp"</code></dt>
+          <dd>
+  Starts a RDP server. The <code>port</code> attribute
+  specifies the TCP port number (with -1 as legacy syntax indicating
+  that it should be auto-allocated). The <code>autoport</code> attribute
+  is the new preferred syntax for indicating autoallocation of the TCP
+  port to use. The <code>replaceUser</code> attribute is a boolean deciding
+  whether multiple simultaneous connections to the VM are permitted.
+  The <code>multiUser</code> whether the existing connection must be dropped
+  and a new connection must be established by the VRDP server, when a new
+  client connects in single connection mode.
+
+          </dd>
+          <dt><code>"desktop"</code></dt>
+          <dd>
+  This value is reserved for VirtualBox domains for the moment. It displays
+  a window on the host desktop, similarly to "sdl", but using the VirtualBox
+  viewer. Just like "sdl", it accepts the optional attributes <code>display</code>
+  and <code>fullscreen</code>.
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+
+    <h4><a name="elementsVideo">Video devices</a></h4>
+    <p>
+      A video device.
+    </p>
+
+    <pre>
+      ...
+      &lt;video type='vga' nvram='8192' heads='1'&gt;
+        &lt;acceleration accel3d='yes' accel3d='yes' /&gt;
+      &lt;/video&gt;
+      ...
+    </pre>
+
+    <dl>
+      <dt><code>video</code></dt>
+      <dd>The <code>video</code> element has a mandatory <code>type</code>
+  attribute which takes the value "vga", "cirrus", "vmvga", "xen" or "vbox".
+  You can also provide the amount of video memory using <code>nvram</code>,
+  the number of screen with <code>heads</code>, and whether acceleration
+  should be enabled (if supported) using the <code>accel3d</code> and
+  <code>accel2d</code> attributes in the <code>acceleration</code> element.
+
     </dl>
 
     <h4><a name="elementsConsole">Consoles, serial &amp; parallel devices</a></h4>
