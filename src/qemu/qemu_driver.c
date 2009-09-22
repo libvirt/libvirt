@@ -3906,17 +3906,26 @@ static int qemudDomainSave(virDomainPtr dom,
         goto cleanup;
     }
 
-    const char *prog = qemudSaveCompressionTypeToString(header.compressed);
-    if (prog == NULL) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Invalid compress format %d"), header.compressed);
-        goto cleanup;
-    }
+    {
+        const char *prog = qemudSaveCompressionTypeToString(header.compressed);
+        const char *args;
 
-    if (STREQ (prog, "raw"))
-        prog = "cat";
-    internalret = virAsprintf(&command, "migrate \"exec:"
-                              "%s -c >> '%s' 2>/dev/null\"", prog, safe_path);
+        if (prog == NULL) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Invalid compress format %d"), header.compressed);
+            goto cleanup;
+        }
+
+        if (STREQ (prog, "raw")) {
+            prog = "cat";
+            args = "";
+        } else {
+            args = "-c";
+        }
+        internalret = virAsprintf(&command, "migrate \"exec:"
+                                  "%s %s >> '%s' 2>/dev/null\"", prog, args,
+                                  safe_path);
+    }
 
     if (internalret < 0) {
         virReportOOMError(dom->conn);
