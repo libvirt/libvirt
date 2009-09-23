@@ -343,6 +343,16 @@ skip_function = (
     "virSecretRef",
     "virStoragePoolRef",
     "virStorageVolRef",
+
+    # This functions shouldn't be called via the bindings (and even the docs
+    # contain an explicit warning to that effect). The equivalent should be
+    # implemented in pure python for each class
+    "virDomainGetConnect",
+    "virInterfaceGetConnect",
+    "virNetworkGetConnect",
+    "virSecretGetConnect",
+    "virStoragePoolGetConnect",
+    "virStorageVolGetConnect",
 )
 
 
@@ -640,6 +650,11 @@ classes_destructors = {
     # We hand-craft __del__ for this one
     #"virStream": "virStreamFree",
 }
+
+class_skip_connect_impl = {
+    "virConnect" : True
+}
+
 
 functions_noexcept = {
     'virDomainGetID': True,
@@ -1065,6 +1080,12 @@ def buildWrappers():
 			      classes_destructors[classname]);
 		classes.write("        self._o = None\n\n");
 		destruct=classes_destructors[classname]
+
+            if not class_skip_connect_impl.has_key(classname):
+                # Build python safe 'connect' method
+                classes.write("    def connect(self):\n")
+                classes.write("        return self._conn\n\n")
+
 	    flist = function_classes[classname]
 	    flist.sort(functionCompare)
 	    oldfile = ""
