@@ -81,4 +81,14 @@ int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
 int qemuMonitorSetBalloon(const virDomainObjPtr vm,
                           unsigned long newmem);
 
+/* XXX should we pass the virDomainDiskDefPtr instead
+ * and hide devname details inside monitor. Reconsider
+ * this when doing the QMP implementation
+ */
+int qemuMonitorEjectMedia(const virDomainObjPtr vm,
+                          const char *devname);
+int qemuMonitorChangeMedia(const virDomainObjPtr vm,
+                           const char *devname,
+                           const char *newmedia);
+
 #endif /* QEMU_MONITOR_TEXT_H */

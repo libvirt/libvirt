@@ -40,6 +40,84 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+static char *qemudEscape(const char *in, int shell)
+{
+    int len = 0;
+    int i, j;
+    char *out;
+
+    /* To pass through the QEMU monitor, we need to use escape
+       sequences: \r, \n, \", \\
+
+       To pass through both QEMU + the shell, we need to escape
+       the single character ' as the five characters '\\''
+    */
+
+    for (i = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\r':
+        case '\n':
+        case '"':
+        case '\\':
+            len += 2;
+            break;
+        case '\'':
+            if (shell)
+                len += 5;
+            else
+                len += 1;
+            break;
+        default:
+            len += 1;
+            break;
+        }
+    }
+
+    if (VIR_ALLOC_N(out, len + 1) < 0)
+        return NULL;
+
+    for (i = j = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\r':
+            out[j++] = '\\';
+            out[j++] = 'r';
+            break;
+        case '\n':
+            out[j++] = '\\';
+            out[j++] = 'n';
+            break;
+        case '"':
+        case '\\':
+            out[j++] = '\\';
+            out[j++] = in[i];
+            break;
+        case '\'':
+            if (shell) {
+                out[j++] = '\'';
+                out[j++] = '\\';
+                out[j++] = '\\';
+                out[j++] = '\'';
+                out[j++] = '\'';
+            } else {
+                out[j++] = in[i];
+            }
+            break;
+        default:
+            out[j++] = in[i];
+            break;
+        }
+    }
+    out[j] = '\0';
+
+    return out;
+}
+
+static char *qemudEscapeMonitorArg(const char *in)
+{
+    return qemudEscape(in, 0);
+}
+
+
 /* Throw away any data available on the monitor
  * This is done before executing a command, in order
  * to allow re-synchronization if something went badly
@@ -648,6 +726,87 @@ int qemuMonitorSetBalloon(const virDomainObjPtr vm,
     }
 
     VIR_FREE(reply);
+    return ret;
+}
+
+int qemuMonitorEjectMedia(const virDomainObjPtr vm,
+                          const char *devname)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "eject %s", devname) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("could not eject media on %s"), devname);
+        goto cleanup;
+    }
+
+    /* If the command failed qemu prints:
+     * device not found, device is locked ...
+     * No message is printed on success it seems */
+    DEBUG ("%s: ejectable media change reply: %s", vm->def->name, reply);
+    if (strstr(reply, "\ndevice ")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("could not eject media on %s: %s"), devname, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
+
+int qemuMonitorChangeMedia(const virDomainObjPtr vm,
+                           const char *devname,
+                           const char *newmedia)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safepath = NULL;
+    int ret = -1;
+
+    if (!(safepath = qemudEscapeMonitorArg(newmedia))) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "change %s \"%s\"", devname, safepath) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("could not eject media on %s"), devname);
+        goto cleanup;
+    }
+
+    /* If the command failed qemu prints:
+     * device not found, device is locked ...
+     * No message is printed on success it seems */
+    DEBUG ("%s: ejectable media change reply: %s", vm->def->name, reply);
+    if (strstr(reply, "\ndevice ")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("could not eject media on %s: %s"), devname, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    VIR_FREE(safepath);
     return ret;
 }
 

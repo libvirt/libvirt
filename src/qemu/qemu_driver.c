@@ -4572,9 +4572,9 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
                                            unsigned int qemuCmdFlags)
 {
     virDomainDiskDefPtr origdisk = NULL, newdisk;
-    char *cmd, *reply, *safe_path;
     char *devname = NULL;
     int i;
+    int ret;
 
     origdisk = NULL;
     newdisk = dev->data.disk;
@@ -4620,53 +4620,19 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     }
 
     if (newdisk->src) {
-        safe_path = qemudEscapeMonitorArg(newdisk->src);
-        if (!safe_path) {
-            virReportOOMError(conn);
-            VIR_FREE(devname);
-            return -1;
-        }
-        if (virAsprintf(&cmd, "change %s \"%s\"", devname, safe_path) == -1) {
-            virReportOOMError(conn);
-            VIR_FREE(safe_path);
-            VIR_FREE(devname);
-            return -1;
-        }
-        VIR_FREE(safe_path);
-
-    } else if (virAsprintf(&cmd, "eject %s", devname) == -1) {
-        virReportOOMError(conn);
-        VIR_FREE(devname);
-        return -1;
-    }
-    VIR_FREE(devname);
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("could not change cdrom media"));
-        VIR_FREE(cmd);
-        return -1;
+        ret = qemuMonitorChangeMedia(vm, devname, newdisk->src);
+    } else {
+        ret = qemuMonitorEjectMedia(vm, devname);
     }
 
-    /* If the command failed qemu prints:
-     * device not found, device is locked ...
-     * No message is printed on success it seems */
-    DEBUG ("%s: ejectable media change reply: %s", vm->def->name, reply);
-    if (strstr(reply, "\ndevice ")) {
-        qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("changing cdrom media failed: %s"), reply);
-        VIR_FREE(reply);
-        VIR_FREE(cmd);
-        return -1;
+    if (ret == 0) {
+        VIR_FREE(origdisk->src);
+        origdisk->src = newdisk->src;
+        newdisk->src = NULL;
+        origdisk->type = newdisk->type;
     }
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
 
-    VIR_FREE(origdisk->src);
-    origdisk->src = newdisk->src;
-    newdisk->src = NULL;
-    origdisk->type = newdisk->type;
-    return 0;
+    return ret;
 }
 
 static int
