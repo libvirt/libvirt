@@ -71,4 +71,7 @@ int qemudMonitorSendCont(virConnectPtr conn,
 int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
                           int **pids);
 
+int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
+                              const char *password);
+
 #endif /* QEMU_MONITOR_TEXT_H */

@@ -1275,29 +1275,21 @@ qemudInitCpus(virConnectPtr conn,
 
 
 static int
-qemudInitPasswords(virConnectPtr conn,
-                   struct qemud_driver *driver,
+qemudInitPasswords(struct qemud_driver *driver,
                    virDomainObjPtr vm) {
-    char *info = NULL;
+    int ret = 0;
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         (vm->def->graphics[0]->data.vnc.passwd || driver->vncPassword)) {
 
-        if (qemudMonitorCommandExtra(vm, "change vnc password",
-                                     vm->def->graphics[0]->data.vnc.passwd ?
-                                     vm->def->graphics[0]->data.vnc.passwd :
-                                     driver->vncPassword,
-                                     QEMU_PASSWD_PROMPT,
-                                     -1, &info) < 0) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("setting VNC password failed"));
-            return -1;
-        }
-        VIR_FREE(info);
+        ret = qemuMonitorSetVNCPassword(vm,
+                                        vm->def->graphics[0]->data.vnc.passwd ?
+                                        vm->def->graphics[0]->data.vnc.passwd :
+                                        driver->vncPassword);
     }
 
-    return 0;
+    return ret;
 }
 
 
@@ -2144,7 +2136,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
         (qemuDetectVcpuPIDs(conn, vm) < 0) ||
         (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
-        (qemudInitPasswords(conn, driver, vm) < 0) ||
+        (qemudInitPasswords(driver, vm) < 0) ||
         (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
         (virDomainSaveStatus(conn, driver->stateDir, vm) < 0)) {
         qemudShutdownVMDaemon(conn, driver, vm);

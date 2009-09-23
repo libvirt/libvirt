@@ -520,3 +520,18 @@ error:
 }
 
 
+int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
+                              const char *password)
+{
+    char *info = NULL;
+    if (qemudMonitorCommandExtra(vm, "change vnc password",
+                                 password,
+                                 QEMU_PASSWD_PROMPT,
+                                 -1, &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("setting VNC password failed"));
+        return -1;
+    }
+    VIR_FREE(info);
+    return 0;
+}
