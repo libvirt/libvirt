@@ -179,7 +179,6 @@ int         qemuBuildHostNetStr         (virConnectPtr conn,
 int         qemuBuildNicStr             (virConnectPtr conn,
                                          virDomainNetDefPtr net,
                                          const char *prefix,
-                                         char type_sep,
                                          int vlan,
                                          char **str);
 

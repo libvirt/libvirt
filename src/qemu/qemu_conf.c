@@ -1263,14 +1263,12 @@ int
 qemuBuildNicStr(virConnectPtr conn,
                 virDomainNetDefPtr net,
                 const char *prefix,
-                char type_sep,
                 int vlan,
                 char **str)
 {
     if (virAsprintf(str,
-                    "%snic%cmacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
+                    "%smacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
                     prefix ? prefix : "",
-                    type_sep,
                     net->mac[0], net->mac[1],
                     net->mac[2], net->mac[3],
                     net->mac[4], net->mac[5],
@@ -1988,7 +1986,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 qemuAssignNetNames(def, net) < 0)
                 goto no_memory;
 
-            if (qemuBuildNicStr(conn, net, NULL, ',', net->vlan, &nic) < 0)
+            if (qemuBuildNicStr(conn, net, "nic,", net->vlan, &nic) < 0)
                 goto error;
 
             if ((qargv[qargc++] = strdup("-net")) == NULL) {

@@ -170,6 +170,15 @@ int qemuMonitorAddPCIDisk(const virDomainObjPtr vm,
                           unsigned *guestBus,
                           unsigned *guestSlot);
 
+/* XXX do we really want to hardcode 'nicstr' as the
+ * sendable item here
+ */
+int qemuMonitorAddPCINetwork(const virDomainObjPtr vm,
+                             const char *nicstr,
+                             unsigned *guestDomain,
+                             unsigned *guestBus,
+                             unsigned *guestSlot);
+
 int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
                                unsigned guestDomain,
                                unsigned guestBus,

@@ -4478,72 +4478,6 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     return ret;
 }
 
-static int
-qemudParsePciAddReply(virDomainObjPtr vm,
-                      const char *reply,
-                      unsigned *domain,
-                      unsigned *bus,
-                      unsigned *slot)
-{
-    char *s, *e;
-
-    DEBUG("%s: pci_add reply: %s", vm->def->name, reply);
-
-    /* If the command succeeds qemu prints:
-     * OK bus 0, slot XXX...
-     * or
-     * OK domain 0, bus 0, slot XXX
-     */
-    if (!(s = strstr(reply, "OK ")))
-        return -1;
-
-    s += 3;
-
-    if (STRPREFIX(s, "domain ")) {
-        s += strlen("domain ");
-
-        if (virStrToLong_ui(s, &e, 10, domain) == -1) {
-            VIR_WARN(_("Unable to parse domain number '%s'\n"), s);
-            return -1;
-        }
-
-        if (!STRPREFIX(e, ", ")) {
-            VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
-            return -1;
-        }
-        s = e + 2;
-    }
-
-    if (!STRPREFIX(s, "bus ")) {
-        VIR_WARN(_("Expected 'bus ' parsing pci_add reply '%s'\n"), s);
-        return -1;
-    }
-    s += strlen("bus ");
-
-    if (virStrToLong_ui(s, &e, 10, bus) == -1) {
-        VIR_WARN(_("Unable to parse bus number '%s'\n"), s);
-        return -1;
-    }
-
-    if (!STRPREFIX(e, ", ")) {
-        VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
-        return -1;
-    }
-    s = e + 2;
-
-    if (!STRPREFIX(s, "slot ")) {
-        VIR_WARN(_("Expected 'slot ' parsing pci_add reply '%s'\n"), s);
-        return -1;
-    }
-    s += strlen("slot ");
-
-    if (virStrToLong_ui(s, &e, 10, slot) == -1) {
-        VIR_WARN(_("Unable to parse slot number '%s'\n"), s);
-        return -1;
-    }
-
-    return 0;
-}
 
 static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                                           virDomainObjPtr vm,
@@ -4621,7 +4555,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     char *cmd = NULL, *reply = NULL, *remove_cmd = NULL;
     char *tapfd_name = NULL;
     int i, tapfd = -1;
-    unsigned domain, bus, slot;
+    char *nicstr = NULL;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
@@ -4693,29 +4627,17 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         close(tapfd);
     tapfd = -1;
 
-    if (qemuBuildNicStr(conn, net,
-                        "pci_add pci_addr=auto ", ' ', net->vlan, &cmd) < 0)
+    if (qemuBuildNicStr(conn, net, NULL, net->vlan, &nicstr) < 0)
         goto try_remove;
 
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to add NIC with '%s'"), cmd);
+    if (qemuMonitorAddPCINetwork(vm, nicstr,
+                                 &net->pci_addr.domain,
+                                 &net->pci_addr.bus,
+                                 &net->pci_addr.slot) < 0)
         goto try_remove;
-    }
 
-    if (qemudParsePciAddReply(vm, reply, &domain, &bus, &slot) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("parsing pci_add reply failed: %s"), reply);
-        goto try_remove;
-    }
-
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
+    VIR_FREE(nicstr);
     VIR_FREE(remove_cmd);
-
-    net->pci_addr.domain = domain;
-    net->pci_addr.bus    = bus;
-    net->pci_addr.slot   = slot;
 
     vm->def->nets[vm->def->nnets++] = net;
 
@@ -4744,6 +4666,7 @@ try_tapfd_close:
 no_memory:
     virReportOOMError(conn);
 cleanup:
+    VIR_FREE(nicstr);
     VIR_FREE(cmd);
     VIR_FREE(reply);
     VIR_FREE(remove_cmd);

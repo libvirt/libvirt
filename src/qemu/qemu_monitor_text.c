@@ -1492,6 +1492,42 @@ cleanup:
 }
 
 
+int qemuMonitorAddPCINetwork(const virDomainObjPtr vm,
+                             const char *nicstr,
+                             unsigned *guestDomain,
+                             unsigned *guestBus,
+                             unsigned *guestSlot)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "pci_add pci_addr=auto nic %s", nicstr) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to add NIC with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    if (qemuMonitorParsePciAddReply(vm, reply,
+                                    guestDomain, guestBus, guestSlot) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("parsing pci_add reply failed: %s"), reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    VIR_FREE(cmd);
+    return ret;
+}
+
 
 int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
                                unsigned guestDomain,
