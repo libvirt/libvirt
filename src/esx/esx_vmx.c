@@ -612,7 +612,9 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(virConnectPtr conn,
 
         for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
              dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "info.name")) {
+            if (STREQ(dynamicProperty->name, "summary.accessible")) {
+                /* Ignore it */
+            } else if (STREQ(dynamicProperty->name, "summary.name")) {
                 if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
                                              esxVI_Type_String) < 0) {
                     goto failure;
@@ -620,7 +622,7 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(virConnectPtr conn,
 
                 datastoreName = dynamicProperty->val->string;
                 break;
-            } else if (STREQ(dynamicProperty->name, "info.url")) {
+            } else if (STREQ(dynamicProperty->name, "summary.url")) {
                 /* Ignore it */
             } else {
                 VIR_WARN("Unexpected '%s' property", dynamicProperty->name);

@@ -1833,7 +1833,9 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *candidate = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_Boolean accessible = esxVI_Boolean_Undefined;
     size_t offset = strlen("/vmfs/volumes/");
+    int numInaccessibleDatastores = 0;
 
     if (datastore == NULL || *datastore != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -1844,8 +1846,9 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
     if (esxVI_String_DeepCopyList(conn, &completePropertyNameList,
                                   propertyNameList) < 0 ||
         esxVI_String_AppendValueListToList(conn, &completePropertyNameList,
-                                           "info.name\0"
-                                           "info.url\0") < 0) {
+                                           "summary.accessible\0"
+                                           "summary.name\0"
+                                           "summary.url\0") < 0) {
         goto failure;
     }
 
@@ -1868,9 +1871,37 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
     /* Search for a matching datastore */
     for (candidate = datastoreList; candidate != NULL;
          candidate = candidate->_next) {
+        accessible = esxVI_Boolean_Undefined;
+
         for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
              dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "info.name")) {
+            if (STREQ(dynamicProperty->name, "summary.accessible")) {
+                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                             esxVI_Type_Boolean) < 0) {
+                    goto failure;
+                }
+
+                accessible = dynamicProperty->val->boolean;
+                break;
+            }
+        }
+
+        if (accessible == esxVI_Boolean_Undefined) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Got incomplete response while querying for the "
+                         "datastore 'summary.accessible' property");
+            goto failure;
+        }
+
+        if (accessible == esxVI_Boolean_False) {
+            ++numInaccessibleDatastores;
+        }
+
+        for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
+             dynamicProperty = dynamicProperty->_next) {
+            if (STREQ(dynamicProperty->name, "summary.accessible")) {
+                /* Ignore it */
+            } else if (STREQ(dynamicProperty->name, "summary.name")) {
                 if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
                                              esxVI_Type_String) < 0) {
                     goto failure;
@@ -1885,7 +1916,15 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
                     /* Found datastore with matching name */
                     goto cleanup;
                 }
-            } else if (STREQ(dynamicProperty->name, "info.url")) {
+            } else if (STREQ(dynamicProperty->name, "summary.url")) {
+                if (accessible == esxVI_Boolean_False) {
+                    /*
+                     * The 'summary.url' property of an inaccessible datastore
+                     * is invalid and cannot be used to identify the datastore.
+                     */
+                    continue;
+                }
+
                 if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
                                              esxVI_Type_String) < 0) {
                     goto failure;
@@ -1916,8 +1955,15 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
     }
 
     if (occurence != esxVI_Occurence_OptionalItem) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "Could not find datastore with name '%s'", name);
+        if (numInaccessibleDatastores > 0) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Could not find datastore '%s', maybe it's "
+                         "inaccessible", name);
+        } else {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Could not find datastore '%s'", name);
+        }
+
         goto failure;
     }
 
