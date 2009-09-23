@@ -27,6 +27,7 @@
  * - Memory model:        http://www.vmware.com/pdf/esx3_memory.pdf
  * - VI API reference:    http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
  * - VMX-file parameters: http://www.sanbarrow.com/vmx.html
+ * - CPUID:               http://www.sandpile.org/ia32/cpuid.htm
  */
 
 #include <config.h>
@@ -62,19 +63,144 @@ typedef struct _esxPrivate {
     char *transport;
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
+    esxVI_Boolean supportsLongMode; /* aka x86_64 */
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
+
+
+
+static esxVI_Boolean
+esxSupportsLongMode(virConnectPtr conn)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_HostCpuIdInfo *hostCpuIdInfoList = NULL;
+    esxVI_HostCpuIdInfo *hostCpuIdInfo = NULL;
+    char edxLongModeBit = '?';
+    char edxFirstBit = '?';
+
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        goto failure;
+    }
+
+    if (priv->supportsLongMode != esxVI_Boolean_Undefined) {
+        return priv->supportsLongMode;
+    }
+
+    if (esxVI_EnsureSession(conn, priv->host) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList,
+                                       "hardware.cpuFeature") < 0 ||
+        esxVI_GetObjectContent(conn, priv->host, priv->host->hostFolder,
+                               "HostSystem", propertyNameList,
+                               esxVI_Boolean_True, &hostSystem) < 0) {
+        goto failure;
+    }
+
+    if (hostSystem == NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Could not retrieve the HostSystem object");
+        goto failure;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "hardware.cpuFeature")) {
+            if (esxVI_HostCpuIdInfo_CastListFromAnyType
+                  (conn, dynamicProperty->val, &hostCpuIdInfoList) < 0) {
+                goto failure;
+            }
+
+            for (hostCpuIdInfo = hostCpuIdInfoList; hostCpuIdInfo != NULL;
+                 hostCpuIdInfo = hostCpuIdInfo->_next) {
+                if (hostCpuIdInfo->level->value == -2147483647) { /* 0x80000001 */
+                    #define _SKIP4 "%*c%*c%*c%*c"
+                    #define _SKIP12 _SKIP4":"_SKIP4":"_SKIP4
+
+                    /* Expected format: "--X-:----:----:----:----:----:----:----" */
+                    if (sscanf(hostCpuIdInfo->edx,
+                               "%*c%*c%c%*c:"_SKIP12":"_SKIP12":%*c%*c%*c%c",
+                               &edxLongModeBit, &edxFirstBit) != 2) {
+                        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                  "HostSystem property 'hardware.cpuFeature[].edx' "
+                                  "with value '%s' doesn't have expected format "
+                                  "'----:----:----:----:----:----:----:----'",
+                                  hostCpuIdInfo->edx);
+                        goto failure;
+                    }
+
+                    #undef _SKIP4
+                    #undef _SKIP12
+
+                    if (edxLongModeBit == '1') {
+                        priv->supportsLongMode = esxVI_Boolean_True;
+                    } else if (edxLongModeBit == '0') {
+                        priv->supportsLongMode = esxVI_Boolean_False;
+                    } else {
+                        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                  "Bit 29 (Long Mode) of HostSystem property "
+                                  "'hardware.cpuFeature[].edx' with value '%s' "
+                                  "has unexpected value '%c', expecting '0' "
+                                  "or '1'", hostCpuIdInfo->edx, edxLongModeBit);
+                        goto failure;
+                    }
+
+                    break;
+                }
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+    esxVI_HostCpuIdInfo_Free(&hostCpuIdInfoList);
+
+    return priv->supportsLongMode;
+
+  failure:
+    priv->supportsLongMode = esxVI_Boolean_Undefined;
+
+    goto cleanup;
+}
 
 
 
 static virCapsPtr
 esxCapsInit(virConnectPtr conn)
 {
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxVI_Boolean supportsLongMode = esxVI_Boolean_Undefined;
     virCapsPtr caps = NULL;
     virCapsGuestPtr guest = NULL;
 
-    /* FIXME: Need to detect real host architecture */
-    caps = virCapabilitiesNew("i686", 1, 1);
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        return NULL;
+    }
+
+    supportsLongMode = esxSupportsLongMode(conn);
+
+    if (supportsLongMode == esxVI_Boolean_Undefined) {
+        return NULL;
+    }
+
+    if (supportsLongMode == esxVI_Boolean_True) {
+        caps = virCapabilitiesNew("x86_64", 1, 1);
+    } else {
+        caps = virCapabilitiesNew("i686", 1, 1);
+    }
 
     if (caps == NULL) {
         virReportOOMError(conn);
@@ -84,9 +210,9 @@ esxCapsInit(virConnectPtr conn)
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x50, 0x56 });
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
 
-    /* FIXME: Need to detect real host architecture and word size */
-    guest =
-      virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0, NULL);
+    /* i686 */
+    guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0,
+                                    NULL);
 
     if (guest == NULL) {
         goto failure;
@@ -99,6 +225,25 @@ esxCapsInit(virConnectPtr conn)
     if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
                                       NULL) == NULL) {
         goto failure;
+    }
+
+    /* x86_64 */
+    if (supportsLongMode == esxVI_Boolean_True) {
+        guest = virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64, NULL, NULL,
+                                        0, NULL);
+
+        if (guest == NULL) {
+            goto failure;
+        }
+
+        /*
+         * FIXME: Maybe distinguish betwen ESX and GSX here, see
+         * esxVMX_ParseConfig() and VIR_DOMAIN_VIRT_VMWARE
+         */
+        if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+                                          NULL) == NULL) {
+            goto failure;
+        }
     }
 
     return caps;
@@ -181,6 +326,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     priv->phantom = phantom;
     priv->maxVcpus = -1;
     priv->supportsVMotion = esxVI_Boolean_Undefined;
+    priv->supportsLongMode = esxVI_Boolean_Undefined;
     priv->usedCpuTimeCounterId = -1;
 
     /* Request credentials and login to non-phantom host/vCenter */
@@ -331,7 +477,11 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         VIR_FREE(vCenter);
+    }
 
+    conn->privateData = priv;
+
+    if (! phantom) {
         /* Setup capabilities */
         priv->caps = esxCapsInit(conn);
 
@@ -339,8 +489,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
     }
-
-    conn->privateData = priv;
 
     return VIR_DRV_OPEN_SUCCESS;
 

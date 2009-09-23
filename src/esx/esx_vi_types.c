@@ -115,6 +115,21 @@
 
 
 
+#define ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(_type)                     \
+    int                                                                       \
+    esxVI_##_type##_CastListFromAnyType(virConnectPtr conn,                   \
+                                        esxVI_AnyType *anyType,               \
+                                        esxVI_##_type **list)                 \
+    {                                                                         \
+        return esxVI_List_CastFromAnyType                                     \
+                 (conn, anyType, (esxVI_List **)list,                         \
+                  (esxVI_List_CastFromAnyTypeFunc)                            \
+                    esxVI_##_type##_CastFromAnyType,                          \
+                  (esxVI_List_FreeFunc)esxVI_##_type##_Free);                 \
+    }
+
+
+
 #define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type)                              \
     int                                                                       \
     esxVI_##_type##_SerializeList(virConnectPtr conn, esxVI_##_type *list,    \
@@ -1464,6 +1479,51 @@ ESX_VI__TEMPLATE__DESERIALIZE(DynamicProperty,
 
 /* esxVI_DynamicProperty_DeserializeList */
 ESX_VI__TEMPLATE__LIST__DESERIALIZE(DynamicProperty);
+
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: HostCpuIdInfo
+ */
+
+/* esxVI_HostCpuIdInfo_Alloc */
+ESX_VI__TEMPLATE__ALLOC(HostCpuIdInfo);
+
+/* esxVI_HostCpuIdInfo_Free */
+ESX_VI__TEMPLATE__FREE(HostCpuIdInfo,
+{
+    esxVI_HostCpuIdInfo_Free(&item->_next);
+
+    VIR_FREE(item->vendor);
+    VIR_FREE(item->eax);
+    VIR_FREE(item->ebx);
+    VIR_FREE(item->ecx);
+    VIR_FREE(item->edx);
+});
+
+/* esxVI_HostCpuIdInfo_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(HostCpuIdInfo);
+
+/* esxVI_HostCpuIdInfo_CastListFromAnyType */
+ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(HostCpuIdInfo);
+
+/* esxVI_HostCpuIdInfo_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE(HostCpuIdInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, level);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, vendor);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, eax);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, ebx);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, ecx);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, edx);
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(level);
+});
+
+/* esxVI_HostCpuIdInfo_DeserializeList */
+ESX_VI__TEMPLATE__LIST__DESERIALIZE(HostCpuIdInfo);
 
 
 

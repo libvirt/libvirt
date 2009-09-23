@@ -150,6 +150,9 @@ struct _esxVI_List {
 typedef int (*esxVI_List_FreeFunc) (esxVI_List **item);
 typedef int (*esxVI_List_DeepCopyFunc) (virConnectPtr conn, esxVI_List **dest,
                                         esxVI_List *src);
+typedef int (*esxVI_List_CastFromAnyTypeFunc) (virConnectPtr conn,
+                                               esxVI_AnyType *anyType,
+                                               esxVI_List **item);
 typedef int (*esxVI_List_SerializeFunc) (virConnectPtr conn, esxVI_List *item,
                                          const char *element,
                                          virBufferPtr output,
@@ -162,6 +165,10 @@ int esxVI_List_DeepCopy(virConnectPtr conn, esxVI_List **destList,
                         esxVI_List *srcList,
                         esxVI_List_DeepCopyFunc deepCopyFunc,
                         esxVI_List_FreeFunc freeFunc);
+int esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
+                               esxVI_List **list,
+                               esxVI_List_CastFromAnyTypeFunc castFromAnyTypeFunc,
+                               esxVI_List_FreeFunc freeFunc);
 int esxVI_List_Serialize(virConnectPtr conn, esxVI_List *list,
                          const char *element, virBufferPtr output,
                          esxVI_Boolean required,

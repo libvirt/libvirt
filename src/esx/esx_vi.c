@@ -833,6 +833,74 @@ esxVI_List_DeepCopy(virConnectPtr conn, esxVI_List **destList,
 }
 
 int
+esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
+                           esxVI_List **list,
+                           esxVI_List_CastFromAnyTypeFunc castFromAnyTypeFunc,
+                           esxVI_List_FreeFunc freeFunc)
+{
+    int result = 0;
+    xmlNodePtr childNode = NULL;
+    esxVI_AnyType *childAnyType = NULL;
+    esxVI_List *item = NULL;
+
+    if (list == NULL || *list != NULL ||
+        castFromAnyTypeFunc == NULL || freeFunc == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        goto failure;
+    }
+
+    if (anyType == NULL) {
+        return 0;
+    }
+
+    if (! STRPREFIX(anyType->other, "ArrayOf")) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Expecting type to begin with 'ArrayOf' but found '%s'",
+                     anyType->other);
+        goto failure;
+    }
+
+    for (childNode = anyType->_node->xmlChildrenNode; childNode != NULL;
+         childNode = childNode->next) {
+        if (childNode->type != XML_ELEMENT_NODE) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Wrong XML element type %d", childNode->type);
+            goto failure;
+        }
+
+        esxVI_AnyType_Free(&childAnyType);
+
+        if (esxVI_AnyType_Deserialize(conn, childNode, &childAnyType) < 0) {
+            goto failure;
+        }
+
+        item = NULL;
+
+        if (castFromAnyTypeFunc(conn, childAnyType, &item) < 0) {
+            goto failure;
+        }
+
+        if (esxVI_List_Append(conn, list, item) < 0) {
+            goto failure;
+        }
+    }
+
+
+  cleanup:
+    esxVI_AnyType_Free(&childAnyType);
+
+    return result;
+
+  failure:
+    freeFunc(list);
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+int
 esxVI_List_Serialize(virConnectPtr conn, esxVI_List *list, const char *element,
                      virBufferPtr output, esxVI_Boolean required,
                      esxVI_List_SerializeFunc serializeFunc)

@@ -71,6 +71,7 @@ typedef enum _esxVI_VirtualMachinePowerState esxVI_VirtualMachinePowerState;
 typedef struct _esxVI_Fault esxVI_Fault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
 typedef struct _esxVI_DynamicProperty esxVI_DynamicProperty;
+typedef struct _esxVI_HostCpuIdInfo esxVI_HostCpuIdInfo;
 typedef struct _esxVI_SelectionSpec esxVI_SelectionSpec;
 typedef struct _esxVI_TraversalSpec esxVI_TraversalSpec;
 typedef struct _esxVI_ObjectSpec esxVI_ObjectSpec;
@@ -527,7 +528,39 @@ int esxVI_DynamicProperty_Deserialize(virConnectPtr conn, xmlNodePtr node,
                                       esxVI_DynamicProperty **dynamicProperty);
 int esxVI_DynamicProperty_DeserializeList
       (virConnectPtr conn, xmlNodePtr node,
-       esxVI_DynamicProperty **dynamicProperty);
+       esxVI_DynamicProperty **dynamicPropertyList);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: HostCpuIdInfo
+ */
+
+struct _esxVI_HostCpuIdInfo {
+    esxVI_HostCpuIdInfo *_next;                            /* optional */
+
+    esxVI_Int *level;                                      /* required */
+    char *vendor;                                          /* optional */
+    char *eax;                                             /* optional */
+    char *ebx;                                             /* optional */
+    char *ecx;                                             /* optional */
+    char *edx;                                             /* optional */
+};
+
+int esxVI_HostCpuIdInfo_Alloc(virConnectPtr conn,
+                              esxVI_HostCpuIdInfo **hostCpuIdInfo);
+void esxVI_HostCpuIdInfo_Free(esxVI_HostCpuIdInfo **hostCpuIdInfoList);
+int esxVI_HostCpuIdInfo_CastFromAnyType(virConnectPtr conn,
+                                        esxVI_AnyType *anyType,
+                                        esxVI_HostCpuIdInfo **hostCpuIdInfo);
+int esxVI_HostCpuIdInfo_CastListFromAnyType
+      (virConnectPtr conn, esxVI_AnyType *anyType,
+       esxVI_HostCpuIdInfo **hostCpuIdInfoList);
+int esxVI_HostCpuIdInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+                                    esxVI_HostCpuIdInfo **hostCpuIdInfo);
+int esxVI_HostCpuIdInfo_DeserializeList
+      (virConnectPtr conn, xmlNodePtr node,
+       esxVI_HostCpuIdInfo **hostCpuIdInfoList);
 
 
 
@@ -632,7 +665,7 @@ int esxVI_PropertyChange_Deserialize(virConnectPtr conn, xmlNodePtr node,
                                      esxVI_PropertyChange **propertyChange);
 int esxVI_PropertyChange_DeserializeList
       (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PropertyChange **propertyChange);
+       esxVI_PropertyChange **propertyChangeList);
 
 
 
