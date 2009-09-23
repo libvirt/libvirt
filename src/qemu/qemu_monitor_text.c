@@ -1242,3 +1242,76 @@ cleanup:
     VIR_FREE(safepath);
     return ret;
 }
+
+
+static int qemuMonitorAddUSBDevice(const virDomainObjPtr vm,
+                                   const char *addr)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "usb_add %s", addr) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot attach usb device"));
+        goto cleanup;
+    }
+
+    DEBUG ("%s: attach_usb reply: %s", vm->def->name, reply);
+    /* If the command failed qemu prints:
+     * Could not add ... */
+    if (strstr(reply, "Could not add ")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("adding usb device failed"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
+int qemuMonitorAddUSBDeviceExact(const virDomainObjPtr vm,
+                                 int bus,
+                                 int dev)
+{
+    int ret;
+    char *addr;
+
+    if (virAsprintf(&addr, "host:%.3d.%.3d", bus, dev) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    ret = qemuMonitorAddUSBDevice(vm, addr);
+
+    VIR_FREE(addr);
+    return ret;
+}
+
+int qemuMonitorAddUSBDeviceMatch(const virDomainObjPtr vm,
+                                 int vendor,
+                                 int product)
+{
+    int ret;
+    char *addr;
+
+    if (virAsprintf(&addr, "host:%.4x:%.4x", vendor, product) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    ret = qemuMonitorAddUSBDevice(vm, addr);
+
+    VIR_FREE(addr);
+    return ret;
+}

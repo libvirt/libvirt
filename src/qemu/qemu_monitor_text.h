@@ -140,4 +140,11 @@ int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
 int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
                           const char *path);
 
+int qemuMonitorAddUSBDeviceExact(const virDomainObjPtr vm,
+                                 int bus,
+                                 int dev);
+int qemuMonitorAddUSBDeviceMatch(const virDomainObjPtr vm,
+                                 int vendor,
+                                 int product);
+
 #endif /* QEMU_MONITOR_TEXT_H */

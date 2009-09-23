@@ -4984,7 +4984,6 @@ static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
                                           virDomainDeviceDefPtr dev)
 {
     int ret;
-    char *cmd, *reply;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError(conn);
@@ -4992,43 +4991,19 @@ static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
     }
 
     if (dev->data.hostdev->source.subsys.u.usb.vendor) {
-        ret = virAsprintf(&cmd, "usb_add host:%.4x:%.4x",
-                          dev->data.hostdev->source.subsys.u.usb.vendor,
-                          dev->data.hostdev->source.subsys.u.usb.product);
+        ret = qemuMonitorAddUSBDeviceMatch(vm,
+                                           dev->data.hostdev->source.subsys.u.usb.vendor,
+                                           dev->data.hostdev->source.subsys.u.usb.product);
     } else {
-        ret = virAsprintf(&cmd, "usb_add host:%.3d.%.3d",
-                          dev->data.hostdev->source.subsys.u.usb.bus,
-                          dev->data.hostdev->source.subsys.u.usb.device);
-    }
-    if (ret == -1) {
-        virReportOOMError(conn);
-        return -1;
+        ret = qemuMonitorAddUSBDeviceExact(vm,
+                                           dev->data.hostdev->source.subsys.u.usb.bus,
+                                           dev->data.hostdev->source.subsys.u.usb.device);
     }
 
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot attach usb device"));
-        VIR_FREE(cmd);
-        return -1;
-    }
+    if (ret != -1)
+        vm->def->hostdevs[vm->def->nhostdevs++] = dev->data.hostdev;
 
-    DEBUG ("%s: attach_usb reply: %s", vm->def->name, reply);
-    /* If the command failed qemu prints:
-     * Could not add ... */
-    if (strstr(reply, "Could not add ")) {
-        qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s",
-                          _("adding usb device failed"));
-        VIR_FREE(reply);
-        VIR_FREE(cmd);
-        return -1;
-    }
-
-    vm->def->hostdevs[vm->def->nhostdevs++] = dev->data.hostdev;
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
-    return 0;
+    return ret;
 }
 
 static int qemudDomainAttachHostDevice(virConnectPtr conn,
