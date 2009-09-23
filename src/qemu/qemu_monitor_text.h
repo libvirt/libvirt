@@ -91,4 +91,14 @@ int qemuMonitorChangeMedia(const virDomainObjPtr vm,
                            const char *devname,
                            const char *newmedia);
 
+
+int qemuMonitorSaveVirtualMemory(const virDomainObjPtr vm,
+                                 unsigned long long offset,
+                                 size_t length,
+                                 const char *path);
+int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
+                                  unsigned long long offset,
+                                  size_t length,
+                                  const char *path);
+
 #endif /* QEMU_MONITOR_TEXT_H */

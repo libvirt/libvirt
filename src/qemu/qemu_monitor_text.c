@@ -810,3 +810,57 @@ cleanup:
     return ret;
 }
 
+static int qemuMonitorSaveMemory(const virDomainObjPtr vm,
+                                 const char *cmdtype,
+                                 unsigned long long offset,
+                                 size_t length,
+                                 const char *path)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safepath = NULL;
+    int ret = -1;
+
+    if (!(safepath = qemudEscapeMonitorArg(path))) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "%s %llu %zi \"%s\"", cmdtype, offset, length, safepath) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("could save memory region to '%s'"), path);
+        goto cleanup;
+    }
+
+    /* XXX what is printed on failure ? */
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    VIR_FREE(safepath);
+    return ret;
+}
+
+
+int qemuMonitorSaveVirtualMemory(const virDomainObjPtr vm,
+                                 unsigned long long offset,
+                                 size_t length,
+                                 const char *path)
+{
+    return qemuMonitorSaveMemory(vm, "memsave", offset, length, path);
+}
+
+int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
+                                  unsigned long long offset,
+                                  size_t length,
+                                  const char *path)
+{
+    return qemuMonitorSaveMemory(vm, "pmemsave", offset, length, path);
+}

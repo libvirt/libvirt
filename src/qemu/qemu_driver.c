@@ -6232,7 +6232,6 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char cmd[256], *info = NULL;
     char *tmp = NULL;
     int fd = -1, ret = -1;
 
@@ -6272,20 +6271,13 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto cleanup;
     }
 
-    if (flags == VIR_MEMORY_VIRTUAL)
-        /* Issue the memsave command. */
-        snprintf (cmd, sizeof cmd, "memsave %llu %zi \"%s\"", offset, size, tmp);
-    else
-        /* Issue the pmemsave command. */
-        snprintf (cmd, sizeof cmd, "pmemsave %llu %zi \"%s\"", offset, size, tmp);
-
-    if (qemudMonitorCommand (vm, cmd, &info) < 0) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("'memsave' command failed"));
-        goto cleanup;
+    if (flags == VIR_MEMORY_VIRTUAL) {
+        if (qemuMonitorSaveVirtualMemory(vm, offset, size, tmp) < 0)
+            goto cleanup;
+    } else {
+        if (qemuMonitorSavePhysicalMemory(vm, offset, size, tmp) < 0)
+            goto cleanup;
     }
-
-    DEBUG ("%s: (p)memsave reply: %s", vm->def->name, info);
 
     /* Read the memory file into buffer. */
     if (saferead (fd, buffer, size) == (ssize_t) -1) {
@@ -6299,7 +6291,6 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
 cleanup:
     VIR_FREE(tmp);
-    VIR_FREE(info);
     if (fd >= 0) close (fd);
     unlink (tmp);
     if (vm)
