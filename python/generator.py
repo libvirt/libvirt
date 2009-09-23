@@ -761,10 +761,10 @@ def nameFixup(name, classe, type, file):
         func = name[10:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:15] == "virInterfaceGet":
-        func = name[13:]
+        func = name[15:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == "virInterface":
-        func = name[10:]
+        func = name[12:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == 'virSecretGet':
         func = name[12:]
@@ -817,6 +817,9 @@ def nameFixup(name, classe, type, file):
         func = "OSType"
     if func == "xMLDesc":
         func = "XMLDesc"
+    if func == "mACString":
+        func = "MACString"
+
     return func
 
 
