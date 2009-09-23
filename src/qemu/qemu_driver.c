@@ -4698,16 +4698,20 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                                  virDomainObjPtr vm,
                                                  virDomainDeviceDefPtr dev)
 {
-    int ret, i;
-    char *safe_path;
-    char *cmd, *reply;
+    int i;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
-            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), dev->data.disk->dst);
             return -1;
         }
+    }
+
+    if (!dev->data.disk->src) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("disk source path is missing"));
+        return -1;
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
@@ -4715,42 +4719,11 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         return -1;
     }
 
-    safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
-    if (!safe_path) {
-        virReportOOMError(conn);
+    if (qemuMonitorAddUSBDisk(vm, dev->data.disk->src) < 0)
         return -1;
-    }
-
-    ret = virAsprintf(&cmd, "usb_add disk:%s", safe_path);
-    VIR_FREE(safe_path);
-    if (ret == -1) {
-        virReportOOMError(conn);
-        return ret;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot attach usb disk"));
-        VIR_FREE(cmd);
-        return -1;
-    }
-
-    DEBUG ("%s: attach_usb reply: %s",vm->def->name,  reply);
-    /* If the command failed qemu prints:
-     * Could not add ... */
-    if (strstr(reply, "Could not add ")) {
-        qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s",
-                          _("adding usb disk failed"));
-        VIR_FREE(reply);
-        VIR_FREE(cmd);
-        return -1;
-    }
 
     virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
 
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
     return 0;
 }
 

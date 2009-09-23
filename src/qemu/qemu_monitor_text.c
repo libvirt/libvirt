@@ -1199,3 +1199,46 @@ cleanup:
     VIR_FREE(dest);
     return ret;
 }
+
+
+int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
+                          const char *path)
+{
+    char *cmd = NULL;
+    char *safepath;
+    int ret = -1;
+    char *info = NULL;
+
+    safepath = qemudEscapeMonitorArg(path);
+    if (!safepath) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (virAsprintf(&cmd, "usb_add disk:%s", safepath) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot run monitor command to add usb disk"));
+        goto cleanup;
+    }
+
+    DEBUG ("%s: usb_add reply: %s", vm->def->name, info);
+    /* If the command failed qemu prints:
+     * Could not add ... */
+    if (strstr(info, "Could not add ")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("unable to add USB disk %s: %s"), path, info);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(safepath);
+    return ret;
+}

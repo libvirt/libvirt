@@ -136,4 +136,8 @@ int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
                                 const char * const *argv,
                                 const char *target);
 
+
+int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
+                          const char *path);
+
 #endif /* QEMU_MONITOR_TEXT_H */
