@@ -2546,8 +2546,14 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
         goto cleanup;
     }
 
-    if (privnet->def->bridge &&
-        !(bridge = strdup(privnet->def->bridge))) {
+    if (!(privnet->def->bridge)) {
+        testError(network->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("network '%s' does not have a bridge name."),
+                  privnet->def->name);
+        goto cleanup;
+    }
+
+    if (!(bridge = strdup(privnet->def->bridge))) {
         virReportOOMError(network->conn);
         goto cleanup;
     }
