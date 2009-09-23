@@ -1,20 +1,22 @@
 #!/bin/sh
 # Get coverage of virsh pool-define-as XML formatting
 
-if test "$VERBOSE" = yes; then
-  set -x
-  virsh --version
-fi
-
 test -z "$srcdir" && srcdir=$(pwd)
 test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+
+if test "$VERBOSE" = yes; then
+  set -x
+  $abs_top_builddir/tools/virsh --version
+fi
+
 . "$srcdir/test-lib.sh"
 
 fail=0
 
 pwd=$(pwd) || fail=1
 
-virsh --connect test:///default \
+$abs_top_builddir/tools/virsh --connect test:///default \
   pool-define-as --print-xml \
   P dir src-host /src/path /src/dev S /target-path \
   1>out 2>&1

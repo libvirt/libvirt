@@ -1,16 +1,20 @@
 #!/bin/sh
 # Get coverage of libvirtd's config-parsing code.
 
-if test "$VERBOSE" = yes; then
-  set -x
-  libvirtd --version
-fi
-
 test -z "$srcdir" && srcdir=$(pwd)
 test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
-. $srcdir/test-lib.sh
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
 
-grep '^#define WITH_QEMU 1' $CONFIG_HEADER > /dev/null ||
+if test "$VERBOSE" = yes; then
+  set -x
+  $abs_top_builddir/daemon/libvirtd --version
+fi
+
+. "$srcdir/test-lib.sh"
+
+test -z "$CONFIG_HEADER" && CONFIG_HEADER="$abs_top_builddir/config.h"
+
+grep '^#define WITH_QEMU 1' "$CONFIG_HEADER" > /dev/null ||
   skip_test_ "configured without QEMU support"
 
 conf="$abs_top_srcdir/daemon/libvirtd.conf"
@@ -40,7 +44,7 @@ while :; do
   esac
 
   # Run libvirtd, expecting it to fail.
-  libvirtd --config=$f 2> err && fail=1
+  $abs_top_builddir/daemon/libvirtd --config=$f 2> err && fail=1
 
   case $rhs in
     # '"'*) msg='should be a string';;
@@ -73,7 +77,7 @@ sed 's,^log_outputs.*,log_outputs="3:file:'"$(pwd)/log"'",' tmp.conf > k \
 mv k tmp.conf || fail=1
 
 printf "running libvirtd with a valid config file ($sleep_secs seconds)\n" 1>&2
-libvirtd --pid-file=pid-file --config=tmp.conf > log 2>&1 & pid=$!
+$abs_top_builddir/daemon/libvirtd --pid-file=pid-file --config=tmp.conf > log 2>&1 & pid=$!
 sleep $sleep_secs
 kill $pid
 

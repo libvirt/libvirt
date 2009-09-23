@@ -16,12 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+test -z "$srcdir" && srcdir=`pwd`
+test -z "$abs_top_srcdir" && abs_top_srcdir=`pwd`/..
+test -z "$abs_top_builddir" && abs_top_builddir=`pwd`/..
+
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $abs_top_builddir/tools/virsh --version
 fi
 
-. $srcdir/test-lib.sh
+. "$srcdir/test-lib.sh"
 
 fail=0
 
@@ -40,11 +44,11 @@ cat <<\EOF > dom
 </domain>
 EOF
 
-virsh -c test:///default define dom > /dev/null || fail=1
+$abs_top_builddir/tools/virsh -c test:///default define dom > /dev/null || fail=1
 
 mkfifo_or_skip_ fifo
 cat dom > fifo &
 
-virsh -c test:///default define fifo > /dev/null || fail=1
+$abs_top_builddir/tools/virsh -c test:///default define fifo > /dev/null || fail=1
 
 (exit $fail); exit $fail

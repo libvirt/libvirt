@@ -2,13 +2,15 @@
 # Exercise a bug whereby defining a valid domain could kill libvirtd.
 # The bug can also be exercised with a simple define/dumpxml pair to virsh.
 
-if test "$VERBOSE" = yes; then
-  set -x
-  virsh --version
-fi
-
 test -z "$srcdir" && srcdir=$(pwd)
 test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+
+if test "$VERBOSE" = yes; then
+  set -x
+  $abs_top_builddir/tools/virsh --version
+fi
+
 . "$srcdir/test-lib.sh"
 
 fail=0
@@ -62,7 +64,7 @@ cat <<\EOF > D.xml || fail=1
 EOF
 
 url=test:///default
-virsh --connect "$url" 'define D.xml; dumpxml D' > out 2>&1 || fail=1
+$abs_top_builddir/tools/virsh --connect "$url" 'define D.xml; dumpxml D' > out 2>&1 || fail=1
 
 cat > exp <<EOF || fail=1
 Domain D defined from D.xml

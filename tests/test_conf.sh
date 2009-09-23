@@ -1,17 +1,19 @@
 #!/bin/sh
 
+test -z "$srcdir" && srcdir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+test -z "$abs_srcdir" && abs_srcdir=$(pwd)
+test -z "$abs_builddir" && abs_builddir=$(pwd)
+
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $abs_top_builddir/tools/virsh --version
 fi
 
-. $srcdir/test-lib.sh
+. "$srcdir/test-lib.sh"
 
 set -e
-if test "x$abs_srcdir" = x; then
-  abs_srcdir=`pwd`
-  abs_builddir=`pwd`
-fi
 
 fail=0
 i=1

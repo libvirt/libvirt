@@ -158,7 +158,7 @@ TESTS += nodedevxml2xmltest
 
 TESTS += interfacexml2xmltest
 
-path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/daemon
+path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/daemon$(PATH_SEPARATOR)$$abs_top_builddir/tools
 
 # NB, automake < 1.10 does not provide the real
 # abs_top_{src/build}dir variables, so don't rely

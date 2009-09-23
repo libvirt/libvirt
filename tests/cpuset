@@ -16,17 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+test -z "$srcdir" && srcdir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $abs_top_builddir/tools/virsh --version
 fi
 
-. $srcdir/test-lib.sh
+. "$srcdir/test-lib.sh"
 
 fail=0
 
 # generate input
-virsh --connect test:///default dumpxml 1 > xml || fail=1
+$abs_top_builddir/tools/virsh --connect test:///default dumpxml 1 > xml || fail=1
 
 # require the presence of the string we'll transform
 grep '<vcpu>' xml > /dev/null || fail=1
@@ -34,7 +38,7 @@ grep '<vcpu>' xml > /dev/null || fail=1
 sed "s/vcpu>/vcpu cpuset='aaa'>/" xml > xml-invalid || fail=1
 
 # Require failure and a diagnostic.
-virsh --connect test:///default define xml-invalid > out 2>&1 && fail=1
+$abs_top_builddir/tools/virsh --connect test:///default define xml-invalid > out 2>&1 && fail=1
 cat <<\EOF > exp || fail=1
 error: Failed to define domain from xml-invalid
 error: failed Xen syscall topology cpuset syntax error

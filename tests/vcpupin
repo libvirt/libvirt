@@ -16,17 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+test -z "$srcdir" && srcdir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+
 if test "$VERBOSE" = yes; then
   set -x
-  virsh --version
+  $abs_top_builddir/tools/virsh --version
 fi
 
-. $srcdir/test-lib.sh
+. "$srcdir/test-lib.sh"
 
 fail=0
 
 # Invalid syntax.
-virsh --connect test:///default vcpupin test a 0,1 > out 2>&1
+$abs_top_builddir/tools/virsh --connect test:///default vcpupin test a 0,1 > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > exp || fail=1
 error: vcpupin: Invalid or missing vCPU number.
@@ -35,7 +39,7 @@ EOF
 compare exp out || fail=1
 
 # An out-of-range vCPU number deserves a diagnostic, too.
-virsh --connect test:///default vcpupin test 100 0,1 > out 2>&1
+$abs_top_builddir/tools/virsh --connect test:///default vcpupin test 100 0,1 > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > exp || fail=1
 error: vcpupin: Invalid vCPU number.

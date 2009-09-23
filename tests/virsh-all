@@ -16,27 +16,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if test "$VERBOSE" = yes; then
-  set -x
-  virsh --version
-fi
-
 test -z "$srcdir" && srcdir=$(pwd)
 test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+
+if test "$VERBOSE" = yes; then
+  set -x
+  $abs_top_builddir/tools/virsh --version
+fi
+
 . "$srcdir/test-lib.sh"
 
 fail=0
 
 test_url=test:///default
 
-virsh -c $test_url help > cmds || framework_failure
+$abs_top_builddir/tools/virsh -c $test_url help > cmds || framework_failure
 cmds=$(sed -n 's/^    \([^ ][^ ]*\) .*/\1/p' cmds) || framework_failure
 test -n "$cmds" || framework_failure
 
 for i in $cmds; do
     echo testing $i... 1>&2
     # For now, just run the command and ignore output and exit status.
-    virsh -c $test_url $i < /dev/null > /dev/null 2>&1
+    $abs_top_builddir/tools/virsh -c $test_url $i < /dev/null > /dev/null 2>&1
 done
 
 (exit $fail); exit $fail

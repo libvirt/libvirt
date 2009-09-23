@@ -16,20 +16,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if test "$VERBOSE" = yes; then
-  set -x
-  virsh --version
-fi
-
 test -z "$srcdir" && srcdir=`pwd`
 test -z "$abs_top_srcdir" && abs_top_srcdir=`pwd`/..
+test -z "$abs_top_builddir" && abs_top_builddir=`pwd`/..
 
-. $srcdir/test-lib.sh
+if test "$VERBOSE" = yes; then
+  set -x
+  $abs_top_builddir/tools/virsh --version
+fi
+
+. "$srcdir/test-lib.sh"
 
 fail=0
 
 # Output a valid definition, to be used as input.
-virsh -c test:///default dumpxml 1 > xml || fail=1
+$abs_top_builddir/tools/virsh -c test:///default dumpxml 1 > xml || fail=1
 
 for i in before after; do
   # The largest BUFSIZ I've seen is 128K.  This is slightly larger.
@@ -38,7 +39,7 @@ for i in before after; do
   # Append or prepend enough spaces to push the size over the limit:
   ( test $i = before && cat sp xml || cat xml sp ) > $in || fail=1
 
-  virsh --connect test:///default define $in > out || fail=1
+  $abs_top_builddir/tools/virsh --connect test:///default define $in > out || fail=1
   printf "Domain test defined from $in\n\n" > exp || fail=1
   compare exp out || fail=1
 done
