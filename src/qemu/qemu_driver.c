@@ -3093,83 +3093,6 @@ cleanup:
 }
 
 
-static char *qemudEscape(const char *in, int shell)
-{
-    int len = 0;
-    int i, j;
-    char *out;
-
-    /* To pass through the QEMU monitor, we need to use escape
-       sequences: \r, \n, \", \\
-
-       To pass through both QEMU + the shell, we need to escape
-       the single character ' as the five characters '\\''
-    */
-
-    for (i = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\r':
-        case '\n':
-        case '"':
-        case '\\':
-            len += 2;
-            break;
-        case '\'':
-            if (shell)
-                len += 5;
-            else
-                len += 1;
-            break;
-        default:
-            len += 1;
-            break;
-        }
-    }
-
-    if (VIR_ALLOC_N(out, len + 1) < 0)
-        return NULL;
-
-    for (i = j = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\r':
-            out[j++] = '\\';
-            out[j++] = 'r';
-            break;
-        case '\n':
-            out[j++] = '\\';
-            out[j++] = 'n';
-            break;
-        case '"':
-        case '\\':
-            out[j++] = '\\';
-            out[j++] = in[i];
-            break;
-        case '\'':
-            if (shell) {
-                out[j++] = '\'';
-                out[j++] = '\\';
-                out[j++] = '\\';
-                out[j++] = '\'';
-                out[j++] = '\'';
-            } else {
-                out[j++] = in[i];
-            }
-            break;
-        default:
-            out[j++] = in[i];
-            break;
-        }
-    }
-    out[j] = '\0';
-
-    return out;
-}
-
-static char *qemudEscapeMonitorArg(const char *in)
-{
-    return qemudEscape(in, 0);
-}
-
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 2
 
@@ -4626,12 +4549,8 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev)
 {
-    int ret, i;
-    char *cmd, *reply;
-    char *safe_path;
+    int i;
     const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
-    int tryOldSyntax = 0;
-    unsigned domain, bus, slot;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4646,48 +4565,13 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return -1;
     }
 
-try_command:
-    safe_path = qemudEscapeMonitorArg(dev->data.disk->src);
-    if (!safe_path) {
-        virReportOOMError(conn);
+    if (qemuMonitorAddPCIDisk(vm,
+                              dev->data.disk->src,
+                              type,
+                              &dev->data.disk->pci_addr.domain,
+                              &dev->data.disk->pci_addr.bus,
+                              &dev->data.disk->pci_addr.slot) < 0)
         return -1;
-    }
-
-    ret = virAsprintf(&cmd, "pci_add %s storage file=%s,if=%s",
-                      (tryOldSyntax ? "0": "pci_addr=auto"), safe_path, type);
-    VIR_FREE(safe_path);
-    if (ret == -1) {
-        virReportOOMError(conn);
-        return ret;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("cannot attach %s disk"), type);
-        VIR_FREE(cmd);
-        return -1;
-    }
-
-    VIR_FREE(cmd);
-
-    if (qemudParsePciAddReply(vm, reply, &domain, &bus, &slot) < 0) {
-        if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
-            VIR_FREE(reply);
-            tryOldSyntax = 1;
-            goto try_command;
-        }
-
-        qemudReportError (conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("adding %s disk failed: %s"), type, reply);
-        VIR_FREE(reply);
-        return -1;
-    }
-
-    VIR_FREE(reply);
-
-    dev->data.disk->pci_addr.domain = domain;
-    dev->data.disk->pci_addr.bus    = bus;
-    dev->data.disk->pci_addr.slot   = slot;
 
     virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
 

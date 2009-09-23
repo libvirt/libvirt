@@ -1437,6 +1437,62 @@ cleanup:
 }
 
 
+int qemuMonitorAddPCIDisk(const virDomainObjPtr vm,
+                          const char *path,
+                          const char *bus,
+                          unsigned *guestDomain,
+                          unsigned *guestBus,
+                          unsigned *guestSlot) {
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safe_path = NULL;
+    int tryOldSyntax = 0;
+    int ret = -1;
+
+    safe_path = qemudEscapeMonitorArg(path);
+    if (!safe_path) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+try_command:
+    if (virAsprintf(&cmd, "pci_add %s storage file=%s,if=%s",
+                    (tryOldSyntax ? "0": "pci_addr=auto"), safe_path, bus) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("cannot attach %s disk %s"), bus, path);
+        goto cleanup;
+    }
+
+    if (qemuMonitorParsePciAddReply(vm, reply,
+                                    guestDomain, guestBus, guestSlot) < 0) {
+        if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
+            VIR_FREE(reply);
+            VIR_FREE(cmd);
+            tryOldSyntax = 1;
+            goto try_command;
+        }
+
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("adding %s disk failed %s: %s"), bus, path, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(safe_path);
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
+
 int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
                                unsigned guestDomain,
                                unsigned guestBus,

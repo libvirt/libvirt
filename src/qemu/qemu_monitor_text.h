@@ -137,6 +137,9 @@ int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
                                 const char *target);
 
 
+/* XXX disk driver type eg,  qcow/etc.
+ * XXX cache mode
+ */
 int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
                           const char *path);
 
@@ -156,6 +159,16 @@ int qemuMonitorAddPCIHostDevice(const virDomainObjPtr vm,
                                 unsigned *guestDomain,
                                 unsigned *guestBus,
                                 unsigned *guestSlot);
+
+/* XXX disk driver type eg,  qcow/etc.
+ * XXX cache mode
+ */
+int qemuMonitorAddPCIDisk(const virDomainObjPtr vm,
+                          const char *path,
+                          const char *bus,
+                          unsigned *guestDomain,
+                          unsigned *guestBus,
+                          unsigned *guestSlot);
 
 int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
                                unsigned guestDomain,
