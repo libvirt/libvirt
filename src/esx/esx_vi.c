@@ -138,7 +138,35 @@ ESX_VI__TEMPLATE__FREE(Context,
 });
 
 static size_t
-_esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *buffer)
+esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *ptrptr)
+{
+    const char *content = *(const char **)ptrptr;
+    size_t available = 0;
+    size_t requested = size * nmemb;
+
+    if (content == NULL) {
+        return 0;
+    }
+
+    available = strlen(content);
+
+    if (available == 0) {
+        return 0;
+    }
+
+    if (requested > available) {
+        requested = available;
+    }
+
+    memcpy(data, content, requested);
+
+    *(const char **)ptrptr = content + requested;
+
+    return requested;
+}
+
+static size_t
+esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *buffer)
 {
     if (buffer != NULL) {
         virBufferAdd((virBufferPtr) buffer, data, size * nmemb);
@@ -153,8 +181,8 @@ _esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *buffer)
 
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
 static int
-_esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
-                  char *info, size_t size, void *data ATTRIBUTE_UNUSED)
+esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
+                 char *info, size_t size, void *data ATTRIBUTE_UNUSED)
 {
     switch (type) {
       case CURLINFO_TEXT:
@@ -246,11 +274,13 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST, noVerify ? 0 : 2);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPHEADER, ctx->curl_headers);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_READFUNCTION,
+                     esxVI_CURL_ReadString);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION,
-                     _esxVI_CURL_WriteBuffer);
+                     esxVI_CURL_WriteBuffer);
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
     curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION,
-                     _esxVI_CURL_Debug);
+                     esxVI_CURL_Debug);
 #endif
 
     if (virMutexInit(&ctx->curl_lock) < 0) {
@@ -398,8 +428,8 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
 }
 
 int
-esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
-                       char **content)
+esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
+                           const char *url, char **content)
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     CURLcode errorCode;
@@ -414,6 +444,7 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
 
     curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, url);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, &buffer);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPGET, 1);
 
     errorCode = curl_easy_perform(ctx->curl_handle);
@@ -465,6 +496,61 @@ esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx, const char *url,
 }
 
 int
+esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
+                         const char *url, const char *content)
+{
+    CURLcode errorCode;
+    long responseCode;
+
+    if (content == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    virMutexLock(&ctx->curl_lock);
+
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, url);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_READDATA, &content);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 1);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_INFILESIZE, strlen(content));
+
+    errorCode = curl_easy_perform(ctx->curl_handle);
+
+    if (errorCode != CURLE_OK) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "curl_easy_perform() returned an error: %s (%d)",
+                     curl_easy_strerror(errorCode), errorCode);
+        goto unlock;
+    }
+
+    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
+                                  &responseCode);
+
+    if (errorCode != CURLE_OK) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "curl_easy_getinfo() returned an error: %s (%d)",
+                     curl_easy_strerror(errorCode), errorCode);
+        goto unlock;
+    }
+
+    virMutexUnlock(&ctx->curl_lock);
+
+    if (responseCode != 200 && responseCode != 201) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "HTTP response code %d while trying to upload to '%s'",
+                     (int)responseCode, url);
+        return -1;
+    }
+
+    return 0;
+
+  unlock:
+    virMutexUnlock(&ctx->curl_lock);
+
+    return -1;
+}
+
+int
 esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
                       const char *request, const char *xpathExpression,
                       esxVI_Response **response, esxVI_Boolean expectList)
@@ -486,6 +572,7 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
 
     curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, ctx->url);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEDATA, &buffer);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDS, request);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDSIZE, strlen(request));
 
@@ -1085,12 +1172,21 @@ esxVI_BuildFullTraversalSpecList(virConnectPtr conn,
                                          "visitFolders",
                                          "Folder", "childEntity",
                                          "visitFolders\0"
+                                         "datacenterToDatastore\0"
                                          "datacenterToVmFolder\0"
                                          "datacenterToHostFolder\0"
                                          "computeResourceToHost\0"
                                          "computeResourceToResourcePool\0"
-                                         "HostSystemToVm\0"
+                                         "hostSystemToVm\0"
                                          "resourcePoolToVm\0") < 0) {
+        goto failure;
+    }
+
+    /* Traversal through datastore branch */
+    if (esxVI_BuildFullTraversalSpecItem(conn, fullTraversalSpecList,
+                                         "datacenterToDatastore",
+                                         "Datacenter", "datastore",
+                                         NULL) < 0) {
         goto failure;
     }
 
@@ -1138,7 +1234,7 @@ esxVI_BuildFullTraversalSpecList(virConnectPtr conn,
 
     /* Recurse through all hosts */
     if (esxVI_BuildFullTraversalSpecItem(conn, fullTraversalSpecList,
-                                         "HostSystemToVm",
+                                         "hostSystemToVm",
                                          "HostSystem", "vm",
                                          "visitFolders\0") < 0) {
         goto failure;
@@ -1351,7 +1447,8 @@ esxVI_GetManagedEntityStatus(virConnectPtr conn,
     }
 
     ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                 "Missing '%s' property", propertyName);
+                 "Missing '%s' property while looking for ManagedEntityStatus",
+                 propertyName);
 
     return -1;
 }
@@ -1714,6 +1811,119 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
   cleanup:
     esxVI_ManagedObjectReference_Free(&managedObjectReference);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
+esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
+                            const char *name, esxVI_String *propertyNameList,
+                            esxVI_ObjectContent **datastore,
+                            esxVI_Occurence occurence)
+{
+    int result = 0;
+    esxVI_String *completePropertyNameList = NULL;
+    esxVI_ObjectContent *datastoreList = NULL;
+    esxVI_ObjectContent *candidate = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    size_t offset = strlen("/vmfs/volumes/");
+
+    if (datastore == NULL || *datastore != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    /* Get all datastores */
+    if (esxVI_String_DeepCopyList(conn, &completePropertyNameList,
+                                  propertyNameList) < 0 ||
+        esxVI_String_AppendValueListToList(conn, &completePropertyNameList,
+                                           "info.name\0"
+                                           "info.url\0") < 0) {
+        goto failure;
+    }
+
+    if (esxVI_GetObjectContent(conn, ctx, ctx->datacenter,
+                               "Datastore", completePropertyNameList,
+                               esxVI_Boolean_True, &datastoreList) < 0) {
+        goto failure;
+    }
+
+    if (datastoreList == NULL) {
+        if (occurence == esxVI_Occurence_OptionalItem) {
+            goto cleanup;
+        } else {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "No datastores available");
+            goto failure;
+        }
+    }
+
+    /* Search for a matching datastore */
+    for (candidate = datastoreList; candidate != NULL;
+         candidate = candidate->_next) {
+        for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
+             dynamicProperty = dynamicProperty->_next) {
+            if (STREQ(dynamicProperty->name, "info.name")) {
+                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                             esxVI_Type_String) < 0) {
+                    goto failure;
+                }
+
+                if (STREQ(dynamicProperty->val->string, name)) {
+                    if (esxVI_ObjectContent_DeepCopy(conn, datastore,
+                                                     candidate) < 0) {
+                        goto failure;
+                    }
+
+                    /* Found datastore with matching name */
+                    goto cleanup;
+                }
+            } else if (STREQ(dynamicProperty->name, "info.url")) {
+                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                             esxVI_Type_String) < 0) {
+                    goto failure;
+                }
+
+                if (! STRPREFIX(dynamicProperty->val->string,
+                                "/vmfs/volumes/")) {
+                    ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Datastore URL '%s' has unexpected prefix, "
+                                 "expecting '/vmfs/volumes/' prefix",
+                                 dynamicProperty->val->string);
+                    goto failure;
+                }
+
+                if (STREQ(dynamicProperty->val->string + offset, name)) {
+                    if (esxVI_ObjectContent_DeepCopy(conn, datastore,
+                                                     candidate) < 0) {
+                        goto failure;
+                    }
+
+                    /* Found datastore with matching URL suffix */
+                    goto cleanup;
+                }
+            } else {
+                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+            }
+        }
+    }
+
+    if (occurence != esxVI_Occurence_OptionalItem) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Could not find datastore with name '%s'", name);
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_String_Free(&completePropertyNameList);
+    esxVI_ObjectContent_Free(&datastoreList);
 
     return result;
 

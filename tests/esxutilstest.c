@@ -9,15 +9,21 @@
 #include "internal.h"
 #include "memory.h"
 #include "testutils.h"
+#include "esx/esx_util.h"
 #include "esx/esx_vmx.h"
 
 static char *progname;
 
-struct testInfo {
-    const char *input;
-    const char *output;
-    esxVI_APIVersion version;
-};
+
+
+static void
+testQuietError(void *userData ATTRIBUTE_UNUSED,
+               virErrorPtr error ATTRIBUTE_UNUSED)
+{
+    /* nothing */
+}
+
+
 
 static const char* names[] = {
     "sda",  "sdb",  "sdc",  "sdd",  "sde",  "sdf",  "sdg",  "sdh",  "sdi",  "sdj",  "sdk",  "sdl",  "sdm",  "sdn",  "sdo",  "sdp",  "sdq",  "sdr",  "sds",  "sdt",  "sdu",  "sdv",  "sdw",  "sdx",  "sdy",  "sdz",
@@ -62,6 +68,80 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
     return 0;
 }
 
+
+
+struct testPath {
+    const char *datastoreRelatedPath;
+    int result;
+    const char *datastoreName;
+    const char *directoryName;
+    const char *fileName;
+};
+
+static struct testPath paths[] = {
+    { "[datastore] directory/file", 0, "datastore", "directory", "file" },
+    { "[datastore] file", 0, "datastore", NULL, "file" },
+    { "[] directory/file", -1, NULL, NULL, NULL },
+    { "[datastore] directory/", -1, NULL, NULL, NULL },
+    { "directory/file", -1, NULL, NULL, NULL },
+};
+
+static int
+testParseDatastoreRelatedPath(const void *data ATTRIBUTE_UNUSED)
+{
+    int i, result = 0;
+    char *datastoreName = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(paths); ++i) {
+        VIR_FREE(datastoreName);
+        VIR_FREE(directoryName);
+        VIR_FREE(fileName);
+
+        if (esxUtil_ParseDatastoreRelatedPath(NULL,
+                                              paths[i].datastoreRelatedPath,
+                                              &datastoreName, &directoryName,
+                                              &fileName) != paths[i].result) {
+            goto failure;
+        }
+
+        if (paths[i].result < 0) {
+            continue;
+        }
+
+        if (STRNEQ(paths[i].datastoreName, datastoreName)) {
+            virtTestDifference(stderr, paths[i].datastoreName, datastoreName);
+            goto failure;
+        }
+
+        if (paths[i].directoryName != NULL &&
+            STRNEQ(paths[i].directoryName, directoryName)) {
+            virtTestDifference(stderr, paths[i].directoryName, directoryName);
+            goto failure;
+        }
+
+        if (STRNEQ(paths[i].fileName, fileName)) {
+            virtTestDifference(stderr, paths[i].fileName, fileName);
+            goto failure;
+        }
+    }
+
+  cleanup:
+    VIR_FREE(datastoreName);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -79,10 +159,18 @@ mymain(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (virtTestRun("VMware IndexToDiskName", 1, testIndexToDiskName,
-                    NULL) < 0) {
-        result = -1;
-    }
+    virSetErrorFunc(NULL, testQuietError);
+
+    #define DO_TEST(_name)                                                    \
+        do {                                                                  \
+            if (virtTestRun("VMware "#_name, 1, test##_name,                  \
+                            NULL) < 0) {                                      \
+                result = -1;                                                  \
+            }                                                                 \
+        } while (0)
+
+    DO_TEST(IndexToDiskName);
+    DO_TEST(ParseDatastoreRelatedPath);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

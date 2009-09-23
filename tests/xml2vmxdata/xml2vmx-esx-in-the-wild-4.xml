@@ -14,7 +14,7 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='lsilogic'/>
-      <source file='virtMonServ1.vmdk'/>
+      <source file='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/virtMonServ1.vmdk'/>
       <target dev='sda' bus='scsi'/>
     </disk>
     <interface type='bridge'>
@@ -26,15 +26,15 @@
       <source bridge='VM Switch 2'/>
     </interface>
     <serial type='file'>
-      <source path='/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/virtMonServ1/serial1.file'/>
+      <source path='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/serial1.file'/>
       <target port='0'/>
     </serial>
     <parallel type='file'>
-      <source path='/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/virtMonServ1/parallel1.file'/>
+      <source path='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/parallel1.file'/>
       <target port='0'/>
     </parallel>
     <console type='file'>
-      <source path='/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/virtMonServ1/serial1.file'/>
+      <source path='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/serial1.file'/>
       <target port='0'/>
     </console>
   </devices>

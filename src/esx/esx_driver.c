@@ -2267,7 +2267,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     const char *vmPathName = NULL;
     char *datastoreName = NULL;
-    char *vmxPath = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *vmx = NULL;
@@ -2306,17 +2307,21 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         }
     }
 
-    /* expected format: "[<datastoreName>] <vmxPath>" */
-    if (sscanf(vmPathName, "[%a[^]%]] %a[^\n]", &datastoreName, &vmxPath) != 2) {
-        ESX_ERROR(domain->conn, VIR_ERR_OPERATION_INVALID,
-                  "'config.files.vmPathName' property '%s' doesn't have "
-                  "expected format '[<datastore>] <vmx>'", vmPathName);
+    if (esxUtil_ParseDatastoreRelatedPath(domain->conn, vmPathName,
+                                          &datastoreName, &directoryName,
+                                          &fileName) < 0) {
         goto failure;
     }
 
     virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->transport,
                       domain->conn->uri->server, domain->conn->uri->port);
-    virBufferURIEncodeString(&buffer, vmxPath);
+
+    if (directoryName != NULL) {
+        virBufferURIEncodeString(&buffer, directoryName);
+        virBufferAddChar(&buffer, '/');
+    }
+
+    virBufferURIEncodeString(&buffer, fileName);
     virBufferAddLit(&buffer, "?dcPath=");
     virBufferURIEncodeString(&buffer, priv->host->datacenter->value);
     virBufferAddLit(&buffer, "&dsName=");
@@ -2329,11 +2334,12 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
 
     url = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Download(domain->conn, priv->host, url, &vmx) < 0) {
+    if (esxVI_Context_DownloadFile(domain->conn, priv->host, url, &vmx) < 0) {
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(domain->conn, vmx, priv->host->apiVersion);
+    def = esxVMX_ParseConfig(domain->conn, priv->host, vmx, datastoreName,
+                             directoryName, priv->host->apiVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(domain->conn, def, flags);
@@ -2343,7 +2349,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(datastoreName);
-    VIR_FREE(vmxPath);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
     VIR_FREE(url);
     VIR_FREE(vmx);
     virDomainDefFree(def);
@@ -2364,6 +2371,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxVI_Context *ctx = NULL;
     esxVI_APIVersion apiVersion = esxVI_APIVersion_Unknown;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
@@ -2375,10 +2383,11 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     if (! priv->phantom) {
+        ctx = priv->host;
         apiVersion = priv->host->apiVersion;
     }
 
-    def = esxVMX_ParseConfig(conn, nativeConfig, apiVersion);
+    def = esxVMX_ParseConfig(conn, ctx, nativeConfig, "?", "?", apiVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
@@ -2418,7 +2427,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    vmx = esxVMX_FormatConfig(conn, def, priv->host->apiVersion);
+    vmx = esxVMX_FormatConfig(conn, priv->host, def, priv->host->apiVersion);
 
     virDomainDefFree(def);
 
@@ -2599,6 +2608,195 @@ esxDomainCreate(virDomainPtr domain)
 
   failure:
     result = -1;
+
+    goto cleanup;
+}
+
+
+
+static virDomainPtr
+esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    virDomainDefPtr def = NULL;
+    char *vmx = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    char *datastoreName = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *url = NULL;
+    char *datastoreRelatedPath = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_ManagedObjectReference *resourcePool = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    virDomainPtr domain = NULL;
+
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        goto failure;
+    }
+
+    if (esxVI_EnsureSession(conn, priv->host) < 0) {
+        goto failure;
+    }
+
+    /* Parse domain XML */
+    def = virDomainDefParseString(conn, priv->caps, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
+
+    if (def == NULL) {
+        goto failure;
+    }
+
+    /* Check if an existing domain should be edited */
+    if (esxVI_LookupVirtualMachineByUuid(conn, priv->host, def->uuid, NULL,
+                                         &virtualMachine,
+                                         esxVI_Occurence_OptionalItem) < 0) {
+        goto failure;
+    }
+
+    if (virtualMachine != NULL) {
+        /* FIXME */
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Domain already exists, editing existing domains is not "
+                  "supported yet");
+        goto failure;
+    }
+
+    /* Build VMX from domain XML */
+    vmx = esxVMX_FormatConfig(conn, priv->host, def, priv->host->apiVersion);
+
+    if (vmx == NULL) {
+        goto failure;
+    }
+
+    /* Build VMX datastore URL */
+    if (def->ndisks < 1) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Domain XML doesn't contain a disk, cannot deduce datastore "
+                  "and path for VMX file");
+        goto failure;
+    }
+
+    if (def->disks[0]->src == NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "First disk has no source, cannot deduce datastore and path "
+                  "for VMX file");
+        goto failure;
+    }
+
+    if (esxUtil_ParseDatastoreRelatedPath(conn, def->disks[0]->src,
+                                          &datastoreName, &directoryName,
+                                          &fileName) < 0) {
+        goto failure;
+    }
+
+    if (! esxUtil_EqualSuffix(fileName, ".vmdk")) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Expecting source of first disk '%s' to be a VMDK image",
+                  def->disks[0]->src);
+        goto failure;
+    }
+
+    virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->transport,
+                      conn->uri->server, conn->uri->port);
+
+    if (directoryName != NULL) {
+        virBufferURIEncodeString(&buffer, directoryName);
+        virBufferAddChar(&buffer, '/');
+    }
+
+    virBufferURIEncodeString(&buffer, def->name);
+    virBufferAddLit(&buffer, ".vmx?dcPath=");
+    virBufferURIEncodeString(&buffer, priv->host->datacenter->value);
+    virBufferAddLit(&buffer, "&dsName=");
+    virBufferURIEncodeString(&buffer, datastoreName);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    url = virBufferContentAndReset(&buffer);
+
+    if (directoryName != NULL) {
+        if (virAsprintf(&datastoreRelatedPath, "[%s] %s/%s.vmx", datastoreName,
+                        directoryName, def->name) < 0) {
+            virReportOOMError(conn);
+            goto failure;
+        }
+    } else {
+        if (virAsprintf(&datastoreRelatedPath, "[%s] %s.vmx", datastoreName,
+                        def->name) < 0) {
+            virReportOOMError(conn);
+            goto failure;
+        }
+    }
+
+    /* Get resource pool */
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList, "parent") < 0 ||
+        esxVI_LookupHostSystemByIp(conn, priv->host, priv->host->ipAddress,
+                                   propertyNameList, &hostSystem) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_GetResourcePool(conn, priv->host, hostSystem,
+                              &resourcePool) < 0) {
+        goto failure;
+    }
+
+    /* Check, if VMX file already exists */
+    /* FIXME */
+
+    /* Upload VMX file */
+    if (esxVI_Context_UploadFile(conn, priv->host, url, vmx) < 0) {
+        goto failure;
+    }
+
+    /* Register the domain */
+    if (esxVI_RegisterVM_Task(conn, priv->host, priv->host->vmFolder,
+                              datastoreRelatedPath, NULL, esxVI_Boolean_False,
+                              resourcePool, hostSystem->obj, &task) < 0 ||
+        esxVI_WaitForTaskCompletion(conn, priv->host, task,
+                                    &taskInfoState) < 0) {
+        goto failure;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Could not define domain");
+        goto failure;
+    }
+
+    domain = virGetDomain(conn, def->name, def->uuid);
+
+    if (domain != NULL) {
+        domain->id = -1;
+    }
+
+    /* FIXME: Add proper rollback in case of an error */
+
+  cleanup:
+    virDomainDefFree(def);
+    VIR_FREE(vmx);
+    VIR_FREE(datastoreName);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
+    VIR_FREE(url);
+    VIR_FREE(datastoreRelatedPath);
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+    esxVI_ManagedObjectReference_Free(&resourcePool);
+    esxVI_ManagedObjectReference_Free(&task);
+
+    return domain;
+
+  failure:
+    domain = NULL;
 
     goto cleanup;
 }
@@ -3297,7 +3495,7 @@ static virDriver esxDriver = {
     esxListDefinedDomains,           /* listDefinedDomains */
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */
-    NULL,                            /* domainDefineXML */
+    esxDomainDefineXML,              /* domainDefineXML */
     esxDomainUndefine,               /* domainUndefine */
     NULL,                            /* domainAttachDevice */
     NULL,                            /* domainDetachDevice */

@@ -14,7 +14,7 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='lsilogic'/>
-      <source file='Fedora11.vmdk'/>
+      <source file='[datastore] directory/Fedora11.vmdk'/>
       <target dev='sda' bus='scsi'/>
     </disk>
     <interface type='bridge'>

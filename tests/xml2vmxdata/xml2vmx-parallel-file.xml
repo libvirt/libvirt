@@ -7,7 +7,7 @@
   </os>
   <devices>
     <parallel type='file'>
-      <source path='parallel0.file'/>
+      <source path='[datastore] directory/parallel0.file'/>
       <target port='0'/>
     </parallel>
   </devices>

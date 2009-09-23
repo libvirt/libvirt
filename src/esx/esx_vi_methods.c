@@ -521,6 +521,76 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+                      esxVI_ManagedObjectReference *folder,
+                      const char *path, const char *name,
+                      esxVI_Boolean asTemplate,
+                      esxVI_ManagedObjectReference *resourcePool,
+                      esxVI_ManagedObjectReference *hostSystem,
+                      esxVI_ManagedObjectReference **task)
+{
+    int result = 0;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *request = NULL;
+
+    if (task == NULL || *task != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
+    virBufferAddLit(&buffer, "<RegisterVM_Task xmlns=\"urn:vim25\">");
+
+    if (esxVI_ManagedObjectReference_Serialize(conn, folder, "_this", &buffer,
+                                               esxVI_Boolean_True) < 0 ||
+        esxVI_String_SerializeValue(conn, path, "path", &buffer,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_String_SerializeValue(conn, name, "name", &buffer,
+                                    esxVI_Boolean_False) < 0 ||
+        esxVI_Boolean_Serialize(conn, asTemplate, "asTemplate", &buffer,
+                                esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Serialize(conn, resourcePool, "pool",
+                                               &buffer,
+                                               esxVI_Boolean_False) < 0 ||
+        esxVI_ManagedObjectReference_Serialize(conn, hostSystem, "host",
+                                               &buffer,
+                                               esxVI_Boolean_False) < 0) {
+        goto failure;
+    }
+
+    virBufferAddLit(&buffer, "</RegisterVM_Task>");
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    request = virBufferContentAndReset(&buffer);
+
+    if (esxVI_StartVirtualMachineTask(conn, ctx, "RegisterVM", request,
+                                      task) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    VIR_FREE(request);
+
+    return result;
+
+  failure:
+    if (request == NULL) {
+        request = virBufferContentAndReset(&buffer);
+    }
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
                    esxVI_ManagedObjectReference *virtualMachine)
 {

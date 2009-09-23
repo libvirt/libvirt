@@ -72,6 +72,14 @@ int esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
                           esxVI_VirtualMachineConfigSpec *spec,
                           esxVI_ManagedObjectReference **task);
 
+int esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+                          esxVI_ManagedObjectReference *folder,
+                          const char *path, const char *name,
+                          esxVI_Boolean asTemplate,
+                          esxVI_ManagedObjectReference *resourcePool,
+                          esxVI_ManagedObjectReference *hostSystem,
+                          esxVI_ManagedObjectReference **task);
+
 int esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
                        esxVI_ManagedObjectReference *virtualMachine);
 

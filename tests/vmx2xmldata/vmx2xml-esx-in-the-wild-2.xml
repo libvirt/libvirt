@@ -14,12 +14,12 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='lsilogic' cache='writethrough'/>
-      <source file='Debian1.vmdk'/>
+      <source file='[datastore] directory/Debian1.vmdk'/>
       <target dev='sda' bus='scsi'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='buslogic'/>
-      <source file='Debian1-cdrom.iso'/>
+      <source file='[datastore] directory/Debian1-cdrom.iso'/>
       <target dev='sdp' bus='scsi'/>
     </disk>
     <disk type='file' device='cdrom'>
@@ -31,7 +31,7 @@
       <target dev='hdb' bus='ide'/>
     </disk>
     <disk type='file' device='disk'>
-      <source file='Debian1-IDE.vmdk'/>
+      <source file='[datastore] directory/Debian1-IDE.vmdk'/>
       <target dev='hdd' bus='ide'/>
     </disk>
     <disk type='block' device='floppy'>

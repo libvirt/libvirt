@@ -40,6 +40,11 @@ int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
 
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 
+int esxUtil_ParseDatastoreRelatedPath(virConnectPtr conn,
+                                      const char *datastoreRelatedPath,
+                                      char **datastoreName,
+                                      char **directoryName, char **fileName);
+
 int esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
                             char *ipAddress, size_t ipAddress_length);
 

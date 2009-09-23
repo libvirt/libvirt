@@ -8,7 +8,7 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='buslogic' cache='writethrough'/>
-      <source file='harddisk.vmdk'/>
+      <source file='[datastore] directory/harddisk.vmdk'/>
       <target dev='sda' bus='scsi'/>
     </disk>
   </devices>

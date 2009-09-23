@@ -95,8 +95,10 @@ int esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx,
                           const char *ipAddress, const char *url,
                           const char *username, const char *password,
                           int noVerify);
-int esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx,
-                           const char *url, char **content);
+int esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
+                               const char *url, char **content);
+int esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
+                             const char *url, const char *content);
 int esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
                           const char *request, const char *xpathExpression,
                           esxVI_Response **response, esxVI_Boolean expectList);
@@ -245,6 +247,12 @@ int esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
                                      esxVI_String *propertyNameList,
                                      esxVI_ObjectContent **virtualMachine,
                                      esxVI_Occurence occurence);
+
+int esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
+                                const char *name,
+                                esxVI_String *propertyNameList,
+                                esxVI_ObjectContent **datastore,
+                                esxVI_Occurence occurence);
 
 int esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
                                   const char *name, const char *request,

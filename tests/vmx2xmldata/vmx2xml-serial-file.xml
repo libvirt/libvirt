@@ -12,11 +12,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <serial type='file'>
-      <source path='serial0.file'/>
+      <source path='[datastore] directory/serial0.file'/>
       <target port='0'/>
     </serial>
     <console type='file'>
-      <source path='serial0.file'/>
+      <source path='[datastore] directory/serial0.file'/>
       <target port='0'/>
     </console>
   </devices>

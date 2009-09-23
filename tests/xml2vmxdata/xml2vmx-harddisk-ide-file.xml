@@ -7,7 +7,7 @@
   </os>
   <devices>
     <disk type='file' device='disk'>
-      <source file='harddisk.vmdk'/>
+      <source file='[datastore] directory/harddisk.vmdk'/>
       <target dev='hda' bus='ide'/>
     </disk>
   </devices>

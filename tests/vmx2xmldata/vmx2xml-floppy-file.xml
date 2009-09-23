@@ -12,7 +12,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='floppy'>
-      <source file='floppy.flp'/>
+      <source file='[datastore] directory/floppy.flp'/>
       <target dev='fda' bus='fdc'/>
     </disk>
   </devices>

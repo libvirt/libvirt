@@ -7,7 +7,7 @@
   </os>
   <devices>
     <disk type='file' device='cdrom'>
-      <source file='cdrom.iso'/>
+      <source file='[testing] isos/cdrom.iso'/>
       <target dev='sda' bus='scsi'/>
     </disk>
   </devices>

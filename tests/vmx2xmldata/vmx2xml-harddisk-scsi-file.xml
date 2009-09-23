@@ -12,7 +12,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <source file='harddisk.vmdk'/>
+      <source file='[datastore] directory/harddisk.vmdk'/>
       <target dev='sda' bus='scsi'/>
     </disk>
   </devices>

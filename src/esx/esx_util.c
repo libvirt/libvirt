@@ -264,6 +264,89 @@ esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 
 
 int
+esxUtil_ParseDatastoreRelatedPath(virConnectPtr conn,
+                                  const char *datastoreRelatedPath,
+                                  char **datastoreName,
+                                  char **directoryName, char **fileName)
+{
+    int result = 0;
+    char *directoryAndFileName = NULL;
+    char *separator = NULL;
+
+    if (datastoreName == NULL || *datastoreName != NULL ||
+        directoryName == NULL || *directoryName != NULL ||
+        fileName == NULL || *fileName != NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        goto failure;
+    }
+
+    /*
+     * Parse string as '[<datastore>] <path>'. '%as' is similar to '%s', but
+     * sscanf() will allocate the memory for the string, so the caller doesn't
+     * need to preallocate a buffer that's large enough.
+     *
+     * The s in '%as' can be replaced with a character set, e.g. [a-z].
+     *
+     * '%a[^]%]' matches <datastore>. '[^]%]' excludes ']' from the accepted
+     * characters, otherwise sscanf() wont match what it should.
+     *
+     * '%a[^\n]' matches <path>. '[^\n]' excludes '\n' from the accepted
+     * characters, otherwise sscanf() would only match up to the first space,
+     * but spaces are valid in <path>.
+     */
+    if (sscanf(datastoreRelatedPath, "[%a[^]%]] %a[^\n]", datastoreName,
+               &directoryAndFileName) != 2) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Datastore related path '%s' doesn't have expected format "
+                  "'[<datastore>] <path>'", datastoreRelatedPath);
+        goto failure;
+    }
+
+    /* Split <path> into <directory>/<file>, where <directory> is optional */
+    separator = strrchr(directoryAndFileName, '/');
+
+    if (separator != NULL) {
+        *separator++ = '\0';
+
+        *directoryName = directoryAndFileName;
+        directoryAndFileName = NULL;
+
+        if (*separator == '\0') {
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "Datastore related path '%s' doesn't reference a file",
+                      datastoreRelatedPath);
+            goto failure;
+        }
+
+        *fileName = strdup(separator);
+
+        if (*fileName == NULL) {
+            virReportOOMError(conn);
+            goto failure;
+        }
+    } else {
+        *fileName = directoryAndFileName;
+        directoryAndFileName = NULL;
+    }
+
+  cleanup:
+    VIR_FREE(directoryAndFileName);
+
+    return result;
+
+  failure:
+    VIR_FREE(*datastoreName);
+    VIR_FREE(*directoryName);
+    VIR_FREE(*fileName);
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
                         char *ipAddress, size_t ipAddress_length)
 {

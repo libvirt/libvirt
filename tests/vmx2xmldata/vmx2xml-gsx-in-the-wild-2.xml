@@ -13,7 +13,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <source file='Debian-System1-0-cl3.vmdk'/>
+      <source file='[datastore] directory/Debian-System1-0-cl3.vmdk'/>
       <target dev='hda' bus='ide'/>
     </disk>
     <interface type='bridge'>

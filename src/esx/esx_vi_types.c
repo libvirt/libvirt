@@ -633,7 +633,8 @@ esxVI_AnyType_Deserialize(virConnectPtr conn, xmlNodePtr node,
                  BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
     if ((*anyType)->other == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Missing 'type' property");
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "AnyType is missing 'type' property");
         goto failure;
     }
 
@@ -1388,7 +1389,8 @@ esxVI_ManagedObjectReference_Deserialize
       (char *)xmlGetNoNsProp(node, BAD_CAST "type");
 
     if ((*managedObjectReference)->type == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Missing 'type' property");
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "ManagedObjectReference is missing 'type' property");
         goto failure;
     }
 

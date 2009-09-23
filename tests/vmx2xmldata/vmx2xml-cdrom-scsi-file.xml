@@ -12,7 +12,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='cdrom'>
-      <source file='cdrom.iso'/>
+      <source file='[datastore] directory/cdrom.iso'/>
       <target dev='sda' bus='scsi'/>
     </disk>
   </devices>
