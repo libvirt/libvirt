@@ -69,6 +69,8 @@ int qemuMonitorStartCPUs(virConnectPtr conn,
                          const virDomainObjPtr vm);
 int qemuMonitorStopCPUs(const virDomainObjPtr vm);
 
+int qemuMonitorSystemPowerdown(const virDomainObjPtr vm);
+
 int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
                           int **pids);
 

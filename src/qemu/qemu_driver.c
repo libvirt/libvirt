@@ -2841,7 +2841,6 @@ cleanup:
 static int qemudDomainShutdown(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char* info;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -2862,12 +2861,9 @@ static int qemudDomainShutdown(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (qemudMonitorCommand(vm, "system_powerdown", &info) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("shutdown operation failed"));
+    if (qemuMonitorSystemPowerdown(vm) < 0)
         goto cleanup;
-    }
-    VIR_FREE(info);
+
     ret = 0;
 
 cleanup:
