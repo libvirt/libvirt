@@ -547,6 +547,48 @@ error:
 }
 
 
+
+/* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
+#define BALLOON_PREFIX "balloon: actual="
+
+int qemuMonitorGetBalloonInfo(const virDomainObjPtr vm,
+                              unsigned long *currmem)
+{
+    char *reply = NULL;
+    int ret = -1;
+    char *offset;
+
+    if (qemudMonitorCommand(vm, "info balloon", &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could not query memory balloon allocation"));
+        return -1;
+    }
+
+    DEBUG ("%s: balloon reply: '%s'", vm->def->name, reply);
+    if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
+        unsigned int memMB;
+        char *end;
+        offset += strlen(BALLOON_PREFIX);
+        if (virStrToLong_ui(offset, &end, 10, &memMB) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("could not parse memory balloon allocation from '%s'"), reply);
+            goto cleanup;
+        }
+        *currmem = memMB * 1024;
+        ret = 1;
+    } else {
+        /* We don't raise an error here, since its to be expected that
+         * many QEMU's don't support ballooning
+         */
+        ret = 0;
+    }
+
+cleanup:
+    VIR_FREE(reply);
+    return ret;
+}
+
+
 int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
                               const char *password)
 {

@@ -73,6 +73,8 @@ int qemuMonitorSystemPowerdown(const virDomainObjPtr vm);
 
 int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
                           int **pids);
+int qemuMonitorGetBalloonInfo(const virDomainObjPtr vm,
+                              unsigned long *currmem);
 
 int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
                               const char *password);
