@@ -2695,7 +2695,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    if (! esxUtil_EqualSuffix(fileName, ".vmdk")) {
+    if (! virFileHasSuffix(fileName, ".vmdk")) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Expecting source of first disk '%s' to be a VMDK image",
                   def->disks[0]->src);

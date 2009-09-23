@@ -61,6 +61,4 @@ int esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
                              const char *name, int *boolean_, int default_,
                              int optional);
 
-int esxUtil_EqualSuffix(const char *string, const char *suffix);
-
 #endif /* __ESX_UTIL_H__ */

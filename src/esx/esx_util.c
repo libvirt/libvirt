@@ -585,17 +585,3 @@ esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
 
     return 0;
 }
-
-
-
-int
-esxUtil_EqualSuffix(const char *string, const char *suffix)
-{
-    int difference = (int)strlen(string) - (int)strlen(suffix);
-
-    if (difference < 0) {
-        return -1;
-    } else {
-        return STRCASEEQ(string + difference, suffix);
-    }
-}

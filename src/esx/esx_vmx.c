@@ -943,7 +943,7 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
         goto failure;
     }
 
-    if (guestOS != NULL && esxUtil_EqualSuffix(guestOS, "-64")) {
+    if (guestOS != NULL && virFileHasSuffix(guestOS, "-64")) {
         def->os.arch = strdup("x86_64");
     } else {
         def->os.arch = strdup("i686");
@@ -1474,7 +1474,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
 
     /* Setup virDomainDiskDef */
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        if (esxUtil_EqualSuffix(fileName, ".vmdk")) {
+        if (virFileHasSuffix(fileName, ".vmdk")) {
             if (deviceType != NULL) {
                 if (bus == VIR_DOMAIN_DISK_BUS_SCSI &&
                     STRCASENEQ(deviceType, "scsi-hardDisk")) {
@@ -1510,7 +1510,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
             if ((*def)->src == NULL) {
                 goto failure;
             }
-        } else if (esxUtil_EqualSuffix(fileName, ".iso") ||
+        } else if (virFileHasSuffix(fileName, ".iso") ||
                    STREQ(deviceType, "atapi-cdrom")) {
             /*
              * This function was called in order to parse a harddisk device,
@@ -1526,7 +1526,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
             goto failure;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (esxUtil_EqualSuffix(fileName, ".iso")) {
+        if (virFileHasSuffix(fileName, ".iso")) {
             if (deviceType != NULL) {
                 if (STRCASENEQ(deviceType, "cdrom-image")) {
                     ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1543,7 +1543,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
             if ((*def)->src == NULL) {
                 goto failure;
             }
-        } else if (esxUtil_EqualSuffix(fileName, ".vmdk")) {
+        } else if (virFileHasSuffix(fileName, ".vmdk")) {
             /*
              * This function was called in order to parse a CDROM device, but
              * .vmdk files are for harddisk devices only. Just ignore it,
@@ -1563,7 +1563,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
             goto failure;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-        if (esxUtil_EqualSuffix(fileName, ".flp")) {
+        if (virFileHasSuffix(fileName, ".flp")) {
             if (fileType != NULL) {
                 if (STRCASENEQ(fileType, "file")) {
                     ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
@@ -2431,7 +2431,7 @@ esxVMX_FormatHardDisk(virConnectPtr conn, esxVI_Context *ctx,
                       entryPrefix, controller, id, deviceTypePrefix);
 
     if (def->src != NULL) {
-        if (! esxUtil_EqualSuffix(def->src, ".vmdk")) {
+        if (! virFileHasSuffix(def->src, ".vmdk")) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Image file for %s harddisk '%s' has unsupported suffix, "
                       "expecting '.vmdk'", busName, def->dst);
@@ -2513,7 +2513,7 @@ esxVMX_FormatCDROM(virConnectPtr conn, esxVI_Context *ctx,
                           entryPrefix, controller, id);
 
         if (def->src != NULL) {
-            if (! esxUtil_EqualSuffix(def->src, ".iso")) {
+            if (! virFileHasSuffix(def->src, ".iso")) {
                 ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                           "Image file for %s cdrom '%s' has unsupported "
                           "suffix, expecting '.iso'", busName, def->dst);
@@ -2577,7 +2577,7 @@ esxVMX_FormatFloppy(virConnectPtr conn, esxVI_Context *ctx,
                           controller);
 
         if (def->src != NULL) {
-            if (! esxUtil_EqualSuffix(def->src, ".flp")) {
+            if (! virFileHasSuffix(def->src, ".flp")) {
                 ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                           "Image file for floppy '%s' has unsupported suffix, "
                           "expecting '.flp'", def->dst);
