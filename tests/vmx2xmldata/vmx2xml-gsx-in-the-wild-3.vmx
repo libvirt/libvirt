@@ -1,0 +1,59 @@
+#!/usr/bin/vmware
+config.version = "8"
+virtualHW.version = "4"
+scsi0.present = "TRUE"
+scsi0.virtualDev = "lsilogic"
+memsize = "32"
+MemAllowAutoScaleDown = "FALSE"
+ide0:0.present = "TRUE"
+ide0:0.fileName = "Debian-System1-0-cl1.vmdk"
+ide0:0.writeThrough = "FALSE"
+ide1:0.present = "FALSE"
+ide1:0.fileName = "/dev/hda"
+ide1:0.deviceType = "cdrom-raw"
+floppy0.fileName = "/dev/fd0"
+ethernet0.present = "TRUE"
+ethernet0.connectionType = "custom"
+usb.present = "TRUE"
+sound.present = "FALSE"
+sound.virtualDev = "es1371"
+displayName = "Router"
+guestOS = "other26xlinux"
+nvram = "Debian-System3.nvram"
+
+ide0:0.redo = ""
+ethernet0.addressType = "generated"
+uuid.location = "56 4d de be e8 6f d5 86-08 54 a0 87 9c c4 be 5a"
+uuid.bios = "56 4d de be e8 6f d5 86-08 54 a0 87 9c c4 be 5a"
+ethernet0.generatedAddress = "00:0c:29:c4:be:5a"
+ethernet0.generatedAddressOffset = "0"
+
+tools.remindInstall = "TRUE"
+
+ethernet0.pvnID = "52 f6 0b f2 77 27 eb 7b-a5 a0 16 7e a3 f0 57 aa"
+
+floppy0.startConnected = "FALSE"
+
+ethernet1.present = "TRUE"
+ethernet1.connectionType = "custom"
+ethernet1.pvnID = "52 e3 67 11 22 b9 90 a3-df 09 e3 9c c3 64 b1 22"
+
+ethernet1.addressType = "generated"
+ethernet1.generatedAddress = "00:0c:29:c4:be:64"
+ethernet1.generatedAddressOffset = "10"
+
+ide0:0.mode = "independent-persistent"
+
+sound.startConnected = "FALSE"
+
+ethernet0.networkName = "net1"
+ethernet0.vnet = "/dev/vmnet1"
+
+ethernet1.vnet = "/dev/vmnet2"
+ethernet1.networkName = "net2"
+
+checkpoint.vmState = ""
+
+floppy0.present = "FALSE"
+
+uuid.action = "create"

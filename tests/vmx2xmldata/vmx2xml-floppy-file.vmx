@@ -1,0 +1,5 @@
+config.version = "8"
+virtualHW.version = "4"
+floppy0.present = "true"
+floppy0.fileType = "file"
+floppy0.fileName = "floppy.flp"

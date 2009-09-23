@@ -1,0 +1,5 @@
+config.version = "8"
+virtualHW.version = "4"
+ide0:0.present = "true"
+ide0:0.deviceType = "cdrom-image"
+ide0:0.fileName = "cdrom.iso"

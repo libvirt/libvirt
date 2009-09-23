@@ -1,0 +1,7 @@
+config.version = "8"
+virtualHW.version = "4"
+serial0.present = "true"
+serial0.fileType = "pipe"
+serial0.fileName = "serial0.pipe"
+serial0.pipe.endPoint = "server"
+serial0.tryNoRxLoss = "true"

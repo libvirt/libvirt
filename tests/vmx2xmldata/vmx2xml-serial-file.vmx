@@ -1,0 +1,5 @@
+config.version = "8"
+virtualHW.version = "4"
+serial0.present = "true"
+serial0.fileType = "file"
+serial0.fileName = "serial0.file"

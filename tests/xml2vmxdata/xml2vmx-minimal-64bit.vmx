@@ -1,0 +1,7 @@
+config.version = "8"
+virtualHW.version = "4"
+guestOS = "other-64"
+uuid.bios = "56 4d 9b ef ac d9 b4 e0-c8 f0 ae a8 b9 10 35 15"
+displayName = "minimal-64bit"
+memsize = "4"
+numvcpus = "1"

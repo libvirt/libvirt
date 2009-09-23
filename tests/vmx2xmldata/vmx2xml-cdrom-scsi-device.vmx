@@ -1,0 +1,6 @@
+config.version = "8"
+virtualHW.version = "4"
+scsi0.present = "true"
+scsi0:0.present = "true"
+scsi0:0.deviceType = "atapi-cdrom"
+scsi0:0.fileName = "/dev/scd0"

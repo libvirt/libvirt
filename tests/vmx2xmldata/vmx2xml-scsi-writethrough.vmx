@@ -1,0 +1,8 @@
+config.version = "8"
+virtualHW.version = "4"
+scsi0.present = "true"
+scsi0.virtualDev = "buslogic"
+scsi0:0.present = "true"
+scsi0:0.deviceType = "scsi-hardDisk"
+scsi0:0.fileName = "harddisk.vmdk"
+scsi0:0.writeThrough = "true"

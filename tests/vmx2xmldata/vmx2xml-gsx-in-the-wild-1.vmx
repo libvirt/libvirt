@@ -1,0 +1,54 @@
+#!/usr/bin/vmware
+config.version = "8"
+virtualHW.version = "4"
+
+displayName = "Server1"
+guestOS = "other26xlinux"
+nvram = "Debian-System1.nvram"
+memsize = "32"
+MemAllowAutoScaleDown = "FALSE"
+
+
+scsi0.present = "TRUE"
+scsi0.virtualDev = "lsilogic"
+
+ide0:0.redo = ""
+ide0:0.present = "TRUE"
+ide0:0.fileName = "Debian-System1-0-cl2.vmdk"
+ide0:0.writeThrough = "FALSE"
+ide0:0.mode = "independent-persistent"
+
+ide1:0.present = "FALSE"
+ide1:0.fileName = "/dev/hda"
+ide1:0.deviceType = "cdrom-raw"
+
+floppy0.fileName = "/dev/fd0"
+floppy0.startConnected = "FALSE"
+floppy0.present = "FALSE"
+
+ethernet0.present = "TRUE"
+ethernet0.connectionType = "custom"
+ethernet0.addressType = "generated"
+ethernet0.generatedAddress = "00:0c:29:d6:2b:d3"
+ethernet0.generatedAddressOffset = "0"
+ethernet0.startConnected = "TRUE"
+ethernet0.pvnID = "52 f6 0b f2 77 27 eb 7b-a5 a0 16 7e a3 f0 57 aa"
+ethernet0.vnet = "/dev/vmnet1"
+ethernet0.networkName = "net1"
+
+usb.present = "TRUE"
+
+sound.startConnected = "FALSE"
+sound.present = "FALSE"
+sound.virtualDev = "es1371"
+
+uuid.action = "create"
+uuid.location = "56 4d 12 23 f8 35 c4 b1-bb f6 e3 23 90 d6 2b d3"
+uuid.bios = "56 4d 12 23 f8 35 c4 b1-bb f6 e3 23 90 d6 2b d3"
+
+tools.remindInstall = "TRUE"
+
+
+checkpoint.vmState = ""
+
+workingDir = ""

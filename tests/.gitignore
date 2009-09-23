@@ -27,3 +27,6 @@ object-locking
 object-locking.cmi
 object-locking.cmx
 object-locking-files.txt
+esxutilstest
+vmx2xmltest
+xml2vmxtest

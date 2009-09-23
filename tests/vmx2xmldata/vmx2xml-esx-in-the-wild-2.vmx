@@ -1,0 +1,99 @@
+#!/usr/bin/vmware
+config.version = "8"
+virtualHW.version = "4"
+nvram = "Debian1.nvram"
+deploymentPlatform = "windows"
+virtualHW.productCompatibility = "hosted"
+tools.upgrade.policy = "useGlobal"
+powerType.powerOff = "default"
+powerType.powerOn = "default"
+powerType.suspend = "default"
+powerType.reset = "default"
+
+displayName = "virtDebian1"
+extendedConfigFile = "Debian1.vmxf"
+
+memsize = "1000"
+
+scsi0.present = "true"
+scsi0.virtualDev = "lsilogic"
+scsi0.sharedBus = "none"
+
+scsi1.present = "true"
+scsi1.virtualDev = "buslogic"
+
+scsi0:0.redo = ""
+scsi0:0.present = "true"
+scsi0:0.fileName = "Debian1.vmdk"
+scsi0:0.deviceType = "scsi-hardDisk"
+scsi0:0.writeThrough = "true"
+
+scsi1:0.present = "true"
+scsi1:0.fileName = "Debian1-cdrom.iso"
+scsi1:0.deviceType = "cdrom-image"
+
+ide0:0.present = "true"
+ide0:0.startConnected = "FALSE"
+ide0:0.clientDevice = "FALSE"
+ide0:0.deviceType = "cdrom-image"
+ide0:0.fileName = "/vmimages/tools-isoimages/linux.iso"
+
+ide0:1.present = "true"
+ide0:1.clientDevice = "FALSE"
+ide0:1.deviceType = "atapi-cdrom"
+ide0:1.startConnected = "true"
+ide0:1.fileName = "/dev/scd0"
+
+ide1:1.present = "true"
+ide1:1.startConnected = "true"
+ide1:1.deviceType = "ata-hardDisk"
+ide1:1.fileName = "Debian1-IDE.vmdk"
+
+floppy1.present = "true"
+floppy1.startConnected = "false"
+floppy1.clientDevice = "true"
+floppy1.fileName = "/dev/fd0"
+
+floppy0.present = "true"
+floppy0.startConnected = "false"
+floppy0.clientDevice = "false"
+floppy0.fileType = "device"
+floppy0.fileName = "/dev/fd0"
+
+ethernet0.present = "true"
+ethernet0.virtualDev = "vlance"
+ethernet0.networkName = "VM Network"
+ethernet0.addressType = "generated"
+ethernet0.generatedAddress = "00:0c:29:3c:98:3e"
+ethernet0.generatedAddressOffset = "0"
+
+guestOSAltName = "Ubuntu Linux (64-bit)"
+guestOS = "ubuntu-64"
+
+uuid.location = "56 4d cd 37 36 85 88 89-35 ea 71 9f c9 3c 98 3e"
+uuid.bios = "56 4d cd 37 36 85 88 89-35 ea 71 9f c9 3c 98 3e"
+
+toolScripts.afterPowerOn = "true"
+toolScripts.afterResume = "true"
+toolScripts.beforeSuspend = "true"
+toolScripts.beforePowerOff = "true"
+
+
+
+sched.swap.derivedName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Debian1/Debian1-04db0c59.vswp"
+
+tools.syncTime = "FALSE"
+tools.remindInstall = "TRUE"
+
+checkpoint.vmState = ""
+
+numvcpus = "4"
+
+sched.cpu.max = "1104"
+sched.cpu.units = "mhz"
+
+sched.cpu.min = "368"
+
+sched.cpu.affinity = "0,1,2,5,6,7"
+
+sched.mem.max = "118"

@@ -1,0 +1,70 @@
+#!/usr/bin/vmware
+config.version = "8"
+virtualHW.version = "4"
+floppy0.present = "true"
+nvram = "Debian2.nvram"
+deploymentPlatform = "windows"
+virtualHW.productCompatibility = "hosted"
+tools.upgrade.policy = "useGlobal"
+powerType.powerOff = "default"
+powerType.powerOn = "default"
+powerType.suspend = "default"
+powerType.reset = "default"
+
+displayName = "virtDebian2"
+extendedConfigFile = "Debian2.vmxf"
+
+numvcpus = "2"
+scsi0.present = "true"
+scsi0.sharedBus = "none"
+scsi0.virtualDev = "lsilogic"
+
+memsize = "1024"
+
+scsi0:0.present = "true"
+scsi0:0.fileName = "Debian2.vmdk"
+scsi0:0.deviceType = "scsi-hardDisk"
+
+ide0:0.present = "true"
+ide0:0.clientDevice = "FALSE"
+ide0:0.deviceType = "cdrom-image"
+ide0:0.startConnected = "true"
+
+floppy0.startConnected = "false"
+floppy0.clientDevice = "true"
+
+ethernet0.present = "true"
+ethernet0.networkName = "VM Network"
+ethernet0.addressType = "generated"
+
+guestOSAltName = "Ubuntu Linux (64-bit)"
+guestOS = "ubuntu-64"
+
+uuid.location = "56 4d b7 68 f3 32 42 ee-62 01 06 97 3c f5 c3 0c"
+uuid.bios = "56 4d b7 68 f3 32 42 ee-62 01 06 97 3c f5 c3 0c"
+
+toolScripts.afterPowerOn = "true"
+toolScripts.afterResume = "true"
+toolScripts.beforeSuspend = "true"
+toolScripts.beforePowerOff = "true"
+
+floppy0.fileName = "/dev/fd0"
+
+ide0:0.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Isos/debian-testing-amd64-netinst.iso"
+
+scsi0:0.redo = ""
+ethernet0.generatedAddress = "00:0c:29:f5:c3:0c"
+tools.syncTime = "false"
+sched.swap.derivedName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Debian2/Debian2-04db0c5a.vswp"
+ethernet0.generatedAddressOffset = "0"
+tools.remindInstall = "TRUE"
+
+sched.cpu.min = "0"
+sched.cpu.units = "mhz"
+
+sched.cpu.affinity = "5,4,3,0"
+
+floppy1.present = "true"
+floppy1.fileType = "file"
+floppy1.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Debian2/dummy.flp"
+floppy1.clientDevice = "FALSE"

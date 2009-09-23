@@ -1,0 +1,3 @@
+config.version = "8"
+virtualHW.version = "4"
+guestOS = "other-64"
