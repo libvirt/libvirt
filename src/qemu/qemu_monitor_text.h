@@ -29,39 +29,6 @@
 
 #include "domain_conf.h"
 
-/* XXX remove these two from public header */
-#define QEMU_CMD_PROMPT "\n(qemu) "
-#define QEMU_PASSWD_PROMPT "Password: "
-
-/* Return -1 for error, 0 for success */
-typedef int qemudMonitorExtraPromptHandler(const virDomainObjPtr vm,
-                                           const char *buf,
-                                           const char *prompt,
-                                           void *data);
-
-/* These first 4 APIs are generic monitor interaction. They will
- * go away eventually
- */
-int qemudMonitorCommand(const virDomainObjPtr vm,
-                        const char *cmd,
-                        char **reply);
-int qemudMonitorCommandWithFd(const virDomainObjPtr vm,
-                              const char *cmd,
-                              int scm_fd,
-                              char **reply);
-int qemudMonitorCommandWithHandler(const virDomainObjPtr vm,
-                                   const char *cmd,
-                                   const char *extraPrompt,
-                                   qemudMonitorExtraPromptHandler extraHandler,
-                                   void *handlerData,
-                                   int scm_fd,
-                                   char **reply);
-int qemudMonitorCommandExtra(const virDomainObjPtr vm,
-                             const char *cmd,
-                             const char *extra,
-                             const char *extraPrompt,
-                             int scm_fd,
-                             char **reply);
 
 /* Formal APIs for each required monitor command */
 
