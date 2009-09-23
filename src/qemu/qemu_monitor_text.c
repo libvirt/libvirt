@@ -551,6 +551,10 @@ error:
 /* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
 #define BALLOON_PREFIX "balloon: actual="
 
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon query worked
+ * or -1 on failure
+ */
 int qemuMonitorGetBalloonInfo(const virDomainObjPtr vm,
                               unsigned long *currmem)
 {
@@ -604,3 +608,46 @@ int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
     VIR_FREE(info);
     return 0;
 }
+
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon adjust worked
+ * or -1 on failure
+ */
+int qemuMonitorSetBalloon(const virDomainObjPtr vm,
+                          unsigned long newmem)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    /*
+     * 'newmem' is in KB, QEMU monitor works in MB, and we all wish
+     * we just worked in bytes with unsigned long long everywhere.
+     */
+    if (virAsprintf(&cmd, "balloon %lu", (newmem / 1024)) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could not balloon memory allocation"));
+        VIR_FREE(cmd);
+        return -1;
+    }
+    VIR_FREE(cmd);
+
+    /* If the command failed qemu prints: 'unknown command'
+     * No message is printed on success it seems */
+    DEBUG ("%s: balloon reply: %s", vm->def->name,  reply);
+    if (strstr(reply, "\nunknown command:")) {
+        /* Don't set error - it is expected memory balloon fails on many qemu */
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+
+    VIR_FREE(reply);
+    return ret;
+}
+

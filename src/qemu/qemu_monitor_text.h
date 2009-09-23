@@ -78,5 +78,7 @@ int qemuMonitorGetBalloonInfo(const virDomainObjPtr vm,
 
 int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
                               const char *password);
+int qemuMonitorSetBalloon(const virDomainObjPtr vm,
+                          unsigned long newmem);
 
 #endif /* QEMU_MONITOR_TEXT_H */
