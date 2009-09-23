@@ -50,7 +50,7 @@
 
 char *
 esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
-                        const char *server)
+                        const char *hostname)
 {
     unsigned int ncred;
     virConnectCredential cred;
@@ -58,7 +58,7 @@ esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
 
     memset(&cred, 0, sizeof(virConnectCredential));
 
-    if (virAsprintf(&prompt, "Enter username for %s [%s]", server,
+    if (virAsprintf(&prompt, "Enter username for %s [%s]", hostname,
                     defaultUsername) < 0) {
         return NULL;
     }
@@ -70,7 +70,7 @@ esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
 
         cred.type = VIR_CRED_AUTHNAME;
         cred.prompt = prompt;
-        cred.challenge = NULL;
+        cred.challenge = hostname;
         cred.defresult = defaultUsername;
         cred.result = NULL;
         cred.resultlen = 0;
@@ -91,7 +91,7 @@ esxUtil_RequestUsername(virConnectAuthPtr auth, const char *defaultUsername,
 
 char *
 esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
-                        const char *server)
+                        const char *hostname)
 {
     unsigned int ncred;
     virConnectCredential cred;
@@ -100,7 +100,7 @@ esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
     memset(&cred, 0, sizeof(virConnectCredential));
 
     if (virAsprintf(&prompt, "Enter %s password for %s", username,
-                    server) < 0) {
+                    hostname) < 0) {
         return NULL;
     }
 
@@ -112,7 +112,7 @@ esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
 
         cred.type = auth->credtype[ncred];
         cred.prompt = prompt;
-        cred.challenge = NULL;
+        cred.challenge = hostname;
         cred.defresult = NULL;
         cred.result = NULL;
         cred.resultlen = 0;

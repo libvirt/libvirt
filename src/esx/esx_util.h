@@ -30,10 +30,10 @@
 
 char *esxUtil_RequestUsername(virConnectAuthPtr auth,
                               const char *defaultUsername,
-                              const char *server);
+                              const char *hostname);
 
 char *esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
-                              const char *server);
+                              const char *hostname);
 
 int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
                        int *noVerify);
