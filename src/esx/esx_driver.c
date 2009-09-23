@@ -1361,7 +1361,8 @@ esxDomainSuspend(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1426,7 +1427,8 @@ esxDomainResume(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1489,7 +1491,8 @@ esxDomainShutdown(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1543,7 +1546,8 @@ esxDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1598,7 +1602,8 @@ esxDomainDestroy(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1676,7 +1681,8 @@ esxDomainGetMaxMemory(virDomainPtr domain)
                                        "config.hardware.memoryMB") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0) {
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0) {
         goto failure;
     }
 
@@ -1738,7 +1744,8 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, NULL,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_Long_Alloc(domain->conn, &spec->memoryMB) < 0) {
         goto failure;
@@ -1797,7 +1804,8 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, NULL,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_ResourceAllocationInfo_Alloc(domain->conn,
                                            &spec->memoryAllocation) < 0 ||
@@ -1875,7 +1883,8 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                                            "config.memoryAllocation.limit\0") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0) {
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0) {
         goto failure;
     }
 
@@ -2146,7 +2155,8 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 
     if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, NULL,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_Int_Alloc(domain->conn, &spec->numCPUs) < 0) {
         goto failure;
@@ -2278,7 +2288,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
                                        "config.files.vmPathName") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0) {
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0) {
         goto failure;
     }
 
@@ -2553,7 +2564,8 @@ esxDomainCreate(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -2616,7 +2628,8 @@ esxDomainUndefine(virDomainPtr domain)
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -2729,7 +2742,8 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
                                            "config.cpuAllocation.shares\0") < 0 ||
         esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, propertyNameList,
-                                         &virtualMachine) < 0) {
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0) {
         goto failure;
     }
 
@@ -2855,7 +2869,8 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
     if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
                                          domain->uuid, NULL,
-                                         &virtualMachine) < 0 ||
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_ResourceAllocationInfo_Alloc(domain->conn,
                                            &spec->cpuAllocation) < 0) {
@@ -3064,7 +3079,8 @@ esxDomainMigratePerform(virDomainPtr domain,
     /* Lookup VirtualMachine, HostSystem and ResourcePool */
     if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->vCenter,
                                          domain->uuid, NULL,
-                                         &virtualMachine) < 0) {
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0) {
         goto failure;
     }
 

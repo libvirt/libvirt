@@ -1677,10 +1677,12 @@ int
 esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
                                  const unsigned char *uuid,
                                  esxVI_String *propertyNameList,
-                                 esxVI_ObjectContent **virtualMachine)
+                                 esxVI_ObjectContent **virtualMachine,
+                                 esxVI_Occurence occurence)
 {
     int result = 0;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     if (virtualMachine == NULL || *virtualMachine != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -1690,6 +1692,18 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
     if (esxVI_FindByUuid(conn, ctx, ctx->datacenter, uuid, esxVI_Boolean_True,
                          &managedObjectReference) < 0) {
         goto failure;
+    }
+
+    if (managedObjectReference == NULL) {
+        if (occurence == esxVI_Occurence_OptionalItem) {
+            return 0;
+        } else {
+            virUUIDFormat(uuid, uuid_string);
+
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Could not find domain with UUID '%s'", uuid_string);
+            goto failure;
+        }
     }
 
     if (esxVI_GetObjectContent(conn, ctx, managedObjectReference,

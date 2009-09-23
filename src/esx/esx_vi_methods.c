@@ -994,10 +994,18 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
+    /* FIXME: Use esxVI_Occurence instead of expectList */
     if (esxVI_Context_Execute(conn, ctx, request,
                               ESX_VI__SOAP__RESPONSE_XPATH("FindByUuid"),
-                              &response, esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Deserialize
+                              &response, esxVI_Boolean_True) < 0) {
+        goto failure;
+    }
+
+    if (response->node == NULL) {
+        goto cleanup;
+    }
+
+    if (esxVI_ManagedObjectReference_Deserialize
           (conn, response->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
