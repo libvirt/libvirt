@@ -4552,11 +4552,11 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                       unsigned int qemuCmdFlags)
 {
     virDomainNetDefPtr net = dev->data.net;
-    char *cmd = NULL, *reply = NULL, *remove_cmd = NULL;
     char *tapfd_name = NULL;
     int i, tapfd = -1;
     char *nicstr = NULL;
     char *netstr = NULL;
+    int ret = -1;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
@@ -4605,18 +4605,9 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                             net->vlan, tapfd_name, &netstr) < 0)
         goto try_tapfd_close;
 
-    remove_cmd = NULL;
-    if (net->vlan >= 0 && net->hostnet_name &&
-        virAsprintf(&remove_cmd, "host_net_remove %d %s",
-                    net->vlan, net->hostnet_name) < 0) {
-        virReportOOMError(conn);
-        goto try_tapfd_close;
-    }
-
     if (qemuMonitorAddHostNetwork(vm, netstr) < 0)
         goto try_tapfd_close;
 
-    VIR_FREE(tapfd_name);
     if (tapfd != -1)
         close(tapfd);
     tapfd = -1;
@@ -4630,28 +4621,28 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                  &net->pci_addr.slot) < 0)
         goto try_remove;
 
-    VIR_FREE(netstr);
-    VIR_FREE(nicstr);
-    VIR_FREE(remove_cmd);
+    ret = 0;
 
     vm->def->nets[vm->def->nnets++] = net;
 
-    return 0;
+cleanup:
+    VIR_FREE(nicstr);
+    VIR_FREE(netstr);
+    VIR_FREE(tapfd_name);
+    if (tapfd != -1)
+        close(tapfd);
+
+    return ret;
 
 try_remove:
-    VIR_FREE(reply);
-
-    if (!remove_cmd)
+    if (!net->hostnet_name || net->vlan == 0)
         VIR_WARN0(_("Unable to remove network backend\n"));
-    else if (qemudMonitorCommand(vm, remove_cmd, &reply) < 0)
-        VIR_WARN(_("Failed to remove network backend with '%s'\n"), remove_cmd);
-    else
-        VIR_DEBUG("%s: host_net_remove reply: %s\n", vm->def->name, reply);
+    else if (qemuMonitorRemoveHostNetwork(vm, net->vlan, net->hostnet_name) < 0)
+        VIR_WARN(_("Failed to remove network backend for vlan %d, net %s"),
+                 net->vlan, net->hostnet_name);
     goto cleanup;
 
 try_tapfd_close:
-    VIR_FREE(reply);
-
     if (tapfd_name &&
         qemuMonitorCloseFileHandle(vm, tapfd_name) < 0)
         VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_name);
@@ -4660,16 +4651,7 @@ try_tapfd_close:
 
 no_memory:
     virReportOOMError(conn);
-cleanup:
-    VIR_FREE(nicstr);
-    VIR_FREE(netstr);
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
-    VIR_FREE(remove_cmd);
-    VIR_FREE(tapfd_name);
-    if (tapfd != -1)
-        close(tapfd);
-    return -1;
+    goto cleanup;
 }
 
 static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
@@ -4968,8 +4950,6 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
                            virDomainDeviceDefPtr dev)
 {
     int i, ret = -1;
-    char *cmd = NULL;
-    char *reply = NULL;
     virDomainNetDefPtr detach = NULL;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
@@ -5002,19 +4982,8 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
                                    detach->pci_addr.slot) < 0)
         goto cleanup;
 
-    if (virAsprintf(&cmd, "host_net_remove %d %s",
-                    detach->vlan, detach->hostnet_name) < 0) {
-        virReportOOMError(conn);
+    if (qemuMonitorRemoveHostNetwork(vm, detach->vlan, detach->hostnet_name) < 0)
         goto cleanup;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("network device dettach command '%s' failed"), cmd);
-        goto cleanup;
-    }
-
-    DEBUG("%s: host_net_remove reply: %s", vm->def->name,  reply);
 
     if (vm->def->nnets > 1) {
         memmove(vm->def->nets + i,
@@ -5034,8 +5003,6 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     ret = 0;
 
 cleanup:
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
     return ret;
 }
 

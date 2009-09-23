@@ -1696,3 +1696,35 @@ cleanup:
     VIR_FREE(reply);
     return ret;
 }
+
+
+int qemuMonitorRemoveHostNetwork(const virDomainObjPtr vm,
+                                 int vlan,
+                                 const char *netname)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "host_net_remove %d %s", vlan, netname) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to remove host metnwork in qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    DEBUG("%s: host_net_remove reply: %s", vm->def->name, reply);
+
+    /* XXX error messages here ? */
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}

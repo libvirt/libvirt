@@ -199,4 +199,8 @@ int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
 int qemuMonitorAddHostNetwork(const virDomainObjPtr vm,
                               const char *netstr);
 
+int qemuMonitorRemoveHostNetwork(const virDomainObjPtr vm,
+                                 int vlan,
+                                 const char *netname);
+
 #endif /* QEMU_MONITOR_TEXT_H */
