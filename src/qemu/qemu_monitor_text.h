@@ -176,5 +176,11 @@ int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
                                unsigned guestSlot);
 
 
+int qemuMonitorSendFileHandle(const virDomainObjPtr vm,
+                              const char *fdname,
+                              int fd);
+
+int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
+                               const char *fdname);
 
 #endif /* QEMU_MONITOR_TEXT_H */

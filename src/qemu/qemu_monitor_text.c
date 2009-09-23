@@ -1552,3 +1552,81 @@ cleanup:
     VIR_FREE(reply);
     return ret;
 }
+
+
+int qemuMonitorSendFileHandle(const virDomainObjPtr vm,
+                              const char *fdname,
+                              int fd)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "getfd %s", fdname) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommandWithFd(vm, cmd, fd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to pass fd to qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    DEBUG("%s: getfd reply: %s", vm->def->name, reply);
+
+    /* If the command isn't supported then qemu prints:
+     * unknown command: getfd" */
+    if (strstr(reply, "unknown command:")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         _("qemu does not support sending of file handles: %s"),
+                         reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
+int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
+                               const char *fdname)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "closefd %s", fdname) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to close fd in qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    DEBUG("%s: closefd reply: %s", vm->def->name, reply);
+
+    /* If the command isn't supported then qemu prints:
+     * unknown command: getfd" */
+    if (strstr(reply, "unknown command:")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         _("qemu does not support closing of file handles: %s"),
+                         reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+

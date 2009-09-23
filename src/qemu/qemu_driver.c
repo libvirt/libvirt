@@ -4619,7 +4619,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 {
     virDomainNetDefPtr net = dev->data.net;
     char *cmd = NULL, *reply = NULL, *remove_cmd = NULL;
-    char *tapfd_name = NULL, *tapfd_close = NULL;
+    char *tapfd_name = NULL;
     int i, tapfd = -1;
     unsigned domain, bus, slot;
 
@@ -4662,32 +4662,8 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         if (virAsprintf(&tapfd_name, "fd-%s", net->hostnet_name) < 0)
             goto no_memory;
 
-        if (virAsprintf(&tapfd_close, "closefd %s", tapfd_name) < 0)
-            goto no_memory;
-
-        if (virAsprintf(&cmd, "getfd %s", tapfd_name) < 0)
-            goto no_memory;
-
-        if (qemudMonitorCommandWithFd(vm, cmd, tapfd, &reply) < 0) {
-            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("failed to pass fd to qemu with '%s'"), cmd);
+        if (qemuMonitorSendFileHandle(vm, tapfd_name, tapfd) < 0)
             goto cleanup;
-        }
-
-        DEBUG("%s: getfd reply: %s", vm->def->name, reply);
-
-        /* If the command isn't supported then qemu prints:
-         * unknown command: getfd" */
-        if (strstr(reply, "unknown command:")) {
-            qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                             "%s",
-                             _("bridge/network interface attach not supported: "
-                               "qemu 'getfd' monitor command not available"));
-            goto cleanup;
-        }
-
-        VIR_FREE(reply);
-        VIR_FREE(cmd);
     }
 
     if (qemuBuildHostNetStr(conn, net, "host_net_add ", ' ',
@@ -4713,7 +4689,6 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     VIR_FREE(reply);
     VIR_FREE(cmd);
     VIR_FREE(tapfd_name);
-    VIR_FREE(tapfd_close);
     if (tapfd != -1)
         close(tapfd);
     tapfd = -1;
@@ -4760,12 +4735,10 @@ try_remove:
 try_tapfd_close:
     VIR_FREE(reply);
 
-    if (tapfd_close) {
-        if (qemudMonitorCommand(vm, tapfd_close, &reply) < 0)
-            VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_close);
-        else
-            VIR_DEBUG("%s: closefd: %s\n", vm->def->name, reply);
-    }
+    if (tapfd_name &&
+        qemuMonitorCloseFileHandle(vm, tapfd_name) < 0)
+        VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_name);
+
     goto cleanup;
 
 no_memory:
@@ -4774,7 +4747,6 @@ cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
     VIR_FREE(remove_cmd);
-    VIR_FREE(tapfd_close);
     VIR_FREE(tapfd_name);
     if (tapfd != -1)
         close(tapfd);
