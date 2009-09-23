@@ -128,4 +128,8 @@ int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
                                   unsigned long long *remaining,
                                   unsigned long long *total);
 
+int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
+                             const char *hostname,
+                             int port);
+
 #endif /* QEMU_MONITOR_TEXT_H */

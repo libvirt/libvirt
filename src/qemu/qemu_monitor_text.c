@@ -1088,3 +1088,59 @@ cleanup:
     VIR_FREE(reply);
     return ret;
 }
+
+
+static int qemuMonitorMigrate(const virDomainObjPtr vm,
+                              const char *dest)
+{
+    char *cmd = NULL;
+    char *info = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "migrate %s", dest) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to start migration to %s"), dest);
+        goto cleanup;
+    }
+
+    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
+
+    /* Now check for "fail" in the output string */
+    if (strstr(info, "fail") != NULL) {
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("migration to '%s' failed: %s"), dest, info);
+        goto cleanup;
+    }
+
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(info);
+    VIR_FREE(cmd);
+    return ret;
+}
+
+int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
+                             const char *hostname,
+                             int port)
+{
+    char *uri;
+    int ret;
+
+    if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    ret = qemuMonitorMigrate(vm, uri);
+
+    VIR_FREE(uri);
+
+    return ret;
+}

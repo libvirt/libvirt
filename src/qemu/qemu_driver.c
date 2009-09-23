@@ -6493,12 +6493,10 @@ qemudDomainMigratePerform (virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
-    char *safe_uri;
-    char cmd[HOST_NAME_MAX+50];
-    char *info = NULL;
     int ret = -1;
     int paused = 0;
     int status;
+    xmlURIPtr uribits = NULL;
     unsigned long long transferred, remaining, total;
 
     qemuDriverLock(driver);
@@ -6536,34 +6534,29 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto cleanup;
 
     /* Issue the migrate command. */
-    safe_uri = qemudEscapeMonitorArg (uri);
-    if (!safe_uri) {
-        virReportOOMError (dom->conn);
+    if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
+        char *tmpuri;
+        if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
+            virReportOOMError(dom->conn);
+            goto cleanup;
+        }
+        uribits = xmlParseURI(tmpuri);
+        VIR_FREE(tmpuri);
+    } else {
+        uribits = xmlParseURI(uri);
+    }
+    if (!uribits) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse URI %s"), uri);
         goto cleanup;
     }
-    snprintf (cmd, sizeof cmd, "migrate \"%s\"", safe_uri);
-    VIR_FREE (safe_uri);
 
-    if (qemudMonitorCommand (vm, cmd, &info) < 0) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("migrate operation failed"));
+    if (qemuMonitorMigrateToHost(vm, uribits->server, uribits->port) < 0)
         goto cleanup;
-    }
-
-    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
-
-    /* Now check for "fail" in the output string */
-    if (strstr(info, "fail") != NULL) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("migrate failed: %s"), info);
-        goto cleanup;
-    }
 
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
      */
-    VIR_FREE(info);
-
     if (qemuMonitorGetMigrationStatus(vm, &status,
                                       &transferred,
                                       &remaining,
@@ -6607,7 +6600,8 @@ cleanup:
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
 
-    VIR_FREE(info);
+    if (uribits)
+        xmlFreeURI(uribits);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
