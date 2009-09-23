@@ -424,7 +424,7 @@ qemudMonitorSendVolumePassphrase(const virDomainObjPtr vm,
 }
 
 int
-qemudMonitorSendCont(virConnectPtr conn,
+qemuMonitorStartCPUs(virConnectPtr conn,
                      const virDomainObjPtr vm) {
     char *reply;
 

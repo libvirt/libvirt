@@ -65,7 +65,7 @@ int qemudMonitorCommandExtra(const virDomainObjPtr vm,
 
 /* Formal APIs for each required monitor command */
 
-int qemudMonitorSendCont(virConnectPtr conn,
+int qemuMonitorStartCPUs(virConnectPtr conn,
                          const virDomainObjPtr vm);
 
 int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,

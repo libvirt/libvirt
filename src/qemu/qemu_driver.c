@@ -1262,7 +1262,7 @@ qemudInitCpus(virConnectPtr conn,
 
     if (migrateFrom == NULL) {
         /* Allow the CPUS to start executing */
-        if (qemudMonitorSendCont(conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(conn, vm) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("resume operation failed"));
@@ -1275,8 +1275,8 @@ qemudInitCpus(virConnectPtr conn,
 
 
 static int
-qemudInitPasswords(struct qemud_driver *driver,
-                   virDomainObjPtr vm) {
+qemuInitPasswords(struct qemud_driver *driver,
+                  virDomainObjPtr vm) {
     int ret = 0;
 
     if ((vm->def->ngraphics == 1) &&
@@ -2136,7 +2136,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
         (qemuDetectVcpuPIDs(conn, vm) < 0) ||
         (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
-        (qemudInitPasswords(driver, vm) < 0) ||
+        (qemuInitPasswords(driver, vm) < 0) ||
         (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
         (virDomainSaveStatus(conn, driver->stateDir, vm) < 0)) {
         qemudShutdownVMDaemon(conn, driver, vm);
@@ -2819,7 +2819,7 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state == VIR_DOMAIN_PAUSED) {
-        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("resume operation failed"));
@@ -3579,7 +3579,7 @@ cleanup:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     if (resume && paused) {
-        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("resuming after dump failed"));
@@ -4095,7 +4095,7 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     /* If it was running before, resume it now. */
     if (header.was_running) {
-        if (qemudMonitorSendCont(conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(conn, vm) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("failed to resume domain"));
@@ -6828,7 +6828,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
 cleanup:
     if (paused) {
         /* we got here through some sort of failure; start the domain again */
-        if (qemudMonitorSendCont(dom->conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -6884,7 +6884,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
          * older qemu's, but it also doesn't hurt anything there
          */
-        if (qemudMonitorSendCont(dconn, vm) < 0) {
+        if (qemuMonitorStartCPUs(dconn, vm) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("resume operation failed"));
