@@ -333,6 +333,16 @@ skip_function = (
     'virStreamSendAll',
     'virStreamRef',
     'virStreamFree',
+
+    # These have no use for bindings users.
+    "virConnectRef",
+    "virDomainRef",
+    "virInterfaceRef",
+    "virNetworkRef",
+    "virNodeDeviceRef",
+    "virSecretRef",
+    "virStoragePoolRef",
+    "virStorageVolRef",
 )
 
 
