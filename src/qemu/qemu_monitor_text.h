@@ -112,4 +112,20 @@ int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
 int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
                                  unsigned long bandwidth);
 
+enum {
+    QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
+    QEMU_MONITOR_MIGRATION_STATUS_ACTIVE,
+    QEMU_MONITOR_MIGRATION_STATUS_COMPLETED,
+    QEMU_MONITOR_MIGRATION_STATUS_ERROR,
+    QEMU_MONITOR_MIGRATION_STATUS_CANCELLED,
+
+    QEMU_MONITOR_MIGRATION_STATUS_LAST
+};
+
+int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
+                                  int *status,
+                                  unsigned long long *transferred,
+                                  unsigned long long *remaining,
+                                  unsigned long long *total);
+
 #endif /* QEMU_MONITOR_TEXT_H */

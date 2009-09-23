@@ -6498,6 +6498,8 @@ qemudDomainMigratePerform (virDomainPtr dom,
     char *info = NULL;
     int ret = -1;
     int paused = 0;
+    int status;
+    unsigned long long transferred, remaining, total;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6561,14 +6563,17 @@ qemudDomainMigratePerform (virDomainPtr dom,
      * rather failed later on.  Check the output of "info migrate"
      */
     VIR_FREE(info);
-    if (qemudMonitorCommand(vm, "info migrate", &info) < 0) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("could not get info about migration"));
+
+    if (qemuMonitorGetMigrationStatus(vm, &status,
+                                      &transferred,
+                                      &remaining,
+                                      &total) < 0) {
         goto cleanup;
     }
-    if (strstr(info, "fail") != NULL) {
+
+    if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("migrate failed: %s"), info);
+                          "%s", _("migrate did not successfully complete"));
         goto cleanup;
     }
 

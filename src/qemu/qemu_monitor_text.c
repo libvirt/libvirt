@@ -28,6 +28,7 @@
 #include <sys/un.h>
 #include <poll.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "qemu_monitor_text.h"
 #include "qemu_conf.h"
@@ -995,5 +996,95 @@ int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
 cleanup:
     VIR_FREE(info);
     VIR_FREE(cmd);
+    return ret;
+}
+
+
+#define MIGRATION_PREFIX "Migration status: "
+#define MIGRATION_TRANSFER_PREFIX "transferred ram: "
+#define MIGRATION_REMAINING_PREFIX "remaining ram: "
+#define MIGRATION_TOTAL_PREFIX "total ram: "
+
+VIR_ENUM_DECL(qemuMonitorMigrationStatus)
+VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
+              QEMU_MONITOR_MIGRATION_STATUS_LAST,
+              "inactive", "active", "completed", "failed", "cancelled")
+
+int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
+                                  int *status,
+                                  unsigned long long *transferred,
+                                  unsigned long long *remaining,
+                                  unsigned long long *total) {
+    char *reply;
+    char *tmp;
+    char *end;
+    int ret = -1;
+
+    *status = QEMU_MONITOR_MIGRATION_STATUS_INACTIVE;
+    *transferred = 0;
+    *remaining = 0;
+    *total = 0;
+
+    if (qemudMonitorCommand(vm, "info migration", &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot query migration status"));
+        return -1;
+    }
+
+    if ((tmp = strstr(reply, MIGRATION_PREFIX)) != NULL) {
+        tmp += strlen(MIGRATION_PREFIX);
+        end = strchr(tmp, '\n');
+        *end = '\0';
+
+        if ((*status = qemuMonitorMigrationStatusTypeFromString(tmp)) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected migration status in %s"), reply);
+            goto cleanup;
+        }
+
+        if (*status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE) {
+            tmp = end + 1;
+
+            if (!(tmp = strstr(tmp, MIGRATION_TRANSFER_PREFIX)))
+                goto done;
+            tmp += strlen(MIGRATION_TRANSFER_PREFIX);
+
+            if (virStrToLong_ull(tmp, NULL, 10, transferred) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse migration data transferred statistic %s"), tmp);
+                goto cleanup;
+            }
+            *transferred *= 1024;
+
+            if (!(tmp = strstr(tmp, MIGRATION_REMAINING_PREFIX)))
+                goto done;
+            tmp += strlen(MIGRATION_REMAINING_PREFIX);
+
+            if (virStrToLong_ull(tmp, NULL, 10, remaining) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse migration data remaining statistic %s"), tmp);
+                goto cleanup;
+            }
+            *remaining *= 1024;
+
+            if (!(tmp = strstr(tmp, MIGRATION_TOTAL_PREFIX)))
+                goto done;
+            tmp += strlen(MIGRATION_TOTAL_PREFIX);
+
+            if (virStrToLong_ull(tmp, NULL, 10, total) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse migration data total statistic %s"), tmp);
+                goto cleanup;
+            }
+            *total *= 1024;
+
+        }
+    }
+
+done:
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
     return ret;
 }
