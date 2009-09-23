@@ -767,7 +767,7 @@ def nameFixup(name, classe, type, file):
     elif name[0:13] == "virNodeDevice":
         if name[13:16] == "Get":
             func = string.lower(name[16]) + name[17:]
-        elif name[13:19] == "Lookup" or name[13:] == "Create":
+        elif name[13:19] == "Lookup" or name[13:19] == "Create":
             func = string.lower(name[3]) + name[4:]
         else:
             func = string.lower(name[13]) + name[14:]
