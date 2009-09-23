@@ -66,7 +66,7 @@
     int                                                                       \
     esxVI_##_type##_Alloc(virConnectPtr conn, esxVI_##_type **ptrptr)         \
     {                                                                         \
-        return esxVI_Alloc(conn, (void **)ptrptr, sizeof (esxVI_##_type));    \
+        return esxVI_Alloc(conn, (void **)ptrptr, sizeof(esxVI_##_type));     \
     }
 
 
@@ -133,7 +133,7 @@
 #define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type)                              \
     int                                                                       \
     esxVI_##_type##_SerializeList(virConnectPtr conn, esxVI_##_type *list,    \
-                                  const char* element, virBufferPtr output,   \
+                                  const char *element, virBufferPtr output,   \
                                   esxVI_Boolean required)                     \
     {                                                                         \
         return esxVI_List_Serialize(conn, (esxVI_List *)list,                 \
@@ -291,7 +291,7 @@
         if (value < (_min) || value > (_max)) {                               \
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,                        \
                          "Value '%s' is not representable as "_xsdType,       \
-                         (const char *) string);                              \
+                         (const char *)string);                               \
             goto failure;                                                     \
         }                                                                     \
                                                                               \
@@ -1010,7 +1010,6 @@ ESX_VI__TEMPLATE__SERIALIZE_EXTRA(Long, "xsd:long",
 /* esxVI_Long_SerializeList */
 ESX_VI__TEMPLATE__LIST__SERIALIZE(Long);
 
-
 /* esxVI_Long_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Long, "xsd:long", INT64_MIN, INT64_MAX);
 
@@ -1394,7 +1393,7 @@ esxVI_ManagedObjectReference_Deserialize
     }
 
     if (expectedType != NULL &&
-        !STREQ(expectedType, (*managedObjectReference)->type)) {
+        STRNEQ(expectedType, (*managedObjectReference)->type)) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "Expected type '%s' but found '%s'", expectedType,
                      (*managedObjectReference)->type);
@@ -1615,7 +1614,7 @@ esxVI_TraversalSpec_Alloc(virConnectPtr conn,
                           esxVI_TraversalSpec **traversalSpec)
 {
     if (esxVI_Alloc(conn, (void **)traversalSpec,
-                    sizeof (esxVI_TraversalSpec)) < 0) {
+                    sizeof(esxVI_TraversalSpec)) < 0) {
         return -1;
     }
 

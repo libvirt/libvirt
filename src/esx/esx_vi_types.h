@@ -1157,13 +1157,13 @@ int esxVI_PerfCounterInfo_DeserializeList
 struct _esxVI_PerfQuerySpec {
     esxVI_PerfQuerySpec *_next;                            /* optional */
 
-    esxVI_ManagedObjectReference* entity;                  /* required */
-    esxVI_DateTime* startTime;                             /* optional */
-    esxVI_DateTime* endTime;                               /* optional */
+    esxVI_ManagedObjectReference *entity;                  /* required */
+    esxVI_DateTime *startTime;                             /* optional */
+    esxVI_DateTime *endTime;                               /* optional */
     esxVI_Int *maxSample;                                  /* optional */
     esxVI_PerfMetricId *metricId;                          /* optional, list */
     esxVI_Int *intervalId;                                 /* optional */
-    char* format;                                          /* optional */ // FIXME: see PerfFormat
+    char *format;                                          /* optional */ // FIXME: see PerfFormat
 };
 
 int esxVI_PerfQuerySpec_Alloc(virConnectPtr conn,
@@ -1187,8 +1187,8 @@ int esxVI_PerfQuerySpec_SerializeList(virConnectPtr conn,
 struct _esxVI_PerfSampleInfo {
     esxVI_PerfSampleInfo *_next;                           /* optional */
 
-    esxVI_DateTime* timestamp;                             /* required */
-    esxVI_Int* interval;                                   /* required */
+    esxVI_DateTime *timestamp;                             /* required */
+    esxVI_Int *interval;                                   /* required */
 };
 
 int esxVI_PerfSampleInfo_Alloc(virConnectPtr conn,

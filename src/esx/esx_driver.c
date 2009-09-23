@@ -752,13 +752,13 @@ esxGetHostname(virConnectPtr conn)
         }
     }
 
-    if (hostName == NULL || strlen (hostName) < 1) {
+    if (hostName == NULL || strlen(hostName) < 1) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Missing or empty 'hostName' property");
         goto failure;
     }
 
-    if (domainName == NULL || strlen (domainName) < 1) {
+    if (domainName == NULL || strlen(domainName) < 1) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Missing or empty 'domainName' property");
         goto failure;
@@ -800,7 +800,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
     int32_t numaInfo_numNodes = 0;
     char *ptr = NULL;
 
-    memset (nodeinfo, 0, sizeof (virNodeInfo));
+    memset(nodeinfo, 0, sizeof(virNodeInfo));
 
     if (priv->phantom) {
         ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
@@ -891,11 +891,11 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 
             /* Strip the string to fit more relevant information in 32 chars */
             while (*ptr != '\0') {
-                if (STRPREFIX (ptr, "  ")) {
-                    memmove(ptr, ptr + 1, strlen (ptr + 1) + 1);
+                if (STRPREFIX(ptr, "  ")) {
+                    memmove(ptr, ptr + 1, strlen(ptr + 1) + 1);
                     continue;
                 } else if (STRPREFIX(ptr, "(R)") || STRPREFIX(ptr, "(C)")) {
-                    memmove(ptr, ptr + 3, strlen (ptr + 3) + 1);
+                    memmove(ptr, ptr + 3, strlen(ptr + 3) + 1);
                     continue;
                 } else if (STRPREFIX(ptr, "(TM)")) {
                     memmove(ptr, ptr + 4, strlen(ptr + 4) + 1);
@@ -1201,7 +1201,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         }
 
         if (memcmp(uuid, uuid_candidate,
-                   VIR_UUID_BUFLEN * sizeof (unsigned char)) != 0) {
+                   VIR_UUID_BUFLEN * sizeof(unsigned char)) != 0) {
             continue;
         }
 
@@ -2737,7 +2737,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
          dynamicProperty != NULL && mask != 7 && i < 3;
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "config.cpuAllocation.reservation") &&
-            !(mask & (1 << 0))) {
+            ! (mask & (1 << 0))) {
             snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
                       "reservation");
 
@@ -2753,7 +2753,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
             ++i;
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.limit") &&
-                   !(mask & (1 << 1))) {
+                   ! (mask & (1 << 1))) {
             snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
                       "limit");
 
@@ -2769,7 +2769,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
             ++i;
         } else if (STREQ(dynamicProperty->name,
                          "config.cpuAllocation.shares") &&
-                   !(mask & (1 << 2))) {
+                   ! (mask & (1 << 2))) {
             snprintf (params[i].field, VIR_DOMAIN_SCHED_FIELD_LENGTH, "%s",
                       "shares");
 

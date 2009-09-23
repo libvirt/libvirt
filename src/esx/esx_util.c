@@ -271,7 +271,7 @@ esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
     struct addrinfo *result = NULL;
     int errcode;
 
-    memset(&hints, 0, sizeof (struct addrinfo));
+    memset(&hints, 0, sizeof(struct addrinfo));
 
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;
@@ -455,12 +455,12 @@ esxUtil_GetConfigLong(virConnectPtr conn, virConfPtr conf, const char *name,
 
 int
 esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
-                         const char *name, int *boolval, int default_,
+                         const char *name, int *boolean_, int default_,
                          int optional)
 {
     virConfValuePtr value;
 
-    *boolval = default_;
+    *boolean_ = default_;
     value = virConfGetValue(conf, name);
 
     if (value == NULL) {
@@ -485,9 +485,9 @@ esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
         }
 
         if (STRCASEEQ(value->str, "true")) {
-            *boolval = 1;
+            *boolean_ = 1;
         } else if (STRCASEEQ(value->str, "false")) {
-            *boolval = 0;
+            *boolean_ = 0;
         } else {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Config entry '%s' must represent a boolean value "
@@ -506,7 +506,7 @@ esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
 
 
 int
-esxUtil_EqualSuffix(const char *string, const char* suffix)
+esxUtil_EqualSuffix(const char *string, const char *suffix)
 {
     int difference = (int)strlen(string) - (int)strlen(suffix);
 

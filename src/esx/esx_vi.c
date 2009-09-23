@@ -82,7 +82,7 @@
     int                                                                       \
     esxVI_##_type##_Alloc(virConnectPtr conn, esxVI_##_type **ptrptr)         \
     {                                                                         \
-        return esxVI_Alloc(conn, (void **)ptrptr, sizeof (esxVI_##_type));    \
+        return esxVI_Alloc(conn, (void **)ptrptr, sizeof(esxVI_##_type));     \
     }
 
 #define ESX_VI__TEMPLATE__FREE(_type, _body)                                  \
@@ -765,6 +765,7 @@ esxVI_Enumeration_Deserialize(virConnectPtr conn,
 
   failure:
     result = -1;
+
     goto cleanup;
 }
 
