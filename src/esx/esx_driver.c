@@ -139,7 +139,8 @@ static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
     esxPrivate *priv = NULL;
-    char ipAddress[NI_MAXHOST] = "";
+    char hostIpAddress[NI_MAXHOST] = "";
+    char vCenterIpAddress[NI_MAXHOST] = "";
     char *url = NULL;
     char *vCenter = NULL;
     int noVerify = 0; // boolean
@@ -189,13 +190,13 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        if (esxUtil_ResolveHostname(conn, conn->uri->server, ipAddress,
+        if (esxUtil_ResolveHostname(conn, conn->uri->server, hostIpAddress,
                                     NI_MAXHOST) < 0) {
             goto failure;
         }
 
         if (vCenter != NULL &&
-            esxUtil_ResolveHostname(conn, vCenter, ipAddress,
+            esxUtil_ResolveHostname(conn, vCenter, vCenterIpAddress,
                                     NI_MAXHOST) < 0) {
             goto failure;
         }
@@ -256,8 +257,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        if (esxVI_Context_Connect(conn, priv->host, url, username,
-                                  password, noVerify) < 0) {
+        if (esxVI_Context_Connect(conn, priv->host, url, hostIpAddress,
+                                  username, password, noVerify) < 0) {
             goto failure;
         }
 
@@ -309,8 +310,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                 goto failure;
             }
 
-            if (esxVI_Context_Connect(conn, priv->vCenter, url, username,
-                                      password, noVerify) < 0) {
+            if (esxVI_Context_Connect(conn, priv->vCenter, url,
+                                      vCenterIpAddress, username, password,
+                                      noVerify) < 0) {
                 goto failure;
             }
 
@@ -2835,9 +2837,6 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_ManagedObjectReference *managedObjectReference = NULL;
-    esxVI_ObjectContent *computeResource = NULL;
     esxVI_ManagedObjectReference *resourcePool = NULL;
     esxVI_Event *eventList = NULL;
     esxVI_ManagedObjectReference *task = NULL;
@@ -2887,69 +2886,13 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "parent") < 0 ||
-        esxVI_LookupHostSystemByIp(domain->conn, priv->vCenter,
-                                   hostIpAddress, propertyNameList,
-                                   &hostSystem) < 0) {
+        esxVI_LookupHostSystemByIp(domain->conn, priv->vCenter, hostIpAddress,
+                                   propertyNameList, &hostSystem) < 0) {
         goto failure;
     }
 
-    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "parent")) {
-            if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (domain->conn, dynamicProperty->val, &managedObjectReference,
-                   "ComputeResource") < 0) {
-                goto failure;
-            }
-
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-        }
-    }
-
-    if (managedObjectReference == NULL) {
-        ESX_ERROR(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve compute resource of host system");
-        goto failure;
-    }
-
-    esxVI_String_Free(&propertyNameList);
-
-    if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
-                                       "resourcePool") < 0 ||
-        esxVI_GetObjectContent(domain->conn, priv->vCenter,
-                               managedObjectReference, "ComputeResource",
-                               propertyNameList, esxVI_Boolean_False,
-                               &computeResource) < 0) {
-        goto failure;
-    }
-
-    if (computeResource == NULL) {
-        ESX_ERROR(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve compute resource of host system");
-        goto failure;
-    }
-
-    for (dynamicProperty = computeResource->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "resourcePool")) {
-            if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (domain->conn, dynamicProperty->val, &resourcePool,
-                   "ResourcePool") < 0) {
-                goto failure;
-            }
-
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-        }
-    }
-
-    if (resourcePool == NULL) {
-        ESX_ERROR(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve resource pool of compute resource of "
-                  "host system");
+    if (esxVI_GetResourcePool(domain->conn, priv->vCenter, hostSystem,
+                              &resourcePool) < 0) {
         goto failure;
     }
 
@@ -3000,8 +2943,6 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
-    esxVI_ManagedObjectReference_Free(&managedObjectReference);
-    esxVI_ObjectContent_Free(&computeResource);
     esxVI_ManagedObjectReference_Free(&resourcePool);
     esxVI_Event_Free(&eventList);
     esxVI_ManagedObjectReference_Free(&task);
@@ -3024,6 +2965,91 @@ esxDomainMigrateFinish(virConnectPtr dconn, const char *dname,
                        unsigned long flags ATTRIBUTE_UNUSED)
 {
     return esxDomainLookupByName(dconn, dname);
+}
+
+
+
+static unsigned long long
+esxNodeGetFreeMemory(virConnectPtr conn)
+{
+    unsigned long long result = 0;
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_ManagedObjectReference *managedObjectReference = NULL;
+    esxVI_ObjectContent *resourcePool = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_ResourcePoolResourceUsage *resourcePoolResourceUsage = NULL;
+
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        goto failure;
+    }
+
+    if (esxVI_EnsureSession(conn, priv->host) < 0) {
+        goto failure;
+    }
+
+    /* Lookup host system with its resource pool */
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList, "parent") < 0 ||
+        esxVI_LookupHostSystemByIp(conn, priv->host, priv->host->ipAddress,
+                                   propertyNameList, &hostSystem) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_GetResourcePool(conn, priv->host, hostSystem,
+                              &managedObjectReference) < 0) {
+        goto failure;
+    }
+
+    esxVI_String_Free(&propertyNameList);
+
+    /* Get memory usage of resource pool */
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList,
+                                       "runtime.memory") < 0 ||
+        esxVI_GetObjectContent(conn, priv->host, managedObjectReference,
+                               "ResourcePool", propertyNameList,
+                               esxVI_Boolean_False, &resourcePool) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = resourcePool->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "runtime.memory")) {
+            if (esxVI_ResourcePoolResourceUsage_CastFromAnyType
+                  (conn, dynamicProperty->val,
+                   &resourcePoolResourceUsage) < 0) {
+                goto failure;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    if (resourcePoolResourceUsage == NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "Could not retrieve memory usage of resource pool");
+        goto failure;
+    }
+
+    result = resourcePoolResourceUsage->unreservedForVm->value;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+    esxVI_ManagedObjectReference_Free(&managedObjectReference);
+    esxVI_ObjectContent_Free(&resourcePool);
+    esxVI_ResourcePoolResourceUsage_Free(&resourcePoolResourceUsage);
+
+    return result;
+
+  failure:
+    result = 0;
+
+    goto cleanup;
 }
 
 
@@ -3088,7 +3114,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainBlockPeek */
     NULL,                            /* domainMemoryPeek */
     NULL,                            /* nodeGetCellsFreeMemory */
-    NULL,                            /* nodeGetFreeMemory */
+    esxNodeGetFreeMemory,            /* nodeGetFreeMemory */
     NULL,                            /* domainEventRegister */
     NULL,                            /* domainEventDeregister */
     NULL,                            /* domainMigratePrepare2 */

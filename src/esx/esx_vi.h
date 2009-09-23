@@ -65,6 +65,7 @@ enum _esxVI_ProductVersion {
 
 struct _esxVI_Context {
     char *url;
+    char *ipAddress;
     CURL *curl_handle;
     struct curl_slist *curl_headers;
     virMutex curl_lock;
@@ -83,8 +84,9 @@ struct _esxVI_Context {
 int esxVI_Context_Alloc(virConnectPtr conn, esxVI_Context **ctx);
 void esxVI_Context_Free(esxVI_Context **ctx);
 int esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx,
-                          const char *url, const char *username,
-                          const char *password, int noVerify);
+                          const char *ipAddress, const char *url,
+                          const char *username, const char *password,
+                          int noVerify);
 int esxVI_Context_Download(virConnectPtr conn, esxVI_Context *ctx,
                            const char *url, char **content);
 int esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
@@ -214,8 +216,13 @@ int esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
                                     esxVI_ObjectContent *virtualMachine,
                                     int *id, char **name, unsigned char *uuid);
 
+int esxVI_GetResourcePool(virConnectPtr conn, esxVI_Context *ctx,
+                          esxVI_ObjectContent *hostSystem,
+                          esxVI_ManagedObjectReference **resourcePool);
+
 int esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
-                               const char *ip, esxVI_String *propertyNameList,
+                               const char *ipAddress,
+                               esxVI_String *propertyNameList,
                                esxVI_ObjectContent **hostSystem);
 
 int esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,

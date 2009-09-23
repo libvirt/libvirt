@@ -85,6 +85,7 @@ typedef struct _esxVI_ServiceContent esxVI_ServiceContent;
 typedef struct _esxVI_UpdateSet esxVI_UpdateSet;
 typedef struct _esxVI_SharesInfo esxVI_SharesInfo;
 typedef struct _esxVI_ResourceAllocationInfo esxVI_ResourceAllocationInfo;
+typedef struct _esxVI_ResourcePoolResourceUsage esxVI_ResourcePoolResourceUsage;
 typedef struct _esxVI_VirtualMachineConfigSpec esxVI_VirtualMachineConfigSpec;
 typedef struct _esxVI_Event esxVI_Event;
 typedef struct _esxVI_UserSession esxVI_UserSession;
@@ -898,6 +899,33 @@ void esxVI_ResourceAllocationInfo_Free
 int esxVI_ResourceAllocationInfo_Serialize
       (virConnectPtr conn, esxVI_ResourceAllocationInfo *resourceAllocationInfo,
        const char *element, virBufferPtr output, esxVI_Boolean required);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: ResourcePoolResourceUsage
+ */
+
+struct _esxVI_ResourcePoolResourceUsage {
+    esxVI_Long *reservationUsed;                           /* required */
+    esxVI_Long *reservationUsedForVm;                      /* required */
+    esxVI_Long *unreservedForPool;                         /* required */
+    esxVI_Long *unreservedForVm;                           /* required */
+    esxVI_Long *overallUsage;                              /* required */
+    esxVI_Long *maxUsage;                                  /* required */
+};
+
+int esxVI_ResourcePoolResourceUsage_Alloc
+      (virConnectPtr conn,
+       esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
+void esxVI_ResourcePoolResourceUsage_Free
+       (esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
+int esxVI_ResourcePoolResourceUsage_CastFromAnyType
+      (virConnectPtr conn, esxVI_AnyType *anyType,
+       esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
+int esxVI_ResourcePoolResourceUsage_Deserialize
+      (virConnectPtr conn, xmlNodePtr node,
+       esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
 
 
 

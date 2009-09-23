@@ -115,6 +115,7 @@ ESX_VI__TEMPLATE__ALLOC(Context);
 ESX_VI__TEMPLATE__FREE(Context,
 {
     VIR_FREE(item->url);
+    VIR_FREE(item->ipAddress);
 
     if (item->curl_handle != NULL) {
         curl_easy_cleanup(item->curl_handle);
@@ -189,21 +190,23 @@ _esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
 
 int
 esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
-                      const char *username, const char *password, int noVerify)
+                      const char *ipAddress, const char *username,
+                      const char *password, int noVerify)
 {
     int result = 0;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datacenterList = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (ctx == NULL || url == NULL || username == NULL || password == NULL ||
-        ctx->url != NULL || ctx->service != NULL || ctx->curl_handle != NULL ||
-        ctx->curl_headers != NULL) {
+    if (ctx == NULL || url == NULL || ipAddress == NULL || username == NULL ||
+        password == NULL || ctx->url != NULL || ctx->service != NULL ||
+        ctx->curl_handle != NULL || ctx->curl_headers != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         goto failure;
     }
 
-    if (esxVI_String_DeepCopyValue(conn, &ctx->url, url) < 0) {
+    if (esxVI_String_DeepCopyValue(conn, &ctx->url, url) < 0 ||
+        esxVI_String_DeepCopyValue(conn, &ctx->ipAddress, ipAddress) < 0) {
         goto failure;
     }
 
@@ -1477,9 +1480,96 @@ esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
 
 
 
+int esxVI_GetResourcePool(virConnectPtr conn, esxVI_Context *ctx,
+                          esxVI_ObjectContent *hostSystem,
+                          esxVI_ManagedObjectReference **resourcePool)
+{
+    int result = 0;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_ManagedObjectReference *managedObjectReference = NULL;
+    esxVI_ObjectContent *computeResource = NULL;
+
+    if (resourcePool == NULL || *resourcePool != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "parent")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (conn, dynamicProperty->val, &managedObjectReference,
+                   "ComputeResource") < 0) {
+                goto failure;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    if (managedObjectReference == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Could not retrieve compute resource of host system");
+        goto failure;
+    }
+
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList,
+                                       "resourcePool") < 0 ||
+        esxVI_GetObjectContent(conn, ctx, managedObjectReference,
+                               "ComputeResource", propertyNameList,
+                               esxVI_Boolean_False, &computeResource) < 0) {
+        goto failure;
+    }
+
+    if (computeResource == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Could not retrieve compute resource of host system");
+        goto failure;
+    }
+
+    for (dynamicProperty = computeResource->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "resourcePool")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (conn, dynamicProperty->val, resourcePool,
+                   "ResourcePool") < 0) {
+                goto failure;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    if ((*resourcePool) == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Could not retrieve resource pool of compute resource");
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ManagedObjectReference_Free(&managedObjectReference);
+    esxVI_ObjectContent_Free(&computeResource);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
 int
 esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
-                           const char *ip, esxVI_String *propertyNameList,
+                           const char *ipAddress,
+                           esxVI_String *propertyNameList,
                            esxVI_ObjectContent **hostSystem)
 {
     int result = 0;
@@ -1490,8 +1580,8 @@ esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
         return -1;
     }
 
-    if (esxVI_FindByIp(conn, ctx, ctx->datacenter, ip, esxVI_Boolean_False,
-                       &managedObjectReference) < 0) {
+    if (esxVI_FindByIp(conn, ctx, ctx->datacenter, ipAddress,
+                       esxVI_Boolean_False, &managedObjectReference) < 0) {
         goto failure;
     }
 

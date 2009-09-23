@@ -2165,6 +2165,48 @@ ESX_VI__TEMPLATE__SERIALIZE(ResourceAllocationInfo,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: ResourcePoolResourceUsage
+ */
+
+/* esxVI_ResourcePoolResourceUsage_Alloc */
+ESX_VI__TEMPLATE__ALLOC(ResourcePoolResourceUsage);
+
+/* esxVI_ResourcePoolResourceUsage_Free */
+ESX_VI__TEMPLATE__FREE(ResourcePoolResourceUsage,
+{
+    esxVI_Long_Free(&item->reservationUsed);
+    esxVI_Long_Free(&item->reservationUsedForVm);
+    esxVI_Long_Free(&item->unreservedForPool);
+    esxVI_Long_Free(&item->unreservedForVm);
+    esxVI_Long_Free(&item->overallUsage);
+    esxVI_Long_Free(&item->maxUsage);
+});
+
+/* esxVI_ResourcePoolResourceUsage_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ResourcePoolResourceUsage);
+
+/* esxVI_ResourcePoolResourceUsage_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE(ResourcePoolResourceUsage,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, reservationUsed);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, reservationUsedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, unreservedForPool);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, unreservedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, overallUsage);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, maxUsage);
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reservationUsed);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reservationUsedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(unreservedForPool);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(unreservedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(overallUsage);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(maxUsage);
+});
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Type: VirtualMachineConfigSpec
  */
 
