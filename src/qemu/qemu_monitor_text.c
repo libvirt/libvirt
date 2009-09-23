@@ -1315,3 +1315,124 @@ int qemuMonitorAddUSBDeviceMatch(const virDomainObjPtr vm,
     VIR_FREE(addr);
     return ret;
 }
+
+
+static int
+qemuMonitorParsePciAddReply(virDomainObjPtr vm,
+                            const char *reply,
+                            unsigned *domain,
+                            unsigned *bus,
+                            unsigned *slot)
+{
+    char *s, *e;
+
+    DEBUG("%s: pci_add reply: %s", vm->def->name, reply);
+
+    /* If the command succeeds qemu prints:
+     * OK bus 0, slot XXX...
+     * or
+     * OK domain 0, bus 0, slot XXX
+     */
+    if (!(s = strstr(reply, "OK ")))
+        return -1;
+
+    s += 3;
+
+    if (STRPREFIX(s, "domain ")) {
+        s += strlen("domain ");
+
+        if (virStrToLong_ui(s, &e, 10, domain) == -1) {
+            VIR_WARN(_("Unable to parse domain number '%s'\n"), s);
+            return -1;
+        }
+
+        if (!STRPREFIX(e, ", ")) {
+            VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
+            return -1;
+        }
+        s = e + 2;
+    }
+
+    if (!STRPREFIX(s, "bus ")) {
+        VIR_WARN(_("Expected 'bus ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s += strlen("bus ");
+
+    if (virStrToLong_ui(s, &e, 10, bus) == -1) {
+        VIR_WARN(_("Unable to parse bus number '%s'\n"), s);
+        return -1;
+    }
+
+    if (!STRPREFIX(e, ", ")) {
+        VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s = e + 2;
+
+    if (!STRPREFIX(s, "slot ")) {
+        VIR_WARN(_("Expected 'slot ' parsing pci_add reply '%s'\n"), s);
+        return -1;
+    }
+    s += strlen("slot ");
+
+    if (virStrToLong_ui(s, &e, 10, slot) == -1) {
+        VIR_WARN(_("Unable to parse slot number '%s'\n"), s);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int qemuMonitorAddPCIHostDevice(const virDomainObjPtr vm,
+                                unsigned hostDomain ATTRIBUTE_UNUSED,
+                                unsigned hostBus,
+                                unsigned hostSlot,
+                                unsigned hostFunction,
+                                unsigned *guestDomain,
+                                unsigned *guestBus,
+                                unsigned *guestSlot)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    *guestDomain = *guestBus = *guestSlot = 0;
+
+    /* XXX hostDomain */
+    if (virAsprintf(&cmd, "pci_add pci_addr=auto host host=%.2x:%.2x.%.1x",
+                    hostBus, hostSlot, hostFunction) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot attach host pci device"));
+        goto cleanup;
+    }
+
+    if (strstr(reply, "invalid type: host")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
+                         _("PCI device assignment is not supported by this version of qemu"));
+        goto cleanup;
+    }
+
+    if (qemuMonitorParsePciAddReply(vm, reply,
+                                    guestDomain,
+                                    guestBus,
+                                    guestSlot) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("parsing pci_add reply failed: %s"), reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+

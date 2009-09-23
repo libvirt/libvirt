@@ -147,4 +147,15 @@ int qemuMonitorAddUSBDeviceMatch(const virDomainObjPtr vm,
                                  int vendor,
                                  int product);
 
+
+int qemuMonitorAddPCIHostDevice(const virDomainObjPtr vm,
+                                unsigned hostDomain,
+                                unsigned hostBus,
+                                unsigned hostSlot,
+                                unsigned hostFunction,
+                                unsigned *guestDomain,
+                                unsigned *guestBus,
+                                unsigned *guestSlot);
+
+
 #endif /* QEMU_MONITOR_TEXT_H */

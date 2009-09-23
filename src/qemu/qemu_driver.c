@@ -4903,8 +4903,6 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
                                           virDomainDeviceDefPtr dev)
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
-    char *cmd, *reply;
-    unsigned domain, bus, slot;
     pciDevice *pci;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
@@ -4931,50 +4929,22 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    cmd = reply = NULL;
-
-    if (virAsprintf(&cmd, "pci_add pci_addr=auto host host=%.2x:%.2x.%.1x",
-                    hostdev->source.subsys.u.pci.bus,
-                    hostdev->source.subsys.u.pci.slot,
-                    hostdev->source.subsys.u.pci.function) < 0) {
-        virReportOOMError(conn);
+    if (qemuMonitorAddPCIHostDevice(vm,
+                                    hostdev->source.subsys.u.pci.domain,
+                                    hostdev->source.subsys.u.pci.bus,
+                                    hostdev->source.subsys.u.pci.slot,
+                                    hostdev->source.subsys.u.pci.function,
+                                    &hostdev->source.subsys.u.pci.guest_addr.domain,
+                                    &hostdev->source.subsys.u.pci.guest_addr.bus,
+                                    &hostdev->source.subsys.u.pci.guest_addr.slot) < 0)
         goto error;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot attach host pci device"));
-        goto error;
-    }
-
-    if (strstr(reply, "invalid type: host")) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
-                         _("PCI device assignment is not supported by this version of qemu"));
-        goto error;
-    }
-
-    if (qemudParsePciAddReply(vm, reply, &domain, &bus, &slot) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("parsing pci_add reply failed: %s"), reply);
-        goto error;
-    }
-
-    hostdev->source.subsys.u.pci.guest_addr.domain = domain;
-    hostdev->source.subsys.u.pci.guest_addr.bus    = bus;
-    hostdev->source.subsys.u.pci.guest_addr.slot   = slot;
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
 
     return 0;
 
 error:
     pciDeviceListDel(conn, driver->activePciHostdevs, pci);
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
 
     return -1;
 }
