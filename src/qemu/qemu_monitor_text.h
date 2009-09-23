@@ -157,5 +157,11 @@ int qemuMonitorAddPCIHostDevice(const virDomainObjPtr vm,
                                 unsigned *guestBus,
                                 unsigned *guestSlot);
 
+int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
+                               unsigned guestDomain,
+                               unsigned guestBus,
+                               unsigned guestSlot);
+
+
 
 #endif /* QEMU_MONITOR_TEXT_H */

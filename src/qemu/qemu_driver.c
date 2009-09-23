@@ -5138,10 +5138,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
                                           virDomainObjPtr vm, virDomainDeviceDefPtr dev)
 {
     int i, ret = -1;
-    char *cmd = NULL;
-    char *reply = NULL;
     virDomainDiskDefPtr detach = NULL;
-    int tryOldSyntax = 0;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -5163,48 +5160,11 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-try_command:
-    if (tryOldSyntax) {
-        if (virAsprintf(&cmd, "pci_del 0 %.2x", detach->pci_addr.slot) < 0) {
-            virReportOOMError(conn);
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
-                        detach->pci_addr.domain,
-                        detach->pci_addr.bus,
-                        detach->pci_addr.slot) < 0) {
-            virReportOOMError(conn);
-            goto cleanup;
-        }
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("failed to execute detach disk %s command"), detach->dst);
+    if (qemuMonitorRemovePCIDevice(vm,
+                                   detach->pci_addr.domain,
+                                   detach->pci_addr.bus,
+                                   detach->pci_addr.slot) < 0)
         goto cleanup;
-    }
-
-    DEBUG ("%s: pci_del reply: %s",vm->def->name,  reply);
-
-    if (!tryOldSyntax &&
-        strstr(reply, "extraneous characters")) {
-        tryOldSyntax = 1;
-        goto try_command;
-    }
-    /* If the command fails due to a wrong slot qemu prints: invalid slot,
-     * nothing is printed on success */
-    if (strstr(reply, "invalid slot") ||
-        strstr(reply, "Invalid pci address")) {
-        qemudReportError (conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("failed to detach disk %s: invalid PCI address %.4x:%.2x:%.2x: %s"),
-                          detach->dst,
-                          detach->pci_addr.domain,
-                          detach->pci_addr.bus,
-                          detach->pci_addr.slot,
-                          reply);
-        goto cleanup;
-    }
 
     if (vm->def->ndisks > 1) {
         memmove(vm->def->disks + i,
@@ -5224,8 +5184,6 @@ try_command:
     ret = 0;
 
 cleanup:
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
     return ret;
 }
 
@@ -5263,36 +5221,11 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
-                    detach->pci_addr.domain,
-                    detach->pci_addr.bus,
-                    detach->pci_addr.slot) < 0) {
-        virReportOOMError(conn);
+    if (qemuMonitorRemovePCIDevice(vm,
+                                   detach->pci_addr.domain,
+                                   detach->pci_addr.bus,
+                                   detach->pci_addr.slot) < 0)
         goto cleanup;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("network device dettach command '%s' failed"), cmd);
-        goto cleanup;
-    }
-
-    DEBUG("%s: pci_del reply: %s", vm->def->name,  reply);
-
-    /* If the command fails due to a wrong PCI address qemu prints
-     * 'invalid pci address'; nothing is printed on success */
-    if (strstr(reply, "Invalid pci address")) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to detach network device: invalid PCI address %.4x:%.2x:%.2x: %s"),
-                         detach->pci_addr.domain,
-                         detach->pci_addr.bus,
-                         detach->pci_addr.slot,
-                         reply);
-        goto cleanup;
-    }
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
 
     if (virAsprintf(&cmd, "host_net_remove %d %s",
                     detach->vlan, detach->hostnet_name) < 0) {
@@ -5337,7 +5270,6 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
                                           virDomainDeviceDefPtr dev)
 {
     virDomainHostdevDefPtr detach = NULL;
-    char *cmd, *reply;
     int i, ret;
     pciDevice *pci;
 
@@ -5372,39 +5304,11 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
-                    detach->source.subsys.u.pci.guest_addr.domain,
-                    detach->source.subsys.u.pci.guest_addr.bus,
-                    detach->source.subsys.u.pci.guest_addr.slot) < 0) {
-        virReportOOMError(conn);
+    if (qemuMonitorRemovePCIDevice(vm,
+                                   detach->source.subsys.u.pci.guest_addr.domain,
+                                   detach->source.subsys.u.pci.guest_addr.bus,
+                                   detach->source.subsys.u.pci.guest_addr.slot) < 0)
         return -1;
-    }
-
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("cannot detach host pci device"));
-        VIR_FREE(cmd);
-        return -1;
-    }
-
-    DEBUG("%s: pci_del reply: %s", vm->def->name,  reply);
-
-    /* If the command fails due to a wrong PCI address qemu prints
-     * 'invalid pci address'; nothing is printed on success */
-    if (strstr(reply, "Invalid pci address")) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to detach host pci device: invalid PCI address %.4x:%.2x:%.2x: %s"),
-                         detach->source.subsys.u.pci.guest_addr.domain,
-                         detach->source.subsys.u.pci.guest_addr.bus,
-                         detach->source.subsys.u.pci.guest_addr.slot,
-                         reply);
-        VIR_FREE(reply);
-        VIR_FREE(cmd);
-        return -1;
-    }
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
 
     ret = 0;
 
