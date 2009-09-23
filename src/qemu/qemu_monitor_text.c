@@ -438,6 +438,19 @@ qemuMonitorStartCPUs(virConnectPtr conn,
 }
 
 
+int
+qemuMonitorStopCPUs(const virDomainObjPtr vm) {
+    char *info;
+
+    if (qemudMonitorCommand(vm, "stop", &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot stop CPU execution"));
+        return -1;
+    }
+    VIR_FREE(info);
+    return 0;
+}
+
 int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
                           int **pids)
 {

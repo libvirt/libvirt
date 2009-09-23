@@ -2749,7 +2749,6 @@ cleanup:
 
 static int qemudDomainSuspend(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
-    char *info;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
@@ -2770,17 +2769,12 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state != VIR_DOMAIN_PAUSED) {
-        if (qemudMonitorCommand(vm, "stop", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("suspend operation failed"));
+        if (qemuMonitorStopCPUs(vm) < 0)
             goto cleanup;
-        }
         vm->state = VIR_DOMAIN_PAUSED;
-        qemudDebug("Reply %s", info);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
-        VIR_FREE(info);
     }
     if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
         goto cleanup;
@@ -3365,14 +3359,9 @@ static int qemudDomainSave(virDomainPtr dom,
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
         header.was_running = 1;
-        if (qemudMonitorCommand(vm, "stop", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("suspend operation failed"));
+        if (qemuMonitorStopCPUs(vm) < 0)
             goto cleanup;
-        }
         vm->state = VIR_DOMAIN_PAUSED;
-        qemudDebug("Reply %s", info);
-        VIR_FREE(info);
     }
 
     /* Get XML for the domain */
@@ -3527,13 +3516,8 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     /* Pause domain for non-live dump */
     if (vm->state == VIR_DOMAIN_RUNNING) {
-        if (qemudMonitorCommand (vm, "stop", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("suspending before dump failed"));
+        if (qemuMonitorStopCPUs(vm) < 0)
             goto cleanup;
-        }
-        DEBUG ("%s: stop reply: %s", vm->def->name, info);
-        VIR_FREE(info);
         paused = 1;
     }
 
@@ -6747,13 +6731,8 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     if (!(flags & VIR_MIGRATE_LIVE)) {
         /* Pause domain for non-live migration */
-        if (qemudMonitorCommand (vm, "stop", &info) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             "%s", _("off-line migration specified, but suspend operation failed"));
+        if (qemuMonitorStopCPUs(vm) < 0)
             goto cleanup;
-        }
-        DEBUG ("%s: stop reply: %s", vm->def->name, info);
-        VIR_FREE(info);
         paused = 1;
 
         event = virDomainEventNewFromObj(vm,
