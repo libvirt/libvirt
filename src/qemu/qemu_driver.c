@@ -5957,10 +5957,7 @@ qemudDomainBlockStats (virDomainPtr dom,
                        struct _virDomainBlockStats *stats)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    char *dummy, *info = NULL;
-    const char *p, *eol;
     const char *qemu_dev_name = NULL;
-    size_t len;
     int i, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -5997,95 +5994,19 @@ qemudDomainBlockStats (virDomainPtr dom,
     qemu_dev_name = qemudDiskDeviceName(dom->conn, disk);
     if (!qemu_dev_name)
         goto cleanup;
-    len = strlen (qemu_dev_name);
 
-    if (qemudMonitorCommand (vm, "info blockstats", &info) < 0) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("'info blockstats' command failed"));
+    if (qemuMonitorGetBlockStatsInfo(vm, qemu_dev_name,
+                                     &stats->rd_req,
+                                     &stats->rd_bytes,
+                                     &stats->wr_req,
+                                     &stats->wr_bytes,
+                                     &stats->errs) < 0)
         goto cleanup;
-    }
-    DEBUG ("%s: info blockstats reply: %s", vm->def->name, info);
 
-    /* If the command isn't supported then qemu prints the supported
-     * info commands, so the output starts "info ".  Since this is
-     * unlikely to be the name of a block device, we can use this
-     * to detect if qemu supports the command.
-     */
-    if (strstr(info, "\ninfo ")) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                          "%s",
-                          _("'info blockstats' not supported by this qemu"));
-        goto cleanup;
-    }
+    ret = 0;
 
-    stats->rd_req = -1;
-    stats->rd_bytes = -1;
-    stats->wr_req = -1;
-    stats->wr_bytes = -1;
-    stats->errs = -1;
-
-    /* The output format for both qemu & KVM is:
-     *   blockdevice: rd_bytes=% wr_bytes=% rd_operations=% wr_operations=%
-     *   (repeated for each block device)
-     * where '%' is a 64 bit number.
-     */
-    p = info;
-
-    while (*p) {
-        if (STREQLEN (p, qemu_dev_name, len)
-            && p[len] == ':' && p[len+1] == ' ') {
-
-            eol = strchr (p, '\n');
-            if (!eol)
-                eol = p + strlen (p);
-
-            p += len+2;         /* Skip to first label. */
-
-            while (*p) {
-                if (STRPREFIX (p, "rd_bytes=")) {
-                    p += 9;
-                    if (virStrToLong_ll (p, &dummy, 10, &stats->rd_bytes) == -1)
-                        DEBUG ("%s: error reading rd_bytes: %s",
-                               vm->def->name, p);
-                } else if (STRPREFIX (p, "wr_bytes=")) {
-                    p += 9;
-                    if (virStrToLong_ll (p, &dummy, 10, &stats->wr_bytes) == -1)
-                        DEBUG ("%s: error reading wr_bytes: %s",
-                               vm->def->name, p);
-                } else if (STRPREFIX (p, "rd_operations=")) {
-                    p += 14;
-                    if (virStrToLong_ll (p, &dummy, 10, &stats->rd_req) == -1)
-                        DEBUG ("%s: error reading rd_req: %s",
-                               vm->def->name, p);
-                } else if (STRPREFIX (p, "wr_operations=")) {
-                    p += 14;
-                    if (virStrToLong_ll (p, &dummy, 10, &stats->wr_req) == -1)
-                        DEBUG ("%s: error reading wr_req: %s",
-                               vm->def->name, p);
-                } else
-                    DEBUG ("%s: unknown block stat near %s", vm->def->name, p);
-
-                /* Skip to next label. */
-                p = strchr (p, ' ');
-                if (!p || p >= eol) break;
-                p++;
-            }
-            ret = 0;
-            goto cleanup;
-        }
-
-        /* Skip to next line. */
-        p = strchr (p, '\n');
-        if (!p) break;
-        p++;
-    }
-
-    /* If we reach here then the device was not found. */
-    qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                      _("device not found: %s (%s)"), path, qemu_dev_name);
- cleanup:
+cleanup:
     VIR_FREE(qemu_dev_name);
-    VIR_FREE(info);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;

@@ -671,6 +671,111 @@ cleanup:
 }
 
 
+int qemuMonitorGetBlockStatsInfo(const virDomainObjPtr vm,
+                                 const char *devname,
+                                 long long *rd_req,
+                                 long long *rd_bytes,
+                                 long long *wr_req,
+                                 long long *wr_bytes,
+                                 long long *errs)
+{
+    char *info = NULL;
+    int ret = -1;
+    char *dummy;
+    const char *p, *eol;
+    int devnamelen = strlen(devname);
+
+    if (qemudMonitorCommand (vm, "info blockstats", &info) < 0) {
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("'info blockstats' command failed"));
+        goto cleanup;
+    }
+    DEBUG ("%s: info blockstats reply: %s", vm->def->name, info);
+
+    /* If the command isn't supported then qemu prints the supported
+     * info commands, so the output starts "info ".  Since this is
+     * unlikely to be the name of a block device, we can use this
+     * to detect if qemu supports the command.
+     */
+    if (strstr(info, "\ninfo ")) {
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                          "%s",
+                          _("'info blockstats' not supported by this qemu"));
+        goto cleanup;
+    }
+
+    *rd_req = -1;
+    *rd_bytes = -1;
+    *wr_req = -1;
+    *wr_bytes = -1;
+    *errs = -1;
+
+    /* The output format for both qemu & KVM is:
+     *   blockdevice: rd_bytes=% wr_bytes=% rd_operations=% wr_operations=%
+     *   (repeated for each block device)
+     * where '%' is a 64 bit number.
+     */
+    p = info;
+
+    while (*p) {
+        if (STREQLEN (p, devname, devnamelen)
+            && p[devnamelen] == ':' && p[devnamelen+1] == ' ') {
+
+            eol = strchr (p, '\n');
+            if (!eol)
+                eol = p + strlen (p);
+
+            p += devnamelen+2;         /* Skip to first label. */
+
+            while (*p) {
+                if (STRPREFIX (p, "rd_bytes=")) {
+                    p += 9;
+                    if (virStrToLong_ll (p, &dummy, 10, rd_bytes) == -1)
+                        DEBUG ("%s: error reading rd_bytes: %s",
+                               vm->def->name, p);
+                } else if (STRPREFIX (p, "wr_bytes=")) {
+                    p += 9;
+                    if (virStrToLong_ll (p, &dummy, 10, wr_bytes) == -1)
+                        DEBUG ("%s: error reading wr_bytes: %s",
+                               vm->def->name, p);
+                } else if (STRPREFIX (p, "rd_operations=")) {
+                    p += 14;
+                    if (virStrToLong_ll (p, &dummy, 10, rd_req) == -1)
+                        DEBUG ("%s: error reading rd_req: %s",
+                               vm->def->name, p);
+                } else if (STRPREFIX (p, "wr_operations=")) {
+                    p += 14;
+                    if (virStrToLong_ll (p, &dummy, 10, wr_req) == -1)
+                        DEBUG ("%s: error reading wr_req: %s",
+                               vm->def->name, p);
+                } else
+                    DEBUG ("%s: unknown block stat near %s", vm->def->name, p);
+
+                /* Skip to next label. */
+                p = strchr (p, ' ');
+                if (!p || p >= eol) break;
+                p++;
+            }
+            ret = 0;
+            goto cleanup;
+        }
+
+        /* Skip to next line. */
+        p = strchr (p, '\n');
+        if (!p) break;
+        p++;
+    }
+
+    /* If we reach here then the device was not found. */
+    qemudReportError (NULL, NULL, NULL, VIR_ERR_INVALID_ARG,
+                      _("no stats found for device %s"), devname);
+
+ cleanup:
+    VIR_FREE(info);
+    return ret;
+}
+
+
 int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
                               const char *password)
 {
