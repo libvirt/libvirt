@@ -170,7 +170,6 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
 
 int         qemuBuildHostNetStr         (virConnectPtr conn,
                                          virDomainNetDefPtr net,
-                                         const char *prefix,
                                          char type_sep,
                                          int vlan,
                                          const char *tapfd,

@@ -4556,6 +4556,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     char *tapfd_name = NULL;
     int i, tapfd = -1;
     char *nicstr = NULL;
+    char *netstr = NULL;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
@@ -4600,8 +4601,8 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (qemuBuildHostNetStr(conn, net, "host_net_add ", ' ',
-                            net->vlan, tapfd_name, &cmd) < 0)
+    if (qemuBuildHostNetStr(conn, net, ' ',
+                            net->vlan, tapfd_name, &netstr) < 0)
         goto try_tapfd_close;
 
     remove_cmd = NULL;
@@ -4612,16 +4613,9 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         goto try_tapfd_close;
     }
 
-    if (qemudMonitorCommand(vm, cmd, &reply) < 0) {
-        qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to add network backend with '%s'"), cmd);
+    if (qemuMonitorAddHostNetwork(vm, netstr) < 0)
         goto try_tapfd_close;
-    }
 
-    DEBUG("%s: host_net_add reply: %s", vm->def->name, reply);
-
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
     VIR_FREE(tapfd_name);
     if (tapfd != -1)
         close(tapfd);
@@ -4636,6 +4630,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                  &net->pci_addr.slot) < 0)
         goto try_remove;
 
+    VIR_FREE(netstr);
     VIR_FREE(nicstr);
     VIR_FREE(remove_cmd);
 
@@ -4667,6 +4662,7 @@ no_memory:
     virReportOOMError(conn);
 cleanup:
     VIR_FREE(nicstr);
+    VIR_FREE(netstr);
     VIR_FREE(cmd);
     VIR_FREE(reply);
     VIR_FREE(remove_cmd);

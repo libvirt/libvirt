@@ -1287,7 +1287,6 @@ qemuBuildNicStr(virConnectPtr conn,
 int
 qemuBuildHostNetStr(virConnectPtr conn,
                     virDomainNetDefPtr net,
-                    const char *prefix,
                     char type_sep,
                     int vlan,
                     const char *tapfd,
@@ -1296,8 +1295,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(str, "%stap%cfd=%s,vlan=%d%s%s",
-                        prefix ? prefix : "",
+        if (virAsprintf(str, "tap%cfd=%s,vlan=%d%s%s",
                         type_sep, tapfd, vlan,
                         (net->hostnet_name ? ",name=" : ""),
                         (net->hostnet_name ? net->hostnet_name : "")) < 0) {
@@ -1310,8 +1308,6 @@ qemuBuildHostNetStr(virConnectPtr conn,
         {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-            if (prefix)
-                virBufferAdd(&buf, prefix, strlen(prefix));
             virBufferAddLit(&buf, "tap");
             if (net->ifname) {
                 virBufferVSprintf(&buf, "%cifname=%s", type_sep, net->ifname);
@@ -1355,8 +1351,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
                 break;
             }
 
-            if (virAsprintf(str, "%ssocket%c%s=%s:%d,vlan=%d%s%s",
-                            prefix ? prefix : "",
+            if (virAsprintf(str, "socket%c%s=%s:%d,vlan=%d%s%s",
                             type_sep, mode,
                             net->data.socket.address,
                             net->data.socket.port,
@@ -1371,8 +1366,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
-        if (virAsprintf(str, "%suser%cvlan=%d%s%s",
-                        prefix ? prefix : "",
+        if (virAsprintf(str, "user%cvlan=%d%s%s",
                         type_sep, vlan,
                         (net->hostnet_name ? ",name=" : ""),
                         (net->hostnet_name ? net->hostnet_name : "")) < 0) {
@@ -2014,7 +2008,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
             }
 
-            if (qemuBuildHostNetStr(conn, net, NULL, ',',
+            if (qemuBuildHostNetStr(conn, net, ',',
                                     net->vlan, tapfd_name, &host) < 0) {
                 VIR_FREE(tapfd_name);
                 goto error;

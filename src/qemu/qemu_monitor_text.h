@@ -192,4 +192,11 @@ int qemuMonitorSendFileHandle(const virDomainObjPtr vm,
 int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
                                const char *fdname);
 
+
+/* XXX do we relaly want to hardcode 'netstr' as the
+ * sendable item here
+ */
+int qemuMonitorAddHostNetwork(const virDomainObjPtr vm,
+                              const char *netstr);
+
 #endif /* QEMU_MONITOR_TEXT_H */
