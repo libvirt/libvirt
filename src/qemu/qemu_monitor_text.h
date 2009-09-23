@@ -68,5 +68,7 @@ int qemudMonitorCommandExtra(const virDomainObjPtr vm,
 int qemudMonitorSendCont(virConnectPtr conn,
                          const virDomainObjPtr vm);
 
-#endif /* QEMU_MONITOR_TEXT_H */
+int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
+                          int **pids);
 
+#endif /* QEMU_MONITOR_TEXT_H */

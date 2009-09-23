@@ -31,6 +31,7 @@
 
 #include "qemu_monitor_text.h"
 #include "qemu_conf.h"
+#include "c-ctype.h"
 #include "memory.h"
 #include "logging.h"
 #include "driver.h"
@@ -435,3 +436,87 @@ qemudMonitorSendCont(virConnectPtr conn,
     VIR_FREE(reply);
     return 0;
 }
+
+
+int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
+                          int **pids)
+{
+    char *qemucpus = NULL;
+    char *line;
+    int lastVcpu = -1;
+    pid_t *cpupids = NULL;
+    size_t ncpupids = 0;
+
+    if (qemudMonitorCommand(vm, "info cpus", &qemucpus) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot run monitor command to fetch CPU thread info"));
+        return -1;
+    }
+
+    /*
+     * This is the gross format we're about to parse :-{
+     *
+     * (qemu) info cpus
+     * * CPU #0: pc=0x00000000000f0c4a thread_id=30019
+     *   CPU #1: pc=0x00000000fffffff0 thread_id=30020
+     *   CPU #2: pc=0x00000000fffffff0 thread_id=30021
+     *
+     */
+    line = qemucpus;
+    do {
+        char *offset = strchr(line, '#');
+        char *end = NULL;
+        int vcpu = 0, tid = 0;
+
+        /* See if we're all done */
+        if (offset == NULL)
+            break;
+
+        /* Extract VCPU number */
+        if (virStrToLong_i(offset + 1, &end, 10, &vcpu) < 0)
+            goto error;
+
+        if (end == NULL || *end != ':')
+            goto error;
+
+        /* Extract host Thread ID */
+        if ((offset = strstr(line, "thread_id=")) == NULL)
+            goto error;
+
+        if (virStrToLong_i(offset + strlen("thread_id="), &end, 10, &tid) < 0)
+            goto error;
+        if (end == NULL || !c_isspace(*end))
+            goto error;
+
+        if (vcpu != (lastVcpu + 1))
+            goto error;
+
+        if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
+            goto error;
+
+        cpupids[ncpupids++] = tid;
+        lastVcpu = vcpu;
+
+        /* Skip to next data line */
+        line = strchr(offset, '\r');
+        if (line == NULL)
+            line = strchr(offset, '\n');
+    } while (line != NULL);
+
+    /* Validate we got data for all VCPUs we expected */
+    VIR_FREE(qemucpus);
+    *pids = cpupids;
+    return ncpupids;
+
+error:
+    VIR_FREE(qemucpus);
+    VIR_FREE(cpupids);
+
+    /* Returning 0 to indicate non-fatal failure, since
+     * older QEMU does not have VCPU<->PID mapping and
+     * we don't want to fail on that
+     */
+    return 0;
+}
+
+

@@ -110,8 +110,8 @@ static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 static int qemudDomainSetMemoryBalloon(virConnectPtr conn,
                                        virDomainObjPtr vm,
                                        unsigned long newmem);
-static int qemudDetectVcpuPIDs(virConnectPtr conn,
-                               virDomainObjPtr vm);
+static int qemuDetectVcpuPIDs(virConnectPtr conn,
+                              virDomainObjPtr vm);
 
 static int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                        virDomainDefPtr def);
@@ -1186,100 +1186,40 @@ qemudWaitForMonitor(virConnectPtr conn,
 }
 
 static int
-qemudDetectVcpuPIDs(virConnectPtr conn,
-                    virDomainObjPtr vm) {
-    char *qemucpus = NULL;
-    char *line;
-    int lastVcpu = -1;
-
-    /* Only KVM has seperate threads for CPUs,
-       others just use main QEMU process for CPU */
-    if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM)
-        vm->nvcpupids = 1;
-    else
-        vm->nvcpupids = vm->def->vcpus;
-
-    if (VIR_ALLOC_N(vm->vcpupids, vm->nvcpupids) < 0) {
-        virReportOOMError(conn);
-        return -1;
-    }
+qemuDetectVcpuPIDs(virConnectPtr conn,
+                   virDomainObjPtr vm) {
+    pid_t *cpupids = NULL;
+    int ncpupids;
 
     if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM) {
+        vm->nvcpupids = 1;
+        if (VIR_ALLOC_N(vm->vcpupids, vm->nvcpupids) < 0) {
+            virReportOOMError(conn);
+            return -1;
+        }
         vm->vcpupids[0] = vm->pid;
         return 0;
     }
 
-    if (qemudMonitorCommand(vm, "info cpus", &qemucpus) < 0) {
+    /* What follows is now all KVM specific */
+
+    if ((ncpupids = qemuMonitorGetCPUInfo(vm, &cpupids)) < 0)
+        return -1;
+
+    /* Treat failure to get VCPU<->PID mapping as non-fatal */
+    if (ncpupids == 0)
+        return 0;
+
+    if (ncpupids != vm->def->vcpus) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("cannot run monitor command to fetch CPU thread info"));
-        VIR_FREE(vm->vcpupids);
-        vm->nvcpupids = 0;
+                         _("got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"),
+                         ncpupids, (int)vm->def->vcpus);
+        VIR_FREE(cpupids);
         return -1;
     }
 
-    /*
-     * This is the gross format we're about to parse :-{
-     *
-     * (qemu) info cpus
-     * * CPU #0: pc=0x00000000000f0c4a thread_id=30019
-     *   CPU #1: pc=0x00000000fffffff0 thread_id=30020
-     *   CPU #2: pc=0x00000000fffffff0 thread_id=30021
-     *
-     */
-    line = qemucpus;
-    do {
-        char *offset = strchr(line, '#');
-        char *end = NULL;
-        int vcpu = 0, tid = 0;
-
-        /* See if we're all done */
-        if (offset == NULL)
-            break;
-
-        /* Extract VCPU number */
-        if (virStrToLong_i(offset + 1, &end, 10, &vcpu) < 0)
-            goto error;
-        if (end == NULL || *end != ':')
-            goto error;
-
-        /* Extract host Thread ID */
-        if ((offset = strstr(line, "thread_id=")) == NULL)
-            goto error;
-        if (virStrToLong_i(offset + strlen("thread_id="), &end, 10, &tid) < 0)
-            goto error;
-        if (end == NULL || !c_isspace(*end))
-            goto error;
-
-        /* Validate the VCPU is in expected range & order */
-        if (vcpu > vm->nvcpupids ||
-            vcpu != (lastVcpu + 1))
-            goto error;
-
-        lastVcpu = vcpu;
-        vm->vcpupids[vcpu] = tid;
-
-        /* Skip to next data line */
-        line = strchr(offset, '\r');
-        if (line == NULL)
-            line = strchr(offset, '\n');
-    } while (line != NULL);
-
-    /* Validate we got data for all VCPUs we expected */
-    if (lastVcpu != (vm->def->vcpus - 1))
-        goto error;
-
-    VIR_FREE(qemucpus);
-    return 0;
-
-error:
-    VIR_FREE(vm->vcpupids);
-    vm->nvcpupids = 0;
-    VIR_FREE(qemucpus);
-
-    /* Explicitly return success, not error. Older KVM does
-       not have vCPU -> Thread mapping info and we don't
-       want to break its use. This merely disables ability
-       to pin vCPUS with libvirt */
+    vm->nvcpupids = ncpupids;
+    vm->vcpupids = cpupids;
     return 0;
 }
 
@@ -2202,7 +2142,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     if ((qemudWaitForMonitor(conn, driver, vm, pos) < 0) ||
-        (qemudDetectVcpuPIDs(conn, vm) < 0) ||
+        (qemuDetectVcpuPIDs(conn, vm) < 0) ||
         (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
         (qemudInitPasswords(conn, driver, vm) < 0) ||
         (qemudDomainSetMemoryBalloon(conn, vm, vm->def->memory) < 0) ||
