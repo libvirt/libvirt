@@ -969,3 +969,31 @@ int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
 {
     return qemuMonitorSaveMemory(vm, "pmemsave", offset, length, path);
 }
+
+
+int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
+                                 unsigned long bandwidth)
+{
+    char *cmd = NULL;
+    char *info = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "migrate_set_speed %lum", bandwidth) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemudMonitorCommand(vm, cmd, &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could restrict migration speed"));
+        goto cleanup;
+    }
+
+    DEBUG("%s: migrate_set_speed reply: %s", vm->def->name, info);
+    ret = 0;
+
+cleanup:
+    VIR_FREE(info);
+    VIR_FREE(cmd);
+    return ret;
+}

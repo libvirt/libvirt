@@ -6529,14 +6529,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
         event = NULL;
     }
 
-    if (resource > 0) {
-        /* Issue migrate_set_speed command.  Don't worry if it fails. */
-        snprintf (cmd, sizeof cmd, "migrate_set_speed %lum", resource);
-        qemudMonitorCommand (vm, cmd, &info);
-
-        DEBUG ("%s: migrate_set_speed reply: %s", vm->def->name, info);
-        VIR_FREE (info);
-    }
+    if (resource > 0 &&
+        qemuMonitorSetMigrationSpeed(vm, resource) < 0)
+        goto cleanup;
 
     /* Issue the migrate command. */
     safe_uri = qemudEscapeMonitorArg (uri);

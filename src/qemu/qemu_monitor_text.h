@@ -109,4 +109,7 @@ int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
                                   size_t length,
                                   const char *path);
 
+int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
+                                 unsigned long bandwidth);
+
 #endif /* QEMU_MONITOR_TEXT_H */
