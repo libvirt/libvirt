@@ -2972,7 +2972,9 @@ int main(int argc, char **argv) {
 
         if (mkdir (rundir, 0755)) {
             if (errno != EEXIST) {
-                VIR_ERROR0 (_("unable to create rundir"));
+                char ebuf[1024];
+                VIR_ERROR(_("unable to create rundir %s: %s"), rundir,
+                          virStrerror(errno, ebuf, sizeof(ebuf)));
                 return -1;
             }
         }
