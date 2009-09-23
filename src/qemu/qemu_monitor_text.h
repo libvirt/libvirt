@@ -132,4 +132,8 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
                              const char *hostname,
                              int port);
 
+int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
+                                const char * const *argv,
+                                const char *target);
+
 #endif /* QEMU_MONITOR_TEXT_H */

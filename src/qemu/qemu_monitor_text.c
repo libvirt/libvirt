@@ -118,6 +118,10 @@ static char *qemudEscapeMonitorArg(const char *in)
     return qemudEscape(in, 0);
 }
 
+static char *qemudEscapeShellArg(const char *in)
+{
+    return qemudEscape(in, 1);
+}
 
 /* Throw away any data available on the monitor
  * This is done before executing a command, in order
@@ -1096,10 +1100,16 @@ static int qemuMonitorMigrate(const virDomainObjPtr vm,
     char *cmd = NULL;
     char *info = NULL;
     int ret = -1;
+    char *safedest = qemudEscapeMonitorArg(dest);
 
-    if (virAsprintf(&cmd, "migrate %s", dest) < 0) {
+    if (!safedest) {
         virReportOOMError(NULL);
         return -1;
+    }
+
+    if (virAsprintf(&cmd, "migrate \"%s\"", safedest) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
     }
 
     if (qemudMonitorCommand(vm, cmd, &info) < 0) {
@@ -1112,8 +1122,15 @@ static int qemuMonitorMigrate(const virDomainObjPtr vm,
 
     /* Now check for "fail" in the output string */
     if (strstr(info, "fail") != NULL) {
-        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                          _("migration to '%s' failed: %s"), dest, info);
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("migration to '%s' failed: %s"), dest, info);
+        goto cleanup;
+    }
+    /* If the command isn't supported then qemu prints:
+     * unknown command: migrate" */
+    if (strstr(info, "unknown command:")) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         _("migration to '%s' not supported by this qemu: %s"), dest, info);
         goto cleanup;
     }
 
@@ -1121,6 +1138,7 @@ static int qemuMonitorMigrate(const virDomainObjPtr vm,
     ret = 0;
 
 cleanup:
+    VIR_FREE(safedest);
     VIR_FREE(info);
     VIR_FREE(cmd);
     return ret;
@@ -1130,7 +1148,7 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
                              const char *hostname,
                              int port)
 {
-    char *uri;
+    char *uri = NULL;
     int ret;
 
     if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
@@ -1142,5 +1160,42 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
 
     VIR_FREE(uri);
 
+    return ret;
+}
+
+
+int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
+                                const char * const *argv,
+                                const char *target)
+{
+    char *argstr;
+    char *dest = NULL;
+    int ret = -1;
+    char *safe_target = NULL;
+
+    argstr = virArgvToString(argv);
+    if (!argstr) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    /* Migrate to file */
+    safe_target = qemudEscapeShellArg(target);
+    if (!safe_target) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dest, "exec:%s >>%s 2>/dev/null", argstr, safe_target) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    ret = qemuMonitorMigrate(vm, dest);
+
+cleanup:
+    VIR_FREE(safe_target);
+    VIR_FREE(argstr);
+    VIR_FREE(dest);
     return ret;
 }

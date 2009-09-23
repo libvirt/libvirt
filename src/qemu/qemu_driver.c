@@ -3170,11 +3170,6 @@ static char *qemudEscapeMonitorArg(const char *in)
     return qemudEscape(in, 0);
 }
 
-static char *qemudEscapeShellArg(const char *in)
-{
-    return qemudEscape(in, 1);
-}
-
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 2
 
@@ -3217,15 +3212,11 @@ static int qemudDomainSave(virDomainPtr dom,
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    char *command = NULL;
-    char *info = NULL;
     int fd = -1;
-    char *safe_path = NULL;
     char *xml = NULL;
     struct qemud_save_header header;
     int ret = -1;
     virDomainEventPtr event = NULL;
-    int internalret;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -3305,55 +3296,21 @@ static int qemudDomainSave(virDomainPtr dom,
     }
     fd = -1;
 
-    /* Migrate to file */
-    safe_path = qemudEscapeShellArg(path);
-    if (!safe_path) {
-        virReportOOMError(dom->conn);
-        goto cleanup;
-    }
-
-    {
+    if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
+        const char *args[] = { "cat", NULL };
+        ret = qemuMonitorMigrateToCommand(vm, args, path);
+    } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
-        const char *args;
-
-        if (prog == NULL) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Invalid compress format %d"), header.compressed);
-            goto cleanup;
-        }
-
-        if (STREQ (prog, "raw")) {
-            prog = "cat";
-            args = "";
-        } else {
-            args = "-c";
-        }
-        internalret = virAsprintf(&command, "migrate \"exec:"
-                                  "%s %s >> '%s' 2>/dev/null\"", prog, args,
-                                  safe_path);
+        const char *args[] = {
+            prog,
+            "-c",
+            NULL
+        };
+        ret = qemuMonitorMigrateToCommand(vm, args, path);
     }
 
-    if (internalret < 0) {
-        virReportOOMError(dom->conn);
+    if (ret < 0)
         goto cleanup;
-    }
-
-    if (qemudMonitorCommand(vm, command, &info) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("migrate operation failed"));
-        goto cleanup;
-    }
-
-    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
-
-    /* If the command isn't supported then qemu prints:
-     * unknown command: migrate" */
-    if (strstr(info, "unknown command:")) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                          "%s",
-                          _("'migrate' not supported by this qemu"));
-        goto cleanup;
-    }
 
     /* Shut it down */
     qemudShutdownVMDaemon(dom->conn, driver, vm);
@@ -3365,15 +3322,11 @@ static int qemudDomainSave(virDomainPtr dom,
                                 vm);
         vm = NULL;
     }
-    ret = 0;
 
 cleanup:
     if (fd != -1)
         close(fd);
     VIR_FREE(xml);
-    VIR_FREE(safe_path);
-    VIR_FREE(command);
-    VIR_FREE(info);
     if (ret != 0)
         unlink(path);
     if (vm)
@@ -3390,11 +3343,12 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                                int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char *command = NULL;
-    char *info = NULL;
-    char *safe_path = NULL;
     int resume = 0, paused = 0;
     int ret = -1;
+    const char *args[] = {
+        "cat",
+        NULL,
+    };
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3426,43 +3380,9 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         paused = 1;
     }
 
-    /* Migrate to file */
-    safe_path = qemudEscapeShellArg(path);
-    if (!safe_path) {
-        virReportOOMError(dom->conn);
-        goto cleanup;
-    }
-    if (virAsprintf(&command, "migrate \"exec:"
-                  "dd of='%s' 2>/dev/null"
-                  "\"", safe_path) == -1) {
-        virReportOOMError(dom->conn);
-        command = NULL;
-        goto cleanup;
-    }
-
-    if (qemudMonitorCommand(vm, command, &info) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("migrate operation failed"));
-        goto cleanup;
-    }
-
-    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
-
-    /* If the command isn't supported then qemu prints:
-     * unknown command: migrate" */
-    if (strstr(info, "unknown command:")) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                          "%s",
-                          _("'migrate' not supported by this qemu"));
-        goto cleanup;
-    }
-
+    ret = qemuMonitorMigrateToCommand(vm, args, path);
     paused = 1;
-    ret = 0;
 cleanup:
-    VIR_FREE(safe_path);
-    VIR_FREE(command);
-    VIR_FREE(info);
 
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
@@ -6369,6 +6289,11 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
             goto cleanup;
         }
 
+        /* XXX this really should have been a properly well-formed
+         * URI, but we can't add in tcp:// now without breaking
+         * compatability with old targets. We at least make the
+         * new targets accept both syntaxes though.
+         */
         /* Caller frees */
         internalret = virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port);
         VIR_FREE(hostname);
@@ -6535,6 +6460,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
+        /* HACK: source host generates bogus URIs, so fix them up */
         char *tmpuri;
         if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
             virReportOOMError(dom->conn);

@@ -453,6 +453,7 @@ virGetGroupID;
 virFileFindMountPoint;
 virFileWaitForDevices;
 virFileMatchesNameSuffix;
+virArgvToString;
 
 
 # usb.h
