@@ -24,8 +24,32 @@
 #define __ESX_VMX_H__
 
 #include "internal.h"
+#include "conf.h"
 #include "domain_conf.h"
 #include "esx_vi.h"
+
+char *
+esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix);
+
+int
+esxVMX_SCSIDiskNameToControllerAndID(virConnectPtr conn, const char *name,
+                                     int *controller, int *id);
+int
+esxVMX_IDEDiskNameToControllerAndID(virConnectPtr conn, const char *name,
+                                     int *controller, int *id);
+int
+esxVMX_FloppyDiskNameToController(virConnectPtr conn, const char *name,
+                                  int *controller);
+
+int
+esxVMX_GatherSCSIControllers(virConnectPtr conn, virDomainDefPtr conf,
+                             char *virtualDev[4], int present[4]);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VMX -> Domain XML
+ */
 
 virDomainDefPtr
 esxVMX_ParseConfig(virConnectPtr conn, const char *vmx,
@@ -34,9 +58,6 @@ esxVMX_ParseConfig(virConnectPtr conn, const char *vmx,
 int
 esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf,
                            int controller, int *present, char **virtualDev);
-
-char *
-esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix);
 
 int
 esxVMX_ParseDisk(virConnectPtr conn, virConfPtr conf, int device, int bus,
@@ -53,5 +74,39 @@ esxVMX_ParseSerial(virConnectPtr conn, virConfPtr conf, int port,
 int
 esxVMX_ParseParallel(virConnectPtr conn, virConfPtr conf, int port,
                      virDomainChrDefPtr *def);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Domain XML -> VMX
+ */
+
+char *
+esxVMX_FormatConfig(virConnectPtr conn, virDomainDefPtr def,
+                    esxVI_APIVersion apiVersion);
+
+int
+esxVMX_FormatHardDisk(virConnectPtr conn, virDomainDiskDefPtr def,
+                      virBufferPtr buffer);
+
+int
+esxVMX_FormatCDROM(virConnectPtr conn, virDomainDiskDefPtr def,
+                   virBufferPtr buffer);
+
+int
+esxVMX_FormatFloppy(virConnectPtr conn, virDomainDiskDefPtr def,
+                    virBufferPtr buffer);
+
+int
+esxVMX_FormatEthernet(virConnectPtr conn, virDomainNetDefPtr def,
+                      int controller, virBufferPtr buffer);
+
+int
+esxVMX_FormatSerial(virConnectPtr conn, virDomainChrDefPtr def,
+                    virBufferPtr buffer);
+
+int
+esxVMX_FormatParallel(virConnectPtr conn, virDomainChrDefPtr def,
+                      virBufferPtr buffer);
 
 #endif /* __ESX_VMX_H__ */

@@ -2232,6 +2232,42 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
 
 
+static char *
+esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
+                     const char *domainXml,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    virDomainDefPtr def = NULL;
+    char *vmx = NULL;
+
+    if (priv->phantom) {
+        ESX_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                  "Not possible with a phantom connection");
+        return NULL;
+    }
+
+    if (STRNEQ(nativeFormat, "vmware-vmx")) {
+        ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
+                  "Unsupported config format '%s'", nativeFormat);
+        return NULL;
+    }
+
+    def = virDomainDefParseString(conn, priv->caps, domainXml, 0);
+
+    if (def == NULL) {
+        return NULL;
+    }
+
+    vmx = esxVMX_FormatConfig(conn, def, priv->host->apiVersion);
+
+    virDomainDefFree(def);
+
+    return vmx;
+}
+
+
+
 static int
 esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
@@ -3093,7 +3129,7 @@ static virDriver esxDriver = {
     NULL,                            /* nodeGetSecurityModel */
     esxDomainDumpXML,                /* domainDumpXML */
     esxDomainXMLFromNative,          /* domainXMLFromNative */
-    NULL,                            /* domainXMLToNative */
+    esxDomainXMLToNative,            /* domainXMLToNative */
     esxListDefinedDomains,           /* listDefinedDomains */
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */
