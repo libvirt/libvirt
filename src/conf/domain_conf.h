@@ -125,7 +125,7 @@ struct _virDomainDiskDef {
 static inline int
 virDiskHasValidPciAddr(virDomainDiskDefPtr def)
 {
-    return def->pci_addr.domain || def->pci_addr.domain || def->pci_addr.slot;
+    return def->pci_addr.domain || def->pci_addr.bus || def->pci_addr.slot;
 }
 
 
