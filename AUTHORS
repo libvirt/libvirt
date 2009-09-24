@@ -22,6 +22,7 @@ The primary maintainers and people with commit access rights:
   Dan Smith            <danms@us.ibm.com>
   Guido Günther        <agx@sigxcpu.org>
   John Levon           <john.levon@sun.com>
+  Matthias Bolte       <matthias.bolte@googlemail.com>
 
 Patches have also been contributed by:
 
@@ -78,7 +79,6 @@ Patches have also been contributed by:
   Henrik Persson E     <henrik.e.persson@ericsson.com>
   Satoru SATOH         <satoru.satoh@gmail.com>
   Paolo Bonzini        <pbonzini@redhat.com>
-  Matthias Bolte       <matthias.bolte@googlemail.com>
   Miloslav Trmač       <mitr@redhat.com>
 
   [....send patches to get your name here....]
