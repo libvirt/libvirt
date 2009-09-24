@@ -1827,10 +1827,7 @@ error:
 virDomainPtr
 virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
-    int raw[VIR_UUID_BUFLEN], i;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    int ret;
-
     DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
 
     virResetLastError();
@@ -1843,26 +1840,11 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format.
-     *      We needn't it here. Right?
-     */
-    ret = sscanf(uuidstr,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x%02x%02x%02x%02x",
-                 raw + 0, raw + 1, raw + 2, raw + 3,
-                 raw + 4, raw + 5, raw + 6, raw + 7,
-                 raw + 8, raw + 9, raw + 10, raw + 11,
-                 raw + 12, raw + 13, raw + 14, raw + 15);
 
-    if (ret!=VIR_UUID_BUFLEN) {
+    if (virUUIDParse(uuidstr, uuid) < 0) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    for (i = 0; i < VIR_UUID_BUFLEN; i++)
-        uuid[i] = raw[i] & 0xFF;
 
     return virDomainLookupByUUID(conn, &uuid[0]);
 
@@ -5026,9 +5008,7 @@ error:
 virNetworkPtr
 virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
-    int raw[VIR_UUID_BUFLEN], i;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    int ret;
     DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
 
     virResetLastError();
@@ -5042,26 +5022,10 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
         goto error;
     }
 
-    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format.
-     *      We needn't it here. Right?
-     */
-    ret = sscanf(uuidstr,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x%02x%02x%02x%02x",
-                 raw + 0, raw + 1, raw + 2, raw + 3,
-                 raw + 4, raw + 5, raw + 6, raw + 7,
-                 raw + 8, raw + 9, raw + 10, raw + 11,
-                 raw + 12, raw + 13, raw + 14, raw + 15);
-
-    if (ret!=VIR_UUID_BUFLEN) {
+    if (virUUIDParse(uuidstr, uuid) < 0) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    for (i = 0; i < VIR_UUID_BUFLEN; i++)
-        uuid[i] = raw[i] & 0xFF;
 
     return virNetworkLookupByUUID(conn, &uuid[0]);
 
@@ -8875,10 +8839,7 @@ error:
 virSecretPtr
 virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
-    int raw[VIR_UUID_BUFLEN], i;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    int ret;
-
     DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
 
     virResetLastError();
@@ -8891,26 +8852,11 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format.
-     *      We needn't it here. Right?
-     */
-    ret = sscanf(uuidstr,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x%02x%02x%02x%02x",
-                 raw + 0, raw + 1, raw + 2, raw + 3,
-                 raw + 4, raw + 5, raw + 6, raw + 7,
-                 raw + 8, raw + 9, raw + 10, raw + 11,
-                 raw + 12, raw + 13, raw + 14, raw + 15);
 
-    if (ret!=VIR_UUID_BUFLEN) {
+    if (virUUIDParse(uuidstr, uuid) < 0) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    for (i = 0; i < VIR_UUID_BUFLEN; i++)
-        uuid[i] = raw[i] & 0xFF;
 
     return virSecretLookupByUUID(conn, &uuid[0]);
 
