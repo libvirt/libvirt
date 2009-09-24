@@ -432,7 +432,7 @@ static virSecretEntryPtr
 secretLoad(virConnectPtr conn, virSecretDriverStatePtr driver,
            const char *xml_basename)
 {
-    virSecretDefPtr def;
+    virSecretDefPtr def = NULL;
     virSecretEntryPtr secret = NULL, ret = NULL;
     char *xml_filename;
 
