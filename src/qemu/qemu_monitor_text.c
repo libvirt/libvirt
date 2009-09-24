@@ -242,7 +242,7 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
 
     qemuMonitorDiscardPendingData(vm);
 
-    VIR_DEBUG("Send '%s'", cmd);
+    VIR_DEBUG("cmd='%s' extraPrompt='%s'", cmd, NULLSTR(extraPrompt));
     if (qemuMonitorSend(vm, cmd, scm_fd) < 0)
         return -1;
 
@@ -282,6 +282,7 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
                 (foundPrompt = strstr(buf, extraPrompt)) != NULL) {
                 char *promptEnd;
 
+                DEBUG("prompt='%s' handler=%p", extraPrompt, extraHandler);
                 if (extraHandler(vm, buf, foundPrompt, handlerData) < 0)
                     return -1;
                 /* Discard output so far, necessary to detect whether
@@ -320,6 +321,7 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
         }
     }
     *reply = buf;
+    DEBUG("reply='%s'", buf);
     return 0;
 
  error:
@@ -521,11 +523,13 @@ qemuMonitorStartCPUs(virConnectPtr conn,
                      const virDomainObjPtr vm) {
     char *reply;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
+
     if (qemuMonitorCommandWithHandler(vm, "cont", ") is encrypted.",
                                       qemuMonitorSendVolumePassphrase, conn,
                                       -1, &reply) < 0)
         return -1;
-    qemudDebug ("%s: cont reply: %s", vm->def->name, info);
+
     VIR_FREE(reply);
     return 0;
 }
@@ -534,6 +538,8 @@ qemuMonitorStartCPUs(virConnectPtr conn,
 int
 qemuMonitorStopCPUs(const virDomainObjPtr vm) {
     char *info;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
 
     if (qemuMonitorCommand(vm, "stop", &info) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -547,6 +553,8 @@ qemuMonitorStopCPUs(const virDomainObjPtr vm) {
 
 int qemuMonitorSystemPowerdown(const virDomainObjPtr vm) {
     char *info;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
 
     if (qemuMonitorCommand(vm, "system_powerdown", &info) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -566,6 +574,8 @@ int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
     int lastVcpu = -1;
     pid_t *cpupids = NULL;
     size_t ncpupids = 0;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
 
     if (qemuMonitorCommand(vm, "info cpus", &qemucpus) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -614,6 +624,7 @@ int qemuMonitorGetCPUInfo(const virDomainObjPtr vm,
         if (VIR_REALLOC_N(cpupids, ncpupids+1) < 0)
             goto error;
 
+        DEBUG("vcpu=%d pid=%d", vcpu, tid);
         cpupids[ncpupids++] = tid;
         lastVcpu = vcpu;
 
@@ -655,13 +666,14 @@ int qemuMonitorGetBalloonInfo(const virDomainObjPtr vm,
     int ret = -1;
     char *offset;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
+
     if (qemuMonitorCommand(vm, "info balloon", &reply) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("could not query memory balloon allocation"));
         return -1;
     }
 
-    DEBUG ("%s: balloon reply: '%s'", vm->def->name, reply);
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
         unsigned int memMB;
         char *end;
@@ -700,12 +712,14 @@ int qemuMonitorGetBlockStatsInfo(const virDomainObjPtr vm,
     const char *p, *eol;
     int devnamelen = strlen(devname);
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s dev=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, devname);
+
     if (qemuMonitorCommand (vm, "info blockstats", &info) < 0) {
         qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           "%s", _("'info blockstats' command failed"));
         goto cleanup;
     }
-    DEBUG ("%s: info blockstats reply: %s", vm->def->name, info);
 
     /* If the command isn't supported then qemu prints the supported
      * info commands, so the output starts "info ".  Since this is
@@ -795,6 +809,9 @@ int qemuMonitorSetVNCPassword(const virDomainObjPtr vm,
                               const char *password)
 {
     char *info = NULL;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
+
     if (qemuMonitorCommandExtra(vm, "change vnc password",
                                 password,
                                 QEMU_PASSWD_PROMPT,
@@ -818,6 +835,9 @@ int qemuMonitorSetBalloon(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s newmem=%lu",
+          vm, vm->pid, vm->def->id, vm->def->name, newmem);
+
     /*
      * 'newmem' is in KB, QEMU monitor works in MB, and we all wish
      * we just worked in bytes with unsigned long long everywhere.
@@ -837,7 +857,6 @@ int qemuMonitorSetBalloon(const virDomainObjPtr vm,
 
     /* If the command failed qemu prints: 'unknown command'
      * No message is printed on success it seems */
-    DEBUG ("%s: balloon reply: %s", vm->def->name,  reply);
     if (strstr(reply, "\nunknown command:")) {
         /* Don't set error - it is expected memory balloon fails on many qemu */
         ret = 0;
@@ -856,6 +875,9 @@ int qemuMonitorEjectMedia(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s devname=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, devname);
+
     if (virAsprintf(&cmd, "eject %s", devname) < 0) {
         virReportOOMError(NULL);
         goto cleanup;
@@ -870,7 +892,6 @@ int qemuMonitorEjectMedia(const virDomainObjPtr vm,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    DEBUG ("%s: ejectable media change reply: %s", vm->def->name, reply);
     if (strstr(reply, "\ndevice ")) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("could not eject media on %s: %s"), devname, reply);
@@ -895,6 +916,9 @@ int qemuMonitorChangeMedia(const virDomainObjPtr vm,
     char *safepath = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s devname=%s newmedia=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, devname, newmedia);
+
     if (!(safepath = qemuMonitorEscapeArg(newmedia))) {
         virReportOOMError(NULL);
         goto cleanup;
@@ -914,7 +938,6 @@ int qemuMonitorChangeMedia(const virDomainObjPtr vm,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    DEBUG ("%s: ejectable media change reply: %s", vm->def->name, reply);
     if (strstr(reply, "\ndevice ")) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("could not eject media on %s: %s"), devname, reply);
@@ -974,6 +997,9 @@ int qemuMonitorSaveVirtualMemory(const virDomainObjPtr vm,
                                  size_t length,
                                  const char *path)
 {
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s offset=%llu length=%zu path=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, offset, length, path);
+
     return qemuMonitorSaveMemory(vm, "memsave", offset, length, path);
 }
 
@@ -982,6 +1008,9 @@ int qemuMonitorSavePhysicalMemory(const virDomainObjPtr vm,
                                   size_t length,
                                   const char *path)
 {
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s offset=%llu length=%zu path=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, offset, length, path);
+
     return qemuMonitorSaveMemory(vm, "pmemsave", offset, length, path);
 }
 
@@ -992,6 +1021,9 @@ int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
     char *cmd = NULL;
     char *info = NULL;
     int ret = -1;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s bandwidth=%lu",
+          vm, vm->pid, vm->def->id, vm->def->name, bandwidth);
 
     if (virAsprintf(&cmd, "migrate_set_speed %lum", bandwidth) < 0) {
         virReportOOMError(NULL);
@@ -1004,7 +1036,6 @@ int qemuMonitorSetMigrationSpeed(const virDomainObjPtr vm,
         goto cleanup;
     }
 
-    DEBUG("%s: migrate_set_speed reply: %s", vm->def->name, info);
     ret = 0;
 
 cleanup:
@@ -1033,6 +1064,8 @@ int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
     char *tmp;
     char *end;
     int ret = -1;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s", vm, vm->pid, vm->def->id, vm->def->name);
 
     *status = QEMU_MONITOR_MIGRATION_STATUS_INACTIVE;
     *transferred = 0;
@@ -1128,8 +1161,6 @@ static int qemuMonitorMigrate(const virDomainObjPtr vm,
         goto cleanup;
     }
 
-    DEBUG ("%s: migrate reply: %s", vm->def->name, info);
-
     /* Now check for "fail" in the output string */
     if (strstr(info, "fail") != NULL) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -1161,6 +1192,9 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
     char *uri = NULL;
     int ret;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s hostname=%s port=%d",
+          vm, vm->pid, vm->def->id, vm->def->name, hostname, port);
+
     if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1182,6 +1216,9 @@ int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
     char *dest = NULL;
     int ret = -1;
     char *safe_target = NULL;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s argv=%p target=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, argv, target);
 
     argstr = virArgvToString(argv);
     if (!argstr) {
@@ -1219,6 +1256,9 @@ int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
     int ret = -1;
     char *info = NULL;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s path=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, path);
+
     safepath = qemuMonitorEscapeArg(path);
     if (!safepath) {
         virReportOOMError(NULL);
@@ -1236,7 +1276,6 @@ int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
         goto cleanup;
     }
 
-    DEBUG ("%s: usb_add reply: %s", vm->def->name, info);
     /* If the command failed qemu prints:
      * Could not add ... */
     if (strstr(info, "Could not add ")) {
@@ -1272,7 +1311,6 @@ static int qemuMonitorAddUSBDevice(const virDomainObjPtr vm,
         goto cleanup;
     }
 
-    DEBUG ("%s: attach_usb reply: %s", vm->def->name, reply);
     /* If the command failed qemu prints:
      * Could not add ... */
     if (strstr(reply, "Could not add ")) {
@@ -1297,6 +1335,9 @@ int qemuMonitorAddUSBDeviceExact(const virDomainObjPtr vm,
     int ret;
     char *addr;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s bus=%d dev=%d",
+          vm, vm->pid, vm->def->id, vm->def->name, bus, dev);
+
     if (virAsprintf(&addr, "host:%.3d.%.3d", bus, dev) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1314,6 +1355,9 @@ int qemuMonitorAddUSBDeviceMatch(const virDomainObjPtr vm,
 {
     int ret;
     char *addr;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s vendor=%d product=%d",
+          vm, vm->pid, vm->def->id, vm->def->name, vendor, product);
 
     if (virAsprintf(&addr, "host:%.4x:%.4x", vendor, product) < 0) {
         virReportOOMError(NULL);
@@ -1408,6 +1452,10 @@ int qemuMonitorAddPCIHostDevice(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s domain=%d bus=%d slot=%d function=%d",
+          vm, vm->pid, vm->def->id, vm->def->name,
+          hostDomain, hostBus, hostSlot, hostFunction);
+
     *guestDomain = *guestBus = *guestSlot = 0;
 
     /* XXX hostDomain */
@@ -1458,6 +1506,9 @@ int qemuMonitorAddPCIDisk(const virDomainObjPtr vm,
     char *safe_path = NULL;
     int tryOldSyntax = 0;
     int ret = -1;
+
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s path=%s bus=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, path, bus);
 
     safe_path = qemuMonitorEscapeArg(path);
     if (!safe_path) {
@@ -1512,6 +1563,9 @@ int qemuMonitorAddPCINetwork(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s nicstr=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, nicstr);
+
     if (virAsprintf(&cmd, "pci_add pci_addr=auto nic %s", nicstr) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1549,6 +1603,9 @@ int qemuMonitorRemovePCIDevice(const virDomainObjPtr vm,
     int tryOldSyntax = 0;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s domain=%d bus=%d slot=%d",
+          vm, vm->pid, vm->def->id, vm->def->name, guestDomain, guestBus, guestSlot);
+
 try_command:
     if (tryOldSyntax) {
         if (virAsprintf(&cmd, "pci_del 0 %.2x", guestSlot) < 0) {
@@ -1568,8 +1625,6 @@ try_command:
                          "%s", _("failed to remove PCI device"));
         goto cleanup;
     }
-
-    DEBUG ("%s: pci_del reply: %s",vm->def->name,  reply);
 
     /* Syntax changed when KVM merged PCI hotplug upstream to QEMU,
      * so check for an error message from old KVM indicating the
@@ -1608,6 +1663,9 @@ int qemuMonitorSendFileHandle(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s fdname=%s fd=%d",
+          vm, vm->pid, vm->def->id, vm->def->name, fdname, fd);
+
     if (virAsprintf(&cmd, "getfd %s", fdname) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1618,8 +1676,6 @@ int qemuMonitorSendFileHandle(const virDomainObjPtr vm,
                          _("failed to pass fd to qemu with '%s'"), cmd);
         goto cleanup;
     }
-
-    DEBUG("%s: getfd reply: %s", vm->def->name, reply);
 
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
@@ -1646,6 +1702,9 @@ int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s fdname=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, fdname);
+
     if (virAsprintf(&cmd, "closefd %s", fdname) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1656,8 +1715,6 @@ int qemuMonitorCloseFileHandle(const virDomainObjPtr vm,
                          _("failed to close fd in qemu with '%s'"), cmd);
         goto cleanup;
     }
-
-    DEBUG("%s: closefd reply: %s", vm->def->name, reply);
 
     /* If the command isn't supported then qemu prints:
      * unknown command: getfd" */
@@ -1684,6 +1741,9 @@ int qemuMonitorAddHostNetwork(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s netstr=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, netstr);
+
     if (virAsprintf(&cmd, "host_net_add %s", netstr) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1694,8 +1754,6 @@ int qemuMonitorAddHostNetwork(const virDomainObjPtr vm,
                          _("failed to close fd in qemu with '%s'"), cmd);
         goto cleanup;
     }
-
-    DEBUG("%s: host_net_add reply: %s", vm->def->name, reply);
 
     /* XXX error messages here ? */
 
@@ -1716,6 +1774,9 @@ int qemuMonitorRemoveHostNetwork(const virDomainObjPtr vm,
     char *reply = NULL;
     int ret = -1;
 
+    DEBUG("vm=%p, pid=%d, id=%d, name=%s netname=%s",
+          vm, vm->pid, vm->def->id, vm->def->name, netname);
+
     if (virAsprintf(&cmd, "host_net_remove %d %s", vlan, netname) < 0) {
         virReportOOMError(NULL);
         return -1;
@@ -1726,8 +1787,6 @@ int qemuMonitorRemoveHostNetwork(const virDomainObjPtr vm,
                          _("failed to remove host metnwork in qemu with '%s'"), cmd);
         goto cleanup;
     }
-
-    DEBUG("%s: host_net_remove reply: %s", vm->def->name, reply);
 
     /* XXX error messages here ? */
 
