@@ -6132,7 +6132,7 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev)
 {
-    virDomainHostdevDefPtr detach;
+    virDomainHostdevDefPtr detach = NULL;
     char *cmd, *reply;
     int i, ret;
     pciDevice *pci;
