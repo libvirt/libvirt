@@ -207,7 +207,7 @@ struct _virDomainNetDef {
 static inline int
 virNetHasValidPciAddr(virDomainNetDefPtr def)
 {
-    return def->pci_addr.domain || def->pci_addr.domain || def->pci_addr.slot;
+    return def->pci_addr.domain || def->pci_addr.bus || def->pci_addr.slot;
 }
 
 enum virDomainChrSrcType {
