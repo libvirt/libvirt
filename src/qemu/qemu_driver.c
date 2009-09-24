@@ -4880,7 +4880,7 @@ cleanup:
     if (cgroup)
         virCgroupFree(&cgroup);
 
-    if (ret < 0) {
+    if (ret < 0 && dev != NULL) {
         if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
             VIR_WARN0("Fail to restore disk device ownership");
         virDomainDeviceDefFree(dev);
