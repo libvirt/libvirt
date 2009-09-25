@@ -27,6 +27,7 @@
 #include "logging.h"
 #include "pci.h"
 #include "hostusb.h"
+#include "storage_file.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -403,9 +404,36 @@ SELinuxSetSecurityImageLabel(virConnectPtr conn,
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    const char *path;
 
     if (!disk->src)
         return 0;
+
+    path = disk->src;
+    do {
+        virStorageFileMetadata meta;
+        int ret;
+
+        memset(&meta, 0, sizeof(meta));
+
+        ret = virStorageFileGetMetadata(conn, path, &meta);
+
+        if (path != disk->src)
+            VIR_FREE(path);
+        path = NULL;
+
+        if (ret < 0)
+            return -1;
+
+        if (meta.backingStore != NULL &&
+            SELinuxSetFilecon(conn, meta.backingStore,
+                              default_content_context) < 0) {
+            VIR_FREE(meta.backingStore);
+            return -1;
+        }
+
+        path = meta.backingStore;
+    } while (path != NULL);
 
     if (disk->shared) {
         return SELinuxSetFilecon(conn, disk->src, default_image_context);
