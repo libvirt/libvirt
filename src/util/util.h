@@ -26,6 +26,7 @@
 #define __VIR_UTIL_H__
 
 #include "verify.h"
+#include "internal.h"
 #include <sys/select.h>
 #include <sys/types.h>
 
