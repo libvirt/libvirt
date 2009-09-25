@@ -814,7 +814,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
  *
  * Initialize all virtualization drivers.
  *
- * Return 0 if all succeed, -1 upon any failure.
+ * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateInitialize(int privileged) {
     int i, ret = 0;
@@ -835,7 +835,7 @@ int virStateInitialize(int privileged) {
  *
  * Run each virtualization driver's cleanup method.
  *
- * Return 0 if all succeed, -1 upon any failure.
+ * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateCleanup(void) {
     int i, ret = 0;
@@ -853,7 +853,7 @@ int virStateCleanup(void) {
  *
  * Run each virtualization driver's reload method.
  *
- * Return 0 if all succeed, -1 upon any failure.
+ * Returns 0 if all succeed, -1 upon any failure.
  */
 int virStateReload(void) {
     int i, ret = 0;
@@ -871,7 +871,7 @@ int virStateReload(void) {
  *
  * Run each virtualization driver's "active" method.
  *
- * Return 0 if none are active, 1 if at least one is.
+ * Returns 0 if none are active, 1 if at least one is.
  */
 int virStateActive(void) {
     int i, ret = 0;
@@ -7040,7 +7040,7 @@ virStoragePoolRef(virStoragePoolPtr pool)
  * involve communicating with a remote server, and/or initializing
  * new devices at the OS layer
  *
- * Return 0 if the volume list was refreshed, -1 on failure
+ * Returns 0 if the volume list was refreshed, -1 on failure
  */
 int
 virStoragePoolRefresh(virStoragePoolPtr pool,
@@ -7085,7 +7085,7 @@ error:
  *
  * Fetch the locally unique name of the storage pool
  *
- * Return the name of the pool, or NULL on error
+ * Returns the name of the pool, or NULL on error
  */
 const char*
 virStoragePoolGetName(virStoragePoolPtr pool)
@@ -7109,7 +7109,7 @@ virStoragePoolGetName(virStoragePoolPtr pool)
  *
  * Fetch the globally unique ID of the storage pool
  *
- * Return 0 on success, or -1 on error;
+ * Returns 0 on success, or -1 on error;
  */
 int
 virStoragePoolGetUUID(virStoragePoolPtr pool,
@@ -7145,7 +7145,7 @@ error:
  *
  * Fetch the globally unique ID of the storage pool as a string
  *
- * Return 0 on success, or -1 on error;
+ * Returns 0 on success, or -1 on error;
  */
 int
 virStoragePoolGetUUIDString(virStoragePoolPtr pool,
@@ -7186,7 +7186,7 @@ error:
  * Get volatile information about the storage pool
  * such as free space / usage summary
  *
- * returns 0 on success, or -1 on failure.
+ * Returns 0 on success, or -1 on failure.
  */
 int
 virStoragePoolGetInfo(virStoragePoolPtr pool,
@@ -7236,7 +7236,7 @@ error:
  * storage pool. This is suitable for later feeding back
  * into the virStoragePoolCreateXML method.
  *
- * returns a XML document, or NULL on error
+ * Returns a XML document, or NULL on error
  */
 char *
 virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
@@ -7283,7 +7283,7 @@ error:
  * Fetches the value of the autostart flag, which determines
  * whether the pool is automatically started at boot time
  *
- * return 0 on success, -1 on failure
+ * Returns 0 on success, -1 on failure
  */
 int
 virStoragePoolGetAutostart(virStoragePoolPtr pool,
@@ -7329,7 +7329,7 @@ error:
  *
  * Sets the autostart flag
  *
- * returns 0 on success, -1 on failure
+ * Returns 0 on success, -1 on failure
  */
 int
 virStoragePoolSetAutostart(virStoragePoolPtr pool,
@@ -7490,7 +7490,7 @@ virStorageVolGetConnect (virStorageVolPtr vol)
  * Fetch a pointer to a storage volume based on its name
  * within a pool
  *
- * return a storage volume, or NULL if not found / error
+ * Returns a storage volume, or NULL if not found / error
  */
 virStorageVolPtr
 virStorageVolLookupByName(virStoragePoolPtr pool,
@@ -7535,7 +7535,7 @@ error:
  * Fetch a pointer to a storage volume based on its
  * globally unique key
  *
- * return a storage volume, or NULL if not found / error
+ * Returns a storage volume, or NULL if not found / error
  */
 virStorageVolPtr
 virStorageVolLookupByKey(virConnectPtr conn,
@@ -7578,7 +7578,7 @@ error:
  * Fetch a pointer to a storage volume based on its
  * locally (host) unique path
  *
- * return a storage volume, or NULL if not found / error
+ * Returns a storage volume, or NULL if not found / error
  */
 virStorageVolPtr
 virStorageVolLookupByPath(virConnectPtr conn,
@@ -7621,7 +7621,7 @@ error:
  * Fetch the storage volume name. This is unique
  * within the scope of a pool
  *
- * return the volume name, or NULL on error
+ * Returns the volume name, or NULL on error
  */
 const char*
 virStorageVolGetName(virStorageVolPtr vol)
@@ -7646,7 +7646,7 @@ virStorageVolGetName(virStorageVolPtr vol)
  * unique, so the same volume will have the same
  * key no matter what host it is accessed from
  *
- * return the volume key, or NULL on error
+ * Returns the volume key, or NULL on error
  */
 const char*
 virStorageVolGetKey(virStorageVolPtr vol)
@@ -7673,7 +7673,7 @@ virStorageVolGetKey(virStorageVolPtr vol)
  * on an XML description. Not all pools support
  * creation of volumes
  *
- * return the storage volume, or NULL on error
+ * Returns the storage volume, or NULL on error
  */
 virStorageVolPtr
 virStorageVolCreateXML(virStoragePoolPtr pool,
@@ -7723,7 +7723,7 @@ error:
  * volume (name, perms)  are passed via a typical volume
  * XML description.
  *
- * return the storage volume, or NULL on error
+ * Returns the storage volume, or NULL on error
  */
 virStorageVolPtr
 virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
@@ -7777,7 +7777,7 @@ error:
  *
  * Delete the storage volume from the pool
  *
- * Return 0 on success, or -1 on error
+ * Returns 0 on success, or -1 on error
  */
 int
 virStorageVolDelete(virStorageVolPtr vol,
@@ -7823,7 +7823,7 @@ error:
  * Release the storage volume handle. The underlying
  * storage volume continues to exist.
  *
- * Return 0 on success, or -1 on error
+ * Returns 0 on success, or -1 on error
  */
 int
 virStorageVolFree(virStorageVolPtr vol)
@@ -7881,7 +7881,7 @@ virStorageVolRef(virStorageVolPtr vol)
  * Fetches volatile information about the storage
  * volume such as its current allocation
  *
- * Return 0 on success, or -1 on failure
+ * Returns 0 on success, or -1 on failure
  */
 int
 virStorageVolGetInfo(virStorageVolPtr vol,
@@ -7930,7 +7930,7 @@ error:
  * Fetch an XML document describing all aspects of
  * the storage volume
  *
- * Return the XML document, or NULL on error
+ * Returns the XML document, or NULL on error
  */
 char *
 virStorageVolGetXMLDesc(virStorageVolPtr vol,
@@ -8161,7 +8161,7 @@ error:
  * Fetch an XML document describing all aspects of
  * the device.
  *
- * Return the XML document, or NULL on error
+ * Returns the XML document, or NULL on error
  */
 char *virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
 {
@@ -9377,7 +9377,7 @@ virSecretRef(virSecretPtr secret)
  *
  * Release the secret handle. The underlying secret continues to exist.
  *
- * Return 0 on success, or -1 on error
+ * Returns 0 on success, or -1 on error
  */
 int
 virSecretFree(virSecretPtr secret)

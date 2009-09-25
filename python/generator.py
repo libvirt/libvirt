@@ -44,6 +44,7 @@ if sgmlop:
             self.finish_starttag = target.start
             self.finish_endtag = target.end
             self.handle_data = target.data
+            self.handle_cdata = target.cdata
 
             # activate parser
             self.parser = sgmlop.XMLParser()
@@ -78,6 +79,7 @@ class SlowParser(xmllib.XMLParser):
     def __init__(self, target):
         self.unknown_starttag = target.start
         self.handle_data = target.data
+        self.handle_cdata = target.cdata
         self.unknown_endtag = target.end
         xmllib.XMLParser.__init__(self)
 
@@ -104,6 +106,11 @@ class docParser:
         return self._methodname
 
     def data(self, text):
+        if debug:
+            print "data %s" % text
+        self._data.append(text)
+
+    def cdata(self, text):
         if debug:
             print "data %s" % text
         self._data.append(text)
@@ -843,20 +850,14 @@ def writeDoc(name, args, indent, output):
      val = string.replace(val, "NULL", "None");
      output.write(indent)
      output.write('"""')
-     while len(val) > 60:
-         if val[0] == " ":
-	     val = val[1:]
-	     continue
-         str = val[0:60]
-         i = string.rfind(str, " ");
-         if i < 0:
-             i = 60
-         str = val[0:i]
-         val = val[i:]
+     i = string.find(val, "\n")
+     while i >= 0:
+         str = val[0:i+1]
+         val = val[i+1:]
          output.write(str)
-         output.write('\n  ');
+         i = string.find(val, "\n")
          output.write(indent)
-     output.write(val);
+     output.write(val)
      output.write(' """\n')
 
 def buildWrappers():

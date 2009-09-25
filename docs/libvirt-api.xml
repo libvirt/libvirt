@@ -490,63 +490,63 @@
   </files>
   <symbols>
     <macro name='LIBVIR_VERSION_NUMBER' file='libvirt'>
-      <info>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</info>
+      <info><![CDATA[Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro]]></info>
     </macro>
     <macro name='VIR_COPY_CPUMAP' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.]]></info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
       <arg name='cpumap' info='pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))'/>
     </macro>
     <macro name='VIR_CPU_MAPLEN' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual & all physical CPUs of a domain.]]></info>
       <arg name='cpu' info='number of physical CPUs'/>
     </macro>
     <macro name='VIR_CPU_USABLE' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.]]></info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
     <macro name='VIR_DOMAIN_SCHED_FIELD_LENGTH' file='libvirt'>
-      <info>Macro providing the field length of virSchedParameter</info>
+      <info><![CDATA[Macro providing the field length of virSchedParameter]]></info>
     </macro>
     <macro name='VIR_GET_CPUMAP' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.]]></info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
     </macro>
     <macro name='VIR_NODEINFO_MAXCPUS' file='libvirt'>
-      <info>This macro is to calculate the total number of CPUs supported but not necessary active in the host.</info>
+      <info><![CDATA[This macro is to calculate the total number of CPUs supported but not necessary active in the host.]]></info>
       <arg name='nodeinfo' info='virNodeInfo instance'/>
     </macro>
     <macro name='VIR_SECURITY_DOI_BUFLEN' file='libvirt'>
-      <info>Macro providing the maximum length of the virSecurityModel doi string.</info>
+      <info><![CDATA[Macro providing the maximum length of the virSecurityModel doi string.]]></info>
     </macro>
     <macro name='VIR_SECURITY_LABEL_BUFLEN' file='libvirt'>
-      <info>Macro providing the maximum length of the virSecurityLabel label string. Note that this value is based on that used by Labeled NFS.</info>
+      <info><![CDATA[Macro providing the maximum length of the virSecurityLabel label string. Note that this value is based on that used by Labeled NFS.]]></info>
     </macro>
     <macro name='VIR_SECURITY_MODEL_BUFLEN' file='libvirt'>
-      <info>Macro providing the maximum length of the virSecurityModel model string.</info>
+      <info><![CDATA[Macro providing the maximum length of the virSecurityModel model string.]]></info>
     </macro>
     <macro name='VIR_UNUSE_CPU' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.]]></info>
       <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
     <macro name='VIR_USE_CPU' file='libvirt'>
-      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</info>
+      <info><![CDATA[This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.]]></info>
       <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
     <macro name='VIR_UUID_BUFLEN' file='libvirt'>
-      <info>This macro provides the length of the buffer required for virDomainGetUUID()</info>
+      <info><![CDATA[This macro provides the length of the buffer required for virDomainGetUUID()]]></info>
     </macro>
     <macro name='VIR_UUID_STRING_BUFLEN' file='libvirt'>
-      <info>This macro provides the length of the buffer required for virDomainGetUUIDString()</info>
+      <info><![CDATA[This macro provides the length of the buffer required for virDomainGetUUIDString()]]></info>
     </macro>
     <enum name='VIR_CONNECT_RO' file='libvirt' value='1' type='virConnectFlags' info=' A readonly connection'/>
     <enum name='VIR_CRED_AUTHNAME' file='libvirt' value='2' type='virConnectCredentialType' info='Identify to authorize as'/>
@@ -738,11 +738,11 @@
     <typedef name='virConnectCredentialType' file='libvirt' type='enum'/>
     <typedef name='virConnectFlags' file='libvirt' type='enum'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
-      <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Hypervisor in the API.</info>
+      <info><![CDATA[a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Hypervisor in the API.]]></info>
     </typedef>
     <struct name='virDomain' file='libvirt' type='struct _virDomain'/>
     <typedef name='virDomainBlockStatsPtr' file='libvirt' type='virDomainBlockStatsStruct *'>
-      <info>A pointer to a virDomainBlockStats structure</info>
+      <info><![CDATA[A pointer to a virDomainBlockStats structure]]></info>
     </typedef>
     <struct name='virDomainBlockStatsStruct' file='libvirt' type='struct _virDomainBlockStats'>
       <field name='rd_req' type='long long' info=' number of read requests'/>
@@ -767,10 +767,10 @@
       <field name='cpuTime' type='unsigned long long' info=' the CPU time used in nanoseconds'/>
     </struct>
     <typedef name='virDomainInfoPtr' file='libvirt' type='virDomainInfo *'>
-      <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
+      <info><![CDATA[a virDomainInfoPtr is a pointer to a virDomainInfo structure.]]></info>
     </typedef>
     <typedef name='virDomainInterfaceStatsPtr' file='libvirt' type='virDomainInterfaceStatsStruct *'>
-      <info>A pointer to a virDomainInterfaceStats structure</info>
+      <info><![CDATA[A pointer to a virDomainInterfaceStats structure]]></info>
     </typedef>
     <struct name='virDomainInterfaceStatsStruct' file='libvirt' type='struct _virDomainInterfaceStats'>
       <field name='rx_bytes' type='long long' info=''/>
@@ -785,7 +785,7 @@
     <typedef name='virDomainMemoryFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainMigrateFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainPtr' file='libvirt' type='virDomain *'>
-      <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a domain in the API.</info>
+      <info><![CDATA[a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a domain in the API.]]></info>
     </typedef>
     <typedef name='virDomainState' file='libvirt' type='enum'/>
     <typedef name='virDomainXMLFlags' file='libvirt' type='enum'/>
@@ -813,15 +813,15 @@ see note above'/>
     <typedef name='virEventHandleType' file='libvirt' type='enum'/>
     <struct name='virInterface' file='libvirt' type='struct _virInterface'/>
     <typedef name='virInterfacePtr' file='libvirt' type='virInterface *'>
-      <info>a virInterfacePtr is pointer to a virInterface private structure, this is the type used to reference a virtual interface in the API.</info>
+      <info><![CDATA[a virInterfacePtr is pointer to a virInterface private structure, this is the type used to reference a virtual interface in the API.]]></info>
     </typedef>
     <struct name='virNetwork' file='libvirt' type='struct _virNetwork'/>
     <typedef name='virNetworkPtr' file='libvirt' type='virNetwork *'>
-      <info>a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.</info>
+      <info><![CDATA[a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.]]></info>
     </typedef>
     <struct name='virNodeDevice' file='libvirt' type='struct _virNodeDevice'/>
     <typedef name='virNodeDevicePtr' file='libvirt' type='virNodeDevice *'>
-      <info>A virNodeDevicePtr is a pointer to a virNodeDevice structure.  Get one via virNodeDeviceLookupByKey, virNodeDeviceLookupByName, or virNodeDeviceCreate.  Be sure to Call virNodeDeviceFree when done using a virNodeDevicePtr obtained from any of the above functions to avoid leaking memory.</info>
+      <info><![CDATA[A virNodeDevicePtr is a pointer to a virNodeDevice structure.  Get one via virNodeDeviceLookupByKey, virNodeDeviceLookupByName, or virNodeDeviceCreate.  Be sure to Call virNodeDeviceFree when done using a virNodeDevicePtr obtained from any of the above functions to avoid leaking memory.]]></info>
     </typedef>
     <struct name='virNodeInfo' file='libvirt' type='struct _virNodeInfo'>
       <field name='model' type='charmodel[32]' info=' string indicating the CPU model'/>
@@ -834,14 +834,14 @@ see note above'/>
       <field name='threads' type='unsigned int' info=' number of threads per core'/>
     </struct>
     <typedef name='virNodeInfoPtr' file='libvirt' type='virNodeInfo *'>
-      <info>a virNodeInfoPtr is a pointer to a virNodeInfo structure.</info>
+      <info><![CDATA[a virNodeInfoPtr is a pointer to a virNodeInfo structure.]]></info>
     </typedef>
     <struct name='virSchedParameter' file='libvirt' type='struct _virSchedParameter'>
       <field name='field' type='charfield[VIR_DOMAIN_SCHED_FIELD_LENGTH]' info=' parameter name'/>
       <field name='type' type='int' info=' parameter type'/>
     </struct>
     <typedef name='virSchedParameterPtr' file='libvirt' type='virSchedParameter *'>
-      <info>a virSchedParameterPtr is a pointer to a virSchedParameter structure.</info>
+      <info><![CDATA[a virSchedParameterPtr is a pointer to a virSchedParameter structure.]]></info>
     </typedef>
     <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
     <struct name='virSecret' file='libvirt' type='struct _virSecret'/>
@@ -849,11 +849,11 @@ see note above'/>
     <typedef name='virSecretUsageType' file='libvirt' type='enum'/>
     <struct name='virSecurityLabel' file='libvirt' type='struct _virSecurityLabel'/>
     <typedef name='virSecurityLabelPtr' file='libvirt' type='virSecurityLabel *'>
-      <info>a virSecurityLabelPtr is a pointer to a virSecurityLabel.</info>
+      <info><![CDATA[a virSecurityLabelPtr is a pointer to a virSecurityLabel.]]></info>
     </typedef>
     <struct name='virSecurityModel' file='libvirt' type='struct _virSecurityModel'/>
     <typedef name='virSecurityModelPtr' file='libvirt' type='virSecurityModel *'>
-      <info>a virSecurityModelPtr is a pointer to a virSecurityModel.</info>
+      <info><![CDATA[a virSecurityModelPtr is a pointer to a virSecurityModel.]]></info>
     </typedef>
     <struct name='virStoragePool' file='libvirt' type='struct _virStoragePool'/>
     <typedef name='virStoragePoolBuildFlags' file='libvirt' type='enum'/>
@@ -866,7 +866,7 @@ see note above'/>
     </struct>
     <typedef name='virStoragePoolInfoPtr' file='libvirt' type='virStoragePoolInfo *'/>
     <typedef name='virStoragePoolPtr' file='libvirt' type='virStoragePool *'>
-      <info>a virStoragePoolPtr is pointer to a virStoragePool private structure, this is the type used to reference a storage pool in the API.</info>
+      <info><![CDATA[a virStoragePoolPtr is pointer to a virStoragePool private structure, this is the type used to reference a storage pool in the API.]]></info>
     </typedef>
     <typedef name='virStoragePoolState' file='libvirt' type='enum'/>
     <struct name='virStorageVol' file='libvirt' type='struct _virStorageVol'/>
@@ -878,7 +878,7 @@ see note above'/>
     </struct>
     <typedef name='virStorageVolInfoPtr' file='libvirt' type='virStorageVolInfo *'/>
     <typedef name='virStorageVolPtr' file='libvirt' type='virStorageVol *'>
-      <info>a virStorageVolPtr is pointer to a virStorageVol private structure, this is the type used to reference a storage volume in the API.</info>
+      <info><![CDATA[a virStorageVolPtr is pointer to a virStorageVol private structure, this is the type used to reference a storage volume in the API.]]></info>
     </typedef>
     <typedef name='virStorageVolType' file='libvirt' type='enum'/>
     <struct name='virVcpuInfo' file='libvirt' type='struct _virVcpuInfo'>
@@ -891,42 +891,80 @@ see note above'/>
     <typedef name='virVcpuState' file='libvirt' type='enum'/>
     <variable name='virConnectAuthPtrDefault' file='libvirt' type='virConnectAuthPtr'/>
     <function name='virConnCopyLastError' file='virterror' module='virterror'>
-      <info>Copy the content of the last error caught on that connection  This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage.  If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object.  Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability.  One will need to free the result with virResetError()</info>
+      <info><![CDATA[Copy the content of the last error caught on that connection
+
+This method is not protected against access from multiple
+threads. In a multi-threaded application, always use the
+global virGetLastError() API which is backed by thread
+local storage.
+
+If the connection object was discovered to be invalid by
+an API call, then the error will be reported against the
+global error object.
+
+Since 0.6.0, all errors reported in the per-connection object
+are also duplicated in the global error object. As such an
+application can always use virGetLastError(). This method
+remains for backwards compatability.
+
+One will need to free the result with virResetError()]]></info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='to' type='virErrorPtr' info='target to receive the copy'/>
     </function>
     <function name='virConnGetLastError' file='virterror' module='virterror'>
-      <info>Provide a pointer to the last error caught on that connection  This method is not protected against access from multiple threads. In a multi-threaded application, always use the global virGetLastError() API which is backed by thread local storage.  If the connection object was discovered to be invalid by an API call, then the error will be reported against the global error object.  Since 0.6.0, all errors reported in the per-connection object are also duplicated in the global error object. As such an application can always use virGetLastError(). This method remains for backwards compatability.</info>
+      <info><![CDATA[Provide a pointer to the last error caught on that connection
+
+This method is not protected against access from multiple
+threads. In a multi-threaded application, always use the
+global virGetLastError() API which is backed by thread
+local storage.
+
+If the connection object was discovered to be invalid by
+an API call, then the error will be reported against the
+global error object.
+
+Since 0.6.0, all errors reported in the per-connection object
+are also duplicated in the global error object. As such an
+application can always use virGetLastError(). This method
+remains for backwards compatability.]]></info>
       <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnResetLastError' file='virterror' module='virterror'>
-      <info>The error object is kept in thread local storage, so separate threads can safely access this concurrently.  Reset the last error caught on that connection</info>
+      <info><![CDATA[The error object is kept in thread local storage, so separate
+threads can safely access this concurrently.
+
+Reset the last error caught on that connection]]></info>
       <return type='void'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnSetErrorFunc' file='virterror' module='virterror'>
-      <info>Set a connection error handling function, if @handler is NULL it will reset to default which is to pass error back to the global library handler.</info>
+      <info><![CDATA[Set a connection error handling function, if @handler is NULL
+it will reset to default which is to pass error back to the global
+library handler.]]></info>
       <return type='void'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='userData' type='void *' info='pointer to the user data provided in the handler callback'/>
       <arg name='handler' type='virErrorFunc' info='the function to get called in case of error or NULL'/>
     </function>
     <functype name='virConnectAuthCallbackPtr' file='libvirt' module='libvirt'>
-      <info></info>
+      <info><![CDATA[]]></info>
       <return type='int' info=''/>
       <arg name='cred' type='virConnectCredentialPtr' info=''/>
       <arg name='ncred' type='unsigned int' info=''/>
       <arg name='cbdata' type='void *' info=''/>
     </functype>
     <function name='virConnectClose' file='libvirt' module='libvirt'>
-      <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
+      <info><![CDATA[This function closes the connection to the Hypervisor. This should
+not be called if further interaction with the Hypervisor are needed
+especially if there is running domain which need further monitoring by
+the application.]]></info>
       <return type='int' info='0 in case of success or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <functype name='virConnectDomainEventCallback' file='libvirt' module='libvirt'>
-      <info>A callback function to be registered, and called when a domain event occurs</info>
+      <info><![CDATA[A callback function to be registered, and called when a domain event occurs]]></info>
       <return type='int' info=''/>
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <arg name='dom' type='virDomainPtr' info='The domain on which the event occured'/>
@@ -935,13 +973,20 @@ see note above'/>
       <arg name='opaque' type='void *' info='opaque user data'/>
     </functype>
     <function name='virConnectDomainEventDeregister' file='libvirt' module='libvirt'>
-      <info>Removes a Domain Event Callback. De-registering for a domain callback will disable delivery of this event type</info>
+      <info><![CDATA[Removes a Domain Event Callback.
+De-registering for a domain callback will disable
+delivery of this event type]]></info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
     </function>
     <function name='virConnectDomainEventRegister' file='libvirt' module='libvirt'>
-      <info>Adds a Domain Event Callback. Registering for a domain callback will enable delivery of the events  The virDomainPtr object handle passed into the callback upon delivery of an event is only valid for the duration of execution of the callback. If the callback wishes to keep the domain object after the callback</info>
+      <info><![CDATA[Adds a Domain Event Callback.
+Registering for a domain callback will enable delivery of the events
+
+The virDomainPtr object handle passed into the callback upon delivery
+of an event is only valid for the duration of execution of the callback.
+If the callback wishes to keep the domain object after the callback]]></info>
       <return type='int' info='it shall take a reference to it, by calling virDomainRef. The reference can be released once the object is no longer required by calling virDomainFree.  Returns 0 on success, -1 on failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the connection'/>
       <arg name='cb' type='virConnectDomainEventCallback' info='callback to the function handling domain events'/>
@@ -949,7 +994,9 @@ see note above'/>
       <arg name='freecb' type='virFreeCallback' info='optional function to deallocate opaque when not used anymore'/>
     </function>
     <function name='virConnectDomainXMLFromNative' file='libvirt' module='libvirt'>
-      <info>Reads native configuration data  describing a domain, and generates libvirt domain XML. The format of the native data is hypervisor dependant.</info>
+      <info><![CDATA[Reads native configuration data  describing a domain, and
+generates libvirt domain XML. The format of the native
+data is hypervisor dependant.]]></info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='conn' type='virConnectPtr' info='a connection object'/>
       <arg name='nativeFormat' type='const char *' info='configuration format importing from'/>
@@ -957,7 +1004,9 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='currently unused, pass 0'/>
     </function>
     <function name='virConnectDomainXMLToNative' file='libvirt' module='libvirt'>
-      <info>Reads a domain XML configuration document, and generates generates a native configuration file describing the domain. The format of the native data is hypervisor dependant.</info>
+      <info><![CDATA[Reads a domain XML configuration document, and generates
+generates a native configuration file describing the domain.
+The format of the native data is hypervisor dependant.]]></info>
       <return type='char *' info='a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='conn' type='virConnectPtr' info='a connection object'/>
       <arg name='nativeFormat' type='const char *' info='configuration format exporting to'/>
@@ -965,7 +1014,15 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='currently unused, pass 0'/>
     </function>
     <function name='virConnectFindStoragePoolSources' file='libvirt' module='libvirt'>
-      <info>Talks to a storage backend and attempts to auto-discover the set of available storage pool sources. e.g. For iSCSI this would be a set of iSCSI targets. For NFS this would be a list of exported paths.  The srcSpec (optional for some storage pool types, e.g. local ones) is an instance of the storage pool&apos;s source element specifying where to look for the pools.  srcSpec is not required for some types (e.g., those querying local storage resources only)</info>
+      <info><![CDATA[Talks to a storage backend and attempts to auto-discover the set of
+available storage pool sources. e.g. For iSCSI this would be a set of
+iSCSI targets. For NFS this would be a list of exported paths.  The
+srcSpec (optional for some storage pool types, e.g. local ones) is
+an instance of the storage pool's source element specifying where
+to look for the pools.
+
+srcSpec is not required for some types (e.g., those querying
+local storage resources only)]]></info>
       <return type='char *' info='an xml document consisting of a SourceList element containing a source document appropriate to the given pool type for each discovered source.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='type' type='const char *' info='type of storage pool sources to discover'/>
@@ -973,185 +1030,256 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags for discovery (unused, pass 0)'/>
     </function>
     <function name='virConnectGetCapabilities' file='libvirt' module='libvirt'>
-      <info>Provides capabilities of the hypervisor / driver.</info>
+      <info><![CDATA[Provides capabilities of the hypervisor / driver.]]></info>
       <return type='char *' info='NULL in case of error, or an XML string defining the capabilities. The client must free the returned string after use.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectGetHostname' file='libvirt' module='libvirt'>
-      <info>This returns the system hostname on which the hypervisor is running (the result of the gethostname(2) system call).  If we are connected to a remote system, then this returns the hostname of the remote system.</info>
+      <info><![CDATA[This returns the system hostname on which the hypervisor is
+running (the result of the gethostname(2) system call).  If
+we are connected to a remote system, then this returns the
+hostname of the remote system.]]></info>
       <return type='char *' info='the hostname which must be freed by the caller, or NULL if there was an error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to a hypervisor connection'/>
     </function>
     <function name='virConnectGetMaxVcpus' file='libvirt' module='libvirt'>
-      <info>Provides the maximum number of virtual CPUs supported for a guest VM of a specific type. The &apos;type&apos; parameter here corresponds to the &apos;type&apos; attribute in the &lt;domain&gt; element of the XML.</info>
+      <info><![CDATA[Provides the maximum number of virtual CPUs supported for a guest VM of a
+specific type. The 'type' parameter here corresponds to the 'type'
+attribute in the <domain> element of the XML.]]></info>
       <return type='int' info='the maximum of virtual CPU or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='type' type='const char *' info='value of the &apos;type&apos; attribute in the &lt;domain&gt; element'/>
     </function>
     <function name='virConnectGetType' file='libvirt' module='libvirt'>
-      <info>Get the name of the Hypervisor software used.</info>
+      <info><![CDATA[Get the name of the Hypervisor software used.]]></info>
       <return type='const char *' info='NULL in case of error, a static zero terminated string otherwise.  See also: http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectGetURI' file='libvirt' module='libvirt'>
-      <info>This returns the URI (name) of the hypervisor connection. Normally this is the same as or similar to the string passed to the virConnectOpen/virConnectOpenReadOnly call, but the driver may make the URI canonical.  If name == NULL was passed to virConnectOpen, then the driver will return a non-NULL URI which can be used to connect to the same hypervisor later.</info>
+      <info><![CDATA[This returns the URI (name) of the hypervisor connection.
+Normally this is the same as or similar to the string passed
+to the virConnectOpen/virConnectOpenReadOnly call, but
+the driver may make the URI canonical.  If name == NULL
+was passed to virConnectOpen, then the driver will return
+a non-NULL URI which can be used to connect to the same
+hypervisor later.]]></info>
       <return type='char *' info='the URI string which must be freed by the caller, or NULL if there was an error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to a hypervisor connection'/>
     </function>
     <function name='virConnectGetVersion' file='libvirt' module='libvirt'>
-      <info>Get the version level of the Hypervisor running. This may work only with hypervisor call, i.e. with privileged access to the hypervisor, not with a Read-Only connection.</info>
+      <info><![CDATA[Get the version level of the Hypervisor running. This may work only with
+hypervisor call, i.e. with privileged access to the hypervisor, not
+with a Read-Only connection.]]></info>
       <return type='int' info='-1 in case of error, 0 otherwise. if the version can&apos;t be extracted by lack of capacities returns 0 and @hvVer is 0, otherwise @hvVer value is major * 1,000,000 + minor * 1,000 + release'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='hvVer' type='unsigned long *' info='return value for the version of the running hypervisor (OUT)'/>
     </function>
     <function name='virConnectListDefinedDomains' file='libvirt' module='libvirt'>
-      <info>list the defined but inactive domains, stores the pointers to the names in @names</info>
+      <info><![CDATA[list the defined but inactive domains, stores the pointers to the names
+in @names]]></info>
       <return type='int' info='the number of names provided in the array or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='pointer to an array to store the names'/>
       <arg name='maxnames' type='int' info='size of the array'/>
     </function>
     <function name='virConnectListDefinedInterfaces' file='libvirt' module='libvirt'>
-      <info>Collect the list of defined (inactive) physical host interfaces, and store their names in @names.</info>
+      <info><![CDATA[Collect the list of defined (inactive) physical host interfaces,
+and store their names in @names.]]></info>
       <return type='int' info='the number of interfaces found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='array to collect the list of names of interfaces'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
     <function name='virConnectListDefinedNetworks' file='libvirt' module='libvirt'>
-      <info>list the inactive networks, stores the pointers to the names in @names</info>
+      <info><![CDATA[list the inactive networks, stores the pointers to the names in @names]]></info>
       <return type='int' info='the number of names provided in the array or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='pointer to an array to store the names'/>
       <arg name='maxnames' type='int' info='size of the array'/>
     </function>
     <function name='virConnectListDefinedStoragePools' file='libvirt' module='libvirt'>
-      <info>Provides the list of names of inactive storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</info>
+      <info><![CDATA[Provides the list of names of inactive storage pools
+upto maxnames. If there are more than maxnames, the
+remaining names will be silently ignored.]]></info>
       <return type='int' info='0 on success, -1 on error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='names' type='char ** const' info='array of char * to fill with pool names (allocated by caller)'/>
       <arg name='maxnames' type='int' info='size of the names array'/>
     </function>
     <function name='virConnectListDomains' file='libvirt' module='libvirt'>
-      <info>Collect the list of active domains, and store their ID in @maxids</info>
+      <info><![CDATA[Collect the list of active domains, and store their ID in @maxids]]></info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='ids' type='int *' info='array to collect the list of IDs of active domains'/>
       <arg name='maxids' type='int' info='size of @ids'/>
     </function>
     <function name='virConnectListInterfaces' file='libvirt' module='libvirt'>
-      <info>Collect the list of active physical host interfaces, and store their names in @names</info>
+      <info><![CDATA[Collect the list of active physical host interfaces,
+and store their names in @names]]></info>
       <return type='int' info='the number of interfaces found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='array to collect the list of names of interfaces'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
     <function name='virConnectListNetworks' file='libvirt' module='libvirt'>
-      <info>Collect the list of active networks, and store their names in @names</info>
+      <info><![CDATA[Collect the list of active networks, and store their names in @names]]></info>
       <return type='int' info='the number of networks found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='array to collect the list of names of active networks'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
     <function name='virConnectListSecrets' file='libvirt' module='libvirt'>
-      <info>List UUIDs of defined secrets, store pointers to names in uuids.</info>
+      <info><![CDATA[List UUIDs of defined secrets, store pointers to names in uuids.]]></info>
       <return type='int' info='the number of UUIDs provided in the array, or -1 on failure.'/>
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <arg name='uuids' type='char **' info='Pointer to an array to store the UUIDs'/>
       <arg name='maxuuids' type='int' info='size of the array.'/>
     </function>
     <function name='virConnectListStoragePools' file='libvirt' module='libvirt'>
-      <info>Provides the list of names of active storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</info>
+      <info><![CDATA[Provides the list of names of active storage pools
+upto maxnames. If there are more than maxnames, the
+remaining names will be silently ignored.]]></info>
       <return type='int' info='0 on success, -1 on error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='names' type='char ** const' info='array of char * to fill with pool names (allocated by caller)'/>
       <arg name='maxnames' type='int' info='size of the names array'/>
     </function>
     <function name='virConnectNumOfDefinedDomains' file='libvirt' module='libvirt'>
-      <info>Provides the number of defined but inactive domains.</info>
+      <info><![CDATA[Provides the number of defined but inactive domains.]]></info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfDefinedInterfaces' file='libvirt' module='libvirt'>
-      <info>Provides the number of defined (inactive) interfaces on the physical host.</info>
+      <info><![CDATA[Provides the number of defined (inactive) interfaces on the physical host.]]></info>
       <return type='int' info='the number of defined interface found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfDefinedNetworks' file='libvirt' module='libvirt'>
-      <info>Provides the number of inactive networks.</info>
+      <info><![CDATA[Provides the number of inactive networks.]]></info>
       <return type='int' info='the number of networks found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfDefinedStoragePools' file='libvirt' module='libvirt'>
-      <info>Provides the number of inactive storage pools</info>
+      <info><![CDATA[Provides the number of inactive storage pools]]></info>
       <return type='int' info='the number of pools found, or -1 on error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
     </function>
     <function name='virConnectNumOfDomains' file='libvirt' module='libvirt'>
-      <info>Provides the number of active domains.</info>
+      <info><![CDATA[Provides the number of active domains.]]></info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfInterfaces' file='libvirt' module='libvirt'>
-      <info>Provides the number of active interfaces on the physical host.</info>
+      <info><![CDATA[Provides the number of active interfaces on the physical host.]]></info>
       <return type='int' info='the number of active interfaces found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfNetworks' file='libvirt' module='libvirt'>
-      <info>Provides the number of active networks.</info>
+      <info><![CDATA[Provides the number of active networks.]]></info>
       <return type='int' info='the number of network found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectNumOfSecrets' file='libvirt' module='libvirt'>
-      <info>Fetch number of currently defined secrets.</info>
+      <info><![CDATA[Fetch number of currently defined secrets.]]></info>
       <return type='int' info='the number currently defined secrets.'/>
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
     </function>
     <function name='virConnectNumOfStoragePools' file='libvirt' module='libvirt'>
-      <info>Provides the number of active storage pools</info>
+      <info><![CDATA[Provides the number of active storage pools]]></info>
       <return type='int' info='the number of pools found, or -1 on error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
     </function>
     <function name='virConnectOpen' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a connection to the Hypervisor and xen store</info>
+      <info><![CDATA[This function should be called first to get a connection to the
+Hypervisor and xen store]]></info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  If @name is NULL then probing will be done to determine a suitable default driver to activate. This involves trying each hypervisor in turn until one successfully opens. If the LIBVIRT_DEFAULT_URI environment variable is set, then it will be used in preference to probing for a driver.  If connecting to an unprivileged hypervisor driver which requires the libvirtd daemon to be active, it will automatically be launched if not already running. This can be prevented by setting the environment variable LIBVIRT_AUTOSTART=0  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
     <function name='virConnectOpenAuth' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a connection to the Hypervisor. If necessary, authentication will be performed fetching credentials via the callback  See virConnectOpen for notes about environment variables which can have an effect on opening drivers</info>
+      <info><![CDATA[This function should be called first to get a connection to the
+Hypervisor. If necessary, authentication will be performed fetching
+credentials via the callback
+
+See virConnectOpen for notes about environment variables which can
+have an effect on opening drivers]]></info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
       <arg name='auth' type='virConnectAuthPtr' info='Authenticate callback parameters'/>
       <arg name='flags' type='int' info='Open flags'/>
     </function>
     <function name='virConnectOpenReadOnly' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a restricted connection to the library functionalities. The set of APIs usable are then restricted on the available methods to control the domains.  See virConnectOpen for notes about environment variables which can have an effect on opening drivers</info>
+      <info><![CDATA[This function should be called first to get a restricted connection to the
+library functionalities. The set of APIs usable are then restricted
+on the available methods to control the domains.
+
+See virConnectOpen for notes about environment variables which can
+have an effect on opening drivers]]></info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
     <function name='virConnectRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the connection. For each additional call to this method, there shall be a corresponding call to virConnectClose to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a connection would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the connection. For each
+additional call to this method, there shall be a corresponding
+call to virConnectClose to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a connection would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='the connection to hold a reference on'/>
     </function>
     <function name='virCopyLastError' file='virterror' module='virterror'>
-      <info>Copy the content of the last error caught at the library level  The error object is kept in thread local storage, so separate threads can safely access this concurrently.  One will need to free the result with virResetError()</info>
+      <info><![CDATA[Copy the content of the last error caught at the library level
+
+The error object is kept in thread local storage, so separate
+threads can safely access this concurrently.
+
+One will need to free the result with virResetError()]]></info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
       <arg name='to' type='virErrorPtr' info='target to receive the copy'/>
     </function>
     <function name='virDefaultErrorFunc' file='virterror' module='virterror'>
-      <info>Default routine reporting an error to stderr.</info>
+      <info><![CDATA[Default routine reporting an error to stderr.]]></info>
       <return type='void'/>
       <arg name='err' type='virErrorPtr' info='pointer to the error.'/>
     </function>
     <function name='virDomainAttachDevice' file='libvirt' module='libvirt'>
-      <info>Create a virtual device attachment to backend.</info>
+      <info><![CDATA[Create a virtual device attachment to backend.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='xml' type='const char *' info='pointer to XML description of one device'/>
     </function>
     <function name='virDomainBlockPeek' file='libvirt' module='libvirt'>
-      <info>This function allows you to read the contents of a domain&apos;s disk device.  Typical uses for this are to determine if the domain has written a Master Boot Record (indicating that the domain has completed installation), or to try to work out the state of the domain&apos;s filesystems.  (Note that in the local case you might try to open the block device or file directly, but that won&apos;t work in the remote case, nor if you don&apos;t have sufficient permission. Hence the need for this call).  &apos;path&apos; must be a device or file corresponding to the domain. In other words it must be the precise string returned in a &lt;disk&gt;&lt;source dev=&apos;...&apos;/&gt;&lt;/disk&gt; from virDomainGetXMLDesc.  &apos;offset&apos; and &apos;size&apos; represent an area which must lie entirely within the device or file.  &apos;size&apos; may be 0 to test if the call would succeed.  &apos;buffer&apos; is the return buffer and must be at least &apos;size&apos; bytes.  NB. The remote driver imposes a 64K byte limit on &apos;size&apos;. For your program to be able to work reliably over a remote connection you should split large requests to &lt;= 65536 bytes.</info>
+      <info><![CDATA[This function allows you to read the contents of a domain's
+disk device.
+
+Typical uses for this are to determine if the domain has
+written a Master Boot Record (indicating that the domain
+has completed installation), or to try to work out the state
+of the domain's filesystems.
+
+(Note that in the local case you might try to open the
+block device or file directly, but that won't work in the
+remote case, nor if you don't have sufficient permission.
+Hence the need for this call).
+
+'path' must be a device or file corresponding to the domain.
+In other words it must be the precise string returned in
+a <disk><source dev='...'/></disk> from
+virDomainGetXMLDesc.
+
+'offset' and 'size' represent an area which must lie entirely
+within the device or file.  'size' may be 0 to test if the
+call would succeed.
+
+'buffer' is the return buffer and must be at least 'size' bytes.
+
+NB. The remote driver imposes a 64K byte limit on 'size'.
+For your program to be able to work reliably over a remote
+connection you should split large requests to <= 65536 bytes.]]></info>
       <return type='int' info='0 in case of success or -1 in case of failure. really 64 bits'/>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
       <arg name='path' type='const char *' info='path to the block device'/>
@@ -1161,7 +1289,19 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='unused, always pass 0'/>
     </function>
     <function name='virDomainBlockStats' file='libvirt' module='libvirt'>
-      <info>This function returns block device (disk) stats for block devices attached to the domain.  The path parameter is the name of the block device.  Get this by calling virDomainGetXMLDesc and finding the &lt;target dev=&apos;...&apos;&gt; attribute within //domain/devices/disk.  (For example, &quot;xvda&quot;).  Domains may have more than one block device.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
+      <info><![CDATA[This function returns block device (disk) stats for block
+devices attached to the domain.
+
+The path parameter is the name of the block device.  Get this
+by calling virDomainGetXMLDesc and finding the <target dev='...'>
+attribute within //domain/devices/disk.  (For example, "xvda").
+
+Domains may have more than one block device.  To get stats for
+each you should make multiple calls to this function.
+
+Individual fields within the stats structure may be returned
+as -1, which indicates that the hypervisor does not support
+that particular statistic.]]></info>
       <return type='int' info='0 in case of success or -1 in case of failure.'/>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
       <arg name='path' type='const char *' info='path to the block device'/>
@@ -1169,128 +1309,166 @@ see note above'/>
       <arg name='size' type='size_t' info='size of stats structure'/>
     </function>
     <function name='virDomainCoreDump' file='libvirt' module='libvirt'>
-      <info>This method will dump the core of a domain on a given file for analysis. Note that for remote Xen Daemon the file path will be interpreted in the remote host.</info>
+      <info><![CDATA[This method will dump the core of a domain on a given file for analysis.
+Note that for remote Xen Daemon the file path will be interpreted in
+the remote host.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='to' type='const char *' info='path for the core file'/>
       <arg name='flags' type='int' info='extra flags, currently unused'/>
     </function>
     <function name='virDomainCreate' file='libvirt' module='libvirt'>
-      <info>launch a defined domain. If the call succeed the domain moves from the defined to the running domains pools.</info>
+      <info><![CDATA[launch a defined domain. If the call succeed the domain moves from the
+defined to the running domains pools.]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Deprecated after 0.4.6. Renamed to virDomainCreateXML() providing identical functionality. This existing name will left indefinitely for API compatability.</info>
+      <info><![CDATA[Deprecated after 0.4.6.
+Renamed to virDomainCreateXML() providing identical functionality.
+This existing name will left indefinitely for API compatability.]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
     </function>
     <function name='virDomainCreateXML' file='libvirt' module='libvirt'>
-      <info>Launch a new guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor. The domain is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted (see virDomainDefineXML() to define persistent domains).</info>
+      <info><![CDATA[Launch a new guest domain, based on an XML description similar
+to the one returned by virDomainGetXMLDesc()
+This function may requires privileged access to the hypervisor.
+The domain is not persistent, so its definition will disappear when it
+is destroyed, or if the host is restarted (see virDomainDefineXML() to
+define persistent domains).]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
     </function>
     <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
-      <info>Define a domain, but does not start it. This definition is persistent, until explicitly undefined with virDomainUndefine(). A previous definition for this domain would be overriden if it already exists.</info>
+      <info><![CDATA[Define a domain, but does not start it.
+This definition is persistent, until explicitly undefined with
+virDomainUndefine(). A previous definition for this domain would be
+overriden if it already exists.]]></info>
       <return type='virDomainPtr' info='NULL in case of error, a pointer to the domain otherwise'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
     </function>
     <function name='virDomainDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. This does not free the associated virDomainPtr object. This function may require privileged access</info>
+      <info><![CDATA[Destroy the domain object. The running instance is shutdown if not down
+already and all resources used by it are given back to the hypervisor. This
+does not free the associated virDomainPtr object.
+This function may require privileged access]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainDetachDevice' file='libvirt' module='libvirt'>
-      <info>Destroy a virtual device attachment to backend.</info>
+      <info><![CDATA[Destroy a virtual device attachment to backend.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='xml' type='const char *' info='pointer to XML description of one device'/>
     </function>
     <function name='virDomainFree' file='libvirt' module='libvirt'>
-      <info>Free the domain object. The running instance is kept alive. The data structure is freed and should not be used thereafter.</info>
+      <info><![CDATA[Free the domain object. The running instance is kept alive.
+The data structure is freed and should not be used thereafter.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetAutostart' file='libvirt' module='libvirt'>
-      <info>Provides a boolean value indicating whether the domain configured to be automatically started when the host machine boots.</info>
+      <info><![CDATA[Provides a boolean value indicating whether the domain
+configured to be automatically started when the host
+machine boots.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virDomainGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a domain.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the domain object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with a domain.  The
+reference counter on the connection is not increased by this
+call.
+
+WARNING: When writing libvirt bindings in other languages, do
+not use this function.  Instead, store the connection and
+the domain object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='dom' type='virDomainPtr' info='pointer to a domain'/>
     </function>
     <function name='virDomainGetID' file='libvirt' module='libvirt'>
-      <info>Get the hypervisor ID number for the domain</info>
+      <info><![CDATA[Get the hypervisor ID number for the domain]]></info>
       <return type='unsigned int' info='the domain ID number or (unsigned int) -1 in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetInfo' file='libvirt' module='libvirt'>
-      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>
+      <info><![CDATA[Extract information about a domain. Note that if the connection
+used to get the domain is limited only a partial set of the information
+can be extracted.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='info' type='virDomainInfoPtr' info='pointer to a virDomainInfo structure allocated by the user'/>
     </function>
     <function name='virDomainGetMaxMemory' file='libvirt' module='libvirt'>
-      <info>Retrieve the maximum amount of physical memory allocated to a domain. If domain is NULL, then this get the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <info><![CDATA[Retrieve the maximum amount of physical memory allocated to a
+domain. If domain is NULL, then this get the amount of memory reserved
+to Domain0 i.e. the domain where the application runs.]]></info>
       <return type='unsigned long' info='the memory size in kilobytes or 0 in case of error.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
     </function>
     <function name='virDomainGetMaxVcpus' file='libvirt' module='libvirt'>
-      <info>Provides the maximum number of virtual CPUs supported for the guest VM. If the guest is inactive, this is basically the same as virConnectGetMaxVcpus. If the guest is running this will reflect the maximum number of virtual CPUs the guest was booted with.</info>
+      <info><![CDATA[Provides the maximum number of virtual CPUs supported for
+the guest VM. If the guest is inactive, this is basically
+the same as virConnectGetMaxVcpus. If the guest is running
+this will reflect the maximum number of virtual CPUs the
+guest was booted with.]]></info>
       <return type='int' info='the maximum of virtual CPU or -1 in case of error.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
     </function>
     <function name='virDomainGetName' file='libvirt' module='libvirt'>
-      <info>Get the public name for that domain</info>
+      <info><![CDATA[Get the public name for that domain]]></info>
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the domain object.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetOSType' file='libvirt' module='libvirt'>
-      <info>Get the type of domain operation system.</info>
+      <info><![CDATA[Get the type of domain operation system.]]></info>
       <return type='char *' info='the new string or NULL in case of error, the string must be freed by the caller.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetSchedulerParameters' file='libvirt' module='libvirt'>
-      <info>Get the scheduler parameters, the @params array will be filled with the values.</info>
+      <info><![CDATA[Get the scheduler parameters, the @params array will be filled with the
+values.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter object (return value)'/>
       <arg name='nparams' type='int *' info='pointer to number of scheduler parameter (this value should be same than the returned value nparams of virDomainGetSchedulerType)'/>
     </function>
     <function name='virDomainGetSchedulerType' file='libvirt' module='libvirt'>
-      <info>Get the scheduler type.</info>
+      <info><![CDATA[Get the scheduler type.]]></info>
       <return type='char *' info='NULL in case of error. The caller must free the returned string.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='nparams' type='int *' info='number of scheduler parameters(return value)'/>
     </function>
     <function name='virDomainGetSecurityLabel' file='libvirt' module='libvirt'>
-      <info>Extract security label of an active domain. The &apos;label&apos; field in the @seclabel argument will be initialized to the empty string if the domain is not running under a security model.</info>
+      <info><![CDATA[Extract security label of an active domain. The 'label' field
+in the @seclabel argument will be initialized to the empty
+string if the domain is not running under a security model.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='seclabel' type='virSecurityLabelPtr' info='pointer to a virSecurityLabel structure'/>
     </function>
     <function name='virDomainGetUUID' file='libvirt' module='libvirt'>
-      <info>Get the UUID for a domain</info>
+      <info><![CDATA[Get the UUID for a domain]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='uuid' type='unsigned char *' info='pointer to a VIR_UUID_BUFLEN bytes array'/>
     </function>
     <function name='virDomainGetUUIDString' file='libvirt' module='libvirt'>
-      <info>Get the UUID for a domain as string. For more information about UUID see RFC4122.</info>
+      <info><![CDATA[Get the UUID for a domain as string. For more information about
+UUID see RFC4122.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virDomainGetVcpus' file='libvirt' module='libvirt'>
-      <info>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer isn&apos;t NULL.</info>
+      <info><![CDATA[Extract information about virtual CPUs of domain, store it in info array
+and also in cpumaps if this pointer isn't NULL.]]></info>
       <return type='int' info='the number of info filled in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='info' type='virVcpuInfoPtr' info='pointer to an array of virVcpuInfo structures (OUT)'/>
@@ -1299,13 +1477,24 @@ see note above'/>
       <arg name='maplen' type='int' info='number of bytes in one cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...).'/>
     </function>
     <function name='virDomainGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateXML().</info>
+      <info><![CDATA[Provide an XML description of the domain. The description may be reused
+later to relaunch the domain with virDomainCreateXML().]]></info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of virDomainXMLFlags'/>
     </function>
     <function name='virDomainInterfaceStats' file='libvirt' module='libvirt'>
-      <info>This function returns network interface stats for interfaces attached to the domain.  The path parameter is the name of the network interface.  Domains may have more than network interface.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
+      <info><![CDATA[This function returns network interface stats for interfaces
+attached to the domain.
+
+The path parameter is the name of the network interface.
+
+Domains may have more than network interface.  To get stats for
+each you should make multiple calls to this function.
+
+Individual fields within the stats structure may be returned
+as -1, which indicates that the hypervisor does not support
+that particular statistic.]]></info>
       <return type='int' info='0 in case of success or -1 in case of failure.'/>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
       <arg name='path' type='const char *' info='path to the interface'/>
@@ -1313,31 +1502,52 @@ see note above'/>
       <arg name='size' type='size_t' info='size of stats structure'/>
     </function>
     <function name='virDomainLookupByID' file='libvirt' module='libvirt'>
-      <info>Try to find a domain based on the hypervisor ID number Note that this won&apos;t work for inactive domains which have an ID of -1, in that case a lookup based on the Name or UUId need to be done instead.</info>
+      <info><![CDATA[Try to find a domain based on the hypervisor ID number
+Note that this won't work for inactive domains which have an ID of -1,
+in that case a lookup based on the Name or UUId need to be done instead.]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='id' type='int' info='the domain ID number'/>
     </function>
     <function name='virDomainLookupByName' file='libvirt' module='libvirt'>
-      <info>Try to lookup a domain on the given hypervisor based on its name.</info>
+      <info><![CDATA[Try to lookup a domain on the given hypervisor based on its name.]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the domain'/>
     </function>
     <function name='virDomainLookupByUUID' file='libvirt' module='libvirt'>
-      <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
+      <info><![CDATA[Try to lookup a domain on the given hypervisor based on its UUID.]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the domain'/>
     </function>
     <function name='virDomainLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
+      <info><![CDATA[Try to lookup a domain on the given hypervisor based on its UUID.]]></info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the domain'/>
     </function>
     <function name='virDomainMemoryPeek' file='libvirt' module='libvirt'>
-      <info>This function allows you to read the contents of a domain&apos;s memory.  The memory which is read is controlled by the &apos;start&apos;, &apos;size&apos; and &apos;flags&apos; parameters.  If &apos;flags&apos; is VIR_MEMORY_VIRTUAL then the &apos;start&apos; and &apos;size&apos; parameters are interpreted as virtual memory addresses for whichever task happens to be running on the domain at the moment.  Although this sounds haphazard it is in fact what you want in order to read Linux kernel state, because it ensures that pointers in the kernel image can be interpreted coherently.  &apos;buffer&apos; is the return buffer and must be at least &apos;size&apos; bytes. &apos;size&apos; may be 0 to test if the call would succeed.  NB. The remote driver imposes a 64K byte limit on &apos;size&apos;. For your program to be able to work reliably over a remote connection you should split large requests to &lt;= 65536 bytes.</info>
+      <info><![CDATA[This function allows you to read the contents of a domain's
+memory.
+
+The memory which is read is controlled by the 'start', 'size'
+and 'flags' parameters.
+
+If 'flags' is VIR_MEMORY_VIRTUAL then the 'start' and 'size'
+parameters are interpreted as virtual memory addresses for
+whichever task happens to be running on the domain at the
+moment.  Although this sounds haphazard it is in fact what
+you want in order to read Linux kernel state, because it
+ensures that pointers in the kernel image can be interpreted
+coherently.
+
+'buffer' is the return buffer and must be at least 'size' bytes.
+'size' may be 0 to test if the call would succeed.
+
+NB. The remote driver imposes a 64K byte limit on 'size'.
+For your program to be able to work reliably over a remote
+connection you should split large requests to <= 65536 bytes.]]></info>
       <return type='int' info='0 in case of success or -1 in case of failure. really 64 bits'/>
       <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
       <arg name='start' type='unsigned long long' info='start of memory to peek'/>
@@ -1346,7 +1556,40 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags, see below'/>
     </function>
     <function name='virDomainMigrate' file='libvirt' module='libvirt'>
-      <info>Migrate the domain object from its current host to the destination host given by dconn (a connection to the destination host).  Flags may be one of more of the following: VIR_MIGRATE_LIVE   Attempt a live migration.  If a hypervisor supports renaming domains during migration, then you may set the dname parameter to the new name (otherwise it keeps the same name).  If this is not supported by the hypervisor, dname must be NULL or else you will get an error.  Since typically the two hypervisors connect directly to each other in order to perform the migration, you may need to specify a path from the source to the destination.  This is the purpose of the uri parameter.  If uri is NULL, then libvirt will try to find the best method.  Uri may specify the hostname or IP address of the destination host as seen from the source.  Or uri may be a URI giving transport, hostname, user, port, etc. in the usual form.  Refer to driver documentation for the particular URIs supported.  The maximum bandwidth (in Mbps) that will be used to do migration can be specified with the bandwidth parameter.  If set to 0, libvirt will choose a suitable default.  Some hypervisors do not support this feature and will return an error if bandwidth is not 0.  To see which features are supported by the current hypervisor, see virConnectGetCapabilities, /capabilities/host/migration_features.  There are many limitations on migration imposed by the underlying technology - for example it may not be possible to migrate between different processors even with the same architecture, or between different types of hypervisor.</info>
+      <info><![CDATA[Migrate the domain object from its current host to the destination
+host given by dconn (a connection to the destination host).
+
+Flags may be one of more of the following:
+  VIR_MIGRATE_LIVE   Attempt a live migration.
+
+If a hypervisor supports renaming domains during migration,
+then you may set the dname parameter to the new name (otherwise
+it keeps the same name).  If this is not supported by the
+hypervisor, dname must be NULL or else you will get an error.
+
+Since typically the two hypervisors connect directly to each
+other in order to perform the migration, you may need to specify
+a path from the source to the destination.  This is the purpose
+of the uri parameter.  If uri is NULL, then libvirt will try to
+find the best method.  Uri may specify the hostname or IP address
+of the destination host as seen from the source.  Or uri may be
+a URI giving transport, hostname, user, port, etc. in the usual
+form.  Refer to driver documentation for the particular URIs
+supported.
+
+The maximum bandwidth (in Mbps) that will be used to do migration
+can be specified with the bandwidth parameter.  If set to 0,
+libvirt will choose a suitable default.  Some hypervisors do
+not support this feature and will return an error if bandwidth
+is not 0.
+
+To see which features are supported by the current hypervisor,
+see virConnectGetCapabilities, /capabilities/host/migration_features.
+
+There are many limitations on migration imposed by the underlying
+technology - for example it may not be possible to migrate between
+different processors even with the same architecture, or between
+different types of hypervisor.]]></info>
       <return type='virDomainPtr' info='the new domain object if the migration was successful, or NULL in case of error.  Note that the new domain object exists in the scope of the destination connection (dconn).'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='dconn' type='virConnectPtr' info='destination host (a connection object)'/>
@@ -1356,7 +1599,8 @@ see note above'/>
       <arg name='bandwidth' type='unsigned long' info='(optional) specify migration bandwidth limit in Mbps'/>
     </function>
     <function name='virDomainPinVcpu' file='libvirt' module='libvirt'>
-      <info>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires privileged access to the hypervisor.</info>
+      <info><![CDATA[Dynamically change the real CPUs which can be allocated to a virtual CPU.
+This function requires privileged access to the hypervisor.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='vcpu' type='unsigned int' info='virtual CPU number'/>
@@ -1364,87 +1608,128 @@ see note above'/>
       <arg name='maplen' type='int' info='number of bytes in cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...). If maplen &lt; size, missing bytes are set to zero. If maplen &gt; size, failure code is returned.'/>
     </function>
     <function name='virDomainReboot' file='libvirt' module='libvirt'>
-      <info>Reboot a domain, the domain object is still usable there after but the domain OS is being stopped for a restart. Note that the guest OS may ignore the request.</info>
+      <info><![CDATA[Reboot a domain, the domain object is still usable there after but
+the domain OS is being stopped for a restart.
+Note that the guest OS may ignore the request.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='unsigned int' info='extra flags for the reboot operation, not used yet'/>
     </function>
     <function name='virDomainRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the domain. For each additional call to this method, there shall be a corresponding call to virDomainFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a domain would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the domain. For each
+additional call to this method, there shall be a corresponding
+call to virDomainFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a domain would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='the domain to hold a reference on'/>
     </function>
     <function name='virDomainRestore' file='libvirt' module='libvirt'>
-      <info>This method will restore a domain saved to disk by virDomainSave().</info>
+      <info><![CDATA[This method will restore a domain saved to disk by virDomainSave().]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='from' type='const char *' info='path to the'/>
     </function>
     <function name='virDomainResume' file='libvirt' module='libvirt'>
-      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function may requires privileged access</info>
+      <info><![CDATA[Resume an suspended domain, the process is restarted from the state where
+it was frozen by calling virSuspendDomain().
+This function may requires privileged access]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSave' file='libvirt' module='libvirt'>
-      <info>This method will suspend a domain and save its memory contents to a file on disk. After the call, if successful, the domain is not listed as running anymore (this may be a problem). Use virDomainRestore() to restore a domain after saving.</info>
+      <info><![CDATA[This method will suspend a domain and save its memory contents to
+a file on disk. After the call, if successful, the domain is not
+listed as running anymore (this may be a problem).
+Use virDomainRestore() to restore a domain after saving.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='to' type='const char *' info='path for the output file'/>
     </function>
     <function name='virDomainSetAutostart' file='libvirt' module='libvirt'>
-      <info>Configure the domain to be automatically started when the host machine boots.</info>
+      <info><![CDATA[Configure the domain to be automatically started
+when the host machine boots.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='autostart' type='int' info='whether the domain should be automatically started 0 or 1'/>
     </function>
     <function name='virDomainSetMaxMemory' file='libvirt' module='libvirt'>
-      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires privileged access to the hypervisor.</info>
+      <info><![CDATA[Dynamically change the maximum amount of physical memory allocated to a
+domain. If domain is NULL, then this change the amount of memory reserved
+to Domain0 i.e. the domain where the application runs.
+This function requires privileged access to the hypervisor.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
     </function>
     <function name='virDomainSetMemory' file='libvirt' module='libvirt'>
-      <info>Dynamically change the target amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function may requires privileged access to the hypervisor.</info>
+      <info><![CDATA[Dynamically change the target amount of physical memory allocated to a
+domain. If domain is NULL, then this change the amount of memory reserved
+to Domain0 i.e. the domain where the application runs.
+This function may requires privileged access to the hypervisor.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
     </function>
     <function name='virDomainSetSchedulerParameters' file='libvirt' module='libvirt'>
-      <info>Change the scheduler parameters</info>
+      <info><![CDATA[Change the scheduler parameters]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
       <arg name='nparams' type='int' info='number of scheduler parameter (this value should be same or less than the returned value nparams of virDomainGetSchedulerType)'/>
     </function>
     <function name='virDomainSetVcpus' file='libvirt' module='libvirt'>
-      <info>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires privileged access to the hypervisor.</info>
+      <info><![CDATA[Dynamically change the number of virtual CPUs used by the domain.
+Note that this call may fail if the underlying virtualization hypervisor
+does not support it or if growing the number is arbitrary limited.
+This function requires privileged access to the hypervisor.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='nvcpus' type='unsigned int' info='the new number of virtual CPUs for this domain'/>
     </function>
     <function name='virDomainShutdown' file='libvirt' module='libvirt'>
-      <info>Shutdown a domain, the domain object is still usable there after but the domain OS is being stopped. Note that the guest OS may ignore the request.  TODO: should we add an option for reboot, knowing it may not be doable in the general case ?</info>
+      <info><![CDATA[Shutdown a domain, the domain object is still usable there after but
+the domain OS is being stopped. Note that the guest OS may ignore the
+request.
+
+TODO: should we add an option for reboot, knowing it may not be doable
+      in the general case ?]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSuspend' file='libvirt' module='libvirt'>
-      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function may requires privileged access.</info>
+      <info><![CDATA[Suspends an active domain, the process is frozen without further access
+to CPU resources and I/O but the memory used by the domain at the
+hypervisor level will stay allocated. Use virDomainResume() to reactivate
+the domain.
+This function may requires privileged access.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainUndefine' file='libvirt' module='libvirt'>
-      <info>Undefine a domain but does not stop it if it is running</info>
+      <info><![CDATA[Undefine a domain but does not stop it if it is running]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <functype name='virErrorFunc' file='virterror' module='virterror'>
-      <info>Signature of a function to use when there is an error raised by the library.</info>
+      <info><![CDATA[Signature of a function to use when there is an error raised by the library.]]></info>
       <return type='void'/>
       <arg name='userData' type='void *' info='user provided data for the error callback'/>
       <arg name='error' type='virErrorPtr' info='the error being raised.'/>
     </functype>
     <functype name='virEventAddHandleFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this callback Adds a file handle callback to listen for specific events. The same file handle can be registered multiple times provided the requested event sets are non-overlapping  If the opaque user data requires free&apos;ing when the handle is unregistered, then a 2nd callback can be supplied for this purpose.</info>
+      <info><![CDATA[Part of the EventImpl, this callback Adds a file handle callback to
+listen for specific events. The same file handle can be registered
+multiple times provided the requested event sets are non-overlapping
+
+If the opaque user data requires free'ing when the handle
+is unregistered, then a 2nd callback can be supplied for
+this purpose.]]></info>
       <return type='int' info='a handle watch number to be used for updating and unregistering for events'/>
       <arg name='fd' type='int' info='file descriptor to listen on'/>
       <arg name='event' type='int' info='bitset of events on which to fire the callback'/>
@@ -1453,7 +1738,12 @@ see note above'/>
       <arg name='ff' type='virFreeCallback' info='the callback invoked to free opaque data blob'/>
     </functype>
     <functype name='virEventAddTimeoutFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-defined callback handles adding an event timeout.  If the opaque user data requires free&apos;ing when the handle is unregistered, then a 2nd callback can be supplied for this purpose.</info>
+      <info><![CDATA[Part of the EventImpl, this user-defined callback handles adding an
+event timeout.
+
+If the opaque user data requires free'ing when the handle
+is unregistered, then a 2nd callback can be supplied for
+this purpose.]]></info>
       <return type='int' info='a timer value'/>
       <arg name='timeout' type='int' info='The timeout to monitor'/>
       <arg name='cb' type='virEventTimeoutCallback' info='the callback to call when timeout has expired'/>
@@ -1461,7 +1751,8 @@ see note above'/>
       <arg name='ff' type='virFreeCallback' info='the callback invoked to free opaque data blob'/>
     </functype>
     <functype name='virEventHandleCallback' file='libvirt' module='libvirt'>
-      <info>Callback for receiving file handle events. The callback will be invoked once for each event which is pending.</info>
+      <info><![CDATA[Callback for receiving file handle events. The callback will
+be invoked once for each event which is pending.]]></info>
       <return type='void'/>
       <arg name='watch' type='int' info='watch on which the event occurred'/>
       <arg name='fd' type='int' info='file handle on which the event occurred'/>
@@ -1469,7 +1760,7 @@ see note above'/>
       <arg name='opaque' type='void *' info='user data registered with handle'/>
     </functype>
     <function name='virEventRegisterImpl' file='libvirt' module='libvirt'>
-      <info></info>
+      <info><![CDATA[]]></info>
       <return type='void'/>
       <arg name='addHandle' type='virEventAddHandleFunc' info=''/>
       <arg name='updateHandle' type='virEventUpdateHandleFunc' info=''/>
@@ -1479,298 +1770,411 @@ see note above'/>
       <arg name='removeTimeout' type='virEventRemoveTimeoutFunc' info=''/>
     </function>
     <functype name='virEventRemoveHandleFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-provided callback is notified when an fd is no longer being listened on.  If a virEventHandleFreeFunc was supplied when the handle was registered, it will be invoked some time during, or after this function call, when it is safe to release the user data.</info>
+      <info><![CDATA[Part of the EventImpl, this user-provided callback is notified when
+an fd is no longer being listened on.
+
+If a virEventHandleFreeFunc was supplied when the handle was
+registered, it will be invoked some time during, or after this
+function call, when it is safe to release the user data.]]></info>
       <return type='int' info=''/>
       <arg name='watch' type='int' info='file descriptor watch to stop listening on'/>
     </functype>
     <functype name='virEventRemoveTimeoutFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-defined callback removes a timer  If a virEventTimeoutFreeFunc was supplied when the handle was registered, it will be invoked some time during, or after this function call, when it is safe to release the user data.</info>
+      <info><![CDATA[Part of the EventImpl, this user-defined callback removes a timer
+
+If a virEventTimeoutFreeFunc was supplied when the handle was
+registered, it will be invoked some time during, or after this
+function call, when it is safe to release the user data.]]></info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='timer' type='int' info='the timer to remove'/>
     </functype>
     <functype name='virEventTimeoutCallback' file='libvirt' module='libvirt'>
-      <info>callback for receiving timer events</info>
+      <info><![CDATA[callback for receiving timer events]]></info>
       <return type='void'/>
       <arg name='timer' type='int' info='timer id emitting the event'/>
       <arg name='opaque' type='void *' info='user data registered with handle'/>
     </functype>
     <functype name='virEventUpdateHandleFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-provided callback is notified when events to listen on change</info>
+      <info><![CDATA[Part of the EventImpl, this user-provided callback is notified when
+events to listen on change]]></info>
       <return type='void'/>
       <arg name='watch' type='int' info='file descriptor watch to modify'/>
       <arg name='event' type='int' info='new events to listen on'/>
     </functype>
     <functype name='virEventUpdateTimeoutFunc' file='libvirt' module='libvirt'>
-      <info>Part of the EventImpl, this user-defined callback updates an event timeout.</info>
+      <info><![CDATA[Part of the EventImpl, this user-defined callback updates an
+event timeout.]]></info>
       <return type='void'/>
       <arg name='timer' type='int' info='the timer to modify'/>
       <arg name='timeout' type='int' info='the new timeout value'/>
     </functype>
     <functype name='virFreeCallback' file='libvirt' module='libvirt'>
-      <info></info>
+      <info><![CDATA[]]></info>
       <return type='void'/>
       <arg name='opaque' type='void *' info=''/>
     </functype>
     <function name='virFreeError' file='virterror' module='virterror'>
-      <info>Resets and frees the given error.</info>
+      <info><![CDATA[Resets and frees the given error.]]></info>
       <return type='void'/>
       <arg name='err' type='virErrorPtr' info='error to free'/>
     </function>
     <function name='virGetLastError' file='virterror' module='virterror'>
-      <info>Provide a pointer to the last error caught at the library level  The error object is kept in thread local storage, so separate threads can safely access this concurrently.</info>
+      <info><![CDATA[Provide a pointer to the last error caught at the library level
+
+The error object is kept in thread local storage, so separate
+threads can safely access this concurrently.]]></info>
       <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
     </function>
     <function name='virGetVersion' file='libvirt' module='libvirt'>
-      <info>Provides two information back, @libVer is the version of the library while @typeVer will be the version of the hypervisor type @type against which the library was compiled. If @type is NULL, &quot;Xen&quot; is assumed, if @type is unknown or not available, an error code will be returned and @typeVer will be 0.</info>
+      <info><![CDATA[Provides two information back, @libVer is the version of the library
+while @typeVer will be the version of the hypervisor type @type against
+which the library was compiled. If @type is NULL, "Xen" is assumed, if
+@type is unknown or not available, an error code will be returned and
+@typeVer will be 0.]]></info>
       <return type='int' info='-1 in case of failure, 0 otherwise, and values for @libVer and @typeVer have the format major * 1,000,000 + minor * 1,000 + release.'/>
       <arg name='libVer' type='unsigned long *' info='return value for the library version (OUT)'/>
       <arg name='type' type='const char *' info='the type of connection/driver looked at'/>
       <arg name='typeVer' type='unsigned long *' info='return value for the version of the hypervisor (OUT)'/>
     </function>
     <function name='virInitialize' file='libvirt' module='libvirt'>
-      <info>Initialize the library. It&apos;s better to call this routine at startup in multithreaded applications to avoid potential race when initializing the library.</info>
+      <info><![CDATA[Initialize the library. It's better to call this routine at startup
+in multithreaded applications to avoid potential race when initializing
+the library.]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
     </function>
     <function name='virInterfaceCreate' file='libvirt' module='libvirt'>
-      <info>Activate an interface (ie call &quot;ifup&quot;)</info>
+      <info><![CDATA[Activate an interface (ie call "ifup")]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='iface' type='virInterfacePtr' info='pointer to a defined interface'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceDefineXML' file='libvirt' module='libvirt'>
-      <info>Define an interface (or modify existing interface configuration)</info>
+      <info><![CDATA[Define an interface (or modify existing interface configuration)]]></info>
       <return type='virInterfacePtr' info='NULL in case of error, a pointer to the interface otherwise'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xml' type='const char *' info='the XML description for the interface, preferably in UTF-8'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceDestroy' file='libvirt' module='libvirt'>
-      <info>deactivate an interface (ie call &quot;ifdown&quot;) This does not remove the interface from the config, and does not free the associated virInterfacePtr object.</info>
+      <info><![CDATA[deactivate an interface (ie call "ifdown")
+This does not remove the interface from the config, and
+does not free the associated virInterfacePtr object.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='iface' type='virInterfacePtr' info='an interface object'/>
       <arg name='flags' type='unsigned int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceFree' file='libvirt' module='libvirt'>
-      <info>Free the interface object. The interface itself is unaltered. The data structure is freed and should not be used thereafter.</info>
+      <info><![CDATA[Free the interface object. The interface itself is unaltered.
+The data structure is freed and should not be used thereafter.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with an interface.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the interface object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with an interface.  The
+reference counter on the connection is not increased by this
+call.
+
+WARNING: When writing libvirt bindings in other languages, do
+not use this function.  Instead, store the connection and
+the interface object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='iface' type='virInterfacePtr' info='pointer to an interface'/>
     </function>
     <function name='virInterfaceGetMACString' file='libvirt' module='libvirt'>
-      <info>Get the MAC for an interface as string. For more information about MAC see RFC4122.</info>
+      <info><![CDATA[Get the MAC for an interface as string. For more information about
+MAC see RFC4122.]]></info>
       <return type='const char *' info='a pointer to the MAC address (in null-terminated ASCII format) or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
       <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetName' file='libvirt' module='libvirt'>
-      <info>Get the public name for that interface</info>
+      <info><![CDATA[Get the public name for that interface]]></info>
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the interface object.'/>
       <arg name='iface' type='virInterfacePtr' info='an interface object'/>
     </function>
     <function name='virInterfaceGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Provide an XML description of the interface. The description may be reused later to redefine the interface with virInterfaceDefineXML().</info>
+      <info><![CDATA[Provide an XML description of the interface. The description may be reused
+later to redefine the interface with virInterfaceDefineXML().]]></info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='iface' type='virInterfacePtr' info='an interface object'/>
       <arg name='flags' type='unsigned int' info='an OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virInterfaceLookupByMACString' file='libvirt' module='libvirt'>
-      <info>Try to lookup an interface on the given hypervisor based on its MAC.</info>
+      <info><![CDATA[Try to lookup an interface on the given hypervisor based on its MAC.]]></info>
       <return type='virInterfacePtr' info='a new interface object or NULL in case of failure.  If the interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='macstr' type='const char *' info='the MAC for the interface (null-terminated ASCII format)'/>
     </function>
     <function name='virInterfaceLookupByName' file='libvirt' module='libvirt'>
-      <info>Try to lookup an interface on the given hypervisor based on its name.</info>
+      <info><![CDATA[Try to lookup an interface on the given hypervisor based on its name.]]></info>
       <return type='virInterfacePtr' info='a new interface object or NULL in case of failure.  If the interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the interface'/>
     </function>
     <function name='virInterfaceRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the interface. For each additional call to this method, there shall be a corresponding call to virInterfaceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using an interface would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the interface. For each
+additional call to this method, there shall be a corresponding
+call to virInterfaceFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using an interface would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='iface' type='virInterfacePtr' info='the interface to hold a reference on'/>
     </function>
     <function name='virInterfaceUndefine' file='libvirt' module='libvirt'>
-      <info>Undefine an interface, ie remove it from the config. This does not free the associated virInterfacePtr object.</info>
+      <info><![CDATA[Undefine an interface, ie remove it from the config.
+This does not free the associated virInterfacePtr object.]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='iface' type='virInterfacePtr' info='pointer to a defined interface'/>
     </function>
     <function name='virNetworkCreate' file='libvirt' module='libvirt'>
-      <info>Create and start a defined network. If the call succeed the network moves from the defined to the running networks pools.</info>
+      <info><![CDATA[Create and start a defined network. If the call succeed the network
+moves from the defined to the running networks pools.]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
     <function name='virNetworkCreateXML' file='libvirt' module='libvirt'>
-      <info>Create and start a new virtual network, based on an XML description similar to the one returned by virNetworkGetXMLDesc()</info>
+      <info><![CDATA[Create and start a new virtual network, based on an XML description
+similar to the one returned by virNetworkGetXMLDesc()]]></info>
       <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='an XML description of the network'/>
     </function>
     <function name='virNetworkDefineXML' file='libvirt' module='libvirt'>
-      <info>Define a network, but does not create it</info>
+      <info><![CDATA[Define a network, but does not create it]]></info>
       <return type='virNetworkPtr' info='NULL in case of error, a pointer to the network otherwise'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xml' type='const char *' info='the XML description for the network, preferably in UTF-8'/>
     </function>
     <function name='virNetworkDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. This does not free the associated virNetworkPtr object. This function may require privileged access</info>
+      <info><![CDATA[Destroy the network object. The running instance is shutdown if not down
+already and all resources used by it are given back to the hypervisor. This
+does not free the associated virNetworkPtr object.
+This function may require privileged access]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkFree' file='libvirt' module='libvirt'>
-      <info>Free the network object. The running instance is kept alive. The data structure is freed and should not be used thereafter.</info>
+      <info><![CDATA[Free the network object. The running instance is kept alive.
+The data structure is freed and should not be used thereafter.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetAutostart' file='libvirt' module='libvirt'>
-      <info>Provides a boolean value indicating whether the network configured to be automatically started when the host machine boots.</info>
+      <info><![CDATA[Provides a boolean value indicating whether the network
+configured to be automatically started when the host
+machine boots.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
       <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virNetworkGetBridgeName' file='libvirt' module='libvirt'>
-      <info>Provides a bridge interface name to which a domain may connect a network interface in order to join the network.</info>
+      <info><![CDATA[Provides a bridge interface name to which a domain may connect
+a network interface in order to join the network.]]></info>
       <return type='char *' info='a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a network.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the network object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with a network.  The
+reference counter on the connection is not increased by this
+call.
+
+WARNING: When writing libvirt bindings in other languages, do
+not use this function.  Instead, store the connection and
+the network object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='net' type='virNetworkPtr' info='pointer to a network'/>
     </function>
     <function name='virNetworkGetName' file='libvirt' module='libvirt'>
-      <info>Get the public name for that network</info>
+      <info><![CDATA[Get the public name for that network]]></info>
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the network object.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetUUID' file='libvirt' module='libvirt'>
-      <info>Get the UUID for a network</info>
+      <info><![CDATA[Get the UUID for a network]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
       <arg name='uuid' type='unsigned char *' info='pointer to a VIR_UUID_BUFLEN bytes array'/>
     </function>
     <function name='virNetworkGetUUIDString' file='libvirt' module='libvirt'>
-      <info>Get the UUID for a network as string. For more information about UUID see RFC4122.</info>
+      <info><![CDATA[Get the UUID for a network as string. For more information about
+UUID see RFC4122.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
       <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virNetworkGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Provide an XML description of the network. The description may be reused later to relaunch the network with virNetworkCreateXML().</info>
+      <info><![CDATA[Provide an XML description of the network. The description may be reused
+later to relaunch the network with virNetworkCreateXML().]]></info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
       <arg name='flags' type='int' info='an OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virNetworkLookupByName' file='libvirt' module='libvirt'>
-      <info>Try to lookup a network on the given hypervisor based on its name.</info>
+      <info><![CDATA[Try to lookup a network on the given hypervisor based on its name.]]></info>
       <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the network'/>
     </function>
     <function name='virNetworkLookupByUUID' file='libvirt' module='libvirt'>
-      <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
+      <info><![CDATA[Try to lookup a network on the given hypervisor based on its UUID.]]></info>
       <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the network'/>
     </function>
     <function name='virNetworkLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
+      <info><![CDATA[Try to lookup a network on the given hypervisor based on its UUID.]]></info>
       <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the network'/>
     </function>
     <function name='virNetworkRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the network. For each additional call to this method, there shall be a corresponding call to virNetworkFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a network would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the network. For each
+additional call to this method, there shall be a corresponding
+call to virNetworkFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a network would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='network' type='virNetworkPtr' info='the network to hold a reference on'/>
     </function>
     <function name='virNetworkSetAutostart' file='libvirt' module='libvirt'>
-      <info>Configure the network to be automatically started when the host machine boots.</info>
+      <info><![CDATA[Configure the network to be automatically started
+when the host machine boots.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
       <arg name='autostart' type='int' info='whether the network should be automatically started 0 or 1'/>
     </function>
     <function name='virNetworkUndefine' file='libvirt' module='libvirt'>
-      <info>Undefine a network but does not stop it if it is running</info>
+      <info><![CDATA[Undefine a network but does not stop it if it is running]]></info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
       <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
     <function name='virNodeDeviceCreateXML' file='libvirt' module='libvirt'>
-      <info>Create a new device on the VM host machine, for example, virtual HBAs created using vport_create.</info>
+      <info><![CDATA[Create a new device on the VM host machine, for example, virtual
+HBAs created using vport_create.]]></info>
       <return type='virNodeDevicePtr' info='a node device object if successful, NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='string containing an XML description of the device to be created'/>
       <arg name='flags' type='unsigned int' info='callers should always pass 0'/>
     </function>
     <function name='virNodeDeviceDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the device object. The virtual device is removed from the host operating system. This function may require privileged access</info>
+      <info><![CDATA[Destroy the device object. The virtual device is removed from the host operating system.
+This function may require privileged access]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='a device object'/>
     </function>
     <function name='virNodeDeviceDettach' file='libvirt' module='libvirt'>
-      <info>Dettach the node device from the node itself so that it may be assigned to a guest domain.  Depending on the hypervisor, this may involve operations such as unbinding any device drivers from the device, binding the device to a dummy device driver and resetting the device.  If the device is currently in use by the node, this method may fail.  Once the device is not assigned to any guest, it may be re-attached to the node using the virNodeDeviceReattach() method.</info>
+      <info><![CDATA[Dettach the node device from the node itself so that it may be
+assigned to a guest domain.
+
+Depending on the hypervisor, this may involve operations such
+as unbinding any device drivers from the device, binding the
+device to a dummy device driver and resetting the device.
+
+If the device is currently in use by the node, this method may
+fail.
+
+Once the device is not assigned to any guest, it may be re-attached
+to the node using the virNodeDeviceReattach() method.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceFree' file='libvirt' module='libvirt'>
-      <info>Drops a reference to the node device, freeing it if this was the last reference.</info>
+      <info><![CDATA[Drops a reference to the node device, freeing it if
+this was the last reference.]]></info>
       <return type='int' info='the 0 for success, -1 for error.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceGetName' file='libvirt' module='libvirt'>
-      <info>Just return the device name</info>
+      <info><![CDATA[Just return the device name]]></info>
       <return type='const char *' info='the device name or NULL in case of error'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
     <function name='virNodeDeviceGetParent' file='libvirt' module='libvirt'>
-      <info>Accessor for the parent of the device</info>
+      <info><![CDATA[Accessor for the parent of the device]]></info>
       <return type='const char *' info='the name of the device&apos;s parent, or NULL if the device has no parent.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
     <function name='virNodeDeviceGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Fetch an XML document describing all aspects of the device.</info>
+      <info><![CDATA[Fetch an XML document describing all aspects of
+the device.]]></info>
       <return type='char *' info='the XML document, or NULL on error'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
       <arg name='flags' type='unsigned int' info='flags for XML generation (unused, pass 0)'/>
     </function>
     <function name='virNodeDeviceListCaps' file='libvirt' module='libvirt'>
-      <info>Lists the names of the capabilities supported by the device.</info>
+      <info><![CDATA[Lists the names of the capabilities supported by the device.]]></info>
       <return type='int' info='the number of capability names listed in @names.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
       <arg name='names' type='char ** const' info='array to collect the list of capability names'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
     <function name='virNodeDeviceLookupByName' file='libvirt' module='libvirt'>
-      <info>Lookup a node device by its name.</info>
+      <info><![CDATA[Lookup a node device by its name.]]></info>
       <return type='virNodeDevicePtr' info='a virNodeDevicePtr if found, NULL otherwise.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='unique device name'/>
     </function>
     <function name='virNodeDeviceNumOfCaps' file='libvirt' module='libvirt'>
-      <info>Accessor for the number of capabilities supported by the device.</info>
+      <info><![CDATA[Accessor for the number of capabilities supported by the device.]]></info>
       <return type='int' info='the number of capabilities supported by the device.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the device'/>
     </function>
     <function name='virNodeDeviceReAttach' file='libvirt' module='libvirt'>
-      <info>Re-attach a previously dettached node device to the node so that it may be used by the node again.  Depending on the hypervisor, this may involve operations such as resetting the device, unbinding it from a dummy device driver and binding it to its appropriate driver.  If the device is currently in use by a guest, this method may fail.</info>
+      <info><![CDATA[Re-attach a previously dettached node device to the node so that it
+may be used by the node again.
+
+Depending on the hypervisor, this may involve operations such
+as resetting the device, unbinding it from a dummy device driver
+and binding it to its appropriate driver.
+
+If the device is currently in use by a guest, this method may fail.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeDeviceRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the dev. For each additional call to this method, there shall be a corresponding call to virNodeDeviceFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a dev would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the dev. For each
+additional call to this method, there shall be a corresponding
+call to virNodeDeviceFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a dev would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='the dev to hold a reference on'/>
     </function>
     <function name='virNodeDeviceReset' file='libvirt' module='libvirt'>
-      <info>Reset a previously dettached node device to the node before or after assigning it to a guest.  The exact reset semantics depends on the hypervisor and device type but, for example, KVM will attempt to reset PCI devices with a Function Level Reset, Secondary Bus Reset or a Power Management D-State reset.  If the reset will affect other devices which are currently in use, this function may fail.</info>
+      <info><![CDATA[Reset a previously dettached node device to the node before or
+after assigning it to a guest.
+
+The exact reset semantics depends on the hypervisor and device
+type but, for example, KVM will attempt to reset PCI devices with
+a Function Level Reset, Secondary Bus Reset or a Power Management
+D-State reset.
+
+If the reset will affect other devices which are currently in use,
+this function may fail.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='dev' type='virNodeDevicePtr' info='pointer to the node device'/>
     </function>
     <function name='virNodeGetCellsFreeMemory' file='libvirt' module='libvirt'>
-      <info>This call returns the amount of free memory in one or more NUMA cells. The @freeMems array must be allocated by the caller and will be filled with the amount of free memory in bytes for each cell requested, starting with startCell (in freeMems[0]), up to either (startCell + maxCells), or the number of additional cells in the node, whichever is smaller.</info>
+      <info><![CDATA[This call returns the amount of free memory in one or more NUMA cells.
+The @freeMems array must be allocated by the caller and will be filled
+with the amount of free memory in bytes for each cell requested,
+starting with startCell (in freeMems[0]), up to either
+(startCell + maxCells), or the number of additional cells in the node,
+whichever is smaller.]]></info>
       <return type='int' info='the number of entries filled in freeMems, or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='freeMems' type='unsigned long long *' info='pointer to the array of unsigned long long'/>
@@ -1778,24 +2182,31 @@ see note above'/>
       <arg name='maxCells' type='int' info='Maximum number of cells for which freeMems information can be returned.'/>
     </function>
     <function name='virNodeGetFreeMemory' file='libvirt' module='libvirt'>
-      <info>provides the free memory available on the Node Note: most libvirt APIs provide memory sizes in kilobytes, but in this function the returned value is in bytes. Divide by 1024 as necessary.</info>
+      <info><![CDATA[provides the free memory available on the Node
+Note: most libvirt APIs provide memory sizes in kilobytes, but in this
+function the returned value is in bytes. Divide by 1024 as necessary.]]></info>
       <return type='unsigned long long' info='the available free memory in bytes or 0 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virNodeGetInfo' file='libvirt' module='libvirt'>
-      <info>Extract hardware information about the node.</info>
+      <info><![CDATA[Extract hardware information about the node.]]></info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='info' type='virNodeInfoPtr' info='pointer to a virNodeInfo structure allocated by the user'/>
     </function>
     <function name='virNodeGetSecurityModel' file='libvirt' module='libvirt'>
-      <info>Extract the security model of a hypervisor. The &apos;model&apos; field in the @secmodel argument may be initialized to the empty string if the driver has not activated a security model.</info>
+      <info><![CDATA[Extract the security model of a hypervisor. The 'model' field
+in the @secmodel argument may be initialized to the empty
+string if the driver has not activated a security model.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='a connection object'/>
       <arg name='secmodel' type='virSecurityModelPtr' info='pointer to a virSecurityModel structure'/>
     </function>
     <function name='virNodeListDevices' file='libvirt' module='libvirt'>
-      <info>Collect the list of node devices, and store their names in @names  If the optional &apos;cap&apos;  argument is non-NULL, then the count will be restricted to devices with the specified capability</info>
+      <info><![CDATA[Collect the list of node devices, and store their names in @names
+
+If the optional 'cap'  argument is non-NULL, then the count
+will be restricted to devices with the specified capability]]></info>
       <return type='int' info='the number of node devices found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='cap' type='const char *' info='capability name'/>
@@ -1804,103 +2215,143 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags (unused, pass 0)'/>
     </function>
     <function name='virNodeNumOfDevices' file='libvirt' module='libvirt'>
-      <info>Provides the number of node devices.  If the optional &apos;cap&apos;  argument is non-NULL, then the count will be restricted to devices with the specified capability</info>
+      <info><![CDATA[Provides the number of node devices.
+
+If the optional 'cap'  argument is non-NULL, then the count
+will be restricted to devices with the specified capability]]></info>
       <return type='int' info='the number of node devices or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='cap' type='const char *' info='capability name'/>
       <arg name='flags' type='unsigned int' info='flags (unused, pass 0)'/>
     </function>
     <function name='virResetError' file='virterror' module='virterror'>
-      <info>Reset the error being pointed to</info>
+      <info><![CDATA[Reset the error being pointed to]]></info>
       <return type='void'/>
       <arg name='err' type='virErrorPtr' info='pointer to the virError to clean up'/>
     </function>
     <function name='virResetLastError' file='virterror' module='virterror'>
-      <info>Reset the last error caught at the library level.  The error object is kept in thread local storage, so separate threads can safely access this concurrently, only resetting their own error object.</info>
+      <info><![CDATA[Reset the last error caught at the library level.
+
+The error object is kept in thread local storage, so separate
+threads can safely access this concurrently, only resetting
+their own error object.]]></info>
       <return type='void'/>
     </function>
     <function name='virSaveLastError' file='virterror' module='virterror'>
-      <info>Save the last error into a new error object.</info>
+      <info><![CDATA[Save the last error into a new error object.]]></info>
       <return type='virErrorPtr' info='a pointer to the copied error or NULL if allocation failed. It is the caller&apos;s responsibility to free the error with virFreeError().'/>
     </function>
     <function name='virSecretDefineXML' file='libvirt' module='libvirt'>
-      <info>If XML specifies an UUID, locates the specified secret and replaces all attributes of the secret specified by UUID by attributes specified in xml (any attributes not specified in xml are discarded).  Otherwise, creates a new secret with an automatically chosen UUID, and initializes its attributes from xml.</info>
+      <info><![CDATA[If XML specifies an UUID, locates the specified secret and replaces all
+attributes of the secret specified by UUID by attributes specified in xml
+(any attributes not specified in xml are discarded).
+
+Otherwise, creates a new secret with an automatically chosen UUID, and
+initializes its attributes from xml.]]></info>
       <return type='virSecretPtr' info='a the secret on success, NULL on failure.'/>
       <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
       <arg name='xml' type='const char *' info='XML describing the secret.'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
     <function name='virSecretFree' file='libvirt' module='libvirt'>
-      <info>Release the secret handle. The underlying secret continues to exist.</info>
+      <info><![CDATA[Release the secret handle. The underlying secret continues to exist.]]></info>
       <return type='int' info='0 on success, or -1 on error'/>
       <arg name='secret' type='virSecretPtr' info='pointer to a secret'/>
     </function>
     <function name='virSecretGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a secret.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the secret object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with a secret.  The reference
+counter on the connection is not increased by this call.
+
+WARNING: When writing libvirt bindings in other languages, do not use this
+function.  Instead, store the connection and the secret object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
     </function>
     <function name='virSecretGetUUID' file='libvirt' module='libvirt'>
-      <info>Fetches the UUID of the secret.</info>
+      <info><![CDATA[Fetches the UUID of the secret.]]></info>
       <return type='int' info='0 on success with the uuid buffer being filled, or -1 upon failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
       <arg name='uuid' type='unsigned char *' info='buffer of VIR_UUID_BUFLEN bytes in size'/>
     </function>
     <function name='virSecretGetUUIDString' file='libvirt' module='libvirt'>
-      <info>Get the UUID for a secret as string. For more information about UUID see RFC4122.</info>
+      <info><![CDATA[Get the UUID for a secret as string. For more information about
+UUID see RFC4122.]]></info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
       <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virSecretGetUsageID' file='libvirt' module='libvirt'>
-      <info>Get the unique identifier of the object with which this secret is to be used. The format of the identifier is dependant on the usage type of the secret. For a secret with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the identifier will be a fully qualfied path name. The identifiers are intended to be unique within the set of all secrets sharing the same usage type. ie, there shall only ever be one secret for each volume path.</info>
+      <info><![CDATA[Get the unique identifier of the object with which this
+secret is to be used. The format of the identifier is
+dependant on the usage type of the secret. For a secret
+with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the
+identifier will be a fully qualfied path name. The
+identifiers are intended to be unique within the set of
+all secrets sharing the same usage type. ie, there shall
+only ever be one secret for each volume path.]]></info>
       <return type='const char *' info='a string identifying the object using the secret, or NULL upon error'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
     <function name='virSecretGetUsageType' file='libvirt' module='libvirt'>
-      <info>Get the type of object which uses this secret. The returned value is one of the constants defined in the virSecretUsageType enumeration. More values may be added to this enumeration in the future, so callers should expect to see usage types they do not explicitly know about.</info>
+      <info><![CDATA[Get the type of object which uses this secret. The returned
+value is one of the constants defined in the virSecretUsageType
+enumeration. More values may be added to this enumeration in
+the future, so callers should expect to see usage types they
+do not explicitly know about.]]></info>
       <return type='int' info='a positive integer identifying the type of object, or -1 upon error.'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
     <function name='virSecretGetValue' file='libvirt' module='libvirt'>
-      <info>Fetches the value of a secret.</info>
+      <info><![CDATA[Fetches the value of a secret.]]></info>
       <return type='unsigned char *' info='the secret value on success, NULL on failure.  The caller must free() the secret value.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret connection'/>
       <arg name='value_size' type='size_t *' info='Place for storing size of the secret value'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
     <function name='virSecretGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Fetches an XML document describing attributes of the secret.</info>
+      <info><![CDATA[Fetches an XML document describing attributes of the secret.]]></info>
       <return type='char *' info='the XML document on success, NULL on failure.  The caller must free() the XML.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
     <function name='virSecretLookupByUUID' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its UUID. Uses the 16 bytes of raw data to describe the UUID</info>
+      <info><![CDATA[Try to lookup a secret on the given hypervisor based on its UUID.
+Uses the 16 bytes of raw data to describe the UUID]]></info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the secret'/>
     </function>
     <function name='virSecretLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its UUID. Uses the printable string value to describe the UUID</info>
+      <info><![CDATA[Try to lookup a secret on the given hypervisor based on its UUID.
+Uses the printable string value to describe the UUID]]></info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the secret'/>
     </function>
     <function name='virSecretLookupByUsage' file='libvirt' module='libvirt'>
-      <info>Try to lookup a secret on the given hypervisor based on its usage The usageID is unique within the set of secrets sharing the same usageType value.</info>
+      <info><![CDATA[Try to lookup a secret on the given hypervisor based on its usage
+The usageID is unique within the set of secrets sharing the
+same usageType value.]]></info>
       <return type='virSecretPtr' info='a new secret object or NULL in case of failure.  If the secret cannot be found, then VIR_ERR_NO_SECRET error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='usageType' type='int' info='the type of secret usage'/>
       <arg name='usageID' type='const char *' info='identifier of the object using the secret'/>
     </function>
     <function name='virSecretRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the secret. For each additional call to this method, there shall be a corresponding call to virSecretFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a secret would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the secret. For each additional call to
+this method, there shall be a corresponding call to virSecretFree to release
+the reference count, once the caller no longer needs the reference to this
+object.
+
+This method is typically useful for applications where multiple threads are
+using a connection, and it is required that the connection remain open until
+all threads have finished using it. ie, each new thread using a secret would
+increment the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='secret' type='virSecretPtr' info='the secret to hold a reference on'/>
     </function>
     <function name='virSecretSetValue' file='libvirt' module='libvirt'>
-      <info>Sets the value of a secret.</info>
+      <info><![CDATA[Sets the value of a secret.]]></info>
       <return type='int' info='0 on success, -1 on failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
       <arg name='value' type='const unsigned char *' info='Value of the secret'/>
@@ -1908,164 +2359,204 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags, use 0 for now'/>
     </function>
     <function name='virSecretUndefine' file='libvirt' module='libvirt'>
-      <info>Deletes the specified secret.  This does not free the associated virSecretPtr object.</info>
+      <info><![CDATA[Deletes the specified secret.  This does not free the associated
+virSecretPtr object.]]></info>
       <return type='int' info='0 on success, -1 on failure.'/>
       <arg name='secret' type='virSecretPtr' info='A virSecret secret'/>
     </function>
     <function name='virSetErrorFunc' file='virterror' module='virterror'>
-      <info>Set a library global error handling function, if @handler is NULL, it will reset to default printing on stderr. The error raised there are those for which no handler at the connection level could caught.</info>
+      <info><![CDATA[Set a library global error handling function, if @handler is NULL,
+it will reset to default printing on stderr. The error raised there
+are those for which no handler at the connection level could caught.]]></info>
       <return type='void'/>
       <arg name='userData' type='void *' info='pointer to the user data provided in the handler callback'/>
       <arg name='handler' type='virErrorFunc' info='the function to get called in case of error or NULL'/>
     </function>
     <function name='virStoragePoolBuild' file='libvirt' module='libvirt'>
-      <info>Build the underlying storage pool</info>
+      <info><![CDATA[Build the underlying storage pool]]></info>
       <return type='int' info='0 on success, or -1 upon failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolCreate' file='libvirt' module='libvirt'>
-      <info>Starts an inactive storage pool</info>
+      <info><![CDATA[Starts an inactive storage pool]]></info>
       <return type='int' info='0 on success, or -1 if it could not be started'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolCreateXML' file='libvirt' module='libvirt'>
-      <info>Create a new storage based on its XML description. The pool is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
+      <info><![CDATA[Create a new storage based on its XML description. The
+pool is not persistent, so its definition will disappear
+when it is destroyed, or if the host is restarted]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='XML description for new pool'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolDefineXML' file='libvirt' module='libvirt'>
-      <info>Define a new inactive storage pool based on its XML description. The pool is persistent, until explicitly undefined.</info>
+      <info><![CDATA[Define a new inactive storage pool based on its XML description. The
+pool is persistent, until explicitly undefined.]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='xml' type='const char *' info='XML description for new pool'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolDelete' file='libvirt' module='libvirt'>
-      <info>Delete the underlying pool resources. This is a non-recoverable operation. The virStoragePoolPtr object itself is not free&apos;d.</info>
+      <info><![CDATA[Delete the underlying pool resources. This is
+a non-recoverable operation. The virStoragePoolPtr object
+itself is not free'd.]]></info>
       <return type='int' info='0 on success, or -1 if it could not be obliterate'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='flags' type='unsigned int' info='flags for obliteration process'/>
     </function>
     <function name='virStoragePoolDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy an active storage pool. This will deactivate the pool on the host, but keep any persistent config associated with it. If it has a persistent config it can later be restarted with virStoragePoolCreate(). This does not free the associated virStoragePoolPtr object.</info>
+      <info><![CDATA[Destroy an active storage pool. This will deactivate the
+pool on the host, but keep any persistent config associated
+with it. If it has a persistent config it can later be
+restarted with virStoragePoolCreate(). This does not free
+the associated virStoragePoolPtr object.]]></info>
       <return type='int' info='0 on success, or -1 if it could not be destroyed'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
     <function name='virStoragePoolFree' file='libvirt' module='libvirt'>
-      <info>Free a storage pool object, releasing all memory associated with it. Does not change the state of the pool on the host.</info>
+      <info><![CDATA[Free a storage pool object, releasing all memory associated with
+it. Does not change the state of the pool on the host.]]></info>
       <return type='int' info='0 on success, or -1 if it could not be free&apos;d.'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
     <function name='virStoragePoolGetAutostart' file='libvirt' module='libvirt'>
-      <info>Fetches the value of the autostart flag, which determines whether the pool is automatically started at boot time</info>
+      <info><![CDATA[Fetches the value of the autostart flag, which determines
+whether the pool is automatically started at boot time]]></info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='autostart' type='int *' info='location in which to store autostart flag'/>
     </function>
     <function name='virStoragePoolGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a storage pool.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the pool object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with a storage pool.  The
+reference counter on the connection is not increased by this
+call.
+
+WARNING: When writing libvirt bindings in other languages, do
+not use this function.  Instead, store the connection and
+the pool object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to a pool'/>
     </function>
     <function name='virStoragePoolGetInfo' file='libvirt' module='libvirt'>
-      <info>Get volatile information about the storage pool such as free space / usage summary</info>
+      <info><![CDATA[Get volatile information about the storage pool
+such as free space / usage summary]]></info>
       <return type='int' info='0 on success, or -1 on failure.'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='info' type='virStoragePoolInfoPtr' info='pointer at which to store info'/>
     </function>
     <function name='virStoragePoolGetName' file='libvirt' module='libvirt'>
-      <info>Fetch the locally unique name of the storage pool</info>
+      <info><![CDATA[Fetch the locally unique name of the storage pool]]></info>
       <return type='const char *' info='the name of the pool, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
     <function name='virStoragePoolGetUUID' file='libvirt' module='libvirt'>
-      <info>Fetch the globally unique ID of the storage pool</info>
+      <info><![CDATA[Fetch the globally unique ID of the storage pool]]></info>
       <return type='int' info='0 on success, or -1 on error;'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='uuid' type='unsigned char *' info='buffer of VIR_UUID_BUFLEN bytes in size'/>
     </function>
     <function name='virStoragePoolGetUUIDString' file='libvirt' module='libvirt'>
-      <info>Fetch the globally unique ID of the storage pool as a string</info>
+      <info><![CDATA[Fetch the globally unique ID of the storage pool as a string]]></info>
       <return type='int' info='0 on success, or -1 on error;'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='buf' type='char *' info='buffer of VIR_UUID_STRING_BUFLEN bytes in size'/>
     </function>
     <function name='virStoragePoolGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Fetch an XML document describing all aspects of the storage pool. This is suitable for later feeding back into the virStoragePoolCreateXML method.</info>
+      <info><![CDATA[Fetch an XML document describing all aspects of the
+storage pool. This is suitable for later feeding back
+into the virStoragePoolCreateXML method.]]></info>
       <return type='char *' info='a XML document, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='flags' type='unsigned int' info='flags for XML format options (set of virDomainXMLFlags)'/>
     </function>
     <function name='virStoragePoolListVolumes' file='libvirt' module='libvirt'>
-      <info>Fetch list of storage volume names, limiting to at most maxnames.</info>
+      <info><![CDATA[Fetch list of storage volume names, limiting to
+at most maxnames.]]></info>
       <return type='int' info='the number of names fetched, or -1 on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='names' type='char ** const' info='array in which to storage volume names'/>
       <arg name='maxnames' type='int' info='size of names array'/>
     </function>
     <function name='virStoragePoolLookupByName' file='libvirt' module='libvirt'>
-      <info>Fetch a storage pool based on its unique name</info>
+      <info><![CDATA[Fetch a storage pool based on its unique name]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='name' type='const char *' info='name of pool to fetch'/>
     </function>
     <function name='virStoragePoolLookupByUUID' file='libvirt' module='libvirt'>
-      <info>Fetch a storage pool based on its globally unique id</info>
+      <info><![CDATA[Fetch a storage pool based on its globally unique id]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='globally unique id of pool to fetch'/>
     </function>
     <function name='virStoragePoolLookupByUUIDString' file='libvirt' module='libvirt'>
-      <info>Fetch a storage pool based on its globally unique id</info>
+      <info><![CDATA[Fetch a storage pool based on its globally unique id]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='globally unique id of pool to fetch'/>
     </function>
     <function name='virStoragePoolLookupByVolume' file='libvirt' module='libvirt'>
-      <info>Fetch a storage pool which contains a particular volume</info>
+      <info><![CDATA[Fetch a storage pool which contains a particular volume]]></info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>
     <function name='virStoragePoolNumOfVolumes' file='libvirt' module='libvirt'>
-      <info>Fetch the number of storage volumes within a pool</info>
+      <info><![CDATA[Fetch the number of storage volumes within a pool]]></info>
       <return type='int' info='the number of storage pools, or -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
     <function name='virStoragePoolRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the pool. For each additional call to this method, there shall be a corresponding call to virStoragePoolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a pool would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the pool. For each
+additional call to this method, there shall be a corresponding
+call to virStoragePoolFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a pool would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='pool' type='virStoragePoolPtr' info='the pool to hold a reference on'/>
     </function>
     <function name='virStoragePoolRefresh' file='libvirt' module='libvirt'>
-      <info>Request that the pool refresh its list of volumes. This may involve communicating with a remote server, and/or initializing new devices at the OS layer</info>
+      <info><![CDATA[Request that the pool refresh its list of volumes. This may
+involve communicating with a remote server, and/or initializing
+new devices at the OS layer]]></info>
       <return type='int' info='0 if the volume list was refreshed, -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='flags' type='unsigned int' info='flags to control refresh behaviour (currently unused, use 0)'/>
     </function>
     <function name='virStoragePoolSetAutostart' file='libvirt' module='libvirt'>
-      <info>Sets the autostart flag</info>
+      <info><![CDATA[Sets the autostart flag]]></info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='autostart' type='int' info='new flag setting'/>
     </function>
     <function name='virStoragePoolUndefine' file='libvirt' module='libvirt'>
-      <info>Undefine an inactive storage pool</info>
+      <info><![CDATA[Undefine an inactive storage pool]]></info>
       <return type='int' info='0 on success, -1 on failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
     </function>
     <function name='virStorageVolCreateXML' file='libvirt' module='libvirt'>
-      <info>Create a storage volume within a pool based on an XML description. Not all pools support creation of volumes</info>
+      <info><![CDATA[Create a storage volume within a pool based
+on an XML description. Not all pools support
+creation of volumes]]></info>
       <return type='virStorageVolPtr' info='the storage volume, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='xmldesc' type='const char *' info='description of volume to create'/>
       <arg name='flags' type='unsigned int' info='flags for creation (unused, pass 0)'/>
     </function>
     <function name='virStorageVolCreateXMLFrom' file='libvirt' module='libvirt'>
-      <info>Create a storage volume in the parent pool, using the &apos;clonevol&apos; volume as input. Information for the new volume (name, perms)  are passed via a typical volume XML description.</info>
+      <info><![CDATA[Create a storage volume in the parent pool, using the
+'clonevol' volume as input. Information for the new
+volume (name, perms)  are passed via a typical volume
+XML description.]]></info>
       <return type='virStorageVolPtr' info='the storage volume, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to parent pool for the new volume'/>
       <arg name='xmldesc' type='const char *' info='description of volume to create'/>
@@ -2073,68 +2564,96 @@ see note above'/>
       <arg name='flags' type='unsigned int' info='flags for creation (unused, pass 0)'/>
     </function>
     <function name='virStorageVolDelete' file='libvirt' module='libvirt'>
-      <info>Delete the storage volume from the pool</info>
+      <info><![CDATA[Delete the storage volume from the pool]]></info>
       <return type='int' info='0 on success, or -1 on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
       <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStorageVolFree' file='libvirt' module='libvirt'>
-      <info>Release the storage volume handle. The underlying storage volume continues to exist.</info>
+      <info><![CDATA[Release the storage volume handle. The underlying
+storage volume continues to exist.]]></info>
       <return type='int' info='0 on success, or -1 on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>
     <function name='virStorageVolGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a storage volume.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the volume object together.</info>
+      <info><![CDATA[Provides the connection pointer associated with a storage volume.  The
+reference counter on the connection is not increased by this
+call.
+
+WARNING: When writing libvirt bindings in other languages, do
+not use this function.  Instead, store the connection and
+the volume object together.]]></info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to a pool'/>
     </function>
     <function name='virStorageVolGetInfo' file='libvirt' module='libvirt'>
-      <info>Fetches volatile information about the storage volume such as its current allocation</info>
+      <info><![CDATA[Fetches volatile information about the storage
+volume such as its current allocation]]></info>
       <return type='int' info='0 on success, or -1 on failure'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
       <arg name='info' type='virStorageVolInfoPtr' info='pointer at which to store info'/>
     </function>
     <function name='virStorageVolGetKey' file='libvirt' module='libvirt'>
-      <info>Fetch the storage volume key. This is globally unique, so the same volume will have the same key no matter what host it is accessed from</info>
+      <info><![CDATA[Fetch the storage volume key. This is globally
+unique, so the same volume will have the same
+key no matter what host it is accessed from]]></info>
       <return type='const char *' info='the volume key, or NULL on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>
     <function name='virStorageVolGetName' file='libvirt' module='libvirt'>
-      <info>Fetch the storage volume name. This is unique within the scope of a pool</info>
+      <info><![CDATA[Fetch the storage volume name. This is unique
+within the scope of a pool]]></info>
       <return type='const char *' info='the volume name, or NULL on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>
     <function name='virStorageVolGetPath' file='libvirt' module='libvirt'>
-      <info>Fetch the storage volume path. Depending on the pool configuration this is either persistent across hosts, or dynamically assigned at pool startup. Consult pool documentation for information on getting the persistent naming</info>
+      <info><![CDATA[Fetch the storage volume path. Depending on the pool
+configuration this is either persistent across hosts,
+or dynamically assigned at pool startup. Consult
+pool documentation for information on getting the
+persistent naming]]></info>
       <return type='char *' info='the storage volume path, or NULL on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>
     <function name='virStorageVolGetXMLDesc' file='libvirt' module='libvirt'>
-      <info>Fetch an XML document describing all aspects of the storage volume</info>
+      <info><![CDATA[Fetch an XML document describing all aspects of
+the storage volume]]></info>
       <return type='char *' info='the XML document, or NULL on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
       <arg name='flags' type='unsigned int' info='flags for XML generation (unused, pass 0)'/>
     </function>
     <function name='virStorageVolLookupByKey' file='libvirt' module='libvirt'>
-      <info>Fetch a pointer to a storage volume based on its globally unique key</info>
+      <info><![CDATA[Fetch a pointer to a storage volume based on its
+globally unique key]]></info>
       <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='key' type='const char *' info='globally unique key'/>
     </function>
     <function name='virStorageVolLookupByName' file='libvirt' module='libvirt'>
-      <info>Fetch a pointer to a storage volume based on its name within a pool</info>
+      <info><![CDATA[Fetch a pointer to a storage volume based on its name
+within a pool]]></info>
       <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
       <arg name='name' type='const char *' info='name of storage volume'/>
     </function>
     <function name='virStorageVolLookupByPath' file='libvirt' module='libvirt'>
-      <info>Fetch a pointer to a storage volume based on its locally (host) unique path</info>
+      <info><![CDATA[Fetch a pointer to a storage volume based on its
+locally (host) unique path]]></info>
       <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='path' type='const char *' info='locally unique path'/>
     </function>
     <function name='virStorageVolRef' file='libvirt' module='libvirt'>
-      <info>Increment the reference count on the vol. For each additional call to this method, there shall be a corresponding call to virStorageVolFree to release the reference count, once the caller no longer needs the reference to this object.  This method is typically useful for applications where multiple threads are using a connection, and it is required that the connection remain open until all threads have finished using it. ie, each new thread using a vol would increment the reference count.</info>
+      <info><![CDATA[Increment the reference count on the vol. For each
+additional call to this method, there shall be a corresponding
+call to virStorageVolFree to release the reference count, once
+the caller no longer needs the reference to this object.
+
+This method is typically useful for applications where multiple
+threads are using a connection, and it is required that the
+connection remain open until all threads have finished using
+it. ie, each new thread using a vol would increment
+the reference count.]]></info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='vol' type='virStorageVolPtr' info='the vol to hold a reference on'/>
     </function>

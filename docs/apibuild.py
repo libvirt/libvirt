@@ -838,14 +838,20 @@ class CParser:
 		       arg, name))
 	while len(lines) > 0 and lines[0] == '*':
 	    del lines[0]
-	desc = ""
+	desc = None
 	while len(lines) > 0:
 	    l = lines[0]
-	    while len(l) > 0 and l[0] == '*':
-	        l = l[1:]
-	    l = string.strip(l)
-	    if len(l) >= 6 and  l[0:6] == "return" or l[0:6] == "Return":
-	        try:
+	    i = 0
+	    # Remove all leading '*', followed by at most one ' ' character
+	    # since we need to preserve correct identation of code examples
+	    while i < len(l) and l[i] == '*':
+		i = i + 1
+	    if i > 0:
+		if i < len(l) and l[i] == ' ':
+		    i = i + 1
+		l = l[i:]
+	    if len(l) >= 6 and  l[0:7] == "returns" or l[0:7] == "Returns":
+		try:
 		    l = string.split(l, ' ', 1)[1]
 		except:
 		    l = ""
@@ -859,9 +865,14 @@ class CParser:
 		    retdesc = retdesc + " " + l
 		    del lines[0]
 	    else:
-	        desc = desc + " " + l
+		if desc is not None:
+		    desc = desc + "\n" + l
+		else:
+		    desc = l
 		del lines[0]
 
+	if desc is None:
+	    desc = ""
 	retdesc = string.strip(retdesc)
 	desc = string.strip(desc)
 
@@ -1716,7 +1727,7 @@ class docBuilder:
             try:
 		(args, desc) = id.info
 		if desc != None and desc != "":
-		    output.write("      <info>%s</info>\n" % (escape(desc)))
+		    output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
 		    self.indexString(name, desc)
 		for arg in args:
 		    (name, desc) = arg
@@ -1760,7 +1771,7 @@ class docBuilder:
             try:
 		desc = id.extra
 		if desc != None and desc != "":
-		    output.write(">\n      <info>%s</info>\n" % (escape(desc)))
+		    output.write(">\n      <info><![CDATA[%s]]></info>\n" % (desc))
 		    output.write("    </typedef>\n")
 		else:
 		    output.write("/>\n")
@@ -1796,7 +1807,7 @@ class docBuilder:
 	    output.write("      <cond>%s</cond>\n"% (apstr));
 	try:
 	    (ret, params, desc) = id.info
-	    output.write("      <info>%s</info>\n" % (escape(desc)))
+	    output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
 	    self.indexString(name, desc)
 	    if ret[0] != None:
 	        if ret[0] == "void":
