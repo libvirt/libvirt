@@ -380,8 +380,6 @@ virStorageVolDefParseNode;
 virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
-virStorageVolFormatFileSystemTypeToString;
-virStorageVolFormatFileSystemTypeFromString;
 virStoragePoolTypeFromString;
 virStoragePartedFsTypeTypeToString;
 virStoragePoolObjLock;
@@ -394,6 +392,9 @@ virStorageEncryptionParseNode;
 virStorageEncryptionFormat;
 virStorageGenerateQcowPassphrase;
 
+# storage_file.h
+virStorageFileFormatTypeToString;
+virStorageFileFormatTypeFromString;
 
 # threads.h
 virMutexInit;

@@ -50,6 +50,7 @@
 #include "internal.h"
 #include "secret_conf.h"
 #include "uuid.h"
+#include "storage_file.h"
 #include "storage_backend.h"
 #include "logging.h"
 
@@ -461,16 +462,16 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     char *create_tool;
     short use_kvmimg;
 
-    const char *type = virStorageVolFormatFileSystemTypeToString(vol->target.format);
+    const char *type = virStorageFileFormatTypeToString(vol->target.format);
     const char *backingType = vol->backingStore.path ?
-        virStorageVolFormatFileSystemTypeToString(vol->backingStore.format) : NULL;
+        virStorageFileFormatTypeToString(vol->backingStore.format) : NULL;
 
     const char *inputBackingPath = (inputvol ? inputvol->backingStore.path
                                              : NULL);
     const char *inputPath = inputvol ? inputvol->target.path : NULL;
     /* Treat input block devices as 'raw' format */
     const char *inputType = inputPath ?
-                            virStorageVolFormatFileSystemTypeToString(inputvol->type == VIR_STORAGE_VOL_BLOCK ? VIR_STORAGE_VOL_FILE_RAW : inputvol->target.format) :
+                            virStorageFileFormatTypeToString(inputvol->type == VIR_STORAGE_VOL_BLOCK ? VIR_STORAGE_FILE_RAW : inputvol->target.format) :
                             NULL;
 
     const char **imgargv;
@@ -551,8 +552,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     if (vol->target.encryption != NULL) {
         virStorageEncryptionPtr enc;
 
-        if (vol->target.format != VIR_STORAGE_VOL_FILE_QCOW &&
-            vol->target.format != VIR_STORAGE_VOL_FILE_QCOW2) {
+        if (vol->target.format != VIR_STORAGE_FILE_QCOW &&
+            vol->target.format != VIR_STORAGE_FILE_QCOW2) {
             virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
                                   _("qcow volume encryption unsupported with "
                                     "volume format %s"), type);
@@ -643,7 +644,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
         return -1;
     }
 
-    if (vol->target.format != VIR_STORAGE_VOL_FILE_QCOW2) {
+    if (vol->target.format != VIR_STORAGE_FILE_QCOW2) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("unsupported storage vol type %d"),
                               vol->target.format);
@@ -734,9 +735,9 @@ virStorageBackendGetBuildVolFromFunction(virConnectPtr conn,
      * tool for converting
      */
     if ((vol->type == VIR_STORAGE_VOL_FILE &&
-         vol->target.format != VIR_STORAGE_VOL_FILE_RAW) ||
+         vol->target.format != VIR_STORAGE_FILE_RAW) ||
         (inputvol->type == VIR_STORAGE_VOL_FILE &&
-         inputvol->target.format != VIR_STORAGE_VOL_FILE_RAW)) {
+         inputvol->target.format != VIR_STORAGE_FILE_RAW)) {
 
         if ((tool_type = virStorageBackendFindFSImageTool(NULL)) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,

@@ -45,6 +45,7 @@
 #include "virterror_internal.h"
 #include "domain_event.h"
 #include "storage_conf.h"
+#include "storage_file.h"
 #include "uuid.h"
 #include "event.h"
 #include "memory.h"
@@ -5985,14 +5986,14 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
 
         /* TODO: for now only the vmdk, vpc and vdi type harddisk
          * variants can be created, also since there is no vdi
-         * type in enum virStorageVolFormatFileSystem {} the default
+         * type in enum virStorageFileFormat {} the default
          * will be to create vdi if nothing is specified in
          * def->target.format
          */
 
-        if (def->target.format == VIR_STORAGE_VOL_FILE_VMDK) {
+        if (def->target.format == VIR_STORAGE_FILE_VMDK) {
             data->pFuncs->pfnUtf8ToUtf16("VMDK", &hddFormatUtf16);
-        } else if (def->target.format == VIR_STORAGE_VOL_FILE_VPC) {
+        } else if (def->target.format == VIR_STORAGE_FILE_VPC) {
             data->pFuncs->pfnUtf8ToUtf16("VHD", &hddFormatUtf16);
         } else {
             data->pFuncs->pfnUtf8ToUtf16("VDI", &hddFormatUtf16);
@@ -6307,13 +6308,13 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags A
                             DEBUG("Storage Volume Format: %s", hddFormatUtf8);
 
                             if (STRCASEEQ("vmdk", hddFormatUtf8))
-                                def.target.format = VIR_STORAGE_VOL_FILE_VMDK;
+                                def.target.format = VIR_STORAGE_FILE_VMDK;
                             else if (STRCASEEQ("vhd", hddFormatUtf8))
-                                def.target.format = VIR_STORAGE_VOL_FILE_VPC;
+                                def.target.format = VIR_STORAGE_FILE_VPC;
                             else
-                                def.target.format = VIR_STORAGE_VOL_FILE_RAW;
+                                def.target.format = VIR_STORAGE_FILE_RAW;
 
-                            /* TODO: need to add vdi to enum virStorageVolFormatFileSystem {}
+                            /* TODO: need to add vdi to enum virStorageFileFormat {}
                              * and then add it here
                              */
 

@@ -36,6 +36,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "storage_conf.h"
+#include "storage_file.h"
 
 #include "xml.h"
 #include "uuid.h"
@@ -81,12 +82,6 @@ VIR_ENUM_IMPL(virStorageVolFormatDisk,
               "fat32", "linux-swap",
               "linux-lvm", "linux-raid",
               "extended")
-
-VIR_ENUM_IMPL(virStorageVolFormatFileSystem,
-              VIR_STORAGE_VOL_FILE_LAST,
-              "raw", "dir", "bochs",
-              "cloop", "cow", "dmg", "iso",
-              "qcow", "qcow2", "vmdk", "vpc")
 
 VIR_ENUM_IMPL(virStoragePartedFsType,
               VIR_STORAGE_PARTED_FS_TYPE_LAST,
@@ -150,9 +145,9 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
     },
     { .poolType = VIR_STORAGE_POOL_DIR,
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
-            .formatFromString = virStorageVolFormatFileSystemTypeFromString,
-            .formatToString = virStorageVolFormatFileSystemTypeToString,
+            .defaultFormat = VIR_STORAGE_FILE_RAW,
+            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatToString = virStorageFileFormatTypeToString,
         },
     },
     { .poolType = VIR_STORAGE_POOL_FS,
@@ -162,9 +157,9 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatFileSystemTypeToString,
         },
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
-            .formatFromString = virStorageVolFormatFileSystemTypeFromString,
-            .formatToString = virStorageVolFormatFileSystemTypeToString,
+            .defaultFormat = VIR_STORAGE_FILE_RAW,
+            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatToString = virStorageFileFormatTypeToString,
         },
     },
     { .poolType = VIR_STORAGE_POOL_NETFS,
@@ -176,9 +171,9 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
             .formatToString = virStoragePoolFormatFileSystemNetTypeToString,
         },
       .volOptions = {
-            .defaultFormat = VIR_STORAGE_VOL_FILE_RAW,
-            .formatFromString = virStorageVolFormatFileSystemTypeFromString,
-            .formatToString = virStorageVolFormatFileSystemTypeToString,
+            .defaultFormat = VIR_STORAGE_FILE_RAW,
+            .formatFromString = virStorageFileFormatTypeFromString,
+            .formatToString = virStorageFileFormatTypeToString,
         },
     },
     { .poolType = VIR_STORAGE_POOL_ISCSI,

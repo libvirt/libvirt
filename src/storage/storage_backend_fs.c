@@ -41,6 +41,7 @@
 #include "virterror_internal.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
+#include "storage_file.h"
 #include "util.h"
 #include "memory.h"
 #include "xml.h"
@@ -91,7 +92,7 @@ struct FileTypeInfo {
 struct FileTypeInfo const fileTypeInfo[] = {
     /* Bochs */
     /* XXX Untested
-    { VIR_STORAGE_VOL_FILE_BOCHS, "Bochs Virtual HD Image", NULL,
+    { VIR_STORAGE_FILE_BOCHS, "Bochs Virtual HD Image", NULL,
       LV_LITTLE_ENDIAN, 64, 0x20000,
       32+16+16+4+4+4+4+4, 8, 1, -1, NULL },*/
     /* CLoop */
@@ -100,45 +101,45 @@ struct FileTypeInfo const fileTypeInfo[] = {
       LV_LITTLE_ENDIAN, -1, 0,
       -1, 0, 0, -1, NULL }, */
     /* Cow */
-    { VIR_STORAGE_VOL_FILE_COW, "OOOM", NULL,
+    { VIR_STORAGE_FILE_COW, "OOOM", NULL,
       LV_BIG_ENDIAN, 4, 2,
       4+4+1024+4, 8, 1, -1, cowGetBackingStore },
     /* DMG */
     /* XXX QEMU says there's no magic for dmg, but we should check... */
-    { VIR_STORAGE_VOL_FILE_DMG, NULL, ".dmg",
+    { VIR_STORAGE_FILE_DMG, NULL, ".dmg",
       0, -1, 0,
       -1, 0, 0, -1, NULL },
     /* XXX there's probably some magic for iso we can validate too... */
-    { VIR_STORAGE_VOL_FILE_ISO, NULL, ".iso",
+    { VIR_STORAGE_FILE_ISO, NULL, ".iso",
       0, -1, 0,
       -1, 0, 0, -1, NULL },
     /* Parallels */
     /* XXX Untested
-    { VIR_STORAGE_VOL_FILE_PARALLELS, "WithoutFreeSpace", NULL,
+    { VIR_STORAGE_FILE_PARALLELS, "WithoutFreeSpace", NULL,
       LV_LITTLE_ENDIAN, 16, 2,
       16+4+4+4+4, 4, 512, -1, NULL },
     */
     /* QCow */
-    { VIR_STORAGE_VOL_FILE_QCOW, "QFI", NULL,
+    { VIR_STORAGE_FILE_QCOW, "QFI", NULL,
       LV_BIG_ENDIAN, 4, 1,
       4+4+8+4+4, 8, 1, 4+4+8+4+4+8+1+1+2, qcowXGetBackingStore },
     /* QCow 2 */
-    { VIR_STORAGE_VOL_FILE_QCOW2, "QFI", NULL,
+    { VIR_STORAGE_FILE_QCOW2, "QFI", NULL,
       LV_BIG_ENDIAN, 4, 2,
       4+4+8+4+4, 8, 1, 4+4+8+4+4+8, qcowXGetBackingStore },
     /* VMDK 3 */
     /* XXX Untested
-    { VIR_STORAGE_VOL_FILE_VMDK, "COWD", NULL,
+    { VIR_STORAGE_FILE_VMDK, "COWD", NULL,
       LV_LITTLE_ENDIAN, 4, 1,
       4+4+4, 4, 512, -1, NULL },
     */
     /* VMDK 4 */
-    { VIR_STORAGE_VOL_FILE_VMDK, "KDMV", NULL,
+    { VIR_STORAGE_FILE_VMDK, "KDMV", NULL,
       LV_LITTLE_ENDIAN, 4, 1,
       4+4+4, 8, 512, -1, vmdk4GetBackingStore },
     /* Connectix / VirtualPC */
     /* XXX Untested
-    { VIR_STORAGE_VOL_FILE_VPC, "conectix", NULL,
+    { VIR_STORAGE_FILE_VPC, "conectix", NULL,
       LV_BIG_ENDIAN, -1, 0,
       -1, 0, 0, -1, NULL},
     */
@@ -452,7 +453,7 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
     }
 
     /* All fails, so call it a raw file */
-    target->format = VIR_STORAGE_VOL_FILE_RAW;
+    target->format = VIR_STORAGE_FILE_RAW;
     return 0;
 }
 
@@ -891,7 +892,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
             goto no_memory;
 
         vol->type = VIR_STORAGE_VOL_FILE;
-        vol->target.format = VIR_STORAGE_VOL_FILE_RAW; /* Real value is filled in during probe */
+        vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
                         vol->name) == -1)
@@ -918,7 +919,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         }
 
         if (backingStore != NULL) {
-            if (vol->target.format == VIR_STORAGE_VOL_FILE_QCOW2 &&
+            if (vol->target.format == VIR_STORAGE_FILE_QCOW2 &&
                 STRPREFIX("fmt:", backingStore)) {
                 char *fmtstr = backingStore + 4;
                 char *path = strchr(fmtstr, ':');
@@ -927,7 +928,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
                 } else {
                     *path = '\0';
                     if ((vol->backingStore.format =
-                         virStorageVolFormatFileSystemTypeFromString(fmtstr)) < 0) {
+                         virStorageFileFormatTypeFromString(fmtstr)) < 0) {
                         VIR_FREE(backingStore);
                     } else {
                         memmove(backingStore, path, strlen(path) + 1);
@@ -1121,9 +1122,9 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                                                inputvol);
         if (!create_func)
             return -1;
-    } else if (vol->target.format == VIR_STORAGE_VOL_FILE_RAW) {
+    } else if (vol->target.format == VIR_STORAGE_FILE_RAW) {
         create_func = virStorageBackendCreateRaw;
-    } else if (vol->target.format == VIR_STORAGE_VOL_FILE_DIR) {
+    } else if (vol->target.format == VIR_STORAGE_FILE_DIR) {
         create_func = createFileDir;
     } else if ((tool_type = virStorageBackendFindFSImageTool(NULL)) != -1) {
         create_func = virStorageBackendFSImageToolTypeToFunc(conn, tool_type);

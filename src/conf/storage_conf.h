@@ -429,23 +429,6 @@ enum virStoragePoolFormatLogical {
 };
 VIR_ENUM_DECL(virStoragePoolFormatLogical)
 
-
-enum virStorageVolFormatFileSystem {
-    VIR_STORAGE_VOL_FILE_RAW = 0,
-    VIR_STORAGE_VOL_FILE_DIR,
-    VIR_STORAGE_VOL_FILE_BOCHS,
-    VIR_STORAGE_VOL_FILE_CLOOP,
-    VIR_STORAGE_VOL_FILE_COW,
-    VIR_STORAGE_VOL_FILE_DMG,
-    VIR_STORAGE_VOL_FILE_ISO,
-    VIR_STORAGE_VOL_FILE_QCOW,
-    VIR_STORAGE_VOL_FILE_QCOW2,
-    VIR_STORAGE_VOL_FILE_VMDK,
-    VIR_STORAGE_VOL_FILE_VPC,
-    VIR_STORAGE_VOL_FILE_LAST,
-};
-VIR_ENUM_DECL(virStorageVolFormatFileSystem)
-
 /*
  * XXX these are basically partition types.
  *
