@@ -355,7 +355,7 @@ the virtualization capabilities of recent versions of Linux (and other OSes).
 %package python
 Summary: Python bindings for the libvirt library
 Group: Development/Libraries
-Requires: libvirt = %{version}-%{release}
+Requires: libvirt-client = %{version}-%{release}
 
 %description python
 The libvirt-python package contains a module that permits applications
