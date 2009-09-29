@@ -25,6 +25,7 @@
 #include "storage_file.h"
 
 #include <unistd.h>
+#include <fcntl.h>
 #include "memory.h"
 #include "virterror_internal.h"
 
@@ -401,4 +402,23 @@ virStorageFileGetMetadataFromFD(virConnectPtr conn,
     }
 
     return 0;
+}
+
+int
+virStorageFileGetMetadata(virConnectPtr conn,
+                          const char *path,
+                          virStorageFileMetadata *meta)
+{
+    int fd, ret;
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportSystemError(conn, errno, _("cannot open file '%s'"), path);
+        return -1;
+    }
+
+    ret = virStorageFileGetMetadataFromFD(conn, path, fd, meta);
+
+    close(fd);
+
+    return ret;
 }
