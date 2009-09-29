@@ -25,6 +25,7 @@
 #define __VIR_STORAGE_FILE_H__
 
 #include "util.h"
+#include <stdbool.h>
 
 enum virStorageFileFormat {
     VIR_STORAGE_FILE_RAW = 0,
@@ -42,5 +43,12 @@ enum virStorageFileFormat {
 };
 
 VIR_ENUM_DECL(virStorageFileFormat);
+
+typedef struct _virStorageFileMetadata {
+    int format;
+    char *backingStore;
+    unsigned long long capacity;
+    bool encrypted;
+} virStorageFileMetadata;
 
 #endif /* __VIR_STORAGE_FILE_H__ */

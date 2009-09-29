@@ -287,24 +287,13 @@ static int
 virStorageGetMetadataFromFD(virConnectPtr conn,
                             const char *path,
                             int fd,
-                            int *format,
-                            bool *encrypted,
-                            char **backingStore,
-                            unsigned long long *capacity)
+                            virStorageFileMetadata *meta)
 {
     unsigned char head[20*512]; /* vmdk4GetBackingStore needs this much. */
     int len, i;
 
-    if (format) /* If all else fails, call it a raw file */
-        *format = VIR_STORAGE_FILE_RAW;
-    if (encrypted)
-        *encrypted = false;
-    if (backingStore)
-        *backingStore = NULL;
-    /* Do not overwrite capacity
-     * if (capacity)
-     *     *capacity = 0;
-     */
+    /* If all else fails, call it a raw file */
+    meta->format = VIR_STORAGE_FILE_RAW;
 
     if ((len = read(fd, head, sizeof(head))) < 0) {
         virReportSystemError(conn, errno, _("cannot read header '%s'"), path);
@@ -345,9 +334,9 @@ virStorageGetMetadataFromFD(virConnectPtr conn,
         }
 
         /* Optionally extract capacity from file */
-        if (fileTypeInfo[i].sizeOffset != -1 && capacity) {
+        if (fileTypeInfo[i].sizeOffset != -1) {
             if (fileTypeInfo[i].endian == LV_LITTLE_ENDIAN) {
-                *capacity =
+                meta->capacity =
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+7] << 56) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+6] << 48) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+5] << 40) |
@@ -357,7 +346,7 @@ virStorageGetMetadataFromFD(virConnectPtr conn,
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+1] << 8) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset]);
             } else {
-                *capacity =
+                meta->capacity =
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset] << 56) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+1] << 48) |
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+2] << 40) |
@@ -368,25 +357,24 @@ virStorageGetMetadataFromFD(virConnectPtr conn,
                     ((unsigned long long)head[fileTypeInfo[i].sizeOffset+7]);
             }
             /* Avoid unlikely, but theoretically possible overflow */
-            if (*capacity > (ULLONG_MAX / fileTypeInfo[i].sizeMultiplier))
+            if (meta->capacity > (ULLONG_MAX / fileTypeInfo[i].sizeMultiplier))
                 continue;
-            *capacity *= fileTypeInfo[i].sizeMultiplier;
+            meta->capacity *= fileTypeInfo[i].sizeMultiplier;
         }
 
-        if (fileTypeInfo[i].qcowCryptOffset != -1 && encrypted) {
+        if (fileTypeInfo[i].qcowCryptOffset != -1) {
             int crypt_format;
 
             crypt_format = (head[fileTypeInfo[i].qcowCryptOffset] << 24) |
                 (head[fileTypeInfo[i].qcowCryptOffset+1] << 16) |
                 (head[fileTypeInfo[i].qcowCryptOffset+2] << 8) |
                 head[fileTypeInfo[i].qcowCryptOffset+3];
-            *encrypted = crypt_format != 0;
+            meta->encrypted = crypt_format != 0;
         }
 
         /* Validation passed, we know the file format now */
-        if (format)
-            *format = fileTypeInfo[i].type;
-        if (fileTypeInfo[i].getBackingStore != NULL && backingStore) {
+        meta->format = fileTypeInfo[i].type;
+        if (fileTypeInfo[i].getBackingStore != NULL) {
             char *base;
 
             switch (fileTypeInfo[i].getBackingStore(conn, &base, head, len)) {
@@ -400,9 +388,9 @@ virStorageGetMetadataFromFD(virConnectPtr conn,
                 return -1;
             }
             if (base != NULL) {
-                *backingStore = absolutePathFromBaseFile(path, base);
+                meta->backingStore = absolutePathFromBaseFile(path, base);
                 VIR_FREE(base);
-                if (*backingStore == NULL) {
+                if (meta->backingStore == NULL) {
                     virReportOOMError(conn);
                     return -1;
                 }
@@ -419,8 +407,7 @@ virStorageGetMetadataFromFD(virConnectPtr conn,
         if (!virFileHasSuffix(path, fileTypeInfo[i].extension))
             continue;
 
-        if (format)
-            *format = fileTypeInfo[i].type;
+        meta->format = fileTypeInfo[i].type;
         return 0;
     }
 
@@ -436,7 +423,7 @@ virStorageBackendProbeTarget(virConnectPtr conn,
                              virStorageEncryptionPtr *encryption)
 {
     int fd, ret;
-    bool encrypted;
+    virStorageFileMetadata meta;
 
     if (encryption)
         *encryption = NULL;
@@ -455,16 +442,28 @@ virStorageBackendProbeTarget(virConnectPtr conn,
         return ret; /* Take care to propagate ret, it is not always -1 */
     }
 
-    if (virStorageGetMetadataFromFD(conn, target->path, fd,
-                                    &target->format, &encrypted,
-                                    backingStore, capacity) < 0) {
+    memset(&meta, 0, sizeof(meta));
+
+    if (virStorageGetMetadataFromFD(conn, target->path, fd, &meta) < 0) {
         close(fd);
         return -1;
     }
 
     close(fd);
 
-    if (encryption != NULL && encrypted) {
+    target->format = meta.format;
+
+    if (backingStore) {
+        *backingStore = meta.backingStore;
+        meta.backingStore = NULL;
+    }
+
+    VIR_FREE(meta.backingStore);
+
+    if (capacity && meta.capacity)
+        *capacity = meta.capacity;
+
+    if (encryption != NULL && meta.encrypted) {
         if (VIR_ALLOC(*encryption) < 0) {
             virReportOOMError(conn);
             if (backingStore)
