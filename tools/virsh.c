@@ -202,8 +202,8 @@ typedef struct __vshControl {
 
 static const vshCmdDef commands[];
 
-static void vshError(vshControl *ctl, int doexit, const char *format, ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4);
+static void vshError(vshControl *ctl, const char *format, ...)
+    ATTRIBUTE_FMT_PRINTF(2, 3);
 static int vshInit(vshControl *ctl);
 static int vshDeinit(vshControl *ctl);
 static void vshUsage(void);
@@ -351,11 +351,11 @@ virshReportError(vshControl *ctl)
         return;
 
     if (last_error->code == VIR_ERR_OK) {
-        vshError(ctl, FALSE, "%s", _("unknown error"));
+        vshError(ctl, "%s", _("unknown error"));
         goto out;
     }
 
-    vshError(ctl, FALSE, "%s", last_error->message);
+    vshError(ctl, "%s", last_error->message);
 
 out:
     virFreeError(last_error);
@@ -433,11 +433,9 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainSetAutostart(dom, autostart) < 0) {
         if (autostart)
-            vshError(ctl, FALSE, _("Failed to mark domain %s as autostarted"),
-                     name);
+            vshError(ctl, _("Failed to mark domain %s as autostarted"), name);
         else
-            vshError(ctl, FALSE, _("Failed to unmark domain %s as autostarted"),
-                     name);
+            vshError(ctl, _("Failed to unmark domain %s as autostarted"), name);
         virDomainFree(dom);
         return FALSE;
     }
@@ -474,8 +472,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
-            vshError(ctl, FALSE, "%s",
-                     _("Failed to disconnect from the hypervisor"));
+            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
             return FALSE;
         }
         ctl->conn = NULL;
@@ -494,7 +491,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
 
     if (!ctl->conn)
-        vshError(ctl, FALSE, "%s", _("Failed to connect to the hypervisor"));
+        vshError(ctl, "%s", _("Failed to connect to the hypervisor"));
 
     return ctl->conn ? TRUE : FALSE;
 }
@@ -528,17 +525,17 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     char *thisHost = NULL;
 
     if (!(thisHost = virGetHostname())) {
-        vshError(ctl, FALSE, "%s", _("Failed to get local hostname"));
+        vshError(ctl, "%s", _("Failed to get local hostname"));
         goto cleanup;
     }
 
     if (!(thatHost = virConnectGetHostname(ctl->conn))) {
-        vshError(ctl, FALSE, "%s", _("Failed to get connection hostname"));
+        vshError(ctl, "%s", _("Failed to get connection hostname"));
         goto cleanup;
     }
 
     if (STRNEQ(thisHost, thatHost)) {
-        vshError(ctl, FALSE, "%s", _("Cannot connect to a remote console device"));
+        vshError(ctl, "%s", _("Cannot connect to a remote console device"));
         goto cleanup;
     }
 
@@ -632,14 +629,14 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxid = virConnectNumOfDomains(ctl->conn);
         if (maxid < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list active domains"));
+            vshError(ctl, "%s", _("Failed to list active domains"));
             return FALSE;
         }
         if (maxid) {
             ids = vshMalloc(ctl, sizeof(int) * maxid);
 
             if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list active domains"));
+                vshError(ctl, "%s", _("Failed to list active domains"));
                 free(ids);
                 return FALSE;
             }
@@ -650,7 +647,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxname = virConnectNumOfDefinedDomains(ctl->conn);
         if (maxname < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
+            vshError(ctl, "%s", _("Failed to list inactive domains"));
             free(ids);
             return FALSE;
         }
@@ -658,7 +655,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             names = vshMalloc(ctl, sizeof(char *) * maxname);
 
             if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
+                vshError(ctl, "%s", _("Failed to list inactive domains"));
                 free(ids);
                 free(names);
                 return FALSE;
@@ -786,8 +783,7 @@ cmdDomblkstat (vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainBlockStats (dom, device, &stats, sizeof stats) == -1) {
-        vshError (ctl, FALSE, _("Failed to get block stats %s %s"),
-                  name, device);
+        vshError(ctl, _("Failed to get block stats %s %s"), name, device);
         virDomainFree(dom);
         return FALSE;
     }
@@ -844,8 +840,7 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainInterfaceStats (dom, device, &stats, sizeof stats) == -1) {
-        vshError (ctl, FALSE, _("Failed to get interface stats %s %s"),
-                  name, device);
+        vshError(ctl, _("Failed to get interface stats %s %s"), name, device);
         virDomainFree(dom);
         return FALSE;
     }
@@ -908,7 +903,7 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
     if (virDomainSuspend(dom) == 0) {
         vshPrint(ctl, _("Domain %s suspended\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to suspend domain %s"), name);
+        vshError(ctl, _("Failed to suspend domain %s"), name);
         ret = FALSE;
     }
 
@@ -967,7 +962,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 #endif
         virDomainFree(dom);
     } else {
-        vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
+        vshError(ctl, _("Failed to create domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -1014,7 +1009,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
                  virDomainGetName(dom), from);
         virDomainFree(dom);
     } else {
-        vshError(ctl, FALSE, _("Failed to define domain from %s"), from);
+        vshError(ctl, _("Failed to define domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -1052,9 +1047,11 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
     if (name && virStrToLong_i(name, NULL, 10, &id) == 0
         && id >= 0 && (dom = virDomainLookupByID(ctl->conn, id))) {
-        vshError(ctl, FALSE, _("a running domain like %s cannot be undefined;\n"
-                               "to undefine, first shutdown then undefine"
-                               " using its name or UUID"), name);
+        vshError(ctl,
+                 _("a running domain like %s cannot be undefined;\n"
+                   "to undefine, first shutdown then undefine"
+                   " using its name or UUID"),
+                 name);
         virDomainFree(dom);
         return FALSE;
     }
@@ -1065,7 +1062,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (virDomainUndefine(dom) == 0) {
         vshPrint(ctl, _("Domain %s has been undefined\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to undefine domain %s"), name);
+        vshError(ctl, _("Failed to undefine domain %s"), name);
         ret = FALSE;
     }
 
@@ -1107,7 +1104,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
-        vshError(ctl, FALSE, "%s", _("Domain is already active"));
+        vshError(ctl, "%s", _("Domain is already active"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1120,8 +1117,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
             cmdRunConsole(ctl, dom);
 #endif
     } else {
-        vshError(ctl, FALSE, _("Failed to start domain %s"),
-                 virDomainGetName(dom));
+        vshError(ctl, _("Failed to start domain %s"), virDomainGetName(dom));
         ret = FALSE;
     }
     virDomainFree(dom);
@@ -1163,7 +1159,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     if (virDomainSave(dom, to) == 0) {
         vshPrint(ctl, _("Domain %s saved to %s\n"), name, to);
     } else {
-        vshError(ctl, FALSE, _("Failed to save domain %s to %s"), name, to);
+        vshError(ctl, _("Failed to save domain %s to %s"), name, to);
         ret = FALSE;
     }
 
@@ -1202,7 +1198,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         int val;
         val = vshCommandOptInt(cmd, "weight", &found);
         if (!found) {
-            vshError(ctl, FALSE, "%s", _("Invalid value of weight"));
+            vshError(ctl, "%s", _("Invalid value of weight"));
             return -1;
         } else {
             param->value.ui = val;
@@ -1217,7 +1213,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         int val;
         val = vshCommandOptInt(cmd, "cap", &found);
         if (!found) {
-            vshError(ctl, FALSE, "%s", _("Invalid value of cap"));
+            vshError(ctl, "%s", _("Invalid value of cap"));
             return -1;
         } else {
             param->value.ui = val;
@@ -1229,7 +1225,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         char *val = strchr(data, '=');
         int match = 0;
         if (!val) {
-            vshError(ctl, FALSE, "%s", _("Invalid syntax for --set, expecting name=value"));
+            vshError(ctl, "%s", _("Invalid syntax for --set, expecting name=value"));
             return -1;
         }
         *val = '\0';
@@ -1243,35 +1239,35 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         switch (param->type) {
         case VIR_DOMAIN_SCHED_FIELD_INT:
             if (virStrToLong_i(val, NULL, 10, &param->value.i) < 0) {
-                vshError(ctl, FALSE, "%s",
+                vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an int"));
                 return -1;
             }
             break;
         case VIR_DOMAIN_SCHED_FIELD_UINT:
             if (virStrToLong_ui(val, NULL, 10, &param->value.ui) < 0) {
-                vshError(ctl, FALSE, "%s",
+                vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an unsigned int"));
                 return -1;
             }
             break;
         case VIR_DOMAIN_SCHED_FIELD_LLONG:
             if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
-                vshError(ctl, FALSE, "%s",
+                vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an long long"));
                 return -1;
             }
             break;
         case VIR_DOMAIN_SCHED_FIELD_ULLONG:
             if (virStrToLong_ull(val, NULL, 10, &param->value.ul) < 0) {
-                vshError(ctl, FALSE, "%s",
+                vshError(ctl, "%s",
                          _("Invalid value for parameter, expecting an unsigned long long"));
                 return -1;
             }
             break;
         case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
             if (virStrToDouble(val, NULL, &param->value.d) < 0) {
-                vshError(ctl, FALSE, "%s", _("Invalid value for parameter, expecting a double"));
+                vshError(ctl, "%s", _("Invalid value for parameter, expecting a double"));
                 return -1;
             }
             break;
@@ -1408,7 +1404,7 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     if (virDomainRestore(ctl->conn, from) == 0) {
         vshPrint(ctl, _("Domain restored from %s\n"), from);
     } else {
-        vshError(ctl, FALSE, _("Failed to restore domain from %s"), from);
+        vshError(ctl, _("Failed to restore domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -1449,8 +1445,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     if (virDomainCoreDump(dom, to, 0) == 0) {
         vshPrint(ctl, _("Domain %s dumped to %s\n"), name, to);
     } else {
-        vshError(ctl, FALSE, _("Failed to core dump domain %s to %s"),
-                 name, to);
+        vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
         ret = FALSE;
     }
 
@@ -1488,7 +1483,7 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
     if (virDomainResume(dom) == 0) {
         vshPrint(ctl, _("Domain %s resumed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to resume domain %s"), name);
+        vshError(ctl, _("Failed to resume domain %s"), name);
         ret = FALSE;
     }
 
@@ -1526,7 +1521,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     if (virDomainShutdown(dom) == 0) {
         vshPrint(ctl, _("Domain %s is being shutdown\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to shutdown domain %s"), name);
+        vshError(ctl, _("Failed to shutdown domain %s"), name);
         ret = FALSE;
     }
 
@@ -1564,7 +1559,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     if (virDomainReboot(dom, 0) == 0) {
         vshPrint(ctl, _("Domain %s is being rebooted\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to reboot domain %s"), name);
+        vshError(ctl, _("Failed to reboot domain %s"), name);
         ret = FALSE;
     }
 
@@ -1602,7 +1597,7 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     if (virDomainDestroy(dom) == 0) {
         vshPrint(ctl, _("Domain %s destroyed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to destroy domain %s"), name);
+        vshError(ctl, _("Failed to destroy domain %s"), name);
         ret = FALSE;
     }
 
@@ -1835,8 +1830,8 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         }
     } else {
         if (info.state == VIR_DOMAIN_SHUTOFF) {
-            vshError(ctl, FALSE, "%s",
-                 _("Domain shut off, virtual CPUs not present."));
+            vshError(ctl, "%s",
+                     _("Domain shut off, virtual CPUs not present."));
         }
         ret = FALSE;
     }
@@ -1886,14 +1881,13 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
 
     vcpu = vshCommandOptInt(cmd, "vcpu", &vcpufound);
     if (!vcpufound) {
-        vshError(ctl, FALSE, "%s",
-                 _("vcpupin: Invalid or missing vCPU number."));
+        vshError(ctl, "%s", _("vcpupin: Invalid or missing vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }
 
     if (!(cpulist = vshCommandOptString(cmd, "cpulist", NULL))) {
-        vshError(ctl, FALSE, "%s", _("vcpupin: Missing cpulist"));
+        vshError(ctl, "%s", _("vcpupin: Missing cpulist"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1904,14 +1898,13 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
-        vshError(ctl, FALSE, "%s",
-                 _("vcpupin: failed to get domain informations."));
+        vshError(ctl, "%s", _("vcpupin: failed to get domain informations."));
         virDomainFree(dom);
         return FALSE;
     }
 
     if (vcpu >= info.nrVirtCpu) {
-        vshError(ctl, FALSE, "%s", _("vcpupin: Invalid vCPU number."));
+        vshError(ctl, "%s", _("vcpupin: Invalid vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1920,7 +1913,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
      * numbers and give an intelligent error message if not.
      */
     if (cpulist[0] == '\0') {
-        vshError(ctl, FALSE, "%s", _("cpulist: Invalid format. Empty string."));
+        vshError(ctl, "%s", _("cpulist: Invalid format. Empty string."));
         virDomainFree (dom);
         return FALSE;
     }
@@ -1930,7 +1923,9 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
         switch (state) {
         case expect_num:
           if (!c_isdigit (cpulist[i])) {
-                vshError( ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."), cpulist, i, cpulist[i]);
+                vshError(ctl, _("cpulist: %s: Invalid format. Expecting "
+                                "digit at position %d (near '%c')."),
+                         cpulist, i, cpulist[i]);
                 virDomainFree (dom);
                 return FALSE;
             }
@@ -1940,14 +1935,18 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
             if (cpulist[i] == ',')
                 state = expect_num;
             else if (!c_isdigit (cpulist[i])) {
-                vshError(ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%c')."), cpulist, i, cpulist[i]);
+                vshError(ctl, _("cpulist: %s: Invalid format. Expecting "
+                                "digit or comma at position %d (near '%c')."),
+                         cpulist, i, cpulist[i]);
                 virDomainFree (dom);
                 return FALSE;
             }
         }
     }
     if (state == expect_num) {
-        vshError(ctl, FALSE, _("cpulist: %s: Invalid format. Trailing comma at position %d."), cpulist, i);
+        vshError(ctl, _("cpulist: %s: Invalid format. Trailing comma "
+                        "at position %d."),
+                 cpulist, i);
         virDomainFree (dom);
         return FALSE;
     }
@@ -1961,7 +1960,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
         if (cpu < VIR_NODEINFO_MAXCPUS(nodeinfo)) {
             VIR_USE_CPU(cpumap, cpu);
         } else {
-            vshError(ctl, FALSE, _("Physical CPU %d doesn't exist."), cpu);
+            vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
             free(cpumap);
             virDomainFree(dom);
             return FALSE;
@@ -2011,7 +2010,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 
     count = vshCommandOptInt(cmd, "count", &count);
     if (count <= 0) {
-        vshError(ctl, FALSE, "%s", _("Invalid number of virtual CPUs."));
+        vshError(ctl, "%s", _("Invalid number of virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -2023,7 +2022,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (count > maxcpu) {
-        vshError(ctl, FALSE, "%s", _("Too many virtual CPUs."));
+        vshError(ctl, "%s", _("Too many virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -2068,19 +2067,19 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
     if (kilobytes <= 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
+        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, "%s", _("Unable to verify MaxMemorySize"));
+        vshError(ctl, "%s", _("Unable to verify MaxMemorySize"));
         return FALSE;
     }
 
     if (kilobytes > info.maxMem) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
+        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
     }
 
@@ -2124,26 +2123,26 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
     if (kilobytes <= 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
+        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, "%s", _("Unable to verify current MemorySize"));
+        vshError(ctl, "%s", _("Unable to verify current MemorySize"));
         return FALSE;
     }
 
     if (kilobytes < info.memory) {
         if (virDomainSetMemory(dom, kilobytes) != 0) {
             virDomainFree(dom);
-            vshError(ctl, FALSE, "%s", _("Unable to shrink current MemorySize"));
+            vshError(ctl, "%s", _("Unable to shrink current MemorySize"));
             return FALSE;
         }
     }
 
     if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
-        vshError(ctl, FALSE, "%s", _("Unable to change MaxMemorySize"));
+        vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
         ret = FALSE;
     }
 
@@ -2169,7 +2168,7 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if (virNodeGetInfo(ctl->conn, &info) < 0) {
-        vshError(ctl, FALSE, "%s", _("failed to get node information"));
+        vshError(ctl, "%s", _("failed to get node information"));
         return FALSE;
     }
     vshPrint(ctl, "%-20s %s\n", _("CPU model:"), info.model);
@@ -2202,7 +2201,7 @@ cmdCapabilities (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if ((caps = virConnectGetCapabilities (ctl->conn)) == NULL) {
-        vshError(ctl, FALSE, "%s", _("failed to get capabilities"));
+        vshError(ctl, "%s", _("failed to get capabilities"));
         return FALSE;
     }
     vshPrint (ctl, "%s\n", caps);
@@ -2446,7 +2445,7 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
     if (virDomainGetUUIDString(dom, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, "%s", _("failed to get domain UUID"));
+        vshError(ctl, "%s", _("failed to get domain UUID"));
 
     virDomainFree(dom);
     return TRUE;
@@ -2489,7 +2488,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
     desturi = vshCommandOptString (cmd, "desturi", &found);
     if (!found) {
-        vshError (ctl, FALSE, "%s", _("migrate: Missing desturi"));
+        vshError(ctl, "%s", _("migrate: Missing desturi"));
         goto done;
     }
 
@@ -2550,11 +2549,9 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virNetworkSetAutostart(network, autostart) < 0) {
         if (autostart)
-            vshError(ctl, FALSE, _("failed to mark network %s as autostarted"),
-                                   name);
+            vshError(ctl, _("failed to mark network %s as autostarted"), name);
         else
-            vshError(ctl, FALSE,_("failed to unmark network %s as autostarted"),
-                                   name);
+            vshError(ctl, _("failed to unmark network %s as autostarted"), name);
         virNetworkFree(network);
         return FALSE;
     }
@@ -2609,7 +2606,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
                  virNetworkGetName(network), from);
         virNetworkFree(network);
     } else {
-        vshError(ctl, FALSE, _("Failed to create network from %s"), from);
+        vshError(ctl, _("Failed to create network from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -2657,7 +2654,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
                  virNetworkGetName(network), from);
         virNetworkFree(network);
     } else {
-        vshError(ctl, FALSE, _("Failed to define network from %s"), from);
+        vshError(ctl, _("Failed to define network from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -2694,7 +2691,7 @@ cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
     if (virNetworkDestroy(network) == 0) {
         vshPrint(ctl, _("Network %s destroyed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to destroy network %s"), name);
+        vshError(ctl, _("Failed to destroy network %s"), name);
         ret = FALSE;
     }
 
@@ -2811,8 +2808,8 @@ cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (STRNEQ (doc, doc_reread)) {
-        vshError (ctl, FALSE, "%s",
-               _("ERROR: the XML configuration was changed by another user"));
+        vshError(ctl, "%s",
+                 _("ERROR: the XML configuration was changed by another user"));
         goto cleanup;
     }
 
@@ -2874,7 +2871,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxactive = virConnectNumOfNetworks(ctl->conn);
         if (maxactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list active networks"));
+            vshError(ctl, "%s", _("Failed to list active networks"));
             return FALSE;
         }
         if (maxactive) {
@@ -2882,7 +2879,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxactive = virConnectListNetworks(ctl->conn, activeNames,
                                                     maxactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list active networks"));
+                vshError(ctl, "%s", _("Failed to list active networks"));
                 free(activeNames);
                 return FALSE;
             }
@@ -2893,7 +2890,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
         if (maxinactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
+            vshError(ctl, "%s", _("Failed to list inactive networks"));
             free(activeNames);
             return FALSE;
         }
@@ -2903,8 +2900,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if ((maxinactive =
                      virConnectListDefinedNetworks(ctl->conn, inactiveNames,
                                                    maxinactive)) < 0) {
-                vshError(ctl, FALSE, "%s",
-                         _("Failed to list inactive networks"));
+                vshError(ctl, "%s", _("Failed to list inactive networks"));
                 free(activeNames);
                 free(inactiveNames);
                 return FALSE;
@@ -3032,7 +3028,7 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("Network %s started\n"),
                  virNetworkGetName(network));
     } else {
-        vshError(ctl, FALSE, _("Failed to start network %s"),
+        vshError(ctl, _("Failed to start network %s"),
                  virNetworkGetName(network));
         ret = FALSE;
     }
@@ -3071,7 +3067,7 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
     if (virNetworkUndefine(network) == 0) {
         vshPrint(ctl, _("Network %s has been undefined\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to undefine network %s"), name);
+        vshError(ctl, _("Failed to undefine network %s"), name);
         ret = FALSE;
     }
 
@@ -3110,7 +3106,7 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
     if (virNetworkGetUUIDString(network, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, "%s", _("failed to get network UUID"));
+        vshError(ctl, "%s", _("failed to get network UUID"));
 
     virNetworkFree(network);
     return TRUE;
@@ -3148,7 +3144,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxactive = virConnectNumOfInterfaces(ctl->conn);
         if (maxactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list active interfaces"));
+            vshError(ctl, "%s", _("Failed to list active interfaces"));
             return FALSE;
         }
         if (maxactive) {
@@ -3156,8 +3152,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxactive = virConnectListInterfaces(ctl->conn, activeNames,
                                                     maxactive)) < 0) {
-                vshError(ctl, FALSE, "%s",
-                         _("Failed to list active interfaces"));
+                vshError(ctl, "%s", _("Failed to list active interfaces"));
                 free(activeNames);
                 return FALSE;
             }
@@ -3168,8 +3163,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxinactive = virConnectNumOfDefinedInterfaces(ctl->conn);
         if (maxinactive < 0) {
-            vshError(ctl, FALSE, "%s",
-                     _("Failed to list inactive interfaces"));
+            vshError(ctl, "%s", _("Failed to list inactive interfaces"));
             free(activeNames);
             return FALSE;
         }
@@ -3179,8 +3173,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if ((maxinactive =
                      virConnectListDefinedInterfaces(ctl->conn, inactiveNames,
                                                      maxinactive)) < 0) {
-                vshError(ctl, FALSE, "%s",
-                         _("Failed to list inactive interfaces"));
+                vshError(ctl, "%s", _("Failed to list inactive interfaces"));
                 free(activeNames);
                 free(inactiveNames);
                 return FALSE;
@@ -3373,7 +3366,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
                  virInterfaceGetName(iface), from);
         virInterfaceFree (iface);
     } else {
-        vshError(ctl, FALSE, _("Failed to define interface from %s"), from);
+        vshError(ctl, _("Failed to define interface from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -3409,7 +3402,7 @@ cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
     if (virInterfaceUndefine(iface) == 0) {
         vshPrint(ctl, _("Interface %s undefined\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to undefine interface %s"), name);
+        vshError(ctl, _("Failed to undefine interface %s"), name);
         ret = FALSE;
     }
 
@@ -3447,7 +3440,7 @@ cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
     if (virInterfaceCreate(iface, 0) == 0) {
         vshPrint(ctl, _("Interface %s started\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to start interface %s"), name);
+        vshError(ctl, _("Failed to start interface %s"), name);
         ret = FALSE;
     }
 
@@ -3485,7 +3478,7 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
     if (virInterfaceDestroy(iface, 0) == 0) {
         vshPrint(ctl, _("Interface %s destroyed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to destroy interface %s"), name);
+        vshError(ctl, _("Failed to destroy interface %s"), name);
         ret = FALSE;
     }
 
@@ -3527,11 +3520,9 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virStoragePoolSetAutostart(pool, autostart) < 0) {
         if (autostart)
-            vshError(ctl, FALSE, _("failed to mark pool %s as autostarted"),
-                                   name);
+            vshError(ctl, _("failed to mark pool %s as autostarted"), name);
         else
-            vshError(ctl, FALSE,_("failed to unmark pool %s as autostarted"),
-                                   name);
+            vshError(ctl, _("failed to unmark pool %s as autostarted"), name);
         virStoragePoolFree(pool);
         return FALSE;
     }
@@ -3587,7 +3578,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
                  virStoragePoolGetName(pool), from);
         virStoragePoolFree(pool);
     } else {
-        vshError(ctl, FALSE, _("Failed to create pool from %s"), from);
+        vshError(ctl, _("Failed to create pool from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -3641,7 +3632,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
                  virNodeDeviceGetName(dev), from);
         virNodeDeviceFree(dev);
     } else {
-        vshError(ctl, FALSE, _("Failed to create node device from %s"), from);
+        vshError(ctl, _("Failed to create node device from %s"), from);
         ret = FALSE;
     }
 
@@ -3687,7 +3678,7 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     if (virNodeDeviceDestroy(dev) == 0) {
         vshPrint(ctl, _("Destroyed node device '%s'\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to destroy node device '%s'"), name);
+        vshError(ctl, _("Failed to destroy node device '%s'"), name);
         ret = FALSE;
     }
 
@@ -3800,7 +3791,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, _("Pool %s created\n"), name);
             virStoragePoolFree(pool);
         } else {
-            vshError(ctl, FALSE, _("Failed to create pool %s"), name);
+            vshError(ctl, _("Failed to create pool %s"), name);
             return FALSE;
         }
     }
@@ -3849,7 +3840,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
                  virStoragePoolGetName(pool), from);
         virStoragePoolFree(pool);
     } else {
-        vshError(ctl, FALSE, _("Failed to define pool from %s"), from);
+        vshError(ctl, _("Failed to define pool from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -3889,7 +3880,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, _("Pool %s defined\n"), name);
             virStoragePoolFree(pool);
         } else {
-            vshError(ctl, FALSE, _("Failed to define pool %s"), name);
+            vshError(ctl, _("Failed to define pool %s"), name);
             return FALSE;
         }
     }
@@ -3927,7 +3918,7 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolBuild(pool, 0) == 0) {
         vshPrint(ctl, _("Pool %s built\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to build pool %s"), name);
+        vshError(ctl, _("Failed to build pool %s"), name);
         ret = FALSE;
         virStoragePoolFree(pool);
     }
@@ -3966,7 +3957,7 @@ cmdPoolDestroy(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolDestroy(pool) == 0) {
         vshPrint(ctl, _("Pool %s destroyed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to destroy pool %s"), name);
+        vshError(ctl, _("Failed to destroy pool %s"), name);
         ret = FALSE;
     }
 
@@ -4005,7 +3996,7 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolDelete(pool, 0) == 0) {
         vshPrint(ctl, _("Pool %s deleted\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to delete pool %s"), name);
+        vshError(ctl, _("Failed to delete pool %s"), name);
         ret = FALSE;
     }
 
@@ -4044,7 +4035,7 @@ cmdPoolRefresh(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolRefresh(pool, 0) == 0) {
         vshPrint(ctl, _("Pool %s refreshed\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to refresh pool %s"), name);
+        vshError(ctl, _("Failed to refresh pool %s"), name);
         ret = FALSE;
     }
     virStoragePoolFree(pool);
@@ -4124,7 +4115,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxactive = virConnectNumOfStoragePools(ctl->conn);
         if (maxactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list active pools"));
+            vshError(ctl, "%s", _("Failed to list active pools"));
             return FALSE;
         }
         if (maxactive) {
@@ -4132,7 +4123,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxactive = virConnectListStoragePools(ctl->conn, activeNames,
                                                         maxactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list active pools"));
+                vshError(ctl, "%s", _("Failed to list active pools"));
                 free(activeNames);
                 return FALSE;
             }
@@ -4143,7 +4134,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxinactive = virConnectNumOfDefinedStoragePools(ctl->conn);
         if (maxinactive < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list inactive pools"));
+            vshError(ctl, "%s", _("Failed to list inactive pools"));
             free(activeNames);
             return FALSE;
         }
@@ -4151,7 +4142,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
 
             if ((maxinactive = virConnectListDefinedStoragePools(ctl->conn, inactiveNames, maxinactive)) < 0) {
-                vshError(ctl, FALSE, "%s", _("Failed to list inactive pools"));
+                vshError(ctl, "%s", _("Failed to list inactive pools"));
                 free(activeNames);
                 free(inactiveNames);
                 return FALSE;
@@ -4273,10 +4264,10 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         if (ret < 0) {
             switch (errno) {
             case ENOMEM:
-                vshError(ctl, FALSE, "%s", _("Out of memory"));
+                vshError(ctl, "%s", _("Out of memory"));
                 break;
             default:
-                vshError(ctl, FALSE, _("virAsprintf failed (errno %d)"), errno);
+                vshError(ctl, _("virAsprintf failed (errno %d)"), errno);
             }
             return FALSE;
         }
@@ -4285,7 +4276,7 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
     free(srcSpec);
     if (srcList == NULL) {
-        vshError(ctl, FALSE, _("Failed to find any %s pool sources"), type);
+        vshError(ctl, _("Failed to find any %s pool sources"), type);
         return FALSE;
     }
     vshPrint(ctl, "%s", srcList);
@@ -4336,7 +4327,7 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
     free(srcSpec);
     if (srcList == NULL) {
-        vshError(ctl, FALSE, _("Failed to find any %s pool sources"), type);
+        vshError(ctl, _("Failed to find any %s pool sources"), type);
         return FALSE;
     }
     vshPrint(ctl, "%s", srcList);
@@ -4503,8 +4494,7 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("Pool %s started\n"),
                  virStoragePoolGetName(pool));
     } else {
-        vshError(ctl, FALSE, _("Failed to start pool %s"),
-                 virStoragePoolGetName(pool));
+        vshError(ctl, _("Failed to start pool %s"), virStoragePoolGetName(pool));
         ret = FALSE;
     }
 
@@ -4585,12 +4575,12 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (!found)
         goto cleanup;
     if (cmdVolSize(capacityStr, &capacity) < 0)
-        vshError(ctl, FALSE, _("Malformed size %s"), capacityStr);
+        vshError(ctl, _("Malformed size %s"), capacityStr);
 
     allocationStr = vshCommandOptString(cmd, "allocation", &found);
     if (allocationStr &&
         cmdVolSize(allocationStr, &allocation) < 0)
-        vshError(ctl, FALSE, _("Malformed size %s"), allocationStr);
+        vshError(ctl, _("Malformed size %s"), allocationStr);
 
     format = vshCommandOptString(cmd, "format", &found);
 
@@ -4623,7 +4613,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         virStorageVolFree(vol);
         return TRUE;
     } else {
-        vshError(ctl, FALSE, _("Failed to create vol %s"), name);
+        vshError(ctl, _("Failed to create vol %s"), name);
         return FALSE;
     }
 
@@ -4664,7 +4654,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolUndefine(pool) == 0) {
         vshPrint(ctl, _("Pool %s has been undefined\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to undefine pool %s"), name);
+        vshError(ctl, _("Failed to undefine pool %s"), name);
         ret = FALSE;
     }
 
@@ -4703,7 +4693,7 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
     if (virStoragePoolGetUUIDString(pool, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, "%s", _("failed to get pool UUID"));
+        vshError(ctl, "%s", _("failed to get pool UUID"));
 
     virStoragePoolFree(pool);
     return TRUE;
@@ -4762,7 +4752,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
                  virStorageVolGetName(vol), from);
         virStorageVolFree(vol);
     } else {
-        vshError(ctl, FALSE, _("Failed to create vol from %s"), from);
+        vshError(ctl, _("Failed to create vol from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -4819,7 +4809,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("Vol %s created from input vol %s\n"),
                  virStorageVolGetName(newvol), virStorageVolGetName(inputvol));
     } else {
-        vshError(ctl, FALSE, _("Failed to create vol from %s"), from);
+        vshError(ctl, _("Failed to create vol from %s"), from);
         goto cleanup;
     }
 
@@ -4901,7 +4891,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
 
     origpool = virStoragePoolLookupByVolume(origvol);
     if (!origpool) {
-        vshError(ctl, FALSE, "%s", _("failed to get parent pool"));
+        vshError(ctl, "%s", _("failed to get parent pool"));
         goto cleanup;
     }
 
@@ -4925,7 +4915,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("Vol %s cloned from %s\n"),
                  virStorageVolGetName(newvol), virStorageVolGetName(origvol));
     } else {
-        vshError(ctl, FALSE, _("Failed to clone vol from %s"),
+        vshError(ctl, _("Failed to clone vol from %s"),
                  virStorageVolGetName(origvol));
         goto cleanup;
     }
@@ -4976,7 +4966,7 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
     if (virStorageVolDelete(vol, 0) == 0) {
         vshPrint(ctl, _("Vol %s deleted\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to delete vol %s"), name);
+        vshError(ctl, _("Failed to delete vol %s"), name);
         ret = FALSE;
     }
 
@@ -5107,7 +5097,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     maxactive = virStoragePoolNumOfVolumes(pool);
     if (maxactive < 0) {
         virStoragePoolFree(pool);
-        vshError(ctl, FALSE, "%s", _("Failed to list active vols"));
+        vshError(ctl, "%s", _("Failed to list active vols"));
         return FALSE;
     }
     if (maxactive) {
@@ -5115,7 +5105,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         if ((maxactive = virStoragePoolListVolumes(pool, activeNames,
                                                    maxactive)) < 0) {
-            vshError(ctl, FALSE, "%s", _("Failed to list active vols"));
+            vshError(ctl, "%s", _("Failed to list active vols"));
             free(activeNames);
             virStoragePoolFree(pool);
             return FALSE;
@@ -5288,12 +5278,11 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     free (buffer);
 
     if (res == NULL) {
-        vshError(ctl, FALSE, _("Failed to set attributes from %s"), from);
+        vshError(ctl, _("Failed to set attributes from %s"), from);
         return FALSE;
     }
     if (virSecretGetUUIDString(res, &(uuid[0])) < 0) {
-        vshError(ctl, FALSE, "%s",
-                 _("Failed to get UUID of created secret"));
+        vshError(ctl, "%s", _("Failed to get UUID of created secret"));
         virSecretFree(res);
         return FALSE;
     }
@@ -5377,11 +5366,11 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (!base64_decode_alloc(base64, strlen(base64), &value, &value_size)) {
-        vshError(ctl, FALSE, _("Invalid base64 data"));
+        vshError(ctl, _("Invalid base64 data"));
         goto cleanup;
     }
     if (value == NULL) {
-        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        vshError(ctl, "%s", _("Failed to allocate memory"));
         return FALSE;
     }
 
@@ -5390,7 +5379,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     free (value);
 
     if (res != 0) {
-        vshError(ctl, FALSE, "%s", _("Failed to set secret value"));
+        vshError(ctl, "%s", _("Failed to set secret value"));
         goto cleanup;
     }
     vshPrint(ctl, "%s", _("Secret value set\n"));
@@ -5440,7 +5429,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     free(value);
 
     if (base64 == NULL) {
-        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        vshError(ctl, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
     printf("%s", base64);
@@ -5482,7 +5471,7 @@ cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (virSecretUndefine(secret) < 0) {
-        vshError(ctl, FALSE, _("Failed to delete secret %s"), uuid);
+        vshError(ctl, _("Failed to delete secret %s"), uuid);
         goto cleanup;
     }
     vshPrint(ctl, _("Secret %s deleted\n"), uuid);
@@ -5513,14 +5502,14 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     maxuuids = virConnectNumOfSecrets(ctl->conn);
     if (maxuuids < 0) {
-        vshError(ctl, FALSE, "%s", _("Failed to list secrets"));
+        vshError(ctl, "%s", _("Failed to list secrets"));
         return FALSE;
     }
     uuids = vshMalloc(ctl, sizeof(*uuids) * maxuuids);
 
     maxuuids = virConnectListSecrets(ctl->conn, uuids, maxuuids);
     if (maxuuids < 0) {
-        vshError(ctl, FALSE, "%s", _("Failed to list secrets"));
+        vshError(ctl, "%s", _("Failed to list secrets"));
         free(uuids);
         return FALSE;
     }
@@ -5589,7 +5578,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     hvType = virConnectGetType(ctl->conn);
     if (hvType == NULL) {
-        vshError(ctl, FALSE, "%s", _("failed to get hypervisor type"));
+        vshError(ctl, "%s", _("failed to get hypervisor type"));
         return FALSE;
     }
 
@@ -5603,7 +5592,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     ret = virGetVersion(&libVersion, hvType, &apiVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, "%s", _("failed to get the library version"));
+        vshError(ctl, "%s", _("failed to get the library version"));
         return FALSE;
     }
     major = libVersion / 1000000;
@@ -5622,7 +5611,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     ret = virConnectGetVersion(ctl->conn, &hvVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, "%s", _("failed to get the hypervisor version"));
+        vshError(ctl, "%s", _("failed to get the hypervisor version"));
         return FALSE;
     }
     if (hvVersion == 0) {
@@ -5752,7 +5741,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     num_devices = virNodeNumOfDevices(ctl->conn, cap, 0);
     if (num_devices < 0) {
-        vshError(ctl, FALSE, "%s", _("Failed to count node devices"));
+        vshError(ctl, "%s", _("Failed to count node devices"));
         return FALSE;
     } else if (num_devices == 0) {
         return TRUE;
@@ -5762,7 +5751,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     num_devices =
         virNodeListDevices(ctl->conn, cap, devices, num_devices, 0);
     if (num_devices < 0) {
-        vshError(ctl, FALSE, "%s", _("Failed to list node devices"));
+        vshError(ctl, "%s", _("Failed to list node devices"));
         free(devices);
         return FALSE;
     }
@@ -5835,7 +5824,7 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
     if (!(name = vshCommandOptString(cmd, "device", NULL)))
         return FALSE;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
         return FALSE;
     }
 
@@ -5878,14 +5867,14 @@ cmdNodeDeviceDettach (vshControl *ctl, const vshCmd *cmd)
     if (!(name = vshCommandOptString(cmd, "device", NULL)))
         return FALSE;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
         return FALSE;
     }
 
     if (virNodeDeviceDettach(device) == 0) {
         vshPrint(ctl, _("Device %s dettached\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to dettach device %s"), name);
+        vshError(ctl, _("Failed to dettach device %s"), name);
         ret = FALSE;
     }
     virNodeDeviceFree(device);
@@ -5919,14 +5908,14 @@ cmdNodeDeviceReAttach (vshControl *ctl, const vshCmd *cmd)
     if (!(name = vshCommandOptString(cmd, "device", NULL)))
         return FALSE;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
         return FALSE;
     }
 
     if (virNodeDeviceReAttach(device) == 0) {
         vshPrint(ctl, _("Device %s re-attached\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to re-attach device %s"), name);
+        vshError(ctl, _("Failed to re-attach device %s"), name);
         ret = FALSE;
     }
     virNodeDeviceFree(device);
@@ -5960,14 +5949,14 @@ cmdNodeDeviceReset (vshControl *ctl, const vshCmd *cmd)
     if (!(name = vshCommandOptString(cmd, "device", NULL)))
         return FALSE;
     if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
-        vshError(ctl, FALSE, "%s '%s'", _("Could not find matching device"), name);
+        vshError(ctl, "%s '%s'", _("Could not find matching device"), name);
         return FALSE;
     }
 
     if (virNodeDeviceReset(device) == 0) {
         vshPrint(ctl, _("Device %s reset\n"), name);
     } else {
-        vshError(ctl, FALSE, _("Failed to reset device %s"), name);
+        vshError(ctl, _("Failed to reset device %s"), name);
         ret = FALSE;
     }
     virNodeDeviceFree(device);
@@ -5993,7 +5982,7 @@ cmdHostname (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     hostname = virConnectGetHostname (ctl->conn);
     if (hostname == NULL) {
-        vshError(ctl, FALSE, "%s", _("failed to get hostname"));
+        vshError(ctl, "%s", _("failed to get hostname"));
         return FALSE;
     }
 
@@ -6022,7 +6011,7 @@ cmdURI (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     uri = virConnectGetURI (ctl->conn);
     if (uri == NULL) {
-        vshError(ctl, FALSE, "%s", _("failed to get URI"));
+        vshError(ctl, "%s", _("failed to get URI"));
         return FALSE;
     }
 
@@ -6200,7 +6189,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
-        vshError(ctl, FALSE, "%s", _("attach-device: Missing <file> option"));
+        vshError(ctl, "%s", _("attach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -6214,7 +6203,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     free (buffer);
 
     if (ret < 0) {
-        vshError(ctl, FALSE, _("Failed to attach device from %s"), from);
+        vshError(ctl, _("Failed to attach device from %s"), from);
         virDomainFree(dom);
         return FALSE;
     } else {
@@ -6258,7 +6247,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
-        vshError(ctl, FALSE, "%s", _("detach-device: Missing <file> option"));
+        vshError(ctl, "%s", _("detach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -6272,7 +6261,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     free (buffer);
 
     if (ret < 0) {
-        vshError(ctl, FALSE, _("Failed to detach device from %s"), from);
+        vshError(ctl, _("Failed to detach device from %s"), from);
         virDomainFree(dom);
         return FALSE;
     } else {
@@ -6331,7 +6320,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     } else if (STREQ(type, "bridge")) {
         typ = 2;
     } else {
-        vshError(ctl, FALSE, _("No support %s in command 'attach-interface'"), type);
+        vshError(ctl, _("No support %s in command 'attach-interface'"), type);
         goto cleanup;
     }
 
@@ -6450,12 +6439,12 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
                      XML_PARSE_NOWARNING);
     free(doc);
     if (!xml) {
-        vshError(ctl, FALSE, "%s", _("Failed to get interface information"));
+        vshError(ctl, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
     ctxt = xmlXPathNewContext(xml);
     if (!ctxt) {
-        vshError(ctl, FALSE, "%s", _("Failed to get interface information"));
+        vshError(ctl, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
 
@@ -6463,7 +6452,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     obj = xmlXPathEval(BAD_CAST buf, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
-        vshError(ctl, FALSE, _("No found interface whose type is %s"), type);
+        vshError(ctl, _("No found interface whose type is %s"), type);
         goto cleanup;
     }
 
@@ -6485,18 +6474,18 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
             cur = cur->next;
         }
     }
-    vshError(ctl, FALSE, _("No found interface whose MAC address is %s"), mac);
+    vshError(ctl, _("No found interface whose MAC address is %s"), mac);
     goto cleanup;
 
  hit:
     xml_buf = xmlBufferCreate();
     if (!xml_buf) {
-        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        vshError(ctl, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
 
     if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
-        vshError(ctl, FALSE, "%s", _("Failed to create XML"));
+        vshError(ctl, "%s", _("Failed to create XML"));
         goto cleanup;
     }
 
@@ -6569,14 +6558,14 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(driver, "file") || STREQ(driver, "tap")) {
             isFile = 1;
         } else if (STRNEQ(driver, "phy")) {
-            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), driver);
+            vshError(ctl, _("No support %s in command 'attach-disk'"), driver);
             goto cleanup;
         }
     }
 
     if (mode) {
         if (STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
-            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), mode);
+            vshError(ctl, _("No support %s in command 'attach-disk'"), mode);
             goto cleanup;
         }
     }
@@ -6723,19 +6712,19 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
                      XML_PARSE_NOWARNING);
     free(doc);
     if (!xml) {
-        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
+        vshError(ctl, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
     ctxt = xmlXPathNewContext(xml);
     if (!ctxt) {
-        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
+        vshError(ctl, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
 
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
-        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
+        vshError(ctl, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
 
@@ -6754,18 +6743,18 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
             cur = cur->next;
         }
     }
-    vshError(ctl, FALSE, _("No found disk whose target is %s"), target);
+    vshError(ctl, _("No found disk whose target is %s"), target);
     goto cleanup;
 
  hit:
     xml_buf = xmlBufferCreate();
     if (!xml_buf) {
-        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
+        vshError(ctl, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
 
     if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
-        vshError(ctl, FALSE, "%s", _("Failed to create XML"));
+        vshError(ctl, "%s", _("Failed to create XML"));
         goto cleanup;
     }
 
@@ -6799,9 +6788,8 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
 
     ret = malloc (PATH_MAX);
     if (!ret) {
-        vshError(ctl, FALSE,
-                 _("malloc: failed to allocate temporary file name: %s"),
-                 strerror (errno));
+        vshError(ctl, _("malloc: failed to allocate temporary file name: %s"),
+                 strerror(errno));
         return NULL;
     }
 
@@ -6810,25 +6798,22 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     snprintf (ret, PATH_MAX, "%s/virshXXXXXX", tmpdir);
     fd = mkstemp (ret);
     if (fd == -1) {
-        vshError(ctl, FALSE,
-                 _("mkstemp: failed to create temporary file: %s"),
-                 strerror (errno));
+        vshError(ctl, _("mkstemp: failed to create temporary file: %s"),
+                 strerror(errno));
         return NULL;
     }
 
     if (safewrite (fd, doc, strlen (doc)) == -1) {
-        vshError(ctl, FALSE,
-                 _("write: %s: failed to write to temporary file: %s"),
-                 ret, strerror (errno));
+        vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
+                 ret, strerror(errno));
         close (fd);
         unlink (ret);
         free (ret);
         return NULL;
     }
     if (close (fd) == -1) {
-        vshError(ctl, FALSE,
-                 _("close: %s: failed to write or close temporary file: %s"),
-                 ret, strerror (errno));
+        vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
+                 ret, strerror(errno));
         unlink (ret);
         free (ret);
         return NULL;
@@ -6856,35 +6841,37 @@ editFile (vshControl *ctl, const char *filename)
      * it does, refuse to run.
      */
     if (strspn (editor, ACCEPTED_CHARS) != strlen (editor)) {
-        vshError(ctl, FALSE,
-                 _("%s: $EDITOR environment variable contains shell meta or other unacceptable characters"),
+        vshError(ctl,
+                 _("%s: $EDITOR environment variable contains shell meta or "
+                   "other unacceptable characters"),
                  editor);
         return -1;
     }
     /* Same for the filename. */
     if (strspn (filename, ACCEPTED_CHARS) != strlen (filename)) {
-        vshError(ctl, FALSE,
-                 _("%s: temporary filename contains shell meta or other unacceptable characters (is $TMPDIR wrong?)"),
+        vshError(ctl,
+                 _("%s: temporary filename contains shell meta or other "
+                   "unacceptable characters (is $TMPDIR wrong?)"),
                  filename);
         return -1;
     }
 
     if (virAsprintf(&command, "%s %s", editor, filename) == -1) {
-        vshError(ctl, FALSE,
+        vshError(ctl,
                  _("virAsprintf: could not create editing command: %s"),
-                 strerror (errno));
+                 strerror(errno));
         return -1;
     }
 
     command_ret = system (command);
     if (command_ret == -1) {
-        vshError(ctl, FALSE,
-                 _("%s: edit command failed: %s"), command, strerror (errno));
+        vshError(ctl,
+                 _("%s: edit command failed: %s"), command, strerror(errno));
         free (command);
         return -1;
     }
     if (command_ret != WEXITSTATUS (0)) {
-        vshError(ctl, FALSE,
+        vshError(ctl,
                  _("%s: command exited with non-zero status"), command);
         free (command);
         return -1;
@@ -6899,9 +6886,9 @@ editReadBackFile (vshControl *ctl, const char *filename)
     char *ret;
 
     if (virFileReadAll (filename, VIRSH_MAX_XML_FILE, &ret) == -1) {
-        vshError(ctl, FALSE,
+        vshError(ctl,
                  _("%s: failed to read temporary file: %s"),
-                 filename, strerror (errno));
+                 filename, strerror(errno));
         return NULL;
     }
     return ret;
@@ -6930,8 +6917,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int found;
 
     if (!ctl->imode) {
-        vshError(ctl, FALSE, "%s",
-                 _("cd: command valid only in interactive mode"));
+        vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
         return -1;
     }
 
@@ -6944,7 +6930,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         dir = "/";
 
     if (chdir (dir) == -1) {
-        vshError(ctl, FALSE, _("cd: %s: %s"), strerror (errno), dir);
+        vshError(ctl, _("cd: %s: %s"), strerror(errno), dir);
         return -1;
     }
 
@@ -6982,7 +6968,8 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     if (err)
-        vshError(ctl, FALSE, _("pwd: cannot get current directory: %s"), strerror (errno));
+        vshError(ctl, _("pwd: cannot get current directory: %s"),
+                 strerror(errno));
     else
         vshPrint (ctl, _("%s\n"), cwd);
 
@@ -7062,8 +7049,8 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (STRNEQ (doc, doc_reread)) {
-        vshError (ctl, FALSE,
-                  "%s", _("ERROR: the XML configuration was changed by another user"));
+        vshError(ctl,
+                 "%s", _("ERROR: the XML configuration was changed by another user"));
         goto cleanup;
     }
 
@@ -7348,7 +7335,7 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd)
                 o = o->next;
             }
             if (!ok) {
-                vshError(ctl, FALSE,
+                vshError(ctl,
                          d->type == VSH_OT_DATA ?
                          _("command '%s' requires <%s> option") :
                          _("command '%s' requires --%s option"),
@@ -7378,7 +7365,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
     const vshCmdDef *def = vshCmddefSearch(cmdname);
 
     if (!def) {
-        vshError(ctl, FALSE, _("command '%s' doesn't exist"), cmdname);
+        vshError(ctl, _("command '%s' doesn't exist"), cmdname);
         return FALSE;
     } else {
         const char *desc = N_(vshCmddefGetInfo(def, "desc"));
@@ -7577,8 +7564,7 @@ cmd_has_option (vshControl *ctl, const vshCmd *cmd, const char *optname)
     }
 
     if (!found)
-        vshError(ctl, FALSE,
-                 _("internal error: virsh %s: no %s VSH_OT_DATA option"),
+        vshError(ctl, _("internal error: virsh %s: no %s VSH_OT_DATA option"),
                  cmd->def->name, optname);
     return found;
 }
@@ -7595,7 +7581,7 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
         return NULL;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "%s", _("undefined domain name or id"));
+        vshError(ctl, "%s", _("undefined domain name or id"));
         return NULL;
     }
 
@@ -7627,7 +7613,7 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!dom)
-        vshError(ctl, FALSE, _("failed to get domain '%s'"), n);
+        vshError(ctl, _("failed to get domain '%s'"), n);
 
     return dom;
 }
@@ -7643,7 +7629,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         return NULL;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "%s", _("undefined network name"));
+        vshError(ctl, "%s", _("undefined network name"));
         return NULL;
     }
 
@@ -7667,7 +7653,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!network)
-        vshError(ctl, FALSE, _("failed to get network '%s'"), n);
+        vshError(ctl, _("failed to get network '%s'"), n);
 
     return network;
 }
@@ -7683,7 +7669,7 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
         return NULL;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "%s", _("undefined interface identifier"));
+        vshError(ctl, "%s", _("undefined interface identifier"));
         return NULL;
     }
 
@@ -7707,7 +7693,7 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!iface)
-        vshError(ctl, FALSE, _("failed to get interface '%s'"), n);
+        vshError(ctl, _("failed to get interface '%s'"), n);
 
     return iface;
 }
@@ -7720,7 +7706,7 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     char *n;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "%s", _("undefined pool name"));
+        vshError(ctl, "%s", _("undefined pool name"));
         return NULL;
     }
 
@@ -7744,7 +7730,7 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     }
 
     if (!pool)
-        vshError(ctl, FALSE, _("failed to get pool '%s'"), n);
+        vshError(ctl, _("failed to get pool '%s'"), n);
 
     return pool;
 }
@@ -7761,12 +7747,12 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     int found;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "%s", _("undefined vol name"));
+        vshError(ctl, "%s", _("undefined vol name"));
         return NULL;
     }
 
     if (!(p = vshCommandOptString(cmd, pooloptname, &found)) && found) {
-        vshError(ctl, FALSE, "%s", _("undefined pool name"));
+        vshError(ctl, "%s", _("undefined pool name"));
         return NULL;
     }
 
@@ -7797,7 +7783,7 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     }
 
     if (!vol)
-        vshError(ctl, FALSE, _("failed to get vol '%s'"), n);
+        vshError(ctl, _("failed to get vol '%s'"), n);
 
     if (pool)
         virStoragePoolFree(pool);
@@ -7817,7 +7803,7 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, char **name)
 
     n = vshCommandOptString(cmd, optname, NULL);
     if (n == NULL) {
-        vshError(ctl, FALSE, "%s", _("undefined secret UUID"));
+        vshError(ctl, "%s", _("undefined secret UUID"));
         return NULL;
     }
 
@@ -7829,7 +7815,7 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, char **name)
     secret = virSecretLookupByUUIDString(ctl->conn, n);
 
     if (secret == NULL)
-        vshError(ctl, FALSE, _("failed to get secret '%s'"), n);
+        vshError(ctl, _("failed to get secret '%s'"), n);
 
     return secret;
 }
@@ -7934,7 +7920,7 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res)
         sz++;
     }
     if (quote) {
-        vshError(ctl, FALSE, "%s", _("missing \""));
+        vshError(ctl, "%s", _("missing \""));
         return VSH_TK_ERROR;
     }
     if (tkstr == NULL || *tkstr == '\0' || p == NULL)
@@ -7994,19 +7980,19 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
             if (cmd == NULL) {
                 /* first token must be command name */
                 if (tk != VSH_TK_DATA) {
-                    vshError(ctl, FALSE,
+                    vshError(ctl,
                              _("unexpected token (command name): '%s'"),
                              tkdata);
                     goto syntaxError;
                 }
                 if (!(cmd = vshCmddefSearch(tkdata))) {
-                    vshError(ctl, FALSE, _("unknown command: '%s'"), tkdata);
+                    vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
                 free(tkdata);
             } else if (tk == VSH_TK_OPTION) {
                 if (!(opt = vshCmddefGetOption(cmd, tkdata))) {
-                    vshError(ctl, FALSE,
+                    vshError(ctl,
                              _("command '%s' doesn't support option --%s"),
                              cmd->name, tkdata);
                     goto syntaxError;
@@ -8021,7 +8007,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                     if (tk == VSH_TK_ERROR)
                         goto syntaxError;
                     if (tk != VSH_TK_DATA) {
-                        vshError(ctl, FALSE,
+                        vshError(ctl,
                                  _("expected syntax: --%s <%s>"),
                                  opt->name,
                                  opt->type ==
@@ -8031,7 +8017,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                 }
             } else if (tk == VSH_TK_DATA) {
                 if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
-                    vshError(ctl, FALSE, _("unexpected data '%s'"), tkdata);
+                    vshError(ctl, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
                 }
             }
@@ -8143,7 +8129,7 @@ vshConnectionUsability(vshControl *ctl, virConnectPtr conn, int showerror)
      */
     if (!conn) {
         if (showerror)
-            vshError(ctl, FALSE, "%s", _("no valid connection"));
+            vshError(ctl, "%s", _("no valid connection"));
         return FALSE;
     }
     return TRUE;
@@ -8181,7 +8167,7 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
 
 
 static void
-vshError(vshControl *ctl, int doexit, const char *format, ...)
+vshError(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
 
@@ -8189,22 +8175,13 @@ vshError(vshControl *ctl, int doexit, const char *format, ...)
     vshOutputLogFile(ctl, VSH_ERR_ERROR, format, ap);
     va_end(ap);
 
-    if (doexit)
-        fprintf(stderr, _("%s: error: "), progname);
-    else
-        fputs(_("error: "), stderr);
+    fputs(_("error: "), stderr);
 
     va_start(ap, format);
     vfprintf(stderr, format, ap);
     va_end(ap);
 
     fputc('\n', stderr);
-
-    if (doexit) {
-        if (ctl)
-            vshDeinit(ctl);
-        exit(EXIT_FAILURE);
-    }
 }
 
 static void *
@@ -8214,9 +8191,9 @@ _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
 
     if ((x = malloc(size)))
         return x;
-    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) size);
-    return NULL;
+    exit(EXIT_FAILURE);
 }
 
 static void *
@@ -8226,9 +8203,9 @@ _vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename, int
 
     if ((x = calloc(nmemb, size)))
         return x;
-    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) (size*nmemb));
-    return NULL;
+    exit(EXIT_FAILURE);
 }
 
 static void *
@@ -8239,9 +8216,9 @@ _vshRealloc(vshControl *ctl, void *ptr, size_t size, const char *filename, int l
     if ((x = realloc(ptr, size)))
         return x;
     free(ptr);
-    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) size);
-    return NULL;
+    exit(EXIT_FAILURE);
 }
 
 static char *
@@ -8253,9 +8230,9 @@ _vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
         return(NULL);
     if ((x = strdup(s)))
         return x;
-    vshError(ctl, TRUE, _("%s: %d: failed to allocate %lu bytes"),
+    vshError(ctl, _("%s: %d: failed to allocate %lu bytes"),
              filename, line, (unsigned long)strlen(s));
-    return NULL;
+    exit(EXIT_FAILURE);
 }
 
 /*
@@ -8283,7 +8260,7 @@ vshInit(vshControl *ctl)
      */
     if (!ctl->conn) {
         virshReportError(ctl);
-        vshError(ctl, FALSE, "%s", _("failed to connect to the hypervisor"));
+        vshError(ctl, "%s", _("failed to connect to the hypervisor"));
         return FALSE;
     }
 
@@ -8314,20 +8291,22 @@ vshOpenLogFile(vshControl *ctl)
             case ENOENT:
                 break;
             default:
-                vshError(ctl, TRUE, "%s",
+                vshError(ctl, "%s",
                          _("failed to get the log file information"));
-                break;
+                exit(EXIT_FAILURE);
         }
     } else {
         if (!S_ISREG(st.st_mode)) {
-            vshError(ctl, TRUE, "%s", _("the log path is not a file"));
+            vshError(ctl, "%s", _("the log path is not a file"));
+            exit(EXIT_FAILURE);
         }
     }
 
     /* log file open */
     if ((ctl->log_fd = open(ctl->logfile, LOGFILE_FLAGS, FILE_MODE)) < 0) {
-        vshError(ctl, TRUE, "%s",
+        vshError(ctl, "%s",
                  _("failed to open the log file. check the log file path"));
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -8395,7 +8374,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
     /* write log */
     if (safewrite(ctl->log_fd, msg_buf, strlen(msg_buf)) < 0) {
         vshCloseLogFile(ctl);
-        vshError(ctl, FALSE, "%s", _("failed to write the log file"));
+        vshError(ctl, "%s", _("failed to write the log file"));
     }
 }
 
@@ -8410,7 +8389,7 @@ vshCloseLogFile(vshControl *ctl)
     /* log file close */
     if (ctl->log_fd >= 0) {
         if (close(ctl->log_fd) < 0)
-            vshError(ctl, FALSE, _("%s: failed to write log file: %s"),
+            vshError(ctl, _("%s: failed to write log file: %s"),
                      ctl->logfile ? ctl->logfile : "?", strerror (errno));
         ctl->log_fd = -1;
     }
@@ -8588,9 +8567,7 @@ vshDeinit(vshControl *ctl)
     free(ctl->name);
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
-            ctl->conn = NULL;   /* prevent recursive call from vshError() */
-            vshError(ctl, TRUE, "%s",
-                     _("failed to disconnect from the hypervisor"));
+            vshError(ctl, "%s", _("failed to disconnect from the hypervisor"));
         }
     }
     virResetLastError();
@@ -8715,16 +8692,16 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
             ctl->logfile = vshStrdup(ctl, optarg);
             break;
         default:
-            vshError(ctl, TRUE,
-                     _("unsupported option '-%c'. See --help."), arg);
-            break;
+            vshError(ctl, _("unsupported option '-%c'. See --help."), arg);
+            exit(EXIT_FAILURE);
         }
     }
 
     if (help) {
-        if (end < argc)
-            vshError(ctl, TRUE,
-                     _("extra argument '%s'. See --help."), argv[end]);
+        if (end < argc) {
+            vshError(ctl, _("extra argument '%s'. See --help."), argv[end]);
+            exit(EXIT_FAILURE);
+        }
 
         /* list all command */
         vshUsage();
