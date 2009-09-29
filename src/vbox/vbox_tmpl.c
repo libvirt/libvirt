@@ -3184,7 +3184,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
                             IHardDisk *hardDisk     = NULL;
                             PRUnichar *hddfileUtf16 = NULL;
-                            vboxIID *hdduuid        = NULL;
+                            vboxIID   *hdduuid      = NULL;
+                            PRUnichar *hddEmpty     = NULL;
                             /* Current Limitation: Harddisk can't be connected to
                              * Secondary Master as Secondary Master is always used
                              * for CD/DVD Drive, so don't connect the harddisk if it
@@ -3192,6 +3193,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                              */
 
                             data->pFuncs->pfnUtf8ToUtf16(def->disks[i]->src, &hddfileUtf16);
+                            data->pFuncs->pfnUtf8ToUtf16("", &hddEmpty);
 
                             data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddfileUtf16, &hardDisk);
 
@@ -3206,9 +3208,9 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                                   hddfileUtf16,
                                                                   AccessMode_ReadWrite,
                                                                   0,
-                                                                  NULL,
+                                                                  hddEmpty,
                                                                   0,
-                                                                  NULL,
+                                                                  hddEmpty,
                                                                   &hardDisk);
 #endif
                             }
@@ -3271,6 +3273,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                 hardDisk->vtbl->imedium.nsisupports.Release((nsISupports *)hardDisk);
                             }
                             vboxIIDUnalloc(hdduuid);
+                            data->pFuncs->pfnUtf16Free(hddEmpty);
                             data->pFuncs->pfnUtf16Free(hddfileUtf16);
                         } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
