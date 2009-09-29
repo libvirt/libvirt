@@ -62,6 +62,7 @@ virXPathString(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         xmlXPathFreeObject(obj);
@@ -72,7 +73,6 @@ virXPathString(virConnectPtr conn,
     if (ret == NULL) {
         virReportOOMError(conn);
     }
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -133,16 +133,15 @@ virXPathNumber(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (isnan(obj->floatval))) {
         xmlXPathFreeObject(obj);
-        ctxt->node = relnode;
         return (-1);
     }
 
     *value = obj->floatval;
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (0);
 }
 
@@ -164,6 +163,7 @@ virXPathLongBase(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         char *conv = NULL;
@@ -186,7 +186,6 @@ virXPathLongBase(virConnectPtr conn,
     }
 
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -251,6 +250,7 @@ virXPathULongBase(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         char *conv = NULL;
@@ -273,7 +273,6 @@ virXPathULongBase(virConnectPtr conn,
     }
 
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -349,6 +348,7 @@ virXPathULongLong(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         char *conv = NULL;
@@ -371,7 +371,6 @@ virXPathULongLong(virConnectPtr conn,
     }
 
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -407,6 +406,7 @@ virXPathBoolean(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj == NULL) || (obj->type != XPATH_BOOLEAN) ||
         (obj->boolval < 0) || (obj->boolval > 1)) {
         xmlXPathFreeObject(obj);
@@ -415,7 +415,6 @@ virXPathBoolean(virConnectPtr conn,
     ret = obj->boolval;
 
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -445,17 +444,16 @@ virXPathNode(virConnectPtr conn,
     }
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
         (obj->nodesetval->nodeTab == NULL)) {
         xmlXPathFreeObject(obj);
-        ctxt->node = relnode;
         return (NULL);
     }
 
     ret = obj->nodesetval->nodeTab[0];
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
 
@@ -491,10 +489,10 @@ virXPathNodeSet(virConnectPtr conn,
 
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr < 0)) {
         xmlXPathFreeObject(obj);
-        ctxt->node = relnode;
         return (-1);
     }
 
@@ -509,6 +507,5 @@ virXPathNodeSet(virConnectPtr conn,
         }
     }
     xmlXPathFreeObject(obj);
-    ctxt->node = relnode;
     return (ret);
 }
