@@ -1328,8 +1328,10 @@ static int vboxDomainDestroy(virDomainPtr dom) {
 #else
                 IProgress *progress;
                 console->vtbl->PowerDown(console, &progress);
-                if (progress)
+                if (progress) {
+                    progress->vtbl->WaitForCompletion(progress, -1);
                     progress->vtbl->nsisupports.Release((nsISupports *)progress);
+                }
 #endif
                 console->vtbl->nsisupports.Release((nsISupports *)console);
                 ret = 0;
