@@ -227,10 +227,12 @@ virInterfaceDefParseBondArpValid(virConnectPtr conn, xmlXPathContextPtr ctxt) {
 static int
 virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceDefPtr def,
                          xmlNodePtr dhcp, xmlXPathContextPtr ctxt) {
+    xmlNodePtr save;
     char *tmp;
     int ret = 0;
 
     def->proto.dhcp = 1;
+    save = ctxt->node;
     ctxt->node = dhcp;
     /* Not much to do in the current version */
     tmp = virXPathString(conn, "string(./@peerdns)", ctxt);
@@ -248,6 +250,7 @@ virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceDefPtr def,
     } else
         def->proto.peerdns = -1;
 
+    ctxt->node = save;
     return(ret);
 }
 
