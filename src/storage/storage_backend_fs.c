@@ -283,49 +283,37 @@ static char *absolutePathFromBaseFile(const char *base_file, const char *path)
  * Probe the header of a file to determine what type of disk image
  * it is, and info about its capacity if available.
  */
-static int virStorageBackendProbeTarget(virConnectPtr conn,
-                                        virStorageVolTargetPtr target,
-                                        char **backingStore,
-                                        unsigned long long *allocation,
-                                        unsigned long long *capacity,
-                                        virStorageEncryptionPtr *encryption) {
-    int fd;
+static int
+virStorageGetMetadataFromFD(virConnectPtr conn,
+                            const char *path,
+                            int fd,
+                            int *format,
+                            bool *encrypted,
+                            char **backingStore,
+                            unsigned long long *capacity)
+{
     unsigned char head[20*512]; /* vmdk4GetBackingStore needs this much. */
-    int len, i, ret;
+    int len, i;
 
+    if (format) /* If all else fails, call it a raw file */
+        *format = VIR_STORAGE_FILE_RAW;
+    if (encrypted)
+        *encrypted = false;
     if (backingStore)
         *backingStore = NULL;
-    if (encryption)
-        *encryption = NULL;
-
-    if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot open volume '%s'"),
-                             target->path);
-        return -1;
-    }
-
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(conn, target, fd,
-                                                      allocation,
-                                                      capacity)) < 0) {
-        close(fd);
-        return ret; /* Take care to propagate ret, it is not always -1 */
-    }
+    /* Do not overwrite capacity
+     * if (capacity)
+     *     *capacity = 0;
+     */
 
     if ((len = read(fd, head, sizeof(head))) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot read header '%s'"),
-                             target->path);
-        close(fd);
+        virReportSystemError(conn, errno, _("cannot read header '%s'"), path);
         return -1;
     }
-
-    close(fd);
 
     /* First check file magic */
     for (i = 0 ; i < ARRAY_CARDINALITY(fileTypeInfo) ; i++) {
         int mlen;
-        bool encrypted_qcow = false;
 
         if (fileTypeInfo[i].magic == NULL)
             continue;
@@ -385,18 +373,19 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
             *capacity *= fileTypeInfo[i].sizeMultiplier;
         }
 
-        if (fileTypeInfo[i].qcowCryptOffset != -1) {
+        if (fileTypeInfo[i].qcowCryptOffset != -1 && encrypted) {
             int crypt_format;
 
             crypt_format = (head[fileTypeInfo[i].qcowCryptOffset] << 24) |
                 (head[fileTypeInfo[i].qcowCryptOffset+1] << 16) |
                 (head[fileTypeInfo[i].qcowCryptOffset+2] << 8) |
                 head[fileTypeInfo[i].qcowCryptOffset+3];
-            encrypted_qcow = crypt_format != 0;
+            *encrypted = crypt_format != 0;
         }
 
         /* Validation passed, we know the file format now */
-        target->format = fileTypeInfo[i].type;
+        if (format)
+            *format = fileTypeInfo[i].type;
         if (fileTypeInfo[i].getBackingStore != NULL && backingStore) {
             char *base;
 
@@ -411,31 +400,13 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
                 return -1;
             }
             if (base != NULL) {
-                *backingStore
-                    = absolutePathFromBaseFile(target->path, base);
+                *backingStore = absolutePathFromBaseFile(path, base);
                 VIR_FREE(base);
                 if (*backingStore == NULL) {
                     virReportOOMError(conn);
                     return -1;
                 }
             }
-        }
-        if (encryption != NULL && encrypted_qcow) {
-            virStorageEncryptionPtr enc;
-
-            if (VIR_ALLOC(enc) < 0) {
-                virReportOOMError(conn);
-                if (backingStore)
-                    VIR_FREE(*backingStore);
-                return -1;
-            }
-            enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
-            *encryption = enc;
-            /* XXX ideally we'd fill in secret UUID here
-             * but we cannot guarentee 'conn' is non-NULL
-             * at this point in time :-(  So we only fill
-             * in secrets when someone first queries a vol
-             */
         }
         return 0;
     }
@@ -445,15 +416,78 @@ static int virStorageBackendProbeTarget(virConnectPtr conn,
         if (fileTypeInfo[i].extension == NULL)
             continue;
 
-        if (!virFileHasSuffix(target->path, fileTypeInfo[i].extension))
+        if (!virFileHasSuffix(path, fileTypeInfo[i].extension))
             continue;
 
-        target->format = fileTypeInfo[i].type;
+        if (format)
+            *format = fileTypeInfo[i].type;
         return 0;
     }
 
-    /* All fails, so call it a raw file */
-    target->format = VIR_STORAGE_FILE_RAW;
+    return 0;
+}
+
+static int
+virStorageBackendProbeTarget(virConnectPtr conn,
+                             virStorageVolTargetPtr target,
+                             char **backingStore,
+                             unsigned long long *allocation,
+                             unsigned long long *capacity,
+                             virStorageEncryptionPtr *encryption)
+{
+    int fd, ret;
+    bool encrypted;
+
+    if (encryption)
+        *encryption = NULL;
+
+    if ((fd = open(target->path, O_RDONLY)) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot open volume '%s'"),
+                             target->path);
+        return -1;
+    }
+
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(conn, target, fd,
+                                                      allocation,
+                                                      capacity)) < 0) {
+        close(fd);
+        return ret; /* Take care to propagate ret, it is not always -1 */
+    }
+
+    if (virStorageGetMetadataFromFD(conn, target->path, fd,
+                                    &target->format, &encrypted,
+                                    backingStore, capacity) < 0) {
+        close(fd);
+        return -1;
+    }
+
+    close(fd);
+
+    if (encryption != NULL && encrypted) {
+        if (VIR_ALLOC(*encryption) < 0) {
+            virReportOOMError(conn);
+            if (backingStore)
+                VIR_FREE(*backingStore);
+            return -1;
+        }
+
+        switch (target->format) {
+        case VIR_STORAGE_FILE_QCOW:
+        case VIR_STORAGE_FILE_QCOW2:
+            (*encryption)->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
+            break;
+        default:
+            break;
+        }
+
+        /* XXX ideally we'd fill in secret UUID here
+         * but we cannot guarentee 'conn' is non-NULL
+         * at this point in time :-(  So we only fill
+         * in secrets when someone first queries a vol
+         */
+    }
+
     return 0;
 }
 
