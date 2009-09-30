@@ -589,7 +589,7 @@ int
 remoteSendStreamData(struct qemud_client *client,
                      struct qemud_client_stream *stream,
                      const char *data,
-                     size_t len)
+                     unsigned int len)
 {
     struct qemud_client_message *msg;
     XDR xdr;
