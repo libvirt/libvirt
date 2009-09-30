@@ -9802,7 +9802,7 @@ cleanup:
 
 
 /**
- * virStreamEventAddCallback
+ * virStreamEventAddCallback:
  * @stream: pointer to the stream object
  * @events: set of events to monitor
  * @cb: callback to invoke when an event occurs
@@ -9850,7 +9850,7 @@ error:
 
 
 /**
- * virStreamEventUpdateCallback
+ * virStreamEventUpdateCallback:
  * @stream: pointer to the stream object
  * @events: set of events to monitor
  *
@@ -9891,7 +9891,7 @@ error:
 }
 
 /**
- * virStreamEventRemoveCallback
+ * virStreamEventRemoveCallback:
  * @stream: pointer to the stream object
  *
  * Remove a event callback from the stream

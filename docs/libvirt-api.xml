@@ -47,7 +47,6 @@
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_DEFINED_ADDED' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_SECRET_USAGE_TYPE_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STARTED_MIGRATED' type='enum'/>
      <exports symbol='VIR_STREAM_EVENT_HANGUP' type='enum'/>
@@ -83,6 +82,7 @@
      <exports symbol='VIR_STREAM_EVENT_WRITABLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
@@ -2703,13 +2703,16 @@ should stop sending data.]]></info>
       <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
     </function>
     <function name='virStreamEventAddCallback' file='libvirt' module='libvirt'>
-      <info><![CDATA[]]></info>
-      <return type='int' info=''/>
-      <arg name='stream' type='virStreamPtr' info=''/>
-      <arg name='events' type='int' info=''/>
-      <arg name='cb' type='virStreamEventCallback' info=''/>
-      <arg name='opaque' type='void *' info=''/>
-      <arg name='ff' type='virFreeCallback' info=''/>
+      <info><![CDATA[Register a callback to be notified when a stream
+becomes writable, or readable. This is most commonly
+used in conjunction with non-blocking data streams
+to integrate into an event loop]]></info>
+      <return type='int' info='0 on success, -1 upon error'/>
+      <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
+      <arg name='events' type='int' info='set of events to monitor'/>
+      <arg name='cb' type='virStreamEventCallback' info='callback to invoke when an event occurs'/>
+      <arg name='opaque' type='void *' info='application defined data'/>
+      <arg name='ff' type='virFreeCallback' info='callback to free @opaque data'/>
     </function>
     <functype name='virStreamEventCallback' file='libvirt' module='libvirt'>
       <info><![CDATA[Callback for receiving stream events. The callback will
@@ -2720,15 +2723,18 @@ be invoked once for each event which is pending.]]></info>
       <arg name='opaque' type='void *' info='user data registered with handle'/>
     </functype>
     <function name='virStreamEventRemoveCallback' file='libvirt' module='libvirt'>
-      <info><![CDATA[]]></info>
-      <return type='int' info=''/>
-      <arg name='stream' type='virStreamPtr' info=''/>
+      <info><![CDATA[Remove a event callback from the stream]]></info>
+      <return type='int' info='0 on success, -1 on error'/>
+      <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
     </function>
     <function name='virStreamEventUpdateCallback' file='libvirt' module='libvirt'>
-      <info><![CDATA[]]></info>
-      <return type='int' info=''/>
-      <arg name='stream' type='virStreamPtr' info=''/>
-      <arg name='events' type='int' info=''/>
+      <info><![CDATA[Changes the set of events to monitor for a stream. This allows
+for event notification to be changed without having to
+unregister & register the callback completely. This method
+is guarenteed to succeed if a callback is already registered]]></info>
+      <return type='int' info='0 on success, -1 if no callback is registered'/>
+      <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
+      <arg name='events' type='int' info='set of events to monitor'/>
     </function>
     <function name='virStreamFinish' file='libvirt' module='libvirt'>
       <info><![CDATA[Indicate that there is no further data is to be transmitted

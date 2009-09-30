@@ -2151,6 +2151,9 @@
         <word name='Change'>
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
+        <word name='Changes'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='Collect'>
           <ref name='virConnectListDefinedInterfaces'/>
           <ref name='virConnectListDomains'/>
@@ -2673,6 +2676,9 @@
         <word name='Refer'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='Register'>
+          <ref name='virStreamEventAddCallback'/>
+        </word>
         <word name='Registering'>
           <ref name='virConnectDomainEventRegister'/>
         </word>
@@ -2682,6 +2688,9 @@
         </word>
         <word name='Remaining'>
           <ref name='_virStoragePoolInfo'/>
+        </word>
+        <word name='Remove'>
+          <ref name='virStreamEventRemoveCallback'/>
         </word>
         <word name='Removes'>
           <ref name='virConnectDomainEventDeregister'/>
@@ -3152,12 +3161,14 @@
         <word name='allows'>
           <ref name='virDomainBlockPeek'/>
           <ref name='virDomainMemoryPeek'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='already'>
           <ref name='virConnectOpen'/>
           <ref name='virDomainDefineXML'/>
           <ref name='virDomainDestroy'/>
           <ref name='virNetworkDestroy'/>
+          <ref name='virStreamEventUpdateCallback'/>
           <ref name='virStreamRecvAll'/>
           <ref name='virStreamSendAll'/>
         </word>
@@ -3213,6 +3224,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamFinish'/>
           <ref name='virStreamNew'/>
           <ref name='virStreamRecv'/>
@@ -3404,6 +3416,9 @@
         </word>
         <word name='because'>
           <ref name='virDomainMemoryPeek'/>
+        </word>
+        <word name='becomes'>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='been'>
           <ref name='virStreamAbort'/>
@@ -3688,6 +3703,9 @@
           <ref name='virEventUpdateHandleFunc'/>
           <ref name='virStoragePoolFree'/>
         </word>
+        <word name='changed'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='char'>
           <ref name='virConnectListDefinedStoragePools'/>
           <ref name='virConnectListStoragePools'/>
@@ -3747,6 +3765,9 @@
         <word name='com'>
           <ref name='virConnectGetType'/>
         </word>
+        <word name='commonly'>
+          <ref name='virStreamEventAddCallback'/>
+        </word>
         <word name='communicating'>
           <ref name='virStoragePoolRefresh'/>
         </word>
@@ -3763,6 +3784,9 @@
         </word>
         <word name='completed'>
           <ref name='virDomainBlockPeek'/>
+        </word>
+        <word name='completely'>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='completion'>
           <ref name='virStreamRecv'/>
@@ -3800,6 +3824,7 @@
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='conn'>
           <ref name='virStreamRecv'/>
@@ -4040,6 +4065,7 @@
           <ref name='virNetworkCreate'/>
           <ref name='virNetworkUndefine'/>
           <ref name='virSecretGetUsageType'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamRecvAll'/>
           <ref name='virStreamSendAll'/>
         </word>
@@ -4426,7 +4452,10 @@
           <ref name='virEventHandleCallback'/>
           <ref name='virEventTimeoutCallback'/>
           <ref name='virEventUpdateTimeoutFunc'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamEventCallback'/>
+          <ref name='virStreamEventRemoveCallback'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='events'>
           <ref name='virConnectDomainEventDeregister'/>
@@ -4435,7 +4464,9 @@
           <ref name='virEventHandleCallback'/>
           <ref name='virEventTimeoutCallback'/>
           <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamEventCallback'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='ever'>
           <ref name='virSecretGetUsageID'/>
@@ -4781,6 +4812,9 @@
           <ref name='virStreamRecv'/>
           <ref name='virStreamSend'/>
         </word>
+        <word name='guarenteed'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='guest'>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainCreateXML'/>
@@ -4861,6 +4895,7 @@
           <ref name='virStorageVolRef'/>
         </word>
         <word name='having'>
+          <ref name='virStreamEventUpdateCallback'/>
           <ref name='virStreamRecvAll'/>
           <ref name='virStreamSendAll'/>
         </word>
@@ -5123,6 +5158,9 @@
         <word name='integer'>
           <ref name='virSecretGetUsageType'/>
         </word>
+        <word name='integrate'>
+          <ref name='virStreamEventAddCallback'/>
+        </word>
         <word name='intended'>
           <ref name='virSecretGetUsageID'/>
         </word>
@@ -5145,12 +5183,14 @@
           <ref name='virConnectDomainEventRegister'/>
           <ref name='virSaveLastError'/>
           <ref name='virStoragePoolGetXMLDesc'/>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='invalid'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
         </word>
         <word name='invoke'>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamRecv'/>
           <ref name='virStreamRecvAll'/>
           <ref name='virStreamSendAll'/>
@@ -5472,6 +5512,9 @@
           <ref name='virSecretLookupByUUIDString'/>
           <ref name='virSecretLookupByUsage'/>
         </word>
+        <word name='loop'>
+          <ref name='virStreamEventAddCallback'/>
+        </word>
         <word name='lowest'>
           <ref name='virDomainPinVcpu'/>
         </word>
@@ -5623,6 +5666,8 @@
         </word>
         <word name='monitor'>
           <ref name='virEventAddTimeoutFunc'/>
+          <ref name='virStreamEventAddCallback'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='monitoring'>
           <ref name='virConnectClose'/>
@@ -5642,6 +5687,7 @@
         <word name='most'>
           <ref name='virNodeGetFreeMemory'/>
           <ref name='virStoragePoolListVolumes'/>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='moves'>
           <ref name='virDomainCreate'/>
@@ -5803,6 +5849,7 @@
           <ref name='virNodeNumOfDevices'/>
         </word>
         <word name='non-blocking'>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamNew'/>
           <ref name='virStreamRecv'/>
           <ref name='virStreamSend'/>
@@ -5827,9 +5874,13 @@
           <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
+        <word name='notification'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='notified'>
           <ref name='virEventRemoveHandleFunc'/>
           <ref name='virEventUpdateHandleFunc'/>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='notify'>
           <ref name='virStreamNew'/>
@@ -5885,6 +5936,7 @@
         </word>
         <word name='occurs'>
           <ref name='virConnectDomainEventCallback'/>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='offline'>
           <ref name='_virVcpuInfo'/>
@@ -6394,6 +6446,9 @@
           <ref name='virStreamSend'/>
           <ref name='virStreamSendAll'/>
         </word>
+        <word name='readable'>
+          <ref name='virStreamEventAddCallback'/>
+        </word>
         <word name='reading'>
           <ref name='virStreamSendAll'/>
         </word>
@@ -6440,6 +6495,9 @@
         <word name='refreshed'>
           <ref name='virStoragePoolRefresh'/>
         </word>
+        <word name='register'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='registered'>
           <ref name='virConnectDomainEventCallback'/>
           <ref name='virEventAddHandleFunc'/>
@@ -6448,6 +6506,7 @@
           <ref name='virEventRemoveTimeoutFunc'/>
           <ref name='virEventTimeoutCallback'/>
           <ref name='virStreamEventCallback'/>
+          <ref name='virStreamEventUpdateCallback'/>
           <ref name='virStreamSend'/>
         </word>
         <word name='related'>
@@ -6861,6 +6920,8 @@
           <ref name='virSecretGetUsageID'/>
           <ref name='virSecretLookupByUsage'/>
           <ref name='virStoragePoolGetXMLDesc'/>
+          <ref name='virStreamEventAddCallback'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='sets'>
           <ref name='virEventAddHandleFunc'/>
@@ -7087,6 +7148,7 @@
         </word>
         <word name='streams'>
           <ref name='virStreamAbort'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamFinish'/>
         </word>
         <word name='structure'>
@@ -7112,6 +7174,7 @@
           <ref name='virDomainCreate'/>
           <ref name='virDomainMemoryPeek'/>
           <ref name='virNetworkCreate'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='succesful'>
           <ref name='virStreamSend'/>
@@ -7473,6 +7536,9 @@
         <word name='unprivileged'>
           <ref name='virConnectOpen'/>
         </word>
+        <word name='unregister'>
+          <ref name='virStreamEventUpdateCallback'/>
+        </word>
         <word name='unregistered'>
           <ref name='virEventAddHandleFunc'/>
           <ref name='virEventAddTimeoutFunc'/>
@@ -7532,6 +7598,7 @@
           <ref name='virSecretGetUsageType'/>
           <ref name='virStoragePoolBuild'/>
           <ref name='virStreamAbort'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamFinish'/>
           <ref name='virStreamFree'/>
           <ref name='virStreamNew'/>
@@ -8078,6 +8145,7 @@
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkSetAutostart'/>
           <ref name='virStoragePoolCreateXML'/>
+          <ref name='virStreamEventAddCallback'/>
           <ref name='virStreamFree'/>
           <ref name='virStreamRecv'/>
         </word>
@@ -8128,6 +8196,7 @@
         </word>
         <word name='without'>
           <ref name='virDomainSuspend'/>
+          <ref name='virStreamEventUpdateCallback'/>
         </word>
         <word name='won'>
           <ref name='virDomainBlockPeek'/>
@@ -8155,6 +8224,9 @@
           <ref name='virSecretRef'/>
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
+        </word>
+        <word name='writable'>
+          <ref name='virStreamEventAddCallback'/>
         </word>
         <word name='write'>
           <ref name='_virDomainBlockStats'/>
