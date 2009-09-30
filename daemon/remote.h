@@ -54,6 +54,7 @@ typedef union {
 typedef int (*dispatch_fn) (struct qemud_server *server,
                             struct qemud_client *client,
                             virConnectPtr conn,
+                            remote_message_header *hdr,
                             remote_error *err,
                             dispatch_args *args,
                             dispatch_ret *ret);

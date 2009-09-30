@@ -503,7 +503,7 @@ remoteDispatchClientCall (struct qemud_server *server,
      *
      *   'conn', 'rerr', 'args and 'ret'
      */
-    rv = (data->fn)(server, client, conn, &rerr, &args, &ret);
+    rv = (data->fn)(server, client, conn, &msg->hdr, &rerr, &args, &ret);
 
     virMutexLock(&server->lock);
     virMutexLock(&client->lock);
