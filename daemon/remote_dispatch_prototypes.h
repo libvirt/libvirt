@@ -298,6 +298,14 @@ static int remoteDispatchDomainMigratePrepare2(
     remote_error *err,
     remote_domain_migrate_prepare2_args *args,
     remote_domain_migrate_prepare2_ret *ret);
+static int remoteDispatchDomainMigratePrepareTunnel(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_migrate_prepare_tunnel_args *args,
+    void *ret);
 static int remoteDispatchDomainPinVcpu(
     struct qemud_server *server,
     struct qemud_client *client,

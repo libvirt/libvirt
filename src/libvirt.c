@@ -3044,6 +3044,70 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     return ddomain;
 }
 
+/*
+ * Tunnelled migration has the following flow:
+ *
+ * virDomainMigrate(src, uri)
+ *   - virDomainMigratePerform(src, uri)
+ *      - dst = virConnectOpen(uri)
+ *      - virDomainMigratePrepareTunnel(dst)
+ *      - while (1)
+ *         - virStreamSend(dst, data)
+ *      - virDomainMigrateFinish(dst)
+ *      - virConnectClose(dst)
+ */
+static virDomainPtr
+virDomainMigrateTunnelled(virDomainPtr domain,
+                          unsigned long flags,
+                          const char *dname,
+                          const char *uri,
+                          unsigned long bandwidth)
+{
+    virConnectPtr dconn;
+    virDomainPtr ddomain = NULL;
+
+    if (uri == NULL) {
+        /* if you are doing a secure migration, you *must* also pass a uri */
+        virLibConnError(domain->conn, VIR_ERR_INVALID_ARG,
+                        _("requested TUNNELLED migration, but no URI passed"));
+        return NULL;
+    }
+
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return NULL;
+    }
+
+    /* FIXME: do we even need this check?  In theory, V1 of the protocol
+     * should be able to do tunnelled migration as well
+     */
+    if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
+        virLibConnError(domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        return NULL;
+    }
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    if (domain->conn->driver->domainMigratePerform
+        (domain, NULL, 0, uri, flags, dname, bandwidth) == -1)
+        return NULL;
+
+    dconn = virConnectOpen(uri);
+    if (dconn == NULL)
+        /* FIXME: this is pretty crappy; as far as we know, the migration has
+         * now succeeded, but we can't connect back to the other side
+         */
+        return NULL;
+
+    ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
+
+    virConnectClose(dconn);
+
+    return ddomain;
+}
+
 /**
  * virDomainMigrate:
  * @domain: a domain object
@@ -3058,6 +3122,8 @@ virDomainMigrateVersion2 (virDomainPtr domain,
  *
  * Flags may be one of more of the following:
  *   VIR_MIGRATE_LIVE   Attempt a live migration.
+ *   VIR_MIGRATE_TUNNELLED Attempt to do a migration tunnelled through the
+ *                         libvirt RPC mechanism
  *
  * If a hypervisor supports renaming domains during migration,
  * then you may set the dname parameter to the new name (otherwise
@@ -3116,31 +3182,47 @@ virDomainMigrate (virDomainPtr domain,
         goto error;
     }
 
-    /* Now checkout the destination */
-    if (!VIR_IS_CONNECT (dconn)) {
-        virLibConnError (domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        goto error;
-    }
-    if (dconn->flags & VIR_CONNECT_RO) {
-        /* NB, deliberately report error against source object, not dest */
-        virLibDomainError (domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        goto error;
-    }
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /* tunnelled migration is more or less a completely different migration
+         * protocol.  dconn has to be NULL, uri has to be set, and the flow
+         * of logic is completely different.  Hence, here we split off from
+         * the main migration flow and use a separate function.
+         */
+        if (dconn != NULL) {
+            virLibConnError(domain->conn, VIR_ERR_INVALID_ARG,
+                            _("requested TUNNELLED migration, but non-NULL dconn"));
+            goto error;
+        }
 
-    /* Check that migration is supported by both drivers. */
-    if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
-                                  VIR_DRV_FEATURE_MIGRATION_V1) &&
-        VIR_DRV_SUPPORTS_FEATURE (dconn->driver, dconn,
-                                  VIR_DRV_FEATURE_MIGRATION_V1))
-        ddomain = virDomainMigrateVersion1 (domain, dconn, flags, dname, uri, bandwidth);
-    else if (VIR_DRV_SUPPORTS_FEATURE (domain->conn->driver, domain->conn,
-                                       VIR_DRV_FEATURE_MIGRATION_V2) &&
-             VIR_DRV_SUPPORTS_FEATURE (dconn->driver, dconn,
-                                       VIR_DRV_FEATURE_MIGRATION_V2))
-        ddomain = virDomainMigrateVersion2 (domain, dconn, flags, dname, uri, bandwidth);
+        ddomain = virDomainMigrateTunnelled(domain, flags, dname, uri, bandwidth);
+    }
     else {
-        virLibConnError (domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-        goto error;
+        /* Now checkout the destination */
+        if (!VIR_IS_CONNECT(dconn)) {
+            virLibConnError(domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+            goto error;
+        }
+        if (dconn->flags & VIR_CONNECT_RO) {
+            /* NB, deliberately report error against source object, not dest */
+            virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+            goto error;
+        }
+
+        /* Check that migration is supported by both drivers. */
+        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                     VIR_DRV_FEATURE_MIGRATION_V1) &&
+            VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                     VIR_DRV_FEATURE_MIGRATION_V1))
+            ddomain = virDomainMigrateVersion1(domain, dconn, flags, dname, uri, bandwidth);
+        else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                          VIR_DRV_FEATURE_MIGRATION_V2) &&
+                 VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                          VIR_DRV_FEATURE_MIGRATION_V2))
+            ddomain = virDomainMigrateVersion2(domain, dconn, flags, dname, uri, bandwidth);
+        else {
+            virLibConnError(domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+            goto error;
+        }
     }
 
      if (ddomain == NULL)
@@ -3395,6 +3477,59 @@ error:
     /* Copy to connection error object for back compatability */
     virSetConnError(dconn);
     return NULL;
+}
+
+
+/*
+ * Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+virDomainMigratePrepareTunnel(virConnectPtr conn,
+                              virStreamPtr st,
+                              const char *uri_in,
+                              unsigned long flags,
+                              const char *dname,
+                              unsigned long bandwidth,
+                              const char *dom_xml)
+
+{
+    VIR_DEBUG("conn=%p, stream=%p, uri_in=%s, flags=%lu, dname=%s, "
+              "bandwidth=%lu, dom_xml=%s", conn, st, uri_in, flags,
+              NULLSTR(dname), bandwidth, dom_xml);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn != st->conn) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigratePrepareTunnel) {
+        int rv = conn->driver->domainMigratePrepareTunnel(conn, st, uri_in,
+                                                          flags, dname,
+                                                          bandwidth, dom_xml);
+        if (rv < 0)
+            goto error;
+        return rv;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
 }
 
 

@@ -787,6 +787,7 @@ static virDriver oneDriver = {
     NULL, /* nodeDeviceDettach; */
     NULL, /* nodeDeviceReAttach; */
     NULL, /* nodeDeviceReset; */
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 static virStateDriver oneStateDriver = {

@@ -1861,6 +1861,7 @@ static virDriver umlDriver = {
     NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 

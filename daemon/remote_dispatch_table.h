@@ -742,3 +742,8 @@
     .args_filter = (xdrproc_t) xdr_remote_secret_lookup_by_usage_args,
     .ret_filter = (xdrproc_t) xdr_remote_secret_lookup_by_usage_ret,
 },
+{   /* DomainMigratePrepareTunnel => 148 */
+    .fn = (dispatch_fn) remoteDispatchDomainMigratePrepareTunnel,
+    .args_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

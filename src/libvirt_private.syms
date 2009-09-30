@@ -239,6 +239,7 @@ virDomainMigratePerform;
 virDomainMigrateFinish;
 virDomainMigratePrepare2;
 virDomainMigrateFinish2;
+virDomainMigratePrepareTunnel;
 virRegisterDriver;
 virRegisterInterfaceDriver;
 virRegisterNetworkDriver;

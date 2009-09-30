@@ -3274,6 +3274,7 @@ static virDriver esxDriver = {
     NULL,                            /* nodeDeviceDettach */
     NULL,                            /* nodeDeviceReAttach */
     NULL,                            /* nodeDeviceReset */
+    NULL,                            /* domainMigratePrepareTunnel */
 };
 
 

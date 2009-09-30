@@ -125,3 +125,4 @@
     remote_secret_get_value_args val_remote_secret_get_value_args;
     remote_secret_undefine_args val_remote_secret_undefine_args;
     remote_secret_lookup_by_usage_args val_remote_secret_lookup_by_usage_args;
+    remote_domain_migrate_prepare_tunnel_args val_remote_domain_migrate_prepare_tunnel_args;

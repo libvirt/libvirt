@@ -55,6 +55,7 @@
 #include "datatypes.h"
 #include "memory.h"
 #include "util.h"
+#include "stream.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 #define REMOTE_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
@@ -1488,6 +1489,49 @@ remoteDispatchDomainMigrateFinish2 (struct qemud_server *server ATTRIBUTE_UNUSED
     }
 
     make_nonnull_domain (&ret->ddom, ddom);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                         struct qemud_client *client,
+                                         virConnectPtr conn,
+                                         remote_message_header *hdr,
+                                         remote_error *rerr,
+                                         remote_domain_migrate_prepare_tunnel_args *args,
+                                         void *ret ATTRIBUTE_UNUSED)
+{
+    int r;
+    char *uri_in;
+    char *dname;
+    struct qemud_client_stream *stream;
+    CHECK_CONN (client);
+
+    uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    stream = remoteCreateClientStream(conn, hdr);
+    if (!stream) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    r = virDomainMigratePrepareTunnel(conn, stream->st, uri_in,
+                                      args->flags, dname, args->resource,
+                                      args->dom_xml);
+    if (r == -1) {
+        remoteFreeClientStream(client, stream);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (remoteAddClientStream(client, stream, 0) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        virStreamAbort(stream->st);
+        remoteFreeClientStream(client, stream);
+        return -1;
+    }
 
     return 0;
 }

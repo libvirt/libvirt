@@ -1432,6 +1432,7 @@ static virDriver openvzDriver = {
     NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 int openvzRegister(void) {

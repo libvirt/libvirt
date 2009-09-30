@@ -2147,6 +2147,7 @@ static virDriver lxcDriver = {
     NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 static virStateDriver lxcStateDriver = {

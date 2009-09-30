@@ -2698,6 +2698,23 @@ xdr_remote_secret_lookup_by_usage_ret (XDR *xdrs, remote_secret_lookup_by_usage_
 }
 
 bool_t
+xdr_remote_domain_migrate_prepare_tunnel_args (XDR *xdrs, remote_domain_migrate_prepare_tunnel_args *objp)
+{
+
+         if (!xdr_remote_string (xdrs, &objp->uri_in))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->flags))
+                 return FALSE;
+         if (!xdr_remote_string (xdrs, &objp->dname))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->resource))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->dom_xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

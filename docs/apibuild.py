@@ -38,6 +38,7 @@ ignored_functions = {
   "virDomainMigratePerform": "private function for migration",
   "virDomainMigratePrepare": "private function for migration",
   "virDomainMigratePrepare2": "private function for migration",
+  "virDomainMigratePrepareTunnel": "private function for tunnelled migration",
   "virDrvSupportsFeature": "private function for remote access",
   "DllMain": "specific function for Win32",
 }

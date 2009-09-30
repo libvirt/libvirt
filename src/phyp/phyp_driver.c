@@ -1377,6 +1377,7 @@ virDriver phypDriver = {
     NULL,                       /* nodeDeviceDettach */
     NULL,                       /* nodeDeviceReAttach */
     NULL,                       /* nodeDeviceReset */
+    NULL,                       /* domainMigratePrepareTunnel */
 };
 
 int

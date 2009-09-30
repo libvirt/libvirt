@@ -71,6 +71,7 @@
 #include "hostusb.h"
 #include "security/security_driver.h"
 #include "cgroup.h"
+#include "libvirt_internal.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -5796,6 +5797,432 @@ static void qemuDomainEventQueue(struct qemud_driver *driver,
 
 /* Migration support. */
 
+/* Tunnelled migration stream support */
+struct qemuStreamMigFile {
+    int fd;
+
+    int watch;
+    unsigned int cbRemoved;
+    unsigned int dispatching;
+    virStreamEventCallback cb;
+    void *opaque;
+    virFreeCallback ff;
+};
+
+static int qemuStreamMigRemoveCallback(virStreamPtr stream)
+{
+    struct qemud_driver *driver = stream->conn->privateData;
+    struct qemuStreamMigFile *qemust = stream->privateData;
+    int ret = -1;
+
+    if (!qemust) {
+        qemudReportError(stream->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream is not open"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    if (qemust->watch == 0) {
+        qemudReportError(stream->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream does not have a callback registered"));
+        goto cleanup;
+    }
+
+    virEventRemoveHandle(qemust->watch);
+    if (qemust->dispatching)
+        qemust->cbRemoved = 1;
+    else if (qemust->ff)
+        (qemust->ff)(qemust->opaque);
+
+    qemust->watch = 0;
+    qemust->ff = NULL;
+    qemust->cb = NULL;
+    qemust->opaque = NULL;
+
+    ret = 0;
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int qemuStreamMigUpdateCallback(virStreamPtr stream, int events)
+{
+    struct qemud_driver *driver = stream->conn->privateData;
+    struct qemuStreamMigFile *qemust = stream->privateData;
+    int ret = -1;
+
+    if (!qemust) {
+        qemudReportError(stream->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream is not open"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    if (qemust->watch == 0) {
+        qemudReportError(stream->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream does not have a callback registered"));
+        goto cleanup;
+    }
+
+    virEventUpdateHandle(qemust->watch, events);
+
+    ret = 0;
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static void qemuStreamMigEvent(int watch ATTRIBUTE_UNUSED,
+                               int fd ATTRIBUTE_UNUSED,
+                               int events,
+                               void *opaque)
+{
+    virStreamPtr stream = opaque;
+    struct qemud_driver *driver = stream->conn->privateData;
+    struct qemuStreamMigFile *qemust = stream->privateData;
+    virStreamEventCallback cb;
+    void *cbopaque;
+    virFreeCallback ff;
+
+    qemuDriverLock(driver);
+    if (!qemust || !qemust->cb) {
+        qemuDriverUnlock(driver);
+        return;
+    }
+
+    cb = qemust->cb;
+    cbopaque = qemust->opaque;
+    ff = qemust->ff;
+    qemust->dispatching = 1;
+    qemuDriverUnlock(driver);
+
+    cb(stream, events, cbopaque);
+
+    qemuDriverLock(driver);
+    qemust->dispatching = 0;
+    if (qemust->cbRemoved && ff)
+        (ff)(cbopaque);
+    qemuDriverUnlock(driver);
+}
+
+static int
+qemuStreamMigAddCallback(virStreamPtr st,
+                         int events,
+                         virStreamEventCallback cb,
+                         void *opaque,
+                         virFreeCallback ff)
+{
+    struct qemud_driver *driver = st->conn->privateData;
+    struct qemuStreamMigFile *qemust = st->privateData;
+    int ret = -1;
+
+    if (!qemust) {
+        qemudReportError(st->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream is not open"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    if (qemust->watch != 0) {
+        qemudReportError(st->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream already has a callback registered"));
+        goto cleanup;
+    }
+
+    if ((qemust->watch = virEventAddHandle(qemust->fd,
+                                           events,
+                                           qemuStreamMigEvent,
+                                           st,
+                                           NULL)) < 0) {
+        qemudReportError(st->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot register file watch on stream"));
+        goto cleanup;
+    }
+
+    qemust->cbRemoved = 0;
+    qemust->cb = cb;
+    qemust->opaque = opaque;
+    qemust->ff = ff;
+    virStreamRef(st);
+
+    ret = 0;
+
+cleanup:
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static void qemuStreamMigFree(struct qemuStreamMigFile *qemust)
+{
+    if (qemust->fd != -1)
+        close(qemust->fd);
+    VIR_FREE(qemust);
+}
+
+static struct qemuStreamMigFile *qemuStreamMigOpen(virStreamPtr st,
+                                                   const char *unixfile)
+{
+    struct qemuStreamMigFile *qemust = NULL;
+    struct sockaddr_un sa_qemu;
+    int i = 0;
+    int timeout = 3;
+    int ret;
+
+    if (VIR_ALLOC(qemust) < 0)
+        return NULL;
+
+    qemust->fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (qemust->fd < 0)
+        goto cleanup;
+
+    memset(&sa_qemu, 0, sizeof(sa_qemu));
+    sa_qemu.sun_family = AF_UNIX;
+    if (virStrcpy(sa_qemu.sun_path, unixfile, sizeof(sa_qemu.sun_path)) == NULL)
+        goto cleanup;
+
+    do {
+        ret = connect(qemust->fd, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu));
+        if (ret == 0)
+            break;
+
+        if (errno == ENOENT || errno == ECONNREFUSED) {
+            /* ENOENT       : Socket may not have shown up yet
+             * ECONNREFUSED : Leftover socket hasn't been removed yet */
+            continue;
+        }
+
+        goto cleanup;
+    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
+
+    if ((st->flags & VIR_STREAM_NONBLOCK) && virSetNonBlock(qemust->fd) < 0)
+        goto cleanup;
+
+    return qemust;
+
+cleanup:
+    qemuStreamMigFree(qemust);
+    return NULL;
+}
+
+static int
+qemuStreamMigClose(virStreamPtr st)
+{
+    struct qemud_driver *driver = st->conn->privateData;
+    struct qemuStreamMigFile *qemust = st->privateData;
+
+    if (!qemust)
+        return 0;
+
+    qemuDriverLock(driver);
+
+    qemuStreamMigFree(qemust);
+
+    st->privateData = NULL;
+
+    qemuDriverUnlock(driver);
+
+    return 0;
+}
+
+static int qemuStreamMigWrite(virStreamPtr st, const char *bytes, size_t nbytes)
+{
+    struct qemud_driver *driver = st->conn->privateData;
+    struct qemuStreamMigFile *qemust = st->privateData;
+    int ret;
+
+    if (!qemust) {
+        qemudReportError(st->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("stream is not open"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+
+retry:
+    ret = write(qemust->fd, bytes, nbytes);
+    if (ret < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            ret = -2;
+        } else if (errno == EINTR) {
+            goto retry;
+        } else {
+            ret = -1;
+            virReportSystemError(st->conn, errno, "%s",
+                                 _("cannot write to stream"));
+        }
+    }
+
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static virStreamDriver qemuStreamMigDrv = {
+    .streamSend = qemuStreamMigWrite,
+    .streamFinish = qemuStreamMigClose,
+    .streamAbort = qemuStreamMigClose,
+    .streamAddCallback = qemuStreamMigAddCallback,
+    .streamUpdateCallback = qemuStreamMigUpdateCallback,
+    .streamRemoveCallback = qemuStreamMigRemoveCallback
+};
+
+/* Prepare is the first step, and it runs on the destination host.
+ *
+ * This version starts an empty VM listening on a localhost TCP port, and
+ * sets up the corresponding virStream to handle the incoming data.
+ */
+static int
+qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
+                                virStreamPtr st,
+                                const char *uri_in,
+                                unsigned long flags,
+                                const char *dname,
+                                unsigned long resource ATTRIBUTE_UNUSED,
+                                const char *dom_xml)
+{
+    struct qemud_driver *driver = dconn->privateData;
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr vm = NULL;
+    char *migrateFrom;
+    virDomainEventPtr event = NULL;
+    int ret = -1;
+    int internalret;
+    char *unixfile = NULL;
+    unsigned int qemuCmdFlags;
+    struct qemuStreamMigFile *qemust = NULL;
+
+    qemuDriverLock(driver);
+    if (!dom_xml) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("no domain XML passed"));
+        goto cleanup;
+    }
+    if (!uri_in) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("no URI passed"));
+        goto cleanup;
+    }
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("PrepareTunnel called but no TUNNELLED flag set"));
+        goto cleanup;
+    }
+    if (st == NULL) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("tunnelled migration requested but NULL stream passed"));
+        goto cleanup;
+    }
+
+    /* Parse the domain XML. */
+    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml,
+                                        VIR_DOMAIN_XML_INACTIVE))) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("failed to parse XML"));
+        goto cleanup;
+    }
+
+    /* Target domain name, maybe renamed. */
+    dname = dname ? dname : def->name;
+
+    /* Ensure the name and UUID don't already exist in an active VM */
+    vm = virDomainFindByUUID(&driver->domains, def->uuid);
+
+    if (!vm) vm = virDomainFindByName(&driver->domains, dname);
+    if (vm) {
+        if (virDomainIsActive(vm)) {
+            qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("domain with the same name or UUID already exists as '%s'"),
+                             vm->def->name);
+            goto cleanup;
+        }
+        virDomainObjUnlock(vm);
+    }
+
+    if (!(vm = virDomainAssignDef(dconn,
+                                  &driver->domains,
+                                  def))) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("failed to assign new VM"));
+        goto cleanup;
+    }
+    def = NULL;
+
+    /* Domain starts inactive, even if the domain XML had an id field. */
+    vm->def->id = -1;
+
+    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.dest.%s",
+                    driver->stateDir, vm->def->name) < 0) {
+        virReportOOMError (dconn);
+        goto cleanup;
+    }
+    unlink(unixfile);
+
+    /* check that this qemu version supports the interactive exec */
+    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot determine QEMU argv syntax %s"),
+                         vm->def->emulator);
+        goto cleanup;
+    }
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)
+        internalret = virAsprintf(&migrateFrom, "unix:%s", unixfile);
+    else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)
+        internalret = virAsprintf(&migrateFrom, "exec:nc -U -l %s", unixfile);
+    else {
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("Destination qemu is too old to support tunnelled migration"));
+        goto cleanup;
+    }
+    if (internalret < 0) {
+        virReportOOMError(dconn);
+        goto cleanup;
+    }
+    /* Start the QEMU daemon, with the same command-line arguments plus
+     * -incoming unix:/path/to/file or exec:nc -U /path/to/file
+     */
+    internalret = qemudStartVMDaemon(dconn, driver, vm, migrateFrom, -1);
+    VIR_FREE(migrateFrom);
+    if (internalret < 0) {
+        /* Note that we don't set an error here because qemudStartVMDaemon
+         * should have already done that.
+         */
+        if (!vm->persistent) {
+            virDomainRemoveInactive(&driver->domains, vm);
+            vm = NULL;
+        }
+        goto cleanup;
+    }
+
+    qemust = qemuStreamMigOpen(st, unixfile);
+    if (qemust == NULL) {
+        qemudShutdownVMDaemon(NULL, driver, vm);
+        virReportSystemError(dconn, errno,
+                             _("cannot open unix socket '%s' for tunnelled migration"),
+                             unixfile);
+        goto cleanup;
+    }
+
+    st->driver = &qemuStreamMigDrv;
+    st->privateData = qemust;
+
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     VIR_DOMAIN_EVENT_STARTED_MIGRATED);
+    ret = 0;
+
+cleanup:
+    virDomainDefFree(def);
+    unlink(unixfile);
+    VIR_FREE(unixfile);
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 /* Prepare is the first step, and it runs on the destination host.
  *
  * This starts an empty VM listening on a TCP port.
@@ -5806,7 +6233,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
                             int *cookielen ATTRIBUTE_UNUSED,
                             const char *uri_in,
                             char **uri_out,
-                            unsigned long flags ATTRIBUTE_UNUSED,
+                            unsigned long flags,
                             const char *dname,
                             unsigned long resource ATTRIBUTE_UNUSED,
                             const char *dom_xml)
@@ -5826,6 +6253,15 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     *uri_out = NULL;
 
     qemuDriverLock(driver);
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        /* this is a logical error; we never should have gotten here with
+         * VIR_MIGRATE_TUNNELLED set
+         */
+        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Tunnelled migration requested but invalid RPC method called"));
+        goto cleanup;
+    }
+
     if (!dom_xml) {
         qemudReportError (dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                           "%s", _("no domain XML passed"));
@@ -5967,6 +6403,209 @@ cleanup:
         qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);
     return ret;
+
+}
+
+static int doTunnelMigrate(virDomainPtr dom,
+                           virDomainObjPtr vm,
+                           const char *uri,
+                           unsigned long flags,
+                           const char *dname,
+                           unsigned long resource)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int client_sock, qemu_sock;
+    struct sockaddr_un sa_qemu, sa_client;
+    socklen_t addrlen;
+    virConnectPtr dconn;
+    virDomainPtr ddomain;
+    int retval = -1;
+    ssize_t bytes;
+    char buffer[65536];
+    virStreamPtr st;
+    char *dom_xml = NULL;
+    char *unixfile = NULL;
+    int internalret;
+    unsigned int qemuCmdFlags;
+    int status;
+    unsigned long long transferred, remaining, total;
+
+    /* the order of operations is important here; we make sure the
+     * destination side is completely setup before we touch the source
+     */
+
+    dconn = virConnectOpen(uri);
+    if (dconn == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("Failed to connect to remote libvirt URI %s"), uri);
+        return -1;
+    }
+    if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "%s",
+                         _("Destination libvirt does not support required migration protocol 2"));
+        goto close_dconn;
+    }
+
+    st = virStreamNew(dconn, 0);
+    if (st == NULL)
+        /* virStreamNew only fails on OOM, and it reports the error itself */
+        goto close_dconn;
+
+    dom_xml = virDomainDefFormat(dom->conn, vm->def, VIR_DOMAIN_XML_SECURE);
+    if (!dom_xml) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("failed to get domain xml"));
+        goto close_stream;
+    }
+
+    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st, uri,
+                                                            flags, dname,
+                                                            resource, dom_xml);
+    VIR_FREE(dom_xml);
+    if (internalret < 0)
+        /* domainMigratePrepareTunnel sets the error for us */
+        goto close_stream;
+
+    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
+                    driver->stateDir, vm->def->name) < 0) {
+        virReportOOMError(dom->conn);
+        goto finish_migrate;
+    }
+
+    qemu_sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (qemu_sock < 0) {
+        virReportSystemError(dom->conn, errno, "%s",
+                             _("cannot open tunnelled migration socket"));
+        goto free_unix_path;
+    }
+    memset(&sa_qemu, 0, sizeof(sa_qemu));
+    sa_qemu.sun_family = AF_UNIX;
+    if (virStrcpy(sa_qemu.sun_path, unixfile,
+                  sizeof(sa_qemu.sun_path)) == NULL) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Unix socket '%s' too big for destination"),
+                         unixfile);
+        goto close_qemu_sock;
+    }
+    unlink(unixfile);
+    if (bind(qemu_sock, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu)) < 0) {
+        virReportSystemError(dom->conn, errno,
+                             _("Cannot bind to unix socket '%s' for tunnelled migration"),
+                             unixfile);
+        goto close_qemu_sock;
+    }
+    if (listen(qemu_sock, 1) < 0) {
+        virReportSystemError(dom->conn, errno,
+                             _("Cannot listen on unix socket '%s' for tunnelled migration"),
+                             unixfile);
+        goto close_qemu_sock;
+    }
+
+    /* check that this qemu version supports the unix migration */
+    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot extract Qemu version from '%s'"),
+                         vm->def->emulator);
+        goto close_qemu_sock;
+    }
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)
+        internalret = qemuMonitorMigrateToUnix(vm, 1, unixfile);
+    else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
+        const char *args[] = { "nc", "-U", unixfile, NULL };
+        internalret = qemuMonitorMigrateToCommand(vm, 1, args, "/dev/null");
+    }
+    else {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("Source qemu is too old to support tunnelled migration"));
+        goto close_qemu_sock;
+    }
+    if (internalret < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("tunnelled migration monitor command failed"));
+        goto close_qemu_sock;
+    }
+
+    /* it is also possible that the migrate didn't fail initially, but
+     * rather failed later on.  Check the output of "info migrate"
+     */
+    if (qemuMonitorGetMigrationStatus(vm, &status,
+                                      &transferred,
+                                      &remaining,
+                                      &total) < 0) {
+        goto qemu_cancel_migration;
+    }
+
+    if (status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s",_("migrate failed"));
+        goto qemu_cancel_migration;
+    }
+
+    addrlen = sizeof(sa_client);
+    while ((client_sock = accept(qemu_sock, (struct sockaddr *)&sa_client, &addrlen)) < 0) {
+        if (errno == EAGAIN || errno == EINTR)
+            continue;
+        virReportSystemError(dom->conn, errno, "%s",
+                             _("tunnelled migration failed to accept from qemu"));
+        goto qemu_cancel_migration;
+    }
+
+    for (;;) {
+        bytes = saferead(client_sock, buffer, sizeof(buffer));
+        if (bytes < 0) {
+            virReportSystemError(dconn, errno, "%s",
+                                 _("tunnelled migration failed to read from qemu"));
+            goto close_client_sock;
+        }
+        else if (bytes == 0)
+            /* EOF; get out of here */
+            break;
+
+        if (virStreamSend(st, buffer, bytes) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("Failed to write migration data to remote libvirtd"));
+            virStreamAbort(st);
+            goto close_client_sock;
+        }
+    }
+
+    if (virStreamFinish(st) < 0)
+        /* virStreamFinish set the error for us */
+        goto close_client_sock;
+
+    retval = 0;
+
+close_client_sock:
+    close(client_sock);
+
+qemu_cancel_migration:
+    if (retval != 0)
+        qemuMonitorMigrateCancel(vm);
+
+close_qemu_sock:
+    close(qemu_sock);
+
+free_unix_path:
+    unlink(unixfile);
+    VIR_FREE(unixfile);
+
+finish_migrate:
+    dname = dname ? dname : dom->name;
+    ddomain = dconn->driver->domainMigrateFinish2
+        (dconn, dname, NULL, 0, uri, flags, retval);
+    if (ddomain)
+        virUnrefDomain(ddomain);
+
+close_stream:
+    /* don't call virStreamFree(), because that resets any pending errors */
+    virUnrefStream(st);
+
+close_dconn:
+    /* don't call virConnectClose(), because that resets any pending errors */
+    virUnrefConnect(dconn);
+
+    return retval;
 }
 
 /* Perform is the second step, and it runs on the source host. */
@@ -6022,42 +6661,49 @@ qemudDomainMigratePerform (virDomainPtr dom,
         qemuMonitorSetMigrationSpeed(vm, resource) < 0)
         goto cleanup;
 
-    /* Issue the migrate command. */
-    if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
-        /* HACK: source host generates bogus URIs, so fix them up */
-        char *tmpuri;
-        if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
-            virReportOOMError(dom->conn);
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        /* Issue the migrate command. */
+        if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
+            /* HACK: source host generates bogus URIs, so fix them up */
+            char *tmpuri;
+            if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
+                virReportOOMError(dom->conn);
+                goto cleanup;
+            }
+            uribits = xmlParseURI(tmpuri);
+            VIR_FREE(tmpuri);
+        } else {
+            uribits = xmlParseURI(uri);
+        }
+        if (!uribits) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot parse URI %s"), uri);
             goto cleanup;
         }
-        uribits = xmlParseURI(tmpuri);
-        VIR_FREE(tmpuri);
-    } else {
-        uribits = xmlParseURI(uri);
-    }
-    if (!uribits) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot parse URI %s"), uri);
-        goto cleanup;
-    }
 
-    if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
-        goto cleanup;
+        if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
+            goto cleanup;
 
-    /* it is also possible that the migrate didn't fail initially, but
-     * rather failed later on.  Check the output of "info migrate"
-     */
-    if (qemuMonitorGetMigrationStatus(vm, &status,
-                                      &transferred,
-                                      &remaining,
-                                      &total) < 0) {
-        goto cleanup;
+        /* it is also possible that the migrate didn't fail initially, but
+         * rather failed later on.  Check the output of "info migrate"
+         */
+        if (qemuMonitorGetMigrationStatus(vm, &status,
+                                          &transferred,
+                                          &remaining,
+                                          &total) < 0) {
+            goto cleanup;
+        }
+
+        if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
+            qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                              "%s", _("migrate did not successfully complete"));
+            goto cleanup;
+        }
     }
-
-    if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
-        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                          "%s", _("migrate did not successfully complete"));
-        goto cleanup;
+    else {
+        if (doTunnelMigrate(dom, vm, uri, flags, dname, resource) < 0)
+            /* doTunnelMigrate already set the error, so just get out */
+            goto cleanup;
     }
 
     /* Clean up the source domain. */
@@ -6357,6 +7003,7 @@ static virDriver qemuDriver = {
     qemudNodeDeviceDettach, /* nodeDeviceDettach */
     qemudNodeDeviceReAttach, /* nodeDeviceReAttach */
     qemudNodeDeviceReset, /* nodeDeviceReset */
+    qemudDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
 };
 
 

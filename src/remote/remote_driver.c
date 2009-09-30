@@ -6698,7 +6698,6 @@ done:
 }
 
 
-#if 0
 static struct private_stream_data *
 remoteStreamOpen(virStreamPtr st,
                  int output ATTRIBUTE_UNUSED,
@@ -7049,8 +7048,50 @@ static virStreamDriver remoteStreamDrv = {
     .streamUpdateCallback = remoteStreamEventUpdateCallback,
     .streamRemoveCallback = remoteStreamEventRemoveCallback,
 };
-#endif
 
+
+static int
+remoteDomainMigratePrepareTunnel(virConnectPtr conn,
+                                 virStreamPtr st,
+                                 const char *uri_in,
+                                 unsigned long flags,
+                                 const char *dname,
+                                 unsigned long resource,
+                                 const char *dom_xml)
+{
+    struct private_data *priv = conn->privateData;
+    struct private_stream_data *privst = NULL;
+    int rv = -1;
+    remote_domain_migrate_prepare_tunnel_args args;
+
+    remoteDriverLock(priv);
+
+    if (!(privst = remoteStreamOpen(st, 1, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL, priv->counter)))
+        goto done;
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = privst;
+
+    args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
+    args.flags = flags;
+    args.dname = dname == NULL ? NULL : (char **) &dname;
+    args.resource = resource;
+    args.dom_xml = (char *) dom_xml;
+
+    if (call(conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL,
+             (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel_args, (char *) &args,
+             (xdrproc_t) xdr_void, NULL) == -1) {
+        remoteStreamRelease(st);
+        goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+}
 
 /*----------------------------------------------------------------------*/
 
@@ -8410,6 +8451,7 @@ static virDriver remote_driver = {
     remoteNodeDeviceDettach, /* nodeDeviceDettach */
     remoteNodeDeviceReAttach, /* nodeDeviceReAttach */
     remoteNodeDeviceReset, /* nodeDeviceReset */
+    remoteDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
 };
 
 static virNetworkDriver network_driver = {

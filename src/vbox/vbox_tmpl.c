@@ -6467,7 +6467,7 @@ virDriver NAME(Driver) = {
     NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
-
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

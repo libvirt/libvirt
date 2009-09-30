@@ -4267,6 +4267,7 @@ static virDriver testDriver = {
     NULL, /* nodeDeviceDettach */
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
+    NULL, /* domainMigratePrepareTunnel */
 };
 
 static virNetworkDriver testNetworkDriver = {

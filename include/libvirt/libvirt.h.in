@@ -337,6 +337,7 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 /* Domain migration flags. */
 typedef enum {
   VIR_MIGRATE_LIVE              = 1, /* live migration */
+  VIR_MIGRATE_TUNNELLED         = 2, /* tunnelled migration */
 } virDomainMigrateFlags;
 
 /* Domain migration. */

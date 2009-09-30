@@ -347,6 +347,16 @@ typedef int
     (*virDrvNodeDeviceReset)
                     (virNodeDevicePtr dev);
 
+typedef int
+    (*virDrvDomainMigratePrepareTunnel)
+                    (virConnectPtr conn,
+                     virStreamPtr st,
+                     const char *uri_in,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource,
+                     const char *dom_xml);
+
 /**
  * _virDriver:
  *
@@ -427,6 +437,7 @@ struct _virDriver {
     virDrvNodeDeviceDettach     nodeDeviceDettach;
     virDrvNodeDeviceReAttach    nodeDeviceReAttach;
     virDrvNodeDeviceReset       nodeDeviceReset;
+    virDrvDomainMigratePrepareTunnel domainMigratePrepareTunnel;
 };
 
 typedef int

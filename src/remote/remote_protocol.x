@@ -1355,6 +1355,14 @@ struct remote_secret_lookup_by_usage_ret {
     remote_nonnull_secret secret;
 };
 
+struct remote_domain_migrate_prepare_tunnel_args {
+    remote_string uri_in;
+    unsigned hyper flags;
+    remote_string dname;
+    unsigned hyper resource;
+    remote_nonnull_string dom_xml;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1523,7 +1531,9 @@ enum remote_procedure {
     REMOTE_PROC_SECRET_SET_VALUE = 144,
     REMOTE_PROC_SECRET_GET_VALUE = 145,
     REMOTE_PROC_SECRET_UNDEFINE = 146,
-    REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147
+    REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147,
+
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148
 };
 
 

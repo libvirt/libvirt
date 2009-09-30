@@ -70,6 +70,12 @@ virDomainPtr virDomainMigrateFinish2 (virConnectPtr dconn,
                                       const char *uri,
                                       unsigned long flags,
                                       int retcode);
-
+int virDomainMigratePrepareTunnel(virConnectPtr conn,
+                                  virStreamPtr st,
+                                  const char *uri_in,
+                                  unsigned long flags,
+                                  const char *dname,
+                                  unsigned long resource,
+                                  const char *dom_xml);
 
 #endif

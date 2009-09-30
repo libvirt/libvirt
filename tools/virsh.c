@@ -2462,6 +2462,7 @@ static const vshCmdInfo info_migrate[] = {
 
 static const vshCmdOptDef opts_migrate[] = {
     {"live", VSH_OT_BOOL, 0, gettext_noop("live migration")},
+    {"tunnelled", VSH_OT_BOOL, 0, gettext_noop("tunnelled migration")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
     {"migrateuri", VSH_OT_DATA, 0, gettext_noop("migration URI, usually can be omitted")},
@@ -2499,12 +2500,31 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool (cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
 
-    /* Temporarily connect to the destination host. */
-    dconn = virConnectOpenAuth (desturi, virConnectAuthPtrDefault, 0);
-    if (!dconn) goto done;
+    if (vshCommandOptBool (cmd, "tunnelled"))
+        flags |= VIR_MIGRATE_TUNNELLED;
+
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        /* For regular live migration, temporarily connect to the destination
+         * host.  For tunnelled migration, that will be done by the remote
+         * libvirtd.
+         */
+        dconn = virConnectOpenAuth(desturi, virConnectAuthPtrDefault, 0);
+        if (!dconn) goto done;
+    }
+    else {
+        /* when doing tunnelled migration, use migrateuri if it's available,
+         * but if not, fall back to desturi.  This allows both of these
+         * to work:
+         *
+         * virsh migrate guest qemu+tls://dest/system
+         * virsh migrate guest qemu+tls://dest/system qemu+tls://dest-alt/system
+         */
+        if (migrateuri == NULL)
+            migrateuri = desturi;
+    }
 
     /* Migrate. */
-    ddom = virDomainMigrate (dom, dconn, flags, dname, migrateuri, 0);
+    ddom = virDomainMigrate(dom, dconn, flags, dname, migrateuri, 0);
     if (!ddom) goto done;
 
     ret = TRUE;
