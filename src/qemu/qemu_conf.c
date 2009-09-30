@@ -892,6 +892,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
     if (version >= 10000) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC;
+        if (version >= 12000)
+            flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX;
     } else if (kvm_version >= 79) {
         flags |= QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP;
         if (kvm_version >= 80)
