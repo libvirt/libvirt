@@ -533,6 +533,7 @@ struct _virDomainDef {
     int id;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *name;
+    char *description;
 
     unsigned long memory;
     unsigned long maxmem;

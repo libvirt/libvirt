@@ -506,6 +506,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->cpumask);
     VIR_FREE(def->emulator);
+    VIR_FREE(def->description);
 
     virSecurityLabelDefFree(def);
 
@@ -2534,6 +2535,9 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         VIR_FREE(tmp);
     }
 
+    /* Extract documentation if present */
+    def->description = virXPathString(conn, "string(./description[1])", ctxt);
+
     /* Extract domain memory */
     if (virXPathULong(conn, "string(./memory[1])", ctxt, &def->maxmem) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -4196,6 +4200,10 @@ char *virDomainDefFormat(virConnectPtr conn,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+
+    if (def->description)
+        virBufferEscapeString(&buf, "  <description>%s</description>\n",
+                              def->description);
 
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", def->maxmem);
     virBufferVSprintf(&buf, "  <currentMemory>%lu</currentMemory>\n",

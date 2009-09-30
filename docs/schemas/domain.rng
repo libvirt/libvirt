@@ -6,6 +6,16 @@
   </start>
 
   <include href='storageencryption.rng'/>
+
+  <!--
+    description element, maybe placed anywhere under the root
+    -->
+  <define name="description">
+    <element name="description">
+      <text/>
+    </element>
+  </define>
+
   <!--
       We handle only document defining a domain
     -->
@@ -14,6 +24,9 @@
       <ref name="hvs"/>
       <ref name="ids"/>
       <interleave>
+        <optional>
+          <ref name="description"/>
+        </optional>
         <ref name="os"/>
         <ref name="clock"/>
         <ref name="resources"/>
