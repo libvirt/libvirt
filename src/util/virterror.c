@@ -560,42 +560,48 @@ virDefaultErrorFunc(virErrorPtr err)
 }
 
 /**
- * virSetGlobalError:
- * Internal helper to ensure the global error object
- * is initialized with a generic message if not already
- * set.
- */
-void
-virSetGlobalError(void)
-{
-    virErrorPtr err = virLastErrorObject();
-
-    if (err && err->code == VIR_ERR_OK)
-        virErrorGenericFailure(err);
-}
-
-/**
- * virSetConnError:
+ * virDispatchError:
  * @conn: pointer to the hypervisor connection
  *
- * Internal helper to ensure the connection error object
- * is initialized from the global object.
+ * Internal helper to do final stage of error
+ * reporting in public APIs.
+ *
+ *  - Copy the global error to per-connection error if needed
+ *  - Set a generic error message if none is already set
+ *  - Invoke the error callback functions
  */
 void
-virSetConnError(virConnectPtr conn)
+virDispatchError(virConnectPtr conn)
 {
     virErrorPtr err = virLastErrorObject();
+    virErrorFunc handler = virErrorHandler;
+    void *userData = virUserData;
 
-    if (err && err->code == VIR_ERR_OK)
+    /* Should never happen, but doesn't hurt to check */
+    if (!err)
+        return;
+
+    /* Set a generic error message if none is already set */
+    if (err->code == VIR_ERR_OK)
         virErrorGenericFailure(err);
 
+    /* Copy the global error to per-connection error if needed */
     if (conn) {
         virMutexLock(&conn->lock);
-        if (err)
-            virCopyError(err, &conn->err);
-        else
-            virErrorGenericFailure(&conn->err);
+        virCopyError(err, &conn->err);
+
+        if (conn->handler != NULL) {
+            handler = conn->handler;
+            userData = conn->userData;
+        }
         virMutexUnlock(&conn->lock);
+    }
+
+    /* Invoke the error callback functions */
+    if (handler != NULL) {
+        (handler)(userData, err);
+    } else {
+        virDefaultErrorFunc(err);
     }
 }
 
@@ -622,7 +628,7 @@ virSetConnError(virConnectPtr conn)
  * immediately if a callback is found and store it for later handling.
  */
 void
-virRaiseErrorFull(virConnectPtr conn,
+virRaiseErrorFull(virConnectPtr conn ATTRIBUTE_UNUSED,
                   const char *filename ATTRIBUTE_UNUSED,
                   const char *funcname,
                   size_t linenr,
@@ -637,8 +643,6 @@ virRaiseErrorFull(virConnectPtr conn,
                   const char *fmt, ...)
 {
     virErrorPtr to;
-    void *userData = virUserData;
-    virErrorFunc handler = virErrorHandler;
     char *str;
 
     /*
@@ -654,18 +658,6 @@ virRaiseErrorFull(virConnectPtr conn,
 
     if (code == VIR_ERR_OK)
         return;
-
-    /*
-     * try to find the best place to save and report the error
-     */
-    if (conn != NULL) {
-        virMutexLock(&conn->lock);
-        if (conn->handler != NULL) {
-            handler = conn->handler;
-            userData = conn->userData;
-        }
-        virMutexUnlock(&conn->lock);
-    }
 
     /*
      * formats the message
@@ -686,7 +678,6 @@ virRaiseErrorFull(virConnectPtr conn,
     /*
      * Save the information about the error
      */
-    virResetError(to);
     /*
      * Delibrately not setting conn, dom & net fields since
      * they're utterly unsafe
@@ -703,15 +694,6 @@ virRaiseErrorFull(virConnectPtr conn,
         to->str3 = strdup(str3);
     to->int1 = int1;
     to->int2 = int2;
-
-    /*
-     * now, report it
-     */
-    if (handler != NULL) {
-        handler(userData, to);
-    } else {
-        virDefaultErrorFunc(to);
-    }
 }
 
 /**
