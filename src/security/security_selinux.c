@@ -492,12 +492,11 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
 
             ret = usbDeviceFileIterate(conn, usb, SELinuxSetSecurityUSBLabel, vm);
             usbFreeDevice(conn, usb);
-
-            break;
         } else {
             /* XXX deal with product/vendor better */
             ret = 0;
         }
+        break;
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
