@@ -1138,19 +1138,26 @@ cleanup:
 
 
 static int qemuMonitorMigrate(const virDomainObjPtr vm,
+                              int background,
                               const char *dest)
 {
     char *cmd = NULL;
     char *info = NULL;
     int ret = -1;
     char *safedest = qemuMonitorEscapeArg(dest);
+    const char *extra;
 
     if (!safedest) {
         virReportOOMError(NULL);
         return -1;
     }
 
-    if (virAsprintf(&cmd, "migrate \"%s\"", safedest) < 0) {
+    if (background)
+        extra = "-d ";
+    else
+        extra = " ";
+
+    if (virAsprintf(&cmd, "migrate %s\"%s\"", extra, safedest) < 0) {
         virReportOOMError(NULL);
         goto cleanup;
     }
@@ -1186,6 +1193,7 @@ cleanup:
 }
 
 int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
+                             int background,
                              const char *hostname,
                              int port)
 {
@@ -1200,7 +1208,7 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
         return -1;
     }
 
-    ret = qemuMonitorMigrate(vm, uri);
+    ret = qemuMonitorMigrate(vm, background, uri);
 
     VIR_FREE(uri);
 
@@ -1209,6 +1217,7 @@ int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
 
 
 int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
+                                int background,
                                 const char * const *argv,
                                 const char *target)
 {
@@ -1238,7 +1247,7 @@ int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
         goto cleanup;
     }
 
-    ret = qemuMonitorMigrate(vm, dest);
+    ret = qemuMonitorMigrate(vm, background, dest);
 
 cleanup:
     VIR_FREE(safe_target);
@@ -1247,6 +1256,38 @@ cleanup:
     return ret;
 }
 
+int qemuMonitorMigrateToUnix(const virDomainObjPtr vm,
+                             int background,
+                             const char *unixfile)
+{
+    char *dest = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    ret = qemuMonitorMigrate(vm, background, dest);
+
+    VIR_FREE(dest);
+
+    return ret;
+}
+
+int qemuMonitorMigrateCancel(const virDomainObjPtr vm)
+{
+    char *info = NULL;
+
+    if (qemuMonitorCommand(vm, "migrate cancel", &info) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot run monitor command to cancel migration"));
+        return -1;
+    }
+    VIR_FREE(info);
+
+    return 0;
+}
 
 int qemuMonitorAddUSBDisk(const virDomainObjPtr vm,
                           const char *path)

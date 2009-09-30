@@ -96,12 +96,20 @@ int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
                                   unsigned long long *total);
 
 int qemuMonitorMigrateToHost(const virDomainObjPtr vm,
+                             int background,
                              const char *hostname,
                              int port);
 
 int qemuMonitorMigrateToCommand(const virDomainObjPtr vm,
+                                int background,
                                 const char * const *argv,
                                 const char *target);
+
+int qemuMonitorMigrateToUnix(const virDomainObjPtr vm,
+                             int background,
+                             const char *unixfile);
+
+int qemuMonitorMigrateCancel(const virDomainObjPtr vm);
 
 
 /* XXX disk driver type eg,  qcow/etc.

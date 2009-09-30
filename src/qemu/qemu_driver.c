@@ -3221,7 +3221,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
-        ret = qemuMonitorMigrateToCommand(vm, args, path);
+        ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
         const char *args[] = {
@@ -3229,7 +3229,7 @@ static int qemudDomainSave(virDomainPtr dom,
             "-c",
             NULL
         };
-        ret = qemuMonitorMigrateToCommand(vm, args, path);
+        ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
     }
 
     if (ret < 0)
@@ -3303,7 +3303,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         paused = 1;
     }
 
-    ret = qemuMonitorMigrateToCommand(vm, args, path);
+    ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
     paused = 1;
 cleanup:
 
@@ -6041,7 +6041,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto cleanup;
     }
 
-    if (qemuMonitorMigrateToHost(vm, uribits->server, uribits->port) < 0)
+    if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
         goto cleanup;
 
     /* it is also possible that the migrate didn't fail initially, but
