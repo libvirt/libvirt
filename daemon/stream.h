@@ -36,7 +36,8 @@ void remoteFreeClientStream(struct qemud_client *client,
                             struct qemud_client_stream *stream);
 
 int remoteAddClientStream(struct qemud_client *client,
-                          struct qemud_client_stream *stream);
+                          struct qemud_client_stream *stream,
+                          int transmit);
 
 struct qemud_client_stream *
 remoteFindClientStream(struct qemud_client *client,

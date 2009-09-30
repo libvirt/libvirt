@@ -259,7 +259,8 @@ void remoteFreeClientStream(struct qemud_client *client,
  * @stream: a stream to add
  */
 int remoteAddClientStream(struct qemud_client *client,
-                          struct qemud_client_stream *stream)
+                          struct qemud_client_stream *stream,
+                          int transmit)
 {
     struct qemud_client_stream *tmp = client->streams;
 
@@ -280,7 +281,8 @@ int remoteAddClientStream(struct qemud_client *client,
     stream->filter.next = client->filters;
     client->filters = &stream->filter;
 
-    stream->tx = 1;
+    if (transmit)
+        stream->tx = 1;
 
     remoteStreamUpdateEvents(stream);
 
