@@ -6728,7 +6728,7 @@ remoteStreamPacket(virStreamPtr st,
                    const char *data,
                    size_t nbytes)
 {
-    DEBUG("st=%p status=%d data=%p nbytes=%d", st, status, data, nbytes);
+    DEBUG("st=%p status=%d data=%p nbytes=%zu", st, status, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *privst = st->privateData;
     XDR xdr;
@@ -6788,7 +6788,7 @@ remoteStreamPacket(virStreamPtr st,
     if (status == REMOTE_CONTINUE) {
         if (((4 + REMOTE_MESSAGE_MAX) - thiscall->bufferLength) < nbytes) {
             errorf(st->conn,
-                   VIR_ERR_RPC, _("data size %d too large for payload %d"),
+                   VIR_ERR_RPC, _("data size %zu too large for payload %d"),
                    nbytes, ((4 + REMOTE_MESSAGE_MAX) - thiscall->bufferLength));
             goto error;
         }
@@ -6874,7 +6874,7 @@ remoteStreamSend(virStreamPtr st,
                  const char *data,
                  size_t nbytes)
 {
-    DEBUG("st=%p data=%p nbytes=%d", st, data, nbytes);
+    DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     int rv = -1;
 
@@ -6903,7 +6903,7 @@ remoteStreamRecv(virStreamPtr st,
                  char *data,
                  size_t nbytes)
 {
-    DEBUG("st=%p data=%p nbytes=%d", st, data, nbytes);
+    DEBUG("st=%p data=%p nbytes=%zu", st, data, nbytes);
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *privst = st->privateData;
     int rv = -1;
