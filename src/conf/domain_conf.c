@@ -1112,7 +1112,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         if (bridge == NULL) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-    _("No <source> 'dev' attribute specified with <interface type='bridge'/>"));
+    _("No <source> 'bridge' attribute specified with <interface type='bridge'/>"));
             goto error;
         }
         def->data.bridge.brname = bridge;
