@@ -509,7 +509,7 @@ gzip -9 ChangeLog
 rm -fr %{buildroot}
 
 %makeinstall
-for i in domain-events dominfo domsuspend hellolibvirt python
+for i in domain-events/events-c dominfo domsuspend hellolibvirt python
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -757,7 +757,6 @@ fi
 %{_libdir}/python*/site-packages/libvirtmod*
 %doc python/tests/*.py
 %doc python/TODO
-%doc python/libvirtclass.txt
 %doc examples/python
 %doc examples/domain-events/events-python
 %endif

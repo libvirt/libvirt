@@ -25,6 +25,7 @@ EXTRA_DIST = \
   .x-sc_prohibit_nonreentrant \
   Makefile.nonreentrant \
   autogen.sh \
+  examples/domain-events/events-python \
   $(XML_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
