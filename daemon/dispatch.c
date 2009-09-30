@@ -195,6 +195,7 @@ remoteSerializeError(struct qemud_client *client,
 
 xdr_error:
     xdr_destroy(&xdr);
+    VIR_FREE(msg);
 fatal_error:
     xdr_free((xdrproc_t)xdr_remote_error,  (char *)rerr);
     return -1;
@@ -359,6 +360,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
                              struct qemud_client *client,
                              struct qemud_client_message *msg)
 {
+    int ret;
     remote_error rerr;
 
     DEBUG("prog=%d ver=%d type=%d satus=%d serial=%d proc=%d",
@@ -404,7 +406,12 @@ remoteDispatchClientRequest (struct qemud_server *server,
     return 0;
 
 error:
-    return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+    ret = remoteSerializeReplyError(client, &rerr, &msg->hdr);
+
+    if (ret >= 0)
+        VIR_FREE(msg);
+
+    return ret;
 }
 
 
@@ -561,8 +568,12 @@ remoteDispatchClientCall (struct qemud_server *server,
 rpc_error:
     /* Semi-bad stuff happened, we can still try to send back
      * an RPC error message to client */
-    return remoteSerializeReplyError(client, &rerr, &msg->hdr);
+    rv = remoteSerializeReplyError(client, &rerr, &msg->hdr);
 
+    if (rv >= 0)
+        VIR_FREE(msg);
+
+    return rv;
 
 xdr_error:
     /* Seriously bad stuff happened, so we'll kill off this client
