@@ -4745,17 +4745,19 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
 
     /* Serialise the return header and event. */
     xdrmem_create (&xdr,
-                   msg->buffer + msg->bufferOffset,
-                   msg->bufferLength - msg->bufferOffset,
+                   msg->buffer,
+                   msg->bufferLength,
                    XDR_ENCODE);
+
+    /* Skip over the header we just wrote */
+    if (xdr_setpos (&xdr, msg->bufferOffset) == 0)
+        goto xdr_error;
 
     if (!xdr_remote_domain_event_msg(&xdr, data))
         goto xdr_error;
 
-
-    /* Update length word */
-    msg->bufferOffset += xdr_getpos (&xdr);
-    len = msg->bufferOffset;
+    /* Update length word to include payload*/
+    len = msg->bufferOffset = xdr_getpos (&xdr);
     if (xdr_setpos (&xdr, 0) == 0)
         goto xdr_error;
 
