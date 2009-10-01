@@ -46,6 +46,7 @@
 #include "domain_event.h"
 #include "event.h"
 #include "storage_conf.h"
+#include "node_device_conf.h"
 #include "xml.h"
 #include "threads.h"
 #include "logging.h"
@@ -75,6 +76,7 @@ struct _testConn {
     virNetworkObjList networks;
     virInterfaceObjList ifaces;
     virStoragePoolObjList pools;
+    virNodeDeviceObjList devs;
     int numCells;
     testCell cells[MAX_CELLS];
 
@@ -223,6 +225,24 @@ static const char *defaultPoolXML =
 "  </target>"
 "</pool>";
 
+static const char *defaultNodeXML =
+"<device>"
+"  <name>computer</name>"
+"  <capability type='system'>"
+"    <hardware>"
+"      <vendor>Libvirt</vendor>"
+"      <version>Test driver</version>"
+"      <serial>123456</serial>"
+"      <uuid>11111111-2222-3333-4444-555555555555</uuid>"
+"    </hardware>"
+"    <firmware>"
+"      <vendor>Libvirt</vendor>"
+"      <version>Test Driver</version>"
+"      <release_date>01/22/2007</release_date>"
+"    </firmware>"
+"  </capability>"
+"</device>";
+
 static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
 static const unsigned long long defaultPoolAlloc = 0;
 
@@ -295,6 +315,8 @@ static int testOpenDefault(virConnectPtr conn) {
     virInterfaceObjPtr interfaceobj = NULL;
     virStoragePoolDefPtr pooldef = NULL;
     virStoragePoolObjPtr poolobj = NULL;
+    virNodeDeviceDefPtr nodedef = NULL;
+    virNodeDeviceObjPtr nodeobj = NULL;
 
     if (VIR_ALLOC(privconn) < 0) {
         virReportOOMError(conn);
@@ -382,6 +404,16 @@ static int testOpenDefault(virConnectPtr conn) {
     poolobj->active = 1;
     virStoragePoolObjUnlock(poolobj);
 
+    /* Init default node device */
+    if (!(nodedef = virNodeDeviceDefParseString(conn, defaultNodeXML, 0)))
+        goto error;
+    if (!(nodeobj = virNodeDeviceAssignDef(conn, &privconn->devs,
+                                           nodedef))) {
+        virNodeDeviceDefFree(nodedef);
+        goto error;
+    }
+    virNodeDeviceObjUnlock(nodeobj);
+
     testDriverUnlock(privconn);
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -391,6 +423,7 @@ error:
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
+    virNodeDeviceObjListFree(&privconn->devs);
     virCapabilitiesFree(privconn->caps);
     testDriverUnlock(privconn);
     conn->privateData = NULL;
@@ -4078,6 +4111,7 @@ cleanup:
 }
 
 
+/* Node device implementations */
 static virDrvOpenStatus testDevMonOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                        int flags ATTRIBUTE_UNUSED) {
@@ -4093,7 +4127,216 @@ static int testDevMonClose(virConnectPtr conn) {
     return 0;
 }
 
+static int
+testNodeNumOfDevices(virConnectPtr conn,
+                     const char *cap,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr driver = conn->privateData;
+    int ndevs = 0;
+    unsigned int i;
 
+    testDriverLock(driver);
+    for (i = 0; i < driver->devs.count; i++)
+        if ((cap == NULL) ||
+            virNodeDeviceHasCap(driver->devs.objs[i], cap))
+            ++ndevs;
+    testDriverUnlock(driver);
+
+    return ndevs;
+}
+
+static int
+testNodeListDevices(virConnectPtr conn,
+                    const char *cap,
+                    char **const names,
+                    int maxnames,
+                    unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr driver = conn->privateData;
+    int ndevs = 0;
+    unsigned int i;
+
+    testDriverLock(driver);
+    for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
+        virNodeDeviceObjLock(driver->devs.objs[i]);
+        if (cap == NULL ||
+            virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
+            if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
+                virNodeDeviceObjUnlock(driver->devs.objs[i]);
+                goto failure;
+            }
+        }
+        virNodeDeviceObjUnlock(driver->devs.objs[i]);
+    }
+    testDriverUnlock(driver);
+
+    return ndevs;
+
+ failure:
+    testDriverUnlock(driver);
+    --ndevs;
+    while (--ndevs >= 0)
+        VIR_FREE(names[ndevs]);
+    return -1;
+}
+
+static virNodeDevicePtr
+testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
+{
+    testConnPtr driver = conn->privateData;
+    virNodeDeviceObjPtr obj;
+    virNodeDevicePtr ret = NULL;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(conn, VIR_ERR_NO_NODE_DEVICE, NULL);
+        goto cleanup;
+    }
+
+    ret = virGetNodeDevice(conn, name);
+
+cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    return ret;
+}
+
+static char *
+testNodeDeviceDumpXML(virNodeDevicePtr dev,
+                      unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr driver = dev->conn->privateData;
+    virNodeDeviceObjPtr obj;
+    char *ret = NULL;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
+        goto cleanup;
+    }
+
+    ret = virNodeDeviceDefFormat(dev->conn, obj->def);
+
+cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    return ret;
+}
+
+static char *
+testNodeDeviceGetParent(virNodeDevicePtr dev)
+{
+    testConnPtr driver = dev->conn->privateData;
+    virNodeDeviceObjPtr obj;
+    char *ret = NULL;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
+        goto cleanup;
+    }
+
+    if (obj->def->parent) {
+        ret = strdup(obj->def->parent);
+        if (!ret)
+            virReportOOMError(dev->conn);
+    } else {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("no parent for this device"));
+    }
+
+cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    return ret;
+}
+
+
+static int
+testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
+{
+    testConnPtr driver = dev->conn->privateData;
+    virNodeDeviceObjPtr obj;
+    virNodeDevCapsDefPtr caps;
+    int ncaps = 0;
+    int ret = -1;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
+        goto cleanup;
+    }
+
+    for (caps = obj->def->caps; caps; caps = caps->next)
+        ++ncaps;
+    ret = ncaps;
+
+cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    return ret;
+}
+
+
+static int
+testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
+{
+    testConnPtr driver = dev->conn->privateData;
+    virNodeDeviceObjPtr obj;
+    virNodeDevCapsDefPtr caps;
+    int ncaps = 0;
+    int ret = -1;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+                                _("no node device with matching name '%s'"),
+                                 dev->name);
+        goto cleanup;
+    }
+
+    for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
+        names[ncaps] = strdup(virNodeDevCapTypeToString(caps->type));
+        if (names[ncaps++] == NULL)
+            goto cleanup;
+    }
+    ret = ncaps;
+
+cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    if (ret == -1) {
+        --ncaps;
+        while (--ncaps >= 0)
+            VIR_FREE(names[ncaps]);
+    }
+    return ret;
+}
+
+
+/* Domain event implementations */
 static int
 testDomainEventRegister (virConnectPtr conn,
                          virConnectDomainEventCallback callback,
@@ -4358,6 +4601,16 @@ static virDeviceMonitor testDevMonitor = {
     .name = "Test",
     .open = testDevMonOpen,
     .close = testDevMonClose,
+
+    .numOfDevices = testNodeNumOfDevices,
+    .listDevices = testNodeListDevices,
+    .deviceLookupByName = testNodeDeviceLookupByName,
+    .deviceDumpXML = testNodeDeviceDumpXML,
+    .deviceGetParent = testNodeDeviceGetParent,
+    .deviceNumOfCaps = testNodeDeviceNumOfCaps,
+    .deviceListCaps = testNodeDeviceListCaps,
+    //.deviceCreateXML = nodeDeviceCreateXML;
+    //.deviceDestroy = nodeDeviceDestroy;
 };
 
 static virSecretDriver testSecretDriver = {
