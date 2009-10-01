@@ -332,8 +332,8 @@ rpcgen:
 	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote/remote_protocol.x
 	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote/remote_protocol.x
 if HAVE_GLIBC_RPCGEN
-	perl -w $(srcdir)/rpcgen_fix.pl rp.h-t > rp.h-t1
-	perl -w $(srcdir)/rpcgen_fix.pl rp.c-t > rp.c-t1
+	perl -w $(srcdir)/remote/rpcgen_fix.pl rp.h-t > rp.h-t1
+	perl -w $(srcdir)/remote/rpcgen_fix.pl rp.c-t > rp.c-t1
 	(echo '#include <config.h>'; cat rp.c-t1) > rp.c-t2
 	chmod 0444 rp.c-t2 rp.h-t1
 	mv -f rp.h-t1 $(srcdir)/remote/remote_protocol.h
