@@ -1072,7 +1072,7 @@ int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
     *remaining = 0;
     *total = 0;
 
-    if (qemuMonitorCommand(vm, "info migration", &reply) < 0) {
+    if (qemuMonitorCommand(vm, "info migrate", &reply) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("cannot query migration status"));
         return -1;
@@ -1080,7 +1080,7 @@ int qemuMonitorGetMigrationStatus(const virDomainObjPtr vm,
 
     if ((tmp = strstr(reply, MIGRATION_PREFIX)) != NULL) {
         tmp += strlen(MIGRATION_PREFIX);
-        end = strchr(tmp, '\n');
+        end = strchr(tmp, '\r');
         *end = '\0';
 
         if ((*status = qemuMonitorMigrationStatusTypeFromString(tmp)) < 0) {
