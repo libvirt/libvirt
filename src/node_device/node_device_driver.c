@@ -153,10 +153,15 @@ static int nodeNumOfDevices(virConnectPtr conn,
     int ndevs = 0;
     unsigned int i;
 
-    for (i = 0; i < driver->devs.count; i++)
+    nodeDeviceLock(driver);
+    for (i = 0; i < driver->devs.count; i++) {
+        virNodeDeviceObjLock(driver->devs.objs[i]);
         if ((cap == NULL) ||
             dev_has_cap(driver->devs.objs[i], cap))
             ++ndevs;
+        virNodeDeviceObjUnlock(driver->devs.objs[i]);
+    }
+    nodeDeviceUnlock(driver);
 
     return ndevs;
 }
