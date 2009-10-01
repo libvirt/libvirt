@@ -43,7 +43,7 @@ virsh_LDADD =							\
 		$(VIRSH_LIBS)
 virsh_CFLAGS = 							\
 		-I$(top_srcdir)/gnulib/lib -I../gnulib/lib	\
-		-I../include					\
+		-I../include -I$(top_srcdir)/include		\
 		-I$(top_srcdir)/src				\
 		-I$(top_srcdir)/src/util			\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\

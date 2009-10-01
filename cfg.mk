@@ -101,7 +101,7 @@ sc_prohibit_VIR_ERR_NO_MEMORY:
 	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
 	  $(_prohibit_regexp)
 
-include Makefile.nonreentrant
+include $(srcdir)/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
 	@fail=0 ; \
 	for i in $(NON_REENTRANT) ; \

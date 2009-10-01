@@ -1,4 +1,4 @@
-INCLUDES = -I@top_srcdir@/include
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
 noinst_PROGRAMS = hellolibvirt
 hellolibvirt_CFLAGS = $(WARN_CFLAGS)
 hellolibvirt_SOURCES = hellolibvirt.c
