@@ -1032,7 +1032,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
             } else if ((ifname == NULL) &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
-                if (STRPREFIX((const char*)ifname, "vnet")) {
+                if ((ifname != NULL) &&
+                    (STRPREFIX((const char*)ifname, "vnet"))) {
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
                 }
