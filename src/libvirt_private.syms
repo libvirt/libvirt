@@ -302,6 +302,7 @@ nodeGetFreeMemory;
 
 
 # node_device_conf.h
+virNodeDeviceHasCap;
 virNodeDeviceObjRemove;
 virNodeDevCapTypeToString;
 virNodeDeviceFindByName;

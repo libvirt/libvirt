@@ -193,6 +193,8 @@ struct _virDeviceMonitorState {
         virReportErrorHelper(conn, VIR_FROM_NODEDEV, code, __FILE__,	\
                                __FUNCTION__, __LINE__, fmt)
 
+int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
+
 virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
                                             const char *name);
 

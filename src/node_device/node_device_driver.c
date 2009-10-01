@@ -39,17 +39,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
-static int dev_has_cap(const virNodeDeviceObjPtr dev, const char *cap)
-{
-    virNodeDevCapsDefPtr caps = dev->def->caps;
-    while (caps) {
-        if (STREQ(cap, virNodeDevCapTypeToString(caps->type)))
-            return 1;
-        caps = caps->next;
-    }
-    return 0;
-}
-
 
 static int update_caps(virNodeDeviceObjPtr dev)
 {
@@ -157,7 +146,7 @@ static int nodeNumOfDevices(virConnectPtr conn,
     for (i = 0; i < driver->devs.count; i++) {
         virNodeDeviceObjLock(driver->devs.objs[i]);
         if ((cap == NULL) ||
-            dev_has_cap(driver->devs.objs[i], cap))
+            virNodeDeviceHasCap(driver->devs.objs[i], cap))
             ++ndevs;
         virNodeDeviceObjUnlock(driver->devs.objs[i]);
     }
@@ -180,7 +169,7 @@ nodeListDevices(virConnectPtr conn,
     for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
         virNodeDeviceObjLock(driver->devs.objs[i]);
         if (cap == NULL ||
-            dev_has_cap(driver->devs.objs[i], cap)) {
+            virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
             if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
                 virNodeDeviceObjUnlock(driver->devs.objs[i]);
                 goto failure;

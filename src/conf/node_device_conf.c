@@ -80,6 +80,16 @@ virNodeDevCapsDefParseString(virConnectPtr conn,
     return 0;
 }
 
+int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap)
+{
+    virNodeDevCapsDefPtr caps = dev->def->caps;
+    while (caps) {
+        if (STREQ(cap, virNodeDevCapTypeToString(caps->type)))
+            return 1;
+        caps = caps->next;
+    }
+    return 0;
+}
 
 virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
                                             const char *name)
