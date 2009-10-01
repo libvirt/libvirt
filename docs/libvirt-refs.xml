@@ -7176,21 +7176,17 @@
           <ref name='virNetworkCreate'/>
           <ref name='virStreamEventUpdateCallback'/>
         </word>
-        <word name='succesful'>
-          <ref name='virStreamSend'/>
-        </word>
-        <word name='succesfully'>
-          <ref name='virStreamRecvAll'/>
-          <ref name='virStreamSendAll'/>
-        </word>
         <word name='successful'>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainSave'/>
           <ref name='virNodeDeviceCreateXML'/>
+          <ref name='virStreamSend'/>
         </word>
         <word name='successfully'>
           <ref name='virConnectOpen'/>
           <ref name='virStreamFinish'/>
+          <ref name='virStreamRecvAll'/>
+          <ref name='virStreamSendAll'/>
         </word>
         <word name='such'>
           <ref name='virConnCopyLastError'/>

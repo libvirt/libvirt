@@ -9638,7 +9638,7 @@ error:
  *   virStreamFree(st);
  *   close(fd);
  *
- * Returns 0 if all the data was succesfully sent. The caller
+ * Returns 0 if all the data was successfully sent. The caller
  * should invoke virStreamFinish(st) to flush the stream upon
  * success and then virStreamFree
  *
@@ -9735,7 +9735,7 @@ cleanup:
  *   virStreamFree(st);
  *   close(fd);
  *
- * Returns 0 if all the data was succesfully received. The caller
+ * Returns 0 if all the data was successfully received. The caller
  * should invoke virStreamFinish(st) to flush the stream upon
  * success and then virStreamFree
  *

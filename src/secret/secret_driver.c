@@ -751,7 +751,7 @@ secretDefineXML(virConnectPtr conn, const char *xml,
         if (secretDeleteSaved(conn, driver, secret) < 0)
             goto restore_backup;
     }
-    /* Saved succesfully - drop old values */
+    /* Saved successfully - drop old values */
     new_attrs = NULL;
     virSecretDefFree(backup);
 
@@ -843,7 +843,7 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
         if (secretSaveValue(obj->conn, driver, secret) < 0)
             goto restore_backup;
     }
-    /* Saved succesfully - drop old value */
+    /* Saved successfully - drop old value */
     if (old_value != NULL) {
         memset(old_value, 0, old_value_size);
         VIR_FREE(old_value);

@@ -2847,7 +2847,7 @@ API looks like
      ...report an error...
   virStreamFree(st);
   close(fd);]]></info>
-      <return type='int' info='0 if all the data was succesfully received. The caller should invoke virStreamFinish(st) to flush the stream upon success and then virStreamFree  Returns -1 upon any error, with virStreamAbort() already having been called,  so the caller need only call virStreamFree()'/>
+      <return type='int' info='0 if all the data was successfully received. The caller should invoke virStreamFinish(st) to flush the stream upon success and then virStreamFree  Returns -1 upon any error, with virStreamAbort() already having been called,  so the caller need only call virStreamFree()'/>
       <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
       <arg name='handler' type='virStreamSinkFunc' info='sink callback for writing data to application'/>
       <arg name='opaque' type='void *' info='application defined data'/>
@@ -2864,7 +2864,7 @@ the caller no longer needs the reference to this object.]]></info>
       <info><![CDATA[Write a series of bytes to the stream. This method may
 block the calling application for an arbitrary amount
 of time. Once an application has finished sending data
-it should call virStreamFinish to wait for succesful
+it should call virStreamFinish to wait for successful
 confirmation from the driver, or detect any error
 
 This method may not be used if a stream source has been
@@ -2939,7 +2939,7 @@ API looks like
      ...report an error...
   virStreamFree(st);
   close(fd);]]></info>
-      <return type='int' info='0 if all the data was succesfully sent. The caller should invoke virStreamFinish(st) to flush the stream upon success and then virStreamFree  Returns -1 upon any error, with virStreamAbort() already having been called,  so the caller need only call virStreamFree()'/>
+      <return type='int' info='0 if all the data was successfully sent. The caller should invoke virStreamFinish(st) to flush the stream upon success and then virStreamFree  Returns -1 upon any error, with virStreamAbort() already having been called,  so the caller need only call virStreamFree()'/>
       <arg name='stream' type='virStreamPtr' info='pointer to the stream object'/>
       <arg name='handler' type='virStreamSourceFunc' info='source callback for reading data from application'/>
       <arg name='opaque' type='void *' info='application defined data'/>
