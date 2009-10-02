@@ -547,7 +547,8 @@ static int testOpenFromFile(virConnectPtr conn,
     char *str;
     xmlDocPtr xml = NULL;
     xmlNodePtr root = NULL;
-    xmlNodePtr *domains = NULL, *networks = NULL, *ifaces = NULL, *pools = NULL;
+    xmlNodePtr *domains = NULL, *networks = NULL, *ifaces = NULL,
+               *pools = NULL, *devs = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
     virNetworkObjPtr net;
@@ -840,6 +841,43 @@ static int testOpenFromFile(virConnectPtr conn,
         virStoragePoolObjUnlock(pool);
     }
     VIR_FREE(pools);
+
+    ret = virXPathNodeSet(conn, "/node/device", ctxt, &devs);
+    if (ret < 0) {
+        testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node device list"));
+        goto error;
+    }
+    for (i = 0 ; i < ret ; i++) {
+        virNodeDeviceDefPtr def;
+        virNodeDeviceObjPtr dev;
+        char *relFile = virXMLPropString(devs[i], "file");
+
+        if (relFile != NULL) {
+            char *absFile = testBuildFilename(file, relFile);
+            VIR_FREE(relFile);
+
+            if (!absFile) {
+                testError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("resolving device filename"));
+                goto error;
+            }
+
+            def = virNodeDeviceDefParseFile(conn, absFile, 0);
+            VIR_FREE(absFile);
+            if (!def)
+                goto error;
+        } else {
+            if ((def = virNodeDeviceDefParseNode(conn, xml, devs[i], 0)) == NULL)
+                goto error;
+        }
+        if (!(dev = virNodeDeviceAssignDef(conn, &privconn->devs, def))) {
+            virNodeDeviceDefFree(def);
+            goto error;
+        }
+        virNodeDeviceObjUnlock(dev);
+    }
+    VIR_FREE(devs);
+
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
