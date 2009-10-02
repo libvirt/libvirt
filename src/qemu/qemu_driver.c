@@ -6469,6 +6469,40 @@ cleanup:
 }
 
 
+static int doTunnelSendAll(virDomainPtr dom,
+                           virStreamPtr st,
+                           int sock)
+{
+    char buffer[65536];
+    int nbytes = sizeof(buffer);
+
+    /* XXX should honour the 'resource' parameter here */
+    for (;;) {
+        nbytes = saferead(sock, buffer, nbytes);
+        if (nbytes < 0) {
+            virStreamAbort(st);
+            virReportSystemError(dom->conn, errno, "%s",
+                                 _("tunnelled migration failed to read from qemu"));
+            return -1;
+        }
+        else if (nbytes == 0)
+            /* EOF; get out of here */
+            break;
+
+        if (virStreamSend(st, buffer, nbytes) < 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("Failed to write migration data to remote libvirtd"));
+            return -1;
+        }
+    }
+
+    if (virStreamFinish(st) < 0)
+        /* virStreamFinish set the error for us */
+        return -1;
+
+    return 0;
+}
+
 static int doTunnelMigrate(virDomainPtr dom,
                            virConnectPtr dconn,
                            virDomainObjPtr vm,
@@ -6485,7 +6519,6 @@ static int doTunnelMigrate(virDomainPtr dom,
     virDomainPtr ddomain;
     int retval = -1;
     ssize_t bytes;
-    char buffer[65536];
     virStreamPtr st;
     char *unixfile = NULL;
     int internalret;
@@ -6594,34 +6627,8 @@ static int doTunnelMigrate(virDomainPtr dom,
         goto qemu_cancel_migration;
     }
 
+    retval = doTunnelSendAll(dom, st, client_sock);
 
-    /* XXX should honour the 'resource' parameter here */
-    for (;;) {
-        bytes = saferead(client_sock, buffer, sizeof(buffer));
-        if (bytes < 0) {
-            virStreamAbort(st);
-            virReportSystemError(dconn, errno, "%s",
-                                 _("tunnelled migration failed to read from qemu"));
-            goto close_client_sock;
-        }
-        else if (bytes == 0)
-            /* EOF; get out of here */
-            break;
-
-        if (virStreamSend(st, buffer, bytes) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("Failed to write migration data to remote libvirtd"));
-            goto close_client_sock;
-        }
-    }
-
-    if (virStreamFinish(st) < 0)
-        /* virStreamFinish set the error for us */
-        goto close_client_sock;
-
-    retval = 0;
-
-close_client_sock:
     close(client_sock);
 
 qemu_cancel_migration:
