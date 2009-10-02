@@ -6470,7 +6470,9 @@ cleanup:
 
 
 static int doTunnelMigrate(virDomainPtr dom,
+                           virConnectPtr dconn,
                            virDomainObjPtr vm,
+                           const char *dom_xml,
                            const char *uri,
                            unsigned long flags,
                            const char *dname,
@@ -6480,13 +6482,11 @@ static int doTunnelMigrate(virDomainPtr dom,
     int client_sock, qemu_sock;
     struct sockaddr_un sa_qemu, sa_client;
     socklen_t addrlen;
-    virConnectPtr dconn;
     virDomainPtr ddomain;
     int retval = -1;
     ssize_t bytes;
     char buffer[65536];
     virStreamPtr st;
-    char *dom_xml = NULL;
     char *unixfile = NULL;
     int internalret;
     unsigned int qemuCmdFlags;
@@ -6497,35 +6497,15 @@ static int doTunnelMigrate(virDomainPtr dom,
      * destination side is completely setup before we touch the source
      */
 
-    dconn = virConnectOpen(uri);
-    if (dconn == NULL) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("Failed to connect to remote libvirt URI %s"), uri);
-        return -1;
-    }
-    if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "%s",
-                         _("Destination libvirt does not support required migration protocol 2"));
-        goto close_dconn;
-    }
-
     st = virStreamNew(dconn, 0);
     if (st == NULL)
         /* virStreamNew only fails on OOM, and it reports the error itself */
-        goto close_dconn;
-
-    dom_xml = virDomainDefFormat(dom->conn, vm->def, VIR_DOMAIN_XML_SECURE);
-    if (!dom_xml) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("failed to get domain xml"));
-        goto close_stream;
-    }
+        goto cleanup;
 
     internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
                                                             flags, dname,
                                                             resource, dom_xml);
-    VIR_FREE(dom_xml);
+
     if (internalret < 0)
         /* domainMigratePrepareTunnel sets the error for us */
         goto close_stream;
@@ -6666,12 +6646,56 @@ close_stream:
     /* don't call virStreamFree(), because that resets any pending errors */
     virUnrefStream(st);
 
-close_dconn:
+cleanup:
+    return retval;
+}
+
+
+static int doPeer2PeerMigrate(virDomainPtr dom,
+                              virDomainObjPtr vm,
+                              const char *uri,
+                              unsigned long flags,
+                              const char *dname,
+                              unsigned long resource)
+{
+    int ret = -1;
+    virConnectPtr dconn = NULL;
+    char *dom_xml;
+
+    /* the order of operations is important here; we make sure the
+     * destination side is completely setup before we touch the source
+     */
+
+    dconn = virConnectOpen(uri);
+    if (dconn == NULL) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("Failed to connect to remote libvirt URI %s"), uri);
+        return -1;
+    }
+    if (!VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "%s",
+                         _("Destination libvirt does not support required migration protocol 2"));
+        goto cleanup;
+    }
+
+    dom_xml = virDomainDefFormat(dom->conn, vm->def, VIR_DOMAIN_XML_SECURE);
+    if (!dom_xml) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("failed to get domain xml"));
+        goto cleanup;
+    }
+
+    ret = doTunnelMigrate(dom, dconn, vm, dom_xml, uri, flags, dname, resource);
+
+cleanup:
+    VIR_FREE(dom_xml);
     /* don't call virConnectClose(), because that resets any pending errors */
     virUnrefConnect(dconn);
 
-    return retval;
+    return ret;
 }
+
 
 /* Perform is the second step, and it runs on the source host. */
 static int
@@ -6720,7 +6744,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     if ((flags & VIR_MIGRATE_TUNNELLED)) {
-        if (doTunnelMigrate(dom, vm, uri, flags, dname, resource) < 0)
+        if (doPeer2PeerMigrate(dom, vm, uri, flags, dname, resource) < 0)
             /* doTunnelMigrate already set the error, so just get out */
             goto cleanup;
     } else {

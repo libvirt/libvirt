@@ -47,6 +47,7 @@
      <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STOPPED_DESTROYED' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_DEFINED_ADDED' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_SECRET_USAGE_TYPE_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_EVENT_STARTED_MIGRATED' type='enum'/>
      <exports symbol='VIR_STREAM_EVENT_HANGUP' type='enum'/>
@@ -82,7 +83,7 @@
      <exports symbol='VIR_STREAM_EVENT_WRITABLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_MIGRATE_TUNNELLED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
@@ -718,7 +719,8 @@
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
     <enum name='VIR_MEMORY_PHYSICAL' file='libvirt' value='2' type='virDomainMemoryFlags' info=' addresses are physical addresses'/>
     <enum name='VIR_MEMORY_VIRTUAL' file='libvirt' value='1' type='virDomainMemoryFlags' info='addresses are virtual addresses'/>
-    <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
+    <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info='live migration'/>
+    <enum name='VIR_MIGRATE_TUNNELLED' file='libvirt' value='2' type='virDomainMigrateFlags' info=' tunnelled migration'/>
     <enum name='VIR_SECRET_USAGE_TYPE_NONE' file='libvirt' value='0' type='virSecretUsageType'/>
     <enum name='VIR_SECRET_USAGE_TYPE_VOLUME' file='libvirt' value='1' type='virSecretUsageType' info=' Expect more owner types later...'/>
     <enum name='VIR_STORAGE_POOL_BUILDING' file='libvirt' value='1' type='virStoragePoolState' info='Initializing pool, not available'/>
@@ -1596,6 +1598,8 @@ host given by dconn (a connection to the destination host).
 
 Flags may be one of more of the following:
   VIR_MIGRATE_LIVE   Attempt a live migration.
+  VIR_MIGRATE_TUNNELLED Attempt to do a migration tunnelled through the
+                        libvirt RPC mechanism
 
 If a hypervisor supports renaming domains during migration,
 then you may set the dname parameter to the new name (otherwise

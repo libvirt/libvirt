@@ -154,6 +154,7 @@
     <reference name='VIR_MEMORY_PHYSICAL' href='html/libvirt-libvirt.html#VIR_MEMORY_PHYSICAL'/>
     <reference name='VIR_MEMORY_VIRTUAL' href='html/libvirt-libvirt.html#VIR_MEMORY_VIRTUAL'/>
     <reference name='VIR_MIGRATE_LIVE' href='html/libvirt-libvirt.html#VIR_MIGRATE_LIVE'/>
+    <reference name='VIR_MIGRATE_TUNNELLED' href='html/libvirt-libvirt.html#VIR_MIGRATE_TUNNELLED'/>
     <reference name='VIR_NODEINFO_MAXCPUS' href='html/libvirt-libvirt.html#VIR_NODEINFO_MAXCPUS'/>
     <reference name='VIR_SECRET_USAGE_TYPE_NONE' href='html/libvirt-libvirt.html#VIR_SECRET_USAGE_TYPE_NONE'/>
     <reference name='VIR_SECRET_USAGE_TYPE_VOLUME' href='html/libvirt-libvirt.html#VIR_SECRET_USAGE_TYPE_VOLUME'/>
@@ -659,6 +660,7 @@
       <ref name='VIR_MEMORY_PHYSICAL'/>
       <ref name='VIR_MEMORY_VIRTUAL'/>
       <ref name='VIR_MIGRATE_LIVE'/>
+      <ref name='VIR_MIGRATE_TUNNELLED'/>
       <ref name='VIR_NODEINFO_MAXCPUS'/>
       <ref name='VIR_SECRET_USAGE_TYPE_NONE'/>
       <ref name='VIR_SECRET_USAGE_TYPE_VOLUME'/>
@@ -1596,6 +1598,7 @@
       <ref name='VIR_MEMORY_PHYSICAL'/>
       <ref name='VIR_MEMORY_VIRTUAL'/>
       <ref name='VIR_MIGRATE_LIVE'/>
+      <ref name='VIR_MIGRATE_TUNNELLED'/>
       <ref name='VIR_NODEINFO_MAXCPUS'/>
       <ref name='VIR_SECRET_USAGE_TYPE_NONE'/>
       <ref name='VIR_SECRET_USAGE_TYPE_VOLUME'/>
@@ -2654,6 +2657,9 @@
           <ref name='virNetworkGetUUIDString'/>
           <ref name='virSecretGetUUIDString'/>
         </word>
+        <word name='RPC'>
+          <ref name='virDomainMigrate'/>
+        </word>
         <word name='Re-attach'>
           <ref name='virNodeDeviceReAttach'/>
         </word>
@@ -2910,6 +2916,9 @@
           <ref name='virDomainMemoryPeek'/>
         </word>
         <word name='VIR_MIGRATE_LIVE'>
+          <ref name='virDomainMigrate'/>
+        </word>
+        <word name='VIR_MIGRATE_TUNNELLED'>
           <ref name='virDomainMigrate'/>
         </word>
         <word name='VIR_SECRET_USAGE_TYPE_VOLUME'>
@@ -5604,6 +5613,9 @@
         <word name='means'>
           <ref name='virDomainPinVcpu'/>
         </word>
+        <word name='mechanism'>
+          <ref name='virDomainMigrate'/>
+        </word>
         <word name='mem'>
           <ref name='_virNodeInfo'/>
         </word>
@@ -7381,6 +7393,9 @@
           <ref name='virStoragePoolRef'/>
           <ref name='virStorageVolRef'/>
         </word>
+        <word name='through'>
+          <ref name='virDomainMigrate'/>
+        </word>
         <word name='time'>
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
@@ -7442,6 +7457,9 @@
         </word>
         <word name='trying'>
           <ref name='virConnectOpen'/>
+        </word>
+        <word name='tunnelled'>
+          <ref name='virDomainMigrate'/>
         </word>
         <word name='turn'>
           <ref name='virConnectOpen'/>
