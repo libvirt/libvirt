@@ -1337,6 +1337,7 @@ def buildWrappers():
                 classes.write ("    # %s methods from %s.py (hand coded)\n" % (classname,classname))
                 classes.write ("    #\n")
                 classes.writelines(extra.readlines())
+                classes.write("\n")
                 extra.close()
             except:
                 pass
