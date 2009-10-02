@@ -1688,7 +1688,6 @@ test "x$srcdir" = x. && ! test -f COPYING &&
 cp -f COPYING.LIB COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
-          docs/devhelp/Makefile \
 	  docs/schemas/Makefile \
 	  gnulib/lib/Makefile \
 	  gnulib/tests/Makefile \

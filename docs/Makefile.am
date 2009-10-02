@@ -1,8 +1,10 @@
 ## Process this file with automake to produce Makefile.in
-SUBDIRS= schemas devhelp
+SUBDIRS= schemas
 
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
+
+DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
 apihtml =			\
   html/index.html		\
@@ -14,6 +16,23 @@ apipng =	\
   html/up.png	\
   html/home.png	\
   html/right.png
+
+devhelphtml = 			\
+  devhelp/libvirt.devhelp	\
+  devhelp/index.html		\
+  devhelp/general.html		\
+  devhelp/libvirt-libvirt.html	\
+  devhelp/libvirt-virterror.html
+
+devhelppng =		\
+  devhelp/home.png	\
+  devhelp/left.png	\
+  devhelp/right.png	\
+  devhelp/up.png
+
+devhelpcss = devhelp/style.css
+
+devhelpxsl = devhelp/devhelp.xsl devhelp/html.xsl
 
 png = \
   32favicon.png \
@@ -54,17 +73,18 @@ EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
   site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
+  $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(fig) $(png) \
   $(patches) \
   ChangeLog.awk
 
-CLEANFILES = $(dot_html) $(apihtml)
+CLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
 
 all: web $(top_builddir)/NEWS
 
 api: libvirt-api.xml libvirt-refs.xml
 
-web: $(dot_html) html/index.html
+web: $(dot_html) html/index.html devhelp/index.html
 
 ChangeLog.xml: ../ChangeLog ChangeLog.awk
 	awk -f ChangeLog.awk < $< > $@
@@ -102,6 +122,12 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
+devhelp/index.html: libvirt-api.xml $(devhelpxsl)
+	-@(echo Rebuilding devhelp files)
+	-@(if [ -x $(XSLTPROC) ] ; then \
+	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp $(top_srcdir)/docs/devhelp/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
+
+
 libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c $(srcdir)/../src/util/virterror.c
@@ -132,7 +158,13 @@ install-data-local:
 	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done
 	for p in $(apipng); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$p $(DESTDIR)$(HTML_DIR)/html; done
+	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
+	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
+	    @INSTALL@ -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
+	done
 
 uninstall-local:
 	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/$$h; done
 	for p in $(apipng); do rm $(DESTDIR)$(HTML_DIR)/$$p; done
+	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
+		rm $(DESTDIR)$(DEVHELP_DIR)$$f ; done
