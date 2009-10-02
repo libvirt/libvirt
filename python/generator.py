@@ -25,31 +25,26 @@ else:
 #
 #######################################################################
 import os
-import xmllib
+import xml.sax
 
 debug = 0
-
-class SlowParser(xmllib.XMLParser):
-    """slow but safe standard parser, based on the XML parser in
-       Python's standard library."""
-
-    def __init__(self, target):
-        self.unknown_starttag = target.start
-        self.handle_data = target.data
-        self.handle_cdata = target.cdata
-        self.unknown_endtag = target.end
-        xmllib.XMLParser.__init__(self)
 
 def getparser():
     # Attach parser to an unmarshalling object. return both objects.
     target = docParser()
-    return SlowParser(target), target
+    parser = xml.sax.make_parser()
+    parser.setContentHandler(target)
+    return parser, target
 
-class docParser:
+class docParser(xml.sax.handler.ContentHandler):
     def __init__(self):
         self._methodname = None
         self._data = []
         self.in_function = 0
+
+        self.startElement = self.start
+        self.endElement = self.end
+        self.characters = self.data
 
     def close(self):
         if debug:
