@@ -24,6 +24,8 @@
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 
+#include "libvirt_internal.h"
+
 /* On architectures which lack these limits, define them (ie. Cygwin).
  * Note that the libvirt code should be robust enough to handle the
  * case where actual value is longer than these limits (eg. by setting
