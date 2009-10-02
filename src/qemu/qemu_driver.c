@@ -6619,6 +6619,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     for (;;) {
         bytes = saferead(client_sock, buffer, sizeof(buffer));
         if (bytes < 0) {
+            virStreamAbort(st);
             virReportSystemError(dconn, errno, "%s",
                                  _("tunnelled migration failed to read from qemu"));
             goto close_client_sock;
@@ -6630,7 +6631,6 @@ static int doTunnelMigrate(virDomainPtr dom,
         if (virStreamSend(st, buffer, bytes) < 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                              _("Failed to write migration data to remote libvirtd"));
-            virStreamAbort(st);
             goto close_client_sock;
         }
     }
