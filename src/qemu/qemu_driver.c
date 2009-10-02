@@ -6513,23 +6513,88 @@ static int doTunnelMigrate(virDomainPtr dom,
                            unsigned long resource)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    int client_sock, qemu_sock;
+    int client_sock = -1;
+    int qemu_sock = -1;
     struct sockaddr_un sa_qemu, sa_client;
     socklen_t addrlen;
-    virDomainPtr ddomain;
+    virDomainPtr ddomain = NULL;
     int retval = -1;
-    ssize_t bytes;
-    virStreamPtr st;
+    virStreamPtr st = NULL;
     char *unixfile = NULL;
     int internalret;
     unsigned int qemuCmdFlags;
     int status;
     unsigned long long transferred, remaining, total;
 
-    /* the order of operations is important here; we make sure the
-     * destination side is completely setup before we touch the source
+    /*
+     * The order of operations is important here to avoid touching
+     * the source VM until we are very sure we can successfully
+     * start the migration operation.
+     *
+     *   1. setup local support infrastructure (eg sockets)
+     *   2. setup destination fully
+     *   3. start migration on source
      */
 
+
+    /* Stage 1. setup local support infrastructure */
+
+    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
+                    driver->stateDir, vm->def->name) < 0) {
+        virReportOOMError(dom->conn);
+        goto cleanup;
+    }
+
+    qemu_sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (qemu_sock < 0) {
+        virReportSystemError(dom->conn, errno, "%s",
+                             _("cannot open tunnelled migration socket"));
+        goto cleanup;
+    }
+    memset(&sa_qemu, 0, sizeof(sa_qemu));
+    sa_qemu.sun_family = AF_UNIX;
+    if (virStrcpy(sa_qemu.sun_path, unixfile,
+                  sizeof(sa_qemu.sun_path)) == NULL) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Unix socket '%s' too big for destination"),
+                         unixfile);
+        goto cleanup;
+    }
+    unlink(unixfile);
+    if (bind(qemu_sock, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu)) < 0) {
+        virReportSystemError(dom->conn, errno,
+                             _("Cannot bind to unix socket '%s' for tunnelled migration"),
+                             unixfile);
+        goto cleanup;
+    }
+    if (listen(qemu_sock, 1) < 0) {
+        virReportSystemError(dom->conn, errno,
+                             _("Cannot listen on unix socket '%s' for tunnelled migration"),
+                             unixfile);
+        goto cleanup;
+    }
+
+    /* check that this qemu version supports the unix migration */
+    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Cannot extract Qemu version from '%s'"),
+                         vm->def->emulator);
+        goto cleanup;
+    }
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX) &&
+        !(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("Source qemu is too old to support tunnelled migration"));
+        goto cleanup;
+    }
+
+
+    /* Stage 2. setup destination fully
+     *
+     * Once stage 2 has completed successfully, we *must* call finish
+     * to cleanup the target whether we succeed or fail
+     */
     st = virStreamNew(dconn, 0);
     if (st == NULL)
         /* virStreamNew only fails on OOM, and it reports the error itself */
@@ -6541,66 +6606,25 @@ static int doTunnelMigrate(virDomainPtr dom,
 
     if (internalret < 0)
         /* domainMigratePrepareTunnel sets the error for us */
-        goto close_stream;
+        goto cleanup;
 
-    if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
-                    driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError(dom->conn);
-        goto finish_migrate;
-    }
-
-    qemu_sock = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (qemu_sock < 0) {
-        virReportSystemError(dom->conn, errno, "%s",
-                             _("cannot open tunnelled migration socket"));
-        goto free_unix_path;
-    }
-    memset(&sa_qemu, 0, sizeof(sa_qemu));
-    sa_qemu.sun_family = AF_UNIX;
-    if (virStrcpy(sa_qemu.sun_path, unixfile,
-                  sizeof(sa_qemu.sun_path)) == NULL) {
-        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unix socket '%s' too big for destination"),
-                         unixfile);
-        goto close_qemu_sock;
-    }
-    unlink(unixfile);
-    if (bind(qemu_sock, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu)) < 0) {
-        virReportSystemError(dom->conn, errno,
-                             _("Cannot bind to unix socket '%s' for tunnelled migration"),
-                             unixfile);
-        goto close_qemu_sock;
-    }
-    if (listen(qemu_sock, 1) < 0) {
-        virReportSystemError(dom->conn, errno,
-                             _("Cannot listen on unix socket '%s' for tunnelled migration"),
-                             unixfile);
-        goto close_qemu_sock;
-    }
-
-    /* check that this qemu version supports the unix migration */
-    if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
-        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot extract Qemu version from '%s'"),
-                         vm->def->emulator);
-        goto close_qemu_sock;
-    }
+    /*   3. start migration on source */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)
         internalret = qemuMonitorMigrateToUnix(vm, 1, unixfile);
     else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
         internalret = qemuMonitorMigrateToCommand(vm, 1, args, "/dev/null");
-    }
-    else {
-        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("Source qemu is too old to support tunnelled migration"));
-        goto close_qemu_sock;
+    } else {
+        internalret = -1;
     }
     if (internalret < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("tunnelled migration monitor command failed"));
-        goto close_qemu_sock;
+        goto finish;
     }
+
+    /* From this point onwards we *must* call cancel to abort the
+     * migration on source if anything goes wrong */
 
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
@@ -6609,13 +6633,13 @@ static int doTunnelMigrate(virDomainPtr dom,
                                       &transferred,
                                       &remaining,
                                       &total) < 0) {
-        goto qemu_cancel_migration;
+        goto cancel;
     }
 
     if (status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s",_("migrate failed"));
-        goto qemu_cancel_migration;
+        goto cancel;
     }
 
     addrlen = sizeof(sa_client);
@@ -6624,36 +6648,37 @@ static int doTunnelMigrate(virDomainPtr dom,
             continue;
         virReportSystemError(dom->conn, errno, "%s",
                              _("tunnelled migration failed to accept from qemu"));
-        goto qemu_cancel_migration;
+        goto cancel;
     }
 
     retval = doTunnelSendAll(dom, st, client_sock);
 
-    close(client_sock);
-
-qemu_cancel_migration:
+cancel:
     if (retval != 0)
         qemuMonitorMigrateCancel(vm);
 
-close_qemu_sock:
-    close(qemu_sock);
-
-free_unix_path:
-    unlink(unixfile);
-    VIR_FREE(unixfile);
-
-finish_migrate:
+finish:
     dname = dname ? dname : dom->name;
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, NULL, 0, uri, flags, retval);
+
+cleanup:
+    if (client_sock != -1)
+        close(client_sock);
+    if (qemu_sock != -1)
+        close(qemu_sock);
+
     if (ddomain)
         virUnrefDomain(ddomain);
 
-close_stream:
-    /* don't call virStreamFree(), because that resets any pending errors */
-    virUnrefStream(st);
+    if (unixfile) {
+        unlink(unixfile);
+        VIR_FREE(unixfile);
+    }
 
-cleanup:
+    if (st)
+        /* don't call virStreamFree(), because that resets any pending errors */
+        virUnrefStream(st);
     return retval;
 }
 
