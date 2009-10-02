@@ -1316,6 +1316,9 @@ dnl
 dnl check for python
 dnl
 
+AC_ARG_WITH([python],
+[  --with-python              Build python bindings (on)],[],[with_python=yes])
+
 PYTHON_VERSION=
 PYTHON_INCLUDES=
 PYTHON_SITE_PACKAGES=
@@ -1373,7 +1376,7 @@ if test "$with_python" != "no" ; then
 	    fi
 	fi
     fi
-    if test "$with_python" != ""
+    if test "$with_python" != "yes"
     then
         pythondir='$(PYTHON_SITE_PACKAGES)'
     else
@@ -1836,6 +1839,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([     Debug: $enable_debug])
 AC_MSG_NOTICE([  Warnings: $enable_compile_warnings])
 AC_MSG_NOTICE([  Readline: $lv_use_readline])
+AC_MSG_NOTICE([    Python: $with_python])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])
