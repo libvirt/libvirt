@@ -112,7 +112,7 @@ $(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.i
 	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl	\
 	     $(top_srcdir)/docs/news.html.in			\
 	   | perl -0777 -pe 's/\n\n+$$/\n/'			\
-	   | perl -pe 's/[ \t]+$//'				\
+	   | perl -pe 's/[ \t]+$$//'				\
 	   > $@-t && mv $@-t $@ ; fi );
 
 clean-local:
