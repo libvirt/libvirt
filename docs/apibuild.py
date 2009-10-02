@@ -55,7 +55,9 @@ def uniq(items):
     d = {}
     for item in items:
         d[item]=1
-    return d.keys()
+    k = d.keys()
+    k.sort()
+    return k
 
 class identifier:
     def __init__(self, name, header=None, module=None, type=None, lineno = 0,
