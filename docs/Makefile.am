@@ -60,7 +60,12 @@ png = \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
   madeWith.png \
-  et.png
+  et.png \
+  migration-managed-direct.png \
+  migration-managed-p2p.png \
+  migration-native.png \
+  migration-tunnel.png \
+  migration-unmanaged-direct.png
 
 gif = \
   architecture.gif \
@@ -85,7 +90,12 @@ fig = \
   libvirt-net-physical.fig \
   libvirt-daemon-arch.fig \
   libvirt-driver-arch.fig \
-  libvirt-object-model.fig
+  libvirt-object-model.fig \
+  migration-managed-direct.fig \
+  migration-managed-p2p.fig \
+  migration-native.fig \
+  migration-tunnel.fig \
+  migration-unmanaged-direct.fig
 
 EXTRA_DIST=					\
   apibuild.py \

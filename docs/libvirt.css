@@ -364,3 +364,51 @@ span.since {
     font-style: italic;
     font-weight: bold;
 }
+
+img.diagram {
+    background: rgb(230,230,230);
+    border: 2px dotted rgb(178,178,178);
+    padding: 1em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.data th, table.data td {
+    padding: 0.3em;
+}
+
+table.data {
+    border-spacing: 0px;
+}
+
+table.data thead th {
+    background: rgb(178,178,178);
+    text-align: center;
+}
+
+table.data {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table.data thead tr th {
+    border: 1px solid black;
+}
+
+table.data tr.head th {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+table.data tbody td {
+    background: rgb(240,240,240);
+}
+table.data tbody td.y {
+    background: rgb(220,255,220);
+    text-align: center;
+}
+table.data tbody td.n {
+    background: rgb(255,220,220);
+    text-align: center;
+}
