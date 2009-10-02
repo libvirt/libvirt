@@ -3058,35 +3058,12 @@ virDomainMigrateVersion2 (virDomainPtr domain,
  */
 static virDomainPtr
 virDomainMigrateTunnelled(virDomainPtr domain,
+                          virConnectPtr dconn,
                           unsigned long flags,
                           const char *dname,
                           const char *uri,
                           unsigned long bandwidth)
 {
-    virConnectPtr dconn;
-    virDomainPtr ddomain = NULL;
-
-    if (uri == NULL) {
-        /* if you are doing a secure migration, you *must* also pass a uri */
-        virLibConnError(domain->conn, VIR_ERR_INVALID_ARG,
-                        _("requested TUNNELLED migration, but no URI passed"));
-        return NULL;
-    }
-
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-        return NULL;
-    }
-
-    /* FIXME: do we even need this check?  In theory, V1 of the protocol
-     * should be able to do tunnelled migration as well
-     */
-    if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                  VIR_DRV_FEATURE_MIGRATION_V2)) {
-        virLibConnError(domain->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-        return NULL;
-    }
-
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
@@ -3094,18 +3071,7 @@ virDomainMigrateTunnelled(virDomainPtr domain,
         (domain, NULL, 0, uri, flags, dname, bandwidth) == -1)
         return NULL;
 
-    dconn = virConnectOpen(uri);
-    if (dconn == NULL)
-        /* FIXME: this is pretty crappy; as far as we know, the migration has
-         * now succeeded, but we can't connect back to the other side
-         */
-        return NULL;
-
-    ddomain = virDomainLookupByName(dconn, dname ? dname : domain->name);
-
-    virConnectClose(dconn);
-
-    return ddomain;
+    return virDomainLookupByName(dconn, dname ? dname : domain->name);
 }
 
 /**
@@ -3182,32 +3148,29 @@ virDomainMigrate (virDomainPtr domain,
         goto error;
     }
 
-    if (flags & VIR_MIGRATE_TUNNELLED) {
-        /* tunnelled migration is more or less a completely different migration
-         * protocol.  dconn has to be NULL, uri has to be set, and the flow
-         * of logic is completely different.  Hence, here we split off from
-         * the main migration flow and use a separate function.
-         */
-        if (dconn != NULL) {
-            virLibConnError(domain->conn, VIR_ERR_INVALID_ARG,
-                            _("requested TUNNELLED migration, but non-NULL dconn"));
-            goto error;
-        }
-
-        ddomain = virDomainMigrateTunnelled(domain, flags, dname, uri, bandwidth);
+    /* Now checkout the destination */
+    if (!VIR_IS_CONNECT(dconn)) {
+        virLibConnError(domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        goto error;
     }
-    else {
-        /* Now checkout the destination */
-        if (!VIR_IS_CONNECT(dconn)) {
-            virLibConnError(domain->conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-            goto error;
-        }
-        if (dconn->flags & VIR_CONNECT_RO) {
-            /* NB, deliberately report error against source object, not dest */
-            virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
-            goto error;
+    if (dconn->flags & VIR_CONNECT_RO) {
+        /* NB, deliberately report error against source object, not dest */
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        char *dstURI = NULL;
+        if (uri == NULL) {
+            dstURI = virConnectGetURI(dconn);
+            if (!uri)
+                return NULL;
         }
 
+        ddomain = virDomainMigrateTunnelled(domain, dconn, flags, dname, uri ? uri : dstURI, bandwidth);
+
+        VIR_FREE(dstURI);
+    } else {
         /* Check that migration is supported by both drivers. */
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_V1) &&
