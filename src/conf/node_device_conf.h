@@ -28,6 +28,8 @@
 #include "util.h"
 #include "threads.h"
 
+#include <libxml/tree.h>
+
 #define CREATE_DEVICE 1
 #define EXISTING_DEVICE 0
 
@@ -211,6 +213,13 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 virNodeDeviceDefPtr virNodeDeviceDefParseString(virConnectPtr conn,
                                                 const char *str,
                                                 int create);
+virNodeDeviceDefPtr virNodeDeviceDefParseFile(virConnectPtr conn,
+                                              const char *filename,
+                                              int create);
+virNodeDeviceDefPtr virNodeDeviceDefParseNode(virConnectPtr conn,
+                                              xmlDocPtr xml,
+                                              xmlNodePtr root,
+                                              int create);
 
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 

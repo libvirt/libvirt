@@ -1097,8 +1097,11 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt, int create
     return NULL;
 }
 
-static virNodeDeviceDefPtr
-virNodeDeviceDefParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root, int create)
+virNodeDeviceDefPtr
+virNodeDeviceDefParseNode(virConnectPtr conn,
+                          xmlDocPtr xml,
+                          xmlNodePtr root,
+                          int create)
 {
     xmlXPathContextPtr ctxt = NULL;
     virNodeDeviceDefPtr def = NULL;
@@ -1143,8 +1146,13 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     }
 }
 
-virNodeDeviceDefPtr
-virNodeDeviceDefParseString(virConnectPtr conn, const char *str, int create)
+
+
+static virNodeDeviceDefPtr
+virNodeDeviceDefParse(virConnectPtr conn,
+                      const char *str,
+                      const char *filename,
+                      int create)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -1159,9 +1167,17 @@ virNodeDeviceDefParseString(virConnectPtr conn, const char *str, int create)
     pctxt->_private = conn;
 
     if (conn) virResetError (&conn->err);
-    xml = xmlCtxtReadDoc(pctxt, BAD_CAST str, "device.xml", NULL,
-                         XML_PARSE_NOENT | XML_PARSE_NONET |
-                         XML_PARSE_NOWARNING);
+    if (filename) {
+        xml = xmlCtxtReadFile (pctxt, filename, NULL,
+                               XML_PARSE_NOENT | XML_PARSE_NONET |
+                               XML_PARSE_NOWARNING);
+    } else {
+        xml = xmlCtxtReadDoc (pctxt, BAD_CAST str,
+                              "device.xml", NULL,
+                              XML_PARSE_NOENT | XML_PARSE_NONET |
+                              XML_PARSE_NOWARNING);
+    }
+
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
               virNodeDeviceReportError(conn, VIR_ERR_XML_ERROR,
@@ -1182,6 +1198,23 @@ cleanup:
     xmlFreeDoc(xml);
     return def;
 }
+
+virNodeDeviceDefPtr
+virNodeDeviceDefParseString(virConnectPtr conn,
+                            const char *str,
+                            int create)
+{
+    return virNodeDeviceDefParse(conn, str, NULL, create);
+}
+
+virNodeDeviceDefPtr
+virNodeDeviceDefParseFile(virConnectPtr conn,
+                          const char *filename,
+                          int create)
+{
+    return virNodeDeviceDefParse(conn, NULL, filename, create);
+}
+
 
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {
