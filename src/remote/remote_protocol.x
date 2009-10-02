@@ -1356,7 +1356,6 @@ struct remote_secret_lookup_by_usage_ret {
 };
 
 struct remote_domain_migrate_prepare_tunnel_args {
-    remote_string uri_in;
     unsigned hyper flags;
     remote_string dname;
     unsigned hyper resource;

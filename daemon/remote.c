@@ -1503,12 +1503,10 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
                                          void *ret ATTRIBUTE_UNUSED)
 {
     int r;
-    char *uri_in;
     char *dname;
     struct qemud_client_stream *stream;
     CHECK_CONN (client);
 
-    uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
 
     stream = remoteCreateClientStream(conn, hdr);
@@ -1517,7 +1515,7 @@ remoteDispatchDomainMigratePrepareTunnel(struct qemud_server *server ATTRIBUTE_U
         return -1;
     }
 
-    r = virDomainMigratePrepareTunnel(conn, stream->st, uri_in,
+    r = virDomainMigratePrepareTunnel(conn, stream->st,
                                       args->flags, dname, args->resource,
                                       args->dom_xml);
     if (r == -1) {

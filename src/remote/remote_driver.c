@@ -7053,7 +7053,6 @@ static virStreamDriver remoteStreamDrv = {
 static int
 remoteDomainMigratePrepareTunnel(virConnectPtr conn,
                                  virStreamPtr st,
-                                 const char *uri_in,
                                  unsigned long flags,
                                  const char *dname,
                                  unsigned long resource,
@@ -7072,7 +7071,6 @@ remoteDomainMigratePrepareTunnel(virConnectPtr conn,
     st->driver = &remoteStreamDrv;
     st->privateData = privst;
 
-    args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
     args.resource = resource;

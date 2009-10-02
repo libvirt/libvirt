@@ -3487,15 +3487,14 @@ error:
 int
 virDomainMigratePrepareTunnel(virConnectPtr conn,
                               virStreamPtr st,
-                              const char *uri_in,
                               unsigned long flags,
                               const char *dname,
                               unsigned long bandwidth,
                               const char *dom_xml)
 
 {
-    VIR_DEBUG("conn=%p, stream=%p, uri_in=%s, flags=%lu, dname=%s, "
-              "bandwidth=%lu, dom_xml=%s", conn, st, uri_in, flags,
+    VIR_DEBUG("conn=%p, stream=%p, flags=%lu, dname=%s, "
+              "bandwidth=%lu, dom_xml=%s", conn, st, flags,
               NULLSTR(dname), bandwidth, dom_xml);
 
     virResetLastError();
@@ -3516,7 +3515,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
     }
 
     if (conn->driver->domainMigratePrepareTunnel) {
-        int rv = conn->driver->domainMigratePrepareTunnel(conn, st, uri_in,
+        int rv = conn->driver->domainMigratePrepareTunnel(conn, st,
                                                           flags, dname,
                                                           bandwidth, dom_xml);
         if (rv < 0)

@@ -2701,8 +2701,6 @@ bool_t
 xdr_remote_domain_migrate_prepare_tunnel_args (XDR *xdrs, remote_domain_migrate_prepare_tunnel_args *objp)
 {
 
-         if (!xdr_remote_string (xdrs, &objp->uri_in))
-                 return FALSE;
          if (!xdr_uint64_t (xdrs, &objp->flags))
                  return FALSE;
          if (!xdr_remote_string (xdrs, &objp->dname))

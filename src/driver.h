@@ -332,7 +332,6 @@ typedef int
     (*virDrvDomainMigratePrepareTunnel)
                     (virConnectPtr conn,
                      virStreamPtr st,
-                     const char *uri_in,
                      unsigned long flags,
                      const char *dname,
                      unsigned long resource,

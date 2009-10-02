@@ -6078,7 +6078,6 @@ static virStreamDriver qemuStreamMigDrv = {
 static int
 qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
                                 virStreamPtr st,
-                                const char *uri_in,
                                 unsigned long flags,
                                 const char *dname,
                                 unsigned long resource ATTRIBUTE_UNUSED,
@@ -6099,11 +6098,6 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     if (!dom_xml) {
         qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("no domain XML passed"));
-        goto cleanup;
-    }
-    if (!uri_in) {
-        qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("no URI passed"));
         goto cleanup;
     }
     if (!(flags & VIR_MIGRATE_TUNNELLED)) {
@@ -6462,7 +6456,7 @@ static int doTunnelMigrate(virDomainPtr dom,
         goto close_stream;
     }
 
-    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st, uri,
+    internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
                                                             flags, dname,
                                                             resource, dom_xml);
     VIR_FREE(dom_xml);
