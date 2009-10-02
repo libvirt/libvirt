@@ -6403,6 +6403,72 @@ cleanup:
 
 }
 
+
+/* Perform migration using QEMU's native TCP migrate support,
+ * not encrypted obviously
+ */
+static int doNativeMigrate(virDomainPtr dom,
+                           virDomainObjPtr vm,
+                           const char *uri,
+                           unsigned long flags ATTRIBUTE_UNUSED,
+                           const char *dname ATTRIBUTE_UNUSED,
+                           unsigned long resource)
+{
+    int ret = -1;
+    xmlURIPtr uribits;
+    int status;
+    unsigned long long transferred, remaining, total;
+
+    /* Issue the migrate command. */
+    if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
+        /* HACK: source host generates bogus URIs, so fix them up */
+        char *tmpuri;
+        if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
+            virReportOOMError(dom->conn);
+            goto cleanup;
+        }
+        uribits = xmlParseURI(tmpuri);
+        VIR_FREE(tmpuri);
+    } else {
+        uribits = xmlParseURI(uri);
+    }
+    if (!uribits) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot parse URI %s"), uri);
+        goto cleanup;
+    }
+
+    if (resource > 0 &&
+        qemuMonitorSetMigrationSpeed(vm, resource) < 0)
+        goto cleanup;
+
+    if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
+        goto cleanup;
+
+    /* it is also possible that the migrate didn't fail initially, but
+     * rather failed later on.  Check the output of "info migrate"
+     */
+    if (qemuMonitorGetMigrationStatus(vm, &status,
+                                      &transferred,
+                                      &remaining,
+                                      &total) < 0) {
+        goto cleanup;
+    }
+
+    if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("migrate did not successfully complete"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    xmlFreeURI(uribits);
+    return ret;
+}
+
+
 static int doTunnelMigrate(virDomainPtr dom,
                            virDomainObjPtr vm,
                            const char *uri,
@@ -6548,6 +6614,8 @@ static int doTunnelMigrate(virDomainPtr dom,
         goto qemu_cancel_migration;
     }
 
+
+    /* XXX should honour the 'resource' parameter here */
     for (;;) {
         bytes = saferead(client_sock, buffer, sizeof(buffer));
         if (bytes < 0) {
@@ -6612,7 +6680,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
                            int cookielen ATTRIBUTE_UNUSED,
                            const char *uri,
                            unsigned long flags,
-                           const char *dname ATTRIBUTE_UNUSED,
+                           const char *dname,
                            unsigned long resource)
 {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -6620,9 +6688,6 @@ qemudDomainMigratePerform (virDomainPtr dom,
     virDomainEventPtr event = NULL;
     int ret = -1;
     int paused = 0;
-    int status;
-    xmlURIPtr uribits = NULL;
-    unsigned long long transferred, remaining, total;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6654,52 +6719,12 @@ qemudDomainMigratePerform (virDomainPtr dom,
         event = NULL;
     }
 
-    if (resource > 0 &&
-        qemuMonitorSetMigrationSpeed(vm, resource) < 0)
-        goto cleanup;
-
-    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
-        /* Issue the migrate command. */
-        if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
-            /* HACK: source host generates bogus URIs, so fix them up */
-            char *tmpuri;
-            if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
-                virReportOOMError(dom->conn);
-                goto cleanup;
-            }
-            uribits = xmlParseURI(tmpuri);
-            VIR_FREE(tmpuri);
-        } else {
-            uribits = xmlParseURI(uri);
-        }
-        if (!uribits) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot parse URI %s"), uri);
-            goto cleanup;
-        }
-
-        if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
-            goto cleanup;
-
-        /* it is also possible that the migrate didn't fail initially, but
-         * rather failed later on.  Check the output of "info migrate"
-         */
-        if (qemuMonitorGetMigrationStatus(vm, &status,
-                                          &transferred,
-                                          &remaining,
-                                          &total) < 0) {
-            goto cleanup;
-        }
-
-        if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
-            qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                              "%s", _("migrate did not successfully complete"));
-            goto cleanup;
-        }
-    }
-    else {
+    if ((flags & VIR_MIGRATE_TUNNELLED)) {
         if (doTunnelMigrate(dom, vm, uri, flags, dname, resource) < 0)
             /* doTunnelMigrate already set the error, so just get out */
+            goto cleanup;
+    } else {
+        if (doNativeMigrate(dom, vm, uri, flags, dname, resource) < 0)
             goto cleanup;
     }
 
@@ -6733,8 +6758,6 @@ cleanup:
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
     }
 
-    if (uribits)
-        xmlFreeURI(uribits);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
