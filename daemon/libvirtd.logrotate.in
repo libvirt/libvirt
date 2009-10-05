@@ -1,7 +1,7 @@
-@localstatedir@/log/libvirt/qemu/*.log {
-        daily
+@localstatedir@/log/libvirt/qemu/*.log @localstatedir@/log/libvirt/uml/*.log @localstatedir@/log/libvirt/lxc/*.log {
+        weekly
         missingok
-        rotate 7
+        rotate 4
         compress
         delaycompress
         copytruncate
