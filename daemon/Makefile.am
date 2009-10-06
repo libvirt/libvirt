@@ -183,6 +183,8 @@ libvirtd.logrotate: libvirtd.logrotate.in
 
 install-logrotate: libvirtd.logrotate
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu/
+	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/lxc/
+	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/uml/
 	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
 	$(INSTALL_DATA) $< $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
 
