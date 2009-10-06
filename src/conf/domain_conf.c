@@ -594,12 +594,16 @@ void virDomainObjFree(virDomainObjPtr dom)
 
     VIR_FREE(dom->vcpupids);
 
+    if (dom->privateDataFreeFunc)
+        (dom->privateDataFreeFunc)(dom->privateData);
+
     virMutexDestroy(&dom->lock);
 
     VIR_FREE(dom);
 }
 
-static virDomainObjPtr virDomainObjNew(virConnectPtr conn)
+static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
+                                       virCapsPtr caps)
 {
     virDomainObjPtr domain;
 
@@ -608,9 +612,19 @@ static virDomainObjPtr virDomainObjNew(virConnectPtr conn)
         return NULL;
     }
 
+    if (caps->privateDataAllocFunc &&
+        !(domain->privateData = (caps->privateDataAllocFunc)())) {
+        virReportOOMError(conn);
+        VIR_FREE(domain);
+        return NULL;
+    }
+    domain->privateDataFreeFunc = caps->privateDataFreeFunc;
+
     if (virMutexInit(&domain->lock) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot initialize mutex"));
+        if (domain->privateDataFreeFunc)
+            (domain->privateDataFreeFunc)(domain->privateData);
         VIR_FREE(domain);
         return NULL;
     }
@@ -624,6 +638,7 @@ static virDomainObjPtr virDomainObjNew(virConnectPtr conn)
 }
 
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
+                                   virCapsPtr caps,
                                    virDomainObjListPtr doms,
                                    const virDomainDefPtr def)
 {
@@ -643,7 +658,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
         return domain;
     }
 
-    if (!(domain = virDomainObjNew(conn)))
+    if (!(domain = virDomainObjNew(conn, caps)))
         return NULL;
     domain->def = def;
 
@@ -3187,7 +3202,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     xmlNodePtr *nodes = NULL;
     int n, i;
 
-    if (!(obj = virDomainObjNew(conn)))
+    if (!(obj = virDomainObjNew(conn, caps)))
         return NULL;
 
     if (!(config = virXPathNode(conn, "./domain", ctxt))) {
@@ -4768,7 +4783,7 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
         newVM = 0;
     }
 
-    if (!(dom = virDomainAssignDef(conn, doms, def)))
+    if (!(dom = virDomainAssignDef(conn, caps, doms, def)))
         goto error;
 
     dom->autostart = autostart;

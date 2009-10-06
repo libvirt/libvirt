@@ -115,6 +115,8 @@ struct _virCaps {
     virCapsGuestPtr *guests;
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     unsigned int emulatorRequired : 1;
+    void *(*privateDataAllocFunc)(void);
+    void (*privateDataFreeFunc)(void *);
 };
 
 

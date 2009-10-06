@@ -774,7 +774,8 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
                   vmdef->name);
         goto cleanup;
     }
-    if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef)))
+    if (!(vm = virDomainAssignDef(conn, driver->caps,
+                                  &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;
 
@@ -841,7 +842,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                   vmdef->name);
         goto cleanup;
     }
-    if (!(vm = virDomainAssignDef(conn, &driver->domains, vmdef)))
+    if (!(vm = virDomainAssignDef(conn, driver->caps,
+                                  &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;
 

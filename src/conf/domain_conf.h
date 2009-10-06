@@ -636,6 +636,9 @@ struct _virDomainObj {
 
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
+
+    void *privateData;
+    void (*privateDataFreeFunc)(void *);
 };
 
 typedef struct _virDomainObjList virDomainObjList;
@@ -678,6 +681,7 @@ void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjFree(virDomainObjPtr vm);
 
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
+                                   virCapsPtr caps,
                                    virDomainObjListPtr doms,
                                    const virDomainDefPtr def);
 void virDomainRemoveInactive(virDomainObjListPtr doms,

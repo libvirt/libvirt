@@ -235,7 +235,8 @@ static virDomainPtr oneDomainDefine(virConnectPtr conn, const char *xml)
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto return_point;
 
-    if (!(vm = virDomainAssignDef(conn, &driver->domains, def))) {
+    if (!(vm = virDomainAssignDef(conn, driver->caps,
+                                  &driver->domains, def))) {
         virDomainDefFree(def);
         goto return_point;
     }
@@ -439,7 +440,8 @@ oneDomainCreateAndStart(virConnectPtr conn,
         goto return_point;
     }
 
-    if (!(vm = virDomainAssignDef(conn, &driver->domains, def))) {
+    if (!(vm = virDomainAssignDef(conn, driver->caps,
+                                  &driver->domains, def))) {
         virDomainDefFree(def);
         goto return_point;
     }

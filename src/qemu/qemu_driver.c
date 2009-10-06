@@ -2697,6 +2697,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     }
 
     if (!(vm = virDomainAssignDef(conn,
+                                  driver->caps,
                                   &driver->domains,
                                   def)))
         goto cleanup;
@@ -3757,6 +3758,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     if (!(vm = virDomainAssignDef(conn,
+                                  driver->caps,
                                   &driver->domains,
                                   def))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -4243,6 +4245,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,
+                                  driver->caps,
                                   &driver->domains,
                                   def))) {
         goto cleanup;
@@ -6101,6 +6104,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     }
 
     if (!(vm = virDomainAssignDef(dconn,
+                                  driver->caps,
                                   &driver->domains,
                                   def))) {
         qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
@@ -6339,6 +6343,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     }
 
     if (!(vm = virDomainAssignDef(dconn,
+                                  driver->caps,
                                   &driver->domains,
                                   def))) {
         qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,

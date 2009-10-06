@@ -387,7 +387,8 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     if (testDomainGenerateIfnames(conn, domdef) < 0)
         goto error;
-    if (!(domobj = virDomainAssignDef(conn, &privconn->domains, domdef)))
+    if (!(domobj = virDomainAssignDef(conn, privconn->caps,
+                                      &privconn->domains, domdef)))
         goto error;
     domdef = NULL;
     domobj->def->id = privconn->nextDomID++;
@@ -739,7 +740,8 @@ static int testOpenFromFile(virConnectPtr conn,
         }
 
         if (testDomainGenerateIfnames(conn, def) < 0 ||
-            !(dom = virDomainAssignDef(conn, &privconn->domains, def))) {
+            !(dom = virDomainAssignDef(conn, privconn->caps,
+                                       &privconn->domains, def))) {
             virDomainDefFree(def);
             goto error;
         }
@@ -1091,7 +1093,8 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
-    if (!(dom = virDomainAssignDef(conn, &privconn->domains, def)))
+    if (!(dom = virDomainAssignDef(conn, privconn->caps,
+                                   &privconn->domains, def)))
         goto cleanup;
     def = NULL;
     dom->state = VIR_DOMAIN_RUNNING;
@@ -1639,7 +1642,8 @@ static int testDomainRestore(virConnectPtr conn,
 
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
-    if (!(dom = virDomainAssignDef(conn, &privconn->domains, def)))
+    if (!(dom = virDomainAssignDef(conn, privconn->caps,
+                                   &privconn->domains, def)))
         goto cleanup;
     def = NULL;
 
@@ -1913,7 +1917,8 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
 
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
-    if (!(dom = virDomainAssignDef(conn, &privconn->domains, def)))
+    if (!(dom = virDomainAssignDef(conn, privconn->caps,
+                                   &privconn->domains, def)))
         goto cleanup;
     def = NULL;
     dom->persistent = 1;
