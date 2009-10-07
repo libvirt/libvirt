@@ -779,13 +779,16 @@ static int testOpenFromFile(virConnectPtr conn,
             if (!def)
                 goto error;
         } else {
-        if ((def = virInterfaceDefParseNode(conn, xml, ifaces[i])) == NULL)
+            if ((def = virInterfaceDefParseNode(conn, xml, ifaces[i])) == NULL)
                 goto error;
         }
+
         if (!(iface = virInterfaceAssignDef(conn, &privconn->ifaces, def))) {
             virInterfaceDefFree(def);
             goto error;
         }
+
+        iface->active = 1;
         virInterfaceObjUnlock(iface);
     }
     VIR_FREE(ifaces);
