@@ -53,6 +53,8 @@ virCgroupForDriver;
 virCgroupRemove;
 virCgroupFree;
 virCgroupAddTask;
+virCgroupSetMemory;
+virCgroupGetMemoryUsage;
 virCgroupSetCpuShares;
 virCgroupGetCpuShares;
 virCgroupDenyDevicePath;

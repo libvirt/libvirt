@@ -702,6 +702,26 @@ int virCgroupSetMemory(virCgroupPtr group, unsigned long kb)
 }
 
 /**
+ * virCgroupGetMemoryUsage:
+ *
+ * @group: The cgroup to change memory for
+ * @kb: Pointer to returned used memory in kilobytes
+ *
+ * Returns: 0 on success
+ */
+int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
+{
+    uint64_t usage_in_bytes;
+    int ret;
+    ret = virCgroupGetValueU64(group,
+                               VIR_CGROUP_CONTROLLER_MEMORY,
+                               "memory.usage_in_bytes", &usage_in_bytes);
+    if (ret == 0)
+        *kb = (unsigned long) usage_in_bytes >> 10;
+    return ret;
+}
+
+/**
  * virCgroupDenyAllDevices:
  *
  * @group: The cgroup to deny devices for

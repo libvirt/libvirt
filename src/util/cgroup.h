@@ -41,6 +41,7 @@ int virCgroupForDomain(virCgroupPtr driver,
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 
 int virCgroupSetMemory(virCgroupPtr group, unsigned long kb);
+int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb);
 
 int virCgroupDenyAllDevices(virCgroupPtr group);
 

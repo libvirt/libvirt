@@ -450,6 +450,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     if (!virDomainIsActive(vm) || driver->cgroup == NULL) {
         info->cpuTime = 0;
+        info->memory = vm->def->memory;
     } else {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
@@ -458,13 +459,18 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         }
 
         if (virCgroupGetCpuacctUsage(cgroup, &(info->cpuTime)) < 0) {
-            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED, ("cannot read cputime for domain"));
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                     "%s", _("cannot read cputime for domain"));
+            goto cleanup;
+        }
+        if (virCgroupGetMemoryUsage(cgroup, &(info->memory)) < 0) {
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                     "%s", _("cannot read memory usage for domain"));
             goto cleanup;
         }
     }
 
     info->maxMem = vm->def->maxmem;
-    info->memory = vm->def->memory;
     info->nrVirtCpu = 1;
     ret = 0;
 
@@ -498,6 +504,112 @@ static char *lxcGetOSType(virDomainPtr dom)
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
+    return ret;
+}
+
+/* Returns max memory in kb, 0 if error */
+static unsigned long lxcDomainGetMaxMemory(virDomainPtr dom) {
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    unsigned long ret = 0;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    ret = vm->def->maxmem;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int lxcDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (newmax < vm->def->memory) {
+        lxcError(dom->conn, dom, VIR_ERR_INVALID_ARG,
+                         "%s", _("cannot set max memory lower than current memory"));
+        goto cleanup;
+    }
+
+    vm->def->maxmem = newmax;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (newmem > vm->def->maxmem) {
+        lxcError(dom->conn, dom, VIR_ERR_INVALID_ARG,
+                 "%s", _("cannot set memory higher than max memory"));
+        goto cleanup;
+    }
+
+    if (virDomainIsActive(vm)) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+            lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
+                     _("Unable to get cgroup for %s\n"), vm->def->name);
+            goto cleanup;
+        }
+
+        if (virCgroupSetMemory(cgroup, newmem) < 0) {
+            lxcError(dom->conn, dom, VIR_ERR_OPERATION_FAILED,
+                     "%s", _("cannot set memory for domain"));
+            goto cleanup;
+        }
+    } else {
+        vm->def->memory = newmem;
+    }
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    if (cgroup)
+        virCgroupFree(&cgroup);
     return ret;
 }
 
@@ -2103,9 +2215,9 @@ static virDriver lxcDriver = {
     NULL, /* domainReboot */
     lxcDomainDestroy, /* domainDestroy */
     lxcGetOSType, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
-    NULL, /* domainSetMaxMemory */
-    NULL, /* domainSetMemory */
+    lxcDomainGetMaxMemory, /* domainGetMaxMemory */
+    lxcDomainSetMaxMemory, /* domainSetMaxMemory */
+    lxcDomainSetMemory, /* domainSetMemory */
     lxcDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
