@@ -5160,7 +5160,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
          dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, vm, dev);
         if (driver->securityDriver)
-            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, dev->data.disk);
+            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev->data.disk);
         if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
             VIR_WARN0("Fail to restore disk device ownership");
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {

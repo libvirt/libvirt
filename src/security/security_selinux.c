@@ -378,6 +378,7 @@ err:
 
 static int
 SELinuxRestoreSecurityImageLabel(virConnectPtr conn,
+                                 virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                  virDomainDiskDefPtr disk)
 {
     /* Don't restore labels on readoly/shared disks, because
@@ -608,7 +609,8 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
                 rc = -1;
         }
         for (i = 0 ; i < vm->def->ndisks ; i++) {
-            if (SELinuxRestoreSecurityImageLabel(conn, vm->def->disks[i]) < 0)
+            if (SELinuxRestoreSecurityImageLabel(conn, vm,
+                                                 vm->def->disks[i]) < 0)
                 rc = -1;
         }
         VIR_FREE(secdef->model);

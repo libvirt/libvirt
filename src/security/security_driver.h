@@ -32,6 +32,7 @@ typedef virSecurityDriverStatus (*virSecurityDriverProbe) (void);
 typedef int (*virSecurityDriverOpen) (virConnectPtr conn,
                                       virSecurityDriverPtr drv);
 typedef int (*virSecurityDomainRestoreImageLabel) (virConnectPtr conn,
+                                                   virDomainObjPtr vm,
                                                    virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainSetImageLabel) (virConnectPtr conn,
                                                virDomainObjPtr vm,
