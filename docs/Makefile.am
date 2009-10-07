@@ -80,7 +80,7 @@ EXTRA_DIST=					\
 
 CLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
 
-all: web $(top_builddir)/NEWS
+all: web
 
 api: libvirt-api.xml libvirt-refs.xml
 
@@ -132,14 +132,6 @@ libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c $(srcdir)/../src/util/virterror.c
 	-(./apibuild.py)
-
-$(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
-	-@(if [ -x $(XSLTPROC) ] ; then				\
-	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl	\
-	     $(top_srcdir)/docs/news.html.in			\
-	   | perl -0777 -pe 's/\n\n+$$/\n/'			\
-	   | perl -pe 's/[ \t]+$$//'				\
-	   > $@-t && mv $@-t $@ ; fi );
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
