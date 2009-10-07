@@ -13,7 +13,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
+#ifdef HAVE_MNTENT_H
 #include <mntent.h>
+#endif
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -68,7 +70,7 @@ void virCgroupFree(virCgroupPtr *group)
     VIR_FREE(*group);
 }
 
-
+#ifdef HAVE_MNTENT_H
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -233,6 +235,7 @@ static int virCgroupDetect(virCgroupPtr group)
 
     return rc;
 }
+#endif
 
 
 static int virCgroupPathOfController(virCgroupPtr group,
@@ -317,12 +320,12 @@ static int virCgroupGetValueStr(virCgroupPtr group,
 static int virCgroupSetValueU64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
-                                uint64_t value)
+                                unsigned long long int value)
 {
     char *strval = NULL;
     int rc;
 
-    if (virAsprintf(&strval, "%" PRIu64, value) == -1)
+    if (virAsprintf(&strval, "%llu", value) == -1)
         return -ENOMEM;
 
     rc = virCgroupSetValueStr(group, controller, key, strval);
@@ -339,12 +342,12 @@ static int virCgroupSetValueU64(virCgroupPtr group,
 static int virCgroupSetValueI64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
-                                int64_t value)
+                                long long int value)
 {
     char *strval = NULL;
     int rc;
 
-    if (virAsprintf(&strval, "%" PRIi64, value) == -1)
+    if (virAsprintf(&strval, "%lld", value) == -1)
         return -ENOMEM;
 
     rc = virCgroupSetValueStr(group, controller, key, strval);
@@ -357,7 +360,7 @@ static int virCgroupSetValueI64(virCgroupPtr group,
 static int virCgroupGetValueI64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
-                                int64_t *value)
+                                long long int *value)
 {
     char *strval = NULL;
     int rc = 0;
@@ -378,7 +381,7 @@ out:
 static int virCgroupGetValueU64(virCgroupPtr group,
                                 int controller,
                                 const char *key,
-                                uint64_t *value)
+                                unsigned long long int *value)
 {
     char *strval = NULL;
     int rc = 0;
@@ -387,7 +390,7 @@ static int virCgroupGetValueU64(virCgroupPtr group,
     if (rc != 0)
         goto out;
 
-    if (sscanf(strval, "%" SCNu64, value) != 1)
+    if (virStrToLong_ull(strval, NULL, 10, value) < 0)
         rc = -EINVAL;
 out:
     VIR_FREE(strval);
@@ -396,6 +399,7 @@ out:
 }
 
 
+#ifdef HAVE_MNTENT_H
 static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
 {
     int i;
@@ -546,7 +550,7 @@ cleanup:
     virCgroupFree(&rootgrp);
     return rc;
 }
-
+#endif
 
 /**
  * virCgroupRemove:
@@ -617,6 +621,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
  *
  * Returns 0 on success
  */
+#ifdef HAVE_MNTENT_H
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
                        int privileged,
@@ -650,6 +655,16 @@ out:
 
     return rc;
 }
+#else
+int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
+                       virCgroupPtr *group ATTRIBUTE_UNUSED,
+                       int privileged ATTRIBUTE_UNUSED,
+                       int create ATTRIBUTE_UNUSED)
+{
+    /* Claim no support */
+    return -ENXIO;
+}
+#endif
 
 
 /**
@@ -661,6 +676,7 @@ out:
  *
  * Returns 0 on success
  */
+#ifdef HAVE_MNTENT_H
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,
                        virCgroupPtr *group,
@@ -684,6 +700,15 @@ int virCgroupForDomain(virCgroupPtr driver,
 
     return rc;
 }
+#else
+int virCgroupForDomain(virCgroupPtr driver ATTRIBUTE_UNUSED,
+                       const char *name ATTRIBUTE_UNUSED,
+                       virCgroupPtr *group ATTRIBUTE_UNUSED,
+                       int create ATTRIBUTE_UNUSED)
+{
+    return -ENXIO;
+}
+#endif
 
 /**
  * virCgroupSetMemory:
@@ -806,6 +831,7 @@ int virCgroupAllowDeviceMajor(virCgroupPtr group, char type, int major)
  *
  * Returns: 0 on success
  */
+#if defined(major) && defined(minor)
 int virCgroupAllowDevicePath(virCgroupPtr group, const char *path)
 {
     struct stat sb;
@@ -821,6 +847,14 @@ int virCgroupAllowDevicePath(virCgroupPtr group, const char *path)
                                 major(sb.st_rdev),
                                 minor(sb.st_rdev));
 }
+#else
+int virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
+                             const char *path ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif
+
 
 /**
  * virCgroupDenyDevice:
@@ -881,6 +915,7 @@ int virCgroupDenyDeviceMajor(virCgroupPtr group, char type, int major)
     return rc;
 }
 
+#if defined(major) && defined(minor)
 int virCgroupDenyDevicePath(virCgroupPtr group, const char *path)
 {
     struct stat sb;
@@ -896,26 +931,33 @@ int virCgroupDenyDevicePath(virCgroupPtr group, const char *path)
                                major(sb.st_rdev),
                                minor(sb.st_rdev));
 }
+#else
+int virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
+                            const char *path ATTRIBUTE_UNUSED)
+{
+    return -ENOSYS;
+}
+#endif
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
 {
     return virCgroupSetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", (uint64_t)shares);
+                                "cpu.shares", shares);
 }
 
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 {
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", (uint64_t *)shares);
+                                "cpu.shares", shares);
 }
 
 int virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
     return virCgroupGetValueU64(group,
                                 VIR_CGROUP_CONTROLLER_CPUACCT,
-                                "cpuacct.usage", (uint64_t *)usage);
+                                "cpuacct.usage", usage);
 }
 
 int virCgroupSetFreezerState(virCgroupPtr group, const char *state)

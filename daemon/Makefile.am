@@ -243,6 +243,9 @@ install-data-sasl:
 uninstall-data-sasl:
 	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
 	rmdir $(DESTDIR)$(sysconfdir)/sasl2/
+else
+install-data-sasl:
+uninstall-data-sasl:
 endif
 
 

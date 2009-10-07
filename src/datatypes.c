@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+#include <unistd.h>
 
 #include "datatypes.h"
 #include "virterror_internal.h"
