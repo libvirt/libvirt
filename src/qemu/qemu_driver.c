@@ -3020,17 +3020,20 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (virDomainIsActive(vm)) {
-        ret = qemuMonitorSetBalloon(vm, newmem);
-        /* Turn lack of balloon support into a fatal error */
-        if (ret == 0) {
+        int r = qemuMonitorSetBalloon(vm, newmem);
+        if (r < 0)
+            goto cleanup;
+
+        /* Lack of balloon support is a fatal error */
+        if (r == 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                              "%s", _("cannot set memory of an active domain"));
-            ret = -1;
+            goto cleanup;
         }
     } else {
         vm->def->memory = newmem;
-        ret = 0;
     }
+    ret = 0;
 
 cleanup:
     if (vm)
