@@ -942,9 +942,13 @@ static int lxcControllerStart(virConnectPtr conn,
 {
     int i;
     int rc;
-    int ret = -1;
     int largc = 0, larga = 0;
     const char **largv = NULL;
+    int lenvc = 0, lenva = 0;
+    const char **lenv = NULL;
+    char *filterstr;
+    char *outputstr;
+    char *tmp;
     pid_t child;
     int status;
     fd_set keepfd;
@@ -975,6 +979,52 @@ static int lxcControllerStart(virConnectPtr conn,
             goto no_memory;                                             \
     } while (0)
 
+#define ADD_ENV_SPACE                                                   \
+    do {                                                                \
+        if (lenvc == lenva) {                                           \
+            lenva += 10;                                                \
+            if (VIR_REALLOC_N(lenv, lenva) < 0)                         \
+                goto no_memory;                                         \
+        }                                                               \
+    } while (0)
+
+#define ADD_ENV(thisarg)                                                \
+    do {                                                                \
+        ADD_ENV_SPACE;                                                  \
+        lenv[lenvc++] = thisarg;                                        \
+    } while (0)
+
+#define ADD_ENV_PAIR(envname, val)                                      \
+    do {                                                                \
+        char *envval;                                                   \
+        ADD_ENV_SPACE;                                                  \
+        if (virAsprintf(&envval, "%s=%s", envname, val) < 0)            \
+            goto no_memory;                                             \
+        lenv[lenvc++] = envval;                                         \
+    } while (0)
+
+    if (virAsprintf(&tmp, "LIBVIRT_DEBUG=%d", virLogGetDefaultPriority()) < 0)
+        goto no_memory;
+    ADD_ENV(tmp);
+
+    if (virLogGetNbFilters() > 0) {
+        filterstr = virLogGetFilters();
+        if (!filterstr)
+            goto no_memory;
+        ADD_ENV_PAIR("LIBVIRT_LOG_FILTERS", filterstr);
+        VIR_FREE(filterstr);
+    }
+
+    if (virLogGetNbOutputs() > 0) {
+        outputstr = virLogGetOutputs();
+        if (!outputstr)
+            goto no_memory;
+        ADD_ENV_PAIR("LIBVIRT_LOG_OUTPUTS", outputstr);
+        VIR_FREE(outputstr);
+    }
+
+    ADD_ENV(NULL);
+
     snprintf(appPtyStr, sizeof(appPtyStr), "%d", appPty);
 
     emulator = vm->def->emulator;
@@ -995,7 +1045,7 @@ static int lxcControllerStart(virConnectPtr conn,
 
     FD_SET(appPty, &keepfd);
 
-    if (virExec(conn, largv, NULL, &keepfd, &child,
+    if (virExec(conn, largv, lenv, &keepfd, &child,
                 -1, &logfd, &logfd,
                 VIR_EXEC_NONE) < 0)
         goto cleanup;
@@ -1022,18 +1072,25 @@ static int lxcControllerStart(virConnectPtr conn,
 #undef ADD_ARG
 #undef ADD_ARG_LIT
 #undef ADD_ARG_SPACE
+#undef ADD_ENV_SPACE
+#undef ADD_ENV_PAIR
 
-    ret = 0;
-
-cleanup:
-    for (i = 0 ; i < largc ; i++)
-        VIR_FREE(largv[i]);
-
-    return ret;
+    return 0;
 
 no_memory:
     virReportOOMError(conn);
-    goto cleanup;
+cleanup:
+    if (largv) {
+        for (i = 0 ; i < largc ; i++)
+            VIR_FREE(largv[i]);
+        VIR_FREE(largv);
+    }
+    if (lenv) {
+        for (i=0 ; i < lenvc ; i++)
+            VIR_FREE(lenv[i]);
+        VIR_FREE(lenv);
+    }
+    return -1;
 }
 
 

@@ -793,6 +793,9 @@ int main(int argc, char *argv[])
         }
     }
 
+    /* Initialize logging */
+    virLogSetFromEnv();
+
     /* Accept initial client which is the libvirtd daemon */
     if ((client = accept(monitor, NULL, 0)) < 0) {
         virReportSystemError(NULL, errno, "%s",
