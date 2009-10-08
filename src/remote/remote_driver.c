@@ -7606,7 +7606,6 @@ processCallDispatchReply(virConnectPtr conn, struct private_data *priv,
         return 0;
 
     case REMOTE_ERROR:
-        VIR_WARN0("Method call error");
         memset (&thecall->err, 0, sizeof thecall->err);
         if (!xdr_remote_error (xdr, &thecall->err)) {
             error (in_open ? NULL : conn,
