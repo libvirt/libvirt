@@ -1,0 +1,71 @@
+# Last Modified: Wed Jul  8 09:57:41 2009
+
+  #include <abstractions/base>
+  #include <abstractions/consoles>
+  #include <abstractions/nameservice>
+
+  # required for reading disk images
+  capability dac_override,
+  capability dac_read_search,
+  capability chown,
+
+  network inet stream,
+  network inet6 stream,
+
+  /dev/net/tun rw,
+  /dev/kvm rw,
+  /dev/ptmx rw,
+  /dev/kqemu rw,
+
+  # WARNING: uncommenting these gives the guest direct access to host hardware.
+  # This is required for USB pass through but is a security risk. You have been
+  # warned.
+  #/sys/bus/usb/devices/ r,
+  #/sys/devices/*/*/usb[0-9]*/** r,
+  #/dev/bus/usb/*/[0-9]* rw,
+
+  /usr/share/kvm/** r,
+  /usr/share/qemu/** r,
+  /usr/share/bochs/** r,
+  /usr/share/openbios/** r,
+  /usr/share/openhackware/** r,
+  /usr/share/proll/** r,
+  /usr/share/vgabios/** r,
+
+  # the various binaries
+  /usr/bin/kvm rmix,
+  /usr/bin/qemu rmix,
+  /usr/bin/qemu-system-arm rmix,
+  /usr/bin/qemu-system-cris rmix,
+  /usr/bin/qemu-system-i386 rmix,
+  /usr/bin/qemu-system-m68k rmix,
+  /usr/bin/qemu-system-mips rmix,
+  /usr/bin/qemu-system-mips64 rmix,
+  /usr/bin/qemu-system-mips64el rmix,
+  /usr/bin/qemu-system-mipsel rmix,
+  /usr/bin/qemu-system-ppc rmix,
+  /usr/bin/qemu-system-ppc64 rmix,
+  /usr/bin/qemu-system-ppcemb rmix,
+  /usr/bin/qemu-system-sh4 rmix,
+  /usr/bin/qemu-system-sh4eb rmix,
+  /usr/bin/qemu-system-sparc rmix,
+  /usr/bin/qemu-system-sparc64 rmix,
+  /usr/bin/qemu-system-x86_64 rmix,
+  /usr/bin/qemu-alpha rmix,
+  /usr/bin/qemu-arm rmix,
+  /usr/bin/qemu-armeb rmix,
+  /usr/bin/qemu-cris rmix,
+  /usr/bin/qemu-i386 rmix,
+  /usr/bin/qemu-m68k rmix,
+  /usr/bin/qemu-mips rmix,
+  /usr/bin/qemu-mipsel rmix,
+  /usr/bin/qemu-ppc rmix,
+  /usr/bin/qemu-ppc64 rmix,
+  /usr/bin/qemu-ppc64abi32 rmix,
+  /usr/bin/qemu-sh4 rmix,
+  /usr/bin/qemu-sh4eb rmix,
+  /usr/bin/qemu-sparc rmix,
+  /usr/bin/qemu-sparc64 rmix,
+  /usr/bin/qemu-sparc32plus rmix,
+  /usr/bin/qemu-sparc64 rmix,
+  /usr/bin/qemu-x86_64 rmix,

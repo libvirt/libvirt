@@ -1,0 +1,48 @@
+# Last Modified: Wed Sep 23 23:23:58 2009
+#include <tunables/global>
+@{LIBVIRT}="libvirt"
+
+/usr/sbin/libvirtd {
+  #include <abstractions/base>
+
+  capability kill,
+  capability net_admin,
+  capability net_raw,
+  capability setgid,
+  capability sys_admin,
+  capability sys_module,
+  capability sys_ptrace,
+  capability sys_nice,
+  capability sys_chroot,
+  capability setuid,
+  capability dac_override,
+  capability dac_read_search,
+  capability fowner,
+  capability chown,
+  capability setpcap,
+  capability mknod,
+
+  network inet stream,
+
+  # Very lenient profile for libvirtd since we want to first focus on confining
+  # the guests. Guests will have a very restricted profile.
+  /** rwmkl,
+
+  /bin/* Ux,
+  /sbin/* Ux,
+  /usr/bin/* Ux,
+  /usr/sbin/* Ux,
+
+  # force the use of virt-aa-helper
+  audit deny /sbin/apparmor_parser rwxl,
+  audit deny /etc/apparmor.d/libvirt/** wxl,
+  audit deny /sys/kernel/security/apparmor/features rwxl,
+  audit deny /sys/kernel/security/apparmor/matching rwxl,
+  audit deny /sys/kernel/security/apparmor/.* rwxl,
+  /sys/kernel/security/apparmor/profiles r,
+  /usr/lib/libvirt/virt-aa-helper Pxr,
+
+  # allow changing to our UUID-based named profiles
+  change_profile -> @{LIBVIRT}-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*,
+
+}

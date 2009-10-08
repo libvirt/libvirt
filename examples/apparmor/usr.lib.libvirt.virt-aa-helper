@@ -1,0 +1,22 @@
+# Last Modified: Mon Jul  06 17:22:37 2009
+#include <tunables/global>
+
+/usr/lib/libvirt/virt-aa-helper {
+  #include <abstractions/base>
+
+  # needed for searching directories
+  capability dac_override,
+  capability dac_read_search,
+
+  # needed for when disk is on a network filesystem
+  network inet,
+
+  deny @{PROC}/[0-9]*/mounts r,
+  @{PROC}/filesystems r,
+
+  /usr/lib/libvirt/virt-aa-helper mr,
+  /sbin/apparmor_parser Ux,
+
+  /etc/apparmor.d/libvirt/* r,
+  /etc/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
+}

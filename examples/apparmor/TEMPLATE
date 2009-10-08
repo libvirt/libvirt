@@ -1,0 +1,9 @@
+#
+# This profile is for the domain whose UUID matches this file.
+#
+
+#include <tunables/global>
+
+profile LIBVIRT_TEMPLATE {
+  #include <abstractions/libvirt-qemu>
+}

@@ -296,6 +296,73 @@
       file can be used to change the setting to <code>security_driver="none"</code>
     </p>
 
+    <h3><a name="securitysvirtaa">AppArmor sVirt confinement</a></h3>
+
+    <p>
+      When using basic AppArmor protection for the libvirtd daemon and
+      QEMU virtual machines, the intention is to protect the host OS
+      from a compromised virtual machine process. There is no protection
+      between guests.
+    </p>
+
+    <p>
+      The AppArmor sVirt protection for QEMU virtual machines builds on
+      this basic level of protection, to also allow individual guests to
+      be protected from each other.
+    </p>
+
+    <p>
+      In the sVirt model, if a profile is loaded for the libvirtd daemon,
+      then each <code>qemu:///system</code> QEMU virtual machine will have
+      a profile created for it when the virtual machine is started if one
+      does not already exist. This generated profile uses a profile name
+      based on the UUID of the QEMU virtual machine and contains rules
+      allowing access to only the files it needs to run, such as its disks,
+      pid file and log files. Just before the QEMU virtual machine is
+      started, the libvirtd daemon will change into this unique profile,
+      preventing the QEMU process from accessing any file resources that
+      are present in another QEMU process or the host machine.
+    </p>
+
+    <p>
+      The AppArmor sVirt implementation is flexible in that it allows an
+      administrator to customize the template file in
+      <code>/etc/apparmor.d/libvirt/TEMPLATE</code> for site-specific
+      access for all newly created QEMU virtual machines. Also, when a new
+      profile is generated, two files are created:
+      <code>/etc/apparmor.d/libvirt/libvirt-&lt;uuid&gt;</code> and
+      <code>/etc/apparmor.d/libvirt/libvirt-&lt;uuid&gt;.files</code>. The
+      former can be fine-tuned by the administrator to allow custom access
+      for this particular QEMU virtual machine, and the latter will be
+      updated appropriately when required file access changes, such as when
+      a disk is added. This flexibility allows for situations such as
+      having one virtual machine in complain mode with all others in
+      enforce mode.
+    </p>
+
+    <p>
+      While users can define their own AppArmor profile scheme, a typical
+      configuration will include a profile for <code>/usr/sbin/libvirtd</code>,
+      <code>/usr/lib/libvirt/virt-aa-helper</code> (a helper program which the
+      libvirtd daemon uses instead of manipulating AppArmor directly), and
+      an abstraction to be included by <code>/etc/apparmor.d/libvirt/TEMPLATE</code>
+      (typically <code>/etc/apparmor.d/abstractions/libvirt-qemu</code>).
+      An example profile scheme can be found in the examples/apparmor
+      directory of the source distribution.
+    </p>
+
+    <p>
+      If the sVirt security model is active, then the node capabilities
+      XML will include its details. If a virtual machine is currently
+      protected by the security model, then the guest XML will include
+      its assigned profile name. If enabled at compile time, the sVirt
+      security model will be activated if AppArmor is available on the host
+      OS and a profile for the libvirtd daemon is loaded when libvirtd is
+      started. To disable sVirt, and revert to the basic level of AppArmor
+      protection (host protection only), the <code>/etc/libvirt/qemu.conf</code>
+      file can be used to change the setting to <code>security_driver="none"</code>.
+    </p>
+
 
     <h3><a name="securityacl">Cgroups device ACLs</a></h3>
 
