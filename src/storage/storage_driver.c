@@ -440,15 +440,24 @@ storageFindPoolSources(virConnectPtr conn,
     char *ret = NULL;
 
     backend_type = virStoragePoolTypeFromString(type);
-    if (backend_type < 0)
+    if (backend_type < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("unknown storage pool type %s"), type);
         goto cleanup;
+    }
 
     backend = virStorageBackendForType(backend_type);
     if (backend == NULL)
         goto cleanup;
 
-    if (backend->findPoolSources)
-        ret = backend->findPoolSources(conn, srcSpec, flags);
+    if (!backend->findPoolSources) {
+        virStorageReportError(conn, VIR_ERR_NO_SUPPORT,
+                              _("pool type '%s' does not support source "
+                                "discovery"), type);
+        goto cleanup;
+    }
+
+    ret = backend->findPoolSources(conn, srcSpec, flags);
 
 cleanup:
     return ret;
