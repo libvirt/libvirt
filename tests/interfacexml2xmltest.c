@@ -76,7 +76,7 @@ mymain(int argc, char **argv)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
 #define DO_TEST(name) \
-    if (virtTestRun("Node device XML-2-XML " name, \
+    if (virtTestRun("Interface XML-2-XML " name, \
                     1, testCompareXMLToXMLHelper, (name)) < 0) \
         ret = -1
 
