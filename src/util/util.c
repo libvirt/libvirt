@@ -601,12 +601,23 @@ virExecWithHook(virConnectPtr conn,
                 char *pidfile)
 {
     char *argv_str;
+    char *envp_str;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
         virReportOOMError(conn);
         return -1;
     }
-    DEBUG0(argv_str);
+
+    if (envp) {
+        if ((envp_str = virArgvToString(envp)) == NULL) {
+            virReportOOMError(conn);
+            return -1;
+        }
+        VIR_DEBUG("%s %s", envp_str, argv_str);
+        VIR_FREE(envp_str);
+    } else {
+        VIR_DEBUG0(argv_str);
+    }
     VIR_FREE(argv_str);
 
     return __virExec(conn, argv, envp, keepfd, retpid, infd, outfd, errfd,
