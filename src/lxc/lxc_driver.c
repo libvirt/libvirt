@@ -1153,7 +1153,7 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((logfd = open(logfile, O_WRONLY | O_TRUNC | O_CREAT,
+    if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(conn, errno,
                              _("failed to open '%s'"),
