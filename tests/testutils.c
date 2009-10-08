@@ -340,7 +340,8 @@ int virtTestMain(int argc,
 #endif
 
     if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0)
+        virErrorInitialize() < 0 ||
+        virRandomInitialize(time(NULL) ^ getpid()))
         return 1;
 
     if ((debugStr = getenv("VIR_TEST_DEBUG")) != NULL) {
