@@ -23,6 +23,7 @@
 #define __VIRTLOG_H_
 
 #include "internal.h"
+#include "buf.h"
 
 /*
  * If configured with --enable-debug=yes then library calls
@@ -79,6 +80,12 @@ typedef enum {
 
 #define VIR_LOG_DEFAULT VIR_LOG_WARN
 
+typedef enum {
+    VIR_LOG_TO_STDERR = 1,
+    VIR_LOG_TO_SYSLOG,
+    VIR_LOG_TO_FILE,
+} virLogDestination;
+
 /**
  * virLogOutputFunc:
  * @category: the category for the message
@@ -107,12 +114,15 @@ typedef void (*virLogCloseFunc) (void *data);
 
 extern int virLogGetNbFilters(void);
 extern int virLogGetNbOutputs(void);
+extern char *virLogGetFilters(void);
+extern char *virLogGetOutputs(void);
 extern int virLogGetDefaultPriority(void);
 extern int virLogSetDefaultPriority(int priority);
 extern void virLogSetFromEnv(void);
 extern int virLogDefineFilter(const char *match, int priority, int flags);
-extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c,
-                              void *data, int priority, int flags);
+extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
+                              int priority, int dest, const char *name,
+                              int flags);
 
 /*
  * Internal logging API

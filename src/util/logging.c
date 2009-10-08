@@ -37,6 +37,7 @@
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
+#include "buf.h"
 #include "threads.h"
 
 /*
@@ -109,6 +110,8 @@ struct _virLogOutput {
     virLogOutputFunc f;
     virLogCloseFunc c;
     int priority;
+    virLogDestination dest;
+    const char *name;
 };
 typedef struct _virLogOutput virLogOutput;
 typedef virLogOutput *virLogOutputPtr;
@@ -138,6 +141,17 @@ static void virLogUnlock(void)
     virMutexUnlock(&virLogMutex);
 }
 
+static const char *virLogOutputString(virLogDestination ldest) {
+    switch (ldest) {
+        case VIR_LOG_TO_STDERR:
+            return("stderr");
+        case VIR_LOG_TO_SYSLOG:
+            return("syslog");
+        case VIR_LOG_TO_FILE:
+            return("file");
+    }
+    return("unknown");
+}
 
 static const char *virLogPriorityString(virLogPriority lvl) {
     switch (lvl) {
@@ -428,6 +442,7 @@ static int virLogResetOutputs(void) {
     for (i = 0;i < virLogNbOutputs;i++) {
         if (virLogOutputs[i].c != NULL)
             virLogOutputs[i].c(virLogOutputs[i].data);
+        VIR_FREE(virLogOutputs[i].name);
     }
     VIR_FREE(virLogOutputs);
     i = virLogNbOutputs;
@@ -438,9 +453,11 @@ static int virLogResetOutputs(void) {
 /**
  * virLogDefineOutput:
  * @f: the function to call to output a message
- * @f: the function to call to close the output (or NULL)
+ * @c: the function to call to close the output (or NULL)
  * @data: extra data passed as first arg to the function
  * @priority: minimal priority for this filter, use 0 for none
+ * @dest: where to send output of this priority
+ * @name: optional name data associated with an output
  * @flags: extra flag, currently unused
  *
  * Defines an output function for log messages. Each message once
@@ -449,11 +466,21 @@ static int virLogResetOutputs(void) {
  * Returns -1 in case of failure or the output number if successful
  */
 int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
-                       int priority, int flags ATTRIBUTE_UNUSED) {
+                       int priority, int dest, const char *name,
+                       int flags ATTRIBUTE_UNUSED) {
     int ret = -1;
+    char *ndup = NULL;
 
     if (f == NULL)
         return(-1);
+
+    if (dest == VIR_LOG_TO_SYSLOG || dest == VIR_LOG_TO_FILE) {
+        if (name == NULL)
+            return(-1);
+        ndup = strdup(name);
+        if (ndup == NULL)
+            return(-1);
+    }
 
     virLogLock();
     if (VIR_REALLOC_N(virLogOutputs, virLogNbOutputs + 1)) {
@@ -464,6 +491,8 @@ int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
     virLogOutputs[ret].c = c;
     virLogOutputs[ret].data = data;
     virLogOutputs[ret].priority = priority;
+    virLogOutputs[ret].dest = dest;
+    virLogOutputs[ret].name = ndup;
 cleanup:
     virLogUnlock();
     return(ret);
@@ -577,7 +606,8 @@ static void virLogCloseFd(void *data) {
 }
 
 static int virLogAddOutputToStderr(int priority) {
-    if (virLogDefineOutput(virLogOutputToFd, NULL, (void *)2L, priority, 0) < 0)
+    if (virLogDefineOutput(virLogOutputToFd, NULL, (void *)2L, priority,
+                           VIR_LOG_TO_STDERR, NULL, 0) < 0)
         return(-1);
     return(0);
 }
@@ -585,11 +615,11 @@ static int virLogAddOutputToStderr(int priority) {
 static int virLogAddOutputToFile(int priority, const char *file) {
     int fd;
 
-    fd = open(file, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+    fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
     if (fd < 0)
         return(-1);
     if (virLogDefineOutput(virLogOutputToFd, virLogCloseFd, (void *)(long)fd,
-                           priority, 0) < 0) {
+                           priority, VIR_LOG_TO_FILE, file, 0) < 0) {
         close(fd);
         return(-1);
     }
@@ -643,7 +673,7 @@ static int virLogAddOutputToSyslog(int priority, const char *ident) {
 
     openlog(current_ident, 0, 0);
     if (virLogDefineOutput(virLogOutputToSyslog, virLogCloseSyslog, NULL,
-                           priority, 0) < 0) {
+                           priority, VIR_LOG_TO_SYSLOG, ident, 0) < 0) {
         closelog();
         VIR_FREE(current_ident);
         return(-1);
@@ -682,6 +712,7 @@ static int virLogAddOutputToSyslog(int priority, const char *ident) {
 int virLogParseOutputs(const char *outputs) {
     const char *cur = outputs, *str;
     char *name;
+    char *abspath;
     int prio;
     int ret = -1;
     int count = 0;
@@ -732,9 +763,14 @@ int virLogParseOutputs(const char *outputs) {
             name = strndup(str, cur - str);
             if (name == NULL)
                 goto cleanup;
-            if (virLogAddOutputToFile(prio, name) == 0)
+            if (virFileAbsPath(name, &abspath) < 0) {
+                VIR_FREE(name);
+                return -1; /* skip warning here because setting was fine */
+            }
+            if (virLogAddOutputToFile(prio, abspath) == 0)
                 count++;
             VIR_FREE(name);
+            VIR_FREE(abspath);
         } else {
             goto cleanup;
         }
@@ -810,6 +846,68 @@ cleanup:
  */
 int virLogGetDefaultPriority(void) {
     return (virLogDefaultPriority);
+}
+
+/**
+ * virLogGetFilters:
+ *
+ * Returns a string listing the current filters, in the format originally
+ * specified in the config file or environment. Caller must free the
+ * result.
+ */
+char *virLogGetFilters(void) {
+    int i;
+    virBuffer filterbuf = VIR_BUFFER_INITIALIZER;
+
+    virLogLock();
+    for (i = 0; i < virLogNbFilters; i++) {
+        virBufferVSprintf(&filterbuf, "%d:%s ", virLogFilters[i].priority,
+                          virLogFilters[i].match);
+    }
+    virLogUnlock();
+
+    if (virBufferError(&filterbuf))
+        return NULL;
+
+    return virBufferContentAndReset(&filterbuf);
+}
+
+/**
+ * virLogGetOutputs:
+ *
+ * Returns a string listing the current outputs, in the format originally
+ * specified in the config file or environment. Caller must free the
+ * result.
+ */
+char *virLogGetOutputs(void) {
+    int i;
+    virBuffer outputbuf = VIR_BUFFER_INITIALIZER;
+
+    virLogLock();
+    for (i = 0; i < virLogNbOutputs; i++) {
+        int dest = virLogOutputs[i].dest;
+        if (i)
+            virBufferVSprintf(&outputbuf, " ");
+        switch (dest) {
+            case VIR_LOG_TO_SYSLOG:
+            case VIR_LOG_TO_FILE:
+                virBufferVSprintf(&outputbuf, "%d:%s:%s",
+                                  virLogOutputs[i].priority,
+                                  virLogOutputString(dest),
+                                  virLogOutputs[i].name);
+                break;
+            default:
+                virBufferVSprintf(&outputbuf, "%d:%s",
+                                  virLogOutputs[i].priority,
+                                  virLogOutputString(dest));
+        }
+    }
+    virLogUnlock();
+
+    if (virBufferError(&outputbuf))
+        return NULL;
+
+    return virBufferContentAndReset(&outputbuf);
 }
 
 /**

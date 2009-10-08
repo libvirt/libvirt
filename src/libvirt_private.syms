@@ -255,6 +255,8 @@ virRegisterSecretDriver;
 virLogMessage;
 virLogGetNbFilters;
 virLogGetNbOutputs;
+virLogGetFilters;
+virLogGetOutputs;
 virLogGetDefaultPriority;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
