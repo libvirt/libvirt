@@ -16,6 +16,7 @@
 	<ref name='pooldisk'/>
 	<ref name='pooliscsi'/>
 	<ref name='poolscsi'/>
+	<ref name='poolmpath'/>
       </choice>
     </element>
   </define>
@@ -87,6 +88,18 @@
     <ref name='commonmetadata'/>
     <ref name='sizing'/>
     <ref name='sourcescsi'/>
+    <ref name='target'/>
+  </define>
+
+  <define name='poolmpath'>
+    <attribute name='type'>
+      <value>mpath</value>
+    </attribute>
+    <ref name='commonmetadata'/>
+    <ref name='sizing'/>
+    <optional>
+      <ref name='sourcempath'/>
+    </optional>
     <ref name='target'/>
   </define>
 
@@ -212,6 +225,22 @@
     </element>
   </define>
 
+  <define name='sourceinfoauth'>
+    <element name='auth'>
+      <attribute name='type'>
+        <choice>
+          <value>chap</value>
+        </choice>
+      </attribute>
+      <attribute name='login'>
+        <text/>
+      </attribute>
+      <attribute name='passwd'>
+        <text/>
+      </attribute>
+    </element>
+  </define>
+
   <define name='sourcefmtfs'>
     <optional>
       <element name='format'>
@@ -309,10 +338,14 @@
 
   <define name='sourcelogical'>
     <element name='source'>
-      <ref name='sourceinfoname'/>
-      <optional>
-	<ref name='sourceinfodev'/>
-      </optional>
+      <oneOrMore>
+        <optional>
+          <ref name='sourceinfoname'/>
+        </optional>
+        <optional>
+          <ref name='sourceinfodev'/>
+        </optional>
+      </oneOrMore>
       <ref name='sourcefmtlogical'/>
     </element>
   </define>
@@ -328,15 +361,23 @@
     <element name='source'>
       <ref name='sourceinfohost'/>
       <ref name='sourceinfodev'/>
+      <optional>
+        <ref name='sourceinfoauth'/>
+      </optional>
     </element>
   </define>
 
   <define name='sourcescsi'>
     <element name='source'>
-      <ref name='sourceinfoname'/>
+      <ref name='sourceinfoadapter'/>
     </element>
   </define>
 
+  <define name='sourcempath'>
+    <element name='source'>
+      <empty/>
+    </element>
+  </define>
 
   <define name='name'>
     <data type='string'>
