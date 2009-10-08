@@ -153,6 +153,9 @@ LXC_CONTROLLER_SOURCES =					\
 		lxc/lxc_controller.c				\
 		lxc/veth.c lxc/veth.h
 
+SECURITY_DRIVER_APPARMOR_HELPER_SOURCES =			\
+		security/virt-aa-helper.c
+
 PHYP_DRIVER_SOURCES =						\
 		phyp/phyp_driver.c phyp/phyp_driver.h
 
@@ -237,6 +240,9 @@ SECURITY_DRIVER_SOURCES =					\
 
 SECURITY_DRIVER_SELINUX_SOURCES =				\
 		security/security_selinux.h security/security_selinux.c
+
+SECURITY_DRIVER_APPARMOR_SOURCES =				\
+		security/security_apparmor.h security/security_apparmor.c
 
 
 NODE_DEVICE_DRIVER_SOURCES =					\
@@ -641,8 +647,14 @@ noinst_LTLIBRARIES += libvirt_driver_security.la
 libvirt_la_LIBADD += libvirt_driver_security.la
 libvirt_driver_security_la_CFLAGS = \
 		-I@top_srcdir@/src/conf
+libvirt_driver_security_la_LDFLAGS =
 if WITH_SECDRIVER_SELINUX
 libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+endif
+if WITH_SECDRIVER_APPARMOR
+libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
+libvirt_driver_security_la_CFLAGS += $(APPARMOR_CFLAGS)
+libvirt_driver_security_la_LDFLAGS += $(APPARMOR_LIBS)
 endif
 
 # Add all conditional sources just in case...
@@ -671,6 +683,7 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_DEVKIT_SOURCES)		\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
+		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)
 
@@ -794,6 +807,26 @@ libvirt_lxc_CFLAGS =				\
 endif
 endif
 EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
+
+if WITH_SECDRIVER_APPARMOR
+if WITH_LIBVIRTD
+libexec_PROGRAMS += virt-aa-helper
+
+virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
+
+virt_aa_helper_LDFLAGS = $(WARN_CFLAGS)
+virt_aa_helper_LDADD =						\
+		$(WARN_CFLAGS)					\
+		$(LIBXML_LIBS)					\
+		@top_srcdir@/gnulib/lib/libgnu.la		\
+		@top_srcdir@/src/libvirt_conf.la		\
+		@top_srcdir@/src/libvirt_util.la
+virt_aa_helper_CFLAGS =						\
+		-I@top_srcdir@/src/conf				\
+		-I@top_srcdir@/src/security
+endif
+endif
+EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 install-data-local:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"

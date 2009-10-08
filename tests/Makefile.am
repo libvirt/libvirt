@@ -16,6 +16,7 @@ INCLUDES = \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
+	$(APPARMOR_CFLAGS) \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
          $(COVERAGE_CFLAGS) \
          $(WARN_CFLAGS)
@@ -31,6 +32,7 @@ LDADDS = \
         $(GNUTLS_LIBS) \
         $(SASL_LIBS) \
         $(SELINUX_LIBS) \
+        $(APPARMOR_LIBS) \
         $(WARN_CFLAGS) \
 	../src/libvirt_test.la \
 	../gnulib/lib/libgnu.la \
@@ -84,6 +86,10 @@ if WITH_SECDRIVER_SELINUX
 noinst_PROGRAMS += seclabeltest
 endif
 
+if WITH_SECDRIVER_APPARMOR
+noinst_PROGRAMS += secaatest
+endif
+
 if WITH_CIL
 noinst_PROGRAMS += object-locking
 endif
@@ -119,6 +125,9 @@ test_scripts +=				\
 	virsh-synopsis
 endif
 
+if WITH_SECDRIVER_APPARMOR
+test_scripts += virt-aa-helper-test
+endif
 EXTRA_DIST += $(test_scripts)
 
 TESTS = virshtest \
@@ -147,6 +156,10 @@ endif
 
 if WITH_SECDRIVER_SELINUX
 TESTS += seclabeltest
+endif
+
+if WITH_SECDRIVER_APPARMOR
+TESTS += secaatest
 endif
 
 if WITH_LIBVIRTD
@@ -283,6 +296,14 @@ seclabeltest_SOURCES = \
 seclabeltest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
 else
 EXTRA_DIST += seclabeltest.c
+endif
+
+if WITH_SECDRIVER_APPARMOR
+secaatest_SOURCES = \
+	secaatest.c
+secaatest_LDADD = ../src/libvirt_driver_security.la $(LDADDS)
+else
+EXTRA_DIST += secaatest.c
 endif
 
 qparamtest_SOURCES = \

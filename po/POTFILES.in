@@ -30,7 +30,9 @@ src/qemu/qemu_monitor_text.c
 src/remote/remote_driver.c
 src/secret/secret_driver.c
 src/security/security_driver.c
+src/security/security_apparmor.c
 src/security/security_selinux.c
+src/security/virt-aa-helper.c
 src/storage/storage_backend.c
 src/storage/storage_backend_disk.c
 src/storage/storage_backend_fs.c

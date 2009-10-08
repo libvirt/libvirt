@@ -20,9 +20,16 @@
 #include "security_selinux.h"
 #endif
 
+#ifdef WITH_SECDRIVER_APPARMOR
+#include "security_apparmor.h"
+#endif
+
 static virSecurityDriverPtr security_drivers[] = {
 #ifdef WITH_SECDRIVER_SELINUX
     &virSELinuxSecurityDriver,
+#endif
+#ifdef WITH_SECDRIVER_APPARMOR
+    &virAppArmorSecurityDriver,
 #endif
     NULL
 };

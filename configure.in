@@ -799,6 +799,83 @@ fi
 AM_CONDITIONAL([WITH_SECDRIVER_SELINUX], [test "$with_secdriver_selinux" != "no"])
 
 
+dnl AppArmor
+AC_ARG_WITH([apparmor],
+  [  --with-apparmor        use AppArmor to manage security],
+  [],
+  [with_apparmor=check])
+
+APPARMOR_CFLAGS=
+APPARMOR_LIBS=
+if test "$with_apparmor" != "no"; then
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  if test "$with_apparmor" = "check"; then
+    AC_CHECK_HEADER([sys/apparmor.h],[],[with_apparmor=no])
+    AC_CHECK_LIB([apparmor], [aa_change_profile],[],[with_apparmor=no])
+    AC_CHECK_LIB([apparmor], [aa_change_hat],[],[with_apparmor=no])
+    if test "$with_apparmor" != "no"; then
+      with_apparmor="yes"
+    fi
+  else
+    fail=0
+    AC_CHECK_HEADER([sys/apparmor.h],[],[fail=1])
+    AC_CHECK_LIB([apparmor], [aa_change_profile],[],[fail=1])
+    AC_CHECK_LIB([apparmor], [aa_change_hat],[],[fail=1])
+    test $fail = 1 &&
+      AC_MSG_ERROR([You must install the AppArmor development package in order to compile libvirt])
+  fi
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+fi
+if test "$with_apparmor" = "yes"; then
+  APPARMOR_LIBS="-lapparmor"
+  AC_DEFINE_UNQUOTED([HAVE_APPARMOR], 1, [whether AppArmor is available for security])
+  AC_DEFINE_UNQUOTED([APPARMOR_DIR], "/etc/apparmor.d", [path to apparmor directory])
+  AC_DEFINE_UNQUOTED([APPARMOR_PROFILES_PATH], "/sys/kernel/security/apparmor/profiles", [path to kernel profiles])
+fi
+AM_CONDITIONAL([HAVE_APPARMOR], [test "$with_apparmor" != "no"])
+AC_SUBST([APPARMOR_CFLAGS])
+AC_SUBST([APPARMOR_LIBS])
+
+
+AC_ARG_WITH([secdriver-apparmor],
+  [  --with-secdriver-apparmor         use AppArmor security driver],
+  [],
+  [with_secdriver_apparmor=check])
+
+if test "$with_apparmor" != "yes" ; then
+  if test "$with_secdriver_apparmor" = "check" ; then
+    with_secdriver_apparmor=no
+  else
+    AC_MSG_ERROR([You must install the AppArmor development package in order to compile libvirt])
+  fi
+else
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  CFLAGS="$CFLAGS $APPARMOR_CFLAGS"
+  LIBS="$CFLAGS $APPARMOR_LIBS"
+
+  fail=0
+  AC_CHECK_FUNC([change_hat], [], [fail=1])
+  AC_CHECK_FUNC([aa_change_profile], [], [fail=1])
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+
+  if test "$fail" = "1" ; then
+    if test "$with_secdriver_apparmor" = "check" ; then
+      with_secdriver_apparmor=no
+    else
+      AC_MSG_ERROR([You must install the AppArmor development package in order to compile libvirt])
+    fi
+  else
+    with_secdriver_apparmor=yes
+    AC_DEFINE_UNQUOTED([WITH_SECDRIVER_APPARMOR], 1, [whether AppArmor security driver is available])
+  fi
+fi
+AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
+
+
 
 dnl NUMA lib
 AC_ARG_WITH([numactl],
@@ -1745,6 +1822,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux])
+AC_MSG_NOTICE([ AppArmor: $with_secdriver_apparmor])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])
@@ -1791,6 +1869,11 @@ if test "$with_selinux" = "yes" ; then
 AC_MSG_NOTICE([ selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
 else
 AC_MSG_NOTICE([ selinux: no])
+fi
+if test "$with_apparmor" = "yes" ; then
+AC_MSG_NOTICE([ apparmor: $APPARMOR_CFLAGS $APPARMOR_LIBS])
+else
+AC_MSG_NOTICE([ apparmor: no])
 fi
 if test "$with_numactl" = "yes" ; then
 AC_MSG_NOTICE([ numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
