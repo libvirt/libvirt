@@ -949,11 +949,13 @@ static int lxcControllerStart(virConnectPtr conn,
     char *filterstr;
     char *outputstr;
     char *tmp;
+    int log_level;
     pid_t child;
     int status;
     fd_set keepfd;
     char appPtyStr[30];
     const char *emulator;
+    lxc_driver_t *driver = conn->privateData;
 
     FD_ZERO(&keepfd);
 
@@ -1003,7 +1005,8 @@ static int lxcControllerStart(virConnectPtr conn,
         lenv[lenvc++] = envval;                                         \
     } while (0)
 
-    if (virAsprintf(&tmp, "LIBVIRT_DEBUG=%d", virLogGetDefaultPriority()) < 0)
+    log_level = virLogGetDefaultPriority();
+    if (virAsprintf(&tmp, "LIBVIRT_DEBUG=%d", log_level) < 0)
         goto no_memory;
     ADD_ENV(tmp);
 
@@ -1015,12 +1018,18 @@ static int lxcControllerStart(virConnectPtr conn,
         VIR_FREE(filterstr);
     }
 
-    if (virLogGetNbOutputs() > 0) {
-        outputstr = virLogGetOutputs();
-        if (!outputstr)
+    if (driver->log_libvirtd) {
+        if (virLogGetNbOutputs() > 0) {
+            outputstr = virLogGetOutputs();
+            if (!outputstr)
+                goto no_memory;
+            ADD_ENV_PAIR("LIBVIRT_LOG_OUTPUTS", outputstr);
+            VIR_FREE(outputstr);
+        }
+    } else {
+        if (virAsprintf(&tmp, "LIBVIRT_LOG_OUTPUTS=%d:stderr", log_level) < 0)
             goto no_memory;
-        ADD_ENV_PAIR("LIBVIRT_LOG_OUTPUTS", outputstr);
-        VIR_FREE(outputstr);
+        ADD_ENV(tmp);
     }
 
     ADD_ENV(NULL);
@@ -1626,6 +1635,7 @@ static int lxcStartup(int privileged)
          virEventAddTimeout(-1, lxcDomainEventFlush, lxc_driver, NULL)) < 0)
         goto cleanup;
 
+    lxc_driver->log_libvirtd = 0; /* by default log to container logfile */
     lxc_driver->have_netns = lxcCheckNetNsSupport();
 
     rc = virCgroupForDriver("lxc", &lxc_driver->cgroup, privileged, 1);

@@ -32,6 +32,8 @@ lib_LTLIBRARIES = libvirt.la
 moddir = $(libdir)/libvirt/drivers
 mod_LTLIBRARIES =
 
+confdir = $(sysconfdir)/libvirt
+conf_DATA =
 
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
@@ -431,8 +433,7 @@ libvirt_driver_qemu_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 
-confdir = $(sysconfdir)/libvirt/
-conf_DATA = qemu/qemu.conf
+conf_DATA += qemu/qemu.conf
 
 augeasdir = $(datadir)/augeas/lenses
 augeas_DATA = qemu/libvirtd_qemu.aug
@@ -462,7 +463,11 @@ if WITH_DRIVER_MODULES
 libvirt_driver_lxc_la_LDFLAGS = -module -avoid-version
 endif
 libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
+
+conf_DATA += lxc/lxc.conf
+
 endif
+EXTRA_DIST += lxc/lxc.conf
 
 if WITH_UML
 if WITH_DRIVER_MODULES

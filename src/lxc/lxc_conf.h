@@ -49,6 +49,7 @@ struct __lxc_driver {
     char *autostartDir;
     char *stateDir;
     char *logDir;
+    int log_libvirtd;
     int have_netns;
 
     /* An array of callbacks */

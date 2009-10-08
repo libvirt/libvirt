@@ -550,6 +550,9 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version}
 %if ! %{with_qemu}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu.conf
 %endif
+%if ! %{with_lxc}
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/lxc.conf
+%endif
 
 %if %{with_libvirtd}
 chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/libvirtd
@@ -629,6 +632,9 @@ fi
 
 %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
+%endif
+%if %{with_lxc}
+%config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %endif
 
 %dir %{_datadir}/libvirt/
