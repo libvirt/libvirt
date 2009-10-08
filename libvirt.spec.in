@@ -539,6 +539,11 @@ rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %endif
 %find_lang %{name}
 
+%if ! %{with_lxc}
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_lxc.aug
+rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
+endif
+
 %if ! %{with_python}
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
 %endif
@@ -675,6 +680,11 @@ fi
 %if %{with_qemu}
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
+%endif
+
+%if %{with_lxc}
+%{_datadir}/augeas/lenses/libvirtd_lxc.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %endif
 
 %{_datadir}/augeas/lenses/libvirtd.aug

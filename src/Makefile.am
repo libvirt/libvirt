@@ -35,6 +35,12 @@ mod_LTLIBRARIES =
 confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
+augeasdir = $(datadir)/augeas/lenses
+augeas_DATA =
+
+augeastestdir = $(datadir)/augeas/lenses/tests
+augeastest_DATA =
+
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
@@ -435,15 +441,8 @@ libvirt_driver_qemu_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 
 conf_DATA += qemu/qemu.conf
 
-augeasdir = $(datadir)/augeas/lenses
-augeas_DATA = qemu/libvirtd_qemu.aug
-
-augeastestdir = $(datadir)/augeas/lenses/tests
-augeastest_DATA = qemu/test_libvirtd_qemu.aug
-
-check-local:
-	test -x '$(AUGPARSE)' \
-	  && '$(AUGPARSE)' -I $(srcdir) $(srcdir)/test_libvirtd_qemu.aug || :
+augeas_DATA += qemu/libvirtd_qemu.aug
+augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
 endif
 EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug qemu/test_libvirtd_qemu.aug
@@ -466,8 +465,11 @@ libvirt_driver_lxc_la_SOURCES = $(LXC_DRIVER_SOURCES)
 
 conf_DATA += lxc/lxc.conf
 
+augeas_DATA += lxc/libvirtd_lxc.aug
+augeastest_DATA += lxc/test_libvirtd_lxc.aug
+
 endif
-EXTRA_DIST += lxc/lxc.conf
+EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug
 
 if WITH_UML
 if WITH_DRIVER_MODULES
@@ -691,6 +693,20 @@ EXTRA_DIST +=							\
 		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)
+
+check-local:
+if WITH_QEMU
+	if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/qemu \
+	    $(srcdir)/qemu/test_libvirtd_qemu.aug; \
+	fi
+endif
+if WITH_LXC
+	if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/lxc \
+	    $(srcdir)/lxc/test_libvirtd_lxc.aug; \
+	fi
+endif
 
 #
 # Build our version script.  This is composed of three parts:
