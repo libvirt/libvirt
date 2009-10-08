@@ -52,6 +52,7 @@ EXTRA_DIST =		\
 	test-lib.sh	\
 	qemuxml2argvdata \
 	nodeinfodata     \
+	schematestutils.sh \
 	capabilityschematest \
 	capabilityschemadata \
 	networkschematest \
