@@ -445,6 +445,7 @@ virFileExists;
 virFileHasSuffix;
 virFileLinkPointsTo;
 virFileMakePath;
+virFileAbsPath;
 virFileOpenTty;
 virFileReadLimFD;
 virFilePid;

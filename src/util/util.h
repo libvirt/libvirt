@@ -115,6 +115,9 @@ int virFileBuildPath(const char *dir,
                      char *buf,
                      unsigned int buflen);
 
+int virFileAbsPath(const char *path,
+                   char **abspath);
+
 int virFileOpenTty(int *ttymaster,
                    char **ttyName,
                    int rawmode);

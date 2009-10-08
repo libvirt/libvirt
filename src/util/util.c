@@ -1402,6 +1402,42 @@ cleanup:
 
 #endif /* PROXY */
 
+/*
+ * Creates an absolute path for a potentialy realtive path.
+ * Return 0 if the path was not relative, or on success.
+ * Return -1 on error.
+ *
+ * You must free the result.
+ */
+int virFileAbsPath(const char *path, char **abspath)
+{
+    char *buf;
+    int cwdlen;
+
+    if (path[0] == '/') {
+        buf = strdup(path);
+        if (buf == NULL)
+            return(-1);
+    } else {
+        buf = getcwd(NULL, 0);
+        if (buf == NULL)
+            return(-1);
+
+        cwdlen = strlen(buf);
+        /* cwdlen includes the null terminator */
+        if (VIR_REALLOC_N(buf, cwdlen + strlen(path) + 1) < 0) {
+            VIR_FREE(buf);
+            errno = ENOMEM;
+            return(-1);
+        }
+
+        buf[cwdlen] = '/';
+        strcpy(&buf[cwdlen + 1], path);
+    }
+
+    *abspath = buf;
+    return 0;
+}
 
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
