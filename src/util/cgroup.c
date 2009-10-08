@@ -736,7 +736,7 @@ int virCgroupSetMemory(virCgroupPtr group, unsigned long kb)
  */
 int virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 {
-    uint64_t usage_in_bytes;
+    long long unsigned int usage_in_bytes;
     int ret;
     ret = virCgroupGetValueU64(group,
                                VIR_CGROUP_CONTROLLER_MEMORY,
