@@ -61,7 +61,8 @@ EXTRA_DIST =		\
 	domainschemadata \
 	interfaceschemadata \
 	storagepoolschematest \
-	storagepoolschemadata \
+	storagepoolxml2xmlout \
+	storagepoolxml2xmlin \
 	storagevolschematest \
 	storagevolschemadata \
 	nodedevschematest \
@@ -94,6 +95,8 @@ endif
 if WITH_CIL
 noinst_PROGRAMS += object-locking
 endif
+
+noinst_PROGRAMS += storagepoolxml2xmltest
 
 noinst_PROGRAMS += nodedevxml2xmltest
 
@@ -167,6 +170,8 @@ if WITH_LIBVIRTD
 noinst_PROGRAMS += eventtest
 TESTS += eventtest
 endif
+
+TESTS += storagepoolxml2xmltest
 
 TESTS += nodedevxml2xmltest
 
@@ -263,6 +268,11 @@ xml2vmxtest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
 else
 EXTRA_DIST += esxutilstest.c vmx2xmltest.c xml2vmxtest.c
 endif
+
+storagepoolxml2xmltest_SOURCES = \
+	storagepoolxml2xmltest.c \
+	testutils.c testutils.h
+storagepoolxml2xmltest_LDADD = $(LDADDS)
 
 nodedevxml2xmltest_SOURCES = \
 	nodedevxml2xmltest.c \

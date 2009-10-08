@@ -1,0 +1,19 @@
+<pool type='fs'>
+  <name>images</name>
+  <uuid>7641d5a8-af11-f730-a34e-0a7dfcede71f</uuid>
+  <capacity>0</capacity>
+  <allocation>0</allocation>
+  <available>0</available>
+  <source>
+    <device path='/dev/sda6'/>
+    <format type='ext3'/>
+  </source>
+  <target>
+    <path>/mnt</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>

@@ -15,6 +15,7 @@ qemuargv2xmltest
 qemuhelptest
 nodedevxml2xmltest
 interfacexml2xmltest
+storagepoolxml2xmltest
 nodeinfotest
 statstest
 qparamtest

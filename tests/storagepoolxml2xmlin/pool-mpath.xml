@@ -1,0 +1,12 @@
+<pool type="mpath">
+  <name>mpath</name>
+  <uuid>e9392370-2917-565e-692b-d057f46512d6</uuid>
+  <target>
+    <path>/dev/mapper</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</pool>

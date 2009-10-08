@@ -12,6 +12,7 @@
       <mode>0700</mode>
       <owner>0</owner>
       <group>0</group>
+      <label>some_label_t</label>
     </permissions>
   </target>
 </pool>
