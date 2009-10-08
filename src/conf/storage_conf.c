@@ -799,7 +799,7 @@ virStoragePoolSourceFormat(virConnectPtr conn,
 
 
     if (src->authType == VIR_STORAGE_POOL_AUTH_CHAP)
-        virBufferVSprintf(buf,"    <auth type='chap' login='%s' passwd='%s'>\n",
+        virBufferVSprintf(buf,"    <auth type='chap' login='%s' passwd='%s'/>\n",
                           src->auth.chap.login,
                           src->auth.chap.passwd);
     virBufferAddLit(buf,"  </source>\n");
