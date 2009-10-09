@@ -1822,7 +1822,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux])
-AC_MSG_NOTICE([ AppArmor: $with_secdriver_apparmor])
+AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])
@@ -1841,9 +1841,9 @@ else
 AC_MSG_NOTICE([ libcurl: no])
 fi
 if test "$with_libssh2" != "no" ; then
-AC_MSG_NOTICE([  libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
+AC_MSG_NOTICE([ libssh2: $LIBSSH2_CFLAGS $LIBSSH2_LIBS])
 else
-AC_MSG_NOTICE([  libssh2: no])
+AC_MSG_NOTICE([ libssh2: no])
 fi
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
 if test "$with_sasl" != "no" ; then
@@ -1871,9 +1871,9 @@ else
 AC_MSG_NOTICE([ selinux: no])
 fi
 if test "$with_apparmor" = "yes" ; then
-AC_MSG_NOTICE([ apparmor: $APPARMOR_CFLAGS $APPARMOR_LIBS])
+AC_MSG_NOTICE([apparmor: $APPARMOR_CFLAGS $APPARMOR_LIBS])
 else
-AC_MSG_NOTICE([ apparmor: no])
+AC_MSG_NOTICE([apparmor: no])
 fi
 if test "$with_numactl" = "yes" ; then
 AC_MSG_NOTICE([ numactl: $NUMACTL_CFLAGS $NUMACTL_LIBS])
