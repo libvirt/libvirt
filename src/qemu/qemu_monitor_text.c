@@ -142,6 +142,7 @@ static char *qemuMonitorEscapeShell(const char *in)
  */
 static void
 qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char buf[1024];
     int ret = 0;
 
@@ -149,54 +150,17 @@ qemuMonitorDiscardPendingData(virDomainObjPtr vm) {
      * get -1 or 0. Don't bother with detecting
      * errors, since we'll deal with that better later */
     do {
-        ret = read(vm->monitor, buf, sizeof (buf)-1);
+        ret = qemuMonitorRead(priv->mon, buf, sizeof (buf)-1);
     } while (ret > 0);
 }
 
-static int
-qemuMonitorSendUnix(const virDomainObjPtr vm,
-                    const char *cmd,
-                    size_t cmdlen,
-                    int scm_fd)
-{
-    struct msghdr msg;
-    struct iovec iov[1];
-    ssize_t ret;
-
-    memset(&msg, 0, sizeof(msg));
-
-    iov[0].iov_base = (void *)cmd;
-    iov[0].iov_len = cmdlen;
-
-    msg.msg_iov = iov;
-    msg.msg_iovlen = 1;
-
-    if (scm_fd != -1) {
-        char control[CMSG_SPACE(sizeof(int))];
-        struct cmsghdr *cmsg;
-
-        msg.msg_control = control;
-        msg.msg_controllen = sizeof(control);
-
-        cmsg = CMSG_FIRSTHDR(&msg);
-        cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-        cmsg->cmsg_level = SOL_SOCKET;
-        cmsg->cmsg_type = SCM_RIGHTS;
-        memcpy(CMSG_DATA(cmsg), &scm_fd, sizeof(int));
-    }
-
-    do {
-        ret = sendmsg(vm->monitor, &msg, 0);
-    } while (ret < 0 && errno == EINTR);
-
-    return ret == cmdlen ? 0 : -1;
-}
 
 static int
 qemuMonitorSend(const virDomainObjPtr vm,
                 const char *cmd,
                 int scm_fd)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *full;
     size_t len;
     int ret = -1;
@@ -208,20 +172,11 @@ qemuMonitorSend(const virDomainObjPtr vm,
 
     len = strlen(full);
 
-    switch (vm->monitor_chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (qemuMonitorSendUnix(vm, full, len, scm_fd) < 0)
-            goto out;
-        break;
-    default:
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (safewrite(vm->monitor, full, len) != len)
-            goto out;
-        break;
-    }
+    if (scm_fd == -1)
+        ret = qemuMonitorWrite(priv->mon, full, len);
+    else
+        ret = qemuMonitorWriteWithFD(priv->mon, full, len, scm_fd);
 
-    ret = 0;
-out:
     VIR_FREE(full);
     return ret;
 }
@@ -234,12 +189,13 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
                               void *handlerData,
                               int scm_fd,
                               char **reply) {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int size = 0;
     char *buf = NULL;
 
     /* Should never happen, but just in case, protect
      * against null monitor (ocurrs when VM is inactive) */
-    if (!vm->monitor_chr)
+    if (!priv->mon)
         return -1;
 
     qemuMonitorDiscardPendingData(vm);
@@ -251,13 +207,10 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
     *reply = NULL;
 
     for (;;) {
-        struct pollfd fd = { vm->monitor, POLLIN | POLLERR | POLLHUP, 0 };
-        char *tmp;
-
         /* Read all the data QEMU has sent thus far */
         for (;;) {
             char data[1024];
-            int got = read(vm->monitor, data, sizeof(data));
+            int got = qemuMonitorRead(priv->mon, data, sizeof(data));
 
             if (got == 0)
                 goto error;
@@ -279,6 +232,7 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
         /* Look for QEMU prompt to indicate completion */
         if (buf) {
             char *foundPrompt;
+            char *tmp;
 
             if (extraPrompt &&
                 (foundPrompt = strstr(buf, extraPrompt)) != NULL) {
@@ -314,13 +268,10 @@ qemuMonitorCommandWithHandler(const virDomainObjPtr vm,
                 break;
             }
         }
-    pollagain:
+
         /* Need to wait for more data */
-        if (poll(&fd, 1, -1) < 0) {
-            if (errno == EINTR)
-                goto pollagain;
+        if (qemuMonitorWaitForInput(priv->mon) < 0)
             goto error;
-        }
     }
     *reply = buf;
     DEBUG("reply='%s'", buf);

@@ -93,11 +93,6 @@ static void qemuDomainEventFlush(int timer, void *opaque);
 static void qemuDomainEventQueue(struct qemud_driver *driver,
                                  virDomainEventPtr event);
 
-static void qemudDispatchVMEvent(int watch,
-                                 int fd,
-                                 int events,
-                                 void *opaque);
-
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -117,6 +112,30 @@ static int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                        virDomainDefPtr def);
 
 static struct qemud_driver *qemu_driver = NULL;
+
+
+static void *qemuDomainObjPrivateAlloc(void)
+{
+    qemuDomainObjPrivatePtr priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    return priv;
+}
+
+static void qemuDomainObjPrivateFree(void *data)
+{
+    qemuDomainObjPrivatePtr priv = data;
+
+    /* This should never be non-NULL if we get here, but just in case... */
+    if (priv->mon) {
+        VIR_ERROR0("Unexpected QEMU monitor still active during domain deletion");
+        qemuMonitorClose(priv->mon);
+    }
+    VIR_FREE(priv);
+}
+
 
 static int qemuCgroupControllerActive(struct qemud_driver *driver,
                                       int controller)
@@ -292,21 +311,53 @@ qemudRemoveDomainStatus(virConnectPtr conn,
     return 0;
 }
 
+
+/*
+ * This is a callback registered with a qemuMonitorPtr  instance,
+ * and to be invoked when the monitor console hits an end of file
+ * condition, or error, thus indicating VM shutdown should be
+ * performed
+ */
+static void
+qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                     virDomainObjPtr vm,
+                     int hasError) {
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+
+    qemuDriverLock(driver);
+    virDomainObjLock(vm);
+    qemuDriverUnlock(driver);
+
+    event = virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_STOPPED,
+                                     hasError ?
+                                     VIR_DOMAIN_EVENT_STOPPED_FAILED :
+                                     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+
+    qemudShutdownVMDaemon(NULL, driver, vm);
+    if (!vm->persistent)
+        virDomainRemoveInactive(&driver->domains, vm);
+    else
+        virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+}
+
+
 static int
 qemuConnectMonitor(virDomainObjPtr vm, int reconnect)
 {
-    int rc;
-    if ((rc = qemuMonitorOpen(vm, reconnect)) != 0) {
-        VIR_ERROR(_("Failed to connect monitor for %s: %d\n"),
-                  vm->def->name, rc);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if ((priv->mon = qemuMonitorOpen(vm, reconnect, qemuHandleMonitorEOF)) == NULL) {
+        VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
         return -1;
     }
-
-    if ((vm->monitorWatch = virEventAddHandle(vm->monitor,
-                                              VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
-                                              qemudDispatchVMEvent,
-                                              vm, NULL)) < 0)
-        return -1;
 
     return 0;
 }
@@ -351,7 +402,7 @@ error:
 }
 
 /**
- * qemudReconnectVMs
+ * qemudReconnectDomains
  *
  * Try to re-open the resources for live VMs that we care
  * about.
@@ -548,6 +599,9 @@ qemudStartup(int privileged) {
 
     if ((qemu_driver->caps = qemudCapsInit(NULL)) == NULL)
         goto out_of_memory;
+
+    qemu_driver->caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
+    qemu_driver->caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
 
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew(NULL)) == NULL)
         goto error;
@@ -1952,6 +2006,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
                                   virDomainObjPtr vm) {
     int ret;
     int retries = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!virDomainObjIsActive(vm))
         return;
@@ -1980,14 +2035,10 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
                              _("Failed to send SIGTERM to %s (%d)"),
                              vm->def->name, vm->pid);
 
-    if (vm->monitorWatch != -1) {
-        virEventRemoveHandle(vm->monitorWatch);
-        vm->monitorWatch = -1;
+    if (priv->mon) {
+        qemuMonitorClose(priv->mon);
+        priv->mon = NULL;
     }
-
-    if (vm->monitor != -1)
-        close(vm->monitor);
-    vm->monitor = -1;
 
     if (vm->monitor_chr) {
         if (vm->monitor_chr->type == VIR_DOMAIN_CHR_TYPE_UNIX)
@@ -2041,59 +2092,6 @@ retry:
         vm->newDef = NULL;
     }
 }
-
-
-static void
-qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
-    struct qemud_driver *driver = qemu_driver;
-    virDomainObjPtr vm = opaque;
-    virDomainEventPtr event = NULL;
-    int quit = 0, failed = 0;
-
-    /* XXX Normally we have to lock the driver first, to protect
-     * against someone adding/removing the domain. We know,
-     * however, then if we're getting data in this callback
-     * the VM must be running. Nowhere is allowed to remove
-     * a domain while it is running, so it is safe to not
-     * lock the driver here... */
-    qemuDriverLock(driver);
-    virDomainObjLock(vm);
-    qemuDriverUnlock(driver);
-
-    if (vm->monitor != fd || vm->monitorWatch != watch) {
-        failed = 1;
-    } else {
-        if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
-            quit = 1;
-        else {
-            VIR_ERROR(_("unhandled fd event %d for %s"),
-                      events, vm->def->name);
-            failed = 1;
-        }
-    }
-
-    if (failed || quit) {
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         quit ?
-                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN :
-                                         VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        qemudShutdownVMDaemon(NULL, driver, vm);
-        if (!vm->persistent) {
-            virDomainRemoveInactive(&driver->domains,
-                                    vm);
-            vm = NULL;
-        }
-    }
-
-    virDomainObjUnlock(vm);
-    if (event) {
-        qemuDriverLock(driver);
-        qemuDomainEventQueue(driver, event);
-        qemuDriverUnlock(driver);
-    }
-}
-
 
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
@@ -2228,6 +2226,9 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
         virReportOOMError(conn);
         goto cleanup;
     }
+
+    caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
+    caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
 
     if (qemu_driver->securityDriver &&
         qemudSecurityCapsInit(qemu_driver->securityDriver, caps) < 0) {

@@ -29,9 +29,33 @@
 
 #include "domain_conf.h"
 
-int qemuMonitorOpen(virDomainObjPtr vm,
-                    int reconnect);
+typedef struct _qemuMonitor qemuMonitor;
+typedef qemuMonitor *qemuMonitorPtr;
 
+typedef void (*qemuMonitorEOFNotify)(qemuMonitorPtr mon,
+                                     virDomainObjPtr vm,
+                                     int withError);
+
+qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
+                               int reconnect,
+                               qemuMonitorEOFNotify eofCB);
+
+void qemuMonitorClose(qemuMonitorPtr mon);
+
+int qemuMonitorWrite(qemuMonitorPtr mon,
+                     const char *data,
+                     size_t len);
+
+int qemuMonitorWriteWithFD(qemuMonitorPtr mon,
+                           const char *data,
+                           size_t len,
+                           int fd);
+
+int qemuMonitorRead(qemuMonitorPtr mon,
+                    char *data,
+                    size_t len);
+
+int qemuMonitorWaitForInput(qemuMonitorPtr mon);
 
 
 #endif /* QEMU_MONITOR_H */
