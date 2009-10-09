@@ -55,6 +55,7 @@
 #include "datatypes.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
+#include "qemu_monitor.h"
 #include "qemu_monitor_text.h"
 #include "qemu_bridge_filter.h"
 #include "c-ctype.h"
@@ -291,11 +292,24 @@ qemudRemoveDomainStatus(virConnectPtr conn,
     return 0;
 }
 
+static int
+qemuConnectMonitor(virDomainObjPtr vm, int reconnect)
+{
+    int rc;
+    if ((rc = qemuMonitorOpen(vm, reconnect)) != 0) {
+        VIR_ERROR(_("Failed to connect monitor for %s: %d\n"),
+                  vm->def->name, rc);
+        return -1;
+    }
 
-static int qemudOpenMonitor(virConnectPtr conn,
-                            virDomainObjPtr vm,
-                            int reconnect);
+    if ((vm->monitorWatch = virEventAddHandle(vm->monitor,
+                                              VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
+                                              qemudDispatchVMEvent,
+                                              vm, NULL)) < 0)
+        return -1;
 
+    return 0;
+}
 
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
@@ -304,17 +318,13 @@ static int qemudOpenMonitor(virConnectPtr conn,
 static void
 qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
 {
-    int rc;
     virDomainObjPtr obj = payload;
     struct qemud_driver *driver = opaque;
 
     virDomainObjLock(obj);
 
-    if ((rc = qemudOpenMonitor(NULL, obj, 1)) != 0) {
-        VIR_ERROR(_("Failed to reconnect monitor for %s: %d\n"),
-                  obj->def->name, rc);
+    if (qemuConnectMonitor(obj, 1) < 0)
         goto error;
-    }
 
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
         goto error;
@@ -744,89 +754,10 @@ qemudShutdown(void) {
     return 0;
 }
 
-/* Return -1 for error, 1 to continue reading and 0 for success */
-typedef int qemudHandlerMonitorOutput(virConnectPtr conn,
-                                      virDomainObjPtr vm,
-                                      const char *output,
-                                      int fd);
-
-/*
- * Returns -1 for error, 0 on end-of-file, 1 for success
- */
-static int
-qemudReadMonitorOutput(virConnectPtr conn,
-                       virDomainObjPtr vm,
-                       int fd,
-                       char *buf,
-                       size_t buflen,
-                       qemudHandlerMonitorOutput func,
-                       const char *what,
-                       int timeout)
-{
-    size_t got = 0;
-    buf[0] = '\0';
-    timeout *= 1000; /* poll wants milli seconds */
-
-    /* Consume & discard the initial greeting */
-    while (got < (buflen-1)) {
-        ssize_t ret;
-
-        ret = read(fd, buf+got, buflen-got-1);
-
-        if (ret < 0) {
-            struct pollfd pfd = { .fd = fd, .events = POLLIN };
-            if (errno == EINTR)
-                continue;
-
-            if (errno != EAGAIN) {
-                virReportSystemError(conn, errno,
-                                     _("Failure while reading %s startup output"),
-                                     what);
-                return -1;
-            }
-
-            ret = poll(&pfd, 1, timeout);
-            if (ret == 0) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Timed out while reading %s startup output"), what);
-                return -1;
-            } else if (ret == -1) {
-                if (errno != EINTR) {
-                    virReportSystemError(conn, errno,
-                                         _("Failure while reading %s startup output"),
-                                         what);
-                    return -1;
-                }
-            } else {
-                /* Make sure we continue loop & read any further data
-                   available before dealing with EOF */
-                if (pfd.revents & (POLLIN | POLLHUP))
-                    continue;
-
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failure while reading %s startup output"), what);
-                return -1;
-            }
-        } else if (ret == 0) {
-            return 0;
-        } else {
-            got += ret;
-            buf[got] = '\0';
-            ret = func(conn, vm, buf, fd);
-            if (ret == -1)
-                return -1;
-            if (ret == 1)
-                continue;
-            return 1;
-        }
-    }
-
-    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("Out of space while reading %s startup output"), what);
-    return -1;
-
-}
-
+typedef int qemuLogHandleOutput(virConnectPtr conn,
+                                virDomainObjPtr vm,
+                                const char *output,
+                                int fd);
 
 /*
  * Returns -1 for error, 0 on success
@@ -837,7 +768,7 @@ qemudReadLogOutput(virConnectPtr conn,
                    int fd,
                    char *buf,
                    size_t buflen,
-                   qemudHandlerMonitorOutput func,
+                   qemuLogHandleOutput func,
                    const char *what,
                    int timeout)
 {
@@ -892,177 +823,20 @@ qemudReadLogOutput(virConnectPtr conn,
     return -1;
 }
 
+
+/*
+ * Look at a chunk of data from the QEMU stdout logs and try to
+ * find a TTY device, as indicated by a line like
+ *
+ * char device redirected to /dev/pts/3
+ *
+ * Returns -1 for error, 0 success, 1 continue reading
+ */
 static int
-qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        virDomainObjPtr vm,
-                        const char *output,
-                        int fd)
-{
-    if (strstr(output, "(qemu) ") == NULL)
-        return 1; /* keep reading */
-
-    vm->monitor = fd;
-
-    return 0;
-}
-
-static int
-qemudOpenMonitorCommon(virConnectPtr conn,
-                       virDomainObjPtr vm,
-                       int monfd,
-                       int reconnect)
-{
-    char buf[1024];
-    int ret;
-
-    if (virSetCloseExec(monfd) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to set monitor close-on-exec flag"));
-        return -1;
-    }
-    if (virSetNonBlock(monfd) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to put monitor into non-blocking mode"));
-        return -1;
-    }
-
-    if (!reconnect) {
-        if (qemudReadMonitorOutput(conn,
-                                   vm, monfd,
-                                   buf, sizeof(buf),
-                                   qemudCheckMonitorPrompt,
-                                   "monitor", 10) <= 0)
-            ret = -1;
-        else
-            ret = 0;
-    } else {
-        vm->monitor = monfd;
-        ret = 0;
-    }
-
-    if (ret != 0)
-        return ret;
-
-    if ((vm->monitorWatch = virEventAddHandle(vm->monitor,
-                                              VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
-                                              qemudDispatchVMEvent,
-                                              vm, NULL)) < 0)
-        return -1;
-
-    return 0;
-}
-
-static int
-qemudOpenMonitorUnix(virConnectPtr conn,
-                     virDomainObjPtr vm,
-                     const char *monitor,
-                     int reconnect)
-{
-    struct sockaddr_un addr;
-    int monfd;
-    int timeout = 3; /* In seconds */
-    int ret, i = 0;
-
-    if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-        virReportSystemError(conn, errno,
-                             "%s", _("failed to create socket"));
-        return -1;
-    }
-
-    memset(&addr, 0, sizeof(addr));
-    addr.sun_family = AF_UNIX;
-    if (virStrcpyStatic(addr.sun_path, monitor) == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Monitor path %s too big for destination"), monitor);
-        goto error;
-    }
-
-    do {
-        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
-
-        if (ret == 0)
-            break;
-
-        if (errno == ENOENT || errno == ECONNREFUSED) {
-            /* ENOENT       : Socket may not have shown up yet
-             * ECONNREFUSED : Leftover socket hasn't been removed yet */
-            continue;
-        }
-
-        virReportSystemError(conn, errno, "%s",
-                             _("failed to connect to monitor socket"));
-        goto error;
-
-    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
-
-    if (ret != 0) {
-        virReportSystemError(conn, errno, "%s",
-                             _("monitor socket did not show up."));
-        goto error;
-    }
-
-    if (qemudOpenMonitorCommon(conn, vm, monfd, reconnect) < 0)
-        goto error;
-
-    return 0;
-
-error:
-    close(monfd);
-    return -1;
-}
-
-static int
-qemudOpenMonitorPty(virConnectPtr conn,
-                    virDomainObjPtr vm,
-                    const char *monitor,
-                    int reconnect)
-{
-    int monfd;
-
-    if ((monfd = open(monitor, O_RDWR)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to open monitor path %s"), monitor);
-        return -1;
-    }
-
-    if (qemudOpenMonitorCommon(conn, vm, monfd, reconnect) < 0)
-        goto error;
-
-    return 0;
-
-error:
-    close(monfd);
-    return -1;
-}
-
-static int
-qemudOpenMonitor(virConnectPtr conn,
-                 virDomainObjPtr vm,
-                 int reconnect)
-{
-    switch (vm->monitor_chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        return qemudOpenMonitorUnix(conn, vm,
-                                    vm->monitor_chr->data.nix.path,
-                                    reconnect);
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        return qemudOpenMonitorPty(conn, vm,
-                                   vm->monitor_chr->data.file.path,
-                                   reconnect);
-    default:
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("unable to handle monitor type: %s"),
-                         virDomainChrTypeToString(vm->monitor_chr->type));
-        return -1;
-    }
-}
-
-/* Returns -1 for error, 0 success, 1 continue reading */
-static int
-qemudExtractMonitorPath(virConnectPtr conn,
-                        const char *haystack,
-                        size_t *offset,
-                        char **path)
+qemudExtractTTYPath(virConnectPtr conn,
+                    const char *haystack,
+                    size_t *offset,
+                    char **path)
 {
     static const char needle[] = "char device redirected to";
     char *tmp, *dev;
@@ -1120,8 +894,8 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nserials ; i++) {
         virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemudExtractMonitorPath(conn, output, &offset,
-                                               &chr->data.file.path)) != 0)
+            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+                                           &chr->data.file.path)) != 0)
                 return ret;
         }
     }
@@ -1130,8 +904,8 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nparallels ; i++) {
         virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemudExtractMonitorPath(conn, output, &offset,
-                                               &chr->data.file.path)) != 0)
+            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+                                           &chr->data.file.path)) != 0)
                 return ret;
         }
     }
@@ -1168,7 +942,7 @@ qemudWaitForMonitor(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudOpenMonitor(conn, vm, 0) < 0)
+    if (qemuConnectMonitor(vm, 0) < 0)
         return -1;
 
     return 0;
