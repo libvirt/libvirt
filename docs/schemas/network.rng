@@ -2,19 +2,29 @@
 <element name="network" xmlns="http://relaxng.org/ns/structure/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <interleave>
+
   <!-- The name of the network, used to refer to it through the API
        and in virsh -->
-  <element name="name"><text/></element>
+  <element name="name">
+    <text/>
+  </element>
+
+  <!-- <uuid> element -->
   <optional>
     <element name="uuid"><text/></element>
   </optional>
+
+  <!-- <bridge> element -->
   <optional>
     <!-- The name of the network to be set up; this will back
          the network on the host -->
     <element name="bridge">
       <optional>
-        <attribute name="name"><text/></attribute>
+        <attribute name="name">
+          <text/>
+        </attribute>
       </optional>
+
       <optional>
         <attribute name="stp">
           <choice>
@@ -23,31 +33,46 @@
           </choice>
         </attribute>
       </optional>
+
       <optional>
-        <attribute name="delay"><data type="integer"/></attribute>
+        <attribute name="delay">
+          <data type="integer"/>
+        </attribute>
       </optional>
+
     </element>
   </optional>
+
+  <!-- <forward> element -->
   <optional>
     <!-- The device through which the bridge is connected to the
          rest of the network -->
     <element name="forward">
-      <optional><attribute name="dev"><text/></attribute></optional>
+      <optional>
+        <attribute name="dev">
+          <text/>
+        </attribute>
+      </optional>
+
       <optional>
         <attribute name="mode">
           <choice>
             <value>nat</value>
-            <value>routed</value>
+            <value>route</value>
           </choice>
         </attribute>
       </optional>
     </element>
   </optional>
+
+  <!-- <domain> element -->
   <optional>
     <element name="domain">
       <attribute name="name"><text/></attribute>
     </element>
   </optional>
+
+  <!-- <ip> element -->
   <optional>
     <!-- The IP element sets up NAT'ing and an optional DHCP server
          local to the host. -->
