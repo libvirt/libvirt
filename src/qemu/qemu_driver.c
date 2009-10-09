@@ -349,6 +349,113 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static virStorageEncryptionPtr
+findDomainDiskEncryption(virConnectPtr conn, virDomainObjPtr vm,
+                         const char *path)
+{
+    bool seen_volume;
+    int i;
+
+    seen_volume = false;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk;
+
+        disk = vm->def->disks[i];
+        if (disk->src != NULL && STREQ(disk->src, path)) {
+            seen_volume = true;
+            if (disk->encryption != NULL)
+                return disk->encryption;
+        }
+    }
+    if (seen_volume)
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("missing <encryption> for volume %s"), path);
+    else
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unexpected passphrase request for volume %s"),
+                         path);
+    return NULL;
+}
+
+
+static int
+findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virConnectPtr conn,
+                         virDomainObjPtr vm,
+                         const char *path,
+                         char **secretRet,
+                         size_t *secretLen)
+{
+    virStorageEncryptionPtr enc;
+    virSecretPtr secret;
+    char *passphrase;
+    unsigned char *data;
+    size_t size;
+
+    if (!conn) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("cannot find secrets without a connection"));
+        return -1;
+    }
+
+    if (conn->secretDriver == NULL ||
+        conn->secretDriver->lookupByUUID == NULL ||
+        conn->secretDriver->getValue == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
+                         _("secret storage not supported"));
+        return -1;
+    }
+
+    enc = findDomainDiskEncryption(conn, vm, path);
+    if (enc == NULL)
+        return -1;
+
+    if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
+        enc->nsecrets != 1 ||
+        enc->secrets[0]->type !=
+        VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("invalid <encryption> for volume %s"), path);
+        return -1;
+    }
+
+    secret = conn->secretDriver->lookupByUUID(conn,
+                                              enc->secrets[0]->uuid);
+    if (secret == NULL)
+        return -1;
+    data = conn->secretDriver->getValue(secret, &size,
+                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    virUnrefSecret(secret);
+    if (data == NULL)
+        return -1;
+
+    if (memchr(data, '\0', size) != NULL) {
+        memset(data, 0, size);
+        VIR_FREE(data);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_SECRET,
+                         _("format='qcow' passphrase for %s must not contain a "
+                           "'\\0'"), path);
+        return -1;
+    }
+
+    if (VIR_ALLOC_N(passphrase, size + 1) < 0) {
+        memset(data, 0, size);
+        VIR_FREE(data);
+        virReportOOMError(conn);
+        return -1;
+    }
+    memcpy(passphrase, data, size);
+    passphrase[size] = '\0';
+
+    memset(data, 0, size);
+    VIR_FREE(data);
+
+    *secretRet = passphrase;
+    *secretLen = size;
+
+    return 0;
+}
+
 static int
 qemuConnectMonitor(virDomainObjPtr vm, int reconnect)
 {
@@ -358,6 +465,9 @@ qemuConnectMonitor(virDomainObjPtr vm, int reconnect)
         VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
         return -1;
     }
+
+    qemuMonitorRegisterDiskSecretLookup(priv->mon,
+                                        findVolumeQcowPassphrase);
 
     return 0;
 }

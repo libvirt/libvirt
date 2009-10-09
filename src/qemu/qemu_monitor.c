@@ -45,6 +45,7 @@ struct _qemuMonitor {
     virDomainObjPtr vm;
 
     qemuMonitorEOFNotify eofCB;
+    qemuMonitorDiskSecretLookup secretCB;
 };
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
@@ -322,6 +323,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
         goto cleanup;
     }
 
+
     return mon;
 
 cleanup:
@@ -341,6 +343,13 @@ void qemuMonitorClose(qemuMonitorPtr mon)
     if (mon->fd != -1)
         close(mon->fd);
     VIR_FREE(mon);
+}
+
+
+void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
+                                         qemuMonitorDiskSecretLookup secretCB)
+{
+    mon->secretCB = secretCB;
 }
 
 
@@ -409,4 +418,17 @@ retry:
         return -1;
     }
     return 0;
+}
+
+
+int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
+                             virConnectPtr conn,
+                             const char *path,
+                             char **secret,
+                             size_t *secretLen)
+{
+    *secret = NULL;
+    *secretLen = 0;
+
+    return mon->secretCB(mon, conn, mon->vm, path, secret, secretLen);
 }

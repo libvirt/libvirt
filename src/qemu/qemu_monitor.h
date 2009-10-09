@@ -36,11 +36,26 @@ typedef void (*qemuMonitorEOFNotify)(qemuMonitorPtr mon,
                                      virDomainObjPtr vm,
                                      int withError);
 
+/* XXX we'd really like to avoid virCOnnectPtr here
+ * It is required so the callback can find the active
+ * secret driver. Need to change this to work like the
+ * security drivers do, to avoid this
+ */
+typedef int (*qemuMonitorDiskSecretLookup)(qemuMonitorPtr mon,
+                                           virConnectPtr conn,
+                                           virDomainObjPtr vm,
+                                           const char *path,
+                                           char **secret,
+                                           size_t *secretLen);
+
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                int reconnect,
                                qemuMonitorEOFNotify eofCB);
 
 void qemuMonitorClose(qemuMonitorPtr mon);
+
+void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
+                                         qemuMonitorDiskSecretLookup secretCB);
 
 int qemuMonitorWrite(qemuMonitorPtr mon,
                      const char *data,
@@ -57,5 +72,10 @@ int qemuMonitorRead(qemuMonitorPtr mon,
 
 int qemuMonitorWaitForInput(qemuMonitorPtr mon);
 
+int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
+                             virConnectPtr conn,
+                             const char *path,
+                             char **secret,
+                             size_t *secretLen);
 
 #endif /* QEMU_MONITOR_H */
