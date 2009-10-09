@@ -78,6 +78,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
+typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
+struct _qemuDomainObjPrivate {
+    qemuMonitorPtr mon;
+};
+
 static int qemudShutdown(void);
 
 static void qemuDriverLock(struct qemud_driver *driver)
@@ -1117,6 +1123,7 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
                    virDomainObjPtr vm) {
     pid_t *cpupids = NULL;
     int ncpupids;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM) {
         vm->nvcpupids = 1;
@@ -1130,7 +1137,7 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
 
     /* What follows is now all KVM specific */
 
-    if ((ncpupids = qemuMonitorGetCPUInfo(vm, &cpupids)) < 0)
+    if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) < 0)
         return -1;
 
     /* Treat failure to get VCPU<->PID mapping as non-fatal */
@@ -1158,6 +1165,7 @@ qemudInitCpus(virConnectPtr conn,
     cpu_set_t mask;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (nodeGetInfo(conn, &nodeinfo) < 0)
         return -1;
@@ -1190,7 +1198,7 @@ qemudInitCpus(virConnectPtr conn,
 
     if (migrateFrom == NULL) {
         /* Allow the CPUS to start executing */
-        if (qemuMonitorStartCPUs(conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("resume operation failed"));
@@ -1206,12 +1214,13 @@ static int
 qemuInitPasswords(struct qemud_driver *driver,
                   virDomainObjPtr vm) {
     int ret = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         (vm->def->graphics[0]->data.vnc.passwd || driver->vncPassword)) {
 
-        ret = qemuMonitorSetVNCPassword(vm,
+        ret = qemuMonitorSetVNCPassword(priv->mon,
                                         vm->def->graphics[0]->data.vnc.passwd ?
                                         vm->def->graphics[0]->data.vnc.passwd :
                                         driver->vncPassword);
@@ -2081,7 +2090,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         (qemuDetectVcpuPIDs(conn, vm) < 0) ||
         (qemudInitCpus(conn, vm, migrateFrom) < 0) ||
         (qemuInitPasswords(driver, vm) < 0) ||
-        (qemuMonitorSetBalloon(vm, vm->def->memory) < 0) ||
+        (qemuMonitorSetBalloon(((qemuDomainObjPrivatePtr)vm->privateData)->mon, vm->def->memory) < 0) ||
         (virDomainSaveStatus(conn, driver->stateDir, vm) < 0)) {
         qemudShutdownVMDaemon(conn, driver, vm);
         ret = -1;
@@ -2611,7 +2620,8 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state != VIR_DOMAIN_PAUSED) {
-        if (qemuMonitorStopCPUs(vm) < 0)
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (qemuMonitorStopCPUs(priv->mon) < 0)
             goto cleanup;
         vm->state = VIR_DOMAIN_PAUSED;
         event = virDomainEventNewFromObj(vm,
@@ -2655,7 +2665,8 @@ static int qemudDomainResume(virDomainPtr dom) {
         goto cleanup;
     }
     if (vm->state == VIR_DOMAIN_PAUSED) {
-        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("resume operation failed"));
@@ -2703,7 +2714,8 @@ static int qemudDomainShutdown(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (qemuMonitorSystemPowerdown(vm) < 0)
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    if (qemuMonitorSystemPowerdown(priv->mon) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2864,7 +2876,8 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (virDomainObjIsActive(vm)) {
-        int r = qemuMonitorSetBalloon(vm, newmem);
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        int r = qemuMonitorSetBalloon(priv->mon, newmem);
         if (r < 0)
             goto cleanup;
 
@@ -2918,7 +2931,8 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     info->maxMem = vm->def->maxmem;
 
     if (virDomainObjIsActive(vm)) {
-        err = qemuMonitorGetBalloonInfo(vm, &balloon);
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
         if (err < 0)
             goto cleanup;
 
@@ -3025,8 +3039,9 @@ static int qemudDomainSave(virDomainPtr dom,
 
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         header.was_running = 1;
-        if (qemuMonitorStopCPUs(vm) < 0)
+        if (qemuMonitorStopCPUs(priv->mon) < 0)
             goto cleanup;
         vm->state = VIR_DOMAIN_PAUSED;
     }
@@ -3069,15 +3084,17 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
-        ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         const char *args[] = {
             prog,
             "-c",
             NULL
         };
-        ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
+        ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
     }
 
     if (ret < 0)
@@ -3144,14 +3161,16 @@ static int qemudDomainCoreDump(virDomainPtr dom,
        the stop command is issued.  */
     resume = (vm->state == VIR_DOMAIN_RUNNING);
 
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     /* Pause domain for non-live dump */
     if (vm->state == VIR_DOMAIN_RUNNING) {
-        if (qemuMonitorStopCPUs(vm) < 0)
+        if (qemuMonitorStopCPUs(priv->mon) < 0)
             goto cleanup;
         paused = 1;
     }
 
-    ret = qemuMonitorMigrateToCommand(vm, 0, args, path);
+    ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
     paused = 1;
 cleanup:
 
@@ -3159,7 +3178,7 @@ cleanup:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     if (resume && paused) {
-        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("resuming after dump failed"));
@@ -3648,7 +3667,8 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     /* If it was running before, resume it now. */
     if (header.was_running) {
-        if (qemuMonitorStartCPUs(conn, vm) < 0) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                                  "%s", _("failed to resume domain"));
@@ -3695,7 +3715,8 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
 
     /* Refresh current memory based on balloon info */
     if (virDomainObjIsActive(vm)) {
-        err = qemuMonitorGetBalloonInfo(vm, &balloon);
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
         if (err < 0)
             goto cleanup;
         if (err > 0)
@@ -4239,10 +4260,11 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         }
     }
 
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     if (newdisk->src) {
-        ret = qemuMonitorChangeMedia(vm, devname, newdisk->src);
+        ret = qemuMonitorChangeMedia(priv->mon, devname, newdisk->src);
     } else {
-        ret = qemuMonitorEjectMedia(vm, devname);
+        ret = qemuMonitorEjectMedia(priv->mon, devname);
     }
 
     if (ret == 0) {
@@ -4262,6 +4284,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
 {
     int i;
     const char* type = virDomainDiskBusTypeToString(dev->data.disk->bus);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4276,7 +4299,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuMonitorAddPCIDisk(vm,
+    if (qemuMonitorAddPCIDisk(priv->mon,
                               dev->data.disk->src,
                               type,
                               &dev->data.disk->pci_addr.domain,
@@ -4293,6 +4316,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                                  virDomainObjPtr vm,
                                                  virDomainDeviceDefPtr dev)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int i;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -4314,7 +4338,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuMonitorAddUSBDisk(vm, dev->data.disk->src) < 0)
+    if (qemuMonitorAddUSBDisk(priv->mon, dev->data.disk->src) < 0)
         return -1;
 
     virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
@@ -4329,6 +4353,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                       unsigned int qemuCmdFlags)
 {
     virDomainNetDefPtr net = dev->data.net;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tapfd_name = NULL;
     int i, tapfd = -1;
     char *nicstr = NULL;
@@ -4374,7 +4399,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         if (virAsprintf(&tapfd_name, "fd-%s", net->hostnet_name) < 0)
             goto no_memory;
 
-        if (qemuMonitorSendFileHandle(vm, tapfd_name, tapfd) < 0)
+        if (qemuMonitorSendFileHandle(priv->mon, tapfd_name, tapfd) < 0)
             goto cleanup;
     }
 
@@ -4382,7 +4407,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                             net->vlan, tapfd_name, &netstr) < 0)
         goto try_tapfd_close;
 
-    if (qemuMonitorAddHostNetwork(vm, netstr) < 0)
+    if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0)
         goto try_tapfd_close;
 
     if (tapfd != -1)
@@ -4392,7 +4417,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     if (qemuBuildNicStr(conn, net, NULL, net->vlan, &nicstr) < 0)
         goto try_remove;
 
-    if (qemuMonitorAddPCINetwork(vm, nicstr,
+    if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
                                  &net->pci_addr.domain,
                                  &net->pci_addr.bus,
                                  &net->pci_addr.slot) < 0)
@@ -4414,14 +4439,14 @@ cleanup:
 try_remove:
     if (!net->hostnet_name || net->vlan == 0)
         VIR_WARN0(_("Unable to remove network backend\n"));
-    else if (qemuMonitorRemoveHostNetwork(vm, net->vlan, net->hostnet_name) < 0)
+    else if (qemuMonitorRemoveHostNetwork(priv->mon, net->vlan, net->hostnet_name) < 0)
         VIR_WARN(_("Failed to remove network backend for vlan %d, net %s"),
                  net->vlan, net->hostnet_name);
     goto cleanup;
 
 try_tapfd_close:
     if (tapfd_name &&
-        qemuMonitorCloseFileHandle(vm, tapfd_name) < 0)
+        qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
         VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_name);
 
     goto cleanup;
@@ -4436,6 +4461,7 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     pciDevice *pci;
 
@@ -4463,7 +4489,7 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuMonitorAddPCIHostDevice(vm,
+    if (qemuMonitorAddPCIHostDevice(priv->mon,
                                     hostdev->source.subsys.u.pci.domain,
                                     hostdev->source.subsys.u.pci.bus,
                                     hostdev->source.subsys.u.pci.slot,
@@ -4488,6 +4514,7 @@ static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
                                           virDomainDeviceDefPtr dev)
 {
     int ret;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError(conn);
@@ -4495,11 +4522,11 @@ static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
     }
 
     if (dev->data.hostdev->source.subsys.u.usb.vendor) {
-        ret = qemuMonitorAddUSBDeviceMatch(vm,
+        ret = qemuMonitorAddUSBDeviceMatch(priv->mon,
                                            dev->data.hostdev->source.subsys.u.usb.vendor,
                                            dev->data.hostdev->source.subsys.u.usb.product);
     } else {
-        ret = qemuMonitorAddUSBDeviceExact(vm,
+        ret = qemuMonitorAddUSBDeviceExact(priv->mon,
                                            dev->data.hostdev->source.subsys.u.usb.bus,
                                            dev->data.hostdev->source.subsys.u.usb.device);
     }
@@ -4673,6 +4700,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
@@ -4694,7 +4722,7 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuMonitorRemovePCIDevice(vm,
+    if (qemuMonitorRemovePCIDevice(priv->mon,
                                    detach->pci_addr.domain,
                                    detach->pci_addr.bus,
                                    detach->pci_addr.slot) < 0)
@@ -4728,6 +4756,7 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
 {
     int i, ret = -1;
     virDomainNetDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
@@ -4753,13 +4782,13 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuMonitorRemovePCIDevice(vm,
+    if (qemuMonitorRemovePCIDevice(priv->mon,
                                    detach->pci_addr.domain,
                                    detach->pci_addr.bus,
                                    detach->pci_addr.slot) < 0)
         goto cleanup;
 
-    if (qemuMonitorRemoveHostNetwork(vm, detach->vlan, detach->hostnet_name) < 0)
+    if (qemuMonitorRemoveHostNetwork(priv->mon, detach->vlan, detach->hostnet_name) < 0)
         goto cleanup;
 
     if (vm->def->nnets > 1) {
@@ -4789,6 +4818,7 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
                                           virDomainDeviceDefPtr dev)
 {
     virDomainHostdevDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int i, ret;
     pciDevice *pci;
 
@@ -4823,7 +4853,7 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuMonitorRemovePCIDevice(vm,
+    if (qemuMonitorRemovePCIDevice(priv->mon,
                                    detach->source.subsys.u.pci.guest_addr.domain,
                                    detach->source.subsys.u.pci.guest_addr.bus,
                                    detach->source.subsys.u.pci.guest_addr.slot) < 0)
@@ -5256,7 +5286,9 @@ qemudDomainBlockStats (virDomainPtr dom,
     if (!qemu_dev_name)
         goto cleanup;
 
-    if (qemuMonitorGetBlockStatsInfo(vm, qemu_dev_name,
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    if (qemuMonitorGetBlockStatsInfo(priv->mon,
+                                     qemu_dev_name,
                                      &stats->rd_req,
                                      &stats->rd_bytes,
                                      &stats->wr_req,
@@ -5453,11 +5485,12 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto cleanup;
     }
 
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     if (flags == VIR_MEMORY_VIRTUAL) {
-        if (qemuMonitorSaveVirtualMemory(vm, offset, size, tmp) < 0)
+        if (qemuMonitorSaveVirtualMemory(priv->mon, offset, size, tmp) < 0)
             goto cleanup;
     } else {
-        if (qemuMonitorSavePhysicalMemory(vm, offset, size, tmp) < 0)
+        if (qemuMonitorSavePhysicalMemory(priv->mon, offset, size, tmp) < 0)
             goto cleanup;
     }
 
@@ -6175,6 +6208,7 @@ static int doNativeMigrate(virDomainPtr dom,
     xmlURIPtr uribits = NULL;
     int status;
     unsigned long long transferred, remaining, total;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
@@ -6196,16 +6230,17 @@ static int doNativeMigrate(virDomainPtr dom,
     }
 
     if (resource > 0 &&
-        qemuMonitorSetMigrationSpeed(vm, resource) < 0)
+        qemuMonitorSetMigrationSpeed(priv->mon, resource) < 0)
         goto cleanup;
 
-    if (qemuMonitorMigrateToHost(vm, 0, uribits->server, uribits->port) < 0)
+    if (qemuMonitorMigrateToHost(priv->mon, 0, uribits->server, uribits->port) < 0)
         goto cleanup;
 
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
      */
-    if (qemuMonitorGetMigrationStatus(vm, &status,
+    if (qemuMonitorGetMigrationStatus(priv->mon,
+                                      &status,
                                       &transferred,
                                       &remaining,
                                       &total) < 0) {
@@ -6270,6 +6305,7 @@ static int doTunnelMigrate(virDomainPtr dom,
                            unsigned long resource)
 {
     struct qemud_driver *driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int client_sock = -1;
     int qemu_sock = -1;
     struct sockaddr_un sa_qemu, sa_client;
@@ -6367,10 +6403,10 @@ static int doTunnelMigrate(virDomainPtr dom,
 
     /*   3. start migration on source */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)
-        internalret = qemuMonitorMigrateToUnix(vm, 1, unixfile);
+        internalret = qemuMonitorMigrateToUnix(priv->mon, 1, unixfile);
     else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
-        internalret = qemuMonitorMigrateToCommand(vm, 1, args, "/dev/null");
+        internalret = qemuMonitorMigrateToCommand(priv->mon, 1, args, "/dev/null");
     } else {
         internalret = -1;
     }
@@ -6386,7 +6422,8 @@ static int doTunnelMigrate(virDomainPtr dom,
     /* it is also possible that the migrate didn't fail initially, but
      * rather failed later on.  Check the output of "info migrate"
      */
-    if (qemuMonitorGetMigrationStatus(vm, &status,
+    if (qemuMonitorGetMigrationStatus(priv->mon,
+                                      &status,
                                       &transferred,
                                       &remaining,
                                       &total) < 0) {
@@ -6412,7 +6449,7 @@ static int doTunnelMigrate(virDomainPtr dom,
 
 cancel:
     if (retval != 0)
-        qemuMonitorMigrateCancel(vm);
+        qemuMonitorMigrateCancel(priv->mon);
 
 finish:
     dname = dname ? dname : dom->name;
@@ -6573,8 +6610,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     if (!(flags & VIR_MIGRATE_LIVE)) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         /* Pause domain for non-live migration */
-        if (qemuMonitorStopCPUs(vm) < 0)
+        if (qemuMonitorStopCPUs(priv->mon) < 0)
             goto cleanup;
         paused = 1;
 
@@ -6611,8 +6649,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
 cleanup:
     if (paused) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         /* we got here through some sort of failure; start the domain again */
-        if (qemuMonitorStartCPUs(dom->conn, vm) < 0) {
+        if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
@@ -6690,13 +6729,14 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                 qemuDomainEventQueue(driver, event);
 
         }
+        qemuDomainObjPrivatePtr priv = vm->privateData;
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
         /* run 'cont' on the destination, which allows migration on qemu
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
          * older qemu's, but it also doesn't hurt anything there
          */
-        if (qemuMonitorStartCPUs(dconn, vm) < 0) {
+        if (qemuMonitorStartCPUs(priv->mon, dconn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("resume operation failed"));

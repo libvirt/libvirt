@@ -29,6 +29,7 @@
 #include <fcntl.h>
 
 #include "qemu_monitor.h"
+#include "qemu_monitor_text.h"
 #include "qemu_conf.h"
 #include "event.h"
 #include "virterror_internal.h"
@@ -431,4 +432,322 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
     *secretLen = 0;
 
     return mon->secretCB(mon, conn, mon->vm, path, secret, secretLen);
+}
+
+
+int
+qemuMonitorStartCPUs(qemuMonitorPtr mon,
+                     virConnectPtr conn)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextStartCPUs(mon, conn);
+}
+
+
+int
+qemuMonitorStopCPUs(qemuMonitorPtr mon)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextStopCPUs(mon);
+}
+
+
+int qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextSystemPowerdown(mon);
+}
+
+
+int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
+                          int **pids)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextGetCPUInfo(mon, pids);
+}
+
+int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
+                              unsigned long *currmem)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextGetBalloonInfo(mon, currmem);
+}
+
+
+int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
+                                 const char *devname,
+                                 long long *rd_req,
+                                 long long *rd_bytes,
+                                 long long *wr_req,
+                                 long long *wr_bytes,
+                                 long long *errs)
+{
+    DEBUG("mon=%p, fd=%d dev=%s", mon, mon->fd, devname);
+
+    return qemuMonitorTextGetBlockStatsInfo(mon, devname,
+                                            rd_req, rd_bytes,
+                                            wr_req, wr_bytes,
+                                            errs);
+}
+
+
+int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
+                              const char *password)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextSetVNCPassword(mon, password);
+}
+
+
+int qemuMonitorSetBalloon(qemuMonitorPtr mon,
+                          unsigned long newmem)
+{
+    DEBUG("mon=%p, fd=%d newmem=%lu", mon, mon->fd, newmem);
+
+    return qemuMonitorTextSetBalloon(mon, newmem);
+}
+
+int qemuMonitorEjectMedia(qemuMonitorPtr mon,
+                          const char *devname)
+{
+    DEBUG("mon=%p, fd=%d devname=%s", mon, mon->fd, devname);
+
+    return qemuMonitorTextEjectMedia(mon, devname);
+}
+
+
+int qemuMonitorChangeMedia(qemuMonitorPtr mon,
+                           const char *devname,
+                           const char *newmedia)
+{
+    DEBUG("mon=%p, fd=%d devname=%s newmedia=%s",
+          mon, mon->fd, devname, newmedia);
+
+    return qemuMonitorTextChangeMedia(mon, devname, newmedia);
+}
+
+
+int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
+                                 unsigned long long offset,
+                                 size_t length,
+                                 const char *path)
+{
+    DEBUG("mon=%p, fd=%d offset=%llu length=%zu path=%s",
+          mon, mon->fd, offset, length, path);
+
+    return qemuMonitorTextSaveVirtualMemory(mon, offset, length, path);
+}
+
+int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
+                                  unsigned long long offset,
+                                  size_t length,
+                                  const char *path)
+{
+    DEBUG("mon=%p, fd=%d offset=%llu length=%zu path=%s",
+          mon, mon->fd, offset, length, path);
+
+    return qemuMonitorTextSavePhysicalMemory(mon, offset, length, path);
+}
+
+
+int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
+                                 unsigned long bandwidth)
+{
+    DEBUG("mon=%p, fd=%d bandwidth=%lu", mon, mon->fd, bandwidth);
+
+    return qemuMonitorTextSetMigrationSpeed(mon, bandwidth);
+}
+
+int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
+                                  int *status,
+                                  unsigned long long *transferred,
+                                  unsigned long long *remaining,
+                                  unsigned long long *total)
+{
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextGetMigrationStatus(mon, status,
+                                             transferred,
+                                             remaining,
+                                             total);
+}
+
+
+int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
+                             int background,
+                             const char *hostname,
+                             int port)
+{
+    DEBUG("mon=%p, fd=%d hostname=%s port=%d",
+          mon, mon->fd, hostname, port);
+
+    return qemuMonitorTextMigrateToHost(mon, background, hostname, port);
+}
+
+
+int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
+                                int background,
+                                const char * const *argv,
+                                const char *target)
+{
+    DEBUG("mon=%p, fd=%d argv=%p target=%s",
+          mon, mon->fd, argv, target);
+
+    return qemuMonitorTextMigrateToCommand(mon, background, argv, target);
+}
+
+int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
+                             int background,
+                             const char *unixfile)
+{
+    DEBUG("mon=%p fd=%d unixfile=%s",
+          mon, mon->fd, unixfile);
+
+    return qemuMonitorTextMigrateToUnix(mon, background, unixfile);
+}
+
+int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
+{
+    DEBUG("mon=%p fd=%d", mon, mon->fd);
+
+    return qemuMonitorTextMigrateCancel(mon);
+}
+
+int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
+                          const char *path)
+{
+    DEBUG("mon=%p, fd=%d path=%s", mon, mon->fd, path);
+
+    return qemuMonitorTextAddUSBDisk(mon, path);
+}
+
+
+int qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
+                                 int bus,
+                                 int dev)
+{
+    DEBUG("mon=%p, fd=%d bus=%d dev=%d", mon, mon->fd, bus, dev);
+
+    return qemuMonitorTextAddUSBDeviceExact(mon, bus, dev);
+}
+
+int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
+                                 int vendor,
+                                 int product)
+{
+    DEBUG("mon=%p, fd=%d vendor=%d product=%d",
+          mon, mon->fd, vendor, product);
+
+    return qemuMonitorTextAddUSBDeviceMatch(mon, vendor, product);
+}
+
+
+int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
+                                unsigned hostDomain,
+                                unsigned hostBus,
+                                unsigned hostSlot,
+                                unsigned hostFunction,
+                                unsigned *guestDomain,
+                                unsigned *guestBus,
+                                unsigned *guestSlot)
+{
+    DEBUG("mon=%p, fd=%d domain=%d bus=%d slot=%d function=%d",
+          mon, mon->fd,
+          hostDomain, hostBus, hostSlot, hostFunction);
+
+    return qemuMonitorTextAddPCIHostDevice(mon, hostDomain,
+                                           hostBus, hostSlot,
+                                           hostFunction,
+                                           guestDomain,
+                                           guestBus,
+                                           guestSlot);
+}
+
+
+int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
+                          const char *path,
+                          const char *bus,
+                          unsigned *guestDomain,
+                          unsigned *guestBus,
+                          unsigned *guestSlot)
+{
+    DEBUG("mon=%p, fd=%d path=%s bus=%s",
+          mon, mon->fd, path, bus);
+
+    return qemuMonitorTextAddPCIDisk(mon, path, bus,
+                                     guestDomain, guestBus, guestSlot);
+}
+
+
+int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
+                             const char *nicstr,
+                             unsigned *guestDomain,
+                             unsigned *guestBus,
+                             unsigned *guestSlot)
+{
+    DEBUG("mon=%p, fd=%d nicstr=%s", mon, mon->fd, nicstr);
+
+    return qemuMonitorTextAddPCINetwork(mon, nicstr, guestDomain,
+                                        guestBus, guestSlot);
+}
+
+
+int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
+                               unsigned guestDomain,
+                               unsigned guestBus,
+                               unsigned guestSlot)
+{
+    DEBUG("mon=%p, fd=%d domain=%d bus=%d slot=%d",
+          mon, mon->fd, guestDomain, guestBus, guestSlot);
+
+    return qemuMonitorTextRemovePCIDevice(mon, guestDomain,
+                                          guestBus, guestSlot);
+}
+
+
+int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
+                              const char *fdname,
+                              int fd)
+{
+    DEBUG("mon=%p, fd=%d fdname=%s fd=%d",
+          mon, mon->fd, fdname, fd);
+
+    return qemuMonitorTextSendFileHandle(mon, fdname, fd);
+}
+
+
+int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
+                               const char *fdname)
+{
+    DEBUG("mon=%p, fd=%d fdname=%s",
+          mon, mon->fd, fdname);
+
+    return qemuMonitorTextCloseFileHandle(mon, fdname);
+}
+
+
+int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
+                              const char *netstr)
+{
+    DEBUG("mon=%p, fd=%d netstr=%s",
+          mon, mon->fd, netstr);
+
+    return qemuMonitorTextAddHostNetwork(mon, netstr);
+}
+
+
+int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
+                                 int vlan,
+                                 const char *netname)
+{
+    DEBUG("mon=%p, fd=%d netname=%s",
+          mon, mon->fd, netname);
+
+    return qemuMonitorTextRemoveHostNetwork(mon, vlan, netname);
 }

@@ -37,7 +37,6 @@
 #include "security/security_driver.h"
 #include "cgroup.h"
 #include "pci.h"
-#include "qemu_monitor.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -132,16 +131,6 @@ struct qemud_driver {
     char *saveImageFormat;
 
     pciDeviceList *activePciHostdevs;
-};
-
-/* XXX temporarily exposed.
- * This will be moved back into qemu_driver.c, once the
- * qemu_monitor* code is refactored a little more
- */
-typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
-typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
-struct _qemuDomainObjPrivate {
-    qemuMonitorPtr mon;
 };
 
 

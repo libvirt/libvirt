@@ -78,4 +78,152 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              char **secret,
                              size_t *secretLen);
 
+
+int qemuMonitorStartCPUs(qemuMonitorPtr mon,
+                         virConnectPtr conn);
+int qemuMonitorStopCPUs(qemuMonitorPtr mon);
+
+int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
+
+int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
+                          int **pids);
+int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
+                              unsigned long *currmem);
+int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
+                                 const char *devname,
+                                 long long *rd_req,
+                                 long long *rd_bytes,
+                                 long long *wr_req,
+                                 long long *wr_bytes,
+                                 long long *errs);
+
+
+int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
+                              const char *password);
+int qemuMonitorSetBalloon(qemuMonitorPtr mon,
+                          unsigned long newmem);
+
+/* XXX should we pass the virDomainDiskDefPtr instead
+ * and hide devname details inside monitor. Reconsider
+ * this when doing the QMP implementation
+ */
+int qemuMonitorEjectMedia(qemuMonitorPtr mon,
+                          const char *devname);
+int qemuMonitorChangeMedia(qemuMonitorPtr mon,
+                           const char *devname,
+                           const char *newmedia);
+
+
+int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
+                                 unsigned long long offset,
+                                 size_t length,
+                                 const char *path);
+int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
+                                  unsigned long long offset,
+                                  size_t length,
+                                  const char *path);
+
+int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
+                                 unsigned long bandwidth);
+
+enum {
+    QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
+    QEMU_MONITOR_MIGRATION_STATUS_ACTIVE,
+    QEMU_MONITOR_MIGRATION_STATUS_COMPLETED,
+    QEMU_MONITOR_MIGRATION_STATUS_ERROR,
+    QEMU_MONITOR_MIGRATION_STATUS_CANCELLED,
+
+    QEMU_MONITOR_MIGRATION_STATUS_LAST
+};
+
+int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
+                                  int *status,
+                                  unsigned long long *transferred,
+                                  unsigned long long *remaining,
+                                  unsigned long long *total);
+
+int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
+                             int background,
+                             const char *hostname,
+                             int port);
+
+int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
+                                int background,
+                                const char * const *argv,
+                                const char *target);
+
+int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
+                             int background,
+                             const char *unixfile);
+
+int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
+
+
+/* XXX disk driver type eg,  qcow/etc.
+ * XXX cache mode
+ */
+int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
+                          const char *path);
+
+int qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
+                                 int bus,
+                                 int dev);
+int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
+                                 int vendor,
+                                 int product);
+
+
+int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
+                                unsigned hostDomain,
+                                unsigned hostBus,
+                                unsigned hostSlot,
+                                unsigned hostFunction,
+                                unsigned *guestDomain,
+                                unsigned *guestBus,
+                                unsigned *guestSlot);
+
+/* XXX disk driver type eg,  qcow/etc.
+ * XXX cache mode
+ */
+int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
+                          const char *path,
+                          const char *bus,
+                          unsigned *guestDomain,
+                          unsigned *guestBus,
+                          unsigned *guestSlot);
+
+/* XXX do we really want to hardcode 'nicstr' as the
+ * sendable item here
+ */
+int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
+                             const char *nicstr,
+                             unsigned *guestDomain,
+                             unsigned *guestBus,
+                             unsigned *guestSlot);
+
+int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
+                               unsigned guestDomain,
+                               unsigned guestBus,
+                               unsigned guestSlot);
+
+
+int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
+                              const char *fdname,
+                              int fd);
+
+int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
+                               const char *fdname);
+
+
+/* XXX do we really want to hardcode 'netstr' as the
+ * sendable item here
+ */
+int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
+                              const char *netstr);
+
+int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
+                                 int vlan,
+                                 const char *netname);
+
+
 #endif /* QEMU_MONITOR_H */
