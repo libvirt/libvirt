@@ -187,5 +187,6 @@ int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int 
 
 int xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path, unsigned long long offset, size_t size, void *buffer);
 int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
+int xenDaemonNumOfDomains(virConnectPtr conn);
 
 #endif /* __XEND_INTERNAL_H_ */

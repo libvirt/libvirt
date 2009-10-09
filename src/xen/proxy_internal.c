@@ -40,7 +40,6 @@ static virDrvOpenStatus xenProxyOpen(virConnectPtr conn, virConnectAuthPtr auth,
 static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *xenProxyGetCapabilities(virConnectPtr conn);
-static int xenProxyNumOfDomains(virConnectPtr conn);
 static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
 static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 static char *xenProxyDomainGetOSType(virDomainPtr domain);
@@ -607,7 +606,7 @@ xenProxyListDomains(virConnectPtr conn, int *ids, int maxids)
  *
  * Returns the number of domain found or -1 in case of error
  */
-static int
+int
 xenProxyNumOfDomains(virConnectPtr conn)
 {
     virProxyPacket req;

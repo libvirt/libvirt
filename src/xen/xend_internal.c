@@ -3696,7 +3696,7 @@ error:
  *
  * Returns the number of domain found or -1 in case of error
  */
-static int
+int
 xenDaemonNumOfDomains(virConnectPtr conn)
 {
     struct sexpr *root = NULL;

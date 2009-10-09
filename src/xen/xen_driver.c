@@ -589,13 +589,31 @@ static int
 xenUnifiedNumOfDomains (virConnectPtr conn)
 {
     GET_PRIVATE(conn);
-    int i, ret;
+    int ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->numOfDomains) {
-            ret = drivers[i]->numOfDomains (conn);
-            if (ret >= 0) return ret;
-        }
+    /* Try xenstore. */
+    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
+        ret = xenStoreNumOfDomains (conn);
+        if (ret >= 0) return ret;
+    }
+
+    /* Try HV. */
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorNumOfDomains (conn);
+        if (ret >= 0) return ret;
+    }
+
+    /* Try xend. */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonNumOfDomains (conn);
+        if (ret >= 0) return ret;
+    }
+
+    /* Try proxy. */
+    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
+        ret = xenProxyNumOfDomains (conn);
+        if (ret >= 0) return ret;
+    }
 
     return -1;
 }
