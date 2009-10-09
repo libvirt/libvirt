@@ -2789,6 +2789,28 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
     return ostype;
 }
 
+int
+xenHypervisorHasDomain(virConnectPtr conn,
+                       int id)
+{
+    xenUnifiedPrivatePtr priv;
+    xen_getdomaininfo dominfo;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->handle < 0)
+        return 0;
+
+    XEN_GETDOMAININFO_CLEAR(dominfo);
+
+    if (virXen_getdomaininfo(priv->handle, id, &dominfo) < 0)
+        return 0;
+
+    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != id)
+        return 0;
+
+    return 1;
+}
+
 virDomainPtr
 xenHypervisorLookupDomainByID(virConnectPtr conn,
                               int id)
