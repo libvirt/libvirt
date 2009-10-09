@@ -1168,6 +1168,9 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
+    if (virDomainObjListInit(&driver->domains) < 0)
+        goto cleanup;
+
     if (!(driver->caps = openvzCapsInit()))
         goto cleanup;
 
@@ -1247,18 +1250,13 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
 
 static int openvzNumDomains(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
-    int nactive = 0, i;
+    int n;
 
     openvzDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (virDomainIsActive(driver->domains.objs[i]))
-            nactive++;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListNumOfDomains(&driver->domains, 1);
     openvzDriverUnlock(driver);
 
-    return nactive;
+    return n;
 }
 
 static int openvzListDefinedDomains(virConnectPtr conn,
@@ -1350,18 +1348,13 @@ Version: 2.2
 
 static int openvzNumDefinedDomains(virConnectPtr conn) {
     struct openvz_driver *driver =  conn->privateData;
-    int ninactive = 0, i;
+    int n;
 
     openvzDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (!virDomainIsActive(driver->domains.objs[i]))
-            ninactive++;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListNumOfDomains(&driver->domains, 0);
     openvzDriverUnlock(driver);
 
-    return ninactive;
+    return n;
 }
 
 static virDriver openvzDriver = {

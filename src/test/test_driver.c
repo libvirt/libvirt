@@ -361,6 +361,9 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     }
 
+    if (virDomainObjListInit(&privconn->domains) < 0)
+        goto error;
+
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     // Numa setup
@@ -442,7 +445,7 @@ static int testOpenDefault(virConnectPtr conn) {
     return VIR_DRV_OPEN_SUCCESS;
 
 error:
-    virDomainObjListFree(&privconn->domains);
+    virDomainObjListDeinit(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
@@ -591,6 +594,9 @@ static int testOpenFromFile(virConnectPtr conn,
 
     testDriverLock(privconn);
     conn->privateData = privconn;
+
+    if (virDomainObjListInit(&privconn->domains) < 0)
+        goto error;
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
@@ -920,7 +926,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(pools);
     if (fd != -1)
         close(fd);
-    virDomainObjListFree(&privconn->domains);
+    virDomainObjListDeinit(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
@@ -989,7 +995,7 @@ static int testClose(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     testDriverLock(privconn);
     virCapabilitiesFree(privconn->caps);
-    virDomainObjListFree(&privconn->domains);
+    virDomainObjListDeinit(&privconn->domains);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
@@ -1059,15 +1065,13 @@ static char *testGetCapabilities (virConnectPtr conn)
 static int testNumOfDomains(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-    unsigned int numActive = 0, i;
+    int count;
 
     testDriverLock(privconn);
-    for (i = 0 ; i < privconn->domains.count ; i++)
-        if (virDomainIsActive(privconn->domains.objs[i]))
-            numActive++;
+    count = virDomainObjListNumOfDomains(&privconn->domains, 1);
     testDriverUnlock(privconn);
 
-    return numActive;
+    return count;
 }
 
 static virDomainPtr
@@ -1196,15 +1200,10 @@ static int testListDomains (virConnectPtr conn,
                             int maxids)
 {
     testConnPtr privconn = conn->privateData;
-    unsigned int n = 0, i;
+    int n;
 
     testDriverLock(privconn);
-    for (i = 0 ; i < privconn->domains.count && n < maxids ; i++) {
-        virDomainObjLock(privconn->domains.objs[i]);
-        if (virDomainIsActive(privconn->domains.objs[i]))
-            ids[n++] = privconn->domains.objs[i]->def->id;
-        virDomainObjUnlock(privconn->domains.objs[i]);
-    }
+    n = virDomainObjListGetActiveIDs(&privconn->domains, ids, maxids);
     testDriverUnlock(privconn);
 
     return n;
@@ -1875,47 +1874,28 @@ cleanup:
 
 static int testNumOfDefinedDomains(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
-    unsigned int numInactive = 0, i;
+    int count;
 
     testDriverLock(privconn);
-    for (i = 0 ; i < privconn->domains.count ; i++) {
-        virDomainObjLock(privconn->domains.objs[i]);
-        if (!virDomainIsActive(privconn->domains.objs[i]))
-            numInactive++;
-        virDomainObjUnlock(privconn->domains.objs[i]);
-    }
+    count = virDomainObjListNumOfDomains(&privconn->domains, 0);
     testDriverUnlock(privconn);
 
-    return numInactive;
+    return count;
 }
 
 static int testListDefinedDomains(virConnectPtr conn,
                                   char **const names,
                                   int maxnames) {
+
     testConnPtr privconn = conn->privateData;
-    unsigned int n = 0, i;
+    int n;
 
     testDriverLock(privconn);
     memset(names, 0, sizeof(*names)*maxnames);
-    for (i = 0 ; i < privconn->domains.count && n < maxnames ; i++) {
-        virDomainObjLock(privconn->domains.objs[i]);
-        if (!virDomainIsActive(privconn->domains.objs[i]) &&
-            !(names[n++] = strdup(privconn->domains.objs[i]->def->name))) {
-            virDomainObjUnlock(privconn->domains.objs[i]);
-            goto no_memory;
-        }
-        virDomainObjUnlock(privconn->domains.objs[i]);
-    }
+    n = virDomainObjListGetInactiveNames(&privconn->domains, names, maxnames);
     testDriverUnlock(privconn);
 
     return n;
-
-no_memory:
-    virReportOOMError(conn);
-    for (n = 0 ; n < maxnames ; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
 }
 
 static virDomainPtr testDomainDefineXML(virConnectPtr conn,

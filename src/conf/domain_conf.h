@@ -33,6 +33,7 @@
 #include "storage_encryption_conf.h"
 #include "util.h"
 #include "threads.h"
+#include "hash.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -640,8 +641,9 @@ struct _virDomainObj {
 typedef struct _virDomainObjList virDomainObjList;
 typedef virDomainObjList *virDomainObjListPtr;
 struct _virDomainObjList {
-    unsigned int count;
-    virDomainObjPtr *objs;
+    /* uuid string -> virDomainObj  mapping
+     * for O(1), lockless lookup-by-uuid */
+    virHashTable *objs;
 };
 
 static inline int
@@ -650,6 +652,8 @@ virDomainIsActive(virDomainObjPtr dom)
     return dom->def->id != -1;
 }
 
+int virDomainObjListInit(virDomainObjListPtr objs);
+void virDomainObjListDeinit(virDomainObjListPtr objs);
 
 virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
                                   int id);
@@ -672,7 +676,6 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjFree(virDomainObjPtr vm);
-void virDomainObjListFree(virDomainObjListPtr vms);
 
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
                                    virDomainObjListPtr doms,
@@ -783,6 +786,16 @@ int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 
 void virDomainObjLock(virDomainObjPtr obj);
 void virDomainObjUnlock(virDomainObjPtr obj);
+
+int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active);
+
+int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
+                                 int *ids,
+                                 int maxids);
+int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
+                                     char **const names,
+                                     int maxnames);
+
 
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)

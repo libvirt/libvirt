@@ -205,51 +205,93 @@ VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
 
 #ifndef PROXY
 
+int virDomainObjListInit(virDomainObjListPtr doms)
+{
+    doms->objs = virHashCreate(50);
+    if (!doms->objs) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+    return 0;
+}
+
+
+static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
+{
+    virDomainObjPtr obj = payload;
+    virDomainObjFree(obj);
+}
+
+void virDomainObjListDeinit(virDomainObjListPtr doms)
+{
+    if (doms->objs)
+        virHashFree(doms->objs, virDomainObjListDeallocator);
+}
+
+
+static int virDomainObjListSearchID(const void *payload,
+                                    const char *name ATTRIBUTE_UNUSED,
+                                    const void *data)
+{
+    virDomainObjPtr obj = (virDomainObjPtr)payload;
+    const int *id = data;
+    int want = 0;
+
+    virDomainObjLock(obj);
+    if (virDomainIsActive(obj) &&
+        obj->def->id == *id)
+        want = 1;
+    virDomainObjUnlock(obj);
+    return want;
+}
+
 virDomainObjPtr virDomainFindByID(const virDomainObjListPtr doms,
                                   int id)
 {
-    unsigned int i;
-
-    for (i = 0 ; i < doms->count ; i++) {
-        virDomainObjLock(doms->objs[i]);
-        if (virDomainIsActive(doms->objs[i]) &&
-            doms->objs[i]->def->id == id)
-            return doms->objs[i];
-        virDomainObjUnlock(doms->objs[i]);
-    }
-
-    return NULL;
+    virDomainObjPtr obj;
+    obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
+    if (obj)
+        virDomainObjLock(obj);
+    return obj;
 }
 
 
 virDomainObjPtr virDomainFindByUUID(const virDomainObjListPtr doms,
                                     const unsigned char *uuid)
 {
-    unsigned int i;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainObjPtr obj;
 
-    for (i = 0 ; i < doms->count ; i++) {
-        virDomainObjLock(doms->objs[i]);
-        if (!memcmp(doms->objs[i]->def->uuid, uuid, VIR_UUID_BUFLEN))
-            return doms->objs[i];
-        virDomainObjUnlock(doms->objs[i]);
-    }
+    virUUIDFormat(uuid, uuidstr);
 
-    return NULL;
+    obj = virHashLookup(doms->objs, uuidstr);
+    if (obj)
+        virDomainObjLock(obj);
+    return obj;
+}
+
+static int virDomainObjListSearchName(const void *payload,
+                                      const char *name ATTRIBUTE_UNUSED,
+                                      const void *data)
+{
+    virDomainObjPtr obj = (virDomainObjPtr)payload;
+    int want = 0;
+
+    virDomainObjLock(obj);
+    if (STREQ(obj->def->name, (const char *)data))
+        want = 1;
+    virDomainObjUnlock(obj);
+    return want;
 }
 
 virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
                                     const char *name)
 {
-    unsigned int i;
-
-    for (i = 0 ; i < doms->count ; i++) {
-        virDomainObjLock(doms->objs[i]);
-        if (STREQ(doms->objs[i]->def->name, name))
-            return doms->objs[i];
-        virDomainObjUnlock(doms->objs[i]);
-    }
-
-    return NULL;
+    virDomainObjPtr obj;
+    obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
+    if (obj)
+        virDomainObjLock(obj);
+    return obj;
 }
 
 #endif /* !PROXY */
@@ -557,21 +599,6 @@ void virDomainObjFree(virDomainObjPtr dom)
     VIR_FREE(dom);
 }
 
-void virDomainObjListFree(virDomainObjListPtr vms)
-{
-    unsigned int i;
-
-    if (!vms)
-        return;
-
-    for (i = 0 ; i < vms->count ; i++)
-        virDomainObjFree(vms->objs[i]);
-
-    VIR_FREE(vms->objs);
-    vms->count = 0;
-}
-
-
 static virDomainObjPtr virDomainObjNew(virConnectPtr conn)
 {
     virDomainObjPtr domain;
@@ -601,6 +628,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
                                    const virDomainDefPtr def)
 {
     virDomainObjPtr domain;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((domain = virDomainFindByUUID(doms, def->uuid))) {
         if (!virDomainIsActive(domain)) {
@@ -615,49 +643,34 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
         return domain;
     }
 
-    if (VIR_REALLOC_N(doms->objs, doms->count + 1) < 0) {
+    if (!(domain = virDomainObjNew(conn)))
+        return NULL;
+    domain->def = def;
+
+    virUUIDFormat(def->uuid, uuidstr);
+    if (virHashAddEntry(doms->objs, uuidstr, domain) < 0) {
+        VIR_FREE(domain);
         virReportOOMError(conn);
         return NULL;
     }
 
-    if (!(domain = virDomainObjNew(conn)))
-        return NULL;
-
-    domain->def = def;
-
-    doms->objs[doms->count] = domain;
-    doms->count++;
-
     return domain;
 }
 
+/*
+ * The caller must hold a lock  on the driver owning 'doms',
+ * and must also have locked 'dom', to ensure no one else
+ * is either waiting for 'dom' or still usingn it
+ */
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom)
 {
-    unsigned int i;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virUUIDFormat(dom->def->uuid, uuidstr);
 
     virDomainObjUnlock(dom);
 
-    for (i = 0 ; i < doms->count ; i++) {
-        virDomainObjLock(doms->objs[i]);
-        if (doms->objs[i] == dom) {
-            virDomainObjUnlock(doms->objs[i]);
-            virDomainObjFree(doms->objs[i]);
-
-            if (i < (doms->count - 1))
-                memmove(doms->objs + i, doms->objs + i + 1,
-                        sizeof(*(doms->objs)) * (doms->count - (i + 1)));
-
-            if (VIR_REALLOC_N(doms->objs, doms->count - 1) < 0) {
-                ; /* Failure to reduce memory allocation isn't fatal */
-            }
-            doms->count--;
-
-            break;
-        }
-        virDomainObjUnlock(doms->objs[i]);
-    }
-
+    virHashRemoveEntry(doms->objs, uuidstr, virDomainObjListDeallocator);
 }
 
 
@@ -4784,7 +4797,7 @@ static virDomainObjPtr virDomainLoadStatus(virConnectPtr conn,
 {
     char *statusFile = NULL;
     virDomainObjPtr obj = NULL;
-    virDomainObjPtr tmp = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((statusFile = virDomainConfigFile(conn, statusDir, name)) == NULL)
         goto error;
@@ -4792,22 +4805,19 @@ static virDomainObjPtr virDomainLoadStatus(virConnectPtr conn,
     if (!(obj = virDomainObjParseFile(conn, caps, statusFile)))
         goto error;
 
-    tmp = virDomainFindByName(doms, obj->def->name);
-    if (tmp) {
-        virDomainObjUnlock(obj);
+    virUUIDFormat(obj->def->uuid, uuidstr);
+
+    if (virHashLookup(doms->objs, uuidstr) != NULL) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("unexpected domain %s already exists"),
                              obj->def->name);
         goto error;
     }
 
-    if (VIR_REALLOC_N(doms->objs, doms->count + 1) < 0) {
+    if (virHashAddEntry(doms->objs, uuidstr, obj) < 0) {
         virReportOOMError(conn);
         goto error;
     }
-
-    doms->objs[doms->count] = obj;
-    doms->count++;
 
     if (notify)
         (*notify)(obj, 1, opaque);
@@ -4993,6 +5003,108 @@ void virDomainObjLock(virDomainObjPtr obj)
 void virDomainObjUnlock(virDomainObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
+}
+
+
+static void virDomainObjListCountActive(void *payload, const char *name ATTRIBUTE_UNUSED, void *data)
+{
+    virDomainObjPtr obj = payload;
+    int *count = data;
+    virDomainObjLock(obj);
+    if (virDomainIsActive(obj))
+        (*count)++;
+    virDomainObjUnlock(obj);
+}
+
+static void virDomainObjListCountInactive(void *payload, const char *name ATTRIBUTE_UNUSED, void *data)
+{
+    virDomainObjPtr obj = payload;
+    int *count = data;
+    virDomainObjLock(obj);
+    if (!virDomainIsActive(obj))
+        (*count)++;
+    virDomainObjUnlock(obj);
+}
+
+int virDomainObjListNumOfDomains(virDomainObjListPtr doms, int active)
+{
+    int count = 0;
+    if (active)
+        virHashForEach(doms->objs, virDomainObjListCountActive, &count);
+    else
+        virHashForEach(doms->objs, virDomainObjListCountInactive, &count);
+    return count;
+}
+
+struct virDomainIDData {
+    int numids;
+    int maxids;
+    int *ids;
+};
+
+static void virDomainObjListCopyActiveIDs(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+{
+    virDomainObjPtr obj = payload;
+    struct virDomainIDData *data = opaque;
+    virDomainObjLock(obj);
+    if (virDomainIsActive(obj) && data->numids < data->maxids)
+        data->ids[data->numids++] = obj->def->id;
+    virDomainObjUnlock(obj);
+}
+
+int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
+                                 int *ids,
+                                 int maxids)
+{
+    struct virDomainIDData data = { 0, maxids, ids };
+    virHashForEach(doms->objs, virDomainObjListCopyActiveIDs, &data);
+    return data.numids;
+}
+
+struct virDomainNameData {
+    int oom;
+    int numnames;
+    int maxnames;
+    char **const names;
+};
+
+static void virDomainObjListCopyInactiveNames(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+{
+    virDomainObjPtr obj = payload;
+    struct virDomainNameData *data = opaque;
+
+    if (data->oom)
+        return;
+
+    virDomainObjLock(obj);
+    if (!virDomainIsActive(obj) && data->numnames < data->maxnames) {
+        if (!(data->names[data->numnames] = strdup(obj->def->name)))
+            data->oom = 1;
+        else
+            data->numnames++;
+    }
+    virDomainObjUnlock(obj);
+}
+
+
+int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
+                                     char **const names,
+                                     int maxnames)
+{
+    struct virDomainNameData data = { 0, 0, maxnames, names };
+    int i;
+    virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
+    if (data.oom) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    return data.numnames;
+
+cleanup:
+    for (i = 0 ; i < data.numnames ; i++)
+        VIR_FREE(data.names[i]);
+    return -1;
 }
 
 #endif /* ! PROXY */

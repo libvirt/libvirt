@@ -421,7 +421,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     if (!driver)
         return;
 
-    virDomainObjListFree(&driver->domains);
+    virDomainObjListDeinit(&driver->domains);
     virCapabilitiesFree(driver->caps);
 }
 
@@ -509,11 +509,10 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         openvzReadNetworkConf(NULL, dom->def, veid);
         openvzReadFSConf(NULL, dom->def, veid);
 
-        if (VIR_REALLOC_N(driver->domains.objs,
-                          driver->domains.count + 1) < 0)
+        virUUIDFormat(dom->def->uuid, uuidstr);
+        if (virHashAddEntry(driver->domains.objs, uuidstr, dom) < 0)
             goto no_memory;
 
-        driver->domains.objs[driver->domains.count++] = dom;
         dom = NULL;
     }
 

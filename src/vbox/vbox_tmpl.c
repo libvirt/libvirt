@@ -103,7 +103,6 @@ typedef struct {
     virMutex lock;
     int version;
 
-    virDomainObjList domains;
     virCapsPtr caps;
 
     IVirtualBox *vboxObj;
@@ -485,7 +484,6 @@ static void vboxUninitialize(vboxGlobalData *data) {
     if (data->pFuncs)
         data->pFuncs->pfnComUninitialize();
 
-    virDomainObjListFree(&data->domains);
     virCapabilitiesFree(data->caps);
 #if VBOX_API_VERSION == 2002
     /* No domainEventCallbacks in 2.2.* version */

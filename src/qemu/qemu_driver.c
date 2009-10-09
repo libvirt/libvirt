@@ -201,9 +201,42 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
 }
 
 
+struct qemuAutostartData {
+    struct qemud_driver *driver;
+    virConnectPtr conn;
+};
+static void
+qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
+{
+    virDomainObjPtr vm = payload;
+    struct qemuAutostartData *data = opaque;
+
+    virDomainObjLock(vm);
+    if (vm->autostart &&
+        !virDomainIsActive(vm)) {
+        int ret;
+
+        virResetLastError();
+        ret = qemudStartVMDaemon(data->conn, data->driver, vm, NULL, -1);
+        if (ret < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
+                      vm->def->name,
+                      err ? err->message : "");
+        } else {
+            virDomainEventPtr event =
+                virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STARTED,
+                                         VIR_DOMAIN_EVENT_STARTED_BOOTED);
+            if (event)
+                qemuDomainEventQueue(data->driver, event);
+        }
+    }
+    virDomainObjUnlock(vm);
+}
+
 static void
 qemudAutostartConfigs(struct qemud_driver *driver) {
-    unsigned int i;
     /* XXX: Figure out a better way todo this. The domain
      * startup code needs a connection handle in order
      * to lookup the bridge associated with a virtual
@@ -213,33 +246,10 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
                                         "qemu:///system" :
                                         "qemu:///session");
     /* Ignoring NULL conn which is mostly harmless here */
+    struct qemuAutostartData data = { driver, conn };
 
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjPtr vm = driver->domains.objs[i];
-        virDomainObjLock(vm);
-        if (vm->autostart &&
-            !virDomainIsActive(vm)) {
-            int ret;
-
-            virResetLastError();
-            ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
-            if (ret < 0) {
-                virErrorPtr err = virGetLastError();
-                VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
-                          vm->def->name,
-                          err ? err->message : "");
-            } else {
-                virDomainEventPtr event =
-                    virDomainEventNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_STARTED,
-                                             VIR_DOMAIN_EVENT_STARTED_BOOTED);
-                if (event)
-                    qemuDomainEventQueue(driver, event);
-            }
-        }
-        virDomainObjUnlock(vm);
-    }
+    virHashForEach(driver->domains.objs, qemuAutostartDomain, &data);
     qemuDriverUnlock(driver);
 
     if (conn)
@@ -284,7 +294,6 @@ cleanup:
 
 
 static int qemudOpenMonitor(virConnectPtr conn,
-                            struct qemud_driver* driver,
                             virDomainObjPtr vm,
                             int reconnect);
 
@@ -293,13 +302,16 @@ static int qemudOpenMonitor(virConnectPtr conn,
  * Open an existing VM's monitor, re-detect VCPU threads
  * and re-reserve the security labels in use
  */
-static int
-qemuReconnectDomain(struct qemud_driver *driver,
-                    virDomainObjPtr obj)
+static void
+qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
 {
     int rc;
+    virDomainObjPtr obj = payload;
+    struct qemud_driver *driver = opaque;
 
-    if ((rc = qemudOpenMonitor(NULL, driver, obj, 1)) != 0) {
+    virDomainObjLock(obj);
+
+    if ((rc = qemudOpenMonitor(NULL, obj, 1)) != 0) {
         VIR_ERROR(_("Failed to reconnect monitor for %s: %d\n"),
                   obj->def->name, rc);
         goto error;
@@ -313,15 +325,20 @@ qemuReconnectDomain(struct qemud_driver *driver,
         driver->securityDriver &&
         driver->securityDriver->domainReserveSecurityLabel &&
         driver->securityDriver->domainReserveSecurityLabel(NULL, obj) < 0)
-        return -1;
+        goto error;
 
     if (obj->def->id >= driver->nextvmid)
         driver->nextvmid = obj->def->id + 1;
 
-    return 0;
+    virDomainObjUnlock(obj);
+    return;
 
 error:
-    return -1;
+    /* We can't get the monitor back, so must kill the VM
+     * to remove danger of it ending up running twice if
+     * user tries to start it again later */
+    qemudShutdownVMDaemon(NULL, driver, obj);
+    virDomainObjUnlock(obj);
 }
 
 /**
@@ -333,20 +350,7 @@ error:
 static void
 qemuReconnectDomains(struct qemud_driver *driver)
 {
-    int i;
-
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjPtr obj = driver->domains.objs[i];
-
-        virDomainObjLock(obj);
-        if (qemuReconnectDomain(driver, obj) < 0) {
-            /* If we can't get the monitor back, then kill the VM
-             * so user has ability to start it again later without
-             * danger of ending up running twice */
-            qemudShutdownVMDaemon(NULL, driver, obj);
-        }
-        virDomainObjUnlock(obj);
-    }
+    virHashForEach(driver->domains.objs, qemuReconnectDomain, driver);
 }
 
 
@@ -438,8 +442,11 @@ qemudStartup(int privileged) {
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
 
+    if (virDomainObjListInit(&qemu_driver->domains) < 0)
+        goto out_of_memory;
+
     /* Init callback list */
-    if(VIR_ALLOC(qemu_driver->domainEventCallbacks) < 0)
+    if (VIR_ALLOC(qemu_driver->domainEventCallbacks) < 0)
         goto out_of_memory;
     if (!(qemu_driver->domainEventQueue = virDomainEventQueueNew()))
         goto out_of_memory;
@@ -679,21 +686,14 @@ qemudReload(void) {
  */
 static int
 qemudActive(void) {
-    unsigned int i;
     int active = 0;
 
     if (!qemu_driver)
         return 0;
 
+    /* XXX having to iterate here is not great because it requires many locks */
     qemuDriverLock(qemu_driver);
-    for (i = 0 ; i < qemu_driver->domains.count ; i++) {
-        virDomainObjPtr vm = qemu_driver->domains.objs[i];
-        virDomainObjLock(vm);
-        if (virDomainIsActive(vm))
-            active = 1;
-        virDomainObjUnlock(vm);
-    }
-
+    active = virDomainObjListNumOfDomains(&qemu_driver->domains, 1);
     qemuDriverUnlock(qemu_driver);
     return active;
 }
@@ -713,7 +713,7 @@ qemudShutdown(void) {
     pciDeviceListFree(NULL, qemu_driver->activePciHostdevs);
     virCapabilitiesFree(qemu_driver->caps);
 
-    virDomainObjListFree(&qemu_driver->domains);
+    virDomainObjListDeinit(&qemu_driver->domains);
 
     VIR_FREE(qemu_driver->securityDriverName);
     VIR_FREE(qemu_driver->logDir);
@@ -913,7 +913,6 @@ qemudCheckMonitorPrompt(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int
 qemudOpenMonitorCommon(virConnectPtr conn,
-                       struct qemud_driver* driver,
                        virDomainObjPtr vm,
                        int monfd,
                        int reconnect)
@@ -952,7 +951,7 @@ qemudOpenMonitorCommon(virConnectPtr conn,
     if ((vm->monitorWatch = virEventAddHandle(vm->monitor,
                                               VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
                                               qemudDispatchVMEvent,
-                                              driver, NULL)) < 0)
+                                              vm, NULL)) < 0)
         return -1;
 
     return 0;
@@ -960,7 +959,6 @@ qemudOpenMonitorCommon(virConnectPtr conn,
 
 static int
 qemudOpenMonitorUnix(virConnectPtr conn,
-                     struct qemud_driver* driver,
                      virDomainObjPtr vm,
                      const char *monitor,
                      int reconnect)
@@ -1008,7 +1006,7 @@ qemudOpenMonitorUnix(virConnectPtr conn,
         goto error;
     }
 
-    if (qemudOpenMonitorCommon(conn, driver, vm, monfd, reconnect) < 0)
+    if (qemudOpenMonitorCommon(conn, vm, monfd, reconnect) < 0)
         goto error;
 
     return 0;
@@ -1020,7 +1018,6 @@ error:
 
 static int
 qemudOpenMonitorPty(virConnectPtr conn,
-                    struct qemud_driver* driver,
                     virDomainObjPtr vm,
                     const char *monitor,
                     int reconnect)
@@ -1033,7 +1030,7 @@ qemudOpenMonitorPty(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudOpenMonitorCommon(conn, driver, vm, monfd, reconnect) < 0)
+    if (qemudOpenMonitorCommon(conn, vm, monfd, reconnect) < 0)
         goto error;
 
     return 0;
@@ -1045,17 +1042,16 @@ error:
 
 static int
 qemudOpenMonitor(virConnectPtr conn,
-                 struct qemud_driver *driver,
                  virDomainObjPtr vm,
                  int reconnect)
 {
     switch (vm->monitor_chr->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        return qemudOpenMonitorUnix(conn, driver, vm,
+        return qemudOpenMonitorUnix(conn, vm,
                                     vm->monitor_chr->data.nix.path,
                                     reconnect);
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        return qemudOpenMonitorPty(conn, driver, vm,
+        return qemudOpenMonitorPty(conn, vm,
                                    vm->monitor_chr->data.file.path,
                                    reconnect);
     default:
@@ -1177,7 +1173,7 @@ qemudWaitForMonitor(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudOpenMonitor(conn, driver, vm, 0) < 0)
+    if (qemudOpenMonitor(conn, vm, 0) < 0)
         return -1;
 
     return 0;
@@ -2255,28 +2251,22 @@ retry:
 
 static void
 qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
-    struct qemud_driver *driver = opaque;
-    virDomainObjPtr vm = NULL;
+    struct qemud_driver *driver = qemu_driver;
+    virDomainObjPtr vm = opaque;
     virDomainEventPtr event = NULL;
-    unsigned int i;
     int quit = 0, failed = 0;
 
+    /* XXX Normally we have to lock the driver first, to protect
+     * against someone adding/removing the domain. We know,
+     * however, then if we're getting data in this callback
+     * the VM must be running. Nowhere is allowed to remove
+     * a domain while it is running, so it is safe to not
+     * lock the driver here... */
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjPtr tmpvm = driver->domains.objs[i];
-        virDomainObjLock(tmpvm);
-        if (virDomainIsActive(tmpvm) &&
-            tmpvm->monitorWatch == watch) {
-            vm = tmpvm;
-            break;
-        }
-        virDomainObjUnlock(tmpvm);
-    }
+    virDomainObjLock(vm);
+    qemuDriverUnlock(driver);
 
-    if (!vm)
-        goto cleanup;
-
-    if (vm->monitor != fd) {
+    if (vm->monitor != fd || vm->monitorWatch != watch) {
         failed = 1;
     } else {
         if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
@@ -2302,12 +2292,12 @@ qemudDispatchVMEvent(int watch, int fd, int events, void *opaque) {
         }
     }
 
-cleanup:
-    if (vm)
-        virDomainObjUnlock(vm);
-    if (event)
+    virDomainObjUnlock(vm);
+    if (event) {
+        qemuDriverLock(driver);
         qemuDomainEventQueue(driver, event);
-    qemuDriverUnlock(driver);
+        qemuDriverUnlock(driver);
+    }
 }
 
 
@@ -2637,31 +2627,21 @@ qemudGetHostname (virConnectPtr conn)
 
 static int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
     struct qemud_driver *driver = conn->privateData;
-    int got = 0, i;
+    int n;
 
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count && got < nids ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (virDomainIsActive(driver->domains.objs[i]))
-            ids[got++] = driver->domains.objs[i]->def->id;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListGetActiveIDs(&driver->domains, ids, nids);
     qemuDriverUnlock(driver);
 
-    return got;
+    return n;
 }
 
 static int qemudNumDomains(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
-    int n = 0, i;
+    int n;
 
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (virDomainIsActive(driver->domains.objs[i]))
-            n++;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListNumOfDomains(&driver->domains, 1);
     qemuDriverUnlock(driver);
 
     return n;
@@ -4060,39 +4040,20 @@ cleanup:
 static int qemudListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     struct qemud_driver *driver = conn->privateData;
-    int got = 0, i;
+    int n;
 
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count && got < nnames ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (!virDomainIsActive(driver->domains.objs[i])) {
-            if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
-                virReportOOMError(conn);
-                virDomainObjUnlock(driver->domains.objs[i]);
-                goto cleanup;
-            }
-        }
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
-
+    n = virDomainObjListGetInactiveNames(&driver->domains, names, nnames);
     qemuDriverUnlock(driver);
-    return got;
-
- cleanup:
-    for (i = 0 ; i < got ; i++)
-        VIR_FREE(names[i]);
-    qemuDriverUnlock(driver);
-    return -1;
+    return n;
 }
 
 static int qemudNumDefinedDomains(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
-    int n = 0, i;
+    int n;
 
     qemuDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++)
-        if (!virDomainIsActive(driver->domains.objs[i]))
-            n++;
+    n = virDomainObjListNumOfDomains(&driver->domains, 0);
     qemuDriverUnlock(driver);
 
     return n;

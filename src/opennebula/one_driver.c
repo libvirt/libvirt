@@ -178,32 +178,22 @@ return_point:
 static int oneListDomains(virConnectPtr conn, int *ids, int nids)
 {
     one_driver_t *driver = (one_driver_t *)conn->privateData;
-    int got = 0, i;
+    int n;
 
     oneDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count && got < nids ; i++){
-        virDomainObjLock(driver->domains.objs[i]);
-        if (virDomainIsActive(driver->domains.objs[i]))
-            ids[got++] = driver->domains.objs[i]->def->id;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListGetActiveIDs(&driver->domains, ids, nids);
     oneDriverUnlock(driver);
 
-    return got;
+    return n;
 }
 
 static int oneNumDomains(virConnectPtr conn)
 {
     one_driver_t *driver = (one_driver_t *)conn->privateData;
-    int n = 0, i;
+    int n;
 
     oneDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++){
-        virDomainObjLock(driver->domains.objs[i]);
-        if (virDomainIsActive(driver->domains.objs[i]))
-            n++;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListNumOfDomains(&driver->domains, 1);
     oneDriverUnlock(driver);
 
     return n;
@@ -212,44 +202,22 @@ static int oneNumDomains(virConnectPtr conn)
 static int oneListDefinedDomains(virConnectPtr conn,
                                  char **const names, int nnames) {
     one_driver_t *driver = (one_driver_t *)conn->privateData;
-    int got = 0, i;
+    int n;
 
     oneDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count && got < nnames ; i++) {
-        virDomainObjLock(driver->domains.objs[i]);
-        if (!virDomainIsActive(driver->domains.objs[i])) {
-            if (!(names[got++] = strdup(driver->domains.objs[i]->def->name))) {
-                virReportOOMError(conn);
-                virDomainObjUnlock(driver->domains.objs[i]);
-                goto cleanup;
-            }
-        }
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListGetInactiveNames(&driver->domains, names, nnames);
     oneDriverUnlock(driver);
 
-    return got;
-
-cleanup:
-    for (i = 0 ; i < got ; i++)
-        VIR_FREE(names[i]);
-    oneDriverUnlock(driver);
-
-    return -1;
+    return n;
 }
 
 static int oneNumDefinedDomains(virConnectPtr conn)
 {
     one_driver_t *driver = (one_driver_t *)conn->privateData;
-    int n = 0, i;
+    int n;
 
     oneDriverLock(driver);
-    for (i = 0 ; i < driver->domains.count ; i++){
-        virDomainObjLock(driver->domains.objs[i]);
-        if (!virDomainIsActive(driver->domains.objs[i]))
-            n++;
-        virDomainObjUnlock(driver->domains.objs[i]);
-    }
+    n = virDomainObjListNumOfDomains(&driver->domains, 0);
     oneDriverUnlock(driver);
 
     return n;
@@ -647,6 +615,12 @@ static int oneStartup(int privileged ATTRIBUTE_UNUSED){
         return -1;
     }
 
+    if (virDomainObjListInit(&one_driver->domains) < 0) {
+        virMutexDestroy(&one_driver->lock);
+        VIR_FREE(one_driver);
+        return -1;
+    }
+
     c_oneStart();
     oneDriverLock(one_driver);
     one_driver->nextid=1;
@@ -665,7 +639,7 @@ static int oneShutdown(void){
         return(-1);
 
     oneDriverLock(one_driver);
-    virDomainObjListFree(&one_driver->domains);
+    virDomainObjListDeinit(&one_driver->domains);
 
     virCapabilitiesFree(one_driver->caps);
     oneDriverUnlock(one_driver);
@@ -677,19 +651,13 @@ static int oneShutdown(void){
 }
 
 static int oneActive(void){
-    unsigned int i;
     int active = 0;
 
     if (one_driver == NULL)
         return(0);
 
     oneDriverLock(one_driver);
-    for (i = 0 ; i < one_driver->domains.count ; i++) {
-        virDomainObjLock(one_driver->domains.objs[i]);
-        if (virDomainIsActive(one_driver->domains.objs[i]))
-            active = 1;
-        virDomainObjUnlock(one_driver->domains.objs[i]);
-    }
+    active = virDomainObjListNumOfDomains(&one_driver->domains, 1);
     oneDriverUnlock(one_driver);
 
     return active;
