@@ -65,7 +65,8 @@ EXTRA_DIST =		\
 	storagepoolxml2xmlout \
 	storagepoolxml2xmlin \
 	storagevolschematest \
-	storagevolschemadata \
+	storagevolxml2xmlout \
+	storagevolxml2xmlin \
 	nodedevschematest \
 	nodedevschemadata \
 	$(patsubst %,qemuhelpdata/%,$(qemuhelpdata))
@@ -99,7 +100,7 @@ endif
 
 noinst_PROGRAMS += networkxml2xmltest
 
-noinst_PROGRAMS += storagepoolxml2xmltest
+noinst_PROGRAMS += storagevolxml2xmltest storagepoolxml2xmltest
 
 noinst_PROGRAMS += nodedevxml2xmltest
 
@@ -176,7 +177,7 @@ endif
 
 TESTS += networkxml2xmltest
 
-TESTS += storagepoolxml2xmltest
+TESTS += storagevolxml2xmltest storagepoolxml2xmltest
 
 TESTS += nodedevxml2xmltest
 
@@ -278,6 +279,11 @@ networkxml2xmltest_SOURCES = \
 	networkxml2xmltest.c \
 	testutils.c testutils.h
 networkxml2xmltest_LDADD = $(LDADDS)
+
+storagevolxml2xmltest_SOURCES = \
+	storagevolxml2xmltest.c \
+	testutils.c testutils.h
+storagevolxml2xmltest_LDADD = $(LDADDS)
 
 storagepoolxml2xmltest_SOURCES = \
 	storagepoolxml2xmltest.c \

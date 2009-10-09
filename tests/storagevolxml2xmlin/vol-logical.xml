@@ -1,0 +1,20 @@
+<volume>
+  <name>Swap</name>
+  <key>r4xkCv-MQhr-WKIT-R66x-Epn2-e8hG-1Z5gY0</key>
+  <source>
+    <device path='/dev/sda2'>
+      <extent start='31440502784' end='33520877568'/>
+    </device>
+  </source>
+  <capacity>2080374784</capacity>
+  <allocation>2080374784</allocation>
+  <target>
+    <path>/dev/HostVG/Swap</path>
+    <permissions>
+      <mode>0660</mode>
+      <owner>0</owner>
+      <group>6</group>
+      <label>system_u:object_r:fixed_disk_device_t:s0</label>
+    </permissions>
+  </target>
+</volume>

@@ -12,7 +12,7 @@
     <path>/dev/sda1</path>
     <format type='none'/>
     <permissions>
-      <mode>060660</mode>
+      <mode>0660</mode>
       <owner>0</owner>
       <group>6</group>
       <label>system_u:object_r:fixed_disk_device_t:s0</label>

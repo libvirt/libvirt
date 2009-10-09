@@ -2,8 +2,7 @@
 
 source ./schematestutils.sh
 
-DIRS="storagevolschemadata"
+DIRS="storagevolxml2xmlin storagevolxml2xmlout"
 SCHEMA="storagevol.rng"
 
 check_schema "$DIRS" "$SCHEMA"
-

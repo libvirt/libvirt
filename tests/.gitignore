@@ -16,6 +16,7 @@ qemuhelptest
 networkxml2xmltest
 nodedevxml2xmltest
 interfacexml2xmltest
+storagevolxml2xmltest
 storagepoolxml2xmltest
 nodeinfotest
 statstest
