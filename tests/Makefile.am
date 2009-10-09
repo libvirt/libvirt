@@ -56,7 +56,8 @@ EXTRA_DIST =		\
 	capabilityschematest \
 	capabilityschemadata \
 	networkschematest \
-	networkschemadata \
+	networkpoolxml2xmlout \
+	networkpoolxml2xmlin \
 	domainschematest \
 	domainschemadata \
 	interfaceschemadata \
@@ -95,6 +96,8 @@ endif
 if WITH_CIL
 noinst_PROGRAMS += object-locking
 endif
+
+noinst_PROGRAMS += networkxml2xmltest
 
 noinst_PROGRAMS += storagepoolxml2xmltest
 
@@ -170,6 +173,8 @@ if WITH_LIBVIRTD
 noinst_PROGRAMS += eventtest
 TESTS += eventtest
 endif
+
+TESTS += networkxml2xmltest
 
 TESTS += storagepoolxml2xmltest
 
@@ -268,6 +273,11 @@ xml2vmxtest_LDADD = ../src/libvirt_driver_esx.la $(LDADDS)
 else
 EXTRA_DIST += esxutilstest.c vmx2xmltest.c xml2vmxtest.c
 endif
+
+networkxml2xmltest_SOURCES = \
+	networkxml2xmltest.c \
+	testutils.c testutils.h
+networkxml2xmltest_LDADD = $(LDADDS)
 
 storagepoolxml2xmltest_SOURCES = \
 	storagepoolxml2xmltest.c \

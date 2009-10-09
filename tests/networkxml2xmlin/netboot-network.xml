@@ -1,0 +1,14 @@
+<network>
+  <name>netboot</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <bridge name="virbr1" stp='off' delay='1'/>
+  <domain name="example.com"/>
+  <forward/>
+  <ip address="192.168.122.1" netmask="255.255.255.0">
+    <tftp root="/var/lib/tftproot" />
+    <dhcp>
+      <range start="192.168.122.2" end="192.168.122.254" />
+      <bootp file="pxeboot.img" />
+    </dhcp>
+  </ip>
+</network>

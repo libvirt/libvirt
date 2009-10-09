@@ -2,8 +2,7 @@
 
 source ./schematestutils.sh
 
-DIRS="../src/network networkschemadata"
+DIRS="../src/network networkxml2xmlin networkxml2xmlout"
 SCHEMA="network.rng"
 
 check_schema "$DIRS" "$SCHEMA"
-

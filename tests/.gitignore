@@ -13,6 +13,7 @@ qemuxml2xmltest
 qemuxml2argvtest
 qemuargv2xmltest
 qemuhelptest
+networkxml2xmltest
 nodedevxml2xmltest
 interfacexml2xmltest
 storagepoolxml2xmltest
