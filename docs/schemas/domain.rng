@@ -157,53 +157,69 @@
   </define>
   <define name="hvmx86">
     <group>
-      <attribute name="arch">
-        <choice>
-          <value>i686</value>
-          <value>x86_64</value>
-        </choice>
-      </attribute>
-      <attribute name="machine">
-        <choice>
-          <value>xenfv</value>
-          <value>pc</value>
-          <value>isapc</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="arch">
+          <choice>
+            <value>i686</value>
+            <value>x86_64</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <choice>
+            <value>xenfv</value>
+            <value>pc</value>
+            <value>isapc</value>
+          </choice>
+        </attribute>
+        </optional>
     </group>
   </define>
   <define name="hvmmips">
     <group>
-      <attribute name="arch">
-        <value>mips</value>
-      </attribute>
-      <attribute name="machine">
-        <value>mips</value>
-      </attribute>
+      <optional>
+        <attribute name="arch">
+          <value>mips</value>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <value>mips</value>
+        </attribute>
+      </optional>
     </group>
   </define>
   <define name="hvmsparc">
     <group>
-      <attribute name="arch">
-        <value>sparc</value>
-      </attribute>
-      <attribute name="machine">
-        <value>sun4m</value>
-      </attribute>
+      <optional>
+        <attribute name="arch">
+          <value>sparc</value>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <value>sun4m</value>
+        </attribute>
+      </optional>
     </group>
   </define>
   <define name="hvmppc">
     <group>
-      <attribute name="arch">
-        <value>ppc</value>
-      </attribute>
-      <attribute name="machine">
-        <choice>
-          <value>g3beige</value>
-          <value>mac99</value>
-          <value>prep</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="arch">
+          <value>ppc</value>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <choice>
+            <value>g3beige</value>
+            <value>mac99</value>
+            <value>prep</value>
+          </choice>
+        </attribute>
+      </optional>
     </group>
   </define>
   <define name="osexe">
