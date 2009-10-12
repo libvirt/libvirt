@@ -549,22 +549,43 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
  * @caps: capabilities to query
  * @ostype: OS type to search for
  * @arch: architecture to search for
+ * @domain: domain type to search for
  *
  * Returns the first machine variant associated with
- * the requested operating system type and architecture
+ * the requested operating system type, architecture
+ * and domain type
  */
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    const char *ostype,
-                                   const char *arch)
+                                   const char *arch,
+                                   const char *domain)
 {
     int i;
+
     for (i = 0 ; i < caps->nguests ; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype) &&
-            STREQ(caps->guests[i]->arch.name, arch) &&
-            caps->guests[i]->arch.defaultInfo.nmachines)
+        virCapsGuestPtr guest = caps->guests[i];
+        int j;
+
+        if (!STREQ(guest->ostype, ostype) || !STREQ(guest->arch.name, arch))
+            continue;
+
+        for (j = 0; j < guest->arch.ndomains; j++) {
+            virCapsGuestDomainPtr dom= guest->arch.domains[j];
+
+            if (!STREQ(dom->type, domain))
+                continue;
+
+            if (!dom->info.nmachines)
+                break;
+
+            return dom->info.machines[0]->name;
+        }
+
+        if (guest->arch.defaultInfo.nmachines)
             return caps->guests[i]->arch.defaultInfo.machines[0]->name;
     }
+
     return NULL;
 }
 

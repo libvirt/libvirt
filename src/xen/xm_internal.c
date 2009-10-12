@@ -720,7 +720,8 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
 
     defaultMachine = virCapabilitiesDefaultGuestMachine(priv->caps,
                                                         def->os.type,
-                                                        def->os.arch);
+                                                        def->os.arch,
+                                                        virDomainVirtTypeToString(def->virtType));
     if (defaultMachine != NULL) {
         if (!(def->os.machine = strdup(defaultMachine)))
             goto no_memory;

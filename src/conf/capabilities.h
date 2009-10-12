@@ -207,7 +207,8 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    const char *ostype,
-                                   const char *arch);
+                                   const char *arch,
+                                   const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     const char *ostype,

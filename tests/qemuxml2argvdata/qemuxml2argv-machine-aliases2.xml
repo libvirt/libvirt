@@ -1,11 +1,11 @@
-<domain type='qemu'>
+<domain type='kvm'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory>219200</memory>
   <currentMemory>219200</currentMemory>
   <vcpu>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc'>hvm</type>
+    <type arch='x86_64'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>

@@ -2669,7 +2669,8 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (!def->os.machine) {
         const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
                                                                         def->os.type,
-                                                                        def->os.arch);
+                                                                        def->os.arch,
+                                                                        virDomainVirtTypeToString(def->virtType));
         if (defaultMachine != NULL) {
             if (!(def->os.machine = strdup(defaultMachine))) {
                 virReportOOMError(conn);
