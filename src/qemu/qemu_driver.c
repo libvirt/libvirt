@@ -3794,9 +3794,8 @@ static int qemudDomainRestore(virConnectPtr conn,
             goto cleanup;
         }
 
-        if (header.compressed != QEMUD_SAVE_FORMAT_RAW)
+        if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
             intermediate_argv[0] = prog;
-        else {
             intermediatefd = fd;
             fd = -1;
             if (virExec(conn, intermediate_argv, NULL, NULL,
