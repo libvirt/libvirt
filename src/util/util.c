@@ -898,7 +898,7 @@ virExec(virConnectPtr conn,
    number of bytes.  If the length of the input is <= max_len, and
    upon error while reading that data, it works just like fread_file.  */
 static char *
-fread_file_lim (FILE *stream, size_t max_len, size_t *length)
+saferead_lim (int fd, size_t max_len, size_t *length)
 {
     char *buf = NULL;
     size_t alloc = 0;
@@ -906,8 +906,8 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
     int save_errno;
 
     for (;;) {
-        size_t count;
-        size_t requested;
+        int count;
+        int requested;
 
         if (size + BUFSIZ + 1 > alloc) {
             alloc += alloc / 2;
@@ -923,12 +923,12 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
         /* Ensure that (size + requested <= max_len); */
         requested = MIN (size < max_len ? max_len - size : 0,
                          alloc - size - 1);
-        count = fread (buf + size, 1, requested, stream);
+        count = saferead (fd, buf + size, requested);
         size += count;
 
         if (count != requested || requested == 0) {
             save_errno = errno;
-            if (ferror (stream))
+            if (count < 0)
                 break;
             buf[size] = '\0';
             *length = size;
@@ -941,12 +941,12 @@ fread_file_lim (FILE *stream, size_t max_len, size_t *length)
     return NULL;
 }
 
-/* A wrapper around fread_file_lim that maps a failure due to
+/* A wrapper around saferead_lim that maps a failure due to
    exceeding the maximum size limitation to EOVERFLOW.  */
-static int virFileReadLimFP(FILE *fp, int maxlen, char **buf)
+int virFileReadLimFD(int fd, int maxlen, char **buf)
 {
     size_t len;
-    char *s = fread_file_lim (fp, maxlen+1, &len);
+    char *s = saferead_lim (fd, maxlen+1, &len);
     if (s == NULL)
         return -1;
     if (len > maxlen || (int)len != len) {
@@ -960,37 +960,16 @@ static int virFileReadLimFP(FILE *fp, int maxlen, char **buf)
     return len;
 }
 
-/* Like virFileReadLimFP, but use a file descriptor rather than a FILE*.  */
-int virFileReadLimFD(int fd_arg, int maxlen, char **buf)
-{
-    int fd = dup (fd_arg);
-    if (fd >= 0) {
-        FILE *fp = fdopen (fd, "r");
-        if (fp) {
-            int len = virFileReadLimFP (fp, maxlen, buf);
-            int saved_errno = errno;
-            fclose (fp);
-            errno = saved_errno;
-            return len;
-        } else {
-            int saved_errno = errno;
-            close (fd);
-            errno = saved_errno;
-        }
-    }
-    return -1;
-}
-
 int virFileReadAll(const char *path, int maxlen, char **buf)
 {
-    FILE *fh = fopen(path, "r");
-    if (fh == NULL) {
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {
         virReportSystemError(NULL, errno, _("Failed to open file '%s'"), path);
         return -1;
     }
 
-    int len = virFileReadLimFP (fh, maxlen, buf);
-    fclose(fh);
+    int len = virFileReadLimFD(fd, maxlen, buf);
+    close(fd);
     if (len < 0) {
         virReportSystemError(NULL, errno, _("Failed to read file '%s'"), path);
         return -1;
