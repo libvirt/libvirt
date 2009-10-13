@@ -1117,7 +1117,7 @@ static int lxcVmStart(virConnectPtr conn,
                       lxc_driver_t * driver,
                       virDomainObjPtr  vm)
 {
-    int rc = -1;
+    int rc = -1, r;
     unsigned int i;
     int parentTty;
     char *parentTtyPath = NULL;
@@ -1126,8 +1126,8 @@ static int lxcVmStart(virConnectPtr conn,
     unsigned int nveths = 0;
     char **veths = NULL;
 
-    if ((rc = virFileMakePath(driver->logDir)) < 0) {
-        virReportSystemError(conn, rc,
+    if ((r = virFileMakePath(driver->logDir)) < 0) {
+        virReportSystemError(conn, r,
                              _("cannot create log directory '%s'"),
                              driver->logDir);
         return -1;
@@ -1157,10 +1157,8 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* Persist the live configuration now we have veth & tty info */
-    if (virDomainSaveConfig(conn, driver->stateDir, vm->def) < 0) {
-        rc = -1;
+    if (virDomainSaveConfig(conn, driver->stateDir, vm->def) < 0)
         goto cleanup;
-    }
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
@@ -1183,11 +1181,10 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* And get its pid */
-    if ((rc = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        virReportSystemError(conn, rc,
+    if ((r = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
+        virReportSystemError(conn, r,
                              _("Failed to read pid file %s/%s.pid"),
                              driver->stateDir, vm->def->name);
-        rc = -1;
         goto cleanup;
     }
 
