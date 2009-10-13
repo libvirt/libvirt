@@ -122,7 +122,7 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
-devhelp/index.html: libvirt-api.xml $(devhelpxsl)
+devhelp/index.html devhelp/libvirt.devhelp: libvirt-api.xml $(devhelpxsl)
 	-@(echo Rebuilding devhelp files)
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp $(top_srcdir)/docs/devhelp/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
