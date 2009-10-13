@@ -39,6 +39,8 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 struct _qemuMonitor {
+    virMutex lock;
+
     int fd;
     int watch;
     int hasSendFD;
@@ -48,6 +50,16 @@ struct _qemuMonitor {
     qemuMonitorEOFNotify eofCB;
     qemuMonitorDiskSecretLookup secretCB;
 };
+
+void qemuMonitorLock(qemuMonitorPtr mon)
+{
+    virMutexLock(&mon->lock);
+}
+
+void qemuMonitorUnlock(qemuMonitorPtr mon)
+{
+    virMutexUnlock(&mon->lock);
+}
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
 typedef int qemuMonitorHandleOutput(virDomainObjPtr vm,
@@ -292,6 +304,12 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
 
+    if (virMutexInit(&mon->lock) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cannot initialize monitor mutex"));
+        VIR_FREE(mon);
+        return NULL;
+    }
     mon->fd = -1;
     mon->vm = vm;
     mon->eofCB = eofCB;
@@ -343,6 +361,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
 
     if (mon->fd != -1)
         close(mon->fd);
+    virMutexDestroy(&mon->lock);
     VIR_FREE(mon);
 }
 

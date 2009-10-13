@@ -54,6 +54,9 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
 
 void qemuMonitorClose(qemuMonitorPtr mon);
 
+void qemuMonitorLock(qemuMonitorPtr mon);
+void qemuMonitorUnlock(qemuMonitorPtr mon);
+
 void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
                                          qemuMonitorDiskSecretLookup secretCB);
 
