@@ -632,7 +632,7 @@ char *virNetworkDefFormat(virConnectPtr conn,
     virBufferAddLit(&buf, "  <bridge");
     if (def->bridge)
         virBufferEscapeString(&buf, " name='%s'", def->bridge);
-    virBufferVSprintf(&buf, " stp='%s' forwardDelay='%ld' />\n",
+    virBufferVSprintf(&buf, " stp='%s' delay='%ld' />\n",
                       def->stp ? "on" : "off",
                       def->delay);
 
