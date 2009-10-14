@@ -720,6 +720,8 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     }
 
 out:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     VIR_FREE(parent_name);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
