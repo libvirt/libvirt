@@ -4376,6 +4376,131 @@ cleanup:
     return ret;
 }
 
+static virNodeDevicePtr
+testNodeDeviceCreateXML(virConnectPtr conn,
+                        const char *xmlDesc,
+                        unsigned int flags ATTRIBUTE_UNUSED)
+{
+    testConnPtr driver = conn->privateData;
+    virNodeDeviceDefPtr def = NULL;
+    virNodeDeviceObjPtr obj = NULL;
+    char *wwnn = NULL, *wwpn = NULL;
+    int parent_host = -1;
+    virNodeDevicePtr dev = NULL;
+    virNodeDevCapsDefPtr caps;
+
+    testDriverLock(driver);
+
+    def = virNodeDeviceDefParseString(conn, xmlDesc, CREATE_DEVICE);
+    if (def == NULL) {
+        goto cleanup;
+    }
+
+    /* We run these next two simply for validation */
+    if (virNodeDeviceGetWWNs(conn, def, &wwnn, &wwpn) == -1) {
+        goto cleanup;
+    }
+
+    if (virNodeDeviceGetParentHost(conn,
+                                   &driver->devs,
+                                   def->name,
+                                   def->parent,
+                                   &parent_host) == -1) {
+        goto cleanup;
+    }
+
+    /* 'name' is supposed to be filled in by the node device backend, which
+     * we don't have. Use WWPN instead. */
+    VIR_FREE(def->name);
+    if (!(def->name = strdup(wwpn))) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    /* Fill in a random 'host' value, since this would also come from
+     * the backend */
+    caps = def->caps;
+    while (caps) {
+        if (caps->type != VIR_NODE_DEV_CAP_SCSI_HOST)
+            continue;
+
+        caps->data.scsi_host.host = virRandom(1024);
+        caps = caps->next;
+    }
+
+
+    if (!(obj = virNodeDeviceAssignDef(conn, &driver->devs, def))) {
+        goto cleanup;
+    }
+    virNodeDeviceObjUnlock(obj);
+
+    dev = virGetNodeDevice(conn, def->name);
+    def = NULL;
+cleanup:
+    testDriverUnlock(driver);
+    if (def)
+        virNodeDeviceDefFree(def);
+    VIR_FREE(wwnn);
+    VIR_FREE(wwpn);
+    return dev;
+}
+
+static int
+testNodeDeviceDestroy(virNodeDevicePtr dev)
+{
+    int ret = 0;
+    testConnPtr driver = dev->conn->privateData;
+    virNodeDeviceObjPtr obj = NULL;
+    char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
+    int parent_host = -1;
+
+    testDriverLock(driver);
+    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
+    testDriverUnlock(driver);
+
+    if (!obj) {
+        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE, NULL);
+        goto out;
+    }
+
+    if (virNodeDeviceGetWWNs(dev->conn, obj->def, &wwnn, &wwpn) == -1) {
+        goto out;
+    }
+
+    parent_name = strdup(obj->def->parent);
+    if (parent_name == NULL) {
+        virReportOOMError(dev->conn);
+        goto out;
+    }
+
+    /* virNodeDeviceGetParentHost will cause the device object's lock to be
+     * taken, so we have to dup the parent's name and drop the lock
+     * before calling it.  We don't need the reference to the object
+     * any more once we have the parent's name.  */
+    virNodeDeviceObjUnlock(obj);
+
+    /* We do this just for basic validation */
+    if (virNodeDeviceGetParentHost(dev->conn,
+                                   &driver->devs,
+                                   dev->name,
+                                   parent_name,
+                                   &parent_host) == -1) {
+        obj = NULL;
+        goto out;
+    }
+
+    virNodeDeviceObjLock(obj);
+    virNodeDeviceObjRemove(&driver->devs, obj);
+
+out:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    VIR_FREE(parent_name);
+    VIR_FREE(wwnn);
+    VIR_FREE(wwpn);
+    return ret;
+}
+
 
 /* Domain event implementations */
 static int
@@ -4650,8 +4775,8 @@ static virDeviceMonitor testDevMonitor = {
     .deviceGetParent = testNodeDeviceGetParent,
     .deviceNumOfCaps = testNodeDeviceNumOfCaps,
     .deviceListCaps = testNodeDeviceListCaps,
-    //.deviceCreateXML = nodeDeviceCreateXML;
-    //.deviceDestroy = nodeDeviceDestroy;
+    .deviceCreateXML = testNodeDeviceCreateXML,
+    .deviceDestroy = testNodeDeviceDestroy,
 };
 
 static virSecretDriver testSecretDriver = {
