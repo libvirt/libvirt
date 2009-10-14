@@ -459,92 +459,6 @@ cleanup:
 
 
 static int
-get_wwns(virConnectPtr conn,
-         virNodeDeviceDefPtr def,
-         char **wwnn,
-         char **wwpn)
-{
-    virNodeDevCapsDefPtr cap = NULL;
-    int ret = 0;
-
-    cap = def->caps;
-    while (cap != NULL) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
-            cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-            *wwnn = strdup(cap->data.scsi_host.wwnn);
-            *wwpn = strdup(cap->data.scsi_host.wwpn);
-            break;
-        }
-
-        cap = cap->next;
-    }
-
-    if (cap == NULL) {
-        virNodeDeviceReportError(conn, VIR_ERR_NO_SUPPORT,
-                                 "%s", _("Device is not a fibre channel HBA"));
-        ret = -1;
-    }
-
-    if (*wwnn == NULL || *wwpn == NULL) {
-        /* Free the other one, if allocated... */
-        VIR_FREE(wwnn);
-        VIR_FREE(wwpn);
-        ret = -1;
-        virReportOOMError(conn);
-    }
-
-    return ret;
-}
-
-
-static int
-get_parent_host(virConnectPtr conn,
-                virDeviceMonitorStatePtr driver,
-                const char *dev_name,
-                const char *parent_name,
-                int *parent_host)
-{
-    virNodeDeviceObjPtr parent = NULL;
-    virNodeDevCapsDefPtr cap = NULL;
-    int ret = 0;
-
-    parent = virNodeDeviceFindByName(&driver->devs, parent_name);
-    if (parent == NULL) {
-        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("Could not find parent HBA for '%s'"),
-                                 dev_name);
-        ret = -1;
-        goto out;
-    }
-
-    cap = parent->def->caps;
-    while (cap != NULL) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
-            (cap->data.scsi_host.flags &
-             VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)) {
-                *parent_host = cap->data.scsi_host.host;
-                break;
-        }
-
-        cap = cap->next;
-    }
-
-    if (cap == NULL) {
-        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("Parent HBA %s is not capable "
-                                   "of vport operations"),
-                                 parent->def->name);
-        ret = -1;
-    }
-
-    virNodeDeviceObjUnlock(parent);
-
-out:
-    return ret;
-}
-
-
-static int
 get_time(virConnectPtr conn, time_t *t)
 {
     int ret = 0;
@@ -630,15 +544,15 @@ nodeDeviceCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (get_wwns(conn, def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(conn, def, &wwnn, &wwpn) == -1) {
         goto cleanup;
     }
 
-    if (get_parent_host(conn,
-                        driver,
-                        def->name,
-                        def->parent,
-                        &parent_host) == -1) {
+    if (virNodeDeviceGetParentHost(conn,
+                                   &driver->devs,
+                                   def->name,
+                                   def->parent,
+                                   &parent_host) == -1) {
         goto cleanup;
     }
 
@@ -685,13 +599,13 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (get_wwns(dev->conn, obj->def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(dev->conn, obj->def, &wwnn, &wwpn) == -1) {
         goto out;
     }
 
     parent_name = strdup(obj->def->parent);
 
-    /* get_parent_host will cause the device object's lock to be
+    /* virNodeDeviceGetParentHost will cause the device object's lock to be
      * taken, so we have to dup the parent's name and drop the lock
      * before calling it.  We don't need the reference to the object
      * any more once we have the parent's name.  */
@@ -703,11 +617,11 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
-    if (get_parent_host(dev->conn,
-                        driver,
-                        dev->name,
-                        parent_name,
-                        &parent_host) == -1) {
+    if (virNodeDeviceGetParentHost(dev->conn,
+                                   &driver->devs,
+                                   dev->name,
+                                   parent_name,
+                                   &parent_host) == -1) {
         goto out;
     }
 

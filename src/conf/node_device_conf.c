@@ -1215,6 +1215,95 @@ virNodeDeviceDefParseFile(virConnectPtr conn,
     return virNodeDeviceDefParse(conn, NULL, filename, create);
 }
 
+/*
+ * Return fc_host dev's WWNN and WWPN
+ */
+int
+virNodeDeviceGetWWNs(virConnectPtr conn,
+                     virNodeDeviceDefPtr def,
+                     char **wwnn,
+                     char **wwpn)
+{
+    virNodeDevCapsDefPtr cap = NULL;
+    int ret = 0;
+
+    cap = def->caps;
+    while (cap != NULL) {
+        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+            cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+            *wwnn = strdup(cap->data.scsi_host.wwnn);
+            *wwpn = strdup(cap->data.scsi_host.wwpn);
+            break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (cap == NULL) {
+        virNodeDeviceReportError(conn, VIR_ERR_NO_SUPPORT,
+                                 "%s", _("Device is not a fibre channel HBA"));
+        ret = -1;
+    }
+
+    if (*wwnn == NULL || *wwpn == NULL) {
+        /* Free the other one, if allocated... */
+        VIR_FREE(wwnn);
+        VIR_FREE(wwpn);
+        ret = -1;
+        virReportOOMError(conn);
+    }
+
+    return ret;
+}
+
+/*
+ * Return the NPIV dev's parent device name
+ */
+int
+virNodeDeviceGetParentHost(virConnectPtr conn,
+                           const virNodeDeviceObjListPtr devs,
+                           const char *dev_name,
+                           const char *parent_name,
+                           int *parent_host)
+{
+    virNodeDeviceObjPtr parent = NULL;
+    virNodeDevCapsDefPtr cap = NULL;
+    int ret = 0;
+
+    parent = virNodeDeviceFindByName(devs, parent_name);
+    if (parent == NULL) {
+        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Could not find parent HBA for '%s'"),
+                                 dev_name);
+        ret = -1;
+        goto out;
+    }
+
+    cap = parent->def->caps;
+    while (cap != NULL) {
+        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+            (cap->data.scsi_host.flags &
+             VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)) {
+                *parent_host = cap->data.scsi_host.host;
+                break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (cap == NULL) {
+        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Parent HBA %s is not capable "
+                                   "of vport operations"),
+                                 parent->def->name);
+        ret = -1;
+    }
+
+    virNodeDeviceObjUnlock(parent);
+
+out:
+    return ret;
+}
 
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {

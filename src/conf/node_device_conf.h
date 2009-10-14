@@ -221,6 +221,17 @@ virNodeDeviceDefPtr virNodeDeviceDefParseNode(virConnectPtr conn,
                                               xmlNodePtr root,
                                               int create);
 
+int virNodeDeviceGetWWNs(virConnectPtr conn,
+                         virNodeDeviceDefPtr def,
+                         char **wwnn,
+                         char **wwpn);
+
+int virNodeDeviceGetParentHost(virConnectPtr conn,
+                               const virNodeDeviceObjListPtr devs,
+                               const char *dev_name,
+                               const char *parent_name,
+                               int *parent_host);
+
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjFree(virNodeDeviceObjPtr dev);

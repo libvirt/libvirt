@@ -318,6 +318,8 @@ virNodeDeviceDefParseString;
 virNodeDeviceObjLock;
 virNodeDeviceObjUnlock;
 virNodeDeviceAssignDef;
+virNodeDeviceGetWWNs;
+virNodeDeviceGetParentHost;
 
 
 # pci.h
