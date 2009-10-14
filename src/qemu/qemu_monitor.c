@@ -40,6 +40,9 @@
 
 struct _qemuMonitor {
     virMutex lock;
+    virCond notify;
+
+    virDomainObjPtr dom;
 
     int fd;
     int watch;
@@ -49,6 +52,25 @@ struct _qemuMonitor {
 
     qemuMonitorEOFNotify eofCB;
     qemuMonitorDiskSecretLookup secretCB;
+
+    /* If there's a command being processed this will be
+     * non-NULL */
+    qemuMonitorMessagePtr msg;
+
+    /* Buffer incoming data ready for Text/QMP monitor
+     * code to process & find message boundaries */
+    size_t bufferOffset;
+    size_t bufferLength;
+    char *buffer;
+
+    /* If anything went wrong, this will be fed back
+     * the next monitor msg */
+    int lastErrno;
+
+    /* If the monitor callback is currently active */
+    unsigned eofcb: 1;
+    /* If the monitor callback should free the closed monitor */
+    unsigned closed: 1;
 };
 
 void qemuMonitorLock(qemuMonitorPtr mon)
@@ -61,134 +83,25 @@ void qemuMonitorUnlock(qemuMonitorPtr mon)
     virMutexUnlock(&mon->lock);
 }
 
-/* Return -1 for error, 1 to continue reading and 0 for success */
-typedef int qemuMonitorHandleOutput(virDomainObjPtr vm,
-                                    const char *output);
 
-/*
- * Returns -1 for error, 0 on end-of-file, 1 for success
- */
-static int
-qemuMonitorReadOutput(virDomainObjPtr vm,
-                      int fd,
-                      char *buf,
-                      size_t buflen,
-                      qemuMonitorHandleOutput func,
-                      const char *what,
-                      int timeout)
+static void qemuMonitorFree(qemuMonitorPtr mon, int lockDomain)
 {
-    size_t got = 0;
-    buf[0] = '\0';
-    timeout *= 1000; /* poll wants milli seconds */
-
-    /* Consume & discard the initial greeting */
-    while (got < (buflen-1)) {
-        ssize_t ret;
-
-        ret = read(fd, buf+got, buflen-got-1);
-
-        if (ret < 0) {
-            struct pollfd pfd = { .fd = fd, .events = POLLIN };
-            if (errno == EINTR)
-                continue;
-
-            if (errno != EAGAIN) {
-                virReportSystemError(NULL, errno,
-                                     _("Failure while reading %s startup output"),
-                                     what);
-                return -1;
-            }
-
-            ret = poll(&pfd, 1, timeout);
-            if (ret == 0) {
-                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Timed out while reading %s startup output"), what);
-                return -1;
-            } else if (ret == -1) {
-                if (errno != EINTR) {
-                    virReportSystemError(NULL, errno,
-                                         _("Failure while reading %s startup output"),
-                                         what);
-                    return -1;
-                }
-            } else {
-                /* Make sure we continue loop & read any further data
-                   available before dealing with EOF */
-                if (pfd.revents & (POLLIN | POLLHUP))
-                    continue;
-
-                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("Failure while reading %s startup output"), what);
-                return -1;
-            }
-        } else if (ret == 0) {
-            return 0;
-        } else {
-            got += ret;
-            buf[got] = '\0';
-            ret = func(vm, buf);
-            if (ret == -1)
-                return -1;
-            if (ret == 1)
-                continue;
-            return 1;
-        }
+    VIR_DEBUG("mon=%p, lockDomain=%d", mon, lockDomain);
+    if (mon->vm) {
+        if (lockDomain)
+            virDomainObjLock(mon->vm);
+        if (!virDomainObjUnref(mon->vm) && lockDomain)
+            virDomainObjUnlock(mon->vm);
     }
-
-    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("Out of space while reading %s startup output"), what);
-    return -1;
-
+    if (virCondDestroy(&mon->notify) < 0)
+    {}
+    virMutexDestroy(&mon->lock);
+    VIR_FREE(mon);
 }
 
-static int
-qemuMonitorCheckPrompt(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                       const char *output)
-{
-    if (strstr(output, "(qemu) ") == NULL)
-        return 1; /* keep reading */
-
-    return 0;
-}
 
 static int
-qemuMonitorOpenCommon(virDomainObjPtr vm,
-                      int monfd,
-                      int reconnect)
-{
-    char buf[1024];
-    int ret;
-
-    if (virSetCloseExec(monfd) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to set monitor close-on-exec flag"));
-        return -1;
-    }
-    if (virSetNonBlock(monfd) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to put monitor into non-blocking mode"));
-        return -1;
-    }
-
-    if (!reconnect) {
-        if (qemuMonitorReadOutput(vm, monfd,
-                                  buf, sizeof(buf),
-                                  qemuMonitorCheckPrompt,
-                                  "monitor", 10) <= 0)
-            ret = -1;
-        else
-            ret = 0;
-    } else {
-        ret = 0;
-    }
-
-    return ret;
-}
-
-static int
-qemuMonitorOpenUnix(virDomainObjPtr vm,
-                    const char *monitor,
-                    int reconnect)
+qemuMonitorOpenUnix(const char *monitor)
 {
     struct sockaddr_un addr;
     int monfd;
@@ -233,9 +146,6 @@ qemuMonitorOpenUnix(virDomainObjPtr vm,
         goto error;
     }
 
-    if (qemuMonitorOpenCommon(vm, monfd, reconnect) < 0)
-        goto error;
-
     return monfd;
 
 error:
@@ -244,9 +154,7 @@ error:
 }
 
 static int
-qemuMonitorOpenPty(virDomainObjPtr vm,
-                   const char *monitor,
-                   int reconnect)
+qemuMonitorOpenPty(const char *monitor)
 {
     int monfd;
 
@@ -256,138 +164,54 @@ qemuMonitorOpenPty(virDomainObjPtr vm,
         return -1;
     }
 
-    if (qemuMonitorOpenCommon(vm, monfd, reconnect) < 0)
-        goto error;
-
     return monfd;
-
-error:
-    close(monfd);
-    return -1;
 }
 
 
-static void
-qemuMonitorIO(int watch, int fd, int events, void *opaque) {
-    qemuMonitorPtr mon = opaque;
-    int quit = 0, failed = 0;
+static int
+qemuMonitorIOProcess(qemuMonitorPtr mon)
+{
+    int len;
+    qemuMonitorMessagePtr msg = NULL;
 
-    if (mon->fd != fd || mon->watch != watch) {
-        VIR_ERROR0(_("event from unexpected fd/watch"));
-        failed = 1;
+    /* See if there's a message & whether its ready for its reply
+     * ie whether its completed writing all its data */
+    if (mon->msg && mon->msg->txOffset == mon->msg->txLength)
+        msg = mon->msg;
+
+    VIR_DEBUG("Process %d", mon->bufferOffset);
+    len = qemuMonitorTextIOProcess(mon,
+                                   mon->buffer, mon->bufferOffset,
+                                   msg);
+
+    if (len < 0) {
+        mon->lastErrno = errno;
+        return -1;
+    }
+
+    if (len < mon->bufferOffset) {
+        memmove(mon->buffer, mon->buffer + len, mon->bufferOffset - len);
+        mon->bufferOffset -= len;
     } else {
-        if (events & (VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR))
-            quit = 1;
-        else {
-            VIR_ERROR(_("unhandled fd event %d for monitor fd %d"),
-                      events, mon->fd);
-            failed = 1;
-        }
+        VIR_FREE(mon->buffer);
+        mon->bufferOffset = mon->bufferLength = 0;
     }
-
-    mon->eofCB(mon, mon->vm, failed);
+    VIR_DEBUG("Process done %d used %d", mon->bufferOffset, len);
+    if (msg && msg->finished)
+        virCondBroadcast(&mon->notify);
+    return len;
 }
 
 
-
-
-
-qemuMonitorPtr
-qemuMonitorOpen(virDomainObjPtr vm,
-                int reconnect,
-                qemuMonitorEOFNotify eofCB)
-{
-    qemuMonitorPtr mon;
-
-    if (VIR_ALLOC(mon) < 0) {
-        virReportOOMError(NULL);
-        return NULL;
-    }
-
-    if (virMutexInit(&mon->lock) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("cannot initialize monitor mutex"));
-        VIR_FREE(mon);
-        return NULL;
-    }
-    mon->fd = -1;
-    mon->vm = vm;
-    mon->eofCB = eofCB;
-
-    switch (vm->monitor_chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        mon->hasSendFD = 1;
-        mon->fd = qemuMonitorOpenUnix(vm, vm->monitor_chr->data.nix.path,
-                                      reconnect);
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        mon->fd = qemuMonitorOpenPty(vm, vm->monitor_chr->data.file.path,
-                                     reconnect);
-        break;
-
-    default:
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("unable to handle monitor type: %s"),
-                         virDomainChrTypeToString(vm->monitor_chr->type));
-        goto cleanup;
-    }
-
-    if ((mon->watch = virEventAddHandle(mon->fd,
-                                        VIR_EVENT_HANDLE_HANGUP | VIR_EVENT_HANDLE_ERROR,
-                                        qemuMonitorIO,
-                                        mon, NULL)) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("unable to register monitor events"));
-        goto cleanup;
-    }
-
-
-    return mon;
-
-cleanup:
-    qemuMonitorClose(mon);
-    return NULL;
-}
-
-
-void qemuMonitorClose(qemuMonitorPtr mon)
-{
-    if (!mon)
-        return;
-
-    if (mon->watch)
-        virEventRemoveHandle(mon->watch);
-
-    if (mon->fd != -1)
-        close(mon->fd);
-    virMutexDestroy(&mon->lock);
-    VIR_FREE(mon);
-}
-
-
-void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
-                                         qemuMonitorDiskSecretLookup secretCB)
-{
-    mon->secretCB = secretCB;
-}
-
-
-int qemuMonitorWrite(qemuMonitorPtr mon,
-                     const char *data,
-                     size_t len)
-{
-    return safewrite(mon->fd, data, len);
-}
-
-int qemuMonitorWriteWithFD(qemuMonitorPtr mon,
-                           const char *data,
-                           size_t len,
-                           int fd)
+static int
+qemuMonitorIOWriteWithFD(qemuMonitorPtr mon,
+                         const char *data,
+                         size_t len,
+                         int fd)
 {
     struct msghdr msg;
     struct iovec iov[1];
-    ssize_t ret;
+    int ret;
     char control[CMSG_SPACE(sizeof(int))];
     struct cmsghdr *cmsg;
 
@@ -417,27 +241,336 @@ int qemuMonitorWriteWithFD(qemuMonitorPtr mon,
         ret = sendmsg(mon->fd, &msg, 0);
     } while (ret < 0 && errno == EINTR);
 
-    return ret == len ? 0 : -1;
+    return ret;
 }
 
-int qemuMonitorRead(qemuMonitorPtr mon,
-                    char *data,
-                    size_t len)
+/* Called when the monitor is able to write data */
+static int
+qemuMonitorIOWrite(qemuMonitorPtr mon)
 {
-    return read(mon->fd, data, len);
-}
+    int done;
 
-int qemuMonitorWaitForInput(qemuMonitorPtr mon)
-{
-    struct pollfd fd = { mon->fd, POLLIN | POLLERR | POLLHUP, 0 };
+    /* If no active message, or fully transmitted, the no-op */
+    if (!mon->msg || mon->msg->txOffset == mon->msg->txLength)
+        return 0;
 
-retry:
-    if (poll(&fd, 1, -1) < 0) {
-        if (errno == EINTR)
-            goto retry;
+    if (mon->msg->txFD == -1)
+        done = write(mon->fd,
+                     mon->msg->txBuffer + mon->msg->txOffset,
+                     mon->msg->txLength - mon->msg->txOffset);
+    else
+        done = qemuMonitorIOWriteWithFD(mon,
+                                        mon->msg->txBuffer + mon->msg->txOffset,
+                                        mon->msg->txLength - mon->msg->txOffset,
+                                        mon->msg->txFD);
+
+    if (done < 0) {
+        if (errno == EAGAIN)
+            return 0;
+
+        mon->lastErrno = errno;
         return -1;
     }
-    return 0;
+    mon->msg->txOffset += done;
+    return done;
+}
+
+/*
+ * Called when the monitor has incoming data to read
+ *
+ * Returns -1 on error, or number of bytes read
+ */
+static int
+qemuMonitorIORead(qemuMonitorPtr mon)
+{
+    size_t avail = mon->bufferLength - mon->bufferOffset;
+    int ret = 0;
+
+    if (avail < 1024) {
+        if (VIR_REALLOC_N(mon->buffer,
+                          mon->bufferLength + 1024) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+        mon->bufferLength += 1024;
+        avail += 1024;
+    }
+
+    /* Read as much as we can get into our buffer,
+       until we block on EAGAIN, or hit EOF */
+    while (avail > 1) {
+        int got;
+        got = read(mon->fd,
+                   mon->buffer + mon->bufferOffset,
+                   avail - 1);
+        if (got < 0) {
+            if (errno == EAGAIN)
+                break;
+            mon->lastErrno = errno;
+            ret = -1;
+            break;
+        }
+        if (got == 0)
+            break;
+
+        ret += got;
+        avail -= got;
+        mon->bufferOffset += got;
+        mon->buffer[mon->bufferOffset] = '\0';
+    }
+
+    VIR_DEBUG("Now read %d bytes of data", mon->bufferOffset);
+
+    return ret;
+}
+
+
+static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
+{
+    int events =
+        VIR_EVENT_HANDLE_HANGUP |
+        VIR_EVENT_HANDLE_ERROR;
+
+    if (!mon->lastErrno) {
+        events |= VIR_EVENT_HANDLE_READABLE;
+
+        if (mon->msg && mon->msg->txOffset < mon->msg->txLength)
+            events |= VIR_EVENT_HANDLE_WRITABLE;
+    }
+
+    virEventUpdateHandle(mon->watch, events);
+}
+
+
+static void
+qemuMonitorIO(int watch, int fd, int events, void *opaque) {
+    qemuMonitorPtr mon = opaque;
+    int quit = 0, failed = 0;
+
+    qemuMonitorLock(mon);
+    VIR_DEBUG("Monitor %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
+
+    if (mon->fd != fd || mon->watch != watch) {
+        VIR_ERROR("event from unexpected fd %d!=%d / watch %d!=%d", mon->fd, fd, mon->watch, watch);
+        failed = 1;
+    } else {
+        if (!mon->lastErrno &&
+            events & VIR_EVENT_HANDLE_WRITABLE) {
+            int done = qemuMonitorIOWrite(mon);
+            if (done < 0)
+                failed = 1;
+            events &= ~VIR_EVENT_HANDLE_WRITABLE;
+        }
+        if (!mon->lastErrno &&
+            events & VIR_EVENT_HANDLE_READABLE) {
+            int got = qemuMonitorIORead(mon);
+            if (got < 0)
+                failed = 1;
+            /* Ignore hangup/error events if we read some data, to
+             * give time for that data to be consumed */
+            if (got > 0) {
+                events = 0;
+
+                if (qemuMonitorIOProcess(mon) < 0)
+                    failed = 1;
+            } else
+                events &= ~VIR_EVENT_HANDLE_READABLE;
+        }
+
+        /* If IO process resulted in an error & we have a message,
+         * then wakeup that waiter */
+        if (mon->lastErrno && mon->msg && !mon->msg->finished) {
+            mon->msg->lastErrno = mon->lastErrno;
+            mon->msg->finished = 1;
+            virCondSignal(&mon->notify);
+        }
+
+        qemuMonitorUpdateWatch(mon);
+
+        if (events & VIR_EVENT_HANDLE_HANGUP) {
+            /* If IO process resulted in EOF & we have a message,
+             * then wakeup that waiter */
+            if (mon->msg && !mon->msg->finished) {
+                mon->msg->finished = 1;
+                mon->msg->lastErrno = EIO;
+                virCondSignal(&mon->notify);
+            }
+            quit = 1;
+        } else if (events) {
+            VIR_ERROR(_("unhandled fd event %d for monitor fd %d"),
+                      events, mon->fd);
+            failed = 1;
+        }
+    }
+
+    /* We have to unlock to avoid deadlock against command thread,
+     * but is this safe ?  I think it is, because the callback
+     * will try to acquire the virDomainObjPtr mutex next */
+    if (failed || quit) {
+        /* Make sure anyone waiting wakes up now */
+        virCondSignal(&mon->notify);
+        mon->eofcb = 1;
+        qemuMonitorUnlock(mon);
+        VIR_DEBUG("Triggering EOF callback error? %d", failed);
+        mon->eofCB(mon, mon->vm, failed);
+
+        qemuMonitorLock(mon);
+        if (mon->closed) {
+            qemuMonitorUnlock(mon);
+            VIR_DEBUG("Delayed free of monitor %p", mon);
+            qemuMonitorFree(mon, 1);
+        } else {
+            qemuMonitorUnlock(mon);
+        }
+    } else {
+        qemuMonitorUnlock(mon);
+    }
+}
+
+
+qemuMonitorPtr
+qemuMonitorOpen(virDomainObjPtr vm,
+                qemuMonitorEOFNotify eofCB)
+{
+    qemuMonitorPtr mon;
+
+    if (VIR_ALLOC(mon) < 0) {
+        virReportOOMError(NULL);
+        return NULL;
+    }
+
+    if (virMutexInit(&mon->lock) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cannot initialize monitor mutex"));
+        VIR_FREE(mon);
+        return NULL;
+    }
+    if (virCondInit(&mon->notify) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cannot initialize monitor condition"));
+        virMutexDestroy(&mon->lock);
+        VIR_FREE(mon);
+        return NULL;
+    }
+    mon->fd = -1;
+    mon->vm = vm;
+    mon->eofCB = eofCB;
+    qemuMonitorLock(mon);
+
+    switch (vm->monitor_chr->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        mon->hasSendFD = 1;
+        mon->fd = qemuMonitorOpenUnix(vm->monitor_chr->data.nix.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        mon->fd = qemuMonitorOpenPty(vm->monitor_chr->data.file.path);
+        break;
+
+    default:
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to handle monitor type: %s"),
+                         virDomainChrTypeToString(vm->monitor_chr->type));
+        goto cleanup;
+    }
+
+    if (virSetCloseExec(mon->fd) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Unable to set monitor close-on-exec flag"));
+        goto cleanup;
+    }
+    if (virSetNonBlock(mon->fd) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("Unable to put monitor into non-blocking mode"));
+        goto cleanup;
+    }
+
+
+    if ((mon->watch = virEventAddHandle(mon->fd,
+                                        VIR_EVENT_HANDLE_HANGUP |
+                                        VIR_EVENT_HANDLE_ERROR |
+                                        VIR_EVENT_HANDLE_READABLE,
+                                        qemuMonitorIO,
+                                        mon, NULL)) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("unable to register monitor events"));
+        goto cleanup;
+    }
+
+    virDomainObjRef(vm);
+
+    VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
+    qemuMonitorUnlock(mon);
+
+    return mon;
+
+cleanup:
+    qemuMonitorUnlock(mon);
+    qemuMonitorClose(mon);
+    return NULL;
+}
+
+
+void qemuMonitorClose(qemuMonitorPtr mon)
+{
+    if (!mon)
+        return;
+
+    qemuMonitorLock(mon);
+    if (!mon->closed) {
+        if (mon->watch)
+            virEventRemoveHandle(mon->watch);
+        if (mon->fd != -1)
+            close(mon->fd);
+        /* NB: don't reset  fd / watch fields, since active
+         * callback may still want them */
+        mon->closed = 1;
+    }
+
+    if (mon->eofcb) {
+        VIR_DEBUG("Mark monitor to be deleted %p", mon);
+        qemuMonitorUnlock(mon);
+    } else {
+        VIR_DEBUG("Delete monitor now %p", mon);
+        qemuMonitorFree(mon, 0);
+    }
+}
+
+
+void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
+                                         qemuMonitorDiskSecretLookup secretCB)
+{
+    mon->secretCB = secretCB;
+}
+
+
+int qemuMonitorSend(qemuMonitorPtr mon,
+                    qemuMonitorMessagePtr msg)
+{
+    int ret = -1;
+
+    if (mon->eofcb) {
+        msg->lastErrno = EIO;
+        qemuMonitorUnlock(mon);
+        return -1;
+    }
+
+    mon->msg = msg;
+    qemuMonitorUpdateWatch(mon);
+
+    while (!mon->msg->finished) {
+        if (virCondWait(&mon->notify, &mon->lock) < 0)
+            goto cleanup;
+    }
+
+    if (mon->lastErrno == 0)
+        ret = 0;
+
+cleanup:
+    mon->msg = NULL;
+    qemuMonitorUpdateWatch(mon);
+
+    return ret;
 }
 
 

@@ -5076,7 +5076,8 @@ static virDomainObjPtr virDomainLoadStatus(virConnectPtr conn,
     return obj;
 
 error:
-    virDomainObjUnref(obj);
+    if (obj)
+        virDomainObjUnref(obj);
     VIR_FREE(statusFile);
     return NULL;
 }

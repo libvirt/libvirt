@@ -32,6 +32,33 @@
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
 
+typedef struct _qemuMonitorMessage qemuMonitorMessage;
+typedef qemuMonitorMessage *qemuMonitorMessagePtr;
+
+typedef int (*qemuMonitorPasswordHandler)(qemuMonitorPtr mon,
+                                          qemuMonitorMessagePtr msg,
+                                          const char *data,
+                                          size_t len,
+                                          void *opaque);
+
+struct _qemuMonitorMessage {
+    int txFD;
+
+    char *txBuffer;
+    int txOffset;
+    int txLength;
+
+    char *rxBuffer;
+    int rxLength;
+
+    int finished;
+
+    int lastErrno;
+
+    qemuMonitorPasswordHandler passwordHandler;
+    void *passwordOpaque;
+};
+
 typedef void (*qemuMonitorEOFNotify)(qemuMonitorPtr mon,
                                      virDomainObjPtr vm,
                                      int withError);
@@ -49,7 +76,6 @@ typedef int (*qemuMonitorDiskSecretLookup)(qemuMonitorPtr mon,
                                            size_t *secretLen);
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
-                               int reconnect,
                                qemuMonitorEOFNotify eofCB);
 
 void qemuMonitorClose(qemuMonitorPtr mon);
@@ -60,21 +86,11 @@ void qemuMonitorUnlock(qemuMonitorPtr mon);
 void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
                                          qemuMonitorDiskSecretLookup secretCB);
 
-int qemuMonitorWrite(qemuMonitorPtr mon,
-                     const char *data,
-                     size_t len);
+/* This API is for use by the internal Text/JSON monitor impl code only */
+int qemuMonitorSend(qemuMonitorPtr mon,
+                    qemuMonitorMessagePtr msg);
 
-int qemuMonitorWriteWithFD(qemuMonitorPtr mon,
-                           const char *data,
-                           size_t len,
-                           int fd);
-
-int qemuMonitorRead(qemuMonitorPtr mon,
-                    char *data,
-                    size_t len);
-
-int qemuMonitorWaitForInput(qemuMonitorPtr mon);
-
+/* XXX same comment about virConnectPtr as above */
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              virConnectPtr conn,
                              const char *path,

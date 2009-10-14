@@ -347,9 +347,8 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr event = NULL;
 
-    qemuDriverLock(driver);
+    VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
     virDomainObjLock(vm);
-    qemuDriverUnlock(driver);
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
@@ -413,11 +412,24 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     char *passphrase;
     unsigned char *data;
     size_t size;
+    int ret = -1;
+
+    /* XXX
+     * We ought to be taking the lock here, but that would
+     * require that it be released when monitor commands are
+     * run. Currently we deadlock if we try to take it again
+     *
+     * Until this is resolved, don't take the lock and rely
+     * on fact that the thread invoking this callback is
+     * running lock-step with the thread holding the lock
+     *
+     * virDomainObjLock(vm);
+     */
 
     if (!conn) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("cannot find secrets without a connection"));
-        return -1;
+        goto cleanup;
     }
 
     if (conn->secretDriver == NULL ||
@@ -425,7 +437,7 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         conn->secretDriver->getValue == NULL) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
                          _("secret storage not supported"));
-        return -1;
+        goto cleanup;
     }
 
     enc = findDomainDiskEncryption(conn, vm, path);
@@ -438,18 +450,18 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_DOMAIN,
                          _("invalid <encryption> for volume %s"), path);
-        return -1;
+        goto cleanup;
     }
 
     secret = conn->secretDriver->lookupByUUID(conn,
                                               enc->secrets[0]->uuid);
     if (secret == NULL)
-        return -1;
+        goto cleanup;
     data = conn->secretDriver->getValue(secret, &size,
                                         VIR_SECRET_GET_VALUE_INTERNAL_CALL);
     virUnrefSecret(secret);
     if (data == NULL)
-        return -1;
+        goto cleanup;
 
     if (memchr(data, '\0', size) != NULL) {
         memset(data, 0, size);
@@ -457,14 +469,14 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INVALID_SECRET,
                          _("format='qcow' passphrase for %s must not contain a "
                            "'\\0'"), path);
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_ALLOC_N(passphrase, size + 1) < 0) {
         memset(data, 0, size);
         VIR_FREE(data);
         virReportOOMError(conn);
-        return -1;
+        goto cleanup;
     }
     memcpy(passphrase, data, size);
     passphrase[size] = '\0';
@@ -475,15 +487,24 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     *secretRet = passphrase;
     *secretLen = size;
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    /*
+     * XXX
+     * See earlier comment about lock
+     *
+     * virDomainObjUnlock(vm);
+     */
+    return ret;
 }
 
 static int
-qemuConnectMonitor(virDomainObjPtr vm, int reconnect)
+qemuConnectMonitor(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if ((priv->mon = qemuMonitorOpen(vm, reconnect, qemuHandleMonitorEOF)) == NULL) {
+    if ((priv->mon = qemuMonitorOpen(vm, qemuHandleMonitorEOF)) == NULL) {
         VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
         return -1;
     }
@@ -506,7 +527,10 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
 
     virDomainObjLock(obj);
 
-    if (qemuConnectMonitor(obj, 1) < 0)
+    VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
+
+    /* XXX check PID liveliness & EXE path */
+    if (qemuConnectMonitor(obj) < 0)
         goto error;
 
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
@@ -530,7 +554,10 @@ error:
      * to remove danger of it ending up running twice if
      * user tries to start it again later */
     qemudShutdownVMDaemon(NULL, driver, obj);
-    virDomainObjUnlock(obj);
+    if (!obj->persistent)
+        virDomainRemoveInactive(&driver->domains, obj);
+    else
+        virDomainObjUnlock(obj);
 }
 
 /**
@@ -1128,7 +1155,8 @@ qemudWaitForMonitor(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuConnectMonitor(vm, 0) < 0)
+    VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
+    if (qemuConnectMonitor(vm) < 0)
         return -1;
 
     return 0;
@@ -2178,7 +2206,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     if (!virDomainObjIsActive(vm))
         return;
 
-    VIR_DEBUG(_("Shutting down VM '%s'\n"), vm->def->name);
+    VIR_DEBUG("Shutting down VM '%s'", vm->def->name);
 
     if (driver->macFilter) {
         int i;
@@ -6121,6 +6149,10 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     qemust = qemuStreamMigOpen(st, unixfile);
     if (qemust == NULL) {
         qemudShutdownVMDaemon(NULL, driver, vm);
+        if (!vm->persistent) {
+            virDomainRemoveInactive(&driver->domains, vm);
+            vm = NULL;
+        }
         virReportSystemError(dconn, errno,
                              _("cannot open unix socket '%s' for tunnelled migration"),
                              unixfile);

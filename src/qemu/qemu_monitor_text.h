@@ -29,6 +29,11 @@
 
 #include "qemu_monitor.h"
 
+int qemuMonitorTextIOProcess(qemuMonitorPtr mon,
+                             const char *data,
+                             size_t len,
+                             qemuMonitorMessagePtr msg);
+
 int qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);
 int qemuMonitorTextStopCPUs(qemuMonitorPtr mon);

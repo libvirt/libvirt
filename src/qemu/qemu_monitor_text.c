@@ -133,183 +133,163 @@ static char *qemuMonitorEscapeShell(const char *in)
     return qemuMonitorEscape(in, 1);
 }
 
-/* Throw away any data available on the monitor
- * This is done before executing a command, in order
- * to allow re-synchronization if something went badly
- * wrong in the past. it also deals with problem of
- * QEMU *sometimes* re-printing its initial greeting
- * when we reconnect to the monitor after restarts.
+/* When connecting to a monitor, QEMU will print a greeting like
+ *
+ * QEMU 0.11.0 monitor - type 'help' for more information
+ *
+ * Don't expect the version number bit to be stable :-)
  */
-static void
-qemuMonitorDiscardPendingData(qemuMonitorPtr mon) {
-    char buf[1024];
-    int ret = 0;
+#define GREETING_PREFIX "QEMU "
+#define GREETING_POSTFIX "type 'help' for more information\r\n(qemu) "
+#define BASIC_PROMPT "(qemu) "
+#define PASSWORD_PROMPT "Password:"
+#define DISK_ENCRYPTION_PREFIX "("
+#define DISK_ENCRYPTION_POSTFIX ") is encrypted."
+#define LINE_ENDING "\r\n"
 
-    /* Monitor is non-blocking, so just loop till we
-     * get -1 or 0. Don't bother with detecting
-     * errors, since we'll deal with that better later */
-    do {
-        ret = qemuMonitorRead(mon, buf, sizeof (buf)-1);
-    } while (ret > 0);
-}
-
-
-static int
-qemuMonitorSend(qemuMonitorPtr mon,
-                const char *cmd,
-                int scm_fd)
+int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                             const char *data,
+                             size_t len,
+                             qemuMonitorMessagePtr msg)
 {
-    char *full;
-    size_t len;
-    int ret = -1;
+    int used = 0;
 
-    if (virAsprintf(&full, "%s\r", cmd) < 0) {
-        virReportOOMError(NULL);
-        return -1;
+    /* Check for & discard greeting */
+    if (STRPREFIX(data, GREETING_PREFIX)) {
+        const char *offset = strstr(data, GREETING_POSTFIX);
+
+        /* We see the greeting prefix, but not postfix, so pretend we've
+           not consumed anything. We'll restart when more data arrives. */
+        if (!offset) {
+            VIR_DEBUG0("Partial greeting seen, getting out & waiting for more");
+            return 0;
+        }
+
+        used = offset - data + strlen(GREETING_POSTFIX);
+
+        VIR_DEBUG0("Discarded monitor greeting");
     }
 
-    len = strlen(full);
+    /* Don't print raw data in debug because its full of control chars */
+    /*VIR_DEBUG("Process data %d byts of data [%s]", len - used, data + used);*/
+    VIR_DEBUG("Process data %d byts of data", len - used);
 
-    if (scm_fd == -1)
-        ret = qemuMonitorWrite(mon, full, len);
-    else
-        ret = qemuMonitorWriteWithFD(mon, full, len, scm_fd);
+    /* Look for a non-zero reply followed by prompt */
+    if (msg && !msg->finished) {
+        const char *end;
 
-    VIR_FREE(full);
-    return ret;
+        /* We might get a prompt for a password */
+        end = strstr(data + used, PASSWORD_PROMPT);
+        if (end) {
+            VIR_DEBUG("Woooo passwowrd [%s]", data + used);
+            if (msg->passwordHandler) {
+                size_t consumed;
+                /* Try and handle the prompt */
+                if (msg->passwordHandler(mon, msg,
+                                         data + used,
+                                         len - used,
+                                         msg->passwordOpaque) < 0)
+                    return -1;
+
+                /* Skip over prompt now */
+                consumed = (end + strlen(PASSWORD_PROMPT))
+                    - (data + used);
+                used += consumed;
+            } else {
+                errno = EACCES;
+                return -1;
+            }
+        }
+
+        /* We use the arrival of BASIC_PROMPT to detect when we've got a
+         * complete reply available from a command */
+        end = strstr(data + used, BASIC_PROMPT);
+        if (end) {
+            /* QEMU echos the command back to us, full of control
+             * character junk that we don't want. Fortunately this
+             * is all terminated by LINE_ENDING, so we can easily
+             * skip over the control character junk */
+            const char *start = strstr(data + used, LINE_ENDING);
+            if (!start)
+                start = data + used;
+            else
+                start += strlen(LINE_ENDING);
+            int want = end - start;
+
+            /* Annoyingly some commands may not have any reply data
+             * at all upon success, but since we've detected the
+             * BASIC_PROMPT we can reasonably reliably cope */
+            if (want) {
+                if (VIR_REALLOC_N(msg->rxBuffer,
+                                  msg->rxLength + want + 1) < 0)
+                    return -1;
+                memcpy(msg->rxBuffer + msg->rxLength, start, want);
+                msg->rxLength += want;
+                msg->rxBuffer[msg->rxLength] = '\0';
+                VIR_DEBUG("Finished %d byte reply [%s]", want, msg->rxBuffer);
+            } else {
+                VIR_DEBUG0("Finished 0 byte reply");
+            }
+            msg->finished = 1;
+            used += end - (data + used);
+            used += strlen(BASIC_PROMPT);
+        }
+    }
+
+    VIR_DEBUG("Total used %d", used);
+    return used;
 }
 
 static int
 qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
                               const char *cmd,
-                              const char *extraPrompt,
-                              qemuMonitorExtraPromptHandler extraHandler,
-                              void *handlerData,
+                              qemuMonitorPasswordHandler passwordHandler,
+                              void *passwordOpaque,
                               int scm_fd,
                               char **reply) {
-    int size = 0;
-    char *buf = NULL;
-
-    qemuMonitorDiscardPendingData(mon);
-
-    VIR_DEBUG("cmd='%s' extraPrompt='%s'", cmd, NULLSTR(extraPrompt));
-    if (qemuMonitorSend(mon, cmd, scm_fd) < 0)
-        return -1;
+    int ret;
+    qemuMonitorMessage msg;
 
     *reply = NULL;
 
-    for (;;) {
-        /* Read all the data QEMU has sent thus far */
-        for (;;) {
-            char data[1024];
-            int got = qemuMonitorRead(mon, data, sizeof(data));
+    memset(&msg, 0, sizeof msg);
 
-            if (got == 0)
-                goto error;
-            if (got < 0) {
-                if (errno == EINTR)
-                    continue;
-                if (errno == EAGAIN)
-                    break;
-                goto error;
-            }
-            if (VIR_REALLOC_N(buf, size+got+1) < 0)
-                goto error;
-
-            memmove(buf+size, data, got);
-            buf[size+got] = '\0';
-            size += got;
-        }
-
-        /* Look for QEMU prompt to indicate completion */
-        if (buf) {
-            char *foundPrompt;
-            char *tmp;
-
-            if (extraPrompt &&
-                (foundPrompt = strstr(buf, extraPrompt)) != NULL) {
-                char *promptEnd;
-
-                DEBUG("prompt='%s' handler=%p", extraPrompt, extraHandler);
-                if (extraHandler(mon, buf, foundPrompt, handlerData) < 0)
-                    return -1;
-                /* Discard output so far, necessary to detect whether
-                   extraPrompt appears again.  We don't need the output between
-                   original command and this prompt anyway. */
-                promptEnd = foundPrompt + strlen(extraPrompt);
-                memmove(buf, promptEnd, strlen(promptEnd)+1);
-                size -= promptEnd - buf;
-            } else if ((tmp = strstr(buf, QEMU_CMD_PROMPT)) != NULL) {
-                char *commptr = NULL, *nlptr = NULL;
-                /* Preserve the newline */
-                tmp[1] = '\0';
-
-                /* The monitor doesn't dump clean output after we have written to
-                 * it. Every character we write dumps a bunch of useless stuff,
-                 * so the result looks like "cXcoXcomXcommXcommaXcommanXcommand"
-                 * Try to throw away everything before the first full command
-                 * occurence, and inbetween the command and the newline starting
-                 * the response
-                 */
-                if ((commptr = strstr(buf, cmd))) {
-                    memmove(buf, commptr, strlen(commptr)+1);
-                    if ((nlptr = strchr(buf, '\n')))
-                        memmove(buf+strlen(cmd), nlptr, strlen(nlptr)+1);
-                }
-
-                break;
-            }
-        }
-
-        /* Need to wait for more data */
-        if (qemuMonitorWaitForInput(mon) < 0)
-            goto error;
-    }
-    *reply = buf;
-    DEBUG("reply='%s'", buf);
-    return 0;
-
- error:
-    VIR_FREE(buf);
-    return -1;
-}
-
-struct extraHandlerData
-{
-    const char *reply;
-    bool first;
-};
-
-static int
-qemuMonitorCommandSimpleExtraHandler(qemuMonitorPtr mon,
-                                     const char *buf ATTRIBUTE_UNUSED,
-                                     const char *prompt ATTRIBUTE_UNUSED,
-                                     void *data_)
-{
-    struct extraHandlerData *data = data_;
-
-    if (!data->first)
-        return 0;
-    if (qemuMonitorSend(mon, data->reply, -1) < 0)
+    if (virAsprintf(&msg.txBuffer, "%s\r", cmd) < 0) {
+        virReportOOMError(NULL);
         return -1;
-    data->first = false;
-    return 0;
-}
+    }
+    msg.txLength = strlen(msg.txBuffer);
+    msg.txFD = scm_fd;
+    msg.passwordHandler = passwordHandler;
+    msg.passwordOpaque = passwordOpaque;
 
-static int
-qemuMonitorCommandExtra(qemuMonitorPtr mon,
-                         const char *cmd,
-                         const char *extra,
-                         const char *extraPrompt,
-                         int scm_fd,
-                         char **reply) {
-    struct extraHandlerData data;
+    VIR_DEBUG("Send command '%s' for write with FD %d", cmd, scm_fd);
 
-    data.reply = extra;
-    data.first = true;
-    return qemuMonitorCommandWithHandler(mon, cmd, extraPrompt,
-                                         qemuMonitorCommandSimpleExtraHandler,
-                                         &data, scm_fd, reply);
+    ret = qemuMonitorSend(mon, &msg);
+
+    VIR_DEBUG("Receive command reply ret=%d errno=%d %d bytes '%s'",
+              ret, msg.lastErrno, msg.rxLength, msg.rxBuffer);
+
+    /* Just in case buffer had some passwords in */
+    memset(msg.txBuffer, 0, msg.txLength);
+    VIR_FREE(msg.txBuffer);
+
+    /* To make life safer for callers, already ensure there's at least an empty string */
+    if (msg.rxBuffer) {
+        *reply = msg.rxBuffer;
+    } else {
+        *reply = strdup("");
+        if (!*reply) {
+            virReportOOMError(NULL);
+            return -1;
+        }
+    }
+
+    if (ret < 0)
+        virReportSystemError(NULL, msg.lastErrno,
+                             _("cannot send monitor command '%s'"), cmd);
+
+    return ret;
 }
 
 static int
@@ -317,7 +297,7 @@ qemuMonitorCommandWithFd(qemuMonitorPtr mon,
                           const char *cmd,
                           int scm_fd,
                           char **reply) {
-    return qemuMonitorCommandExtra(mon, cmd, NULL, NULL, scm_fd, reply);
+    return qemuMonitorCommandWithHandler(mon, cmd, NULL, NULL, scm_fd, reply);
 }
 
 static int
@@ -329,44 +309,74 @@ qemuMonitorCommand(qemuMonitorPtr mon,
 
 
 static int
-qemuMonitorSendVolumePassphrase(qemuMonitorPtr mon,
-                                const char *buf,
-                                const char *prompt,
-                                void *data)
+qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
+                              qemuMonitorMessagePtr msg,
+                              const char *data,
+                              size_t len ATTRIBUTE_UNUSED,
+                              void *opaque)
 {
-    virConnectPtr conn = data;
-    char *passphrase = NULL, *path;
-    const char *prompt_path;
-    size_t path_len, passphrase_len = 0;
+    virConnectPtr conn = opaque;
+    char *path;
+    char *passphrase = NULL;
+    size_t passphrase_len = 0;
     int res;
+    const char *pathStart;
+    const char *pathEnd;
 
-    /* The complete prompt looks like this:
-           ide0-hd0 (/path/to/volume) is encrypted.
-           Password:
-       "prompt" starts with ") is encrypted".  Extract /path/to/volume. */
-    for (prompt_path = prompt; prompt_path > buf && prompt_path[-1] != '(';
-         prompt_path--)
-        ;
-    if (prompt_path == buf)
+    /*
+     * For disk passwords:
+     *
+     *    ide0-hd0 (/path/to/volume) is encrypted.
+     *    Password:
+     *
+     */
+    pathStart = strstr(data, DISK_ENCRYPTION_PREFIX);
+    pathEnd = strstr(data, DISK_ENCRYPTION_POSTFIX);
+    if (!pathStart || !pathEnd || pathStart >= pathEnd) {
+        errno = -EINVAL;
         return -1;
-    path_len = prompt - prompt_path;
-    if (VIR_ALLOC_N(path, path_len + 1) < 0)
-        return -1;
-    memcpy(path, prompt_path, path_len);
-    path[path_len] = '\0';
+    }
 
-    res = qemuMonitorGetDiskSecret(mon, conn, path,
-                                   &passphrase, &passphrase_len);
+    /* Extra the path */
+    pathStart += strlen(DISK_ENCRYPTION_PREFIX);
+    path = strndup(pathStart, pathEnd - pathStart);
+    if (!path) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    /* Fetch the disk password if possible */
+    res = qemuMonitorGetDiskSecret(mon,
+                                   conn,
+                                   path,
+                                   &passphrase,
+                                   &passphrase_len);
     VIR_FREE(path);
     if (res < 0)
         return -1;
 
-    res = qemuMonitorSend(mon, passphrase, -1);
+    /* Enlarge transmit buffer to allow for the extra data
+     * to be sent back */
+    if (VIR_REALLOC_N(msg->txBuffer,
+                      msg->txLength + passphrase_len + 1 + 1) < 0) {
+        memset(passphrase, 0, passphrase_len);
+        VIR_FREE(passphrase);
+        errno = ENOMEM;
+        return -1;
+    }
+
+    /* Queue the password for sending */
+    memcpy(msg->txBuffer + msg->txLength,
+           passphrase, passphrase_len);
+    msg->txLength += passphrase_len;
+    msg->txBuffer[msg->txLength] = '\r';
+    msg->txLength++;
+    msg->txBuffer[msg->txLength] = '\0';
 
     memset(passphrase, 0, passphrase_len);
     VIR_FREE(passphrase);
 
-    return res;
+    return 0;
 }
 
 int
@@ -374,8 +384,9 @@ qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn) {
     char *reply;
 
-    if (qemuMonitorCommandWithHandler(mon, "cont", ") is encrypted.",
-                                      qemuMonitorSendVolumePassphrase, conn,
+    if (qemuMonitorCommandWithHandler(mon, "cont",
+                                      qemuMonitorSendDiskPassphrase,
+                                      conn,
                                       -1, &reply) < 0)
         return -1;
 
@@ -639,15 +650,44 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorSendVNCPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                             qemuMonitorMessagePtr msg,
+                             const char *data ATTRIBUTE_UNUSED,
+                             size_t len ATTRIBUTE_UNUSED,
+                             void *opaque)
+{
+    char *passphrase = opaque;
+    size_t passphrase_len = strlen(passphrase);
+
+    /* Enlarge transmit buffer to allow for the extra data
+     * to be sent back */
+    if (VIR_REALLOC_N(msg->txBuffer,
+                      msg->txLength + passphrase_len + 1 + 1) < 0) {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    /* Queue the password for sending */
+    memcpy(msg->txBuffer + msg->txLength,
+           passphrase, passphrase_len);
+    msg->txLength += passphrase_len;
+    msg->txBuffer[msg->txLength] = '\r';
+    msg->txLength++;
+    msg->txBuffer[msg->txLength] = '\0';
+
+    return 0;
+}
+
 int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password)
 {
     char *info = NULL;
 
-    if (qemuMonitorCommandExtra(mon, "change vnc password",
-                                password,
-                                QEMU_PASSWD_PROMPT,
-                                -1, &info) < 0) {
+    if (qemuMonitorCommandWithHandler(mon, "change vnc password",
+                                      qemuMonitorSendVNCPassphrase,
+                                      (char *)password,
+                                      -1, &info) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("setting VNC password failed"));
         return -1;
