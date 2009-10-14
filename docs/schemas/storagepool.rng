@@ -258,6 +258,7 @@
 	    <value>vfat</value>
 	    <value>hfs+</value>
 	    <value>xfs</value>
+	    <value>ocfs2</value>
 	  </choice>
 	</attribute>
       </element>

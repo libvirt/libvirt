@@ -395,6 +395,7 @@ enum virStoragePoolFormatFileSystem {
     VIR_STORAGE_POOL_FS_VFAT,
     VIR_STORAGE_POOL_FS_HFSPLUS,
     VIR_STORAGE_POOL_FS_XFS,
+    VIR_STORAGE_POOL_FS_OCFS2,
     VIR_STORAGE_POOL_FS_LAST,
 };
 VIR_ENUM_DECL(virStoragePoolFormatFileSystem)
