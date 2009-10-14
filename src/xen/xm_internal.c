@@ -2750,8 +2750,8 @@ struct xenXMListIteratorContext {
     char ** names;
 };
 
-static void xenXMListIterator(const void *payload ATTRIBUTE_UNUSED, const char *name, const void *data) {
-    struct xenXMListIteratorContext *ctx = (struct xenXMListIteratorContext *)data;
+static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const char *name, void *data) {
+    struct xenXMListIteratorContext *ctx = data;
     virDomainPtr dom = NULL;
 
     if (ctx->count == ctx->max)

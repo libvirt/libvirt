@@ -38,7 +38,7 @@ typedef void (*virHashDeallocator) (void *payload, const char *name);
  *
  * Callback to process a hash entry during iteration
  */
-typedef void (*virHashIterator) (const void *payload, const char *name, const void *data);
+typedef void (*virHashIterator) (void *payload, const char *name, void *data);
 /**
  * virHashSearcher
  * @payload: the data in the hash
@@ -82,7 +82,7 @@ void *virHashLookup(virHashTablePtr table, const char *name);
 /*
  * Iterators
  */
-int virHashForEach(virHashTablePtr table, virHashIterator iter, const void *data);
+int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
 int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDeallocator f, const void *data);
 void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
 

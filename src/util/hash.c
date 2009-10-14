@@ -482,7 +482,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
  *
  * Returns number of items iterated over upon completion, -1 on failure
  */
-int virHashForEach(virHashTablePtr table, virHashIterator iter, const void *data) {
+int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data) {
     int i, count = 0;
 
     if (table == NULL || iter == NULL)
