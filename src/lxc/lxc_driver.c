@@ -1005,6 +1005,19 @@ static int lxcControllerStart(virConnectPtr conn,
         lenv[lenvc++] = envval;                                         \
     } while (0)
 
+#define ADD_ENV_COPY(envname)                                           \
+    do {                                                                \
+        char *val = getenv(envname);                                    \
+        if (val != NULL) {                                              \
+            ADD_ENV_PAIR(envname, val);                                 \
+        }                                                               \
+    } while (0)
+
+    /*
+     * The controller may call ip command, so we have to remain PATH.
+     */
+    ADD_ENV_COPY("PATH");
+
     log_level = virLogGetDefaultPriority();
     if (virAsprintf(&tmp, "LIBVIRT_DEBUG=%d", log_level) < 0)
         goto no_memory;
