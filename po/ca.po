@@ -7058,7 +7058,6 @@ msgstr "No s'ha pogut executar '"
 msgid "Failed to read "
 msgstr "No s'ha pogut llegir"
 
-# 200
 #: src/util/iptables.c:180
 msgid "Failed to write to "
 msgstr "No s'ha pogut escriure a "
@@ -7958,7 +7957,6 @@ msgstr "No s'ha pogut tancar el sòcol %d\n"
 msgid "Failed to write to socket %d\n"
 msgstr "No s'ha pogut escriure al sòcol %d\n"
 
-# 200
 #: src/xen/proxy_internal.c:382
 #, fuzzy
 msgid "failed to write proxy request"
