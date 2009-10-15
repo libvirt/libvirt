@@ -59,21 +59,25 @@ struct _qemuMonitorMessage {
     void *passwordOpaque;
 };
 
-typedef void (*qemuMonitorEOFNotify)(qemuMonitorPtr mon,
-                                     virDomainObjPtr vm,
-                                     int withError);
+typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
+typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
+struct _qemuMonitorCallbacks {
+    void (*eofNotify)(qemuMonitorPtr mon,
+                      virDomainObjPtr vm,
+                      int withError);
+    /* XXX we'd really like to avoid virCOnnectPtr here
+     * It is required so the callback can find the active
+     * secret driver. Need to change this to work like the
+     * security drivers do, to avoid this
+     */
+    int (*diskSecretLookup)(qemuMonitorPtr mon,
+                            virConnectPtr conn,
+                            virDomainObjPtr vm,
+                            const char *path,
+                            char **secret,
+                            size_t *secretLen);
+};
 
-/* XXX we'd really like to avoid virCOnnectPtr here
- * It is required so the callback can find the active
- * secret driver. Need to change this to work like the
- * security drivers do, to avoid this
- */
-typedef int (*qemuMonitorDiskSecretLookup)(qemuMonitorPtr mon,
-                                           virConnectPtr conn,
-                                           virDomainObjPtr vm,
-                                           const char *path,
-                                           char **secret,
-                                           size_t *secretLen);
 
 char *qemuMonitorEscapeArg(const char *in);
 char *qemuMonitorEscapeShell(const char *in);
@@ -81,7 +85,7 @@ char *qemuMonitorEscapeShell(const char *in);
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrDefPtr config,
                                int json,
-                               qemuMonitorEOFNotify eofCB);
+                               qemuMonitorCallbacksPtr cb);
 
 int qemuMonitorClose(qemuMonitorPtr mon);
 
@@ -90,9 +94,6 @@ void qemuMonitorUnlock(qemuMonitorPtr mon);
 
 int qemuMonitorRef(qemuMonitorPtr mon);
 int qemuMonitorUnref(qemuMonitorPtr mon);
-
-void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
-                                         qemuMonitorDiskSecretLookup secretCB);
 
 /* This API is for use by the internal Text/JSON monitor impl code only */
 int qemuMonitorSend(qemuMonitorPtr mon,

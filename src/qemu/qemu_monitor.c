@@ -51,8 +51,7 @@ struct _qemuMonitor {
 
     virDomainObjPtr vm;
 
-    qemuMonitorEOFNotify eofCB;
-    qemuMonitorDiskSecretLookup secretCB;
+    qemuMonitorCallbacksPtr cb;
 
     /* If there's a command being processed this will be
      * non-NULL */
@@ -517,14 +516,15 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
      * but is this safe ?  I think it is, because the callback
      * will try to acquire the virDomainObjPtr mutex next */
     if (failed || quit) {
-        qemuMonitorEOFNotify eofCB = mon->eofCB;
+        void (*eofNotify)(qemuMonitorPtr, virDomainObjPtr, int)
+            = mon->cb->eofNotify;
         virDomainObjPtr vm = mon->vm;
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         if (qemuMonitorUnref(mon) > 0)
             qemuMonitorUnlock(mon);
         VIR_DEBUG("Triggering EOF callback error? %d", failed);
-        (eofCB)(mon, vm, failed);
+        (eofNotify)(mon, vm, failed);
     } else {
         if (qemuMonitorUnref(mon) > 0)
             qemuMonitorUnlock(mon);
@@ -536,9 +536,15 @@ qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrDefPtr config,
                 int json,
-                qemuMonitorEOFNotify eofCB)
+                qemuMonitorCallbacksPtr cb)
 {
     qemuMonitorPtr mon;
+
+    if (!cb || !cb->eofNotify) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("EOF notify callback must be supplied"));
+        return NULL;
+    }
 
     if (VIR_ALLOC(mon) < 0) {
         virReportOOMError(NULL);
@@ -561,8 +567,8 @@ qemuMonitorOpen(virDomainObjPtr vm,
     mon->fd = -1;
     mon->refs = 1;
     mon->vm = vm;
-    mon->eofCB = eofCB;
     mon->json = json;
+    mon->cb = cb;
     qemuMonitorLock(mon);
 
     switch (config->type) {
@@ -648,13 +654,6 @@ int qemuMonitorClose(qemuMonitorPtr mon)
 }
 
 
-void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
-                                         qemuMonitorDiskSecretLookup secretCB)
-{
-    mon->secretCB = secretCB;
-}
-
-
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg)
 {
@@ -690,10 +689,17 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              char **secret,
                              size_t *secretLen)
 {
+    int ret = -1;
     *secret = NULL;
     *secretLen = 0;
 
-    return mon->secretCB(mon, conn, mon->vm, path, secret, secretLen);
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->diskSecretLookup)
+        ret = mon->cb->diskSecretLookup(mon, conn, mon->vm, path, secret, secretLen);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
 }
 
 

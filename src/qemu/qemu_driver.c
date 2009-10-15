@@ -794,6 +794,11 @@ cleanup:
     return ret;
 }
 
+static qemuMonitorCallbacks monitorCallbacks = {
+    .eofNotify = qemuHandleMonitorEOF,
+    .diskSecretLookup = findVolumeQcowPassphrase,
+};
+
 static int
 qemuConnectMonitor(virDomainObjPtr vm)
 {
@@ -806,13 +811,10 @@ qemuConnectMonitor(virDomainObjPtr vm)
     if ((priv->mon = qemuMonitorOpen(vm,
                                      priv->monConfig,
                                      priv->monJSON,
-                                     qemuHandleMonitorEOF)) == NULL) {
+                                     &monitorCallbacks)) == NULL) {
         VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
         return -1;
     }
-
-    qemuMonitorRegisterDiskSecretLookup(priv->mon,
-                                        findVolumeQcowPassphrase);
 
     return 0;
 }
