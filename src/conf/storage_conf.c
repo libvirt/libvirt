@@ -366,14 +366,14 @@ static int
 virStoragePoolDefParseAuthChap(virConnectPtr conn,
                                xmlXPathContextPtr ctxt,
                                virStoragePoolAuthChapPtr auth) {
-    auth->login = virXPathString(conn, "string(./source/auth/@login)", ctxt);
+    auth->login = virXPathString(conn, "string(./auth/@login)", ctxt);
     if (auth->login == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing auth host attribute"));
         return -1;
     }
 
-    auth->passwd = virXPathString(conn, "string(./source/auth/@passwd)", ctxt);
+    auth->passwd = virXPathString(conn, "string(./auth/@passwd)", ctxt);
     if (auth->passwd == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing auth passwd attribute"));
@@ -383,6 +383,96 @@ virStoragePoolDefParseAuthChap(virConnectPtr conn,
     return 0;
 }
 
+static int
+virStoragePoolDefParseSource(virConnectPtr conn,
+                             xmlXPathContextPtr ctxt,
+                             virStoragePoolSourcePtr source,
+                             int pool_type,
+                             xmlNodePtr node) {
+    int ret = -1;
+    xmlNodePtr relnode, *nodeset = NULL;
+    char *authType = NULL;
+    int nsource, i;
+    virStoragePoolOptionsPtr options;
+
+    relnode = ctxt->node;
+    ctxt->node = node;
+
+    if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL) {
+        goto cleanup;
+    }
+
+    source->name = virXPathString(conn, "string(./name)", ctxt);
+
+    if (options->formatFromString) {
+        char *format = virXPathString(conn, "string(./format/@type)", ctxt);
+        if (format == NULL)
+            source->format = options->defaultFormat;
+        else
+            source->format = options->formatFromString(format);
+
+        if (source->format < 0) {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("unknown pool format type %s"), format);
+            VIR_FREE(format);
+            goto cleanup;
+        }
+        VIR_FREE(format);
+    }
+
+    source->host.name = virXPathString(conn, "string(./host/@name)", ctxt);
+
+    nsource = virXPathNodeSet(conn, "./device", ctxt, &nodeset);
+    if (nsource > 0) {
+        if (VIR_ALLOC_N(source->devices, nsource) < 0) {
+            VIR_FREE(nodeset);
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+
+        for (i = 0 ; i < nsource ; i++) {
+            xmlChar *path = xmlGetProp(nodeset[i], BAD_CAST "path");
+            if (path == NULL) {
+                VIR_FREE(nodeset);
+                virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                        "%s", _("missing storage pool source device path"));
+                goto cleanup;
+            }
+            source->devices[i].path = (char *)path;
+        }
+        source->ndevice = nsource;
+    }
+
+    source->dir = virXPathString(conn, "string(./dir/@path)", ctxt);
+    source->adapter = virXPathString(conn, "string(./adapter/@name)", ctxt);
+
+    authType = virXPathString(conn, "string(./auth/@type)", ctxt);
+    if (authType == NULL) {
+        source->authType = VIR_STORAGE_POOL_AUTH_NONE;
+    } else {
+        if (STREQ(authType, "chap")) {
+            source->authType = VIR_STORAGE_POOL_AUTH_CHAP;
+        } else {
+            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                                  _("unknown auth type '%s'"),
+                                  (const char *)authType);
+            goto cleanup;
+        }
+    }
+
+    if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
+        if (virStoragePoolDefParseAuthChap(conn, ctxt, &source->auth.chap) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    ctxt->node = relnode;
+
+    VIR_FREE(authType);
+    VIR_FREE(nodeset);
+    return ret;
+}
 
 static int
 virStorageDefParsePerms(virConnectPtr conn,
@@ -460,9 +550,9 @@ virStoragePoolDefParseXML(virConnectPtr conn,
                           xmlXPathContextPtr ctxt) {
     virStoragePoolOptionsPtr options;
     virStoragePoolDefPtr ret;
+    xmlNodePtr source_node;
     char *type = NULL;
     char *uuid = NULL;
-    char *authType = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError(conn);
@@ -483,10 +573,17 @@ virStoragePoolDefParseXML(virConnectPtr conn,
         goto cleanup;
     }
 
+    source_node = virXPathNode(conn, "./source", ctxt);
+    if (source_node) {
+        if (virStoragePoolDefParseSource(conn, ctxt, &ret->source, ret->type,
+                                         source_node) < 0)
+            goto cleanup;
+    }
+
     ret->name = virXPathString(conn, "string(./name)", ctxt);
     if (ret->name == NULL &&
         options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
-        ret->name = virXPathString(conn, "string(./source/name)", ctxt);
+        ret->name = ret->source.name;
     if (ret->name == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR,
                               "%s", _("missing pool source name element"));
@@ -509,66 +606,23 @@ virStoragePoolDefParseXML(virConnectPtr conn,
         VIR_FREE(uuid);
     }
 
-    if (options->formatFromString) {
-        char *format = virXPathString(conn, "string(./source/format/@type)", ctxt);
-        if (format == NULL)
-            ret->source.format = options->defaultFormat;
-        else
-            ret->source.format = options->formatFromString(format);
-
-        if (ret->source.format < 0) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  _("unknown pool format type %s"), format);
-            VIR_FREE(format);
-            goto cleanup;
-        }
-        VIR_FREE(format);
-    }
-
     if (options->flags & VIR_STORAGE_POOL_SOURCE_HOST) {
-        if ((ret->source.host.name = virXPathString(conn, "string(./source/host/@name)", ctxt)) == NULL) {
+        if (!ret->source.host.name) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                             "%s", _("missing storage pool source host name"));
+                                  "%s",
+                                  _("missing storage pool source host name"));
             goto cleanup;
         }
     }
-    if (options->flags & VIR_STORAGE_POOL_SOURCE_DEVICE) {
-        xmlNodePtr *nodeset = NULL;
-        int nsource, i;
 
-        if ((nsource = virXPathNodeSet(conn, "./source/device", ctxt, &nodeset)) < 0) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                        "%s", _("cannot extract storage pool source devices"));
-            goto cleanup;
-        }
-        if (VIR_ALLOC_N(ret->source.devices, nsource) < 0) {
-            VIR_FREE(nodeset);
-            virReportOOMError(conn);
-            goto cleanup;
-        }
-        for (i = 0 ; i < nsource ; i++) {
-            xmlChar *path = xmlGetProp(nodeset[i], BAD_CAST "path");
-            if (path == NULL) {
-                VIR_FREE(nodeset);
-                virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                        "%s", _("missing storage pool source device path"));
-                goto cleanup;
-            }
-            ret->source.devices[i].path = (char *)path;
-        }
-        VIR_FREE(nodeset);
-        ret->source.ndevice = nsource;
-    }
     if (options->flags & VIR_STORAGE_POOL_SOURCE_DIR) {
-        if ((ret->source.dir = virXPathString(conn, "string(./source/dir/@path)", ctxt)) == NULL) {
+        if (!ret->source.dir) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                "%s", _("missing storage pool source path"));
+                                  "%s", _("missing storage pool source path"));
             goto cleanup;
         }
     }
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME) {
-        ret->source.name = virXPathString(conn, "string(./source/name)",
-                                          ctxt);
         if (ret->source.name == NULL) {
             /* source name defaults to pool name */
             ret->source.name = strdup(ret->name);
@@ -580,34 +634,11 @@ virStoragePoolDefParseXML(virConnectPtr conn,
     }
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) {
-        if ((ret->source.adapter = virXPathString(conn,
-                                                  "string(./source/adapter/@name)",
-                                                  ctxt)) == NULL) {
+        if (!ret->source.adapter) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                             "%s", _("missing storage pool source adapter name"));
+                                  "%s", _("missing storage pool source adapter name"));
             goto cleanup;
         }
-    }
-
-    authType = virXPathString(conn, "string(./source/auth/@type)", ctxt);
-    if (authType == NULL) {
-        ret->source.authType = VIR_STORAGE_POOL_AUTH_NONE;
-    } else {
-        if (STREQ(authType, "chap")) {
-            ret->source.authType = VIR_STORAGE_POOL_AUTH_CHAP;
-        } else {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
-                                  _("unknown auth type '%s'"),
-                                  (const char *)authType);
-            VIR_FREE(authType);
-            goto cleanup;
-        }
-        VIR_FREE(authType);
-    }
-
-    if (ret->source.authType == VIR_STORAGE_POOL_AUTH_CHAP) {
-        if (virStoragePoolDefParseAuthChap(conn, ctxt, &ret->source.auth.chap) < 0)
-            goto cleanup;
     }
 
     if ((ret->target.path = virXPathString(conn, "string(./target/path)", ctxt)) == NULL) {
