@@ -380,6 +380,7 @@ virStoragePoolObjListFree;
 virStoragePoolObjRemove;
 virStoragePoolObjSaveDef;
 virStoragePoolSourceFree;
+virStoragePoolSourceListNewSource;
 virStoragePoolSourceListFormat;
 virStorageVolDefFindByKey;
 virStorageVolDefFindByName;

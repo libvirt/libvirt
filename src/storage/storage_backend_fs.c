@@ -136,14 +136,15 @@ struct _virNetfsDiscoverState {
 typedef struct _virNetfsDiscoverState virNetfsDiscoverState;
 
 static int
-virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_UNUSED,
+virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn,
                                                   virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                                   char **const groups,
                                                   void *data)
 {
     virNetfsDiscoverState *state = data;
     const char *name, *path;
-    virStoragePoolSource *src;
+    virStoragePoolSource *src = NULL;
+    int ret = -1;
 
     path = groups[0];
 
@@ -151,29 +152,33 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn ATTRIBUTE_U
     if (name == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("invalid netfs path (no /): %s"), path);
-        return -1;
+        goto cleanup;
     }
     name += 1;
     if (*name == '\0') {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("invalid netfs path (ends in /): %s"), path);
-        return -1;
+        goto cleanup;
     }
 
-    if (VIR_REALLOC_N(state->list.sources, state->list.nsources+1) < 0) {
-        virReportOOMError(conn);
-        return -1;
-    }
-    memset(state->list.sources + state->list.nsources, 0, sizeof(*state->list.sources));
+    if (!(src = virStoragePoolSourceListNewSource(conn, &state->list)))
+        goto cleanup;
 
-    src = state->list.sources + state->list.nsources++;
     if (!(src->host.name = strdup(state->host)) ||
-        !(src->dir = strdup(path)))
-        return -1;
+        !(src->dir = strdup(path))) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
-    return 0;
+    src = NULL;
+    ret = 0;
+cleanup:
+    if (src)
+        virStoragePoolSourceFree(src);
+    return ret;
 }
+
 
 static char *
 virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,

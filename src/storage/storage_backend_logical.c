@@ -278,15 +278,10 @@ virStorageBackendLogicalFindPoolSourcesFunc(virConnectPtr conn,
     }
 
     if (thisSource == NULL) {
-        if (VIR_REALLOC_N(sourceList->sources, sourceList->nsources + 1) != 0) {
-            virReportOOMError(conn);
+        if (!(thisSource = virStoragePoolSourceListNewSource(conn,
+                                                             sourceList)))
             goto err_no_memory;
-        }
 
-        thisSource = &sourceList->sources[sourceList->nsources];
-        sourceList->nsources++;
-
-        memset(thisSource, 0, sizeof(*thisSource));
         thisSource->name = vgname;
     }
     else

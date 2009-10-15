@@ -375,6 +375,9 @@ void virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
 void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                              virStoragePoolObjPtr pool);
 
+virStoragePoolSourcePtr
+virStoragePoolSourceListNewSource(virConnectPtr conn,
+                                  virStoragePoolSourceListPtr list);
 char *virStoragePoolSourceListFormat(virConnectPtr conn,
                                      virStoragePoolSourceListPtr def);
 

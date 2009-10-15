@@ -1633,6 +1633,28 @@ virStoragePoolObjDeleteDef(virConnectPtr conn,
     return 0;
 }
 
+virStoragePoolSourcePtr
+virStoragePoolSourceListNewSource(virConnectPtr conn,
+                                  virStoragePoolSourceListPtr list)
+{
+    virStoragePoolSourcePtr source;
+
+    if (VIR_ALLOC(source) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    if (VIR_REALLOC_N(list->sources, list->nsources+1) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    source = &list->sources[list->nsources++];
+    memset(source, 0, sizeof(*source));
+
+    return source;
+}
+
 char *virStoragePoolSourceListFormat(virConnectPtr conn,
                                      virStoragePoolSourceListPtr def)
 {
