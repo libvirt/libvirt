@@ -228,7 +228,9 @@ int virDomainObjListInit(virDomainObjListPtr doms)
 static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUTE_UNUSED)
 {
     virDomainObjPtr obj = payload;
-    virDomainObjFree(obj);
+    virDomainObjLock(obj);
+    if (!virDomainObjUnref(obj))
+        virDomainObjUnlock(obj);
 }
 
 void virDomainObjListDeinit(virDomainObjListPtr doms)
@@ -602,11 +604,12 @@ void virDomainDefFree(virDomainDefPtr def)
 
 #ifndef PROXY
 
-void virDomainObjFree(virDomainObjPtr dom)
+static void virDomainObjFree(virDomainObjPtr dom)
 {
     if (!dom)
         return;
 
+    VIR_DEBUG("obj=%p", dom);
     virDomainDefFree(dom->def);
     virDomainDefFree(dom->newDef);
 
@@ -620,6 +623,25 @@ void virDomainObjFree(virDomainObjPtr dom)
     virMutexDestroy(&dom->lock);
 
     VIR_FREE(dom);
+}
+
+void virDomainObjRef(virDomainObjPtr dom)
+{
+    dom->refs++;
+    VIR_DEBUG("obj=%p refs=%d", dom, dom->refs);
+}
+
+
+int virDomainObjUnref(virDomainObjPtr dom)
+{
+    dom->refs--;
+    VIR_DEBUG("obj=%p refs=%d", dom, dom->refs);
+    if (dom->refs == 0) {
+        virDomainObjUnlock(dom);
+        virDomainObjFree(dom);
+        return 1;
+    }
+    return 0;
 }
 
 static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
@@ -653,7 +675,9 @@ static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->monitorWatch = -1;
     domain->monitor = -1;
+    domain->refs = 1;
 
+    VIR_DEBUG("obj=%p", domain);
     return domain;
 }
 
@@ -3455,7 +3479,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
 error:
     VIR_FREE(nodes);
     virDomainChrDefFree(obj->monitor_chr);
-    virDomainObjFree(obj);
+    virDomainObjUnref(obj);
     return NULL;
 }
 
@@ -5052,7 +5076,7 @@ static virDomainObjPtr virDomainLoadStatus(virConnectPtr conn,
     return obj;
 
 error:
-    virDomainObjFree(obj);
+    virDomainObjUnref(obj);
     VIR_FREE(statusFile);
     return NULL;
 }

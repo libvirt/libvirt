@@ -463,6 +463,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
             goto cleanup;
         }
 
+        virDomainObjLock(dom);
+
         if (VIR_ALLOC(dom->def) < 0)
             goto no_memory;
 
@@ -471,6 +473,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         else
             dom->state = VIR_DOMAIN_RUNNING;
 
+        dom->refs = 1;
         dom->pid = veid;
         dom->def->id = dom->state == VIR_DOMAIN_SHUTOFF ? -1 : veid;
 
@@ -513,6 +516,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         if (virHashAddEntry(driver->domains.objs, uuidstr, dom) < 0)
             goto no_memory;
 
+        virDomainObjUnlock(dom);
         dom = NULL;
     }
 
@@ -525,7 +529,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
  cleanup:
     fclose(fp);
-    virDomainObjFree(dom);
+    virDomainObjUnref(dom);
     return -1;
 }
 

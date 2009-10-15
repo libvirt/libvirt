@@ -123,7 +123,6 @@ virDomainLifecycleTypeToString;
 virDomainLoadAllConfigs;
 virDomainNetDefFree;
 virDomainNetTypeToString;
-virDomainObjFree;
 virDomainRemoveInactive;
 virDomainSaveXML;
 virDomainSaveConfig;
@@ -152,6 +151,8 @@ virDomainObjListGetActiveIDs;
 virDomainObjListNumOfDomains;
 virDomainObjListInit;
 virDomainObjListDeinit;
+virDomainObjRef;
+virDomainObjUnref;
 
 
 # domain_event.h

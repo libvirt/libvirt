@@ -640,6 +640,7 @@ typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
     virMutex lock;
+    int refs;
 
     int monitor;
     virDomainChrDefPtr monitor_chr;
@@ -697,7 +698,9 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 void virDomainDefFree(virDomainDefPtr vm);
-void virDomainObjFree(virDomainObjPtr vm);
+void virDomainObjRef(virDomainObjPtr vm);
+/* Returns 1 if the object was freed, 0 if more refs exist */
+int virDomainObjUnref(virDomainObjPtr vm);
 
 virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
                                    virCapsPtr caps,
