@@ -318,6 +318,12 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
     }
     *out = 0;
 
+    if ((buf->use >= buf->size) &&
+        virBufferGrow(buf, 100) < 0) {
+        VIR_FREE(escaped);
+        return;
+    }
+
     size = buf->size - buf->use - 1;
     while (((count = snprintf(&buf->content[buf->use], size, format,
                               (char *)escaped)) < 0) || (count >= size - 1)) {
