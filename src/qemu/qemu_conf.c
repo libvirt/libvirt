@@ -505,6 +505,9 @@ qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
     virCapsGuestMachinePtr *list;
     int i;
 
+    if (!info->nmachines)
+        return 0;
+
     if (!info->emulator || !STREQ(emulator, info->emulator))
         return 0;
 
