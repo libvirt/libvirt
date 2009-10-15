@@ -199,8 +199,6 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
     int vars[] = {
         1
     };
-    xmlDocPtr doc = NULL;
-    xmlXPathContextPtr xpath_ctxt = NULL;
     virNetfsDiscoverState state = {
         .host = NULL,
         .list = {
@@ -210,31 +208,18 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
         }
     };
     const char *prog[] = { SHOWMOUNT, "--no-headers", "--exports", NULL, NULL };
+    virStoragePoolSourcePtr source = NULL;
     int exitstatus;
     char *retval = NULL;
     unsigned int i;
 
-    doc = xmlReadDoc((const xmlChar *)srcSpec, "srcSpec.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-    if (doc == NULL) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s", _("bad <source> spec"));
+    source = virStoragePoolDefParseSourceString(conn, srcSpec,
+                                                VIR_STORAGE_POOL_NETFS);
+    if (!source)
         goto cleanup;
-    }
 
-    xpath_ctxt = xmlXPathNewContext(doc);
-    if (xpath_ctxt == NULL) {
-        virReportOOMError(conn);
-        goto cleanup;
-    }
-
-    state.host = virXPathString(conn, "string(/source/host/@name)", xpath_ctxt);
-    if (!state.host || !state.host[0]) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
-                              _("missing <host> in <source> spec"));
-        goto cleanup;
-    }
-    prog[3] = state.host;
+    state.host = source->host.name;
+    prog[3] = source->host.name;
 
     if (virStorageBackendRunProgRegex(conn, NULL, prog, 1, regexes, vars,
                                       virStorageBackendFileSystemNetFindPoolSourcesFunc,
@@ -251,11 +236,10 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
     for (i = 0; i < state.list.nsources; i++)
         virStoragePoolSourceFree(&state.list.sources[i]);
 
-    VIR_FREE(state.list.sources);
-    VIR_FREE(state.host);
+    if (source)
+        virStoragePoolSourceFree(source);
 
-    xmlFreeDoc(doc);
-    xmlXPathFreeContext(xpath_ctxt);
+    VIR_FREE(state.list.sources);
 
     return retval;
 }

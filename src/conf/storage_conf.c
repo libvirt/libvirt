@@ -474,6 +474,58 @@ cleanup:
     return ret;
 }
 
+virStoragePoolSourcePtr
+virStoragePoolDefParseSourceString(virConnectPtr conn,
+                                   const char *srcSpec,
+                                   int pool_type)
+{
+    xmlDocPtr doc = NULL;
+    xmlNodePtr node = NULL;
+    xmlXPathContextPtr xpath_ctxt = NULL;
+    virStoragePoolSourcePtr def = NULL, ret = NULL;
+
+    doc = xmlReadDoc((const xmlChar *)srcSpec, "srcSpec.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+
+    if (doc == NULL) {
+        virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                              "%s", _("bad <source> spec"));
+        goto cleanup;
+    }
+
+    xpath_ctxt = xmlXPathNewContext(doc);
+    if (xpath_ctxt == NULL) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    node = virXPathNode(conn, "/source", xpath_ctxt);
+    if (!node) {
+        virStorageReportError(conn, VIR_ERR_XML_ERROR,
+                              "%s", _("root element was not source"));
+        goto cleanup;
+    }
+
+    if (virStoragePoolDefParseSource(conn, xpath_ctxt, def, pool_type,
+                                     node) < 0)
+        goto cleanup;
+
+    ret = def;
+    def = NULL;
+cleanup:
+    if (def)
+        virStoragePoolSourceFree(def);
+    xmlFreeDoc(doc);
+    xmlXPathFreeContext(xpath_ctxt);
+
+    return ret;
+}
 static int
 virStorageDefParsePerms(virConnectPtr conn,
                         xmlXPathContextPtr ctxt,

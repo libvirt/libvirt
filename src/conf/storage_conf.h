@@ -376,6 +376,10 @@ void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                              virStoragePoolObjPtr pool);
 
 virStoragePoolSourcePtr
+virStoragePoolDefParseSourceString(virConnectPtr conn,
+                                   const char *srcSpec,
+                                   int pool_type);
+virStoragePoolSourcePtr
 virStoragePoolSourceListNewSource(virConnectPtr conn,
                                   virStoragePoolSourceListPtr list);
 char *virStoragePoolSourceListFormat(virConnectPtr conn,
