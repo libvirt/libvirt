@@ -267,6 +267,7 @@ struct qemud_server {
     struct qemud_client **clients;
 
     int sigread;
+    int sigwrite;
     char *logDir;
     unsigned int shutdown : 1;
 #ifdef HAVE_AVAHI

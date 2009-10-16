@@ -782,7 +782,7 @@ static void virshErrorHandler(void *opaque ATTRIBUTE_UNUSED, virErrorPtr err ATT
      * took care of reporting the error */
 }
 
-static struct qemud_server *qemudInitialize(int sigread) {
+static struct qemud_server *qemudInitialize(void) {
     struct qemud_server *server;
 
     if (VIR_ALLOC(server) < 0) {
@@ -790,21 +790,26 @@ static struct qemud_server *qemudInitialize(int sigread) {
         return NULL;
     }
 
+    server->privileged = geteuid() == 0 ? 1 : 0;
+    server->sigread = server->sigwrite = -1;
+
     if (virMutexInit(&server->lock) < 0) {
         VIR_ERROR("%s", _("cannot initialize mutex"));
         VIR_FREE(server);
+        return NULL;
     }
     if (virCondInit(&server->job) < 0) {
         VIR_ERROR("%s", _("cannot initialize condition variable"));
         virMutexDestroy(&server->lock);
         VIR_FREE(server);
+        return NULL;
     }
-
-    server->privileged = geteuid() == 0 ? 1 : 0;
-    server->sigread = sigread;
 
     if (virEventInit() < 0) {
         VIR_ERROR0(_("Failed to initialize event system"));
+        virMutexDestroy(&server->lock);
+        if (virCondDestroy(&server->job) < 0)
+        {}
         VIR_FREE(server);
         return NULL;
     }
@@ -2296,7 +2301,10 @@ cleanup:
 static void qemudCleanup(struct qemud_server *server) {
     struct qemud_socket *sock;
 
-    close(server->sigread);
+    if (server->sigread != -1)
+        close(server->sigread);
+    if (server->sigwrite != -1)
+        close(server->sigwrite);
 
     sock = server->sockets;
     while (sock) {
@@ -2786,6 +2794,67 @@ qemudSetupPrivs (void)
 #define qemudSetupPrivs() 0
 #endif
 
+
+/*
+ * Doing anything non-trivial in signal handlers is pretty dangerous,
+ * since there are very few async-signal safe POSIX funtions. To
+ * deal with this we setup a very simple signal handler. It simply
+ * writes the signal number to a pipe. The main event loop then sees
+ * the signal on the pipe and can safely do the processing from
+ * event loop context
+ */
+static int
+daemonSetupSignals(struct qemud_server *server)
+{
+    struct sigaction sig_action;
+    int sigpipe[2];
+
+    if (pipe(sigpipe) < 0)
+        return -1;
+
+    if (virSetNonBlock(sigpipe[0]) < 0 ||
+        virSetNonBlock(sigpipe[1]) < 0 ||
+        virSetCloseExec(sigpipe[0]) < 0 ||
+        virSetCloseExec(sigpipe[1]) < 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create pipe: %s"),
+                  virStrerror(errno, ebuf, sizeof ebuf));
+        goto error;
+    }
+
+    sig_action.sa_sigaction = sig_handler;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+
+    sigaction(SIGHUP, &sig_action, NULL);
+    sigaction(SIGINT, &sig_action, NULL);
+    sigaction(SIGQUIT, &sig_action, NULL);
+    sigaction(SIGTERM, &sig_action, NULL);
+    sigaction(SIGCHLD, &sig_action, NULL);
+
+    sig_action.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &sig_action, NULL);
+
+    if (virEventAddHandleImpl(sigpipe[0],
+                              VIR_EVENT_HANDLE_READABLE,
+                              qemudDispatchSignalEvent,
+                              server, NULL) < 0) {
+        VIR_ERROR0(_("Failed to register callback for signal pipe"));
+        goto error;
+    }
+
+    server->sigread = sigpipe[0];
+    server->sigwrite = sigpipe[1];
+    sigwrite = sigpipe[1];
+
+    return 0;
+
+error:
+    close(sigpipe[0]);
+    close(sigpipe[1]);
+    return -1;
+}
+
 /* Print command-line usage. */
 static void
 usage (const char *argv0)
@@ -2839,8 +2908,6 @@ enum {
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
     struct qemud_server *server = NULL;
-    struct sigaction sig_action;
-    int sigpipe[2];
     const char *pid_file = NULL;
     const char *remote_config_file = NULL;
     int ret = 1;
@@ -2929,7 +2996,7 @@ int main(int argc, char **argv) {
         if (qemudGoDaemon() < 0) {
             VIR_ERROR(_("Failed to fork as daemon: %s"),
                       virStrerror(errno, ebuf, sizeof ebuf));
-            goto error1;
+            goto error;
         }
     }
 
@@ -2942,32 +3009,7 @@ int main(int argc, char **argv) {
     /* If we have a pidfile set, claim it now, exiting if already taken */
     if (pid_file != NULL &&
         qemudWritePidFile (pid_file) < 0)
-        goto error1;
-
-    if (pipe(sigpipe) < 0 ||
-        virSetNonBlock(sigpipe[0]) < 0 ||
-        virSetNonBlock(sigpipe[1]) < 0 ||
-        virSetCloseExec(sigpipe[0]) < 0 ||
-        virSetCloseExec(sigpipe[1]) < 0) {
-        char ebuf[1024];
-        VIR_ERROR(_("Failed to create pipe: %s"),
-                  virStrerror(errno, ebuf, sizeof ebuf));
-        goto error2;
-    }
-    sigwrite = sigpipe[1];
-
-    sig_action.sa_sigaction = sig_handler;
-    sig_action.sa_flags = SA_SIGINFO;
-    sigemptyset(&sig_action.sa_mask);
-
-    sigaction(SIGHUP, &sig_action, NULL);
-    sigaction(SIGINT, &sig_action, NULL);
-    sigaction(SIGQUIT, &sig_action, NULL);
-    sigaction(SIGTERM, &sig_action, NULL);
-    sigaction(SIGCHLD, &sig_action, NULL);
-
-    sig_action.sa_handler = SIG_IGN;
-    sigaction(SIGPIPE, &sig_action, NULL);
+        goto error;
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (geteuid() == 0) {
@@ -2990,46 +3032,37 @@ int main(int argc, char **argv) {
      * drivers
      */
     if (qemudSetupPrivs() < 0)
-        goto error2;
+        goto error;
 
-    if (!(server = qemudInitialize(sigpipe[0]))) {
+    if (!(server = qemudInitialize())) {
         ret = 2;
-        goto error2;
+        goto error;
     }
+
+    if ((daemonSetupSignals(server)) < 0)
+        goto error;
 
     /* Read the config file (if it exists). */
     if (remoteReadConfigFile (server, remote_config_file) < 0)
-        goto error2;
+        goto error;
 
     /* Disable error func, now logging is setup */
     virSetErrorFunc(NULL, virshErrorHandler);
 
-    if (virEventAddHandleImpl(sigpipe[0],
-                              VIR_EVENT_HANDLE_READABLE,
-                              qemudDispatchSignalEvent,
-                              server, NULL) < 0) {
-        VIR_ERROR0(_("Failed to register callback for signal pipe"));
-        ret = 3;
-        goto error2;
-    }
-
     if (qemudNetworkInit(server) < 0) {
         ret = 2;
-        goto error2;
+        goto error;
     }
 
     qemudRunLoop(server);
 
     ret = 0;
 
-error2:
+error:
     if (server)
         qemudCleanup(server);
     if (pid_file)
         unlink (pid_file);
-    close(sigwrite);
-
-error1:
     virLogShutdown();
     return ret;
 }
