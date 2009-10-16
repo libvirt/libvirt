@@ -606,34 +606,37 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(virConnectPtr conn,
     if (ctx != NULL) {
         if (esxVI_LookupDatastoreByName(conn, ctx, preliminaryDatastoreName,
                                         NULL, &datastore,
-                                        esxVI_Occurence_RequiredItem) < 0) {
+                                        esxVI_Occurence_OptionalItem) < 0) {
             goto failure;
         }
 
-        for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "summary.accessible")) {
-                /* Ignore it */
-            } else if (STREQ(dynamicProperty->name, "summary.name")) {
-                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
-                                             esxVI_Type_String) < 0) {
-                    goto failure;
-                }
+        if (datastore != NULL) {
+            for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+                 dynamicProperty = dynamicProperty->_next) {
+                if (STREQ(dynamicProperty->name, "summary.accessible")) {
+                    /* Ignore it */
+                } else if (STREQ(dynamicProperty->name, "summary.name")) {
+                    if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                                 esxVI_Type_String) < 0) {
+                        goto failure;
+                    }
 
-                datastoreName = dynamicProperty->val->string;
-                break;
-            } else if (STREQ(dynamicProperty->name, "summary.url")) {
-                /* Ignore it */
-            } else {
-                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+                    datastoreName = dynamicProperty->val->string;
+                    break;
+                } else if (STREQ(dynamicProperty->name, "summary.url")) {
+                    /* Ignore it */
+                } else {
+                    VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+                }
             }
         }
 
         if (datastoreName == NULL) {
-            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                      "Could not retrieve datastore name for absolute path '%s'",
-                      absolutePath);
-            goto failure;
+            VIR_WARN("Could not retrieve datastore name for absolute "
+                     "path '%s', falling back to preliminary name '%s'",
+                     absolutePath, preliminaryDatastoreName);
+
+            datastoreName = preliminaryDatastoreName;
         }
     } else {
         datastoreName = preliminaryDatastoreName;
