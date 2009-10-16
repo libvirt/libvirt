@@ -225,6 +225,29 @@ static const char *defaultPoolXML =
 "  </target>"
 "</pool>";
 
+static const char *defaultPoolSourcesLogicalXML =
+"<sources>\n"
+"  <source>\n"
+"    <device path='/dev/sda20'/>\n"
+"    <name>testvg1</name>\n"
+"    <format type='lvm2'/>\n"
+"  </source>\n"
+"  <source>\n"
+"    <device path='/dev/sda21'/>\n"
+"    <name>testvg2</name>\n"
+"    <format type='lvm2'/>\n"
+"  </source>\n"
+"</sources>\n";
+
+static const char *defaultPoolSourcesNetFSXML =
+"<sources>\n"
+"  <source>\n"
+"    <host name='%s'/>\n"
+"    <dir path='/testshare'/>\n"
+"    <format type='nfs'/>\n"
+"  </source>\n"
+"</sources>\n";
+
 static const char *defaultNodeXML =
 "<device>"
 "  <name>computer</name>"
@@ -3210,12 +3233,56 @@ cleanup:
 }
 
 static char *
-testStorageFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           const char *type ATTRIBUTE_UNUSED,
-                           const char *srcSpec ATTRIBUTE_UNUSED,
+testStorageFindPoolSources(virConnectPtr conn,
+                           const char *type,
+                           const char *srcSpec,
                            unsigned int flags ATTRIBUTE_UNUSED)
 {
-    return NULL;
+    virStoragePoolSourcePtr source = NULL;
+    int pool_type;
+    char *ret = NULL;
+
+    pool_type = virStoragePoolTypeFromString(type);
+    if (!pool_type) {
+        testError(conn, VIR_ERR_INTERNAL_ERROR,
+                  _("unknown storage pool type %s"), type);
+        goto cleanup;
+    }
+
+    if (srcSpec) {
+        source = virStoragePoolDefParseSourceString(conn, srcSpec, pool_type);
+        if (!source)
+            goto cleanup;
+    }
+
+    switch (pool_type) {
+
+    case VIR_STORAGE_POOL_LOGICAL:
+        ret = strdup(defaultPoolSourcesLogicalXML);
+        if (!ret)
+            virReportOOMError(conn);
+        break;
+
+    case VIR_STORAGE_POOL_NETFS:
+        if (!source || !source->host.name) {
+            testError(conn, VIR_ERR_INVALID_ARG,
+                      "%s", "hostname must be specified for netfs sources");
+            goto cleanup;
+        }
+
+        if (virAsprintf(&ret, defaultPoolSourcesNetFSXML,
+                        source->host.name) < 0)
+            virReportOOMError(conn);
+        break;
+
+    default:
+        testError(conn, VIR_ERR_NO_SUPPORT,
+                  _("pool type '%s' does not support source discovery"), type);
+    }
+
+cleanup:
+    virStoragePoolSourceFree(source);
+    return ret;
 }
 
 
