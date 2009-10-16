@@ -185,6 +185,30 @@ static int max_client_requests = 5;
 static sig_atomic_t sig_errors = 0;
 static int sig_lasterrno = 0;
 
+enum {
+    VIR_DAEMON_ERR_NONE = 0,
+    VIR_DAEMON_ERR_PIDFILE,
+    VIR_DAEMON_ERR_RUNDIR,
+    VIR_DAEMON_ERR_INIT,
+    VIR_DAEMON_ERR_SIGNAL,
+    VIR_DAEMON_ERR_PRIVS,
+    VIR_DAEMON_ERR_NETWORK,
+    VIR_DAEMON_ERR_CONFIG,
+
+    VIR_DAEMON_ERR_LAST
+};
+
+VIR_ENUM_DECL(virDaemonErr)
+VIR_ENUM_IMPL(virDaemonErr, VIR_DAEMON_ERR_LAST,
+              "Initialization successful",
+              "Unable to obtain pidfile",
+              "Unable to create rundir",
+              "Unable to initialize libvirt",
+              "Unable to setup signal handlers",
+              "Unable to drop privileges",
+              "Unable to initialize network sockets",
+              "Unable to load configuration file")
+
 static void sig_handler(int sig, siginfo_t * siginfo,
                         void* context ATTRIBUTE_UNUSED) {
     int origerrno;
@@ -375,7 +399,11 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
 }
 
 
-static int qemudGoDaemon(void) {
+static int daemonForkIntoBackground(void) {
+    int statuspipe[2];
+    if (pipe(statuspipe) < 0)
+        return -1;
+
     int pid = fork();
     switch (pid) {
     case 0:
@@ -383,6 +411,8 @@ static int qemudGoDaemon(void) {
             int stdinfd = -1;
             int stdoutfd = -1;
             int nextpid;
+
+            close(statuspipe[0]);
 
             if ((stdinfd = open("/dev/null", O_RDONLY)) < 0)
                 goto cleanup;
@@ -407,7 +437,7 @@ static int qemudGoDaemon(void) {
             nextpid = fork();
             switch (nextpid) {
             case 0:
-                return 0;
+                return statuspipe[1];
             case -1:
                 return -1;
             default:
@@ -428,15 +458,29 @@ static int qemudGoDaemon(void) {
 
     default:
         {
-            int got, status = 0;
-            /* We wait to make sure the next child forked
-               successfully */
-            if ((got = waitpid(pid, &status, 0)) < 0 ||
+            int got, exitstatus = 0;
+            int ret;
+            char status;
+
+            close(statuspipe[1]);
+
+            /* We wait to make sure the first child forked successfully */
+            if ((got = waitpid(pid, &exitstatus, 0)) < 0 ||
                 got != pid ||
-                status != 0) {
+                exitstatus != 0) {
                 return -1;
             }
-            _exit(0);
+
+            /* Now block until the second child initializes successfully */
+        again:
+            ret = read(statuspipe[0], &status, 1);
+            if (ret == -1 && errno == EINTR)
+                goto again;
+
+            if (ret == 1 && status != 0) {
+                fprintf(stderr, "error: %s\n", virDaemonErrTypeToString(status));
+            }
+            _exit(ret == 1 && status == 0 ? 0 : 1);
         }
     }
 }
@@ -870,8 +914,6 @@ static struct qemud_server *qemudInitialize(void) {
                          virEventAddTimeoutImpl,
                          virEventUpdateTimeoutImpl,
                          virEventRemoveTimeoutImpl);
-
-    virStateInitialize(server->privileged);
 
     return server;
 }
@@ -2910,6 +2952,7 @@ int main(int argc, char **argv) {
     struct qemud_server *server = NULL;
     const char *pid_file = NULL;
     const char *remote_config_file = NULL;
+    int statuswrite = -1;
     int ret = 1;
 
     struct option opts[] = {
@@ -2993,7 +3036,7 @@ int main(int argc, char **argv) {
 
     if (godaemon) {
         char ebuf[1024];
-        if (qemudGoDaemon() < 0) {
+        if ((statuswrite = daemonForkIntoBackground()) < 0) {
             VIR_ERROR(_("Failed to fork as daemon: %s"),
                       virStrerror(errno, ebuf, sizeof ebuf));
             goto error;
@@ -3008,8 +3051,11 @@ int main(int argc, char **argv) {
 
     /* If we have a pidfile set, claim it now, exiting if already taken */
     if (pid_file != NULL &&
-        qemudWritePidFile (pid_file) < 0)
+        qemudWritePidFile (pid_file) < 0) {
+        pid_file = NULL; /* Prevent unlinking of someone else's pid ! */
+        ret = VIR_DAEMON_ERR_PIDFILE;
         goto error;
+    }
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (geteuid() == 0) {
@@ -3020,7 +3066,8 @@ int main(int argc, char **argv) {
                 char ebuf[1024];
                 VIR_ERROR(_("unable to create rundir %s: %s"), rundir,
                           virStrerror(errno, ebuf, sizeof(ebuf)));
-                return -1;
+                ret = VIR_DAEMON_ERR_RUNDIR;
+                goto error;
             }
         }
     }
@@ -3031,34 +3078,71 @@ int main(int argc, char **argv) {
      * which is also passed into all libvirt stateful
      * drivers
      */
-    if (qemudSetupPrivs() < 0)
-        goto error;
-
-    if (!(server = qemudInitialize())) {
-        ret = 2;
+    if (qemudSetupPrivs() < 0) {
+        ret = VIR_DAEMON_ERR_PRIVS;
         goto error;
     }
 
-    if ((daemonSetupSignals(server)) < 0)
+    if (!(server = qemudInitialize())) {
+        ret = VIR_DAEMON_ERR_INIT;
         goto error;
+    }
+
+    if ((daemonSetupSignals(server)) < 0) {
+        ret = VIR_DAEMON_ERR_SIGNAL;
+        goto error;
+    }
 
     /* Read the config file (if it exists). */
-    if (remoteReadConfigFile (server, remote_config_file) < 0)
+    if (remoteReadConfigFile (server, remote_config_file) < 0) {
+        ret = VIR_DAEMON_ERR_CONFIG;
         goto error;
+    }
 
     /* Disable error func, now logging is setup */
     virSetErrorFunc(NULL, virshErrorHandler);
 
     if (qemudNetworkInit(server) < 0) {
-        ret = 2;
+        ret = VIR_DAEMON_ERR_NETWORK;
+        goto error;
+    }
+
+    /* Tell parent of daemon that basic initialization is complete
+     * In particular we're ready to accept net connections & have
+     * written the pidfile
+     */
+    if (statuswrite != -1) {
+        char status = 0;
+        while (write(statuswrite, &status, 1) == -1 &&
+               errno == EINTR)
+            ;
+        close(statuswrite);
+        statuswrite = -1;
+    }
+
+    /* Start the stateful HV drivers
+     * This is delibrately done after telling the parent process
+     * we're ready, since it can take a long time and this will
+     * seriously delay OS bootup process */
+    if (virStateInitialize(server->privileged) < 0) {
+        VIR_ERROR0("Driver state initialization failed");
         goto error;
     }
 
     qemudRunLoop(server);
-
     ret = 0;
 
 error:
+    if (statuswrite != -1) {
+        if (ret != 0) {
+            /* Tell parent of daemon what failed */
+            char status = ret;
+            while (write(statuswrite, &status, 1) == -1 &&
+                   errno == EINTR)
+                ;
+        }
+        close(statuswrite);
+    }
     if (server)
         qemudCleanup(server);
     if (pid_file)
