@@ -1,9 +1,29 @@
 
-     Threading: the RULES.
-     ====================
+     Threading in the libvirtd daemon
+     ================================
 
-If you don't understand this, don't touch the code. Ask for
-further advice / explanation on the mailing list first.
+To allow efficient processing of RPC requests, the libvirtd daemon
+makes use of threads.
+
+ - The process leader. This is the initial thread of control
+   when the daemon starts running. It is responsible for
+   initializing all the state, and starting the event loop.
+   Once that's all done, this thread does nothing except
+   wait for the event loop to quit, thus indicating an orderly
+   shutdown is required.
+
+ - The event loop. This thread runs the event loop, sitting
+   in poll() on all monitored file handles, and calculating
+   and dispatching any timers that may be registered. When
+   this thread quits, the entire daemon will shutdown.
+
+ - The workers. These 'n' threads all sit around waiting to
+   process incoming RPC requests. Since RPC requests may take
+   a long time to complete, with long idle periods, there will
+   be quite a few workers running.
+
+The use of threads obviously requires locking to ensure safety when
+accessing/changing data structures.
 
  - the top level lock is on 'struct qemud_server'. This must be
    held before acquiring any other lock
@@ -16,47 +36,17 @@ further advice / explanation on the mailing list first.
    this as a caller of virEvent APIs.
 
 
-The server lock is only needed / used once the daemon has entered
-its main loop, which is the qemudRunLoop() . The initial thread
-acquires the lock upon entering this method.
+The server lock is used in conjunction with a condition variable
+to pass jobs from the event loop thread to the workers. The main
+event loop thread handles I/O from the client socket, and once a
+complete RPC message has been read off the wire (and optionally
+decrypted), it will be placed onto the 'dx' job queue for the
+associated client object. The job condition will be signalled and
+a worker will wakup and process it.
 
-It immediatelty spawns 'n' worker threads, whose main loop is
-the qemudWorker() method. The workers will immediately try to
-acquire the server lock, and thus block since its held by the
-initial thread.
+The worker thread must quickly drop its locks on the server and
+client to allow the main event loop thread to continue running
+with its other work. Critically important, is that now libvirt
+API call will ever be made with the server or client locks held.
 
-When the initial thread enters the poll() call, it drops the
-server lock. The worker locks now each wakeup, acquire the
-server lock and go into a condition wait on the 'job' condition
-variable. The workers are now all 'primed' for incoming RPC
-calls.
-
-
-
-A file descriptor event now occurrs, causing the initial thread
-to exit poll(). It invokes the registered callback associated
-with the file descriptors on which the event occurrs. The callbacks
-are required to immediately acquire the server lock.
-
-If the callback is dealing with a client event, it will then
-acquire the client lock, and drop the server lock.
-
-The callback will now handle the I/O event, reading or writing
-a RPC message. Once a complete RPC message has been read the
-client is marked as being in state QEMUD_MODE_WAIT_DISPATCH,
-and the 'job' condition variable is signaled. The callback
-now drops the client lock and goes back into the poll() loop
-waiting for more I/O events.
-
-Meanwhile one of the worker threads wakes up from its condition
-variable sleep, holding the server lock. It now searches for a
-client in state QEMUD_MODE_WAIT_DISPATCH. If it doesn't find
-one, it goes back to sleep. If it does find one, then it calls
-into the remoteDispatchClientRequest() method de-serialize the
-incoming message into an XDR object and invoke the helper method
-for the associated RPC call.
-
-While the helper method is executing, no locks are held on either
-the client or server, but the ref count on the 'struct qemud_client'
-object is incremented to ensure its not deleted. The helper can
-now safely invoke the necessary libvirt API call.
+-- End

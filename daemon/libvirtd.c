@@ -384,7 +384,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     case SIGQUIT:
     case SIGTERM:
         VIR_WARN(_("Shutting down on signal %d"), siginfo.si_signo);
-        server->shutdown = 1;
+        server->quitEventThread = 1;
         break;
 
     default:
@@ -393,7 +393,7 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     }
 
     if (ret != 0)
-        server->shutdown = 1;
+        server->quitEventThread = 1;
 
     virMutexUnlock(&server->lock);
 }
@@ -579,16 +579,6 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
 
-    if ((sock->watch = virEventAddHandleImpl(sock->fd,
-                                             VIR_EVENT_HANDLE_READABLE |
-                                             VIR_EVENT_HANDLE_ERROR |
-                                             VIR_EVENT_HANDLE_HANGUP,
-                                             qemudDispatchServerEvent,
-                                             server, NULL)) < 0) {
-        VIR_ERROR0(_("Failed to add server event callback"));
-        goto cleanup;
-    }
-
     sock->next = server->sockets;
     server->sockets = sock;
     server->nsockets++;
@@ -713,17 +703,6 @@ remoteListenTCP (struct qemud_server *server,
                       virStrerror (errno, ebuf, sizeof ebuf));
             goto cleanup;
         }
-
-        if ((sock->watch = virEventAddHandleImpl(sock->fd,
-                                                 VIR_EVENT_HANDLE_READABLE |
-                                                 VIR_EVENT_HANDLE_ERROR |
-                                                 VIR_EVENT_HANDLE_HANGUP,
-                                                 qemudDispatchServerEvent,
-                                                 server, NULL)) < 0) {
-            VIR_ERROR0(_("Failed to add server event callback"));
-            goto cleanup;
-        }
-
     }
 
     return 0;
@@ -1037,6 +1016,25 @@ static int qemudNetworkInit(struct qemud_server *server) {
     return -1;
 }
 
+static int qemudNetworkEnable(struct qemud_server *server) {
+    struct qemud_socket *sock;
+
+    sock = server->sockets;
+    while (sock) {
+        if ((sock->watch = virEventAddHandleImpl(sock->fd,
+                                                 VIR_EVENT_HANDLE_READABLE |
+                                                 VIR_EVENT_HANDLE_ERROR |
+                                                 VIR_EVENT_HANDLE_HANGUP,
+                                                 qemudDispatchServerEvent,
+                                                 server, NULL)) < 0) {
+            VIR_ERROR0(_("Failed to add server event callback"));
+            return -1;
+        }
+
+        sock = sock->next;
+    }
+    return 0;
+}
 
 static gnutls_session_t
 remoteInitializeTLSSession (void)
@@ -2182,7 +2180,7 @@ static void qemudInactiveTimer(int timerid, void *data) {
         virEventUpdateTimeoutImpl(timerid, -1);
     } else {
         DEBUG0("Timer expired and inactive, shutting down");
-        server->shutdown = 1;
+        server->quitEventThread = 1;
     }
 }
 
@@ -2212,9 +2210,10 @@ static void qemudFreeClient(struct qemud_client *client) {
     VIR_FREE(client);
 }
 
-static int qemudRunLoop(struct qemud_server *server) {
+static void *qemudRunLoop(void *opaque) {
+    struct qemud_server *server = opaque;
     int timerid = -1;
-    int ret = -1, i;
+    int i;
     int timerActive = 0;
 
     virMutexLock(&server->lock);
@@ -2224,7 +2223,7 @@ static int qemudRunLoop(struct qemud_server *server) {
                                           qemudInactiveTimer,
                                           server, NULL)) < 0) {
         VIR_ERROR0(_("Failed to register shutdown timeout"));
-        return -1;
+        return NULL;
     }
 
     if (min_workers > max_workers)
@@ -2233,7 +2232,7 @@ static int qemudRunLoop(struct qemud_server *server) {
     server->nworkers = max_workers;
     if (VIR_ALLOC_N(server->workers, server->nworkers) < 0) {
         VIR_ERROR0(_("Failed to allocate workers"));
-        return -1;
+        return NULL;
     }
 
     for (i = 0 ; i < min_workers ; i++) {
@@ -2242,7 +2241,7 @@ static int qemudRunLoop(struct qemud_server *server) {
         server->nactiveworkers++;
     }
 
-    for (;;) {
+    for (;!server->quitEventThread;) {
         /* A shutdown timeout is specified, so check
          * if any drivers have active state, if not
          * shutdown after timeout seconds
@@ -2314,11 +2313,6 @@ static int qemudRunLoop(struct qemud_server *server) {
                 server->nactiveworkers--;
             }
         }
-
-        if (server->shutdown) {
-            ret = 0;
-            break;
-        }
     }
 
 cleanup:
@@ -2337,8 +2331,27 @@ cleanup:
     VIR_FREE(server->workers);
 
     virMutexUnlock(&server->lock);
-    return ret;
+    return NULL;
 }
+
+
+static int qemudStartEventLoop(struct qemud_server *server) {
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    /* We want to join the eventloop, so don't detach it */
+    /*pthread_attr_setdetachstate(&attr, 1);*/
+
+    if (pthread_create(&server->eventThread,
+                       &attr,
+                       qemudRunLoop,
+                       server) != 0)
+        return -1;
+
+    server->hasEventThread = 1;
+
+    return 0;
+}
+
 
 static void qemudCleanup(struct qemud_server *server) {
     struct qemud_socket *sock;
@@ -3120,6 +3133,13 @@ int main(int argc, char **argv) {
         statuswrite = -1;
     }
 
+    /* Start the event loop in a background thread, since
+     * state initialization needs events to be being processed */
+    if (qemudStartEventLoop(server) < 0) {
+        VIR_ERROR0("Event thread startup failed");
+        goto error;
+    }
+
     /* Start the stateful HV drivers
      * This is delibrately done after telling the parent process
      * we're ready, since it can take a long time and this will
@@ -3129,8 +3149,31 @@ int main(int argc, char **argv) {
         goto error;
     }
 
-    qemudRunLoop(server);
+    /* Start accepting new clients from network */
+    virMutexLock(&server->lock);
+    if (qemudNetworkEnable(server) < 0) {
+        VIR_ERROR0("Network event loop enablement failed");
+        goto shutdown;
+    }
+    virMutexUnlock(&server->lock);
+
     ret = 0;
+
+shutdown:
+    /* In a non-0 shutdown scenario we need to tell event loop
+     * to quit immediately. Otherwise in normal case we just
+     * sit in the thread join forever. Sure this means the
+     * main thread doesn't do anything useful ever, but that's
+     * not too much of drain on resources
+     */
+    if (ret != 0) {
+        virMutexLock(&server->lock);
+        if (server->hasEventThread)
+            /* This SIGQUIT triggers the shutdown process */
+            kill(getpid(), SIGQUIT);
+        virMutexUnlock(&server->lock);
+    }
+    pthread_join(server->eventThread, NULL);
 
 error:
     if (statuswrite != -1) {

@@ -269,7 +269,9 @@ struct qemud_server {
     int sigread;
     int sigwrite;
     char *logDir;
-    unsigned int shutdown : 1;
+    pthread_t eventThread;
+    unsigned int hasEventThread :1;
+    unsigned int quitEventThread :1;
 #ifdef HAVE_AVAHI
     struct libvirtd_mdns *mdns;
 #endif
