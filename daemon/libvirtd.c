@@ -593,13 +593,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
                 return -1;
             }
             close (fds[*nfds_r]);
-        }
-        else {
-            if (listen (fds[*nfds_r], SOMAXCONN) == -1) {
-                VIR_ERROR(_("listen: %s"),
-                          virStrerror (errno, ebuf, sizeof ebuf));
-                return -1;
-            }
+        } else {
             ++*nfds_r;
         }
         runp = runp->ai_next;
@@ -867,8 +861,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     return server;
 }
 
-static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
-    struct qemud_socket *sock;
+static int qemudNetworkInit(struct qemud_server *server) {
     char sockname[PATH_MAX];
     char roSockname[PATH_MAX];
 #if HAVE_SASL
@@ -935,6 +928,7 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
 #ifdef HAVE_AVAHI
     if (server->privileged && mdns_adv) {
         struct libvirtd_mdns_group *group;
+        struct qemud_socket *sock;
         int port = 0;
 
         server->mdns = libvirtd_mdns_new();
@@ -980,24 +974,12 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
     }
 #endif
 
-    return server;
+    return 0;
 
  cleanup:
-    if (server) {
-        sock = server->sockets;
-        while (sock) {
-            close(sock->fd);
-            sock = sock->next;
-        }
-
-#if HAVE_POLKIT0
-        if (server->sysbus)
-            dbus_connection_unref(server->sysbus);
-#endif
-        free(server);
-    }
-    return NULL;
+    return -1;
 }
+
 
 static gnutls_session_t
 remoteInitializeTLSSession (void)
@@ -2309,6 +2291,8 @@ static void qemudCleanup(struct qemud_server *server) {
     sock = server->sockets;
     while (sock) {
         struct qemud_socket *next = sock->next;
+        if (sock->watch)
+            virEventRemoveHandleImpl(sock->watch);
         close(sock->fd);
         free(sock);
         sock = next;
@@ -2324,6 +2308,11 @@ static void qemudCleanup(struct qemud_server *server) {
         }
         free(server->saslUsernameWhitelist);
     }
+#endif
+
+#if HAVE_POLKIT0
+        if (server->sysbus)
+            dbus_connection_unref(server->sysbus);
 #endif
 
     virStateCleanup();
@@ -3016,7 +3005,7 @@ int main(int argc, char **argv) {
         goto error2;
     }
 
-    if (!(server = qemudNetworkInit(server))) {
+    if (qemudNetworkInit(server) < 0) {
         ret = 2;
         goto error2;
     }
