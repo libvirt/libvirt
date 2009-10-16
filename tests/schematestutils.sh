@@ -3,7 +3,7 @@
 test -z "$srcdir" && srcdir=`pwd`
 test -z "$abs_srcdir" && abs_srcdir=`pwd`
 
-function check_schema {
+check_schema () {
 
 DIRS=$1
 SCHEMA="$srcdir/../docs/schemas/$2"

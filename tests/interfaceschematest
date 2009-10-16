@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./schematestutils.sh
+. ./schematestutils.sh
 
 DIRS="interfaceschemadata"
 SCHEMA="interface.rng"

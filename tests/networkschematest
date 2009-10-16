@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./schematestutils.sh
+. ./schematestutils.sh
 
 DIRS="../src/network networkxml2xmlin networkxml2xmlout"
 SCHEMA="network.rng"
