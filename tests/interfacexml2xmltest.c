@@ -43,8 +43,6 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     ret = 0;
 
  fail:
-    if (ret != 0)
-        fprintf(stderr, "expected: -------\n%s", actual);
     free(actual);
     virInterfaceDefFree(dev);
     return ret;

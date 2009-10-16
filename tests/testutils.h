@@ -34,6 +34,8 @@ int virtTestDifference(FILE *stream,
                        const char *expect,
                        const char *actual);
 
+unsigned int virtTestGetDebug(void);
+
 int virtTestMain(int argc,
                  char **argv,
                  int (*func)(int, char **));
@@ -42,7 +44,5 @@ int virtTestMain(int argc,
     int main(int argc, char **argv)  {          \
         return virtTestMain(argc,argv, func);   \
     }
-
-extern unsigned int testDebug;
 
 #endif /* __VIT_TEST_UTILS_H__ */

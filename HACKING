@@ -37,6 +37,17 @@ and run the tests:
 
 The latter test checks for memory leaks.
 
+If you encounter any failing tests, the VIR_TEST_DEBUG environment variable
+may provide extra information to debug the failures. Larger values of
+VIR_TEST_DEBUG may provide larger amounts of information:
+
+  VIR_TEST_DEBUG=1 make check    (or)
+  VIR_TEST_DEBUG=2 make check
+
+Also, individual tests can be run from inside the 'tests/' directory, like:
+
+  ./qemuxml2xmltest
+
 (6) Update tests and/or documentation, particularly if you are adding
 a new feature or changing the output of a program.
 

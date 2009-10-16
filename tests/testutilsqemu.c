@@ -132,7 +132,7 @@ virCapsPtr testQemuCapsInit(void) {
                                       NULL) == NULL)
         goto cleanup;
 
-    if (testDebug) {
+    if (virtTestGetDebug()) {
         char *caps_str;
 
         caps_str = virCapabilitiesFormatXML(caps);
