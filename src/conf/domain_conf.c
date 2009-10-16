@@ -1109,7 +1109,12 @@ virDomainNetDefParseXML(virConnectPtr conn,
     }
 
     if (macaddr) {
-        virParseMacAddr((const char *)macaddr, def->mac);
+        if (virParseMacAddr((const char *)macaddr, def->mac) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unable to parse mac address '%s'"),
+                                 (const char *)macaddr);
+            goto error;
+        }
     } else {
         virCapabilitiesGenerateMac(caps, def->mac);
     }

@@ -108,8 +108,6 @@ SELinuxInitialize(virConnectPtr conn)
     char *ptr = NULL;
     int fd = 0;
 
-    virRandomInitialize(time(NULL) ^ getpid());
-
     fd = open(selinux_virtual_domain_context_path(), O_RDONLY);
     if (fd < 0) {
         virReportSystemError(conn, errno,

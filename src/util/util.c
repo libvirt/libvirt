@@ -1257,7 +1257,8 @@ int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
 char* virFilePid(const char *dir, const char* name)
 {
     char *pidfile;
-    virAsprintf(&pidfile, "%s/%s.pid", dir, name);
+    if (virAsprintf(&pidfile, "%s/%s.pid", dir, name) < 0)
+        return NULL;
     return pidfile;
 }
 
@@ -2108,7 +2109,8 @@ void virFileWaitForDevices(virConnectPtr conn)
      * If this fails for any reason, we still have the backup of polling for
      * 5 seconds for device nodes.
      */
-    virRun(conn, settleprog, &exitstatus);
+    if (virRun(conn, settleprog, &exitstatus) < 0)
+    {}
 }
 #else
 void virFileWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}

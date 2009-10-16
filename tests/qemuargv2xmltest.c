@@ -109,8 +109,6 @@ mymain(int argc, char **argv)
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-    virRandomInitialize(0);
-
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
     if((driver.stateDir = strdup("/nowhere")) == NULL)

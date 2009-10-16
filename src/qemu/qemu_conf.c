@@ -2841,7 +2841,14 @@ qemuParseCommandLineNet(virConnectPtr conn,
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "macaddr")) {
             genmac = 0;
-            virParseMacAddr(values[i], def->mac);
+            if (virParseMacAddr(values[i], def->mac) < 0) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unable to parse mac address '%s'"),
+                                 values[i]);
+                virDomainNetDefFree(def);
+                def = NULL;
+                goto cleanup;
+            }
         } else if (STREQ(keywords[i], "model")) {
             def->model = values[i];
             values[i] = NULL;

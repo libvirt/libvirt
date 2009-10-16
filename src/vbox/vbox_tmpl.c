@@ -2219,7 +2219,9 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                      MACAddress[4], MACAddress[5], MACAddress[6], MACAddress[7],
                                      MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
 
-                            virParseMacAddr(macaddr, def->nets[netAdpIncCnt]->mac);
+                            /* XXX some real error handling here some day ... */
+                            if (virParseMacAddr(macaddr, def->nets[netAdpIncCnt]->mac) < 0)
+                            {}
 
                             netAdpIncCnt++;
 

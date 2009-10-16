@@ -752,13 +752,16 @@ static int qemudInitPaths(struct qemud_server *server,
             goto snprintf_error;
     }
 
-    if (server->privileged)
-        server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt");
-    else
-        virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix);
+    if (server->privileged) {
+        if (!(server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt")))
+            virReportOOMError(NULL);
+    } else {
+        if (virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix) < 0)
+            virReportOOMError(NULL);
+    }
 
     if (server->logDir == NULL)
-        virReportOOMError(NULL);
+        goto cleanup;
 
     ret = 0;
 

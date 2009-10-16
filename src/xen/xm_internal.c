@@ -3035,14 +3035,16 @@ xenXMDomainBlockPeek (virDomainPtr dom,
 static char *xenXMAutostartLinkName(virDomainPtr dom)
 {
     char *ret;
-    virAsprintf(&ret, "/etc/xen/auto/%s", dom->name);
+    if (virAsprintf(&ret, "/etc/xen/auto/%s", dom->name) < 0)
+        return NULL;
     return ret;
 }
 
 static char *xenXMDomainConfigName(virDomainPtr dom)
 {
     char *ret;
-    virAsprintf(&ret, "/etc/xen/%s", dom->name);
+    if (virAsprintf(&ret, "/etc/xen/%s", dom->name) < 0)
+        return NULL;
     return ret;
 }
 

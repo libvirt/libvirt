@@ -149,7 +149,10 @@ networkFindActiveConfigs(struct network_driver *driver) {
 #ifdef __linux__
                 char *pidpath;
 
-                virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid);
+                if (virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid) < 0) {
+                    virReportOOMError(NULL);
+                    goto cleanup;
+                }
                 if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
                     obj->dnsmasqPid = -1;
                 VIR_FREE(pidpath);
@@ -157,6 +160,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
             }
         }
 
+    cleanup:
         virNetworkObjUnlock(obj);
     }
 }
