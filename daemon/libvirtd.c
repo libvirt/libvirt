@@ -700,9 +700,15 @@ static int qemudInitPaths(struct qemud_server *server,
     int ret = -1;
     char *sock_dir_prefix = NULL;
 
-    if (unix_sock_dir)
+    if (unix_sock_dir) {
         sock_dir = unix_sock_dir;
-    else {
+        /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
+        if (server->privileged) {
+            if (chown(unix_sock_dir, -1, unix_sock_gid) < 0)
+                VIR_ERROR(_("Failed to change group ownership of %s"),
+                          unix_sock_dir);
+        }
+    } else {
         sock_dir = sockname;
         if (server->privileged) {
             dir_prefix = strdup (LOCAL_STATE_DIR);
@@ -796,8 +802,6 @@ static struct qemud_server *qemudInitialize(int sigread) {
         VIR_FREE(server);
         return NULL;
     }
-
-    virInitialize();
 
     /*
      * Note that the order is important: the first ones have a higher
@@ -2847,6 +2851,8 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
+    virInitialize();
+
     while (1) {
         int optidx = 0;
         int c;
@@ -2988,13 +2994,6 @@ int main(int argc, char **argv) {
     /* Read the config file (if it exists). */
     if (remoteReadConfigFile (server, remote_config_file) < 0)
         goto error2;
-
-    /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
-    if (unix_sock_dir && server->privileged) {
-        if (chown(unix_sock_dir, -1, unix_sock_gid) < 0)
-            VIR_ERROR(_("Failed to change group ownership of %s"),
-                      unix_sock_dir);
-    }
 
     if (virEventAddHandleImpl(sigpipe[0],
                               VIR_EVENT_HANDLE_READABLE,
