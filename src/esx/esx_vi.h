@@ -192,29 +192,33 @@ int esxVI_List_Deserialize(virConnectPtr conn, xmlNodePtr node,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Utility and Convenience Functions
+ *
+ * Function naming scheme:
+ *  - 'lookup' functions query the ESX or vCenter for information
+ *  - 'get' functions get information from a local object
  */
 
-int
-esxVI_Alloc(virConnectPtr conn, void **ptrptr, size_t size);
+int esxVI_Alloc(virConnectPtr conn, void **ptrptr, size_t size);
 
-int
-esxVI_CheckSerializationNecessity(virConnectPtr conn, const char *element,
-                                  esxVI_Boolean required);
+int esxVI_CheckSerializationNecessity(virConnectPtr conn, const char *element,
+                                      esxVI_Boolean required);
 
 int esxVI_BuildFullTraversalSpecItem
       (virConnectPtr conn, esxVI_SelectionSpec **fullTraversalSpecList,
        const char *name, const char *type, const char *path,
        const char *selectSetNames);
+
 int esxVI_BuildFullTraversalSpecList
       (virConnectPtr conn, esxVI_SelectionSpec **fullTraversalSpecList);
 
 int esxVI_EnsureSession(virConnectPtr conn, esxVI_Context *ctx);
 
-int esxVI_GetObjectContent(virConnectPtr conn, esxVI_Context *ctx,
-                           esxVI_ManagedObjectReference *root,
-                           const char *type, esxVI_String *propertyNameList,
-                           esxVI_Boolean recurse,
-                           esxVI_ObjectContent **objectContentList);
+int esxVI_LookupObjectContentByType(virConnectPtr conn, esxVI_Context *ctx,
+                                    esxVI_ManagedObjectReference *root,
+                                    const char *type,
+                                    esxVI_String *propertyNameList,
+                                    esxVI_Boolean recurse,
+                                    esxVI_ObjectContent **objectContentList);
 
 int esxVI_GetManagedEntityStatus
       (virConnectPtr conn, esxVI_ObjectContent *objectContent,
@@ -225,7 +229,7 @@ int esxVI_GetVirtualMachinePowerState
       (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachinePowerState *powerState);
 
-int esxVI_GetNumberOfDomainsByPowerState
+int esxVI_LookupNumberOfDomainsByPowerState
       (virConnectPtr conn, esxVI_Context *ctx,
        esxVI_VirtualMachinePowerState powerState, esxVI_Boolean inverse);
 
@@ -233,9 +237,9 @@ int esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
                                     esxVI_ObjectContent *virtualMachine,
                                     int *id, char **name, unsigned char *uuid);
 
-int esxVI_GetResourcePool(virConnectPtr conn, esxVI_Context *ctx,
-                          esxVI_ObjectContent *hostSystem,
-                          esxVI_ManagedObjectReference **resourcePool);
+int esxVI_LookupResourcePoolByHostSystem
+      (virConnectPtr conn, esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
+       esxVI_ManagedObjectReference **resourcePool);
 
 int esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
                                const char *ipAddress,

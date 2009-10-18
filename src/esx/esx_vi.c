@@ -374,9 +374,10 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     }
 
     /* Get pointer to Datacenter for later use */
-    if (esxVI_GetObjectContent(conn, ctx, ctx->service->rootFolder,
-                               "Datacenter", propertyNameList,
-                               esxVI_Boolean_True, &datacenterList) < 0) {
+    if (esxVI_LookupObjectContentByType(conn, ctx, ctx->service->rootFolder,
+                                        "Datacenter", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &datacenterList) < 0) {
         goto failure;
     }
 
@@ -1061,6 +1062,10 @@ esxVI_List_Deserialize(virConnectPtr conn, xmlNodePtr node, esxVI_List **list,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Utility and Convenience Functions
+ *
+ * Function naming scheme:
+ *  - 'lookup' functions query the ESX or vCenter for information
+ *  - 'get' functions get information from a local object
  */
 
 int
@@ -1301,9 +1306,11 @@ esxVI_EnsureSession(virConnectPtr conn, esxVI_Context *ctx)
 #else
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "currentSession") < 0 ||
-        esxVI_GetObjectContent(conn, ctx, ctx->service->sessionManager,
-                               "SessionManager", propertyNameList,
-                               esxVI_Boolean_False, &sessionManager) < 0) {
+        esxVI_LookupObjectContentByType(conn, ctx,
+                                        ctx->service->sessionManager,
+                                        "SessionManager", propertyNameList,
+                                        esxVI_Boolean_False,
+                                        &sessionManager) < 0) {
         goto failure;
     }
 
@@ -1358,11 +1365,12 @@ esxVI_EnsureSession(virConnectPtr conn, esxVI_Context *ctx)
 
 
 int
-esxVI_GetObjectContent(virConnectPtr conn, esxVI_Context *ctx,
-                       esxVI_ManagedObjectReference *root,
-                       const char *type, esxVI_String *propertyNameList,
-                       esxVI_Boolean recurse,
-                       esxVI_ObjectContent **objectContentList)
+esxVI_LookupObjectContentByType(virConnectPtr conn, esxVI_Context *ctx,
+                                esxVI_ManagedObjectReference *root,
+                                const char *type,
+                                esxVI_String *propertyNameList,
+                                esxVI_Boolean recurse,
+                                esxVI_ObjectContent **objectContentList)
 {
     int result = 0;
     esxVI_ObjectSpec *objectSpec = NULL;
@@ -1479,9 +1487,9 @@ esxVI_GetVirtualMachinePowerState(virConnectPtr conn,
 
 
 int
-esxVI_GetNumberOfDomainsByPowerState(virConnectPtr conn, esxVI_Context *ctx,
-                                     esxVI_VirtualMachinePowerState powerState,
-                                     esxVI_Boolean inverse)
+esxVI_LookupNumberOfDomainsByPowerState(virConnectPtr conn, esxVI_Context *ctx,
+                                        esxVI_VirtualMachinePowerState powerState,
+                                        esxVI_Boolean inverse)
 {
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
@@ -1492,9 +1500,10 @@ esxVI_GetNumberOfDomainsByPowerState(virConnectPtr conn, esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_GetObjectContent(conn, ctx, ctx->vmFolder, "VirtualMachine",
-                               propertyNameList, esxVI_Boolean_True,
-                               &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, ctx, ctx->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -1646,9 +1655,10 @@ esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
 
 
 
-int esxVI_GetResourcePool(virConnectPtr conn, esxVI_Context *ctx,
-                          esxVI_ObjectContent *hostSystem,
-                          esxVI_ManagedObjectReference **resourcePool)
+int
+esxVI_LookupResourcePoolByHostSystem
+  (virConnectPtr conn, esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
+   esxVI_ManagedObjectReference **resourcePool)
 {
     int result = 0;
     esxVI_String *propertyNameList = NULL;
@@ -1684,9 +1694,10 @@ int esxVI_GetResourcePool(virConnectPtr conn, esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "resourcePool") < 0 ||
-        esxVI_GetObjectContent(conn, ctx, managedObjectReference,
-                               "ComputeResource", propertyNameList,
-                               esxVI_Boolean_False, &computeResource) < 0) {
+        esxVI_LookupObjectContentByType(conn, ctx, managedObjectReference,
+                                        "ComputeResource", propertyNameList,
+                                        esxVI_Boolean_False,
+                                        &computeResource) < 0) {
         goto failure;
     }
 
@@ -1751,9 +1762,9 @@ esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
         goto failure;
     }
 
-    if (esxVI_GetObjectContent(conn, ctx, managedObjectReference,
-                               "HostSystem", propertyNameList,
-                               esxVI_Boolean_False, hostSystem) < 0) {
+    if (esxVI_LookupObjectContentByType(conn, ctx, managedObjectReference,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_False, hostSystem) < 0) {
         goto failure;
     }
 
@@ -1803,9 +1814,10 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
         }
     }
 
-    if (esxVI_GetObjectContent(conn, ctx, managedObjectReference,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_False, virtualMachine) < 0) {
+    if (esxVI_LookupObjectContentByType(conn, ctx, managedObjectReference,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_False,
+                                        virtualMachine) < 0) {
         goto failure;
     }
 
@@ -1852,9 +1864,10 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
         goto failure;
     }
 
-    if (esxVI_GetObjectContent(conn, ctx, ctx->datacenter,
-                               "Datastore", completePropertyNameList,
-                               esxVI_Boolean_True, &datastoreList) < 0) {
+    if (esxVI_LookupObjectContentByType(conn, ctx, ctx->datacenter,
+                                        "Datastore", completePropertyNameList,
+                                        esxVI_Boolean_True,
+                                        &datastoreList) < 0) {
         goto failure;
     }
 

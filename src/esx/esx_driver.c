@@ -90,9 +90,10 @@ esxSupportsLongMode(virConnectPtr conn)
 
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "hardware.cpuFeature") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->hostFolder,
-                               "HostSystem", propertyNameList,
-                               esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host,
+                                        priv->host->hostFolder,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_True, &hostSystem) < 0) {
         goto failure;
     }
 
@@ -522,9 +523,10 @@ esxSupportsVMotion(virConnectPtr conn)
 
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "capability.vmotionSupported") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->hostFolder,
-                               "HostSystem", propertyNameList,
-                               esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host,
+                                        priv->host->hostFolder,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_True, &hostSystem) < 0) {
         goto failure;
     }
 
@@ -653,9 +655,10 @@ esxGetHostname(virConnectPtr conn)
           (conn, &propertyNameList,
            "config.network.dnsConfig.hostName\0"
            "config.network.dnsConfig.domainName\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->hostFolder,
-                               "HostSystem", propertyNameList,
-                               esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host,
+                                        priv->host->hostFolder,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_True, &hostSystem) < 0) {
         goto failure;
     }
 
@@ -750,9 +753,10 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                                            "hardware.memorySize\0"
                                            "hardware.numaInfo.numNodes\0"
                                            "summary.hardware.cpuModel\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->hostFolder,
-                               "HostSystem", propertyNameList,
-                               esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host,
+                                        priv->host->hostFolder,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_True, &hostSystem) < 0) {
         goto failure;
     }
 
@@ -914,9 +918,10 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_True, &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -970,7 +975,7 @@ esxNumberOfDomains(virConnectPtr conn)
         return -1;
     }
 
-    return esxVI_GetNumberOfDomainsByPowerState
+    return esxVI_LookupNumberOfDomainsByPowerState
              (conn, priv->host, esxVI_VirtualMachinePowerState_PoweredOn,
               esxVI_Boolean_False);
 }
@@ -999,9 +1004,10 @@ esxDomainLookupByID(virConnectPtr conn, int id)
                                            "name\0"
                                            "runtime.powerState\0"
                                            "config.uuid\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_True, &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -1082,9 +1088,10 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
                                            "name\0"
                                            "runtime.powerState\0"
                                            "config.uuid\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_True, &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -1168,9 +1175,10 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
                                            "name\0"
                                            "runtime.powerState\0"
                                            "config.uuid\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_True, &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -2042,10 +2050,10 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "capability.maxSupportedVcpus") < 0 ||
-        esxVI_GetObjectContent(domain->conn, priv->host,
-                               priv->host->hostFolder, "HostSystem",
-                               propertyNameList, esxVI_Boolean_True,
-                               &hostSystem) < 0) {
+        esxVI_LookupObjectContentByType(domain->conn, priv->host,
+                                        priv->host->hostFolder, "HostSystem",
+                                        propertyNameList, esxVI_Boolean_True,
+                                        &hostSystem) < 0) {
         goto failure;
     }
 
@@ -2270,9 +2278,10 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
                                            "name\0"
                                            "runtime.powerState\0") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, priv->host->vmFolder,
-                               "VirtualMachine", propertyNameList,
-                               esxVI_Boolean_True, &virtualMachineList) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
+                                        "VirtualMachine", propertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
         goto failure;
     }
 
@@ -2337,7 +2346,7 @@ esxNumberOfDefinedDomains(virConnectPtr conn)
         return -1;
     }
 
-    return esxVI_GetNumberOfDomainsByPowerState
+    return esxVI_LookupNumberOfDomainsByPowerState
              (conn, priv->host, esxVI_VirtualMachinePowerState_PoweredOn,
               esxVI_Boolean_True);
 }
@@ -2550,8 +2559,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    if (esxVI_GetResourcePool(conn, priv->host, hostSystem,
-                              &resourcePool) < 0) {
+    if (esxVI_LookupResourcePoolByHostSystem(conn, priv->host, hostSystem,
+                                             &resourcePool) < 0) {
         goto failure;
     }
 
@@ -3071,8 +3080,8 @@ esxDomainMigratePerform(virDomainPtr domain,
         goto failure;
     }
 
-    if (esxVI_GetResourcePool(domain->conn, priv->vCenter, hostSystem,
-                              &resourcePool) < 0) {
+    if (esxVI_LookupResourcePoolByHostSystem(domain->conn, priv->vCenter,
+                                             hostSystem, &resourcePool) < 0) {
         goto failure;
     }
 
@@ -3172,8 +3181,8 @@ esxNodeGetFreeMemory(virConnectPtr conn)
         goto failure;
     }
 
-    if (esxVI_GetResourcePool(conn, priv->host, hostSystem,
-                              &managedObjectReference) < 0) {
+    if (esxVI_LookupResourcePoolByHostSystem(conn, priv->host, hostSystem,
+                                             &managedObjectReference) < 0) {
         goto failure;
     }
 
@@ -3182,9 +3191,11 @@ esxNodeGetFreeMemory(virConnectPtr conn)
     /* Get memory usage of resource pool */
     if (esxVI_String_AppendValueToList(conn, &propertyNameList,
                                        "runtime.memory") < 0 ||
-        esxVI_GetObjectContent(conn, priv->host, managedObjectReference,
-                               "ResourcePool", propertyNameList,
-                               esxVI_Boolean_False, &resourcePool) < 0) {
+        esxVI_LookupObjectContentByType(conn, priv->host,
+                                        managedObjectReference,
+                                        "ResourcePool", propertyNameList,
+                                        esxVI_Boolean_False,
+                                        &resourcePool) < 0) {
         goto failure;
     }
 
