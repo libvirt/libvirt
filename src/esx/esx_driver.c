@@ -2410,6 +2410,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     esxPrivate *priv = (esxPrivate *)conn->privateData;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
+    int i;
+    virDomainDiskDefPtr disk = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     char *datastoreName = NULL;
     char *directoryName = NULL;
@@ -2458,31 +2460,51 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    /* Build VMX datastore URL */
+    /*
+     * Build VMX datastore URL. Use the source of the first file-based harddisk
+     * to deduce the datastore and path for the VMX file. Don't just use the
+     * first disk, because it may be CDROM disk and ISO images are normaly not
+     * located in the virtual machine's directory. This approach to deduce the
+     * datastore isn't perfect but should work in the majority of cases.
+     */
     if (def->ndisks < 1) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Domain XML doesn't contain a disk, cannot deduce datastore "
-                  "and path for VMX file");
+                  "Domain XML doesn't contain any disks, cannot deduce "
+                  "datastore and path for VMX file");
         goto failure;
     }
 
-    if (def->disks[0]->src == NULL) {
+    for (i = 0; i < def->ndisks; ++i) {
+        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+            def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+            disk = def->disks[i];
+            break;
+        }
+    }
+
+    if (disk == NULL) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "First disk has no source, cannot deduce datastore and path "
-                  "for VMX file");
+                  "Domain XML doesn't contain any file-based harddisks, "
+                  "cannot deduce datastore and path for VMX file");
         goto failure;
     }
 
-    if (esxUtil_ParseDatastoreRelatedPath(conn, def->disks[0]->src,
-                                          &datastoreName, &directoryName,
-                                          &fileName) < 0) {
+    if (disk->src == NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                  "First file-based harddisk has no source, cannot deduce "
+                  "datastore and path for VMX file");
+        goto failure;
+    }
+
+    if (esxUtil_ParseDatastoreRelatedPath(conn, disk->src, &datastoreName,
+                                          &directoryName, &fileName) < 0) {
         goto failure;
     }
 
     if (! virFileHasSuffix(fileName, ".vmdk")) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Expecting source of first disk '%s' to be a VMDK image",
-                  def->disks[0]->src);
+                  "Expecting source '%s' of first file-based harddisk to be a "
+                  "VMDK image", disk->src);
         goto failure;
     }
 
