@@ -776,6 +776,12 @@ static int qemudInitPaths(struct qemud_server *server,
     return ret;
 }
 
+static void virshErrorHandler(void *opaque ATTRIBUTE_UNUSED, virErrorPtr err ATTRIBUTE_UNUSED)
+{
+    /* Don't do anything, since logging infrastructure already
+     * took care of reporting the error */
+}
+
 static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
 
@@ -2994,6 +3000,9 @@ int main(int argc, char **argv) {
     /* Read the config file (if it exists). */
     if (remoteReadConfigFile (server, remote_config_file) < 0)
         goto error2;
+
+    /* Disable error func, now logging is setup */
+    virSetErrorFunc(NULL, virshErrorHandler);
 
     if (virEventAddHandleImpl(sigpipe[0],
                               VIR_EVENT_HANDLE_READABLE,
