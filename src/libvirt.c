@@ -3279,7 +3279,7 @@ error:
  * @bandwidth: (optional) specify migration bandwidth limit in Mbps
  *
  * Migrate the domain object from its current host to the destination
- * host given by dconn (a connection to the destination host).
+ * host given by duri.
  *
  * Flags may be one of more of the following:
  *   VIR_MIGRATE_LIVE      Do not pause the VM during migration
@@ -3298,14 +3298,11 @@ error:
  *
  * If the VIR_MIGRATE_PEER2PEER flag is set, the duri parameter
  * must be a valid libvirt connection URI, by which the source
- * libvirt driver can connect to the destination libvirt. If
- * omitted, the dconn connection object will be queried for its
- * current URI.
+ * libvirt driver can connect to the destination libvirt.
  *
  * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
  * takes a hypervisor specific format. The hypervisor capabilities
- * XML includes details of the support URI schemes. If omitted
- * the dconn will be asked for a default URI. Not all hypervisors
+ * XML includes details of the support URI schemes. Not all hypervisors
  * will support this mode of migration, so if the VIR_MIGRATE_PEER2PEER
  * flag is not set, then it may be neccessary to use the alternative
  * virDomainMigrate API providing an explicit virConnectPtr for the
