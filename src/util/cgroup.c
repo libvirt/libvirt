@@ -309,6 +309,10 @@ static int virCgroupGetValueStr(virCgroupPtr group,
         DEBUG("Failed to read %s: %m\n", keypath);
         rc = -errno;
     } else {
+        /* Terminated with '\n' has sometimes harmful effects to the caller */
+        char *p = strchr(*value, '\n');
+        if (p) *p = '\0';
+
         rc = 0;
     }
 
@@ -969,13 +973,7 @@ int virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 
 int virCgroupGetFreezerState(virCgroupPtr group, char **state)
 {
-    int ret;
-    ret = virCgroupGetValueStr(group,
+    return virCgroupGetValueStr(group,
                                 VIR_CGROUP_CONTROLLER_CPU,
                                 "freezer.state", state);
-    if (ret == 0) {
-        char *p = strchr(*state, '\n');
-        if (p) *p = '\0';
-    }
-    return ret;
 }
