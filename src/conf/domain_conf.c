@@ -238,7 +238,7 @@ static int virDomainObjListSearchID(const void *payload,
     int want = 0;
 
     virDomainObjLock(obj);
-    if (virDomainIsActive(obj) &&
+    if (virDomainObjIsActive(obj) &&
         obj->def->id == *id)
         want = 1;
     virDomainObjUnlock(obj);
@@ -646,7 +646,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((domain = virDomainFindByUUID(doms, def->uuid))) {
-        if (!virDomainIsActive(domain)) {
+        if (!virDomainObjIsActive(domain)) {
             virDomainDefFree(domain->def);
             domain->def = def;
         } else {
@@ -5031,7 +5031,7 @@ static void virDomainObjListCountActive(void *payload, const char *name ATTRIBUT
     virDomainObjPtr obj = payload;
     int *count = data;
     virDomainObjLock(obj);
-    if (virDomainIsActive(obj))
+    if (virDomainObjIsActive(obj))
         (*count)++;
     virDomainObjUnlock(obj);
 }
@@ -5041,7 +5041,7 @@ static void virDomainObjListCountInactive(void *payload, const char *name ATTRIB
     virDomainObjPtr obj = payload;
     int *count = data;
     virDomainObjLock(obj);
-    if (!virDomainIsActive(obj))
+    if (!virDomainObjIsActive(obj))
         (*count)++;
     virDomainObjUnlock(obj);
 }
@@ -5067,7 +5067,7 @@ static void virDomainObjListCopyActiveIDs(void *payload, const char *name ATTRIB
     virDomainObjPtr obj = payload;
     struct virDomainIDData *data = opaque;
     virDomainObjLock(obj);
-    if (virDomainIsActive(obj) && data->numids < data->maxids)
+    if (virDomainObjIsActive(obj) && data->numids < data->maxids)
         data->ids[data->numids++] = obj->def->id;
     virDomainObjUnlock(obj);
 }
@@ -5097,7 +5097,7 @@ static void virDomainObjListCopyInactiveNames(void *payload, const char *name AT
         return;
 
     virDomainObjLock(obj);
-    if (!virDomainIsActive(obj) && data->numnames < data->maxnames) {
+    if (!virDomainObjIsActive(obj) && data->numnames < data->maxnames) {
         if (!(data->names[data->numnames] = strdup(obj->def->name)))
             data->oom = 1;
         else

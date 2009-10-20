@@ -153,7 +153,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
     virNetworkObjPtr network;
 
     if ((network = virNetworkFindByName(nets, def->name))) {
-        if (!virNetworkIsActive(network)) {
+        if (!virNetworkObjIsActive(network)) {
             virNetworkDefFree(network->def);
             network->def = def;
         } else {

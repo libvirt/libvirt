@@ -650,7 +650,7 @@ struct _virDomainObjList {
 };
 
 static inline int
-virDomainIsActive(virDomainObjPtr dom)
+virDomainObjIsActive(virDomainObjPtr dom)
 {
     return dom->def->id != -1;
 }

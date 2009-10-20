@@ -307,7 +307,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
         return -1;
     }
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
     } else {
         char vm_info[257];

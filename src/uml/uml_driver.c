@@ -127,7 +127,7 @@ umlAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaqu
 
     virDomainObjLock(vm);
     if (vm->autostart &&
-        !virDomainIsActive(vm)) {
+        !virDomainObjIsActive(vm)) {
         virResetLastError();
         if (umlStartVMDaemon(data->conn, data->driver, vm) < 0) {
             virErrorPtr err = virGetLastError();
@@ -273,7 +273,7 @@ reread:
 
         if (e->mask & IN_DELETE) {
             VIR_DEBUG("Got inotify domain shutdown '%s'", name);
-            if (!virDomainIsActive(dom)) {
+            if (!virDomainObjIsActive(dom)) {
                 virDomainObjUnlock(dom);
                 continue;
             }
@@ -281,7 +281,7 @@ reread:
             umlShutdownVMDaemon(NULL, driver, dom);
         } else if (e->mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
-            if (virDomainIsActive(dom)) {
+            if (virDomainObjIsActive(dom)) {
                 virDomainObjUnlock(dom);
                 continue;
             }
@@ -487,7 +487,7 @@ umlShutdownOneVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
     struct uml_driver *driver = opaque;
 
     virDomainObjLock(dom);
-    if (virDomainIsActive(dom))
+    if (virDomainObjIsActive(dom))
         umlShutdownVMDaemon(NULL, driver, dom);
     virDomainObjUnlock(dom);
 }
@@ -784,7 +784,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     FD_ZERO(&keepfd);
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("VM is already active"));
         return -1;
@@ -900,7 +900,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm)
 {
     int ret;
-    if (!virDomainIsActive(vm))
+    if (!virDomainObjIsActive(vm))
         return;
 
     virKillProcess(vm->pid, SIGTERM);
@@ -1398,7 +1398,7 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("cannot set memory of an active domain"));
         goto cleanup;
@@ -1437,7 +1437,7 @@ static int umlDomainGetInfo(virDomainPtr dom,
 
     info->state = vm->state;
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
     } else {
         if (umlGetProcessInfo(&(info->cpuTime), vm->pid) < 0) {
@@ -1587,7 +1587,7 @@ static int umlDomainUndefine(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         umlReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("cannot delete active domain"));
         goto cleanup;

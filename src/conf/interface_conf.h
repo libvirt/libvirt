@@ -172,7 +172,7 @@ struct _virInterfaceObjList {
 };
 
 static inline int
-virInterfaceIsActive(const virInterfaceObjPtr iface)
+virInterfaceObjIsActive(const virInterfaceObjPtr iface)
 {
     return iface->active;
 }

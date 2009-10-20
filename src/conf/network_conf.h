@@ -106,7 +106,7 @@ struct _virNetworkObjList {
 };
 
 static inline int
-virNetworkIsActive(const virNetworkObjPtr net)
+virNetworkObjIsActive(const virNetworkObjPtr net)
 {
     return net->active;
 }

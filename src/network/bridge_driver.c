@@ -173,7 +173,7 @@ networkAutostartConfigs(struct network_driver *driver) {
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
         if (driver->networks.objs[i]->autostart &&
-            !virNetworkIsActive(driver->networks.objs[i]) &&
+            !virNetworkObjIsActive(driver->networks.objs[i]) &&
             networkStartNetworkDaemon(NULL, driver, driver->networks.objs[i]) < 0) {
             /* failed to start but already logged */
         }
@@ -322,7 +322,7 @@ networkActive(void) {
     for (i = 0 ; i < driverState->networks.count ; i++) {
         virNetworkObjPtr net = driverState->networks.objs[i];
         virNetworkObjLock(net);
-        if (virNetworkIsActive(net))
+        if (virNetworkObjIsActive(net))
             active = 1;
         virNetworkObjUnlock(net);
     }
@@ -871,7 +871,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
                                    virNetworkObjPtr network) {
     int err;
 
-    if (virNetworkIsActive(network)) {
+    if (virNetworkObjIsActive(network)) {
         networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("network is already active"));
         return -1;
@@ -976,7 +976,7 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
 
     VIR_INFO(_("Shutting down network '%s'\n"), network->def->name);
 
-    if (!virNetworkIsActive(network))
+    if (!virNetworkObjIsActive(network))
         return 0;
 
     stateFile = virNetworkConfigFile(conn, NETWORK_STATE_DIR, network->def->name);
@@ -1088,7 +1088,7 @@ static int networkNumNetworks(virConnectPtr conn) {
     networkDriverLock(driver);
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
-        if (virNetworkIsActive(driver->networks.objs[i]))
+        if (virNetworkObjIsActive(driver->networks.objs[i]))
             nactive++;
         virNetworkObjUnlock(driver->networks.objs[i]);
     }
@@ -1104,7 +1104,7 @@ static int networkListNetworks(virConnectPtr conn, char **const names, int nname
     networkDriverLock(driver);
     for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
-        if (virNetworkIsActive(driver->networks.objs[i])) {
+        if (virNetworkObjIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
                 virReportOOMError(conn);
@@ -1132,7 +1132,7 @@ static int networkNumDefinedNetworks(virConnectPtr conn) {
     networkDriverLock(driver);
     for (i = 0 ; i < driver->networks.count ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
-        if (!virNetworkIsActive(driver->networks.objs[i]))
+        if (!virNetworkObjIsActive(driver->networks.objs[i]))
             ninactive++;
         virNetworkObjUnlock(driver->networks.objs[i]);
     }
@@ -1148,7 +1148,7 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
     networkDriverLock(driver);
     for (i = 0 ; i < driver->networks.count && got < nnames ; i++) {
         virNetworkObjLock(driver->networks.objs[i]);
-        if (!virNetworkIsActive(driver->networks.objs[i])) {
+        if (!virNetworkObjIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
                 virReportOOMError(conn);
@@ -1260,7 +1260,7 @@ static int networkUndefine(virNetworkPtr net) {
         goto cleanup;
     }
 
-    if (virNetworkIsActive(network)) {
+    if (virNetworkObjIsActive(network)) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
                            "%s", _("network is still active"));
         goto cleanup;
@@ -1321,7 +1321,7 @@ static int networkDestroy(virNetworkPtr net) {
         goto cleanup;
     }
 
-    if (!virNetworkIsActive(network)) {
+    if (!virNetworkObjIsActive(network)) {
         networkReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
                            "%s", _("network is not active"));
         goto cleanup;

@@ -2370,7 +2370,7 @@ static int testNumNetworks(virConnectPtr conn) {
     testDriverLock(privconn);
     for (i = 0 ; i < privconn->networks.count ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
-        if (virNetworkIsActive(privconn->networks.objs[i]))
+        if (virNetworkObjIsActive(privconn->networks.objs[i]))
             numActive++;
         virNetworkObjUnlock(privconn->networks.objs[i]);
     }
@@ -2387,7 +2387,7 @@ static int testListNetworks(virConnectPtr conn, char **const names, int nnames) 
     memset(names, 0, sizeof(*names)*nnames);
     for (i = 0 ; i < privconn->networks.count && n < nnames ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
-        if (virNetworkIsActive(privconn->networks.objs[i]) &&
+        if (virNetworkObjIsActive(privconn->networks.objs[i]) &&
             !(names[n++] = strdup(privconn->networks.objs[i]->def->name))) {
             virNetworkObjUnlock(privconn->networks.objs[i]);
             goto no_memory;
@@ -2413,7 +2413,7 @@ static int testNumDefinedNetworks(virConnectPtr conn) {
     testDriverLock(privconn);
     for (i = 0 ; i < privconn->networks.count ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
-        if (!virNetworkIsActive(privconn->networks.objs[i]))
+        if (!virNetworkObjIsActive(privconn->networks.objs[i]))
             numInactive++;
         virNetworkObjUnlock(privconn->networks.objs[i]);
     }
@@ -2430,7 +2430,7 @@ static int testListDefinedNetworks(virConnectPtr conn, char **const names, int n
     memset(names, 0, sizeof(*names)*nnames);
     for (i = 0 ; i < privconn->networks.count && n < nnames ; i++) {
         virNetworkObjLock(privconn->networks.objs[i]);
-        if (!virNetworkIsActive(privconn->networks.objs[i]) &&
+        if (!virNetworkObjIsActive(privconn->networks.objs[i]) &&
             !(names[n++] = strdup(privconn->networks.objs[i]->def->name))) {
             virNetworkObjUnlock(privconn->networks.objs[i]);
             goto no_memory;
@@ -2513,7 +2513,7 @@ static int testNetworkUndefine(virNetworkPtr network) {
         goto cleanup;
     }
 
-    if (virNetworkIsActive(privnet)) {
+    if (virNetworkObjIsActive(privnet)) {
         testError(network->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Network '%s' is still running"), network->name);
         goto cleanup;
@@ -2546,7 +2546,7 @@ static int testNetworkStart(virNetworkPtr network) {
         goto cleanup;
     }
 
-    if (virNetworkIsActive(privnet)) {
+    if (virNetworkObjIsActive(privnet)) {
         testError(network->conn, VIR_ERR_INTERNAL_ERROR,
                   _("Network '%s' is already running"), network->name);
         goto cleanup;
@@ -2727,7 +2727,7 @@ static int testNumOfInterfaces(virConnectPtr conn)
     testDriverLock(privconn);
     for (i = 0 ; (i < privconn->ifaces.count); i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (virInterfaceIsActive(privconn->ifaces.objs[i])) {
+        if (virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
             count++;
         }
         virInterfaceObjUnlock(privconn->ifaces.objs[i]);
@@ -2745,7 +2745,7 @@ static int testListInterfaces(virConnectPtr conn, char **const names, int nnames
     memset(names, 0, sizeof(*names)*nnames);
     for (i = 0 ; (i < privconn->ifaces.count) && (n < nnames); i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (virInterfaceIsActive(privconn->ifaces.objs[i])) {
+        if (virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
             if (!(names[n++] = strdup(privconn->ifaces.objs[i]->def->name))) {
                 virInterfaceObjUnlock(privconn->ifaces.objs[i]);
                 goto no_memory;
@@ -2773,7 +2773,7 @@ static int testNumOfDefinedInterfaces(virConnectPtr conn)
     testDriverLock(privconn);
     for (i = 0 ; i < privconn->ifaces.count; i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (!virInterfaceIsActive(privconn->ifaces.objs[i])) {
+        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
             count++;
         }
         virInterfaceObjUnlock(privconn->ifaces.objs[i]);
@@ -2791,7 +2791,7 @@ static int testListDefinedInterfaces(virConnectPtr conn, char **const names, int
     memset(names, 0, sizeof(*names)*nnames);
     for (i = 0 ; (i < privconn->ifaces.count) && (n < nnames); i++) {
         virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (!virInterfaceIsActive(privconn->ifaces.objs[i])) {
+        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
             if (!(names[n++] = strdup(privconn->ifaces.objs[i]->def->name))) {
                 virInterfaceObjUnlock(privconn->ifaces.objs[i]);
                 goto no_memory;

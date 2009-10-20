@@ -364,7 +364,7 @@ static int lxcDomainUndefine(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                  "%s", _("cannot delete active domain"));
         goto cleanup;
@@ -418,7 +418,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     info->state = vm->state;
 
-    if (!virDomainIsActive(vm) || driver->cgroup == NULL) {
+    if (!virDomainObjIsActive(vm) || driver->cgroup == NULL) {
         info->cpuTime = 0;
         info->memory = vm->def->memory;
     } else {
@@ -558,7 +558,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
                      _("Unable to get cgroup for %s\n"), vm->def->name);
@@ -1287,7 +1287,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
         }
 
         /* UUID & name match, but if VM is already active, refuse it */
-        if (virDomainIsActive(vm)) {
+        if (virDomainObjIsActive(vm)) {
             lxcError(conn, NULL, VIR_ERR_OPERATION_FAILED,
                      _("domain is already active as '%s'"), vm->def->name);
             goto cleanup;
@@ -1545,7 +1545,7 @@ lxcAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaqu
 
     virDomainObjLock(vm);
     if (vm->autostart &&
-        !virDomainIsActive(vm)) {
+        !virDomainObjIsActive(vm)) {
         int ret = lxcVmStart(data->conn, data->driver, vm);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
@@ -2151,7 +2151,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;
@@ -2216,7 +2216,7 @@ static int lxcDomainResume(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
         goto cleanup;

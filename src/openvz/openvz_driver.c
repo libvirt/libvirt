@@ -398,7 +398,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
 
     info->state = vm->state;
 
-    if (!virDomainIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
     } else {
         if (openvzGetProcessInfo(&(info->cpuTime), dom->id) < 0) {
@@ -964,7 +964,7 @@ openvzDomainUndefine(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (virDomainIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         openvzError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s", _("cannot delete active domain"));
         goto cleanup;
     }
