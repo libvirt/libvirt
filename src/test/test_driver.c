@@ -1188,6 +1188,16 @@ static int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
     return (0);
 }
 
+static int testIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
+static int testIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static int testGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED)
 {
@@ -1225,6 +1235,48 @@ static int testNumOfDomains(virConnectPtr conn)
     testDriverUnlock(privconn);
 
     return count;
+}
+
+static int testDomainIsActive(virDomainPtr dom)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virDomainFindByUUID(&privconn->domains, dom->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+static int testDomainIsPersistent(virDomainPtr dom)
+{
+    testConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virDomainFindByUUID(&privconn->domains, dom->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
 }
 
 static virDomainPtr
@@ -2778,6 +2830,50 @@ no_memory:
     return -1;
 }
 
+
+static int testNetworkIsActive(virNetworkPtr net)
+{
+    testConnPtr privconn = net->conn->privateData;
+    virNetworkObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virNetworkFindByUUID(&privconn->networks, net->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(net->conn, VIR_ERR_NO_NETWORK, NULL);
+        goto cleanup;
+    }
+    ret = virNetworkObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return ret;
+}
+
+static int testNetworkIsPersistent(virNetworkPtr net)
+{
+    testConnPtr privconn = net->conn->privateData;
+    virNetworkObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virNetworkFindByUUID(&privconn->networks, net->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(net->conn, VIR_ERR_NO_NETWORK, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return ret;
+}
+
+
 static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
     testConnPtr privconn = conn->privateData;
     virNetworkDefPtr def;
@@ -3194,6 +3290,28 @@ cleanup:
     return ret;
 }
 
+static int testInterfaceIsActive(virInterfacePtr iface)
+{
+    testConnPtr privconn = iface->conn->privateData;
+    virInterfaceObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virInterfaceFindByName(&privconn->ifaces, iface->name);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(iface->conn, VIR_ERR_NO_INTERFACE, NULL);
+        goto cleanup;
+    }
+    ret = virInterfaceObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virInterfaceObjUnlock(obj);
+    return ret;
+}
+
+
 static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
                                      unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -3338,6 +3456,7 @@ cleanup:
  * Storage Driver routines
  */
 
+
 static int testStoragePoolObjSetDefaults(virConnectPtr conn,
                                          virStoragePoolObjPtr pool) {
 
@@ -3368,6 +3487,7 @@ static int testStorageClose(virConnectPtr conn) {
     conn->storagePrivateData = NULL;
     return 0;
 }
+
 
 static virStoragePoolPtr
 testStoragePoolLookupByUUID(virConnectPtr conn,
@@ -3512,6 +3632,50 @@ no_memory:
     testDriverUnlock(privconn);
     return -1;
 }
+
+
+static int testStoragePoolIsActive(virStoragePoolPtr pool)
+{
+    testConnPtr privconn = pool->conn->privateData;
+    virStoragePoolObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virStoragePoolObjFindByUUID(&privconn->pools, pool->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(pool->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        goto cleanup;
+    }
+    ret = virStoragePoolObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virStoragePoolObjUnlock(obj);
+    return ret;
+}
+
+static int testStoragePoolIsPersistent(virStoragePoolPtr pool)
+{
+    testConnPtr privconn = pool->conn->privateData;
+    virStoragePoolObjPtr obj;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    obj = virStoragePoolObjFindByUUID(&privconn->pools, pool->uuid);
+    testDriverUnlock(privconn);
+    if (!obj) {
+        testError(pool->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        goto cleanup;
+    }
+    ret = obj->configFile ? 1 : 0;
+
+cleanup:
+    if (obj)
+        virStoragePoolObjUnlock(obj);
+    return ret;
+}
+
 
 
 static int
@@ -5064,10 +5228,10 @@ static virDriver testDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    testIsEncrypted, /* isEncrypted */
+    testIsSecure, /* isEncrypted */
+    testDomainIsActive, /* domainIsActive */
+    testDomainIsPersistent, /* domainIsPersistent */
 };
 
 static virNetworkDriver testNetworkDriver = {
@@ -5089,8 +5253,8 @@ static virNetworkDriver testNetworkDriver = {
     testNetworkGetBridgeName, /* networkGetBridgeName */
     testNetworkGetAutostart, /* networkGetAutostart */
     testNetworkSetAutostart, /* networkSetAutostart */
-    NULL, /* networkIsActive */
-    NULL, /* networkIsPersistent */
+    testNetworkIsActive, /* networkIsActive */
+    testNetworkIsPersistent, /* networkIsPersistent */
 };
 
 static virInterfaceDriver testInterfaceDriver = {
@@ -5108,7 +5272,7 @@ static virInterfaceDriver testInterfaceDriver = {
     testInterfaceUndefine,      /* interfaceUndefine */
     testInterfaceCreate,        /* interfaceCreate */
     testInterfaceDestroy,       /* interfaceDestroy */
-    NULL, /* interfaceIsActive */
+    testInterfaceIsActive,      /* interfaceIsActive */
 };
 
 
@@ -5149,9 +5313,8 @@ static virStorageDriver testStorageDriver = {
     .volGetInfo = testStorageVolumeGetInfo,
     .volGetXMLDesc = testStorageVolumeGetXMLDesc,
     .volGetPath = testStorageVolumeGetPath,
-
-    .poolIsActive = NULL, /* poolIsActive */
-    .poolIsPersistent = NULL, /* poolIsPersistent */
+    .poolIsActive = testStoragePoolIsActive,
+    .poolIsPersistent = testStoragePoolIsPersistent,
 };
 
 static virDeviceMonitor testDevMonitor = {

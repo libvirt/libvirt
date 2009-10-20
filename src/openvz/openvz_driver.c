@@ -420,6 +420,50 @@ cleanup:
 }
 
 
+static int openvzDomainIsActive(virDomainPtr dom)
+{
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    openvzDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+    if (!obj) {
+        openvzError(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+
+static int openvzDomainIsPersistent(virDomainPtr dom)
+{
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    openvzDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+    if (!obj) {
+        openvzError(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+
 static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -785,6 +829,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
                                   &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;
+    vm->persistent = 1;
 
     if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -864,6 +909,9 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                                   &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;
+    /* All OpenVZ domains seem to be persistent - this is a bit of a violation
+     * of this libvirt API which is intended for transient domain creation */
+    vm->persistent = 1;
 
     if (openvzSetInitialConfig(conn, vm->def) < 0) {
         openvzError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -1222,6 +1270,16 @@ static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return "OpenVZ";
 }
 
+static int openvzIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
+    /* Encryption is not relevant / applicable to way we talk to openvz */
+    return 0;
+}
+
+static int openvzIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
+    /* We run CLI tools directly so this is secure */
+    return 1;
+}
+
 static char *openvzGetCapabilities(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
     char *ret;
@@ -1471,10 +1529,10 @@ static virDriver openvzDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    openvzIsEncrypted,
+    openvzIsSecure,
+    openvzDomainIsActive,
+    openvzDomainIsPersistent,
 };
 
 int openvzRegister(void) {

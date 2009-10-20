@@ -49,6 +49,8 @@ extern int xenRegister (void);
 #define XEN_CONFIG_FORMAT_XM    "xen-xm"
 #define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
+#define XEND_DOMAINS_DIR "/var/lib/xend/domains"
+
 /* _xenUnifiedDriver:
  *
  * Entry points into the underlying Xen drivers.  This structure

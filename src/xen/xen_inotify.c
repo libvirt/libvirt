@@ -47,8 +47,6 @@
         virReportErrorHelper(NULL, VIR_FROM_XEN_INOTIFY, code, __FILE__,      \
                                __FUNCTION__, __LINE__, fmt)
 
-#define LIBVIRTD_DOMAINS_DIR "/var/lib/xend/domains"
-
 struct xenUnifiedDriver xenInotifyDriver = {
     xenInotifyOpen, /* open */
     xenInotifyClose, /* close */
@@ -126,7 +124,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
     * a filename in the manner:
     * /var/lib/xend/domains/<uuid>/
     */
-    uuid_str = filename + strlen(LIBVIRTD_DOMAINS_DIR) + 1;
+    uuid_str = filename + strlen(XEND_DOMAINS_DIR) + 1;
 
     if (virUUIDParse(uuid_str, rawuuid) < 0) {
         virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
@@ -200,7 +198,7 @@ static int
 xenInotifyXendDomainsDirRemoveEntry(virConnectPtr conn,
                                     const char *fname) {
     xenUnifiedPrivatePtr priv = conn->privateData;
-    const char *uuidstr = fname + strlen(LIBVIRTD_DOMAINS_DIR) + 1;
+    const char *uuidstr = fname + strlen(XEND_DOMAINS_DIR) + 1;
     unsigned char uuid[VIR_UUID_BUFLEN];
     int i;
 
@@ -395,7 +393,7 @@ xenInotifyOpen(virConnectPtr conn,
         priv->useXenConfigCache = 1;
     } else {
         /* /var/lib/xend/domains/<uuid>/config.sxp */
-        priv->configDir = LIBVIRTD_DOMAINS_DIR;
+        priv->configDir = XEND_DOMAINS_DIR;
         priv->useXenConfigCache = 0;
 
         if (VIR_ALLOC(priv->configInfoList) < 0) {

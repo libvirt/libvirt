@@ -221,6 +221,23 @@ phypClose(virConnectPtr conn)
     return 0;
 }
 
+
+static int
+phypIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Phyp uses an SSH tunnel, so is always encrypted */
+    return 1;
+}
+
+
+static int
+phypIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Phyp uses an SSH tunnel, so is always secure */
+    return 1;
+}
+
+
 LIBSSH2_SESSION *
 openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
                int *internal_socket)
@@ -1625,10 +1642,10 @@ virDriver phypDriver = {
     NULL,                       /* nodeDeviceReAttach */
     NULL,                       /* nodeDeviceReset */
     NULL,                       /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    phypIsEncrypted,
+    phypIsSecure,
+    NULL,                       /* domainIsActive */
+    NULL,                       /* domainIsPersistent */
 };
 
 int

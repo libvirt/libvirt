@@ -1177,6 +1177,50 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
     return -1;
 }
 
+
+static int networkIsActive(virNetworkPtr net)
+{
+    struct network_driver *driver = net->conn->privateData;
+    virNetworkObjPtr obj;
+    int ret = -1;
+
+    networkDriverLock(driver);
+    obj = virNetworkFindByUUID(&driver->networks, net->uuid);
+    networkDriverUnlock(driver);
+    if (!obj) {
+        networkReportError(net->conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
+        goto cleanup;
+    }
+    ret = virNetworkObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return ret;
+}
+
+static int networkIsPersistent(virNetworkPtr net)
+{
+    struct network_driver *driver = net->conn->privateData;
+    virNetworkObjPtr obj;
+    int ret = -1;
+
+    networkDriverLock(driver);
+    obj = virNetworkFindByUUID(&driver->networks, net->uuid);
+    networkDriverUnlock(driver);
+    if (!obj) {
+        networkReportError(net->conn, NULL, NULL, VIR_ERR_NO_NETWORK, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virNetworkObjUnlock(obj);
+    return ret;
+}
+
+
 static virNetworkPtr networkCreate(virConnectPtr conn, const char *xml) {
     struct network_driver *driver = conn->networkPrivateData;
     virNetworkDefPtr def;
@@ -1264,7 +1308,7 @@ static int networkUndefine(virNetworkPtr net) {
 
     network = virNetworkFindByUUID(&driver->networks, net->uuid);
     if (!network) {
-        networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_DOMAIN,
+        networkReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
                            "%s", _("no network with matching uuid"));
         goto cleanup;
     }
@@ -1515,8 +1559,8 @@ static virNetworkDriver networkDriver = {
     networkGetBridgeName, /* networkGetBridgeName */
     networkGetAutostart, /* networkGetAutostart */
     networkSetAutostart, /* networkSetAutostart */
-    NULL, /* networkIsActive */
-    NULL, /* networkIsPersistent */
+    networkIsActive,
+    networkIsPersistent,
 };
 
 static virStateDriver networkStateDriver = {

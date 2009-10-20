@@ -106,3 +106,11 @@
     remote_secret_get_xml_desc_ret val_remote_secret_get_xml_desc_ret;
     remote_secret_get_value_ret val_remote_secret_get_value_ret;
     remote_secret_lookup_by_usage_ret val_remote_secret_lookup_by_usage_ret;
+    remote_is_secure_ret val_remote_is_secure_ret;
+    remote_domain_is_active_ret val_remote_domain_is_active_ret;
+    remote_domain_is_persistent_ret val_remote_domain_is_persistent_ret;
+    remote_network_is_active_ret val_remote_network_is_active_ret;
+    remote_network_is_persistent_ret val_remote_network_is_persistent_ret;
+    remote_storage_pool_is_active_ret val_remote_storage_pool_is_active_ret;
+    remote_storage_pool_is_persistent_ret val_remote_storage_pool_is_persistent_ret;
+    remote_interface_is_active_ret val_remote_interface_is_active_ret;

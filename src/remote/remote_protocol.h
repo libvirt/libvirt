@@ -1537,6 +1537,80 @@ struct remote_domain_migrate_prepare_tunnel_args {
 };
 typedef struct remote_domain_migrate_prepare_tunnel_args remote_domain_migrate_prepare_tunnel_args;
 
+struct remote_is_secure_ret {
+        int secure;
+};
+typedef struct remote_is_secure_ret remote_is_secure_ret;
+
+struct remote_domain_is_active_args {
+        remote_nonnull_domain dom;
+};
+typedef struct remote_domain_is_active_args remote_domain_is_active_args;
+
+struct remote_domain_is_active_ret {
+        int active;
+};
+typedef struct remote_domain_is_active_ret remote_domain_is_active_ret;
+
+struct remote_domain_is_persistent_args {
+        remote_nonnull_domain dom;
+};
+typedef struct remote_domain_is_persistent_args remote_domain_is_persistent_args;
+
+struct remote_domain_is_persistent_ret {
+        int persistent;
+};
+typedef struct remote_domain_is_persistent_ret remote_domain_is_persistent_ret;
+
+struct remote_network_is_active_args {
+        remote_nonnull_network net;
+};
+typedef struct remote_network_is_active_args remote_network_is_active_args;
+
+struct remote_network_is_active_ret {
+        int active;
+};
+typedef struct remote_network_is_active_ret remote_network_is_active_ret;
+
+struct remote_network_is_persistent_args {
+        remote_nonnull_network net;
+};
+typedef struct remote_network_is_persistent_args remote_network_is_persistent_args;
+
+struct remote_network_is_persistent_ret {
+        int persistent;
+};
+typedef struct remote_network_is_persistent_ret remote_network_is_persistent_ret;
+
+struct remote_storage_pool_is_active_args {
+        remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_is_active_args remote_storage_pool_is_active_args;
+
+struct remote_storage_pool_is_active_ret {
+        int active;
+};
+typedef struct remote_storage_pool_is_active_ret remote_storage_pool_is_active_ret;
+
+struct remote_storage_pool_is_persistent_args {
+        remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_is_persistent_args remote_storage_pool_is_persistent_args;
+
+struct remote_storage_pool_is_persistent_ret {
+        int persistent;
+};
+typedef struct remote_storage_pool_is_persistent_ret remote_storage_pool_is_persistent_ret;
+
+struct remote_interface_is_active_args {
+        remote_nonnull_interface iface;
+};
+typedef struct remote_interface_is_active_args remote_interface_is_active_args;
+
+struct remote_interface_is_active_ret {
+        int active;
+};
+typedef struct remote_interface_is_active_ret remote_interface_is_active_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1689,6 +1763,14 @@ enum remote_procedure {
         REMOTE_PROC_SECRET_UNDEFINE = 146,
         REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147,
         REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148,
+        REMOTE_PROC_IS_SECURE = 149,
+        REMOTE_PROC_DOMAIN_IS_ACTIVE = 150,
+        REMOTE_PROC_DOMAIN_IS_PERSISTENT = 151,
+        REMOTE_PROC_NETWORK_IS_ACTIVE = 152,
+        REMOTE_PROC_NETWORK_IS_PERSISTENT = 153,
+        REMOTE_PROC_STORAGE_POOL_IS_ACTIVE = 154,
+        REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
+        REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1970,6 +2052,21 @@ extern  bool_t xdr_remote_secret_undefine_args (XDR *, remote_secret_undefine_ar
 extern  bool_t xdr_remote_secret_lookup_by_usage_args (XDR *, remote_secret_lookup_by_usage_args*);
 extern  bool_t xdr_remote_secret_lookup_by_usage_ret (XDR *, remote_secret_lookup_by_usage_ret*);
 extern  bool_t xdr_remote_domain_migrate_prepare_tunnel_args (XDR *, remote_domain_migrate_prepare_tunnel_args*);
+extern  bool_t xdr_remote_is_secure_ret (XDR *, remote_is_secure_ret*);
+extern  bool_t xdr_remote_domain_is_active_args (XDR *, remote_domain_is_active_args*);
+extern  bool_t xdr_remote_domain_is_active_ret (XDR *, remote_domain_is_active_ret*);
+extern  bool_t xdr_remote_domain_is_persistent_args (XDR *, remote_domain_is_persistent_args*);
+extern  bool_t xdr_remote_domain_is_persistent_ret (XDR *, remote_domain_is_persistent_ret*);
+extern  bool_t xdr_remote_network_is_active_args (XDR *, remote_network_is_active_args*);
+extern  bool_t xdr_remote_network_is_active_ret (XDR *, remote_network_is_active_ret*);
+extern  bool_t xdr_remote_network_is_persistent_args (XDR *, remote_network_is_persistent_args*);
+extern  bool_t xdr_remote_network_is_persistent_ret (XDR *, remote_network_is_persistent_ret*);
+extern  bool_t xdr_remote_storage_pool_is_active_args (XDR *, remote_storage_pool_is_active_args*);
+extern  bool_t xdr_remote_storage_pool_is_active_ret (XDR *, remote_storage_pool_is_active_ret*);
+extern  bool_t xdr_remote_storage_pool_is_persistent_args (XDR *, remote_storage_pool_is_persistent_args*);
+extern  bool_t xdr_remote_storage_pool_is_persistent_ret (XDR *, remote_storage_pool_is_persistent_ret*);
+extern  bool_t xdr_remote_interface_is_active_args (XDR *, remote_interface_is_active_args*);
+extern  bool_t xdr_remote_interface_is_active_ret (XDR *, remote_interface_is_active_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2225,6 +2322,21 @@ extern bool_t xdr_remote_secret_undefine_args ();
 extern bool_t xdr_remote_secret_lookup_by_usage_args ();
 extern bool_t xdr_remote_secret_lookup_by_usage_ret ();
 extern bool_t xdr_remote_domain_migrate_prepare_tunnel_args ();
+extern bool_t xdr_remote_is_secure_ret ();
+extern bool_t xdr_remote_domain_is_active_args ();
+extern bool_t xdr_remote_domain_is_active_ret ();
+extern bool_t xdr_remote_domain_is_persistent_args ();
+extern bool_t xdr_remote_domain_is_persistent_ret ();
+extern bool_t xdr_remote_network_is_active_args ();
+extern bool_t xdr_remote_network_is_active_ret ();
+extern bool_t xdr_remote_network_is_persistent_args ();
+extern bool_t xdr_remote_network_is_persistent_ret ();
+extern bool_t xdr_remote_storage_pool_is_active_args ();
+extern bool_t xdr_remote_storage_pool_is_active_ret ();
+extern bool_t xdr_remote_storage_pool_is_persistent_args ();
+extern bool_t xdr_remote_storage_pool_is_persistent_ret ();
+extern bool_t xdr_remote_interface_is_active_args ();
+extern bool_t xdr_remote_interface_is_active_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

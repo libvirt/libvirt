@@ -591,6 +591,16 @@ static int vboxGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
+static int vboxIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED) {
+    /* Driver is using local, non-network based transport */
+    return 1;
+}
+
+static int vboxIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED) {
+    /* No encryption is needed, or used on the local transport*/
+    return 0;
+}
+
 static int vboxGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED) {
     vboxGlobalData *data = conn->privateData;
     PRUint32 maxCPUCount = 0;
@@ -1013,6 +1023,93 @@ static virDomainPtr vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
     return dom;
 }
+
+
+static int vboxDomainIsActive(virDomainPtr dom) {
+    nsresult rc;
+    vboxGlobalData *data = dom->conn->privateData;
+    IMachine **machines  = NULL;
+    PRUint32 machineCnt  = 0;
+    vboxIID *iid         = NULL;
+    char      *machineNameUtf8  = NULL;
+    PRUnichar *machineNameUtf16 = NULL;
+    unsigned char iidl[VIR_UUID_BUFLEN];
+    int i, matched = 0;
+    int ret = -1;
+
+    if(data->vboxObj) {
+        rc = data->vboxObj->vtbl->GetMachines(data->vboxObj, &machineCnt, &machines);
+        if (NS_FAILED(rc)) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,"%s, rc=%08x",
+                      "Could not get list of machines",(unsigned)rc);
+            return -1;
+        }
+
+        for (i = 0; i < machineCnt; ++i) {
+            IMachine *machine = machines[i];
+            PRBool isAccessible = PR_FALSE;
+
+            if (!machine)
+                continue;
+
+            machine->vtbl->GetAccessible(machine, &isAccessible);
+            if (isAccessible) {
+
+                machine->vtbl->GetId(machine, &iid);
+                if (!iid)
+                    continue;
+                vboxIIDToUUID(iidl, iid);
+                vboxIIDUnalloc(iid);
+
+                if (memcmp(dom->uuid, iidl, VIR_UUID_BUFLEN) == 0) {
+
+                    PRUint32 state;
+
+                    matched = 1;
+
+                    machine->vtbl->GetName(machine, &machineNameUtf16);
+                    data->pFuncs->pfnUtf16ToUtf8(machineNameUtf16, &machineNameUtf8);
+
+                    machine->vtbl->GetState(machine, &state);
+
+                    if ((state == MachineState_Starting)   ||
+                        (state == MachineState_Running)    ||
+                        (state == MachineState_Stuck)      ||
+                        (state == MachineState_Stopping)   ||
+                        (state == MachineState_Saving)     ||
+                        (state == MachineState_Restoring)  ||
+                        (state == MachineState_Discarding) ||
+                        (state == MachineState_Paused) )
+                        ret = 1;
+                    else
+                        ret = 0;
+                }
+
+                if (matched == 1)
+                    break;
+            }
+        }
+
+        /* Do the cleanup and take care you dont leak any memory */
+        if (machineNameUtf8)
+            data->pFuncs->pfnUtf8Free(machineNameUtf8);
+        if (machineNameUtf16)
+            data->pFuncs->pfnComUnallocMem(machineNameUtf16);
+        for (i = 0; i < machineCnt; ++i) {
+            if (machines[i])
+                machines[i]->vtbl->nsisupports.Release((nsISupports *)machines[i]);
+        }
+    }
+
+    return ret;
+}
+
+
+static int vboxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED) {
+    /* XXX All domains appear to be persistent. Is this true ? */
+    return 1;
+}
+
 
 static int vboxDomainSuspend(virDomainPtr dom) {
     nsresult rc;
@@ -6469,10 +6566,10 @@ virDriver NAME(Driver) = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPerrsistent */
+    vboxIsEncrypted,
+    vboxIsSecure,
+    vboxDomainIsActive,
+    vboxDomainIsPersistent,
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

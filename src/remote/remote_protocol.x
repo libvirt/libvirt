@@ -1362,6 +1362,73 @@ struct remote_domain_migrate_prepare_tunnel_args {
     remote_nonnull_string dom_xml;
 };
 
+
+struct remote_is_secure_ret {
+    int secure;
+};
+
+
+struct remote_domain_is_active_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_is_active_ret {
+    int active;
+};
+
+
+struct remote_domain_is_persistent_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_is_persistent_ret {
+    int persistent;
+};
+
+
+struct remote_network_is_active_args {
+    remote_nonnull_network net;
+};
+
+struct remote_network_is_active_ret {
+    int active;
+};
+
+struct remote_network_is_persistent_args {
+    remote_nonnull_network net;
+};
+
+struct remote_network_is_persistent_ret {
+    int persistent;
+};
+
+
+struct remote_storage_pool_is_active_args {
+    remote_nonnull_storage_pool pool;
+};
+
+struct remote_storage_pool_is_active_ret {
+    int active;
+};
+
+struct remote_storage_pool_is_persistent_args {
+    remote_nonnull_storage_pool pool;
+};
+
+struct remote_storage_pool_is_persistent_ret {
+    int persistent;
+};
+
+
+struct remote_interface_is_active_args {
+    remote_nonnull_interface iface;
+};
+
+struct remote_interface_is_active_ret {
+    int active;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1518,12 +1585,11 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_DESTROY = 134,
     REMOTE_PROC_DOMAIN_XML_FROM_NATIVE = 135,
     REMOTE_PROC_DOMAIN_XML_TO_NATIVE = 136,
-
     REMOTE_PROC_NUM_OF_DEFINED_INTERFACES = 137,
     REMOTE_PROC_LIST_DEFINED_INTERFACES = 138,
-
     REMOTE_PROC_NUM_OF_SECRETS = 139,
     REMOTE_PROC_LIST_SECRETS = 140,
+
     REMOTE_PROC_SECRET_LOOKUP_BY_UUID = 141,
     REMOTE_PROC_SECRET_DEFINE_XML = 142,
     REMOTE_PROC_SECRET_GET_XML_DESC = 143,
@@ -1531,10 +1597,23 @@ enum remote_procedure {
     REMOTE_PROC_SECRET_GET_VALUE = 145,
     REMOTE_PROC_SECRET_UNDEFINE = 146,
     REMOTE_PROC_SECRET_LOOKUP_BY_USAGE = 147,
+    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148,
+    REMOTE_PROC_IS_SECURE = 149,
+    REMOTE_PROC_DOMAIN_IS_ACTIVE = 150,
 
-    REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL = 148
+    REMOTE_PROC_DOMAIN_IS_PERSISTENT = 151,
+    REMOTE_PROC_NETWORK_IS_ACTIVE = 152,
+    REMOTE_PROC_NETWORK_IS_PERSISTENT = 153,
+    REMOTE_PROC_STORAGE_POOL_IS_ACTIVE = 154,
+    REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
+    REMOTE_PROC_INTERFACE_IS_ACTIVE = 156
+
+
+    /*
+     * Notice how the entries are grouped in sets of 10 ?
+     * Nice isn't it. Please keep it this way when adding more.
+     */
 };
-
 
 /*
  * RPC wire format

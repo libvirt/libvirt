@@ -2522,6 +2522,19 @@ static const char *qemudGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
 }
 
 
+static int qemuIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+static int qemuIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
 static int kvmGetMaxVCPUs(void) {
     int maxvcpus = 1;
 
@@ -2733,6 +2746,50 @@ cleanup:
         virDomainObjUnlock(vm);
     return dom;
 }
+
+
+static int qemuDomainIsActive(virDomainPtr dom)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!obj) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+static int qemuDomainIsPersistent(virDomainPtr dom)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    qemuDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!obj) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
 
 static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     struct qemud_driver *driver = conn->privateData;
@@ -7465,10 +7522,10 @@ static virDriver qemuDriver = {
     qemudNodeDeviceReAttach, /* nodeDeviceReAttach */
     qemudNodeDeviceReset, /* nodeDeviceReset */
     qemudDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    qemuIsEncrypted,
+    qemuIsSecure,
+    qemuDomainIsActive,
+    qemuDomainIsPersistent,
 };
 
 

@@ -128,6 +128,21 @@ static int lxcClose(virConnectPtr conn)
     return 0;
 }
 
+
+static int lxcIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int lxcIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
 static char *lxcGetCapabilities(virConnectPtr conn) {
     lxc_driver_t *driver = conn->privateData;
     char *xml;
@@ -217,6 +232,51 @@ cleanup:
         virDomainObjUnlock(vm);
     return dom;
 }
+
+
+static int lxcDomainIsActive(virDomainPtr dom)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!obj) {
+        lxcError(dom->conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+
+static int lxcDomainIsPersistent(virDomainPtr dom)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+    if (!obj) {
+        lxcError(dom->conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
 
 static int lxcListDomains(virConnectPtr conn, int *ids, int nids) {
     lxc_driver_t *driver = conn->privateData;
@@ -2278,10 +2338,10 @@ static virDriver lxcDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    lxcIsEncrypted,
+    lxcIsSecure,
+    lxcDomainIsActive,
+    lxcDomainIsPersistent,
 };
 
 static virStateDriver lxcStateDriver = {

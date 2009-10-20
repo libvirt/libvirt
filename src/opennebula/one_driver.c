@@ -90,6 +90,21 @@ static int oneClose(virConnectPtr conn)
     return 0;
 }
 
+
+static int oneIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted because it uses HTTP, not HTTPs */
+    return 0;
+}
+
+
+static int oneIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not secure because it uses HTTP, not HTTPs */
+    return 0;
+}
+
+
 static virDomainPtr oneDomainLookupByID(virConnectPtr conn,
                                         int id)
 {
@@ -761,8 +776,8 @@ static virDriver oneDriver = {
     NULL, /* nodeDeviceReAttach; */
     NULL, /* nodeDeviceReset; */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
+    oneIsEncrypted,
+    oneIsSecure,
     NULL, /* domainIsActive */
     NULL, /* domainIsPersistent */
 };

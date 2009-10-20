@@ -31,4 +31,5 @@ virDrvOpenStatus	xenInotifyOpen	(virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          int flags);
 int		xenInotifyClose		(virConnectPtr conn);
+
 #endif

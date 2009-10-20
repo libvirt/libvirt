@@ -999,6 +999,20 @@ static const char *umlGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
 }
 
 
+static int umlIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int umlIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
 static char *umlGetCapabilities(virConnectPtr conn) {
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     char *xml;
@@ -1121,6 +1135,51 @@ cleanup:
         virDomainObjUnlock(vm);
     return dom;
 }
+
+
+static int umlDomainIsActive(virDomainPtr dom)
+{
+    struct uml_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    umlDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    umlDriverUnlock(driver);
+    if (!obj) {
+        umlReportError(dom->conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = virDomainObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
+
+static int umlDomainIsPersistent(virDomainPtr dom)
+{
+    struct uml_driver *driver = dom->conn->privateData;
+    virDomainObjPtr obj;
+    int ret = -1;
+
+    umlDriverLock(driver);
+    obj = virDomainFindByUUID(&driver->domains, dom->uuid);
+    umlDriverUnlock(driver);
+    if (!obj) {
+        umlReportError(dom->conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        goto cleanup;
+    }
+    ret = obj->persistent;
+
+cleanup:
+    if (obj)
+        virDomainObjUnlock(obj);
+    return ret;
+}
+
 
 static int umlGetVersion(virConnectPtr conn, unsigned long *version) {
     struct uml_driver *driver = conn->privateData;
@@ -1824,10 +1883,10 @@ static virDriver umlDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    umlIsEncrypted,
+    umlIsSecure,
+    umlDomainIsActive,
+    umlDomainIsPersistent,
 };
 
 

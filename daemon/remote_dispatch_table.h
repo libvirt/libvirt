@@ -747,3 +747,43 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* IsSecure => 149 */
+    .fn = (dispatch_fn) remoteDispatchIsSecure,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_remote_is_secure_ret,
+},
+{   /* DomainIsActive => 150 */
+    .fn = (dispatch_fn) remoteDispatchDomainIsActive,
+    .args_filter = (xdrproc_t) xdr_remote_domain_is_active_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_is_active_ret,
+},
+{   /* DomainIsPersistent => 151 */
+    .fn = (dispatch_fn) remoteDispatchDomainIsPersistent,
+    .args_filter = (xdrproc_t) xdr_remote_domain_is_persistent_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_is_persistent_ret,
+},
+{   /* NetworkIsActive => 152 */
+    .fn = (dispatch_fn) remoteDispatchNetworkIsActive,
+    .args_filter = (xdrproc_t) xdr_remote_network_is_active_args,
+    .ret_filter = (xdrproc_t) xdr_remote_network_is_active_ret,
+},
+{   /* NetworkIsPersistent => 153 */
+    .fn = (dispatch_fn) remoteDispatchNetworkIsPersistent,
+    .args_filter = (xdrproc_t) xdr_remote_network_is_persistent_args,
+    .ret_filter = (xdrproc_t) xdr_remote_network_is_persistent_ret,
+},
+{   /* StoragePoolIsActive => 154 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolIsActive,
+    .args_filter = (xdrproc_t) xdr_remote_storage_pool_is_active_args,
+    .ret_filter = (xdrproc_t) xdr_remote_storage_pool_is_active_ret,
+},
+{   /* StoragePoolIsPersistent => 155 */
+    .fn = (dispatch_fn) remoteDispatchStoragePoolIsPersistent,
+    .args_filter = (xdrproc_t) xdr_remote_storage_pool_is_persistent_args,
+    .ret_filter = (xdrproc_t) xdr_remote_storage_pool_is_persistent_ret,
+},
+{   /* InterfaceIsActive => 156 */
+    .fn = (dispatch_fn) remoteDispatchInterfaceIsActive,
+    .args_filter = (xdrproc_t) xdr_remote_interface_is_active_args,
+    .ret_filter = (xdrproc_t) xdr_remote_interface_is_active_ret,
+},

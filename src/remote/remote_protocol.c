@@ -2713,6 +2713,141 @@ xdr_remote_domain_migrate_prepare_tunnel_args (XDR *xdrs, remote_domain_migrate_
 }
 
 bool_t
+xdr_remote_is_secure_ret (XDR *xdrs, remote_is_secure_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->secure))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_is_active_args (XDR *xdrs, remote_domain_is_active_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_is_active_ret (XDR *xdrs, remote_domain_is_active_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->active))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_is_persistent_args (XDR *xdrs, remote_domain_is_persistent_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_is_persistent_ret (XDR *xdrs, remote_domain_is_persistent_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->persistent))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_network_is_active_args (XDR *xdrs, remote_network_is_active_args *objp)
+{
+
+         if (!xdr_remote_nonnull_network (xdrs, &objp->net))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_network_is_active_ret (XDR *xdrs, remote_network_is_active_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->active))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_network_is_persistent_args (XDR *xdrs, remote_network_is_persistent_args *objp)
+{
+
+         if (!xdr_remote_nonnull_network (xdrs, &objp->net))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_network_is_persistent_ret (XDR *xdrs, remote_network_is_persistent_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->persistent))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_is_active_args (XDR *xdrs, remote_storage_pool_is_active_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_is_active_ret (XDR *xdrs, remote_storage_pool_is_active_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->active))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_is_persistent_args (XDR *xdrs, remote_storage_pool_is_persistent_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_is_persistent_ret (XDR *xdrs, remote_storage_pool_is_persistent_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->persistent))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_interface_is_active_args (XDR *xdrs, remote_interface_is_active_args *objp)
+{
+
+         if (!xdr_remote_nonnull_interface (xdrs, &objp->iface))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_interface_is_active_ret (XDR *xdrs, remote_interface_is_active_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->active))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

@@ -157,6 +157,7 @@ struct private_data {
     int watch;                  /* File handle watch */
     pid_t pid;                  /* PID of tunnel process */
     int uses_tls;               /* TLS enabled on socket? */
+    int is_secure;              /* Secure if TLS or SASL or UNIX sockets */
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
@@ -574,6 +575,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_tls:
         if (initialise_gnutls (conn) == -1) goto failed;
         priv->uses_tls = 1;
+        priv->is_secure = 1;
 
         /*FALLTHROUGH*/
     case trans_tcp: {
@@ -691,6 +693,7 @@ doRemoteOpen (virConnectPtr conn,
             addr.sun_path[0] = '\0';
 
       autostart_retry:
+        priv->is_secure = 1;
         priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv->sock == -1) {
             virReportSystemError(conn, errno, "%s",
@@ -771,6 +774,8 @@ doRemoteOpen (virConnectPtr conn,
         for (j = 0; j < (nr_args-1); j++)
             if (cmd_argv[j] == NULL)
                 goto out_of_memory;
+
+        priv->is_secure = 1;
     }
 
         /*FALLTHROUGH*/
@@ -797,6 +802,10 @@ doRemoteOpen (virConnectPtr conn,
         close (sv[1]);
         priv->sock = sv[0];
         priv->pid = pid;
+
+        /* Do not set 'is_secure' flag since we can't guarentee
+         * an external program is secure, and this flag must be
+         * pessimistic */
     }
 #else /* WIN32 */
 
@@ -1564,6 +1573,72 @@ done:
     return rv;
 }
 
+static int remoteIsSecure(virConnectPtr conn)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_is_secure_ret ret;
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_IS_SECURE,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* We claim to be secure, if the remote driver
+     * transport itself is secure, and the remote
+     * HV connection is secure
+     *
+     * ie, we don't want to claim to be secure if the
+     * remote driver is used to connect to a XenD
+     * driver using unencrypted HTTP:/// access
+     */
+    rv = priv->is_secure && ret.secure ? 1 : 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int remoteIsEncrypted(virConnectPtr conn)
+{
+    int rv = -1;
+    int encrypted = 0;
+    struct private_data *priv = conn->privateData;
+    remote_is_secure_ret ret;
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_IS_SECURE,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_is_secure_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (priv->uses_tls)
+        encrypted = 1;
+#if HAVE_SASL
+    else if (priv->saslconn)
+        encrypted = 1;
+#endif
+
+
+    /* We claim to be encrypted, if the remote driver
+     * transport itself is encrypted, and the remote
+     * HV connection is secure.
+     *
+     * Yes, we really don't check the remote 'encrypted'
+     * option, since it will almost always be false,
+     * even if secure (eg UNIX sockets).
+     */
+    rv = encrypted && ret.secure ? 1 : 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 static int
 remoteGetMaxVcpus (virConnectPtr conn, const char *type)
 {
@@ -1769,6 +1844,54 @@ remoteNumOfDomains (virConnectPtr conn)
         goto done;
 
     rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainIsActive(virDomainPtr domain)
+{
+    int rv = -1;
+    remote_domain_is_active_args args;
+    remote_domain_is_active_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_ACTIVE,
+              (xdrproc_t) xdr_remote_domain_is_active_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_is_active_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainIsPersistent(virDomainPtr domain)
+{
+    int rv = -1;
+    remote_domain_is_persistent_args args;
+    remote_domain_is_persistent_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_IS_PERSISTENT,
+              (xdrproc_t) xdr_remote_domain_is_persistent_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_is_persistent_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
 
 done:
     remoteDriverUnlock(priv);
@@ -3601,6 +3724,54 @@ done:
     return net;
 }
 
+static int
+remoteNetworkIsActive(virNetworkPtr network)
+{
+    int rv = -1;
+    remote_network_is_active_args args;
+    remote_network_is_active_ret ret;
+    struct private_data *priv = network->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network (&args.net, network);
+
+    if (call (network->conn, priv, 0, REMOTE_PROC_NETWORK_IS_ACTIVE,
+              (xdrproc_t) xdr_remote_network_is_active_args, (char *) &args,
+              (xdrproc_t) xdr_remote_network_is_active_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteNetworkIsPersistent(virNetworkPtr network)
+{
+    int rv = -1;
+    remote_network_is_persistent_args args;
+    remote_network_is_persistent_ret ret;
+    struct private_data *priv = network->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_network (&args.net, network);
+
+    if (call (network->conn, priv, 0, REMOTE_PROC_NETWORK_IS_PERSISTENT,
+              (xdrproc_t) xdr_remote_network_is_persistent_args, (char *) &args,
+              (xdrproc_t) xdr_remote_network_is_persistent_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static virNetworkPtr
 remoteNetworkCreateXML (virConnectPtr conn, const char *xmlDesc)
 {
@@ -4107,6 +4278,32 @@ done:
     return iface;
 }
 
+
+static int
+remoteInterfaceIsActive(virInterfacePtr iface)
+{
+    int rv = -1;
+    remote_interface_is_active_args args;
+    remote_interface_is_active_ret ret;
+    struct private_data *priv = iface->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_interface (&args.iface, iface);
+
+    if (call (iface->conn, priv, 0, REMOTE_PROC_INTERFACE_IS_ACTIVE,
+              (xdrproc_t) xdr_remote_interface_is_active_args, (char *) &args,
+              (xdrproc_t) xdr_remote_interface_is_active_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 static char *
 remoteInterfaceGetXMLDesc (virInterfacePtr iface,
                            unsigned int flags)
@@ -4584,6 +4781,55 @@ remoteStoragePoolLookupByVolume (virStorageVolPtr vol)
 done:
     remoteDriverUnlock(priv);
     return pool;
+}
+
+
+static int
+remoteStoragePoolIsActive(virStoragePoolPtr pool)
+{
+    int rv = -1;
+    remote_storage_pool_is_active_args args;
+    remote_storage_pool_is_active_ret ret;
+    struct private_data *priv = pool->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_IS_ACTIVE,
+              (xdrproc_t) xdr_remote_storage_pool_is_active_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_is_active_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.active;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteStoragePoolIsPersistent(virStoragePoolPtr pool)
+{
+    int rv = -1;
+    remote_storage_pool_is_persistent_args args;
+    remote_storage_pool_is_persistent_ret ret;
+    struct private_data *priv = pool->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT,
+              (xdrproc_t) xdr_remote_storage_pool_is_persistent_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_is_persistent_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.persistent;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
 }
 
 
@@ -6297,6 +6543,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                              _("negotiation SSF %d was not strong enough"), ssf);
             goto cleanup;
         }
+        priv->is_secure = 1;
     }
 
     DEBUG0("SASL authentication complete");
@@ -8554,10 +8801,10 @@ static virDriver remote_driver = {
     remoteNodeDeviceReAttach, /* nodeDeviceReAttach */
     remoteNodeDeviceReset, /* nodeDeviceReset */
     remoteDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    remoteIsEncrypted, /* isEncrypted */
+    remoteIsSecure, /* isSecure */
+    remoteDomainIsActive, /* domainIsActive */
+    remoteDomainIsPersistent, /* domainIsPersistent */
 };
 
 static virNetworkDriver network_driver = {
@@ -8579,8 +8826,8 @@ static virNetworkDriver network_driver = {
     .networkGetBridgeName = remoteNetworkGetBridgeName,
     .networkGetAutostart = remoteNetworkGetAutostart,
     .networkSetAutostart = remoteNetworkSetAutostart,
-    .networkIsActive = NULL,
-    .networkIsPersistent = NULL,
+    .networkIsActive = remoteNetworkIsActive,
+    .networkIsPersistent = remoteNetworkIsPersistent,
 };
 
 static virInterfaceDriver interface_driver = {
@@ -8598,7 +8845,7 @@ static virInterfaceDriver interface_driver = {
     .interfaceUndefine = remoteInterfaceUndefine,
     .interfaceCreate = remoteInterfaceCreate,
     .interfaceDestroy = remoteInterfaceDestroy,
-    .interfaceIsActive = NULL, /* interfaceIsActive */
+    .interfaceIsActive = remoteInterfaceIsActive,
 };
 
 static virStorageDriver storage_driver = {
@@ -8637,9 +8884,8 @@ static virStorageDriver storage_driver = {
     .volGetInfo = remoteStorageVolGetInfo,
     .volGetXMLDesc = remoteStorageVolDumpXML,
     .volGetPath = remoteStorageVolGetPath,
-
-    .poolIsActive = NULL, /* poolIsActive */
-    .poolIsPersistent = NULL, /* poolIsEncrypted */
+    .poolIsActive = remoteStoragePoolIsActive,
+    .poolIsPersistent = remoteStoragePoolIsPersistent,
 };
 
 static virSecretDriver secret_driver = {

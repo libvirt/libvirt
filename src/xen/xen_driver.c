@@ -45,6 +45,7 @@
 #include "memory.h"
 #include "node_device_conf.h"
 #include "pci.h"
+#include "uuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_XEN
 
@@ -486,6 +487,26 @@ xenUnifiedGetVersion (virConnectPtr conn, unsigned long *hvVer)
 }
 
 static int
+xenUnifiedIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+xenUnifiedIsSecure(virConnectPtr conn)
+{
+    GET_PRIVATE(conn);
+    int ret = 1;
+
+    /* All drivers are secure, except for XenD over TCP */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET] &&
+        priv->addrfamily != AF_UNIX)
+        ret = 0;
+
+    return ret;
+}
+
+static int
 xenUnifiedGetMaxVcpus (virConnectPtr conn, const char *type)
 {
     GET_PRIVATE(conn);
@@ -725,6 +746,75 @@ xenUnifiedDomainLookupByName (virConnectPtr conn,
     /* Not found. */
     xenUnifiedError (conn, VIR_ERR_NO_DOMAIN, __FUNCTION__);
     return NULL;
+}
+
+
+static int
+xenUnifiedDomainIsActive(virDomainPtr dom)
+{
+    virDomainPtr currdom;
+    int ret = -1;
+
+    /* ID field in dom may be outdated, so re-lookup */
+    currdom = xenUnifiedDomainLookupByUUID(dom->conn, dom->uuid);
+
+    if (currdom) {
+        ret = currdom->id == -1 ? 0 : 1;
+        virDomainFree(currdom);
+    }
+
+    return ret;
+}
+
+static int
+xenUnifiedDomainisPersistent(virDomainPtr dom)
+{
+    GET_PRIVATE(dom->conn);
+    virDomainPtr currdom = NULL;
+    int ret = -1;
+
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        /* Old Xen, pre-inactive domain management.
+         * If the XM driver can see the guest, it is definitely persistent */
+        currdom = xenXMDomainLookupByUUID(dom->conn, dom->uuid);
+        if (currdom)
+            ret = 1;
+        else
+            ret = 0;
+    } else {
+        /* New Xen with inactive domain management */
+        if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+            currdom = xenDaemonLookupByUUID(dom->conn, dom->uuid);
+            if (currdom) {
+                if (currdom->id == -1) {
+                    /* If its inactive, then trivially, it must be persistent */
+                    ret = 1;
+                } else {
+                    char *path;
+                    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+                    /* If its running there's no official way to tell, so we
+                     * go behind xend's back & look at the config dir */
+
+                    virUUIDFormat(dom->uuid, uuidstr);
+                    if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
+                        virReportOOMError(NULL);
+                        goto done;
+                    }
+                    if (access(path, R_OK) == 0)
+                        ret = 1;
+                    else if (errno == ENOENT)
+                        ret = 0;
+                }
+            }
+        }
+    }
+
+done:
+    if (currdom)
+        virDomainFree(currdom);
+
+    return ret;
 }
 
 static int
@@ -1709,10 +1799,10 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedNodeDeviceReAttach, /* nodeDeviceReAttach */
     xenUnifiedNodeDeviceReset, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    NULL, /* isEncrypted */
-    NULL, /* isSecure */
-    NULL, /* domainIsActive */
-    NULL, /* domainIsPersistent */
+    xenUnifiedIsEncrypted,
+    xenUnifiedIsSecure,
+    xenUnifiedDomainIsActive,
+    xenUnifiedDomainisPersistent,
 };
 
 /**

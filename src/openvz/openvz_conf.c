@@ -478,6 +478,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
         dom->refs = 1;
         dom->pid = veid;
         dom->def->id = dom->state == VIR_DOMAIN_SHUTOFF ? -1 : veid;
+        /* XXX OpenVZ doesn't appear to have concept of a transient domain */
+        dom->persistent = 1;
 
         if (virAsprintf(&dom->def->name, "%i", veid) < 0)
             goto no_memory;

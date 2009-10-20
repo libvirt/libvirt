@@ -466,6 +466,49 @@ cleanup:
 }
 
 
+static int storagePoolIsActive(virStoragePoolPtr net)
+{
+    virStorageDriverStatePtr driver = net->conn->privateData;
+    virStoragePoolObjPtr obj;
+    int ret = -1;
+
+    storageDriverLock(driver);
+    obj = virStoragePoolObjFindByUUID(&driver->pools, net->uuid);
+    storageDriverUnlock(driver);
+    if (!obj) {
+        virStorageReportError(net->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        goto cleanup;
+    }
+    ret = virStoragePoolObjIsActive(obj);
+
+cleanup:
+    if (obj)
+        virStoragePoolObjUnlock(obj);
+    return ret;
+}
+
+static int storagePoolIsPersistent(virStoragePoolPtr net)
+{
+    virStorageDriverStatePtr driver = net->conn->privateData;
+    virStoragePoolObjPtr obj;
+    int ret = -1;
+
+    storageDriverLock(driver);
+    obj = virStoragePoolObjFindByUUID(&driver->pools, net->uuid);
+    storageDriverUnlock(driver);
+    if (!obj) {
+        virStorageReportError(net->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        goto cleanup;
+    }
+    ret = obj->configFile ? 1 : 0;
+
+cleanup:
+    if (obj)
+        virStoragePoolObjUnlock(obj);
+    return ret;
+}
+
+
 static virStoragePoolPtr
 storagePoolCreate(virConnectPtr conn,
                   const char *xml,
@@ -1742,6 +1785,9 @@ static virStorageDriver storageDriver = {
     .volGetInfo = storageVolumeGetInfo,
     .volGetXMLDesc = storageVolumeGetXMLDesc,
     .volGetPath = storageVolumeGetPath,
+
+    .poolIsActive = storagePoolIsActive,
+    .poolIsPersistent = storagePoolIsPersistent,
 };
 
 
