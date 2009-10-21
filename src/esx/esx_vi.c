@@ -216,6 +216,68 @@ esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
 }
 #endif
 
+static int
+esxVI_CURL_Perform(virConnectPtr conn, esxVI_Context *ctx, const char *url)
+{
+    CURLcode errorCode;
+    long responseCode = 0;
+#if LIBCURL_VERSION_NUM >= 0x071202 /* 7.18.2 */
+    const char *redirectUrl = NULL;
+#endif
+
+    errorCode = curl_easy_perform(ctx->curl_handle);
+
+    if (errorCode != CURLE_OK) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "curl_easy_perform() returned an error: %s (%d)",
+                     curl_easy_strerror(errorCode), errorCode);
+        return -1;
+    }
+
+    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
+                                  &responseCode);
+
+    if (errorCode != CURLE_OK) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an "
+                     "error: %s (%d)", curl_easy_strerror(errorCode),
+                     errorCode);
+        return -1;
+    }
+
+    if (responseCode < 0) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a "
+                     "negative response code");
+        return -1;
+    }
+
+    if (responseCode == 301) {
+#if LIBCURL_VERSION_NUM >= 0x071202 /* 7.18.2 */
+        errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_REDIRECT_URL,
+                                      &redirectUrl);
+
+        if (errorCode != CURLE_OK) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned "
+                         "an error: %s (%d)", curl_easy_strerror(errorCode),
+                         errorCode);
+        } else {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "The server redirects from '%s' to '%s'", url,
+                         redirectUrl);
+        }
+#else
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "The server redirects from '%s'", url);
+#endif
+
+        return -1;
+    }
+
+    return responseCode;
+}
+
 int
 esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
@@ -269,7 +331,7 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_URL, ctx->url);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_USERAGENT, "libvirt-esx");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HEADER, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER, noVerify ? 0 : 1);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST, noVerify ? 0 : 2);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
@@ -433,8 +495,7 @@ esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
                            const char *url, char **content)
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    CURLcode errorCode;
-    long responseCode;
+    int responseCode = 0;
 
     if (content == NULL || *content != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -448,26 +509,18 @@ esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPGET, 1);
 
-    errorCode = curl_easy_perform(ctx->curl_handle);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
-
-    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
-                                  &responseCode);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_getinfo() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
+    responseCode = esxVI_CURL_Perform(conn, ctx, url);
 
     virMutexUnlock(&ctx->curl_lock);
+
+    if (responseCode < 0) {
+        goto failure;
+    } else if (responseCode != 200) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "HTTP response code %d while trying to download '%s'",
+                     responseCode, url);
+        goto failure;
+    }
 
     if (virBufferError(&buffer)) {
         virReportOOMError(conn);
@@ -476,32 +529,19 @@ esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
 
     *content = virBufferContentAndReset(&buffer);
 
-    if (responseCode != 200) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d while trying to download '%s'",
-                     (int)responseCode, url);
-        goto failure;
-    }
-
     return 0;
 
   failure:
     free(virBufferContentAndReset(&buffer));
 
     return -1;
-
-  unlock:
-    virMutexUnlock(&ctx->curl_lock);
-
-    goto failure;
 }
 
 int
 esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
                          const char *url, const char *content)
 {
-    CURLcode errorCode;
-    long responseCode;
+    int responseCode = 0;
 
     if (content == NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -515,40 +555,20 @@ esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_UPLOAD, 1);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_INFILESIZE, strlen(content));
 
-    errorCode = curl_easy_perform(ctx->curl_handle);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
-
-    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
-                                  &responseCode);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_getinfo() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
+    responseCode = esxVI_CURL_Perform(conn, ctx, url);
 
     virMutexUnlock(&ctx->curl_lock);
 
-    if (responseCode != 200 && responseCode != 201) {
+    if (responseCode < 0) {
+        return -1;
+    } else if (responseCode != 200 && responseCode != 201) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "HTTP response code %d while trying to upload to '%s'",
-                     (int)responseCode, url);
+                     responseCode, url);
         return -1;
     }
 
     return 0;
-
-  unlock:
-    virMutexUnlock(&ctx->curl_lock);
-
-    return -1;
 }
 
 int
@@ -558,7 +578,6 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
 {
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
-    CURLcode errorCode;
 
     if (request == NULL || response == NULL || *response != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -577,26 +596,13 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDS, request);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_POSTFIELDSIZE, strlen(request));
 
-    errorCode = curl_easy_perform(ctx->curl_handle);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
-
-    errorCode = curl_easy_getinfo(ctx->curl_handle, CURLINFO_RESPONSE_CODE,
-                                  &(*response)->responseCode);
-
-    if (errorCode != CURLE_OK) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_getinfo() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
-        goto unlock;
-    }
+    (*response)->responseCode = esxVI_CURL_Perform(conn, ctx, ctx->url);
 
     virMutexUnlock(&ctx->curl_lock);
+
+    if ((*response)->responseCode < 0) {
+        goto failure;
+    }
 
     if (virBufferError(&buffer)) {
         virReportOOMError(conn);
@@ -695,8 +701,7 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
         }
     } else if ((*response)->responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d", (int)(*response)->responseCode);
-
+                     "HTTP response code %d", (*response)->responseCode);
         goto failure;
     }
 
@@ -708,11 +713,6 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Fault_Free(&fault);
 
     return -1;
-
-  unlock:
-    virMutexUnlock(&ctx->curl_lock);
-
-    goto failure;
 }
 
 

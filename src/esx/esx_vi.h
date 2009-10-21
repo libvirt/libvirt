@@ -110,7 +110,7 @@ int esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
  */
 
 struct _esxVI_Response {
-    long responseCode;                                /* required */
+    int responseCode;                                 /* required */
     char *content;                                    /* required */
     xmlDocPtr document;                               /* optional */
     xmlXPathContextPtr xpathContext;                  /* optional */
