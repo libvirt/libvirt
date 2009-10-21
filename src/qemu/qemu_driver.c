@@ -3481,7 +3481,8 @@ qemudDomainGetVcpus(virDomainPtr dom,
 
     if (!virDomainIsActive(vm)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
-                         "%s",_("cannot pin vcpus on an inactive domain"));
+                         "%s",
+                         _("cannot list vcpu pinning for an inactive domain"));
         goto cleanup;
     }
 
