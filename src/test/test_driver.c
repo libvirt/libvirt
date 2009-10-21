@@ -2006,6 +2006,94 @@ cleanup:
     return ret;
 }
 
+static int testDomainGetVcpus(virDomainPtr domain,
+                              virVcpuInfoPtr info,
+                              int maxinfo,
+                              unsigned char *cpumaps,
+                              int maplen)
+{
+    testConnPtr privconn = domain->conn->privateData;
+    testDomainObjPrivatePtr privdomdata;
+    virDomainObjPtr privdom;
+    int i, v, maxcpu, hostcpus;
+    int ret = -1;
+    struct timeval tv;
+    unsigned long long statbase;
+
+    testDriverLock(privconn);
+    privdom = virDomainFindByName(&privconn->domains, domain->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(privdom)) {
+        testError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                  "%s",_("cannot list vcpus for an inactive domain"));
+        goto cleanup;
+    }
+
+    privdomdata = privdom->privateData;
+
+    if (gettimeofday(&tv, NULL) < 0) {
+        virReportSystemError(domain->conn, errno,
+                             "%s", _("getting time of day"));
+        goto cleanup;
+    }
+
+    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+
+
+    hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    /* Clamp to actual number of vcpus */
+    if (maxinfo > privdom->def->vcpus)
+        maxinfo = privdom->def->vcpus;
+
+    /* Populate virVcpuInfo structures */
+    if (info != NULL) {
+        memset(info, 0, sizeof(*info) * maxinfo);
+
+        for (i = 0 ; i < maxinfo ; i++) {
+            virVcpuInfo privinfo = privdomdata->vcpu_infos[i];
+
+            info[i].number = privinfo.number;
+            info[i].state = privinfo.state;
+            info[i].cpu = privinfo.cpu;
+
+            /* Fake an increasing cpu time value */
+            info[i].cpuTime = statbase / 10;
+        }
+    }
+
+    /* Populate cpumaps */
+    if (cpumaps != NULL) {
+        int privmaplen = VIR_CPU_MAPLEN(hostcpus);
+        memset(cpumaps, 0, maplen * maxinfo);
+
+        for (v = 0 ; v < maxinfo ; v++) {
+            unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+
+            for (i = 0 ; i < maxcpu ; i++) {
+                if (VIR_CPU_USABLE(privdomdata->cpumaps, privmaplen, v, i)) {
+                    VIR_USE_CPU(cpumap, i);
+                }
+            }
+        }
+    }
+
+    ret = maxinfo;
+cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
 static char *testDomainDumpXML(virDomainPtr domain, int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
@@ -4861,7 +4949,7 @@ static virDriver testDriver = {
     testDomainCoreDump, /* domainCoreDump */
     testSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
+    testDomainGetVcpus, /* domainGetVcpus */
     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
