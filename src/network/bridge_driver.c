@@ -1515,6 +1515,8 @@ static virNetworkDriver networkDriver = {
     networkGetBridgeName, /* networkGetBridgeName */
     networkGetAutostart, /* networkGetAutostart */
     networkSetAutostart, /* networkSetAutostart */
+    NULL, /* networkIsActive */
+    NULL, /* networkIsPersistent */
 };
 
 static virStateDriver networkStateDriver = {

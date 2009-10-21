@@ -8554,6 +8554,10 @@ static virDriver remote_driver = {
     remoteNodeDeviceReAttach, /* nodeDeviceReAttach */
     remoteNodeDeviceReset, /* nodeDeviceReset */
     remoteDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPersistent */
 };
 
 static virNetworkDriver network_driver = {
@@ -8575,6 +8579,8 @@ static virNetworkDriver network_driver = {
     .networkGetBridgeName = remoteNetworkGetBridgeName,
     .networkGetAutostart = remoteNetworkGetAutostart,
     .networkSetAutostart = remoteNetworkSetAutostart,
+    .networkIsActive = NULL,
+    .networkIsPersistent = NULL,
 };
 
 static virInterfaceDriver interface_driver = {
@@ -8592,6 +8598,7 @@ static virInterfaceDriver interface_driver = {
     .interfaceUndefine = remoteInterfaceUndefine,
     .interfaceCreate = remoteInterfaceCreate,
     .interfaceDestroy = remoteInterfaceDestroy,
+    .interfaceIsActive = NULL, /* interfaceIsActive */
 };
 
 static virStorageDriver storage_driver = {
@@ -8630,6 +8637,9 @@ static virStorageDriver storage_driver = {
     .volGetInfo = remoteStorageVolGetInfo,
     .volGetXMLDesc = remoteStorageVolDumpXML,
     .volGetPath = remoteStorageVolGetPath,
+
+    .poolIsActive = NULL, /* poolIsActive */
+    .poolIsPersistent = NULL, /* poolIsEncrypted */
 };
 
 static virSecretDriver secret_driver = {

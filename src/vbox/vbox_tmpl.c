@@ -6469,6 +6469,10 @@ virDriver NAME(Driver) = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPerrsistent */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

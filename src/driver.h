@@ -337,6 +337,15 @@ typedef int
                      unsigned long resource,
                      const char *dom_xml);
 
+typedef int
+    (*virDrvConnectIsEncrypted)(virConnectPtr conn);
+typedef int
+    (*virDrvConnectIsSecure)(virConnectPtr conn);
+typedef int
+    (*virDrvDomainIsActive)(virDomainPtr dom);
+typedef int
+    (*virDrvDomainIsPersistent)(virDomainPtr dom);
+
 /**
  * _virDriver:
  *
@@ -418,6 +427,10 @@ struct _virDriver {
     virDrvNodeDeviceReAttach    nodeDeviceReAttach;
     virDrvNodeDeviceReset       nodeDeviceReset;
     virDrvDomainMigratePrepareTunnel domainMigratePrepareTunnel;
+    virDrvConnectIsEncrypted   isEncrypted;
+    virDrvConnectIsSecure      isSecure;
+    virDrvDomainIsActive       domainIsActive;
+    virDrvDomainIsPersistent   domainIsPersistent;
 };
 
 typedef int
@@ -462,6 +475,12 @@ typedef int
         (*virDrvNetworkSetAutostart)	(virNetworkPtr network,
                                          int autostart);
 
+typedef int
+        (*virDrvNetworkIsActive)(virNetworkPtr net);
+typedef int
+        (*virDrvNetworkIsPersistent)(virNetworkPtr net);
+
+
 
 typedef struct _virNetworkDriver virNetworkDriver;
 typedef virNetworkDriver *virNetworkDriverPtr;
@@ -495,6 +514,8 @@ struct _virNetworkDriver {
         virDrvNetworkGetBridgeName	networkGetBridgeName;
         virDrvNetworkGetAutostart	networkGetAutostart;
         virDrvNetworkSetAutostart	networkSetAutostart;
+        virDrvNetworkIsActive           networkIsActive;
+        virDrvNetworkIsPersistent       networkIsPersistent;
 };
 
 /*-------*/
@@ -534,6 +555,10 @@ typedef int
         (*virDrvInterfaceDestroy)       (virInterfacePtr iface,
                                          unsigned int flags);
 
+typedef int
+        (*virDrvInterfaceIsActive)(virInterfacePtr iface);
+
+
 typedef struct _virInterfaceDriver virInterfaceDriver;
 typedef virInterfaceDriver *virInterfaceDriverPtr;
 
@@ -562,6 +587,7 @@ struct _virInterfaceDriver {
     virDrvInterfaceUndefine          interfaceUndefine;
     virDrvInterfaceCreate            interfaceCreate;
     virDrvInterfaceDestroy           interfaceDestroy;
+    virDrvInterfaceIsActive          interfaceIsActive;
 };
 
 
@@ -668,6 +694,12 @@ typedef virStorageVolPtr
                                               virStorageVolPtr clone,
                                               unsigned int flags);
 
+typedef int
+        (*virDrvStoragePoolIsActive)(virStoragePoolPtr pool);
+typedef int
+        (*virDrvStoragePoolIsPersistent)(virStoragePoolPtr pool);
+
+
 
 typedef struct _virStorageDriver virStorageDriver;
 typedef virStorageDriver *virStorageDriverPtr;
@@ -719,6 +751,8 @@ struct _virStorageDriver {
     virDrvStorageVolGetInfo volGetInfo;
     virDrvStorageVolGetXMLDesc volGetXMLDesc;
     virDrvStorageVolGetPath volGetPath;
+    virDrvStoragePoolIsActive   poolIsActive;
+    virDrvStoragePoolIsPersistent   poolIsPersistent;
 };
 
 #ifdef WITH_LIBVIRTD

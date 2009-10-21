@@ -7465,6 +7465,10 @@ static virDriver qemuDriver = {
     qemudNodeDeviceReAttach, /* nodeDeviceReAttach */
     qemudNodeDeviceReset, /* nodeDeviceReset */
     qemudDomainMigratePrepareTunnel, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPersistent */
 };
 
 

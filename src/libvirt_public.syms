@@ -329,4 +329,17 @@ LIBVIRT_0.7.2 {
 	virDomainMigrateToURI;
 } LIBVIRT_0.7.1;
 
+LIBVIRT_0.7.3 {
+    global:
+	virConnectIsEncrypted;
+	virConnectIsSecure;
+	virDomainIsActive;
+	virDomainIsPersistent;
+	virNetworkIsActive;
+	virNetworkIsPersistent;
+	virStoragePoolIsActive;
+	virStoragePoolIsPersistent;
+	virInterfaceIsActive;
+} LIBVIRT_0.7.2;
+
 # .... define new API here using predicted next version number ....

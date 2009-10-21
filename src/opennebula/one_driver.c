@@ -761,6 +761,10 @@ static virDriver oneDriver = {
     NULL, /* nodeDeviceReAttach; */
     NULL, /* nodeDeviceReset; */
     NULL, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPersistent */
 };
 
 static virStateDriver oneStateDriver = {

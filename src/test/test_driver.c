@@ -5064,6 +5064,10 @@ static virDriver testDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPersistent */
 };
 
 static virNetworkDriver testNetworkDriver = {
@@ -5085,6 +5089,8 @@ static virNetworkDriver testNetworkDriver = {
     testNetworkGetBridgeName, /* networkGetBridgeName */
     testNetworkGetAutostart, /* networkGetAutostart */
     testNetworkSetAutostart, /* networkSetAutostart */
+    NULL, /* networkIsActive */
+    NULL, /* networkIsPersistent */
 };
 
 static virInterfaceDriver testInterfaceDriver = {
@@ -5102,6 +5108,7 @@ static virInterfaceDriver testInterfaceDriver = {
     testInterfaceUndefine,      /* interfaceUndefine */
     testInterfaceCreate,        /* interfaceCreate */
     testInterfaceDestroy,       /* interfaceDestroy */
+    NULL, /* interfaceIsActive */
 };
 
 
@@ -5142,6 +5149,9 @@ static virStorageDriver testStorageDriver = {
     .volGetInfo = testStorageVolumeGetInfo,
     .volGetXMLDesc = testStorageVolumeGetXMLDesc,
     .volGetPath = testStorageVolumeGetPath,
+
+    .poolIsActive = NULL, /* poolIsActive */
+    .poolIsPersistent = NULL, /* poolIsPersistent */
 };
 
 static virDeviceMonitor testDevMonitor = {

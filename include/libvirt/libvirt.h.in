@@ -1653,6 +1653,22 @@ int virStreamAbort(virStreamPtr st);
 int virStreamFree(virStreamPtr st);
 
 
+int virDomainIsActive(virDomainPtr dom);
+int virDomainIsPersistent(virDomainPtr dom);
+
+int virNetworkIsActive(virNetworkPtr net);
+int virNetworkIsPersistent(virNetworkPtr net);
+
+int virStoragePoolIsActive(virStoragePoolPtr pool);
+int virStoragePoolIsPersistent(virStoragePoolPtr pool);
+
+int virInterfaceIsActive(virInterfacePtr iface);
+
+int virConnectIsEncrypted(virConnectPtr conn);
+int virConnectIsSecure(virConnectPtr conn);
+
+
+
 #ifdef __cplusplus
 }
 #endif

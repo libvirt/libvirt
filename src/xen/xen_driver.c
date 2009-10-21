@@ -1709,6 +1709,10 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedNodeDeviceReAttach, /* nodeDeviceReAttach */
     xenUnifiedNodeDeviceReset, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
+    NULL, /* isEncrypted */
+    NULL, /* isSecure */
+    NULL, /* domainIsActive */
+    NULL, /* domainIsPersistent */
 };
 
 /**

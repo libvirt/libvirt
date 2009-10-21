@@ -10334,3 +10334,313 @@ int virStreamFree(virStreamPtr stream)
         return (-1);
     return (0);
 }
+
+
+/**
+ * virDomainIsActive:
+ * @dom: pointer to the domain object
+ *
+ * Determine if the domain is currently running
+ *
+ * Returns 1 if running, 0 if inactive, -1 on error
+ */
+int virDomainIsActive(virDomainPtr dom)
+{
+    DEBUG("dom=%p", dom);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (dom->conn->driver->domainIsActive) {
+        int ret;
+        ret = dom->conn->driver->domainIsActive(dom);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dom->conn);
+    return -1;
+}
+
+/**
+ * virDomainIsPersistent:
+ * @dom: pointer to the domain object
+ *
+ * Determine if the domain has a persistent configuration
+ * which means it will still exist after shutting down
+ *
+ * Returns 1 if persistent, 0 if transient, -1 on error
+ */
+int virDomainIsPersistent(virDomainPtr dom)
+{
+    DEBUG("dom=%p", dom);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (dom->conn->driver->domainIsPersistent) {
+        int ret;
+        ret = dom->conn->driver->domainIsPersistent(dom);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dom->conn);
+    return -1;
+}
+
+/**
+ * virNetworkIsActive:
+ * @net: pointer to the network object
+ *
+ * Determine if the network is currently running
+ *
+ * Returns 1 if running, 0 if inactive, -1 on error
+ */
+int virNetworkIsActive(virNetworkPtr net)
+{
+    DEBUG("net=%p", net);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NETWORK(net)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (net->conn->networkDriver->networkIsActive) {
+        int ret;
+        ret = net->conn->networkDriver->networkIsActive(net);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(net->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(net->conn);
+    return -1;
+}
+
+
+/**
+ * virNetworkIsPersistent:
+ * @net: pointer to the network object
+ *
+ * Determine if the network has a persistent configuration
+ * which means it will still exist after shutting down
+ *
+ * Returns 1 if persistent, 0 if transient, -1 on error
+ */
+int virNetworkIsPersistent(virNetworkPtr net)
+{
+    DEBUG("net=%p", net);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NETWORK(net)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (net->conn->networkDriver->networkIsPersistent) {
+        int ret;
+        ret = net->conn->networkDriver->networkIsPersistent(net);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(net->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(net->conn);
+    return -1;
+}
+
+
+/**
+ * virStoragePoolIsActive:
+ * @pool: pointer to the storage pool object
+ *
+ * Determine if the storage pool is currently running
+ *
+ * Returns 1 if running, 0 if inactive, -1 on error
+ */
+int virStoragePoolIsActive(virStoragePoolPtr pool)
+{
+    DEBUG("pool=%p", pool);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (pool->conn->storageDriver->poolIsActive) {
+        int ret;
+        ret = pool->conn->storageDriver->poolIsActive(pool);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(pool->conn);
+    return -1;
+}
+
+
+/**
+ * virStoragePoolIsPersistent:
+ * @pool: pointer to the storage pool object
+ *
+ * Determine if the storage pool has a persistent configuration
+ * which means it will still exist after shutting down
+ *
+ * Returns 1 if persistent, 0 if transient, -1 on error
+ */
+int virStoragePoolIsPersistent(virStoragePoolPtr pool)
+{
+    DEBUG("pool=%p", pool);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_STORAGE_POOL(pool)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (pool->conn->storageDriver->poolIsPersistent) {
+        int ret;
+        ret = pool->conn->storageDriver->poolIsPersistent(pool);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(pool->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(pool->conn);
+    return -1;
+}
+
+
+/**
+ * virInterfaceIsActive:
+ * @iface: pointer to the interface object
+ *
+ * Determine if the interface is currently running
+ *
+ * Returns 1 if running, 0 if inactive, -1 on error
+ */
+int virInterfaceIsActive(virInterfacePtr iface)
+{
+    DEBUG("iface=%p", iface);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_INTERFACE(iface)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (iface->conn->interfaceDriver->interfaceIsActive) {
+        int ret;
+        ret = iface->conn->interfaceDriver->interfaceIsActive(iface);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(iface->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(iface->conn);
+    return -1;
+}
+
+
+/**
+ * virConnectIsEncrypted:
+ * @conn: pointer to the connection object
+ *
+ * Determine if the connection to the hypervisor is encrypted
+ *
+ * Returns 1 if encrypted, 0 if not encrypted, -1 on error
+ */
+int virConnectIsEncrypted(virConnectPtr conn)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (conn->driver->isEncrypted) {
+        int ret;
+        ret = conn->driver->isEncrypted(conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}
+
+/**
+ * virConnectIsSecure:
+ * @conn: pointer to the connection object
+ *
+ * Determine if the connection to the hypervisor is secure
+ *
+ * A connection will be classed as secure if it is either
+ * encrypted, or running over a channel which is not exposed
+ * to eavesdropping (eg a UNIX domain socket, or pipe)
+ *
+ * Returns 1 if secure, 0 if secure, -1 on error
+ */
+int virConnectIsSecure(virConnectPtr conn)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (conn->driver->isSecure) {
+        int ret;
+        ret = conn->driver->isSecure(conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return -1;
+}

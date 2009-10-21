@@ -526,6 +526,7 @@ static virInterfaceDriver interfaceDriver = {
     interfaceUndefine,               /* interfaceUndefine */
     interfaceCreate,                 /* interfaceCreate */
     interfaceDestroy,                /* interfaceDestroy */
+    NULL,                            /* interfaceIsActive */
 };
 
 int interfaceRegister(void) {
