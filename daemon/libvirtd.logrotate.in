@@ -5,4 +5,5 @@
         compress
         delaycompress
         copytruncate
+        minsize 100k
 }
