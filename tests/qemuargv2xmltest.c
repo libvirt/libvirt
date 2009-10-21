@@ -212,6 +212,7 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
     DO_TEST("sound", 0);
+    DO_TEST("watchdog", 0);
 
     DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);

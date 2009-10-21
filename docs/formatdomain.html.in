@@ -1028,6 +1028,81 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h4><a name="elementsWatchdog">Watchdog device</a></h4>
+
+    <p>
+      A virtual hardware watchdog device can be added to the guest via
+      the <code>watchdog</code> element.
+      <span class="since">Since 0.7.3, QEMU and KVM only</span>
+    </p>
+
+    <p>
+      The watchdog device requires an additional driver and management
+      daemon in the guest.  Just enabling the watchdog in the libvirt
+      configuration does not do anything useful on its own.
+    </p>
+
+    <p>
+      Currently libvirt does not support notification when the
+      watchdog fires.  This feature is planned for a future version of
+      libvirt.
+    </p>
+
+    <pre>
+      ...
+      &lt;watchdog model='i6300esb'/&gt;
+      ...</pre>
+
+    <pre>
+      ...
+      &lt;watchdog model='i6300esb' action='poweroff'/&gt;
+      ...</pre>
+
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>
+	<p>
+        The required <code>model</code> attribute specifies what real
+	watchdog device is emulated.  Valid values are specific to the
+	underlying hypervisor.
+	</p>
+	<p>
+	QEMU and KVM support:
+	</p>
+	<ul>
+	  <li> 'i6300esb' &mdash; the recommended device,
+	    emulating a PCI Intel 6300ESB </li>
+	  <li> 'ib700' &mdash; emulating an ISA iBase IB700 </li>
+	</ul>
+      </dd>
+      <dt><code>action</code></dt>
+      <dd>
+	<p>
+        The optional <code>action</code> attribute describes what
+	action to take when the watchdog expires.  Valid values are
+	specific to the underlying hypervisor.
+	</p>
+	<p>
+	QEMU and KVM support:
+	</p>
+	<ul>
+	  <li>'reset' &mdash; default, forcefully reset the guest</li>
+	  <li>'shutdown' &mdash; gracefully shutdown the guest
+	    (not recommended) </li>
+	  <li>'poweroff' &mdash; forcefully power off the guest</li>
+	  <li>'pause' &mdash; pause the guest</li>
+	  <li>'none' &mdash; do nothing</li>
+	</ul>
+	<p>
+	Note that the 'shutdown' action requires that the guest
+	is responsive to ACPI signals.  In the sort of situations
+	where the watchdog has expired, guests are usually unable
+	to respond to ACPI signals.  Therefore using 'shutdown'
+	is not recommended.
+	</p>
+      </dd>
+    </dl>
+
     <h2><a name="examples">Example configs</a></h2>
 
     <p>

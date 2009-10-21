@@ -84,7 +84,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "input",
               "sound",
               "video",
-              "hostdev")
+              "hostdev",
+              "watchdog")
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -143,6 +144,17 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "es1370",
               "pcspk",
               "ac97")
+
+VIR_ENUM_IMPL(virDomainWatchdogModel, VIR_DOMAIN_WATCHDOG_MODEL_LAST,
+              "i6300esb",
+              "ib700")
+
+VIR_ENUM_IMPL(virDomainWatchdogAction, VIR_DOMAIN_WATCHDOG_ACTION_LAST,
+              "reset",
+              "shutdown",
+              "poweroff",
+              "pause",
+              "none")
 
 VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vga",
@@ -387,6 +399,14 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def);
+}
+
 void virDomainVideoDefFree(virDomainVideoDefPtr def)
 {
     if (!def)
@@ -428,6 +448,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         virDomainHostdevDefFree(def->data.hostdev);
+        break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        virDomainWatchdogDefFree(def->data.watchdog);
         break;
     }
 
@@ -507,6 +530,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->cpumask);
     VIR_FREE(def->emulator);
     VIR_FREE(def->description);
+
+    virDomainWatchdogDefFree(def->watchdog);
 
     virSecurityLabelDefFree(def);
 
@@ -1739,6 +1764,58 @@ error:
 }
 
 
+static virDomainWatchdogDefPtr
+virDomainWatchdogDefParseXML(virConnectPtr conn,
+                             const xmlNodePtr node,
+                             int flags ATTRIBUTE_UNUSED) {
+
+    char *model = NULL;
+    char *action = NULL;
+    virDomainWatchdogDefPtr def;
+
+    if (VIR_ALLOC (def) < 0) {
+        virReportOOMError (conn);
+        return NULL;
+    }
+
+    model = virXMLPropString (node, "model");
+    if (model == NULL) {
+        virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR,
+                              _("watchdog must contain model name"));
+        goto error;
+    }
+    def->model = virDomainWatchdogModelTypeFromString (model);
+    if (def->model < 0) {
+        virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR,
+                              _("unknown watchdog model '%s'"), model);
+        goto error;
+    }
+
+    action = virXMLPropString (node, "action");
+    if (action == NULL)
+        def->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
+    else {
+        def->action = virDomainWatchdogActionTypeFromString (action);
+        if (def->action < 0) {
+            virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("unknown watchdog action '%s'"), action);
+            goto error;
+        }
+    }
+
+cleanup:
+    VIR_FREE (action);
+    VIR_FREE (model);
+
+    return def;
+
+error:
+    virDomainWatchdogDefFree (def);
+    def = NULL;
+    goto cleanup;
+}
+
+
 int
 virDomainVideoDefaultRAM(virDomainDefPtr def,
                          int type)
@@ -2364,6 +2441,11 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     } else if (xmlStrEqual(node->name, BAD_CAST "sound")) {
         dev->type = VIR_DOMAIN_DEVICE_SOUND;
         if (!(dev->data.sound = virDomainSoundDefParseXML(conn, node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "watchdog")) {
+        dev->type = VIR_DOMAIN_DEVICE_WATCHDOG;
+        if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(conn, node,
+                                                                flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "video")) {
         dev->type = VIR_DOMAIN_DEVICE_VIDEO;
@@ -3038,6 +3120,28 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         def->hostdevs[def->nhostdevs++] = hostdev;
     }
     VIR_FREE(nodes);
+
+    /* analysis of the watchdog devices */
+    def->watchdog = NULL;
+    if ((n = virXPathNodeSet(conn, "./devices/watchdog", ctxt, &nodes)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract watchdog devices"));
+        goto error;
+    }
+    if (n > 1) {
+        virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("only a single watchdog device is supported"));
+        goto error;
+    }
+    if (n > 0) {
+        virDomainWatchdogDefPtr watchdog =
+            virDomainWatchdogDefParseXML (conn, nodes[0], flags);
+        if (!watchdog)
+            goto error;
+
+        def->watchdog = watchdog;
+        VIR_FREE(nodes);
+    }
 
     /* analysis of security label */
     if (virSecurityLabelDefParseXML(conn, def, ctxt, flags) == -1)
@@ -3946,6 +4050,33 @@ virDomainSoundDefFormat(virConnectPtr conn,
 }
 
 
+static int
+virDomainWatchdogDefFormat(virConnectPtr conn,
+                           virBufferPtr buf,
+                           virDomainWatchdogDefPtr def)
+{
+    const char *model = virDomainWatchdogModelTypeToString (def->model);
+    const char *action = virDomainWatchdogActionTypeToString (def->action);
+
+    if (!model) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected watchdog model %d"), def->model);
+        return -1;
+    }
+
+    if (!action) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected watchdog action %d"), def->action);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "    <watchdog model='%s' action='%s'/>\n",
+                      model, action);
+
+    return 0;
+}
+
+
 static void
 virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
@@ -4391,6 +4522,9 @@ char *virDomainDefFormat(virConnectPtr conn,
     for (n = 0 ; n < def->nhostdevs ; n++)
         if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n], flags) < 0)
             goto cleanup;
+
+    if (def->watchdog)
+        virDomainWatchdogDefFormat (conn, &buf, def->watchdog);
 
     virBufferAddLit(&buf, "  </devices>\n");
 

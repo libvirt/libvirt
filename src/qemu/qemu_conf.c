@@ -2233,6 +2233,28 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG(modstr);
     }
 
+    /* Add watchdog hardware */
+    if (def->watchdog) {
+        virDomainWatchdogDefPtr watchdog = def->watchdog;
+        const char *model = virDomainWatchdogModelTypeToString(watchdog->model);
+        if (!model) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("invalid watchdog model"));
+            goto error;
+        }
+        ADD_ARG_LIT("-watchdog");
+        ADD_ARG_LIT(model);
+
+        const char *action = virDomainWatchdogActionTypeToString(watchdog->action);
+        if (!action) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("invalid watchdog action"));
+            goto error;
+        }
+        ADD_ARG_LIT("-watchdog-action");
+        ADD_ARG_LIT(action);
+    }
+
     /* Add host passthrough hardware */
     for (i = 0 ; i < def->nhostdevs ; i++) {
         int ret;
@@ -3482,6 +3504,24 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
 
                 start = tmp ? tmp + 1 : NULL;
             }
+        } else if (STREQ(arg, "-watchdog")) {
+            WANT_VALUE();
+            int model = virDomainWatchdogModelTypeFromString (val);
+
+            if (model != -1) {
+                virDomainWatchdogDefPtr wd;
+                if (VIR_ALLOC(wd) < 0)
+                    goto no_memory;
+                wd->model = model;
+                wd->action = VIR_DOMAIN_WATCHDOG_ACTION_RESET;
+                def->watchdog = wd;
+            }
+        } else if (STREQ(arg, "-watchdog-action") && def->watchdog) {
+            WANT_VALUE();
+            int action = virDomainWatchdogActionTypeFromString (val);
+
+            if (action != -1)
+                def->watchdog->action = action;
         } else if (STREQ(arg, "-bootloader")) {
             WANT_VALUE();
             def->os.bootloader = strdup(val);

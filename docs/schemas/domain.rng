@@ -275,13 +275,13 @@
         </element>
       </optional>
       <optional>
-	<element name="memoryBacking">
-	  <optional>
-	    <element name="hugepages">
-	      <empty/>
-	    </element>
-	  </optional>
-	</element>
+        <element name="memoryBacking">
+          <optional>
+            <element name="hugepages">
+              <empty/>
+            </element>
+          </optional>
+        </element>
       </optional>
       <optional>
         <element name="vcpu">
@@ -842,7 +842,7 @@
   <define name="video">
     <element name="video">
       <optional>
-	<element name="model">
+        <element name="model">
           <attribute name="type">
             <choice>
               <value>vga</value>
@@ -882,7 +882,7 @@
               </optional>
             </element>
           </optional>
-	</element>
+        </element>
       </optional>
     </element>
   </define>
@@ -1013,6 +1013,27 @@
       </attribute>
     </element>
   </define>
+  <define name="watchdog">
+    <element name="watchdog">
+      <attribute name="model">
+        <choice>
+          <value>i6300esb</value>
+          <value>ib700</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="action">
+          <choice>
+            <value>reset</value>
+            <value>shutdown</value>
+            <value>poweroff</value>
+            <value>pause</value>
+            <value>none</value>
+          </choice>
+        </attribute>
+      </optional>
+    </element>
+  </define>
   <define name="parallel">
     <element name="parallel">
       <ref name="qemucdev"/>
@@ -1139,6 +1160,9 @@
             <ref name="serial"/>
           </choice>
         </zeroOrMore>
+        <optional>
+          <ref name="watchdog"/>
+        </optional>
       </interleave>
     </element>
   </define>

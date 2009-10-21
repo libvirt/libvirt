@@ -298,6 +298,30 @@ struct _virDomainSoundDef {
     int model;
 };
 
+enum virDomainWatchdogModel {
+    VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB,
+    VIR_DOMAIN_WATCHDOG_MODEL_IB700,
+
+    VIR_DOMAIN_WATCHDOG_MODEL_LAST
+};
+
+enum virDomainWatchdogAction {
+    VIR_DOMAIN_WATCHDOG_ACTION_RESET,
+    VIR_DOMAIN_WATCHDOG_ACTION_SHUTDOWN,
+    VIR_DOMAIN_WATCHDOG_ACTION_POWEROFF,
+    VIR_DOMAIN_WATCHDOG_ACTION_PAUSE,
+    VIR_DOMAIN_WATCHDOG_ACTION_NONE,
+
+    VIR_DOMAIN_WATCHDOG_ACTION_LAST
+};
+
+typedef struct _virDomainWatchdogDef virDomainWatchdogDef;
+typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
+struct _virDomainWatchdogDef {
+    int model;
+    int action;
+};
+
 
 enum virDomainVideoType {
     VIR_DOMAIN_VIDEO_TYPE_VGA,
@@ -438,6 +462,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_SOUND,
     VIR_DOMAIN_DEVICE_VIDEO,
     VIR_DOMAIN_DEVICE_HOSTDEV,
+    VIR_DOMAIN_DEVICE_WATCHDOG,
 
     VIR_DOMAIN_DEVICE_LAST,
 };
@@ -454,6 +479,7 @@ struct _virDomainDeviceDef {
         virDomainSoundDefPtr sound;
         virDomainVideoDefPtr video;
         virDomainHostdevDefPtr hostdev;
+        virDomainWatchdogDefPtr watchdog;
     } data;
 };
 
@@ -586,6 +612,7 @@ struct _virDomainDef {
     /* Only 1 */
     virDomainChrDefPtr console;
     virSecurityLabelDef seclabel;
+    virDomainWatchdogDefPtr watchdog;
 };
 
 /* Guest VM runtime state */
@@ -639,6 +666,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
+void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
@@ -769,6 +797,8 @@ VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainWatchdogModel)
+VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)
