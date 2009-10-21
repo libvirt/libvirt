@@ -786,6 +786,17 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             goto error_exit;
         }
 
+        if (def->nets[i]->mac) {
+            char macaddr[VIR_MAC_STRING_BUFLEN];
+            virFormatMacAddr(def->nets[i]->mac, macaddr);
+            if (0 != (rc = setMacAddr(containerVeth, macaddr))) {
+                virReportSystemError(conn, rc,
+                                     _("failed to set %s to %s"),
+                                     macaddr, containerVeth);
+                goto error_exit;
+            }
+        }
+
         if (0 != (rc = brAddInterface(brctl, bridge, parentVeth))) {
             virReportSystemError(conn, rc,
                                  _("failed to add %s device to %s"),

@@ -216,3 +216,34 @@ error_out:
     VIR_FREE(pid);
     return rc;
 }
+
+/**
+ * setMacAddr
+ * @iface: name of device
+ * @macaddr: MAC address to be assigned
+ *
+ * Changes the MAC address of the given device with the
+ * given address using this command:
+ *     ip link set @iface address @macaddr
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+int setMacAddr(const char* iface, const char* macaddr)
+{
+    int rc = -1;
+    const char *argv[] = {
+        "ip", "link", "set", iface, "address", macaddr, NULL
+    };
+    int cmdResult;
+
+    if (NULL == iface) {
+        goto error_out;
+    }
+
+    rc = virRun(NULL, argv, &cmdResult);
+    if (0 == rc)
+        rc = cmdResult;
+
+error_out:
+    return rc;
+}

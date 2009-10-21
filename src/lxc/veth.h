@@ -20,5 +20,6 @@ int vethCreate(char* veth1, int veth1MaxLen, char* veth2,
 int vethDelete(const char* veth);
 int vethInterfaceUpOrDown(const char* veth, int upOrDown);
 int moveInterfaceToNetNs(const char *iface, int pidInNs);
+int setMacAddr(const char* iface, const char* macaddr);
 
 #endif /* VETH_H */
