@@ -102,6 +102,9 @@ int lxcLoadDriverConfig(lxc_driver_t *driver)
         goto no_memory;
     if ((driver->logDir = strdup(LXC_LOG_DIR)) == NULL)
         goto no_memory;
+    if ((driver->autostartDir = strdup(LXC_AUTOSTART_DIR)) == NULL)
+        goto no_memory;
+
 
     if ((filename = strdup(SYSCONF_DIR "/libvirt/lxc.conf")) == NULL)
         goto no_memory;

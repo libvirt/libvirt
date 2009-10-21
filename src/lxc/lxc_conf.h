@@ -36,6 +36,7 @@
 #define LXC_CONFIG_DIR SYSCONF_DIR "/libvirt/lxc"
 #define LXC_STATE_DIR LOCAL_STATE_DIR "/run/libvirt/lxc"
 #define LXC_LOG_DIR LOCAL_STATE_DIR "/log/libvirt/lxc"
+#define LXC_AUTOSTART_DIR LXC_CONFIG_DIR "/autostart"
 
 typedef struct __lxc_driver lxc_driver_t;
 struct __lxc_driver {
