@@ -1243,9 +1243,7 @@ virNodeDeviceGetWWNs(virConnectPtr conn,
         virNodeDeviceReportError(conn, VIR_ERR_NO_SUPPORT,
                                  "%s", _("Device is not a fibre channel HBA"));
         ret = -1;
-    }
-
-    if (*wwnn == NULL || *wwpn == NULL) {
+    } else if (*wwnn == NULL || *wwpn == NULL) {
         /* Free the other one, if allocated... */
         VIR_FREE(wwnn);
         VIR_FREE(wwpn);
