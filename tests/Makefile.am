@@ -56,8 +56,8 @@ EXTRA_DIST =		\
 	capabilityschematest \
 	capabilityschemadata \
 	networkschematest \
-	networkpoolxml2xmlout \
-	networkpoolxml2xmlin \
+	networkxml2xmlout \
+	networkxml2xmlin \
 	domainschematest \
 	domainschemadata \
 	interfaceschemadata \
