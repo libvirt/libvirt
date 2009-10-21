@@ -2518,7 +2518,7 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
          * a libvirt URI, or a hypervisor specific URI. */
 
         if (migrateuri != NULL) {
-            vshError(ctl, FALSE, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
+            vshError(ctl, "%s", _("migrate: Unexpected migrateuri for peer2peer/direct migration"));
             goto done;
         }
 
