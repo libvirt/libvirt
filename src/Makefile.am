@@ -657,6 +657,8 @@ libvirt_driver_security_la_CFLAGS = \
 libvirt_driver_security_la_LDFLAGS =
 if WITH_SECDRIVER_SELINUX
 libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+libvirt_driver_security_la_CFLAGS += $(SELINUX_CFLAGS)
+libvirt_driver_security_la_LDFLAGS += $(SELINUX_LIBS)
 endif
 if WITH_SECDRIVER_APPARMOR
 libvirt_driver_security_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
