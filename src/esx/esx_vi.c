@@ -959,21 +959,14 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
 
         esxVI_AnyType_Free(&childAnyType);
 
-        if (esxVI_AnyType_Deserialize(conn, childNode, &childAnyType) < 0) {
+        if (esxVI_AnyType_Deserialize(conn, childNode, &childAnyType) < 0 ||
+            castFromAnyTypeFunc(conn, childAnyType, &item) < 0 ||
+            esxVI_List_Append(conn, list, item) < 0) {
             goto failure;
         }
 
         item = NULL;
-
-        if (castFromAnyTypeFunc(conn, childAnyType, &item) < 0) {
-            goto failure;
-        }
-
-        if (esxVI_List_Append(conn, list, item) < 0) {
-            goto failure;
-        }
     }
-
 
   cleanup:
     esxVI_AnyType_Free(&childAnyType);
@@ -981,6 +974,7 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
     return result;
 
   failure:
+    freeFunc(&item);
     freeFunc(list);
 
     result = -1;
@@ -1039,20 +1033,18 @@ esxVI_List_Deserialize(virConnectPtr conn, xmlNodePtr node, esxVI_List **list,
             goto failure;
         }
 
+        if (deserializeFunc(conn, node, &item) < 0 ||
+            esxVI_List_Append(conn, list, item) < 0) {
+            goto failure;
+        }
+
         item = NULL;
-
-        if (deserializeFunc(conn, node, &item) < 0) {
-            goto failure;
-        }
-
-        if (esxVI_List_Append(conn, list, item) < 0) {
-            goto failure;
-        }
     }
 
     return 0;
 
   failure:
+    freeFunc(&item);
     freeFunc(list);
 
     return -1;
