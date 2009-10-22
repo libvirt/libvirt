@@ -490,10 +490,15 @@ virXPathNodeSet(virConnectPtr conn,
     relnode = ctxt->node;
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     ctxt->node = relnode;
-    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr < 0)) {
+    if (obj == NULL)
+        return(0);
+    if (obj->type != XPATH_NODESET) {
         xmlXPathFreeObject(obj);
         return (-1);
+    }
+    if ((obj->nodesetval == NULL)  || (obj->nodesetval->nodeNr < 0)) {
+        xmlXPathFreeObject(obj);
+        return (0);
     }
 
     ret = obj->nodesetval->nodeNr;
