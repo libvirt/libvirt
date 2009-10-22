@@ -3217,7 +3217,7 @@ virDomainMigrate (virDomainPtr domain,
             char *dstURI = NULL;
             if (uri == NULL) {
                 dstURI = virConnectGetURI(dconn);
-                if (!uri)
+                if (!dstURI)
                     return NULL;
             }
 
