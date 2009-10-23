@@ -1,10 +1,10 @@
 ^gnulib/
 ^po/
-ChangeLog
+^ChangeLog$
+^ChangeLog-old$
 ^Makefile*
 ^docs/
 ^tests/
-^tools/virsh\.c
-^tools/console\.c
-^src/util/virterror\.c
+^tools/virsh\.c$
+^tools/console\.c$
 ^build-aux/

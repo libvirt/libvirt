@@ -1157,7 +1157,7 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
     return errBuf;
 # endif
 #else
-    /* Mingw lacks strerror_r() and its strerror() is definitely not
+    /* Mingw lacks strerror_r and its strerror is definitely not
      * threadsafe, so safest option is to just print the raw errno
      * value - we can at least reliably & safely look it up in the
      * header files for debug purposes
