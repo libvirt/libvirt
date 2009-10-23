@@ -2600,21 +2600,6 @@ cleanup:
     return ret;
 }
 
-static char *
-qemudGetHostname (virConnectPtr conn)
-{
-    char *result;
-
-    result = virGetHostname();
-    if (result == NULL) {
-        virReportSystemError (conn, errno,
-                              "%s", _("failed to determine host name"));
-        return NULL;
-    }
-    /* Caller frees this string. */
-    return result;
-}
-
 static int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
     struct qemud_driver *driver = conn->privateData;
     int n;
@@ -6238,11 +6223,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         if (port == QEMUD_MIGRATION_NUM_PORTS) port = 0;
 
         /* Get hostname */
-        if ((hostname = virGetHostname()) == NULL) {
-            virReportSystemError (dconn, errno,
-                                  "%s", _("failed to determine host name"));
+        if ((hostname = virGetHostname(dconn)) == NULL)
             goto cleanup;
-        }
 
         /* XXX this really should have been a properly well-formed
          * URI, but we can't add in tcp:// now without breaking
@@ -7074,7 +7056,7 @@ static virDriver qemuDriver = {
     qemudSupportsFeature, /* supports_feature */
     qemudGetType, /* type */
     qemudGetVersion, /* version */
-    qemudGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */

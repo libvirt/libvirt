@@ -4347,11 +4347,9 @@ xenDaemonDomainMigratePrepare (virConnectPtr dconn,
      * deallocates this string.
      */
     if (uri_in == NULL) {
-        *uri_out = virGetHostname();
-        if (*uri_out == NULL) {
-            virReportOOMError(dconn);
+        *uri_out = virGetHostname(dconn);
+        if (*uri_out == NULL)
             return -1;
-        }
     }
 
     return 0;

@@ -972,11 +972,10 @@ static int qemudNetworkInit(struct qemud_server *server) {
         if (!mdns_name) {
             char groupname[64], *localhost, *tmp;
             /* Extract the host part of the potentially FQDN */
-            localhost = virGetHostname();
-            if (localhost == NULL) {
-                virReportOOMError(NULL);
+            localhost = virGetHostname(NULL);
+            if (localhost == NULL)
                 goto cleanup;
-            }
+
             if ((tmp = strchr(localhost, '.')))
                 *tmp = '\0';
             snprintf(groupname, sizeof(groupname)-1, "Virtualization Host %s", localhost);

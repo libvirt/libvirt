@@ -524,7 +524,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     char *thatHost = NULL;
     char *thisHost = NULL;
 
-    if (!(thisHost = virGetHostname())) {
+    if (!(thisHost = virGetHostname(ctl->conn))) {
         vshError(ctl, "%s", _("Failed to get local hostname"));
         goto cleanup;
     }

@@ -591,20 +591,6 @@ static int vboxGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
-static char *vboxGetHostname(virConnectPtr conn) {
-    char *hostname;
-
-    /* the return string should be freed by caller */
-    hostname = virGetHostname();
-    if (hostname == NULL) {
-        vboxError(conn, VIR_ERR_INTERNAL_ERROR,"%s",
-                  "failed to determine host name");
-        return NULL;
-    }
-
-    return hostname;
-}
-
 static int vboxGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED) {
     vboxGlobalData *data = conn->privateData;
     PRUint32 maxCPUCount = 0;
@@ -6402,7 +6388,7 @@ virDriver NAME(Driver) = {
     NULL, /* supports_feature */
     NULL, /* type */
     vboxGetVersion, /* version */
-    vboxGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     vboxGetMaxVcpus, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     vboxGetCapabilities, /* getCapabilities */

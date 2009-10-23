@@ -479,24 +479,6 @@ xenUnifiedGetVersion (virConnectPtr conn, unsigned long *hvVer)
     return -1;
 }
 
-/* NB: Even if connected to the proxy, we're still on the
- * same machine.
- */
-static char *
-xenUnifiedGetHostname (virConnectPtr conn)
-{
-    char *result;
-
-    result = virGetHostname();
-    if (result == NULL) {
-        virReportSystemError(conn, errno,
-                             "%s", _("cannot lookup hostname"));
-        return NULL;
-    }
-    /* Caller frees this string. */
-    return result;
-}
-
 static int
 xenUnifiedGetMaxVcpus (virConnectPtr conn, const char *type)
 {
@@ -1660,7 +1642,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedSupportsFeature, /* supports_feature */
     xenUnifiedType, /* type */
     xenUnifiedGetVersion, /* version */
-    xenUnifiedGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     xenUnifiedGetMaxVcpus, /* getMaxVcpus */
     xenUnifiedNodeGetInfo, /* nodeGetInfo */
     xenUnifiedGetCapabilities, /* getCapabilities */

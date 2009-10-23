@@ -1805,30 +1805,42 @@ int virDiskNameToIndex(const char *name) {
 #define AI_CANONIDN 0
 #endif
 
-char *virGetHostname(void)
+char *virGetHostname(virConnectPtr conn)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result;
     struct addrinfo hints, *info;
 
     r = gethostname (hostname, sizeof(hostname));
-    if (r == -1)
+    if (r == -1) {
+        virReportSystemError (conn, errno,
+                              "%s", _("failed to determine host name"));
         return NULL;
+    }
     NUL_TERMINATE(hostname);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_CANONNAME|AI_CANONIDN;
     hints.ai_family = AF_UNSPEC;
     r = getaddrinfo(hostname, NULL, &hints, &info);
-    if (r != 0)
+    if (r != 0) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("getaddrinfo failed for '%s': %s"),
+                    hostname, gai_strerror(r));
         return NULL;
+    }
     if (info->ai_canonname == NULL) {
+        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("could not determine canonical host name"));
         freeaddrinfo(info);
         return NULL;
     }
 
     /* Caller frees this string. */
     result = strdup (info->ai_canonname);
+    if (!result)
+        virReportOOMError(conn);
+
     freeaddrinfo(info);
     return result;
 }

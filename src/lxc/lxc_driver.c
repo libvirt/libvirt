@@ -2030,20 +2030,6 @@ cleanup:
     return ret;
 }
 
-static char *lxcGetHostname (virConnectPtr conn)
-{
-    char *result;
-
-    result = virGetHostname();
-    if (result == NULL) {
-        virReportSystemError (conn, errno,
-                              "%s", _("failed to determine host name"));
-        return NULL;
-    }
-    /* Caller frees this string. */
-    return result;
-}
-
 static int lxcFreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
 {
     int timeout = 1000; /* In milliseconds */
@@ -2261,7 +2247,7 @@ static virDriver lxcDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     lxcVersion, /* version */
-    lxcGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     lxcGetCapabilities, /* getCapabilities */

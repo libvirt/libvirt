@@ -1146,21 +1146,6 @@ cleanup:
     return ret;
 }
 
-static char *
-umlGetHostname (virConnectPtr conn)
-{
-    char *result;
-
-    result = virGetHostname();
-    if (result == NULL) {
-        virReportSystemError(conn, errno,
-                             "%s", _("cannot lookup hostname"));
-        return NULL;
-    }
-    /* Caller frees this string. */
-    return result;
-}
-
 static int umlListDomains(virConnectPtr conn, int *ids, int nids) {
     struct uml_driver *driver = conn->privateData;
     int n;
@@ -1790,7 +1775,7 @@ static virDriver umlDriver = {
     NULL, /* supports_feature */
     umlGetType, /* type */
     umlGetVersion, /* version */
-    umlGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */
     umlGetCapabilities, /* getCapabilities */

@@ -1023,20 +1023,6 @@ static int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
     return (0);
 }
 
-static char *testGetHostname (virConnectPtr conn)
-{
-    char *result;
-
-    result = virGetHostname();
-    if (result == NULL) {
-        virReportSystemError(conn, errno,
-                             "%s", _("cannot lookup hostname"));
-        return NULL;
-    }
-    /* Caller frees this string. */
-    return result;
-}
-
 static int testGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED)
 {
@@ -4674,7 +4660,7 @@ static virDriver testDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     testGetVersion, /* version */
-    testGetHostname, /* getHostname */
+    virGetHostname, /* getHostname */
     testGetMaxVCPUs, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testGetCapabilities, /* getCapabilities */
