@@ -4342,21 +4342,12 @@ xenDaemonDomainMigratePrepare (virConnectPtr dconn,
                                const char *dname ATTRIBUTE_UNUSED,
                                unsigned long resource ATTRIBUTE_UNUSED)
 {
-    int r;
-    char hostname [HOST_NAME_MAX+1];
-
     /* If uri_in is NULL, get the current hostname as a best guess
      * of how the source host should connect to us.  Note that caller
      * deallocates this string.
      */
     if (uri_in == NULL) {
-        r = gethostname (hostname, HOST_NAME_MAX+1);
-        if (r == -1) {
-            virReportSystemError(dconn, errno,
-                                 _("unable to resolve name %s"), hostname);
-            return -1;
-        }
-        *uri_out = strdup (hostname);
+        *uri_out = virGetHostname();
         if (*uri_out == NULL) {
             virReportOOMError(dconn);
             return -1;
