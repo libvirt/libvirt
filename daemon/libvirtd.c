@@ -2509,8 +2509,9 @@ remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
  * debugging is asked for then output informations or debug.
  */
 static int
-qemudSetLogging(virConfPtr conf, const char *filename) {
-    int log_level;
+qemudSetLogging(virConfPtr conf, const char *filename)
+{
+    int log_level = 0;
     char *log_filters = NULL;
     char *log_outputs = NULL;
     int ret = -1;
@@ -2530,12 +2531,6 @@ qemudSetLogging(virConfPtr conf, const char *filename) {
      * first two. Because we don't have a way to determine if the log
      * level has been set, we must process variables in the opposite
      * order, each one overriding the previous.
-     */
-    /*
-     * GET_CONF_INT returns 0 when there is no log_level setting in
-     * the config file. The conditional below eliminates a false
-     * warning in that case, but also has the side effect of missing
-     * a warning if the user actually does say log_level=0.
      */
     GET_CONF_INT (conf, filename, log_level);
     if (log_level != 0)
