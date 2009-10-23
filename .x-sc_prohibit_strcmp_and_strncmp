@@ -1,1 +1,8 @@
 ^gnulib/
+^ChangeLog-old$
+^examples/domain-events/events-c/event-test\.c$
+^src/internal\.h$
+^src/lxc/lxc_container\.c$
+^src/node_device/node_device_devkit\.c$
+^src/node_device/node_device_hal\.c$
+^src/storage/parthelper\.c$

@@ -79,11 +79,9 @@ sc_avoid_write:
 # Use STREQ rather than comparing strcmp == 0, or != 0.
 # Similarly, use STREQLEN or STRPREFIX rather than strncmp.
 sc_prohibit_strcmp_and_strncmp:
-	@grep -nE '! *strn?cmp *\(|\<strn?cmp *\([^)]+\) *=='		\
-	    $$($(VC_LIST_EXCEPT))					\
-	  | grep -vE ':# *define STREQ(LEN)?\(' &&			\
-	  { echo '$(ME): use STREQ(LEN) in place of the above uses of strcmp(strncmp)' \
-		1>&2; exit 1; } || :
+	@re='strn?cmp *\('						\
+	msg='use STREQ() in place of the above uses of str[n]cmp'	\
+	  $(_prohibit_regexp)
 
 # Use virAsprintf rather than a'sprintf since *strp is undefined on error.
 sc_prohibit_asprintf:

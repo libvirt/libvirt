@@ -1,8 +1,5 @@
-ChangeLog
-docs/devhelp/libvirt-virterror.html
-docs/html/libvirt-virterror.html
-docs/libvirt-api.xml
-docs/libvirt-refs.xml
-include/libvirt/virterror.h
-daemon/dispatch.c
-src/util/virterror.c
+^ChangeLog$
+^ChangeLog-old$
+^include/libvirt/virterror\.h$
+^daemon/dispatch\.c$
+^src/util/virterror\.c$
