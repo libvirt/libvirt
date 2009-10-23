@@ -3154,7 +3154,7 @@ virDomainMigrateDirect (virDomainPtr domain,
  * XML includes details of the support URI schemes. If omitted
  * the dconn will be asked for a default URI.
  *
- * In either case it is typically only neccessary to specify a
+ * In either case it is typically only necessary to specify a
  * URI if the destination host has multiple interfaces and a
  * specific interface is required to transmit migration data.
  *
@@ -3285,28 +3285,31 @@ error:
  *   VIR_MIGRATE_LIVE      Do not pause the VM during migration
  *   VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
  *   VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+ *   VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+ *                            on the destination host.
+ *   VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+ *                               domain on the source host.
  *
- * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
- * Applications using the VIR_MIGRATE_PEER2PEER flag will probably
- * prefer to invoke virDomainMigrateToURI, avoiding the need to
- * open connection to the destination host themselves.
+ * The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
+ * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
+ * takes a hypervisor specific format. The uri_transports element of the
+ * hypervisor capabilities XML includes details of the supported URI
+ * schemes. Not all hypervisors will support this mode of migration, so
+ * if the VIR_MIGRATE_PEER2PEER flag is not set, then it may be necessary
+ * to use the alternative virDomainMigrate API providing and explicit
+ * virConnectPtr for the destination host.
  *
- * If a hypervisor supports renaming domains during migration,
- * then you may set the dname parameter to the new name (otherwise
- * it keeps the same name).  If this is not supported by the
- * hypervisor, dname must be NULL or else you will get an error.
- *
- * If the VIR_MIGRATE_PEER2PEER flag is set, the duri parameter
+ * If the VIR_MIGRATE_PEER2PEER flag IS set, the duri parameter
  * must be a valid libvirt connection URI, by which the source
  * libvirt driver can connect to the destination libvirt.
  *
- * If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
- * takes a hypervisor specific format. The hypervisor capabilities
- * XML includes details of the support URI schemes. Not all hypervisors
- * will support this mode of migration, so if the VIR_MIGRATE_PEER2PEER
- * flag is not set, then it may be neccessary to use the alternative
- * virDomainMigrate API providing an explicit virConnectPtr for the
- * destination host
+ * VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+ *
+ * If a hypervisor supports renaming domains during migration,
+ * the dname parameter specifies the new name for the domain.
+ * Setting dname to NULL keeps the domain name the same.  If domain
+ * renaming is not supported by the hypervisor, dname must be NULL or
+ * else an error will be returned.
  *
  * The maximum bandwidth (in Mbps) that will be used to do migration
  * can be specified with the bandwidth parameter.  If set to 0,
