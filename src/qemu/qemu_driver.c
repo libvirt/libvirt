@@ -4145,7 +4145,7 @@ qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
         if (!machine->canonical)
             continue;
 
-        if (strcmp(def->os.machine, machine->name) != 0)
+        if (STRNEQ(def->os.machine, machine->name))
             continue;
 
         if (!(*canonical = strdup(machine->canonical))) {
@@ -4174,7 +4174,7 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
         if (!machines[i]->canonical)
             continue;
 
-        if (strcmp(def->os.machine, machines[i]->name) != 0)
+        if (STRNEQ(def->os.machine, machines[i]->name))
             continue;
 
         *canonical = machines[i]->canonical;
