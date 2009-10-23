@@ -1441,7 +1441,7 @@ error:
  * @conn: pointer to a hypervisor connection
  *
  * This returns the system hostname on which the hypervisor is
- * running (the result of the gethostname(2) system call).  If
+ * running (the result of the gethostname system call).  If
  * we are connected to a remote system, then this returns the
  * hostname of the remote system.
  *

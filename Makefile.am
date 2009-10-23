@@ -23,6 +23,7 @@ EXTRA_DIST = \
   .x-sc_m4_quote_check \
   .x-sc_prohibit_asprintf \
   .x-sc_prohibit_gethostby \
+  .x-sc_prohibit_gethostname \
   .x-sc_prohibit_have_config_h \
   .x-sc_prohibit_HAVE_MBRTOWC \
   .x-sc_prohibit_nonreentrant \
