@@ -937,15 +937,19 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
         server->mdns = libvirtd_mdns_new();
 
         if (!mdns_name) {
-            char groupname[64], localhost[HOST_NAME_MAX+1], *tmp;
+            char groupname[64], *localhost, *tmp;
             /* Extract the host part of the potentially FQDN */
-            gethostname(localhost, HOST_NAME_MAX);
-            localhost[HOST_NAME_MAX] = '\0';
+            localhost = virGetHostname();
+            if (localhost == NULL) {
+                virReportOOMError(NULL);
+                goto cleanup;
+            }
             if ((tmp = strchr(localhost, '.')))
                 *tmp = '\0';
             snprintf(groupname, sizeof(groupname)-1, "Virtualization Host %s", localhost);
             groupname[sizeof(groupname)-1] = '\0';
             group = libvirtd_mdns_add_group(server->mdns, groupname);
+            VIR_FREE(localhost);
         } else {
             group = libvirtd_mdns_add_group(server->mdns, mdns_name);
         }
