@@ -1502,9 +1502,6 @@ xenUnifiedDomainEventRegister (virConnectPtr conn,
     ret = virDomainEventCallbackListAdd(conn, priv->domainEventCallbacks,
                                         callback, opaque, freefunc);
 
-    if (ret == 0)
-        conn->refs++;
-
     xenUnifiedUnlock(priv);
     return (ret);
 }
@@ -1529,9 +1526,6 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
     else
         ret = virDomainEventCallbackListRemove(conn, priv->domainEventCallbacks,
                                                callback);
-
-    if (ret == 0)
-        virUnrefConnect(conn);
 
     xenUnifiedUnlock(priv);
     return ret;
