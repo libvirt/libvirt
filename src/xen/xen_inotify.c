@@ -142,7 +142,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
            search for, and create a domain from the stored
            list info */
         for (i = 0 ; i < priv->configInfoList->count ; i++) {
-            if (!memcmp(uuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
+            if (!memcmp(rawuuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
                 *name = strdup(priv->configInfoList->doms[i]->name);
                 if (!*name) {
                     virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
@@ -332,7 +332,7 @@ reread:
                 xenInotifyDomainEventFromFile(conn, fname,
                                               VIR_DOMAIN_EVENT_UNDEFINED,
                                               VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
-            if (!event)
+            if (event)
                 xenUnifiedDomainEventDispatch(conn->privateData, event);
             else
                 virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
