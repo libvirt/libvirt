@@ -6314,14 +6314,31 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
         /* Get the port number. */
         p = strrchr (uri_in, ':');
-        p++; /* definitely has a ':' in it, see above */
-        this_port = virParseNumber (&p);
-        if (this_port == -1 || p-uri_in != strlen (uri_in)) {
-            qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
-                              "%s", _("URI did not have ':port' at the end"));
-            goto cleanup;
+        if (p == strchr(uri_in, ':')) {
+            /* Generate a port */
+            this_port = QEMUD_MIGRATION_FIRST_PORT + port++;
+            if (port == QEMUD_MIGRATION_NUM_PORTS)
+                port = 0;
+
+            /* Caller frees */
+            if (virAsprintf(uri_out, "%s:%d", uri_in, this_port) < 0) {
+                virReportOOMError (dconn);
+                goto cleanup;
+            }
+
+        } else {
+            p++; /* definitely has a ':' in it, see above */
+            this_port = virParseNumber (&p);
+            if (this_port == -1 || p-uri_in != strlen (uri_in)) {
+                qemudReportError (dconn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                                  "%s", _("URI ended with incorrect ':port'"));
+                goto cleanup;
+            }
         }
     }
+
+    if (uri_out && *uri_out)
+        VIR_DEBUG("Generated uri_out=%s", *uri_out);
 
     /* Parse the domain XML. */
     if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml,
