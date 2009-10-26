@@ -71,7 +71,7 @@ virNetworkFreeName(virNetworkPtr network, const char *name ATTRIBUTE_UNUSED)
 
 /**
  * virInterfaceFreeName:
- * @interface: a interface object
+ * @interface: an interface object
  *
  * Destroy the interface object, this is just used by the interface hash callback.
  *
@@ -674,7 +674,7 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
  * virReleaseInterface:
  * @interface: the interface to release
  *
- * Unconditionally release all memory associated with a interface.
+ * Unconditionally release all memory associated with an interface.
  * The conn.lock mutex must be held prior to calling this, and will
  * be released prior to this returning. The interface obj must not
  * be used once this method returns.

@@ -812,7 +812,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
 #ifdef WITH_DRIVER_MODULES
     /* We don't care if any of these fail, because the whole point
      * is to allow users to only install modules they want to use.
-     * If they try to use a open a connection for a module that
+     * If they try to open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
     virDriverLoadModule("network");

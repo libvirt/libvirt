@@ -291,7 +291,7 @@ virInitialize(void)
 #ifdef WITH_DRIVER_MODULES
     /* We don't care if any of these fail, because the whole point
      * is to allow users to only install modules they want to use.
-     * If they try to use a open a connection for a module that
+     * If they try to open a connection for a module that
      * is not loaded they'll get a suitable error at that point
      */
     virDriverLoadModule("test");
@@ -2050,7 +2050,7 @@ error:
  * virDomainResume:
  * @domain: a domain object
  *
- * Resume an suspended domain, the process is restarted from the state where
+ * Resume a suspended domain, the process is restarted from the state where
  * it was frozen by calling virSuspendDomain().
  * This function may requires privileged access
  *
@@ -3999,7 +3999,7 @@ error:
  *
  * The path parameter is the name of the network interface.
  *
- * Domains may have more than network interface.  To get stats for
+ * Domains may have more than one network interface.  To get stats for
  * each you should make multiple calls to this function.
  *
  * Individual fields within the stats structure may be returned
@@ -4680,7 +4680,7 @@ error:
  * @domain: pointer to domain object, or NULL for Domain0
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
- * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this
+ * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this
  *      domain (in 8-bit bytes) (OUT)
  *	If cpumaps is NULL, then no cpumap information is returned by the API.
  *	It's assumed there is <maxinfo> cpumap in cpumaps array.
@@ -9202,7 +9202,7 @@ error:
  * @xml: XML describing the secret.
  * @flags: flags, use 0 for now
  *
- * If XML specifies an UUID, locates the specified secret and replaces all
+ * If XML specifies a UUID, locates the specified secret and replaces all
  * attributes of the secret specified by UUID by attributes specified in xml
  * (any attributes not specified in xml are discarded).
  *
@@ -9713,7 +9713,7 @@ virStreamRef(virStreamPtr stream)
  * with the call, but may instead be delayed until a
  * subsequent call.
  *
- * A example using this with a hypothetical file upload
+ * An example using this with a hypothetical file upload
  * API looks like
  *
  *   virStreamPtr st = virStreamNew(conn, 0);
@@ -9805,7 +9805,7 @@ error:
  * with the call, but may instead be delayed until a
  * subsequent call.
  *
- * A example using this with a hypothetical file download
+ * An example using this with a hypothetical file download
  * API looks like
  *
  *   virStreamPtr st = virStreamNew(conn, 0);
@@ -9896,7 +9896,7 @@ error:
  * requested data source. This is simply a convenient alternative
  * to virStreamSend, for apps that do blocking-I/o.
  *
- * A example using this with a hypothetical file upload
+ * An example using this with a hypothetical file upload
  * API looks like
  *
  *   int mysource(virStreamPtr st, char *buf, int nbytes, void *opaque) {
@@ -9993,7 +9993,7 @@ cleanup:
  * requested data sink. This is simply a convenient alternative
  * to virStreamRecv, for apps that do blocking-I/o.
  *
- * A example using this with a hypothetical file download
+ * An example using this with a hypothetical file download
  * API looks like
  *
  *   int mysink(virStreamPtr st, const char *buf, int nbytes, void *opaque) {
@@ -10174,7 +10174,7 @@ error:
  * virStreamEventRemoveCallback:
  * @stream: pointer to the stream object
  *
- * Remove a event callback from the stream
+ * Remove an event callback from the stream
  *
  * Returns 0 on success, -1 on error
  */
@@ -10297,7 +10297,7 @@ error:
  * Decrement the reference count on a stream, releasing
  * the stream object if the reference count has hit zero.
  *
- * There must not be a active data transfer in progress
+ * There must not be an active data transfer in progress
  * when releasing the stream. If a stream needs to be
  * disposed of prior to end of stream being reached, then
  * the virStreamAbort function should be called first.
