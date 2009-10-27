@@ -325,6 +325,17 @@ testDomainGenerateIfnames(virConnectPtr conn,
     return 0;
 }
 
+static int
+testDomainStartState(virConnectPtr conn,
+                     virDomainObjPtr dom)
+{
+    testConnPtr privconn = conn->privateData;
+
+    dom->state = VIR_DOMAIN_RUNNING;
+    dom->def->id = privconn->nextDomID++;
+
+    return 0;
+}
 
 static int testOpenDefault(virConnectPtr conn) {
     int u;
@@ -391,8 +402,12 @@ static int testOpenDefault(virConnectPtr conn) {
                                       &privconn->domains, domdef)))
         goto error;
     domdef = NULL;
-    domobj->def->id = privconn->nextDomID++;
-    domobj->state = VIR_DOMAIN_RUNNING;
+
+    if (testDomainStartState(conn, domobj) < 0) {
+        virDomainObjUnlock(domobj);
+        goto error;
+    }
+
     domobj->persistent = 1;
     virDomainObjUnlock(domobj);
 
@@ -746,8 +761,11 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
 
-        dom->state = VIR_DOMAIN_RUNNING;
-        dom->def->id = privconn->nextDomID++;
+        if (testDomainStartState(conn, dom) < 0) {
+            virDomainObjUnlock(dom);
+            goto error;
+        }
+
         dom->persistent = 1;
         virDomainObjUnlock(dom);
     }
@@ -1083,8 +1101,9 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
                                    &privconn->domains, def)))
         goto cleanup;
     def = NULL;
-    dom->state = VIR_DOMAIN_RUNNING;
-    dom->def->id = privconn->nextDomID++;
+
+    if (testDomainStartState(conn, dom) < 0)
+        goto cleanup;
 
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,
@@ -1633,8 +1652,9 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    dom->state = VIR_DOMAIN_RUNNING;
-    dom->def->id = privconn->nextDomID++;
+    if (testDomainStartState(conn, dom) < 0)
+        goto cleanup;
+
     event = virDomainEventNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
@@ -1993,8 +2013,10 @@ static int testDomainCreate(virDomainPtr domain) {
         goto cleanup;
     }
 
-    domain->id = privdom->def->id = privconn->nextDomID++;
-    privdom->state = VIR_DOMAIN_RUNNING;
+    if (testDomainStartState(domain->conn, privdom) < 0)
+        goto cleanup;
+    domain->id = privdom->def->id;
+
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
