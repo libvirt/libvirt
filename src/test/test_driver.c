@@ -1801,11 +1801,21 @@ cleanup:
     return ret;
 }
 
+static int testDomainGetMaxVcpus(virDomainPtr domain)
+{
+    return testGetMaxVCPUs(domain->conn, "test");
+}
+
 static int testSetVcpus(virDomainPtr domain,
                         unsigned int nrCpus) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
-    int ret = -1;
+    int ret = -1, maxvcpus;
+
+    /* Do this first before locking */
+    maxvcpus = testDomainGetMaxVcpus(domain);
+    if (maxvcpus < 0)
+        goto cleanup;
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -1817,9 +1827,17 @@ static int testSetVcpus(virDomainPtr domain,
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(privdom)) {
+        testError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                  "%s", _("cannot hotplug vcpus for an inactive domain"));
+        goto cleanup;
+    }
+
     /* We allow more cpus in guest than host */
-    if (nrCpus > 32) {
-        testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (nrCpus > maxvcpus) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG,
+                  "requested cpu amount exceeds maximum (%d > %d)",
+                  nrCpus, maxvcpus);
         goto cleanup;
     }
 
@@ -4686,7 +4704,7 @@ static virDriver testDriver = {
     testSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
-    NULL, /* domainGetMaxVcpus */
+    testDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
     NULL, /* nodeGetSecurityModel */
     testDomainDumpXML, /* domainDumpXML */
