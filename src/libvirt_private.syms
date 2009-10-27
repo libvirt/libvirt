@@ -365,6 +365,11 @@ pciDeviceListFree;
 pciDeviceListAdd;
 pciDeviceListDel;
 pciDeviceFileIterate;
+pciDeviceListCount;
+pciDeviceListGet;
+pciDeviceListLock;
+pciDeviceListUnlock;
+pciDeviceListSteal;
 
 
 # qparams.h

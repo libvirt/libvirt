@@ -1365,7 +1365,7 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                             virDomainDefPtr def)
 {
     pciDeviceList *pcidevs;
-    int i, ret;
+    int ret = -1;
 
     if (!def->nhostdevs)
         return 0;
@@ -1373,18 +1373,19 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     if (!(pcidevs = qemuGetPciHostDeviceList(NULL, def)))
         return -1;
 
-    ret = 0;
-
-    for (i = 0; i < pcidevs->count; i++) {
+    while (pciDeviceListCount(pcidevs) > 0) {
+        pciDevice *dev = pciDeviceListSteal(NULL, pcidevs, 0);
         if (pciDeviceListAdd(NULL,
                              driver->activePciHostdevs,
-                             pcidevs->devs[i]) < 0) {
-            ret = -1;
-            break;
+                             dev) < 0) {
+            pciFreeDevice(NULL, dev);
+            goto cleanup;
         }
-        pcidevs->devs[i] = NULL;
     }
 
+    ret = 0;
+
+cleanup:
     pciDeviceListFree(NULL, pcidevs);
     return ret;
 }
@@ -1396,6 +1397,7 @@ qemuPrepareHostDevices(virConnectPtr conn,
 {
     pciDeviceList *pcidevs;
     int i;
+    int ret = -1;
 
     if (!def->nhostdevs)
         return 0;
@@ -1415,33 +1417,39 @@ qemuPrepareHostDevices(virConnectPtr conn,
      * to pci-stub.ko
      */
 
-    for (i = 0; i < pcidevs->count; i++)
-        if (pciDeviceGetManaged(pcidevs->devs[i]) &&
-            pciDettachDevice(conn, pcidevs->devs[i]) < 0)
-            goto error;
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        if (pciDeviceGetManaged(dev) &&
+            pciDettachDevice(conn, dev) < 0)
+            goto cleanup;
+    }
 
     /* Now that all the PCI hostdevs have be dettached, we can safely
      * reset them */
-    for (i = 0; i < pcidevs->count; i++)
-        if (pciResetDevice(conn, pcidevs->devs[i],
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        if (pciResetDevice(conn, dev,
                            driver->activePciHostdevs) < 0)
-            goto error;
-
-    /* Now mark all the devices as active */
-    for (i = 0; i < pcidevs->count; i++) {
-        if (pciDeviceListAdd(conn,
-                             driver->activePciHostdevs,
-                             pcidevs->devs[i]) < 0)
-            goto error;
-        pcidevs->devs[i] = NULL;
+            goto cleanup;
     }
 
-    pciDeviceListFree(conn, pcidevs);
-    return 0;
+    /* Now mark all the devices as active */
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciDeviceListSteal(NULL, pcidevs, dev);
+        if (pciDeviceListAdd(conn,
+                             driver->activePciHostdevs,
+                             dev) < 0) {
+            pciFreeDevice(NULL, dev);
+            goto cleanup;
+        }
+    }
 
-error:
+    ret = 0;
+
+cleanup:
     pciDeviceListFree(conn, pcidevs);
-    return -1;
+    return ret;
 }
 
 static void
@@ -1466,26 +1474,32 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
     /* Again 3 loops; mark all devices as inactive before reset
      * them and reset all the devices before re-attach */
 
-    for (i = 0; i < pcidevs->count; i++)
-        pciDeviceListDel(conn, driver->activePciHostdevs, pcidevs->devs[i]);
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciDeviceListDel(conn, driver->activePciHostdevs, dev);
+    }
 
-    for (i = 0; i < pcidevs->count; i++)
-        if (pciResetDevice(conn, pcidevs->devs[i],
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        if (pciResetDevice(conn, dev,
                            driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s\n"),
                       err ? err->message : "");
             virResetError(err);
         }
+    }
 
-    for (i = 0; i < pcidevs->count; i++)
-        if (pciDeviceGetManaged(pcidevs->devs[i]) &&
-            pciReAttachDevice(conn, pcidevs->devs[i]) < 0) {
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        if (pciDeviceGetManaged(dev) &&
+            pciReAttachDevice(NULL, dev) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to re-attach PCI device: %s\n"),
                       err ? err->message : "");
             virResetError(err);
         }
+    }
 
     pciDeviceListFree(conn, pcidevs);
 }
