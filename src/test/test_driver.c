@@ -1993,6 +1993,10 @@ static int testSetVcpus(virDomainPtr domain,
         goto cleanup;
     }
 
+    /* Update VCPU state for the running domain */
+    if (testDomainUpdateVCPUs(domain->conn, privdom, nrCpus, 0) < 0)
+        goto cleanup;
+
     privdom->def->vcpus = nrCpus;
     ret = 0;
 
