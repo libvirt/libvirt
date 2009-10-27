@@ -2094,6 +2094,63 @@ cleanup:
     return ret;
 }
 
+static int testDomainPinVcpu(virDomainPtr domain,
+                             unsigned int vcpu,
+                             unsigned char *cpumap,
+                             int maplen)
+{
+    testConnPtr privconn = domain->conn->privateData;
+    testDomainObjPrivatePtr privdomdata;
+    virDomainObjPtr privdom;
+    unsigned char *privcpumap;
+    int i, maxcpu, hostcpus, privmaplen;
+    int ret = -1;
+
+    testDriverLock(privconn);
+    privdom = virDomainFindByName(&privconn->domains, domain->name);
+    testDriverUnlock(privconn);
+
+    if (privdom == NULL) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(privdom)) {
+        testError(domain->conn, VIR_ERR_OPERATION_INVALID,
+                  "%s",_("cannot pin vcpus on an inactive domain"));
+        goto cleanup;
+    }
+
+    if (vcpu > privdom->def->vcpus) {
+        testError(domain->conn, VIR_ERR_INVALID_ARG, "%s",
+                  _("requested vcpu is higher than allocated vcpus"));
+        goto cleanup;
+    }
+
+    privdomdata = privdom->privateData;
+    hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
+    privmaplen = VIR_CPU_MAPLEN(hostcpus);
+
+    maxcpu = maplen * 8;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
+
+    privcpumap = VIR_GET_CPUMAP(privdomdata->cpumaps, privmaplen, vcpu);
+    memset(privcpumap, 0, privmaplen);
+
+    for (i = 0 ; i < maxcpu ; i++) {
+        if (VIR_CPU_USABLE(cpumap, maplen, 0, i)) {
+            VIR_USE_CPU(privcpumap, i);
+        }
+    }
+
+    ret = 0;
+cleanup:
+    if (privdom)
+        virDomainObjUnlock(privdom);
+    return ret;
+}
+
 static char *testDomainDumpXML(virDomainPtr domain, int flags)
 {
     testConnPtr privconn = domain->conn->privateData;
@@ -4948,7 +5005,7 @@ static virDriver testDriver = {
     testDomainRestore, /* domainRestore */
     testDomainCoreDump, /* domainCoreDump */
     testSetVcpus, /* domainSetVcpus */
-    NULL, /* domainPinVcpu */
+    testDomainPinVcpu, /* domainPinVcpu */
     testDomainGetVcpus, /* domainGetVcpus */
     testDomainGetMaxVcpus, /* domainGetMaxVcpus */
     NULL, /* domainGetSecurityLabel */
