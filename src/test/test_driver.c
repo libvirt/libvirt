@@ -53,6 +53,15 @@
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
+/* Driver specific info to carry with a domain */
+struct _testDomainObjPrivate {
+    virVcpuInfoPtr vcpu_infos;
+
+    unsigned char *cpumaps;
+};
+typedef struct _testDomainObjPrivate testDomainObjPrivate;
+typedef struct _testDomainObjPrivate *testDomainObjPrivatePtr;
+
 #define MAX_CPUS 128
 
 struct _testCell {
@@ -126,6 +135,25 @@ static void testDriverUnlock(testConnPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
+static void *testDomainObjPrivateAlloc(void)
+{
+    testDomainObjPrivatePtr priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    return priv;
+}
+
+static void testDomainObjPrivateFree(void *data)
+{
+    testDomainObjPrivatePtr priv = data;
+
+    VIR_FREE(priv->cpumaps);
+    VIR_FREE(priv);
+}
+
+
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn) {
     testConnPtr privconn = conn->privateData;
@@ -172,6 +200,9 @@ testBuildCapabilities(virConnectPtr conn) {
         if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
             goto no_memory;
     }
+
+    caps->privateDataAllocFunc = testDomainObjPrivateAlloc;
+    caps->privateDataFreeFunc = testDomainObjPrivateFree;
 
     return caps;
 
@@ -269,7 +300,9 @@ static const char *defaultNodeXML =
 static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
 static const unsigned long long defaultPoolAlloc = 0;
 
-static int testStoragePoolObjSetDefaults(virConnectPtr conn, virStoragePoolObjPtr pool);
+static int testStoragePoolObjSetDefaults(virConnectPtr conn,
+                                         virStoragePoolObjPtr pool);
+static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 
 static char *
 testDomainGenerateIfname(virConnectPtr conn,
@@ -325,16 +358,115 @@ testDomainGenerateIfnames(virConnectPtr conn,
     return 0;
 }
 
+/* Helper to update info for a single VCPU */
+static int
+testDomainUpdateVCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virDomainObjPtr dom,
+                     int vcpu,
+                     int maplen,
+                     int maxcpu)
+{
+    testDomainObjPrivatePtr privdata = dom->privateData;
+    virVcpuInfoPtr info = &privdata->vcpu_infos[vcpu];
+    unsigned char *cpumap = VIR_GET_CPUMAP(privdata->cpumaps, maplen, vcpu);
+    int j;
+
+    memset(info, 0, sizeof(virVcpuInfo));
+    memset(cpumap, 0, maplen);
+
+    info->number    = vcpu;
+    info->state     = VIR_VCPU_RUNNING;
+    info->cpuTime   = 5000000;
+    info->cpu       = 0;
+
+    if (dom->def->cpumask) {
+        for (j = 0; j < maxcpu && j < VIR_DOMAIN_CPUMASK_LEN; ++j) {
+            if (dom->def->cpumask[j]) {
+                VIR_USE_CPU(cpumap, j);
+                info->cpu = j;
+            }
+        }
+    } else {
+        for (j = 0; j < maxcpu; ++j) {
+            if ((j % 3) == 0) {
+                /* Mark of every third CPU as usable */
+                VIR_USE_CPU(cpumap, j);
+                info->cpu = j;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Update domain VCPU amount and info
+ *
+ * @conn: virConnectPtr
+ * @dom : domain needing updates
+ * @nvcpus: New amount of vcpus for the domain
+ * @clear_all: If true, rebuild info for ALL vcpus, not just newly added vcpus
+ */
+static int
+testDomainUpdateVCPUs(virConnectPtr conn,
+                      virDomainObjPtr dom,
+                      int nvcpus,
+                      unsigned int clear_all)
+{
+    testConnPtr privconn = conn->privateData;
+    testDomainObjPrivatePtr privdata = dom->privateData;
+    int i, ret = -1;
+    int cpumaplen, maxcpu;
+
+    maxcpu  = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+
+    if (VIR_REALLOC_N(privdata->vcpu_infos, nvcpus) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(privdata->cpumaps, nvcpus * cpumaplen) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    /* Set running VCPU and cpumap state */
+    if (clear_all) {
+        for (i = 0; i < nvcpus; ++i)
+            if (testDomainUpdateVCPU(conn, dom, i, cpumaplen, maxcpu) < 0)
+                goto cleanup;
+
+    } else if (nvcpus > dom->def->vcpus) {
+        /* VCPU amount has grown, populate info for the new vcpus */
+        for (i = dom->def->vcpus; i < nvcpus; ++i)
+            if (testDomainUpdateVCPU(conn, dom, i, cpumaplen, maxcpu) < 0)
+                goto cleanup;
+    }
+
+    ret = 0;
+cleanup:
+    return ret;
+}
+
+/* Set up domain runtime state */
 static int
 testDomainStartState(virConnectPtr conn,
                      virDomainObjPtr dom)
 {
     testConnPtr privconn = conn->privateData;
+    int ret = -1;
 
+    if (testDomainUpdateVCPUs(conn, dom, dom->def->vcpus, 1) < 0)
+        goto cleanup;
+
+    /* Set typical run state */
     dom->state = VIR_DOMAIN_RUNNING;
     dom->def->id = privconn->nextDomID++;
 
-    return 0;
+    ret = 0;
+cleanup:
+    return ret;
 }
 
 static int testOpenDefault(virConnectPtr conn) {
