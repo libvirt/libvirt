@@ -1593,9 +1593,9 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
         char path[PATH_MAX];
 
         if ((err = virFileMakePath(driver->configDir))) {
-            virStorageReportError(conn, err,
-                                  _("cannot create config directory %s"),
-                                  driver->configDir);
+            virReportSystemError(conn, err,
+                                 _("cannot create config directory %s"),
+                                 driver->configDir);
             return -1;
         }
 

@@ -41,7 +41,7 @@ sed "s/vcpu>/vcpu cpuset='aaa'>/" xml > xml-invalid || fail=1
 $abs_top_builddir/tools/virsh --connect test:///default define xml-invalid > out 2>&1 && fail=1
 cat <<\EOF > exp || fail=1
 error: Failed to define domain from xml-invalid
-error: failed Xen syscall topology cpuset syntax error
+error: internal error topology cpuset syntax error
 
 EOF
 compare exp out || fail=1

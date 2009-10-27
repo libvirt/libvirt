@@ -3705,7 +3705,7 @@ virDomainCpuSetParse(virConnectPtr conn, const char **str, char sep,
     return (ret);
 
   parse_error:
-    virDomainReportError(conn, VIR_ERR_XEN_CALL,
+    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("topology cpuset syntax error"));
     return (-1);
 }

@@ -1106,10 +1106,8 @@ int qemudExtractVersion(virConnectPtr conn,
         return -1;
 
     if (stat(binary, &sb) < 0) {
-        char ebuf[1024];
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Cannot find QEMU binary %s: %s"), binary,
-                         virStrerror(errno, ebuf, sizeof ebuf));
+        virReportSystemError(conn, errno,
+                             _("Cannot find QEMU binary %s"), binary);
         return -1;
     }
 

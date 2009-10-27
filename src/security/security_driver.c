@@ -123,7 +123,7 @@ virSecurityDriverSetDOI(virConnectPtr conn,
                         const char *doi)
 {
     if (strlen(doi) >= VIR_SECURITY_DOI_BUFLEN) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("%s: DOI \'%s\' is "
                                "longer than the maximum allowed length of %d"),
                                __func__, doi, VIR_SECURITY_DOI_BUFLEN - 1);

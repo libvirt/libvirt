@@ -112,7 +112,7 @@ profile_status_file(const char *str)
 
     if (snprintf(profile, PATH_MAX, "%s/%s", APPARMOR_DIR "/libvirt", str)
        > PATH_MAX - 1) {
-        virSecurityReportError(NULL, VIR_ERR_ERROR,
+        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("profile name exceeds maximum length"));
     }
 
@@ -204,7 +204,7 @@ load_profile(virConnectPtr conn, const char *profile, virDomainObjPtr vm,
         if (errno == EINTR)
             goto rewait;
 
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected exit status from virt-aa-helper "
                                "%d pid %lu"),
                                WEXITSTATUS(status), (unsigned long)child);
@@ -265,7 +265,7 @@ use_apparmor(void)
 
     if ((len = readlink("/proc/self/exe", libvirt_daemon,
                         PATH_MAX - 1)) < 0) {
-        virSecurityReportError(NULL, VIR_ERR_ERROR,
+        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("could not find libvirtd"));
         return rc;
     }
@@ -289,13 +289,13 @@ AppArmorSecurityDriverProbe(void)
     /* see if template file exists */
     if (snprintf(template, PATH_MAX, "%s/TEMPLATE",
                  APPARMOR_DIR "/libvirt") > PATH_MAX - 1) {
-        virSecurityReportError(NULL, VIR_ERR_ERROR,
+        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("template too large"));
         return SECURITY_DRIVER_DISABLE;
     }
 
     if (!virFileExists(template)) {
-        virSecurityReportError(NULL, VIR_ERR_ERROR,
+        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                                _("template \'%s\' does not exist"), template);
         return SECURITY_DRIVER_DISABLE;
     }
@@ -326,7 +326,7 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
 
     if ((vm->def->seclabel.label) ||
         (vm->def->seclabel.model) || (vm->def->seclabel.imagelabel)) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("security label already defined for VM"));
         return rc;
@@ -338,7 +338,7 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
     /* if the profile is not already loaded, then load one */
     if (profile_loaded(profile_name) < 0) {
         if (load_profile(conn, profile_name, vm, NULL) < 0) {
-            virSecurityReportError(conn, VIR_ERR_ERROR,
+            virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("cannot generate AppArmor profile "
                                    "\'%s\'"), profile_name);
             goto clean;
@@ -395,13 +395,13 @@ AppArmorGetSecurityLabel(virConnectPtr conn,
 
     if (virStrcpy(sec->label, profile_name,
         VIR_SECURITY_LABEL_BUFLEN) == NULL) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("error copying profile name"));
         goto clean;
     }
 
     if ((sec->enforcing = profile_status(profile_name, 1)) < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("error calling profile_status()"));
         goto clean;
     }
@@ -424,7 +424,7 @@ AppArmorRestoreSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
 
     if (secdef->imagelabel) {
         if ((rc = remove_profile(secdef->label)) != 0) {
-            virSecurityReportError(conn, VIR_ERR_ERROR,
+            virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("could not remove profile for \'%s\'"),
                                    secdef->label);
         }
@@ -450,7 +450,7 @@ AppArmorSetSecurityLabel(virConnectPtr conn,
         return rc;
 
     if (STRNEQ(drv->name, secdef->model)) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("security label driver mismatch: "
                                "\'%s\' model configured for domain, but "
                                "hypervisor driver is \'%s\'."),
@@ -460,7 +460,7 @@ AppArmorSetSecurityLabel(virConnectPtr conn,
     }
 
     if (aa_change_profile(profile_name) < 0) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("error calling aa_change_profile()"));
         goto clean;
     }
@@ -490,7 +490,7 @@ AppArmorRestoreSecurityImageLabel(virConnectPtr conn,
         /* Update the profile only if it is loaded */
         if (profile_loaded(secdef->imagelabel) >= 0) {
             if (load_profile(conn, secdef->imagelabel, vm, NULL) < 0) {
-                virSecurityReportError(conn, VIR_ERR_ERROR,
+                virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                        _("cannot update AppArmor profile "
                                        "\'%s\'"),
                                        secdef->imagelabel);
@@ -520,7 +520,7 @@ AppArmorSetSecurityImageLabel(virConnectPtr conn,
     if (secdef->imagelabel) {
         /* if the device doesn't exist, error out */
         if (!virFileExists(disk->src)) {
-            virSecurityReportError(conn, VIR_ERR_ERROR,
+            virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("\'%s\' does not exist"), disk->src);
             return rc;
         }
@@ -531,7 +531,7 @@ AppArmorSetSecurityImageLabel(virConnectPtr conn,
         /* update the profile only if it is loaded */
         if (profile_loaded(secdef->imagelabel) >= 0) {
             if (load_profile(conn, secdef->imagelabel, vm, disk) < 0) {
-                virSecurityReportError(conn, VIR_ERR_ERROR,
+                virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                      _("cannot update AppArmor profile "
                                      "\'%s\'"),
                                      secdef->imagelabel);

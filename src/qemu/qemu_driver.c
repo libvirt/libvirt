@@ -1771,7 +1771,7 @@ static int qemuDomainSetHostdevOwnership(virConnectPtr conn,
     }
     return 0;
 #else
-    qemudReportError(conn, NULL, NULL, "%s",
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
                      _("unable to set host device ownership on this platform"));
     return -1;
 #endif

@@ -189,13 +189,13 @@ SELinuxGenSecurityLabel(virConnectPtr conn,
 
     vm->def->seclabel.label = SELinuxGenNewContext(default_domain_context, mcs);
     if (! vm->def->seclabel.label)  {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("cannot generate selinux context for %s"), mcs);
         goto err;
     }
     vm->def->seclabel.imagelabel = SELinuxGenNewContext(default_image_context, mcs);
     if (! vm->def->seclabel.imagelabel)  {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("cannot generate selinux context for %s"), mcs);
         goto err;
     }
@@ -285,9 +285,9 @@ SELinuxGetSecurityLabel(virConnectPtr conn,
     }
 
     if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("security label exceeds "
-                                 "maximum lenth: %d"),
+                                 "maximum length: %d"),
                                VIR_SECURITY_LABEL_BUFLEN - 1);
         return -1;
     }
@@ -647,7 +647,7 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
     int i;
 
     if (!STREQ(drv->name, secdef->model)) {
-        virSecurityReportError(conn, VIR_ERR_ERROR,
+        virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("security label driver mismatch: "
                                  "'%s' model configured for domain, but "
                                  "hypervisor driver is '%s'."),
