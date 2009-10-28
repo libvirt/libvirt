@@ -112,6 +112,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
                                   uuidstr);
             goto cleanup;
         }
+        VIR_FREE(uuidstr);
     } else {
         virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
                               _("missing volume encryption uuid"));
