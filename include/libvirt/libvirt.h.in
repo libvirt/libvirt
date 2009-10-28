@@ -930,6 +930,10 @@ virInterfacePtr         virInterfaceLookupByMACString (virConnectPtr conn,
 const char*             virInterfaceGetName       (virInterfacePtr iface);
 const char*             virInterfaceGetMACString  (virInterfacePtr iface);
 
+typedef enum {
+    VIR_INTERFACE_XML_INACTIVE = 1 /* dump inactive interface information */
+} virInterfaceXMLFlags;
+
 char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,
                                                    unsigned int flags);
 virInterfacePtr         virInterfaceDefineXML     (virConnectPtr conn,

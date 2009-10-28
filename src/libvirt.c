@@ -6201,10 +6201,17 @@ virInterfaceGetMACString(virInterfacePtr iface)
 /**
  * virInterfaceGetXMLDesc:
  * @iface: an interface object
- * @flags: an OR'ed set of extraction flags, not used yet
+ * @flags: an OR'ed set of extraction flags. Current valid bits:
  *
- * Provide an XML description of the interface. The description may be reused
- * later to redefine the interface with virInterfaceDefineXML().
+ *      VIR_INTERFACE_XML_INACTIVE - return the static configuration,
+ *                                   suitable for use redefining the
+ *                                   interface via virInterfaceDefineXML()
+ *
+ * Provide an XML description of the interface. If
+ * VIR_INTERFACE_XML_INACTIVE is set, the description may be reused
+ * later to redefine the interface with virInterfaceDefineXML(). If it
+ * is not set, the ip address and netmask will be the current live
+ * setting of the interface, not the settings from the config files.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
@@ -6221,7 +6228,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
         virLibInterfaceError(NULL, VIR_ERR_INVALID_INTERFACE, __FUNCTION__);
         return (NULL);
     }
-    if (flags != 0) {
+    if ((flags & ~VIR_INTERFACE_XML_INACTIVE) != 0) {
         virLibInterfaceError(iface, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }

@@ -2792,7 +2792,7 @@ cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
     char *doc = NULL;
     char *doc_edited = NULL;
     char *doc_reread = NULL;
-    int flags = 0;
+    int flags = VIR_INTERFACE_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -3326,6 +3326,7 @@ static const vshCmdInfo info_interface_dumpxml[] = {
 
 static const vshCmdOptDef opts_interface_dumpxml[] = {
     {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface name or MAC address")},
+    {"inactive", VSH_OT_BOOL, 0, gettext_noop("show inactive defined XML")},
     {NULL, 0, 0, NULL}
 };
 
@@ -3335,6 +3336,11 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     virInterfacePtr iface;
     int ret = TRUE;
     char *dump;
+    int flags = 0;
+    int inactive = vshCommandOptBool(cmd, "inactive");
+
+    if (inactive)
+        flags |= VIR_INTERFACE_XML_INACTIVE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -3342,7 +3348,7 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(iface = vshCommandOptInterface(ctl, cmd, NULL)))
         return FALSE;
 
-    dump = virInterfaceGetXMLDesc(iface, 0);
+    dump = virInterfaceGetXMLDesc(iface, flags);
     if (dump != NULL) {
         printf("%s", dump);
         free(dump);

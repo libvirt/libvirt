@@ -279,22 +279,19 @@ virInterfaceDefParseIp(virConnectPtr conn, virInterfaceDefPtr def,
 static int
 virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceDefPtr def,
                               xmlXPathContextPtr ctxt) {
-    xmlNodePtr cur;
-    int ret;
+    xmlNodePtr dhcp, ip;
+    int ret = 0;
 
-    cur = virXPathNode(conn, "./dhcp", ctxt);
-    if (cur != NULL)
-        ret = virInterfaceDefParseDhcp(conn, def, cur, ctxt);
-    else {
-        cur = virXPathNode(conn, "./ip", ctxt);
-        if (cur != NULL)
-            ret = virInterfaceDefParseIp(conn, def, cur, ctxt);
-        else {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                                "%s", _("interface miss dhcp or ip adressing"));
-            ret = -1;
-        }
-    }
+    dhcp = virXPathNode(conn, "./dhcp", ctxt);
+    if (dhcp != NULL)
+        ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
+
+    if (ret != 0)
+        return(ret);
+
+    ip = virXPathNode(conn, "./ip", ctxt);
+    if (ip != NULL)
+        ret = virInterfaceDefParseIp(conn, def, ip, ctxt);
     return(ret);
 }
 
@@ -1012,20 +1009,18 @@ virInterfaceProtocolDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
             virBufferAddLit(buf, "    <dhcp peerdns='yes'/>\n");
         else
             virBufferAddLit(buf, "    <dhcp/>\n");
-    } else {
-        /* theorically if we don't have dhcp we should have an address */
-        if (def->proto.address != NULL) {
-            if (def->proto.prefix != 0)
-                virBufferVSprintf(buf, "    <ip address='%s' prefix='%d'/>\n",
-                                  def->proto.address, def->proto.prefix);
-            else
-                virBufferVSprintf(buf, "    <ip address='%s'/>\n",
-                                  def->proto.address);
-        }
-        if (def->proto.gateway != NULL) {
-            virBufferVSprintf(buf, "    <route gateway='%s'/>\n",
-                              def->proto.gateway);
-        }
+    }
+    if (def->proto.address != NULL) {
+        if (def->proto.prefix != 0)
+            virBufferVSprintf(buf, "    <ip address='%s' prefix='%d'/>\n",
+                              def->proto.address, def->proto.prefix);
+        else
+            virBufferVSprintf(buf, "    <ip address='%s'/>\n",
+                              def->proto.address);
+    }
+    if (def->proto.gateway != NULL) {
+        virBufferVSprintf(buf, "    <route gateway='%s'/>\n",
+                          def->proto.gateway);
     }
     virBufferAddLit(buf, "  </protocol>\n");
     return(0);

@@ -326,7 +326,7 @@ cleanup:
 }
 
 static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
-                                 unsigned int flags ATTRIBUTE_UNUSED)
+                                 unsigned int flags)
 {
     struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
     struct netcf_if *iface = NULL;
@@ -342,7 +342,11 @@ static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-    xmlstr = ncf_if_xml_desc(iface);
+    if ((flags & VIR_INTERFACE_XML_INACTIVE)) {
+        xmlstr = ncf_if_xml_desc(iface);
+    } else {
+        xmlstr = ncf_if_xml_state(iface);
+    }
     if (!xmlstr) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
