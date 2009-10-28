@@ -142,11 +142,16 @@
 	name to be given that host by the DHCP server (via the
         <code>name</code> attribute).  <span class="since">Since 0.4.5</span>
       </dd><dt><code>bootp</code></dt><dd>The optional <code>bootp</code>
-	element specifies BOOTP options to be provided by the DHCP server.
-	Only one attribute is supported, <code>file</code>, giving the file
-	to be used for the boot image).  The BOOTP options currently have to
-	be the same for all address ranges and statically assigned addresses.<span
-	class="since">Since 0.7.1.</span>
+        element specifies BOOTP options to be provided by the DHCP server.
+        Two attributes are supported: <code>file</code> is mandatory and
+        gives the file to be used for the boot image; <code>server</code> is
+        optional and gives the address of the TFTP server from which the boot
+        image will be fetched.  <code>server</code> defaults to the same host
+        that runs the DHCP server, as is the case when the <code>tftp</code>
+        element is used.  The BOOTP options currently have to be the same
+        for all address ranges and statically assigned addresses.<span
+        class="since">Since 0.7.1 (<code>server</code> since 0.7.3).</span>
+      </dd>
     </dl>
 
     <h2><a name="examples">Example configuration</a></h2>

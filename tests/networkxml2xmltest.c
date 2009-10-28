@@ -89,6 +89,7 @@ mymain(int argc, char **argv)
     DO_TEST("routed-network");
     DO_TEST("nat-network");
     DO_TEST("netboot-network");
+    DO_TEST("netboot-proxy-network");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

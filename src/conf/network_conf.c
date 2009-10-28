@@ -117,6 +117,7 @@ void virNetworkDefFree(virNetworkDefPtr def)
 
     VIR_FREE(def->tftproot);
     VIR_FREE(def->bootfile);
+    VIR_FREE(def->bootserver);
 
     VIR_FREE(def);
 }
@@ -313,6 +314,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             }
 
             def->bootfile = (char *)file;
+            def->bootserver = (char *) xmlGetProp(cur, BAD_CAST "server");
         }
 
         cur = cur->next;
@@ -671,8 +673,13 @@ char *virNetworkDefFormat(virConnectPtr conn,
                 virBufferAddLit(&buf, "/>\n");
             }
             if (def->bootfile) {
-                virBufferEscapeString(&buf, "      <bootp file='%s' />\n",
+                virBufferEscapeString(&buf, "      <bootp file='%s' ",
                                       def->bootfile);
+                if (def->bootserver) {
+                    virBufferEscapeString(&buf, "server='%s' ",
+                                          def->bootserver);
+                }
+                virBufferAddLit(&buf, "/>\n");
             }
 
             virBufferAddLit(&buf, "    </dhcp>\n");

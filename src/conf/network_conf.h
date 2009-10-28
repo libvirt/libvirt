@@ -81,6 +81,7 @@ struct _virNetworkDef {
 
     char *tftproot;
     char *bootfile;
+    char *bootserver;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

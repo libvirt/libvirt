@@ -402,7 +402,7 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
         (2 * network->def->nhosts) +
         /* --enable-tftp --tftp-root /srv/tftp */
         (network->def->tftproot ? 3 : 0) +
-        /* --dhcp-boot pxeboot.img */
+        /* --dhcp-boot pxeboot.img[,,12.34.56.78] */
         (network->def->bootfile ? 2 : 0) +
         1;  /* NULL */
 
@@ -488,8 +488,13 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
         APPEND_ARG(*argv, i++, network->def->tftproot);
     }
     if (network->def->bootfile) {
+        snprintf(buf, sizeof(buf), "%s%s%s",
+                 network->def->bootfile,
+                 network->def->bootserver ? ",," : "",
+                 network->def->bootserver ? network->def->bootserver : "");
+
         APPEND_ARG(*argv, i++, "--dhcp-boot");
-        APPEND_ARG(*argv, i++, network->def->bootfile);
+        APPEND_ARG(*argv, i++, buf);
     }
 
 #undef APPEND_ARG

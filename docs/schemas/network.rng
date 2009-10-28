@@ -109,6 +109,9 @@
 	<optional>
 	  <element name="bootp">
 	    <attribute name="file"><text/></attribute>
+            <optional>
+              <attribute name="server"><text/></attribute>
+            </optional>
 	  </element>
 	</optional>
       </element>
