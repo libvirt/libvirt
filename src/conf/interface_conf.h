@@ -124,14 +124,23 @@ struct _virInterfaceVlanDef {
     char *devname;   /* device name for vlan */
 };
 
+typedef struct _virInterfaceIpDef virInterfaceIpDef;
+typedef virInterfaceIpDef *virInterfaceIpDefPtr;
+struct _virInterfaceIpDef {
+    char *address;   /* ip address */
+    int prefix;      /* ip prefix */
+};
+
+
 typedef struct _virInterfaceProtocolDef virInterfaceProtocolDef;
 typedef virInterfaceProtocolDef *virInterfaceProtocolDefPtr;
 struct _virInterfaceProtocolDef {
-    char *family;    /* ipv4 only right now */
+    char *family;    /* ipv4 or ipv6 */
     int dhcp;        /* use dhcp */
     int peerdns;     /* dhcp peerdns ? */
-    char *address;   /* ip address */
-    int prefix;      /* ip prefix */
+    int autoconf;    /* only useful if family is ipv6 */
+    int nips;
+    virInterfaceIpDefPtr *ips; /* ptr to array of ips[nips] */
     char *gateway;   /* route gateway */
 };
 
@@ -152,8 +161,8 @@ struct _virInterfaceDef {
         virInterfaceBondDef bond;
     } data;
 
-    /* separated as we may allow multiple of those in the future */
-    virInterfaceProtocolDef proto;
+    int nprotos;
+    virInterfaceProtocolDefPtr *protos; /* ptr to array of protos[nprotos] */
 };
 
 typedef struct _virInterfaceObj virInterfaceObj;
