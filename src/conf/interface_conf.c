@@ -128,12 +128,9 @@ virInterfaceDefParseStartMode(virConnectPtr conn, virInterfaceDefPtr def,
     char *tmp;
 
     tmp = virXPathString(conn, "string(./start/@mode)", ctxt);
-    if (tmp == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                        "%s", _("interface misses the start mode attribute"));
-        return(-1);
-    }
-    if (STREQ(tmp, "onboot"))
+    if (tmp == NULL)
+        def->startmode = VIR_INTERFACE_START_UNSPECIFIED;
+    else if (STREQ(tmp, "onboot"))
         def->startmode = VIR_INTERFACE_START_ONBOOT;
     else if (STREQ(tmp, "hotplug"))
         def->startmode = VIR_INTERFACE_START_HOTPLUG;
@@ -1039,6 +1036,8 @@ virInterfaceStartmodeDefFormat(virConnectPtr conn, virBufferPtr buf,
                                enum virInterfaceStartMode startmode) {
     const char *mode;
     switch (startmode) {
+        case VIR_INTERFACE_START_UNSPECIFIED:
+            return 0;
         case VIR_INTERFACE_START_NONE:
             mode = "none";
             break;

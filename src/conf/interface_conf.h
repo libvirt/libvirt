@@ -48,7 +48,8 @@ VIR_ENUM_DECL(virInterface)
 /* types of start mode */
 
 enum virInterfaceStartMode {
-    VIR_INTERFACE_START_NONE = 0, /* not defined */
+    VIR_INTERFACE_START_UNSPECIFIED = 0, /* not given in config */
+    VIR_INTERFACE_START_NONE,     /* specified as not defined */
     VIR_INTERFACE_START_ONBOOT,   /* startup at boot */
     VIR_INTERFACE_START_HOTPLUG,  /* on hotplug */
 };
