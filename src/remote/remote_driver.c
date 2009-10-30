@@ -7845,7 +7845,7 @@ remoteIOEventLoop(virConnectPtr conn,
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
-        if (ret < 0 && errno == EINTR)
+        if (ret < 0 && errno == EAGAIN)
             goto repoll;
         remoteDriverLock(priv);
 
