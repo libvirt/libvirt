@@ -285,6 +285,16 @@ virReallocN;
 virFree;
 
 
+# network.h
+virSocketAddrInNetwork;
+virSocketAddrIsNetmask;
+virSocketCheckNetmask;
+virSocketGetRange;
+virSocketParseAddr;
+virSocketParseIpv4Addr;
+virSocketParseIpv6Addr;
+
+
 # network_conf.h
 virNetworkAssignDef;
 virNetworkConfigFile;
