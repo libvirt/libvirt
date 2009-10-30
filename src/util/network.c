@@ -91,11 +91,11 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
 /*
  * virSocketParseIpv4Addr:
  * @val: an IPv4 numeric address
- * @addr: the loacation to store the result
+ * @addr: the location to store the result
  *
  * Extract the address storage from an IPv4 numeric address
  *
- * Returns the lenght of the network address or -1 in case of error.
+ * Returns the length of the network address or -1 in case of error.
  */
 int
 virSocketParseIpv4Addr(const char *val, virSocketAddrPtr addr) {
@@ -105,11 +105,11 @@ virSocketParseIpv4Addr(const char *val, virSocketAddrPtr addr) {
 /*
  * virSocketParseIpv6Addr:
  * @val: an IPv6 numeric address
- * @addr: the loacation to store the result
+ * @addr: the location to store the result
  *
  * Extract the address storage from an IPv6 numeric address
  *
- * Returns the lenght of the network address or -1 in case of error.
+ * Returns the length of the network address or -1 in case of error.
  */
 int
 virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
