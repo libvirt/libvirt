@@ -182,6 +182,7 @@ xenInitialize (int privileged ATTRIBUTE_UNUSED)
 }
 
 static virStateDriver state_driver = {
+    .name = "Xen",
     .initialize = xenInitialize,
 };
 

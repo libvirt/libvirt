@@ -431,6 +431,7 @@ static virDeviceMonitor devkitDeviceMonitor = {
 
 
 static virStateDriver devkitStateDriver = {
+    .name = "DeviceKit",
     .initialize = devkitDeviceMonitorStartup,
     .cleanup = devkitDeviceMonitorShutdown,
     .reload = devkitDeviceMonitorReload,

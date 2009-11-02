@@ -1074,6 +1074,7 @@ static virSecretDriver secretDriver = {
 };
 
 static virStateDriver stateDriver = {
+    .name = "Secret",
     .initialize = secretDriverStartup,
     .cleanup = secretDriverCleanup,
     .reload = secretDriverReload,

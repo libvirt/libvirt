@@ -731,6 +731,7 @@ typedef struct _virStateDriver virStateDriver;
 typedef virStateDriver *virStateDriverPtr;
 
 struct _virStateDriver {
+    const char *name;
     virDrvStateInitialize  initialize;
     virDrvStateCleanup     cleanup;
     virDrvStateReload      reload;

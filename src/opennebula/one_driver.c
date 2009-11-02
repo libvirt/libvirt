@@ -761,6 +761,7 @@ static virDriver oneDriver = {
 };
 
 static virStateDriver oneStateDriver = {
+    .name = "OpenNebula",
     .initialize = oneStartup,
     .cleanup    = oneShutdown,
     .active     = oneActive,

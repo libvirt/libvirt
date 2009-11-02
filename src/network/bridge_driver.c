@@ -1509,6 +1509,7 @@ static virNetworkDriver networkDriver = {
 };
 
 static virStateDriver networkStateDriver = {
+    "Network",
     networkStartup,
     networkShutdown,
     networkReload,

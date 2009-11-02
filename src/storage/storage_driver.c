@@ -1744,6 +1744,7 @@ static virStorageDriver storageDriver = {
 
 
 static virStateDriver stateDriver = {
+    .name = "Storage",
     .initialize = storageDriverStartup,
     .cleanup = storageDriverShutdown,
     .reload = storageDriverReload,

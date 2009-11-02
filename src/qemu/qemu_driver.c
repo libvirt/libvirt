@@ -7154,6 +7154,7 @@ static virDriver qemuDriver = {
 
 
 static virStateDriver qemuStateDriver = {
+    .name = "QEMU",
     .initialize = qemudStartup,
     .cleanup = qemudShutdown,
     .reload = qemudReload,

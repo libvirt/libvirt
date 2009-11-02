@@ -8560,6 +8560,7 @@ static virDeviceMonitor dev_monitor = {
 
 #ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
+    .name = "Remote",
     .initialize = remoteStartup,
 };
 #endif

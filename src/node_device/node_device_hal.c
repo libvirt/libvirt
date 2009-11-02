@@ -873,6 +873,7 @@ static virDeviceMonitor halDeviceMonitor = {
 
 
 static virStateDriver halStateDriver = {
+    .name = "HAL",
     .initialize = halDeviceMonitorStartup,
     .cleanup = halDeviceMonitorShutdown,
     .reload = halDeviceMonitorReload,

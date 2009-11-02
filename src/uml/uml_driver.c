@@ -1855,6 +1855,7 @@ static virDriver umlDriver = {
 
 
 static virStateDriver umlStateDriver = {
+    .name = "UML",
     .initialize = umlStartup,
     .cleanup = umlShutdown,
     .reload = umlReload,

@@ -827,8 +827,11 @@ int virStateInitialize(int privileged) {
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
         if (virStateDriverTab[i]->initialize &&
-            virStateDriverTab[i]->initialize(privileged) < 0)
+            virStateDriverTab[i]->initialize(privileged) < 0) {
+            VIR_ERROR("Initialization of %s state driver failed",
+                      virStateDriverTab[i]->name);
             ret = -1;
+        }
     }
     return ret;
 }

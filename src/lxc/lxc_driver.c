@@ -1641,12 +1641,21 @@ static int lxcStartup(int privileged)
      * XXX remove this when valgrind is fixed
      */
     ld = getenv("LD_PRELOAD");
-    if (ld && strstr(ld, "vgpreload"))
-        return -1;
+    if (ld && strstr(ld, "vgpreload")) {
+        VIR_INFO0("Running under valgrind, disabling driver");
+        return 0;
+    }
 
-    /* Check that the user is root */
+    /* Check that the user is root, silently disable if not */
     if (!privileged) {
-        return -1;
+        VIR_INFO0("Not running privileged, disabling driver");
+        return 0;
+    }
+
+    /* Check that this is a container enabled kernel */
+    if (lxcContainerAvailable(0) < 0) {
+        VIR_INFO0("LXC support not available in this kernel, disabling driver");
+        return 0;
     }
 
     if (VIR_ALLOC(lxc_driver) < 0) {
@@ -1657,12 +1666,6 @@ static int lxcStartup(int privileged)
         return -1;
     }
     lxcDriverLock(lxc_driver);
-
-    /* Check that this is a container enabled kernel */
-    if (lxcContainerAvailable(0) < 0) {
-        VIR_INFO0("LXC support not available in this kernel, disabling driver");
-        goto cleanup;
-    }
 
     if (virDomainObjListInit(&lxc_driver->domains) < 0)
         goto cleanup;
@@ -2322,6 +2325,7 @@ static virDriver lxcDriver = {
 };
 
 static virStateDriver lxcStateDriver = {
+    .name = "LXC",
     .initialize = lxcStartup,
     .cleanup = lxcShutdown,
     .active = lxcActive,
