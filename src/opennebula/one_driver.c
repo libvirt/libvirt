@@ -617,23 +617,26 @@ static int oneStartup(int privileged ATTRIBUTE_UNUSED){
         return -1;
     }
 
-    if (virDomainObjListInit(&one_driver->domains) < 0) {
-        virMutexDestroy(&one_driver->lock);
-        VIR_FREE(one_driver);
-        return -1;
-    }
-
     c_oneStart();
     oneDriverLock(one_driver);
+
+    if (virDomainObjListInit(&one_driver->domains) < 0) {
+        goto error;
+    }
+
     one_driver->nextid=1;
     if ((one_driver->caps = oneCapsInit()) == NULL) {
-        oneDriverUnlock(one_driver);
-        VIR_FREE(one_driver);
-        return -1;
+        virReportOOMError(NULL);
+        goto error;
     }
     oneDriverUnlock(one_driver);
 
     return 0;
+
+error:
+    oneDriverUnlock(one_driver);
+    oneShutdown();
+    return -1;
 }
 
 static int oneShutdown(void){
