@@ -47,7 +47,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
     if ((addr == NULL) || (tab == NULL) || (addr->stor.ss_family != AF_INET6))
         return(-1);
 
-    val = (virIPv6AddrPtr) &(addr->inet6.sin6_addr.__in6_u.__u6_addr16);
+    val = (virIPv6AddrPtr) &(addr->inet6.sin6_addr.s6_addr16);
 
     for (i = 0;i < 8;i++) {
         (*tab)[i] = ntohs((*val)[i]);
