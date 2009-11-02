@@ -807,6 +807,10 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def);
 int virDomainVideoDefaultType(virDomainDefPtr def);
 int virDomainVideoDefaultRAM(virDomainDefPtr def, int type);
 
+int virDomainObjIsDuplicate(virDomainObjListPtr doms,
+                            virDomainDefPtr def,
+                            unsigned int check_active);
+
 void virDomainObjLock(virDomainObjPtr obj);
 void virDomainObjUnlock(virDomainObjPtr obj);
 

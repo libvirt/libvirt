@@ -1178,23 +1178,8 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    vm = virDomainFindByName(&driver->domains, def->name);
-    if (vm) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain '%s' is already defined"),
-                         def->name);
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
-    }
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-    if (vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(def->uuid, uuidstr);
-        umlReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain with uuid '%s' is already defined"),
-                         uuidstr);
-        goto cleanup;
-    }
 
     if (!(vm = virDomainAssignDef(conn,
                                   driver->caps,
@@ -1529,6 +1514,9 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(conn, driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (virDomainObjIsDuplicate(&driver->domains, def, 0) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,

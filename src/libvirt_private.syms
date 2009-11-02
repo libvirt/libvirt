@@ -146,6 +146,7 @@ virDomainObjLock;
 virDomainObjUnlock;
 virDomainStateTypeToString;
 virDomainStateTypeFromString;
+virDomainObjIsDuplicate;
 virDomainObjListGetInactiveNames;
 virDomainObjListGetActiveIDs;
 virDomainObjListNumOfDomains;

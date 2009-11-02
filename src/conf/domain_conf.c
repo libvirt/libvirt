@@ -5218,6 +5218,70 @@ virDomainFSDefPtr virDomainGetRootFilesystem(virDomainDefPtr def)
     return NULL;
 }
 
+/*
+ * virDomainObjIsDuplicate:
+ * @doms : virDomainObjListPtr to search
+ * @def  : virDomainDefPtr definition of domain to lookup
+ * @check_active: If true, ensure that domain is not active
+ *
+ * Returns: -1 on error
+ *          0 if domain is new
+ *          1 if domain is a duplicate
+ */
+int
+virDomainObjIsDuplicate(virDomainObjListPtr doms,
+                        virDomainDefPtr def,
+                        unsigned int check_active)
+{
+    int ret = -1;
+    int dupVM = 0;
+    virDomainObjPtr vm = NULL;
+
+    /* See if a VM with matching UUID already exists */
+    vm = virDomainFindByUUID(doms, def->uuid);
+    if (vm) {
+        /* UUID matches, but if names don't match, refuse it */
+        if (STRNEQ(vm->def->name, def->name)) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(vm->def->uuid, uuidstr);
+            virDomainReportError(NULL, VIR_ERR_OPERATION_FAILED,
+                            _("domain '%s' is already defined with uuid %s"),
+                            vm->def->name, uuidstr);
+            goto cleanup;
+        }
+
+        if (check_active) {
+            /* UUID & name match, but if VM is already active, refuse it */
+            if (virDomainObjIsActive(vm)) {
+                virDomainReportError(NULL, VIR_ERR_OPERATION_INVALID,
+                                     _("domain is already active as '%s'"),
+                                     vm->def->name);
+                goto cleanup;
+            }
+        }
+
+        dupVM = 1;
+        virDomainObjUnlock(vm);
+    } else {
+        /* UUID does not match, but if a name matches, refuse it */
+        vm = virDomainFindByName(doms, def->name);
+        if (vm) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(vm->def->uuid, uuidstr);
+            virDomainReportError(NULL, VIR_ERR_OPERATION_FAILED,
+                                 _("domain '%s' already exists with uuid %s"),
+                                 def->name, uuidstr);
+            goto cleanup;
+        }
+    }
+
+    ret = dupVM;
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 
 void virDomainObjLock(virDomainObjPtr obj)
 {

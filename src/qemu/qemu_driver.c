@@ -2657,38 +2657,8 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (virSecurityDriverVerify(conn, def) < 0)
         goto cleanup;
 
-    /* See if a VM with matching UUID already exists */
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-    if (vm) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             vm->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        /* UUID & name match, but if VM is already active, refuse it */
-        if (virDomainObjIsActive(vm)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain is already active as '%s'"), vm->def->name);
-            goto cleanup;
-        }
-        virDomainObjUnlock(vm);
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        vm = virDomainFindByName(&driver->domains, def->name);
-        if (vm) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             def->name, uuidstr);
-            goto cleanup;
-        }
-    }
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,
                                   driver->caps,
@@ -3718,38 +3688,8 @@ static int qemudDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
 
-    /* See if a VM with matching UUID already exists */
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-    if (vm) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             vm->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        /* UUID & name match, but if VM is already active, refuse it */
-        if (virDomainObjIsActive(vm)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_INVALID,
-                             _("domain is already active as '%s'"), vm->def->name);
-            goto cleanup;
-        }
-        virDomainObjUnlock(vm);
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        vm = virDomainFindByName(&driver->domains, def->name);
-        if (vm) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             def->name, uuidstr);
-            goto cleanup;
-        }
-    }
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
 
     if (!(vm = virDomainAssignDef(conn,
                                   driver->caps,
@@ -4196,7 +4136,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
-    int newVM = 1;
+    int dupVM;
 
     qemuDriverLock(driver);
     if (!(def = virDomainDefParseString(conn, driver->caps, xml,
@@ -4206,34 +4146,8 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (virSecurityDriverVerify(conn, def) < 0)
         goto cleanup;
 
-    /* See if a VM with matching UUID already exists */
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-    if (vm) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             vm->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        /* UUID & name match */
-        virDomainObjUnlock(vm);
-        newVM = 0;
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        vm = virDomainFindByName(&driver->domains, def->name);
-        if (vm) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
-            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain '%s' is already defined with uuid %s"),
-                             def->name, uuidstr);
-            goto cleanup;
-        }
-    }
+    if ((dupVM = virDomainObjIsDuplicate(&driver->domains, def, 0)) < 0)
+        goto cleanup;
 
     if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
@@ -4258,7 +4172,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
-                                     newVM ?
+                                     !dupVM ?
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED :
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 

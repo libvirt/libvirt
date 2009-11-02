@@ -32,6 +32,9 @@ fail=0
 # Output a valid definition, to be used as input.
 $abs_top_builddir/tools/virsh -c test:///default dumpxml 1 > xml || fail=1
 
+# Change the VM name
+sed -i -e "s|<name>test</name>|<name>newtest</name>|g" xml
+
 for i in before after; do
   # The largest BUFSIZ I've seen is 128K.  This is slightly larger.
   printf %132000s ' ' > sp || fail=1
@@ -40,7 +43,7 @@ for i in before after; do
   ( test $i = before && cat sp xml || cat xml sp ) > $in || fail=1
 
   $abs_top_builddir/tools/virsh --connect test:///default define $in > out || fail=1
-  printf "Domain test defined from $in\n\n" > exp || fail=1
+  printf "Domain newtest defined from $in\n\n" > exp || fail=1
   compare exp out || fail=1
 done
 
