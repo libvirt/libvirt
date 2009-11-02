@@ -188,7 +188,7 @@ install-logrotate: libvirtd.logrotate
 	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
 	$(INSTALL_DATA) $< $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
 
-if LIBVIRT_INIT_SCRIPTS_RED_HAT
+if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init: libvirtd.init
 	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
 	$(INSTALL_SCRIPT) libvirtd.init \
@@ -222,7 +222,7 @@ install-init:
 uninstall-init:
 libvirtd.init:
 
-endif # DBUS_INIT_SCRIPTS_RED_HAT
+endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 # This must be added last, since functions it provides/replaces
 # are used by nearly every other library.

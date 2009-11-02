@@ -243,17 +243,17 @@ dnl init script flavor
 dnl
 AC_MSG_CHECKING([for init script flavor])
 AC_ARG_WITH([init-script],
-            [AC_HELP_STRING([--with-init-scripts=[redhat|auto|none]],
-		     [Style of init scripts to install (defaults to auto)])])
-if test "x$with_init_scripts" = "x" -o "x$with_init_scripts" = "xauto"; then
+            [AC_HELP_STRING([--with-init-script=[redhat|auto|none]],
+		     [Style of init script to install (defaults to auto)])])
+if test "x$with_init_script" = "x" -o "x$with_init_script" = "xauto"; then
     if test -f /etc/redhat-release ; then
-        with_init_scripts=redhat
+        with_init_script=redhat
     else
-        with_init_scripts=none
+        with_init_script=none
     fi
 fi
-AM_CONDITIONAL([LIBVIRT_INIT_SCRIPTS_RED_HAT], test x$with_init_scripts = xredhat)
-AC_MSG_RESULT($with_init_scripts)
+AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test x$with_init_script = xredhat)
+AC_MSG_RESULT($with_init_script)
 
 dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
 AC_ARG_WITH([rhel5-api],
