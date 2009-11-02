@@ -6288,20 +6288,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     /* Target domain name, maybe renamed. */
     dname = dname ? dname : def->name;
 
-#if 1
     /* Ensure the name and UUID don't already exist in an active VM */
     vm = virDomainFindByUUID(&driver->domains, def->uuid);
-#else
-    /* For TESTING ONLY you can change #if 1 -> #if 0 above and use
-     * this code which lets you do localhost migrations.  You must still
-     * supply a fresh 'dname' but this code assigns a random UUID.
-     */
-    if (virUUIDGenerate (def->uuid) == -1) {
-        qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-            _("could not generate random UUID"));
-        goto cleanup;
-    }
-#endif
 
     if (!vm) vm = virDomainFindByName(&driver->domains, dname);
     if (vm) {
