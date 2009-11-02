@@ -5997,19 +5997,8 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     /* Target domain name, maybe renamed. */
     dname = dname ? dname : def->name;
 
-    /* Ensure the name and UUID don't already exist in an active VM */
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-
-    if (!vm) vm = virDomainFindByName(&driver->domains, dname);
-    if (vm) {
-        if (virDomainObjIsActive(vm)) {
-            qemudReportError(dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("domain with the same name or UUID already exists as '%s'"),
-                             vm->def->name);
-            goto cleanup;
-        }
-        virDomainObjUnlock(vm);
-    }
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
 
     if (!(vm = virDomainAssignDef(dconn,
                                   driver->caps,
@@ -6221,19 +6210,8 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     /* Target domain name, maybe renamed. */
     dname = dname ? dname : def->name;
 
-    /* Ensure the name and UUID don't already exist in an active VM */
-    vm = virDomainFindByUUID(&driver->domains, def->uuid);
-
-    if (!vm) vm = virDomainFindByName(&driver->domains, dname);
-    if (vm) {
-        if (virDomainObjIsActive(vm)) {
-            qemudReportError (dconn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                              _("domain with the same name or UUID already exists as '%s'"),
-                              vm->def->name);
-            goto cleanup;
-        }
-        virDomainObjUnlock(vm);
-    }
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
 
     if (!(vm = virDomainAssignDef(dconn,
                                   driver->caps,
