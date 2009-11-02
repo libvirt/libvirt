@@ -289,10 +289,13 @@ virFree;
 virSocketAddrInNetwork;
 virSocketAddrIsNetmask;
 virSocketCheckNetmask;
+virSocketFormatAddr;
+virSocketGetPort;
 virSocketGetRange;
 virSocketParseAddr;
 virSocketParseIpv4Addr;
 virSocketParseIpv6Addr;
+virSocketSetPort;
 
 
 # network_conf.h

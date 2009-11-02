@@ -34,6 +34,12 @@ int virSocketParseIpv4Addr(const char *val,
 int virSocketParseIpv6Addr(const char *val,
                            virSocketAddrPtr addr);
 
+char * virSocketFormatAddr(virSocketAddrPtr addr);
+
+int virSocketSetPort(virSocketAddrPtr addr, int port);
+
+int virSocketGetPort(virSocketAddrPtr addr);
+
 int virSocketAddrInNetwork(virSocketAddrPtr addr1,
                            virSocketAddrPtr addr2,
                            virSocketAddrPtr netmask);

@@ -9,6 +9,7 @@
  */
 
 #include <config.h>
+#include <arpa/inet.h>
 
 #include "memory.h"
 #include "network.h"
@@ -64,7 +65,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
  * Mostly a wrapper for getaddrinfo() extracting the address storage
  * from the numeric string like 1.2.3.4 or 2001:db8:85a3:0:0:8a2e:370:7334
  *
- * Returns the lenght of the network address or -1 in case of error.
+ * Returns the length of the network address or -1 in case of error.
  */
 int
 virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
@@ -114,6 +115,100 @@ virSocketParseIpv4Addr(const char *val, virSocketAddrPtr addr) {
 int
 virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
     return(virSocketParseAddr(val, addr, AF_INET6));
+}
+
+/*
+ * virSocketFormatAddr:
+ * @addr: an initialised virSocketAddrPtr
+ *
+ * Returns a string representation of the given address
+ * Returns NULL on any error
+ * Caller must free the returned string
+ */
+char *
+virSocketFormatAddr(virSocketAddrPtr addr) {
+    char   *out;
+    size_t outlen;
+    void   *inaddr;
+
+    if (addr == NULL)
+        return NULL;
+
+    if (addr->stor.ss_family == AF_INET) {
+        outlen = INET_ADDRSTRLEN;
+        inaddr = &addr->inet4.sin_addr;
+    }
+
+    else if (addr->stor.ss_family == AF_INET6) {
+        outlen = INET6_ADDRSTRLEN;
+        inaddr = &addr->inet6.sin6_addr;
+    }
+
+    else {
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(out, outlen) < 0)
+        return NULL;
+
+    if (inet_ntop(addr->stor.ss_family, inaddr, out, outlen) == NULL) {
+        VIR_FREE(out);
+        return NULL;
+    }
+
+    return out;
+}
+
+/*
+ * virSocketSetPort:
+ * @addr: an initialised virSocketAddrPtr
+ * @port: the port number to set
+ *
+ * Set the transport layer port of the given virtSocketAddr
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virSocketSetPort(virSocketAddrPtr addr, int port) {
+    if (addr == NULL)
+        return -1;
+
+    if(addr->stor.ss_family == AF_INET) {
+        addr->inet4.sin_port = port;
+    }
+
+    else if(addr->stor.ss_family == AF_INET6) {
+        addr->inet6.sin6_port = port;
+    }
+
+    else {
+        return -1;
+    }
+
+    return 0;
+}
+
+/*
+ * virSocketGetPort:
+ * @addr: an initialised virSocketAddrPtr
+ *
+ * Returns the transport layer port of the given virtSocketAddr
+ * Returns -1 if @addr is invalid
+ */
+int
+virSocketGetPort(virSocketAddrPtr addr) {
+    if (addr == NULL)
+        return -1;
+
+    if(addr->stor.ss_family == AF_INET) {
+        return addr->inet4.sin_port;
+    }
+
+    else if(addr->stor.ss_family == AF_INET6) {
+        return addr->inet6.sin6_port;
+    }
+
+    return -1;
 }
 
 /**
