@@ -629,12 +629,16 @@ static int
 virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
     xmlNodePtr node;
-    int ret = 0;
+    int ret = -1;
     unsigned long tmp;
 
     def->data.bond.mode = virInterfaceDefParseBondMode(conn, ctxt);
     if (def->data.bond.mode < 0)
         goto error;
+
+    ret = virInterfaceDefParseBondItfs(conn, def, ctxt);
+    if (ret != 0)
+       goto error;
 
     node = virXPathNode(conn, "./miimon[1]", ctxt);
     if (node != NULL) {
@@ -667,15 +671,13 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
         }
 
         def->data.bond.carrier = virInterfaceDefParseBondMiiCarrier(conn, ctxt);
-        if (def->data.bond.carrier < 0)
+        if (def->data.bond.carrier < 0) {
+            ret = -1;
             goto error;
+        }
 
-        ret = virInterfaceDefParseBondItfs(conn, def, ctxt);
+    } else if ((node = virXPathNode(conn, "./arpmon[1]", ctxt)) != NULL) {
 
-        goto done;
-    }
-    node = virXPathNode(conn, "./arpmon[1]", ctxt);
-    if (node != NULL) {
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_ARP;
 
         ret = virXPathULong(conn, "string(./arpmon/@interval)", ctxt, &tmp);
@@ -691,23 +693,17 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
         if (def->data.bond.target == NULL) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                  "%s", _("bond interface arpmon target missing"));
+            ret = -1;
             goto error;
         }
 
         def->data.bond.validate = virInterfaceDefParseBondArpValid(conn, ctxt);
-        if (def->data.bond.validate < 0)
+        if (def->data.bond.validate < 0) {
+            ret = -1;
             goto error;
-
-        ret = virInterfaceDefParseBondItfs(conn, def, ctxt);
-
-        goto done;
+        }
     }
-
-    virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                "%s", _("bond interface need miimon or arpmon element"));
 error:
-    ret = -1;
-done:
     return(ret);
 }
 
@@ -1107,11 +1103,6 @@ virInterfaceBondDefFormat(virConnectPtr conn, virBufferPtr buf,
         else if (def->data.bond.validate == VIR_INTERFACE_BOND_ARP_ALL)
             virBufferAddLit(buf, " validate='all'");
         virBufferAddLit(buf, "/>\n");
-    } else {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                _("bond monitoring type %d unknown"),
-                                def->data.bond.monit);
-        return(-1);
     }
     for (i = 0;i < def->data.bond.nbItf;i++) {
         if (virInterfaceBareDevDefFormat(conn, buf, def->data.bond.itf[i]) < 0)
