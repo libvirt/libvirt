@@ -60,7 +60,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     if (qemudBuildCommandLine(NULL, &driver,
-                              vmdef, &monitor_chr, flags,
+                              vmdef, &monitor_chr, 0, flags,
                               &argv, &qenv,
                               NULL, NULL, migrateFrom) < 0)
         goto fail;

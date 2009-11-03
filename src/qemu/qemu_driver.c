@@ -87,6 +87,7 @@ struct _qemuDomainObjPrivate {
 
     qemuMonitorPtr mon;
     virDomainChrDefPtr monConfig;
+    int monJSON;
 
     int nvcpupids;
     int *vcpupids;
@@ -173,6 +174,8 @@ static int qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
         }
 
         virBufferEscapeString(buf, "  <monitor path='%s'", monitorpath);
+        if (priv->monJSON)
+            virBufferAddLit(buf, " json='1'");
         virBufferVSprintf(buf, " type='%s'/>\n",
                           virDomainChrTypeToString(priv->monConfig->type));
     }
@@ -216,6 +219,9 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     else
         priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
+
+    if (virXPathBoolean(NULL, "int(./monitor[1]/@json)", ctxt))
+        priv->monJSON = 1;
 
     switch (priv->monConfig->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -799,6 +805,7 @@ qemuConnectMonitor(virDomainObjPtr vm)
 
     if ((priv->mon = qemuMonitorOpen(vm,
                                      priv->monConfig,
+                                     priv->monJSON,
                                      qemuHandleMonitorEOF)) == NULL) {
         VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
         return -1;
@@ -2347,6 +2354,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuPrepareMonitorChr(conn, driver, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
+#if HAVE_YAJL
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_MONITOR_JSON)
+        priv->monJSON = 1;
+#endif
+
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(conn, ret,
                              _("Cannot remove stale PID file for %s"),
@@ -2362,7 +2374,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
-                              qemuCmdFlags, &argv, &progenv,
+                              priv->monJSON, qemuCmdFlags, &argv, &progenv,
                               &tapfds, &ntapfds, migrateFrom) < 0)
         goto cleanup;
 
@@ -4437,7 +4449,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     if (qemudBuildCommandLine(conn, driver, def,
-                              &monConfig, qemuCmdFlags,
+                              &monConfig, 0, qemuCmdFlags,
                               &retargv, &retenv,
                               NULL, NULL, /* Don't want it to create TAP devices */
                               NULL) < 0) {

@@ -80,6 +80,7 @@ char *qemuMonitorEscapeShell(const char *in);
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrDefPtr config,
+                               int json,
                                qemuMonitorEOFNotify eofCB);
 
 int qemuMonitorClose(qemuMonitorPtr mon);
@@ -132,6 +133,9 @@ int qemuMonitorSetBalloon(qemuMonitorPtr mon,
 /* XXX should we pass the virDomainDiskDefPtr instead
  * and hide devname details inside monitor. Reconsider
  * this when doing the QMP implementation
+ *
+ * XXXX 'eject' has gained a 'force' flag we might like
+ * to make use of...
  */
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
                           const char *devname);

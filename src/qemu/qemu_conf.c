@@ -942,6 +942,9 @@ static unsigned int qemudComputeCmdFlags(const char *help,
     if (version >= 10000)
         flags |= QEMUD_CMD_FLAG_0_10;
 
+    if (version >= 12000)
+        flags |= QEMUD_CMD_FLAG_0_12;
+
     return flags;
 }
 
@@ -1584,6 +1587,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainDefPtr def,
                           virDomainChrDefPtr monitor_chr,
+                          int monitor_json,
                           unsigned int qemuCmdFlags,
                           const char ***retargv,
                           const char ***retenv,
@@ -1857,6 +1861,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (monitor_chr) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+        if (monitor_json)
+            virBufferAddLit(&buf, "control,");
 
         qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
         if (virBufferError(&buf))

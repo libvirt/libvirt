@@ -74,6 +74,8 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX = (1 << 21), /* Does qemu support unix domain sockets for migration? */
     QEMUD_CMD_FLAG_CHARDEV       = (1 << 22), /* Is the new -chardev arg available */
     QEMUD_CMD_FLAG_ENABLE_KVM    = (1 << 23), /* Is the -enable-kvm flag available to "enable KVM full virtualization support" */
+    QEMUD_CMD_FLAG_0_12          = (1 << 24),
+    QEMUD_CMD_FLAG_MONITOR_JSON  = QEMUD_CMD_FLAG_0_12, /* JSON mode for monitor */
 };
 
 /* Main driver state */
@@ -168,6 +170,7 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainDefPtr def,
                                          virDomainChrDefPtr monitor_chr,
+                                         int monitor_json,
                                          unsigned int qemuCmdFlags,
                                          const char ***retargv,
                                          const char ***retenv,

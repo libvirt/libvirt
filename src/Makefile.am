@@ -189,7 +189,9 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_monitor.c qemu/qemu_monitor.h		\
 		qemu/qemu_monitor_text.c			\
 		qemu/qemu_monitor_text.h			\
-		qemu/qemu_driver.c qemu/qemu_driver.h        	\
+		qemu/qemu_monitor_json.c			\
+		qemu/qemu_monitor_json.h			\
+		qemu/qemu_driver.c qemu/qemu_driver.h		\
 		qemu/qemu_bridge_filter.c 			\
 		qemu/qemu_bridge_filter.h
 
