@@ -185,7 +185,9 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_conf.c qemu/qemu_conf.h		\
 		qemu/qemu_monitor_text.c			\
 		qemu/qemu_monitor_text.h			\
-		qemu/qemu_driver.c qemu/qemu_driver.h
+		qemu/qemu_driver.c qemu/qemu_driver.h        	\
+		qemu/qemu_bridge_filter.c 			\
+		qemu/qemu_bridge_filter.h
 
 UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\

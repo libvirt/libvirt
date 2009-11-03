@@ -56,6 +56,7 @@
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 #include "qemu_monitor_text.h"
+#include "qemu_bridge_filter.h"
 #include "c-ctype.h"
 #include "event.h"
 #include "buf.h"
@@ -2169,6 +2170,22 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
         return;
 
     VIR_DEBUG(_("Shutting down VM '%s'\n"), vm->def->name);
+
+    if (driver->macFilter) {
+        int i;
+        virDomainDefPtr def = vm->def;
+        for (i = 0 ; i < def->nnets ; i++) {
+            virDomainNetDefPtr net = def->nets[i];
+            if (net->ifname == NULL)
+                continue;
+            if ((errno = networkDisallowMacOnPort(conn, driver, net->ifname,
+                                                  net->mac))) {
+                virReportSystemError(conn, errno,
+             _("failed to remove ebtables rule to allow MAC address on  '%s'"),
+                                     net->ifname);
+            }
+        }
+    }
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)

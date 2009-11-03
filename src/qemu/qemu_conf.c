@@ -40,6 +40,7 @@
 #include "c-ctype.h"
 #include "virterror_internal.h"
 #include "qemu_conf.h"
+#include "qemu_bridge_filter.h"
 #include "uuid.h"
 #include "buf.h"
 #include "conf.h"
@@ -317,6 +318,24 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
              return -1;
          }
      }
+
+    p = virConfGetValue (conf, "mac_filter");
+    CHECK_TYPE ("mac_filter", VIR_CONF_LONG);
+    if (p) {
+        driver->macFilter = p->l;
+        if (!(driver->ebtables = ebtablesContextNew("qemu"))) {
+            driver->macFilter = 0;
+            virReportSystemError(NULL, errno,
+                                 _("failed to enable mac filter in in '%s'"),
+                                 __FILE__);
+        }
+
+        if ((errno = networkDisableAllFrames(driver))) {
+            virReportSystemError(NULL, errno,
+                         _("failed to add rule to drop all frames in '%s'"),
+                                 __FILE__);
+        }
+    }
 
     virConfFree (conf);
     return 0;
@@ -1192,6 +1211,14 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         if (template_ifname)
             VIR_FREE(net->ifname);
         tapfd = -1;
+    }
+
+    if (driver->macFilter) {
+        if ((err = networkAllowMacOnPort(conn, driver, net->ifname, net->mac))) {
+            virReportSystemError(conn, err,
+                 _("failed to add ebtables rule to allow MAC address on  '%s'"),
+                                 net->ifname);
+        }
     }
 
 cleanup:

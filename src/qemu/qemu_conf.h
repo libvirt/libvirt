@@ -26,6 +26,7 @@
 
 #include <config.h>
 
+#include "ebtables.h"
 #include "internal.h"
 #include "bridge.h"
 #include "capabilities.h"
@@ -111,6 +112,9 @@ struct qemud_driver {
     char *vncSASLdir;
     char *hugetlbfs_mount;
     char *hugepage_path;
+
+    unsigned int macFilter : 1;
+    ebtablesContext *ebtables;
 
     virCapsPtr caps;
 
