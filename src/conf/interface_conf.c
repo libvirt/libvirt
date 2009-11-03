@@ -310,10 +310,11 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
     def->gateway = tmp;
 
     dhcp = virXPathNode(conn, "./dhcp", ctxt);
-    if (dhcp != NULL)
+    if (dhcp != NULL) {
         ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
-    if (ret != 0)
-        return(ret);
+        if (ret != 0)
+           return(ret);
+    }
 
     nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
     if (ipNodes == NULL)
@@ -366,10 +367,11 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
         def->autoconf = 1;
 
     dhcp = virXPathNode(conn, "./dhcp", ctxt);
-    if (dhcp != NULL)
+    if (dhcp != NULL) {
         ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
-    if (ret != 0)
-        return(ret);
+        if (ret != 0)
+           return(ret);
+    }
 
     nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
     if (ipNodes == NULL)
