@@ -588,10 +588,15 @@ virInterfacePtr
 virGetInterface(virConnectPtr conn, const char *name, const char *mac) {
     virInterfacePtr ret = NULL;
 
-    if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (mac == NULL)) {
+    if ((!VIR_IS_CONNECT(conn)) || (name == NULL)) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
+
+    /* a NULL mac from caller is okay. Treat it as blank */
+    if (mac == NULL)
+       mac = "";
+
     virMutexLock(&conn->lock);
 
     ret = (virInterfacePtr) virHashLookup(conn->interfaces, name);
