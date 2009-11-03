@@ -51,6 +51,7 @@ UTIL_SOURCES =							\
 		util/event.c util/event.h			\
 		util/hash.c util/hash.h				\
 		util/iptables.c util/iptables.h			\
+		util/ebtables.c util/ebtables.h			\
 		util/logging.c util/logging.h			\
 		util/memory.c util/memory.h			\
 		util/pci.c util/pci.h				\
