@@ -274,15 +274,18 @@ qemudRemoveDomainStatus(virConnectPtr conn,
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
         virReportOOMError(conn);
-        goto cleanup;
+        return(-1);
     }
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN(_("Failed to remove domain XML for %s: %s"),
-                 vm->def->name, virStrerror(errno, buf, sizeof(ebuf)));
+                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+    VIR_FREE(file);
+
     if (virFileDeletePid(driver->stateDir, vm->def->name) != 0)
         VIR_WARN(_("Failed to remove PID file for %s: %s"),
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+
 
     return 0;
 }
