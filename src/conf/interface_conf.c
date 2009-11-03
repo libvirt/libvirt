@@ -58,6 +58,7 @@ void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
     if (def == NULL)
         return;
     VIR_FREE(def->address);
+    VIR_FREE(def);
 }
 
 static
