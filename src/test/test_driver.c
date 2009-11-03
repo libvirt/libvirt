@@ -469,6 +469,15 @@ cleanup:
     return ret;
 }
 
+static void
+testDomainShutdownState(virDomainPtr domain,
+                        virDomainObjPtr privdom)
+{
+    privdom->state = VIR_DOMAIN_SHUTOFF;
+    privdom->def->id = -1;
+    domain->id = -1;
+}
+
 static int testOpenDefault(virConnectPtr conn) {
     int u;
     struct timeval tv;
@@ -1365,18 +1374,16 @@ static int testDestroyDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_SHUTOFF;
-    privdom->def->id = -1;
-    domain->id = -1;
+    testDomainShutdownState(domain, privdom);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
         privdom = NULL;
     }
-
 
     ret = 0;
 cleanup:
@@ -1494,19 +1501,18 @@ static int testShutdownDomain (virDomainPtr domain)
         goto cleanup;
     }
 
-    privdom->state = VIR_DOMAIN_SHUTOFF;
-    domain->id = -1;
-    privdom->def->id = -1;
+    testDomainShutdownState(domain, privdom);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
         privdom = NULL;
     }
-    ret = 0;
 
+    ret = 0;
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
@@ -1538,8 +1544,6 @@ static int testRebootDomain (virDomainPtr domain,
     switch (privdom->def->onReboot) {
     case VIR_DOMAIN_LIFECYCLE_DESTROY:
         privdom->state = VIR_DOMAIN_SHUTOFF;
-        domain->id = -1;
-        privdom->def->id = -1;
         break;
 
     case VIR_DOMAIN_LIFECYCLE_RESTART:
@@ -1548,8 +1552,6 @@ static int testRebootDomain (virDomainPtr domain,
 
     case VIR_DOMAIN_LIFECYCLE_PRESERVE:
         privdom->state = VIR_DOMAIN_SHUTOFF;
-        domain->id = -1;
-        privdom->def->id = -1;
         break;
 
     case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
@@ -1558,15 +1560,15 @@ static int testRebootDomain (virDomainPtr domain,
 
     default:
         privdom->state = VIR_DOMAIN_SHUTOFF;
-        domain->id = -1;
-        privdom->def->id = -1;
         break;
     }
 
     if (privdom->state == VIR_DOMAIN_SHUTOFF) {
+        testDomainShutdownState(domain, privdom);
         event = virDomainEventNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+
         if (!privdom->persistent) {
             virDomainRemoveInactive(&privconn->domains,
                                     privdom);
@@ -1575,7 +1577,6 @@ static int testRebootDomain (virDomainPtr domain,
     }
 
     ret = 0;
-
 cleanup:
     if (privdom)
         virDomainObjUnlock(privdom);
@@ -1689,17 +1690,18 @@ static int testDomainSave(virDomainPtr domain,
     }
     fd = -1;
 
-    privdom->state = VIR_DOMAIN_SHUTOFF;
+    testDomainShutdownState(domain, privdom);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
+
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
         privdom = NULL;
     }
-    ret = 0;
 
+    ret = 0;
 cleanup:
     VIR_FREE(xml);
 
@@ -1842,17 +1844,19 @@ static int testDomainCoreDump(virDomainPtr domain,
                              domain->name, to);
         goto cleanup;
     }
-    privdom->state = VIR_DOMAIN_SHUTOFF;
+
+    testDomainShutdownState(domain, privdom);
     event = virDomainEventNewFromObj(privdom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+
     if (!privdom->persistent) {
         virDomainRemoveInactive(&privconn->domains,
                                 privdom);
         privdom = NULL;
     }
-    ret = 0;
 
+    ret = 0;
 cleanup:
     if (fd != -1)
         close(fd);
