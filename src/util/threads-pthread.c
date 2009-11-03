@@ -88,6 +88,21 @@ int virCondWait(virCondPtr c, virMutexPtr m)
     return 0;
 }
 
+int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms)
+{
+    int ret;
+    struct timespec ts;
+
+    ts.tv_sec = whenms / 1000;
+    ts.tv_nsec = (whenms % 1000) * 1000;
+
+    if ((ret = pthread_cond_timedwait(&c->cond, &m->lock, &ts)) != 0) {
+        errno = ret;
+        return -1;
+    }
+    return 0;
+}
+
 void virCondSignal(virCondPtr c)
 {
     pthread_cond_signal(&c->cond);

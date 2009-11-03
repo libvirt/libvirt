@@ -452,6 +452,7 @@ virMutexUnlock;
 virCondInit;
 virCondDestroy;
 virCondWait;
+virCondWaitUntil;
 virCondSignal;
 virCondBroadcast;
 
