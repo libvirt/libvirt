@@ -2354,8 +2354,11 @@ libvirt_virEventInvokeHandleCallback(PyObject *self ATTRIBUTE_UNUSED,
     cb     = (virEventHandleCallback) PyvirEventHandleCallback_Get(py_f);
     opaque = (void *) PyvirVoidPtr_Get(py_opaque);
 
-    if(cb)
+    if(cb) {
+        LIBVIRT_BEGIN_ALLOW_THREADS;
         cb (watch, fd, event, opaque);
+        LIBVIRT_END_ALLOW_THREADS;
+    }
 
     return VIR_PY_INT_SUCCESS;
 }
@@ -2378,8 +2381,11 @@ libvirt_virEventInvokeTimeoutCallback(PyObject *self ATTRIBUTE_UNUSED,
 
     cb     = (virEventTimeoutCallback) PyvirEventTimeoutCallback_Get(py_f);
     opaque = (void *) PyvirVoidPtr_Get(py_opaque);
-    if(cb)
+    if(cb) {
+        LIBVIRT_BEGIN_ALLOW_THREADS;
         cb (timer, opaque);
+        LIBVIRT_END_ALLOW_THREADS;
+    }
 
     return VIR_PY_INT_SUCCESS;
 }
