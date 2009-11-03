@@ -1095,6 +1095,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("unsupported configuration: %s");
             break;
+        case VIR_ERR_OPERATION_TIMEOUT:
+            if (info == NULL)
+                errmsg = _("Timed out during operation");
+            else
+                errmsg = _("Timed out during operation: %s");
+            break;
     }
     return (errmsg);
 }

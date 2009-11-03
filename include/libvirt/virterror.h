@@ -171,6 +171,7 @@ typedef enum {
     VIR_ERR_INVALID_SECRET, /* invalid secret */
     VIR_ERR_NO_SECRET, /* secret not found */
     VIR_ERR_CONFIG_UNSUPPORTED, /* unsupported configuration construct */
+    VIR_ERR_OPERATION_TIMEOUT, /* timeout occurred during operation */
 } virErrorNumber;
 
 /**

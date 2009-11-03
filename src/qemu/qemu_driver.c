@@ -158,18 +158,36 @@ static void qemuDomainObjPrivateFree(void *data)
  * Upon successful return, the object will have its ref count increased,
  * successful calls must be followed by EndJob eventually
  */
+
+/* Give up waiting for mutex after 30 seconds */
+#define QEMU_JOB_WAIT_TIME (1000ull * 30)
+
 static int qemuDomainObjBeginJob(virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
 static int qemuDomainObjBeginJob(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    struct timeval now;
+    unsigned long long then;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+    then = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    then += QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
 
     while (priv->jobActive) {
-        if (virCondWait(&priv->jobCond, &obj->lock) < 0) {
+        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
             virDomainObjUnref(obj);
-            virReportSystemError(NULL, errno,
-                                 "%s", _("cannot acquire job mutex"));
+            if (errno == ETIMEDOUT)
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_TIMEOUT,
+                                 "%s", _("cannot acquire state change lock"));
+            else
+                virReportSystemError(NULL, errno,
+                                     "%s", _("cannot acquire job mutex"));
             return -1;
         }
     }
@@ -190,15 +208,29 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                                            virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    struct timeval now;
+    unsigned long long then;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(NULL, errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
+    then = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    then += QEMU_JOB_WAIT_TIME;
 
     virDomainObjRef(obj);
     qemuDriverUnlock(driver);
 
     while (priv->jobActive) {
-        if (virCondWait(&priv->jobCond, &obj->lock) < 0) {
+        if (virCondWaitUntil(&priv->jobCond, &obj->lock, then) < 0) {
             virDomainObjUnref(obj);
-            virReportSystemError(NULL, errno,
-                                 "%s", _("cannot acquire job mutex"));
+            if (errno == ETIMEDOUT)
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_TIMEOUT,
+                                 "%s", _("cannot acquire state change lock"));
+            else
+                virReportSystemError(NULL, errno,
+                                     "%s", _("cannot acquire job mutex"));
             return -1;
         }
     }
