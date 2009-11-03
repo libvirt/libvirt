@@ -5299,7 +5299,7 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
         if (STREQ(param->field, "cpu_shares")) {
             int rc;
             if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
-                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG, "%s",
                                  _("invalid type for cpu_shares tunable, expected a 'ullong'"));
                 goto cleanup;
             }
@@ -6463,7 +6463,7 @@ static int doTunnelSendAll(virDomainPtr dom,
             break;
 
         if (virStreamSend(st, buffer, nbytes) < 0) {
-            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "%s",
                              _("Failed to write migration data to remote libvirtd"));
             return -1;
         }
@@ -6685,7 +6685,7 @@ static int doNonTunnelMigrate(virDomainPtr dom,
         goto cleanup;
 
     if (uri_out == NULL) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("domainMigratePrepare2 did not set uri"));
     }
 

@@ -568,7 +568,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             return -1;
         }
         if (enc->nsecrets > 1) {
-            virStorageReportError(conn, VIR_ERR_INVALID_STORAGE_VOL,
+            virStorageReportError(conn, VIR_ERR_INVALID_STORAGE_VOL, "%s",
                                   _("too many secrets for qcow encryption"));
             return -1;
         }

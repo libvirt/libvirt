@@ -1858,7 +1858,7 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
     for (i = 0; i < nparams; i++) {
         virSchedParameterPtr param = &params[i];
         if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
-            lxcError(NULL, domain, VIR_ERR_INVALID_ARG,
+            lxcError(NULL, domain, VIR_ERR_INVALID_ARG, "%s",
                      _("invalid type for cpu_shares tunable, expected a 'ullong'"));
             goto cleanup;
         }

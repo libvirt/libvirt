@@ -1813,7 +1813,7 @@ virDomainWatchdogDefParseXML(virConnectPtr conn,
 
     model = virXMLPropString (node, "model");
     if (model == NULL) {
-        virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR,
+        virDomainReportError (conn, VIR_ERR_INTERNAL_ERROR, "%s",
                               _("watchdog must contain model name"));
         goto error;
     }
