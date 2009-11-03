@@ -473,6 +473,12 @@ static void
 testDomainShutdownState(virDomainPtr domain,
                         virDomainObjPtr privdom)
 {
+    if (privdom->newDef) {
+        virDomainDefFree(privdom->def);
+        privdom->def = privdom->newDef;
+        privdom->newDef = NULL;
+    }
+
     privdom->state = VIR_DOMAIN_SHUTOFF;
     privdom->def->id = -1;
     domain->id = -1;
