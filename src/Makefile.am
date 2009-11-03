@@ -52,6 +52,7 @@ UTIL_SOURCES =							\
 		util/hash.c util/hash.h				\
 		util/iptables.c util/iptables.h			\
 		util/ebtables.c util/ebtables.h			\
+		util/json.c util/json.h				\
 		util/logging.c util/logging.h			\
 		util/memory.c util/memory.h			\
 		util/pci.c util/pci.h				\
@@ -284,8 +285,8 @@ noinst_LTLIBRARIES = libvirt_util.la
 libvirt_la_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
-libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS)
-libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS)
+libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS) $(YAJL_CFLAGS)
+libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS) $(YAJL_LIBS)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -829,12 +830,13 @@ libvirt_lxc_SOURCES =						\
 		$(NODE_INFO_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
 		$(DOMAIN_CONF_SOURCES)
-libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS)
+libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS) $(YAJL_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\
 		$(CAPNG_CFLAGS)			\
+		$(YAJL_CFLAGS)			\
 		-I@top_srcdir@/src/conf
 endif
 endif

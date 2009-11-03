@@ -60,6 +60,7 @@
 %define with_netcf         0%{!?_without_netcf:0}
 %define with_udev          0%{!?_without_udev:0}
 %define with_hal           0%{!?_without_hal:0}
+%define with_yajl          0%{!?_without_yajl:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -139,6 +140,11 @@
 %define with_udev     0%{!?_without_udev:%{server_drivers}}
 %else
 %define with_hal       0%{!?_without_hal:%{server_drivers}}
+%endif
+
+# Enable yajl library for JSON mode with QEMU
+%if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
+%define with_yajl     0%{!?_without_yajl:%{server_drivers}}
 %endif
 
 # Force QEMU to run as non-root
@@ -256,6 +262,9 @@ BuildRequires: hal-devel
 %if %{with_udev}
 BuildRequires: libudev-devel >= 145
 BuildRequires: libpciaccess-devel >= 0.10.9
+%endif
+%if %{with_yajl}
+BuildRequires: yajl-devel
 %endif
 %if %{with_avahi}
 BuildRequires: avahi-devel
@@ -495,6 +504,10 @@ of recent versions of Linux (and other OSes).
 %define _without_udev --without-udev
 %endif
 
+%if ! %{with_yajl}
+%define _without_yajl --without-yajl
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -522,6 +535,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_selinux} \
            %{?_without_hal} \
            %{?_without_udev} \
+           %{?_without_yajl} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \

@@ -270,6 +270,53 @@ virRegisterDeviceMonitor;
 virRegisterSecretDriver;
 
 
+# json.h
+virJSONValueFree;
+virJSONValueNewString;
+virJSONValueNewStringLen;
+virJSONValueNewNumberInt;
+virJSONValueNewNumberUint;
+virJSONValueNewNumberLong;
+virJSONValueNewNumberUlong;
+virJSONValueNewNumberDouble;
+virJSONValueNewBoolean;
+virJSONValueNewNull;
+virJSONValueNewArray;
+virJSONValueNewObject;
+virJSONValueObjectAppend;
+virJSONValueObjectAppendString;
+virJSONValueObjectAppendNumberInt;
+virJSONValueObjectAppendNumberUint;
+virJSONValueObjectAppendNumberLong;
+virJSONValueObjectAppendNumberUlong;
+virJSONValueObjectAppendNumberDouble;
+virJSONValueObjectAppendBoolean;
+virJSONValueObjectAppendNull;
+virJSONValueArrayAppend;
+virJSONValueObjectHasKey;
+virJSONValueObjectGet;
+virJSONValueArraySize;
+virJSONValueArrayGet;
+virJSONValueGetString;
+virJSONValueGetNumberInt;
+virJSONValueGetNumberUint;
+virJSONValueGetNumberLong;
+virJSONValueGetNumberUlong;
+virJSONValueGetNumberDouble;
+virJSONValueGetBoolean;
+virJSONValueIsNull;
+virJSONValueObjectGetString;
+virJSONValueObjectGetNumberInt;
+virJSONValueObjectGetNumberUint;
+virJSONValueObjectGetNumberLong;
+virJSONValueObjectGetNumberUlong;
+virJSONValueObjectGetNumberDouble;
+virJSONValueObjectGetBoolean;
+virJSONValueObjectIsNull;
+virJSONValueFromString;
+virJSONValueToString;
+
+
 # logging.h
 virLogMessage;
 virLogGetNbFilters;

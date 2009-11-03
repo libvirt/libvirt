@@ -645,6 +645,56 @@ AC_SUBST([SASL_CFLAGS])
 AC_SUBST([SASL_LIBS])
 
 
+dnl YAJL JSON library http://lloyd.github.com/yajl/
+AC_ARG_WITH([yajl],
+  [  --with-yajl         use YAJL for JSON parsing/formatting],
+  [],
+  [with_yajl=check])
+
+YAJL_CFLAGS=
+YAJL_LIBS=
+if test "x$with_yajl" != "xno"; then
+  if test "x$with_yajl" != "xyes" -a "x$with_yajl" != "xcheck"; then
+    YAJL_CFLAGS="-I$with_yajl/include"
+    YAJL_LIBS="-L$with_yajl/lib"
+  fi
+  fail=0
+  old_cppflags="$CPPFLAGS"
+  old_ldflags="$LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $YAJL_CFLAGS"
+  LDFLAGS="$LDFLAGS $YAJL_LIBS"
+  AC_CHECK_HEADER([yajl/yajl_common.h],[],[
+    if test "x$with_yajl" != "xcheck" ; then
+        with_yajl=no
+    else
+        fail=1
+    fi])
+  if test "x$with_yajl" != "xno" ; then
+    AC_CHECK_LIB([yajl], [yajl_parse],[
+      YAJL_LIBS="$YAJL_LIBS -lyajl"
+      with_yajl=yes
+    ],[
+      if test "x$with_yajl" = "xcheck" ; then
+        with_yajl=no
+      else
+        fail=1
+      fi
+    ])
+  fi
+  test $fail = 1 &&
+    AC_MSG_ERROR([You must install the YAJL development package in order to compile libvirt])
+  CPPFLAGS="$old_cppflags"
+  LDFLAGS="$old_ldflags"
+  if test "x$with_yajl" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_YAJL], 1,
+      [whether YAJL is available for JSON parsing/formatting])
+  fi
+fi
+AM_CONDITIONAL([HAVE_YAJL], [test "x$with_yajl" = "xyes"])
+AC_SUBST([YAJL_CFLAGS])
+AC_SUBST([YAJL_LIBS])
+
+
 dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
@@ -1858,6 +1908,11 @@ if test "$with_sasl" != "no" ; then
 AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
 else
 AC_MSG_NOTICE([    sasl: no])
+fi
+if test "$with_yajl" != "no" ; then
+AC_MSG_NOTICE([    yajl: $YAJL_CFLAGS $YAJL_LIBS])
+else
+AC_MSG_NOTICE([    yajl: no])
 fi
 if test "$with_avahi" = "yes" ; then
 AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])
