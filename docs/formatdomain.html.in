@@ -300,7 +300,7 @@
 
     <dl>
       <dt><code>clock</code></dt>
-      <dd>The <code>sync</code> attribute takes either "utc" or
+      <dd>The <code>offset</code> attribute takes either "utc" or
 	"localtime" to specify how the guest clock is initialized
 	in relation to the host OS.
       </dd>
