@@ -930,6 +930,19 @@
       definition doesn't fully specify the constraints on this node.
     -->
   <define name="qemucdev">
+    <ref name="qemucdevSrcType"/>
+    <interleave>
+      <ref name="qemucdevSrcDef"/>
+      <optional>
+        <element name="target">
+          <optional>
+            <attribute name="port"/>
+          </optional>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+  <define name="qemucdevSrcType">
     <attribute name="type">
       <choice>
         <value>dev</value>
@@ -944,43 +957,36 @@
         <value>pty</value>
       </choice>
     </attribute>
-    <interleave>
-      <optional>
-        <oneOrMore>
-          <element name="source">
-            <optional>
-              <attribute name="mode"/>
-            </optional>
-            <optional>
-              <attribute name="path"/>
-            </optional>
-            <optional>
-              <attribute name="host"/>
-            </optional>
-            <optional>
-              <attribute name="service"/>
-            </optional>
-            <optional>
-              <attribute name="wiremode"/>
-            </optional>
-          </element>
-        </oneOrMore>
-      </optional>
-      <optional>
-        <element name="protocol">
+  </define>
+  <define name="qemucdevSrcDef">
+    <optional>
+      <oneOrMore>
+        <element name="source">
           <optional>
-            <attribute name="type"/>
+            <attribute name="mode"/>
+          </optional>
+          <optional>
+            <attribute name="path"/>
+          </optional>
+          <optional>
+            <attribute name="host"/>
+          </optional>
+          <optional>
+            <attribute name="service"/>
+          </optional>
+          <optional>
+            <attribute name="wiremode"/>
           </optional>
         </element>
-      </optional>
-      <optional>
-        <element name="target">
-          <optional>
-            <attribute name="port"/>
-          </optional>
-        </element>
-      </optional>
-    </interleave>
+      </oneOrMore>
+    </optional>
+    <optional>
+      <element name="protocol">
+        <optional>
+          <attribute name="type"/>
+        </optional>
+      </element>
+    </optional>
   </define>
   <!--
       The description for a console
@@ -1042,6 +1048,24 @@
   <define name="serial">
     <element name="serial">
       <ref name="qemucdev"/>
+    </element>
+  </define>
+  <define name="guestfwdTarget">
+    <element name="target">
+        <attribute name="type">
+            <value>guestfwd</value>
+        </attribute>
+        <attribute name="address"/>
+        <attribute name="port"/>
+    </element>
+  </define>
+  <define name="channel">
+    <element name="channel">
+      <ref name="qemucdevSrcType"/>
+      <interleave>
+        <ref name="qemucdevSrcDef"/>
+        <ref name="guestfwdTarget"/>
+      </interleave>
     </element>
   </define>
   <define name="input">
@@ -1158,6 +1182,7 @@
             <ref name="console"/>
             <ref name="parallel"/>
             <ref name="serial"/>
+            <ref name="channel"/>
           </choice>
         </zeroOrMore>
         <optional>

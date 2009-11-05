@@ -51,6 +51,7 @@
 #include "xml.h"
 #include "nodeinfo.h"
 #include "logging.h"
+#include "network.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1411,6 +1412,97 @@ qemuBuildHostNetStr(virConnectPtr conn,
     return 0;
 }
 
+/* This function outputs a -chardev command line option which describes only the
+ * host side of the character device */
+static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
+                                                  const char *const id,
+                                                  virBufferPtr buf)
+{
+    bool telnet;
+    switch(dev->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+        virBufferVSprintf(buf, "null,id=%s", id);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_VC:
+        virBufferVSprintf(buf, "vc,id=%s", id);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+        virBufferVSprintf(buf, "pty,id=%s", id);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+        virBufferVSprintf(buf, "tty,id=%s,path=%s", id, dev->data.file.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        virBufferVSprintf(buf, "file,id=%s,path=%s", id, dev->data.file.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        virBufferVSprintf(buf, "pipe,id=%s,path=%s", id, dev->data.file.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+        virBufferVSprintf(buf, "stdio,id=%s", id);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        virBufferVSprintf(buf,
+                          "udp,id=%s,host=%s,port=%s,localaddr=%s,localport=%s",
+                          id,
+                          dev->data.udp.connectHost,
+                          dev->data.udp.connectService,
+                          dev->data.udp.bindHost,
+                          dev->data.udp.bindService);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+        virBufferVSprintf(buf,
+                          "socket,id=%s,host=%s,port=%s%s%s",
+                          id,
+                          dev->data.tcp.host,
+                          dev->data.tcp.service,
+                          telnet ? ",telnet" : "",
+                          dev->data.tcp.listen ? ",server,nowait" : "");
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        virBufferVSprintf(buf,
+                          "socket,id=%s,path=%s%s",
+                          id,
+                          dev->data.nix.path,
+                          dev->data.nix.listen ? ",server,nowait" : "");
+        break;
+    }
+}
+
+static int qemudBuildCommandLineChrDevTargetStr(virDomainChrDefPtr dev,
+                                                const char *const id,
+                                                virBufferPtr buf)
+{
+    int ret = 0;
+    const char *addr = NULL;
+
+    int port;
+    switch (dev->targetType) {
+    case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+        addr = virSocketFormatAddr(dev->target.addr);
+        port = virSocketGetPort(dev->target.addr);
+
+        virBufferVSprintf(buf, "user,guestfwd=tcp:%s:%i-chardev:%s",
+                          addr, port, id);
+
+        VIR_FREE(addr);
+        break;
+    }
+
+    return ret;
+}
+
+/* This function outputs an all-in-one character device command line option */
 static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
                                           char *buf,
                                           int buflen)
@@ -2085,6 +2177,46 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_LIT("-parallel");
             ADD_ARG_LIT(buf);
+        }
+    }
+
+    for (i = 0 ; i < def->nchannels ; i++) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        const char *argStr;
+        char id[16];
+
+        virDomainChrDefPtr channel = def->channels[i];
+
+        if (snprintf(id, sizeof(id), "channel%i", i) > sizeof(id))
+            goto error;
+
+        switch(channel->targetType) {
+        case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV)) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                     "%s", _("guestfwd requires QEMU to support -chardev"));
+                goto error;
+            }
+
+            qemudBuildCommandLineChrDevChardevStr(channel, id, &buf);
+            argStr = virBufferContentAndReset(&buf);
+            if (argStr == NULL)
+                goto error;
+
+            ADD_ARG_LIT("-chardev");
+            ADD_ARG_LIT(argStr);
+
+            VIR_FREE(argStr);
+
+            qemudBuildCommandLineChrDevTargetStr(channel, id, &buf);
+            argStr = virBufferContentAndReset(&buf);
+            if (argStr == NULL)
+                goto error;
+
+            ADD_ARG_LIT("-net");
+            ADD_ARG_LIT(argStr);
+
+            VIR_FREE(argStr);
         }
     }
 

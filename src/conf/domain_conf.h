@@ -34,6 +34,7 @@
 #include "util.h"
 #include "threads.h"
 #include "hash.h"
+#include "network.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -217,6 +218,7 @@ enum virDomainChrTargetType {
     VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL,
     VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL,
     VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE,
+    VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD,
 
     VIR_DOMAIN_CHR_TARGET_TYPE_LAST
 };
@@ -249,6 +251,7 @@ struct _virDomainChrDef {
     int targetType;
     union {
         int port; /* parallel, serial, console */
+        virSocketAddrPtr addr; /* guestfwd */
     } target;
 
     int type;
@@ -622,6 +625,9 @@ struct _virDomainDef {
 
     int nparallels;
     virDomainChrDefPtr *parallels;
+
+    int nchannels;
+    virDomainChrDefPtr *channels;
 
     /* Only 1 */
     virDomainChrDefPtr console;

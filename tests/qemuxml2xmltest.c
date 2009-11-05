@@ -129,6 +129,7 @@ mymain(int argc, char **argv)
     DO_TEST("serial-many");
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
+    DO_TEST("channel-guestfwd");
 
     DO_TEST("hostdev-usb-product");
     DO_TEST("hostdev-usb-address");

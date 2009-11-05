@@ -268,11 +268,13 @@ mymain(int argc, char **argv)
     DO_TEST("serial-many", 0);
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
+
+    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV);
+
     DO_TEST("sound", 0);
 
     DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);
-
     DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);
 
     DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio");
