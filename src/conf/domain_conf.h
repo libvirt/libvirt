@@ -211,7 +211,17 @@ virNetHasValidPciAddr(virDomainNetDefPtr def)
     return def->pci_addr.domain || def->pci_addr.bus || def->pci_addr.slot;
 }
 
-enum virDomainChrSrcType {
+enum virDomainChrTargetType {
+    VIR_DOMAIN_CHR_TARGET_TYPE_NULL = 0,
+    VIR_DOMAIN_CHR_TARGET_TYPE_MONITOR,
+    VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL,
+    VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL,
+    VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE,
+
+    VIR_DOMAIN_CHR_TARGET_TYPE_LAST
+};
+
+enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_NULL,
     VIR_DOMAIN_CHR_TYPE_VC,
     VIR_DOMAIN_CHR_TYPE_PTY,
@@ -236,7 +246,10 @@ enum virDomainChrTcpProtocol {
 typedef struct _virDomainChrDef virDomainChrDef;
 typedef virDomainChrDef *virDomainChrDefPtr;
 struct _virDomainChrDef {
-    int dstPort;
+    int targetType;
+    union {
+        int port; /* parallel, serial, console */
+    } target;
 
     int type;
     union {
@@ -812,6 +825,7 @@ VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
+VIR_ENUM_DECL(virDomainChrTarget)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainWatchdogModel)

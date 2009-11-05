@@ -3406,7 +3406,8 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                     virDomainChrDefFree(chr);
                     goto no_memory;
                 }
-                chr->dstPort = def->nserials;
+                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+                chr->target.port = def->nserials;
                 def->serials[def->nserials++] = chr;
             }
         } else if (STREQ(arg, "-parallel")) {
@@ -3419,7 +3420,8 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                     virDomainChrDefFree(chr);
                     goto no_memory;
                 }
-                chr->dstPort = def->nparallels;
+                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
+                chr->target.port = def->nparallels;
                 def->parallels[def->nparallels++] = chr;
             }
         } else if (STREQ(arg, "-usbdevice")) {

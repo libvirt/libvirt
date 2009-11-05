@@ -2403,9 +2403,9 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             serialPort->vtbl->GetIRQ(serialPort, &IRQ);
                             serialPort->vtbl->GetIOBase(serialPort, &IOBase);
                             if ((IRQ == 4) && (IOBase == 1016)) {
-                                def->serials[serialPortIncCount]->dstPort = 0;
+                                def->serials[serialPortIncCount]->target.port = 0;
                             } else if ((IRQ == 3) && (IOBase == 760)) {
-                                def->serials[serialPortIncCount]->dstPort = 1;
+                                def->serials[serialPortIncCount]->target.port = 1;
                             }
 
                             serialPort->vtbl->GetPath(serialPort, &pathUtf16);
@@ -2469,9 +2469,9 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             parallelPort->vtbl->GetIRQ(parallelPort, &IRQ);
                             parallelPort->vtbl->GetIOBase(parallelPort, &IOBase);
                             if ((IRQ == 7) && (IOBase == 888)) {
-                                def->parallels[parallelPortIncCount]->dstPort = 0;
+                                def->parallels[parallelPortIncCount]->target.port = 0;
                             } else if ((IRQ == 5) && (IOBase == 632)) {
-                                def->parallels[parallelPortIncCount]->dstPort = 1;
+                                def->parallels[parallelPortIncCount]->target.port = 1;
                             }
 
                             def->parallels[parallelPortIncCount]->type = VIR_DOMAIN_CHR_TYPE_FILE;
@@ -3493,7 +3493,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 ISerialPort *serialPort = NULL;
 
                 DEBUG("SerialPort(%d): Type: %d", i, def->serials[i]->type);
-                DEBUG("SerialPort(%d): dstPort: %d", i, def->serials[i]->dstPort);
+                DEBUG("SerialPort(%d): target.port: %d", i, def->serials[i]->target.port);
 
                 machine->vtbl->GetSerialPort(machine, i, &serialPort);
                 if (serialPort) {
@@ -3508,17 +3508,17 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                      * TODO: make this more flexible
                      */
                     /* TODO: to improve the libvirt XMl handling so
-                     * that def->serials[i]->dstPort shows real port
+                     * that def->serials[i]->target.port shows real port
                      * and not always start at 0
                      */
                     if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_DEV) {
                         serialPort->vtbl->SetPath(serialPort, pathUtf16);
-                        if (def->serials[i]->dstPort == 0) {
+                        if (def->serials[i]->target.port == 0) {
                             serialPort->vtbl->SetIRQ(serialPort, 4);
                             serialPort->vtbl->SetIOBase(serialPort, 1016);
                             DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
                                   i, 4, 1016, def->serials[i]->data.file.path);
-                        } else if (def->serials[i]->dstPort == 1) {
+                        } else if (def->serials[i]->target.port == 1) {
                             serialPort->vtbl->SetIRQ(serialPort, 3);
                             serialPort->vtbl->SetIOBase(serialPort, 760);
                             DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
@@ -3527,12 +3527,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         serialPort->vtbl->SetHostMode(serialPort, PortMode_HostDevice);
                     } else if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_PIPE) {
                         serialPort->vtbl->SetPath(serialPort, pathUtf16);
-                        if (def->serials[i]->dstPort == 0) {
+                        if (def->serials[i]->target.port == 0) {
                             serialPort->vtbl->SetIRQ(serialPort, 4);
                             serialPort->vtbl->SetIOBase(serialPort, 1016);
                             DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
                                   i, 4, 1016, def->serials[i]->data.file.path);
-                        } else if (def->serials[i]->dstPort == 1) {
+                        } else if (def->serials[i]->target.port == 1) {
                             serialPort->vtbl->SetIRQ(serialPort, 3);
                             serialPort->vtbl->SetIOBase(serialPort, 760);
                             DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
@@ -3573,7 +3573,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 IParallelPort *parallelPort = NULL;
 
                 DEBUG("ParallelPort(%d): Type: %d", i, def->parallels[i]->type);
-                DEBUG("ParallelPort(%d): dstPort: %d", i, def->parallels[i]->dstPort);
+                DEBUG("ParallelPort(%d): target.port: %d", i, def->parallels[i]->target.port);
 
                 machine->vtbl->GetParallelPort(machine, i, &parallelPort);
                 if (parallelPort) {

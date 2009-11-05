@@ -279,21 +279,21 @@ umlBuildCommandLineChr(virConnectPtr conn,
 
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        if (virAsprintf(&ret, "%s%d=null", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=null", dev, def->target.port) < 0) {
             virReportOOMError(conn);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (virAsprintf(&ret, "%s%d=pts", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=pts", dev, def->target.port) < 0) {
             virReportOOMError(conn);
             return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->dstPort,
+        if (virAsprintf(&ret, "%s%d=tty:%s", dev, def->target.port,
                         def->data.file.path) < 0) {
             virReportOOMError(conn);
             return NULL;
@@ -301,7 +301,7 @@ umlBuildCommandLineChr(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->dstPort) < 0) {
+        if (virAsprintf(&ret, "%s%d=fd:0,fd:1", dev, def->target.port) < 0) {
             virReportOOMError(conn);
             return NULL;
         }
@@ -314,7 +314,7 @@ umlBuildCommandLineChr(virConnectPtr conn,
             return NULL;
         }
 
-        if (virAsprintf(&ret, "%s%d=port:%s", dev, def->dstPort,
+        if (virAsprintf(&ret, "%s%d=port:%s", dev, def->target.port,
                         def->data.tcp.service) < 0) {
             virReportOOMError(conn);
             return NULL;
@@ -502,7 +502,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         virDomainChrDefPtr chr = NULL;
         char *ret;
         for (j = 0 ; j < vm->def->nserials ; j++)
-            if (vm->def->serials[j]->dstPort == i)
+            if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
             ret = umlBuildCommandLineChr(conn, chr, "ssl");

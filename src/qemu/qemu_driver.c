@@ -1920,6 +1920,8 @@ qemuPrepareMonitorChr(virConnectPtr conn,
                       virDomainChrDefPtr monitor_chr,
                       const char *vm)
 {
+    monitor_chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_MONITOR;
+
     monitor_chr->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monitor_chr->data.nix.listen = 1;
 

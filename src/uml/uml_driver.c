@@ -169,7 +169,7 @@ umlIdentifyOneChrPTY(virConnectPtr conn,
     char *cmd;
     char *res = NULL;
     int retries = 0;
-    if (virAsprintf(&cmd, "config %s%d", dev, def->dstPort) < 0) {
+    if (virAsprintf(&cmd, "config %s%d", dev, def->target.port) < 0) {
         virReportOOMError(conn);
         return -1;
     }

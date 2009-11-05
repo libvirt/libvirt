@@ -2569,6 +2569,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
                 virDomainChrDefFree(chr);
                 goto no_memory;
             }
+            chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
             def->serials[def->nserials++] = chr;
         }
         tmp = sexpr_node(root, "domain/image/hvm/parallel");
@@ -2581,12 +2582,14 @@ xenDaemonParseSxpr(virConnectPtr conn,
                 virDomainChrDefFree(chr);
                 goto no_memory;
             }
+            chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
             def->parallels[def->nparallels++] = chr;
         }
     } else {
         /* Fake a paravirt console, since that's not in the sexpr */
         if (!(def->console = xenDaemonParseSxprChar(conn, "pty", tty)))
             goto error;
+        def->console->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE;
     }
     VIR_FREE(tty);
 

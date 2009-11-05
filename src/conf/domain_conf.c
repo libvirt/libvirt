@@ -127,6 +127,13 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "bridge",
               "internal")
 
+VIR_ENUM_IMPL(virDomainChrTarget, VIR_DOMAIN_CHR_TARGET_TYPE_LAST,
+              "null",
+              "monitor",
+              "parallel",
+              "serial",
+              "console")
+
 VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "null",
               "vc",
@@ -1325,6 +1332,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
     char *path = NULL;
     char *mode = NULL;
     char *protocol = NULL;
+    const char *targetType = NULL;
     virDomainChrDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
@@ -1337,6 +1345,20 @@ virDomainChrDefParseXML(virConnectPtr conn,
         def->type = VIR_DOMAIN_CHR_TYPE_PTY;
     else if ((def->type = virDomainChrTypeFromString(type)) < 0)
         def->type = VIR_DOMAIN_CHR_TYPE_NULL;
+
+    targetType = (const char *) node->name;
+    if (targetType == NULL) {
+        /* Shouldn't be possible */
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("node->name is NULL in virDomainChrDefParseXML()"));
+        return NULL;
+    }
+    if ((def->targetType = virDomainChrTargetTypeFromString(targetType)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown target type for character device: %s"),
+                             targetType);
+        def->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_NULL;
+    }
 
     cur = node->children;
     while (cur != NULL) {
@@ -2931,7 +2953,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         if (!chr)
             goto error;
 
-        chr->dstPort = i;
+        chr->target.port = i;
         def->parallels[def->nparallels++] = chr;
     }
     VIR_FREE(nodes);
@@ -2951,7 +2973,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         if (!chr)
             goto error;
 
-        chr->dstPort = i;
+        chr->target.port = i;
         def->serials[def->nserials++] = chr;
     }
     VIR_FREE(nodes);
@@ -2963,7 +2985,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         if (!chr)
             goto error;
 
-        chr->dstPort = 0;
+        chr->target.port = 0;
         /*
          * For HVM console actually created a serial device
          * while for non-HVM it was a parvirt console
@@ -3965,10 +3987,12 @@ static int
 virDomainChrDefFormat(virConnectPtr conn,
                       virBufferPtr buf,
                       virDomainChrDefPtr def,
-                      const char *name,
                       int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
+    const char *targetName = virDomainChrTargetTypeToString(def->targetType);
+
+    const char *elementName = targetName; /* Currently always the same */
 
     if (!type) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -3978,8 +4002,8 @@ virDomainChrDefFormat(virConnectPtr conn,
 
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
     virBufferVSprintf(buf, "    <%s type='%s'",
-                      name, type);
-    if (STREQ(name, "console") &&
+                      elementName, type);
+    if (def->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE &&
         def->type == VIR_DOMAIN_CHR_TYPE_PTY &&
         !(flags & VIR_DOMAIN_XML_INACTIVE) &&
         def->data.file.path) {
@@ -4054,11 +4078,23 @@ virDomainChrDefFormat(virConnectPtr conn,
         break;
     }
 
-    virBufferVSprintf(buf, "      <target port='%d'/>\n",
-                      def->dstPort);
+    switch (def->targetType) {
+    case VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL:
+    case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
+    case VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE:
+        virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                          def->target.port);
+        break;
+
+    default:
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected character destination type %d"),
+                             def->targetType);
+        return -1;
+    }
 
     virBufferVSprintf(buf, "    </%s>\n",
-                      name);
+                      elementName);
 
     return 0;
 }
@@ -4505,21 +4541,24 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     for (n = 0 ; n < def->nserials ; n++)
-        if (virDomainChrDefFormat(conn, &buf, def->serials[n], "serial", flags) < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->serials[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nparallels ; n++)
-        if (virDomainChrDefFormat(conn, &buf, def->parallels[n], "parallel", flags) < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->parallels[n], flags) < 0)
             goto cleanup;
 
     /* If there's a PV console that's preferred.. */
     if (def->console) {
-        if (virDomainChrDefFormat(conn, &buf, def->console, "console", flags) < 0)
+        if (virDomainChrDefFormat(conn, &buf, def->console, flags) < 0)
             goto cleanup;
     } else if (def->nserials != 0) {
         /* ..else for legacy compat duplicate the first serial device as a
          * console */
-        if (virDomainChrDefFormat(conn, &buf, def->serials[0], "console", flags) < 0)
+        virDomainChrDef console;
+        memcpy(&console, def->serials[0], sizeof(console));
+        console.targetType = VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE;
+        if (virDomainChrDefFormat(conn, &buf, &console, flags) < 0)
             goto cleanup;
     }
 

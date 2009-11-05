@@ -319,7 +319,7 @@ def->nets[0]...
                                         serial0.startConnected = "true"         # defaults to "true"
 
 def->serials[0]...
-->dstPort = <port>
+->target.port = <port>
 
 
 ## serials: device #############################################################
@@ -378,7 +378,7 @@ def->serials[0]...
                                         parallel0.startConnected = "true"       # defaults to "true"
 
 def->parallels[0]...
-->dstPort = <port>
+->target.port = <port>
 
 
 ## parallels: device #############################################################
@@ -1871,6 +1871,8 @@ esxVMX_ParseSerial(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
         goto failure;
     }
 
+    (*def)->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+
     snprintf(prefix, sizeof(prefix), "serial%d", port);
 
     ESX_BUILD_VMX_NAME(present);
@@ -1907,13 +1909,13 @@ esxVMX_ParseSerial(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
 
     /* Setup virDomainChrDef */
     if (STRCASEEQ(fileType, "device")) {
-        (*def)->dstPort = port;
+        (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_DEV;
         (*def)->data.file.path = fileName;
 
         fileName = NULL;
     } else if (STRCASEEQ(fileType, "file")) {
-        (*def)->dstPort = port;
+        (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
         (*def)->data.file.path = esxVMX_ParseFileName(conn, ctx, fileName,
                                                       datastoreName,
@@ -1927,7 +1929,7 @@ esxVMX_ParseSerial(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
          * FIXME: Differences between client/server and VM/application pipes
          *        not representable in domain XML form
          */
-        (*def)->dstPort = port;
+        (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_PIPE;
         (*def)->data.file.path = fileName;
 
@@ -1993,6 +1995,8 @@ esxVMX_ParseParallel(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
         goto failure;
     }
 
+    (*def)->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
+
     snprintf(prefix, sizeof(prefix), "parallel%d", port);
 
     ESX_BUILD_VMX_NAME(present);
@@ -2029,13 +2033,13 @@ esxVMX_ParseParallel(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
 
     /* Setup virDomainChrDef */
     if (STRCASEEQ(fileType, "device")) {
-        (*def)->dstPort = port;
+        (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_DEV;
         (*def)->data.file.path = fileName;
 
         fileName = NULL;
     } else if (STRCASEEQ(fileType, "file")) {
-        (*def)->dstPort = port;
+        (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
         (*def)->data.file.path = esxVMX_ParseFileName(conn, ctx, fileName,
                                                       datastoreName,
@@ -2706,9 +2710,9 @@ esxVMX_FormatSerial(virConnectPtr conn, esxVI_Context *ctx,
 {
     char *fileName = NULL;
 
-    if (def->dstPort < 0 || def->dstPort > 3) {
+    if (def->target.port < 0 || def->target.port > 3) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Serial port index %d out of [0..3] range", def->dstPort);
+                  "Serial port index %d out of [0..3] range", def->target.port);
         return -1;
     }
 
@@ -2719,20 +2723,20 @@ esxVMX_FormatSerial(virConnectPtr conn, esxVI_Context *ctx,
         return -1;
     }
 
-    virBufferVSprintf(buffer, "serial%d.present = \"true\"\n", def->dstPort);
+    virBufferVSprintf(buffer, "serial%d.present = \"true\"\n", def->target.port);
 
     /* def:type -> vmx:fileType and def:data.file.path -> vmx:fileName */
     switch (def->type) {
       case VIR_DOMAIN_CHR_TYPE_DEV:
         virBufferVSprintf(buffer, "serial%d.fileType = \"device\"\n",
-                          def->dstPort);
+                          def->target.port);
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s\"\n",
-                          def->dstPort, def->data.file.path);
+                          def->target.port, def->data.file.path);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferVSprintf(buffer, "serial%d.fileType = \"file\"\n",
-                          def->dstPort);
+                          def->target.port);
 
         fileName = esxVMX_FormatFileName(conn, ctx, def->data.file.path);
 
@@ -2741,22 +2745,22 @@ esxVMX_FormatSerial(virConnectPtr conn, esxVI_Context *ctx,
         }
 
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s\"\n",
-                          def->dstPort, fileName);
+                          def->target.port, fileName);
 
         VIR_FREE(fileName);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_PIPE:
         virBufferVSprintf(buffer, "serial%d.fileType = \"pipe\"\n",
-                          def->dstPort);
+                          def->target.port);
         /* FIXME: Based on VI Client GUI default */
         virBufferVSprintf(buffer, "serial%d.pipe.endPoint = \"client\"\n",
-                          def->dstPort);
+                          def->target.port);
         /* FIXME: Based on VI Client GUI default */
         virBufferVSprintf(buffer, "serial%d.tryNoRxLoss = \"false\"\n",
-                          def->dstPort);
+                          def->target.port);
         virBufferVSprintf(buffer, "serial%d.fileName = \"%s\"\n",
-                          def->dstPort, def->data.file.path);
+                          def->target.port, def->data.file.path);
         break;
 
       default:
@@ -2769,7 +2773,7 @@ esxVMX_FormatSerial(virConnectPtr conn, esxVI_Context *ctx,
     /* vmx:yieldOnMsrRead */
     /* FIXME: Based on VI Client GUI default */
     virBufferVSprintf(buffer, "serial%d.yieldOnMsrRead = \"true\"\n",
-                      def->dstPort);
+                      def->target.port);
 
     return 0;
 }
@@ -2782,9 +2786,9 @@ esxVMX_FormatParallel(virConnectPtr conn, esxVI_Context *ctx,
 {
     char *fileName = NULL;
 
-    if (def->dstPort < 0 || def->dstPort > 2) {
+    if (def->target.port < 0 || def->target.port > 2) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Parallel port index %d out of [0..2] range", def->dstPort);
+                  "Parallel port index %d out of [0..2] range", def->target.port);
         return -1;
     }
 
@@ -2795,20 +2799,20 @@ esxVMX_FormatParallel(virConnectPtr conn, esxVI_Context *ctx,
         return -1;
     }
 
-    virBufferVSprintf(buffer, "parallel%d.present = \"true\"\n", def->dstPort);
+    virBufferVSprintf(buffer, "parallel%d.present = \"true\"\n", def->target.port);
 
     /* def:type -> vmx:fileType and def:data.file.path -> vmx:fileName */
     switch (def->type) {
       case VIR_DOMAIN_CHR_TYPE_DEV:
         virBufferVSprintf(buffer, "parallel%d.fileType = \"device\"\n",
-                          def->dstPort);
+                          def->target.port);
         virBufferVSprintf(buffer, "parallel%d.fileName = \"%s\"\n",
-                          def->dstPort, def->data.file.path);
+                          def->target.port, def->data.file.path);
         break;
 
       case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferVSprintf(buffer, "parallel%d.fileType = \"file\"\n",
-                          def->dstPort);
+                          def->target.port);
 
         fileName = esxVMX_FormatFileName(conn, ctx, def->data.file.path);
 
@@ -2817,7 +2821,7 @@ esxVMX_FormatParallel(virConnectPtr conn, esxVI_Context *ctx,
         }
 
         virBufferVSprintf(buffer, "parallel%d.fileName = \"%s\"\n",
-                          def->dstPort, fileName);
+                          def->target.port, fileName);
 
         VIR_FREE(fileName);
         break;
