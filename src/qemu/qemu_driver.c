@@ -6794,9 +6794,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
         event = NULL;
     }
 
-    if ((flags & VIR_MIGRATE_TUNNELLED)) {
+    if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         if (doPeer2PeerMigrate(dom, vm, uri, flags, dname, resource) < 0)
-            /* doTunnelMigrate already set the error, so just get out */
+            /* doPeer2PeerMigrate already set the error, so just get out */
             goto cleanup;
     } else {
         if (doNativeMigrate(dom, vm, uri, flags, dname, resource) < 0)
