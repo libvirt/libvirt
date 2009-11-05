@@ -92,6 +92,8 @@ int phypUUIDTable_Push(virConnectPtr conn);
 
 int phypUUIDTable_Init(virConnectPtr conn);
 
+void phypUUIDTable_Free(uuid_tablePtr uuid_table);
+
 int escape_specialcharacters(char *src, char *dst, size_t dstlen);
 
 int waitsocket(int socket_fd, LIBSSH2_SESSION * session);
