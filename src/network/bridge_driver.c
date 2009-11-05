@@ -783,16 +783,15 @@ static void
 networkRemoveIptablesRules(struct network_driver *driver,
                          virNetworkObjPtr network) {
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
-        iptablesRemoveForwardMasquerade(driver->iptables,
-                                        network->def->network,
-                                        network->def->forwardDev);
-
-        if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT)
+        if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
+            iptablesRemoveForwardMasquerade(driver->iptables,
+                                                network->def->network,
+                                                network->def->forwardDev);
             iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                                 network->def->network,
                                                 network->def->bridge,
                                                 network->def->forwardDev);
-        else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
+        } else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE)
             iptablesRemoveForwardAllowIn(driver->iptables,
                                          network->def->network,
                                          network->def->bridge,
