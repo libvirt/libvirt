@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <limits.h>
 #include <string.h>
 #include <strings.h>
@@ -39,6 +40,9 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include <sys/utsname.h>
+#include <domain_event.h>
 
 #include "internal.h"
 #include "util.h"
@@ -51,14 +55,11 @@
 #include "virterror_internal.h"
 #include "uuid.h"
 #include "domain_conf.h"
+#include "nodeinfo.h"
 
 #include "phyp_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
-
-#define PHYP_CMD_DEBUG VIR_DEBUG("COMMAND:%s\n",cmd);
-
-static int escape_specialcharacters(char *src, char *dst, size_t dstlen);
 
 /*
  * URI: phyp://user@[hmc|ivm]/managed_system
@@ -72,8 +73,11 @@ phypOpen(virConnectPtr conn,
     ConnectionData *connection_data = NULL;
     char *string;
     size_t len = 0;
-    uuid_dbPtr uuid_db = NULL;
     int internal_socket;
+    uuid_tablePtr uuid_table = NULL;
+    phyp_driverPtr phyp_driver = NULL;
+    char *char_ptr;
+    char *managed_system;
 
     if (!conn || !conn->uri)
         return VIR_DRV_OPEN_DECLINED;
@@ -91,11 +95,23 @@ phypOpen(virConnectPtr conn,
     if (conn->uri->path == NULL) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
+                      _("Missing managed system name in phyp:// URI"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (conn->uri->path == NULL) {
+        virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
+                      VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0, "%s",
                       _("Missing path name in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (VIR_ALLOC(uuid_db) < 0) {
+    if (VIR_ALLOC(phyp_driver) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    if (VIR_ALLOC(uuid_table) < 0) {
         virReportOOMError(conn);
         goto failure;
     }
@@ -111,6 +127,27 @@ phypOpen(virConnectPtr conn,
         virReportOOMError(conn);
         goto failure;
     }
+
+    if (VIR_ALLOC_N(managed_system, len) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    managed_system = strdup(conn->uri->path);
+    if (!managed_system)
+        goto failure;
+
+    /* need to shift one byte in order to remove the first "/" of URI component */
+    if (managed_system[0] == '/')
+        managed_system++;
+
+    /* here we are handling only the first component of the path,
+     * so skipping the second:
+     * */
+    char_ptr = strchr(managed_system, '/');
+
+    if (char_ptr)
+        *char_ptr = '\0';
 
     if (escape_specialcharacters(conn->uri->path, string, len) == -1) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
@@ -129,17 +166,32 @@ phypOpen(virConnectPtr conn,
     connection_data->session = session;
     connection_data->auth = auth;
 
-    uuid_db->nlpars = 0;
-    uuid_db->lpars = NULL;
+    uuid_table->nlpars = 0;
+    uuid_table->lpars = NULL;
 
-    conn->privateData = uuid_db;
+    phyp_driver->managed_system = managed_system;
+    phyp_driver->uuid_table = uuid_table;
+    if ((phyp_driver->caps = phypCapsInit()) == NULL) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    conn->privateData = phyp_driver;
     conn->networkPrivateData = connection_data;
-    init_uuid_db(conn);
+    if (phypUUIDTable_Init(conn) == -1)
+        goto failure;
+
+    if ((phyp_driver->vios_id = phypGetVIOSPartitionID(conn)) == -1)
+        goto failure;
 
     return VIR_DRV_OPEN_SUCCESS;
 
   failure:
-    VIR_FREE(uuid_db);
+    virCapabilitiesFree(phyp_driver->caps);
+    VIR_FREE(phyp_driver->managed_system);
+    VIR_FREE(phyp_driver);
+    VIR_FREE(uuid_table);
+    VIR_FREE(uuid_table->lpars);
     VIR_FREE(connection_data);
     VIR_FREE(string);
 
@@ -150,11 +202,17 @@ static int
 phypClose(virConnectPtr conn)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
 
     libssh2_session_disconnect(session, "Disconnecting...");
     libssh2_session_free(session);
 
+    virCapabilitiesFree(phyp_driver->caps);
+    VIR_FREE(phyp_driver->uuid_table);
+    VIR_FREE(phyp_driver->uuid_table->lpars);
+    VIR_FREE(phyp_driver->managed_system);
+    VIR_FREE(phyp_driver);
     VIR_FREE(connection_data);
     return 0;
 }
@@ -174,17 +232,16 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     struct addrinfo hints;
     int ret;
 
-    memset (&hints, '\0', sizeof (hints));
+    memset(&hints, '\0', sizeof(hints));
     hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = 0;
 
-    ret = getaddrinfo (hostname, "22", &hints, &ai);
+    ret = getaddrinfo(hostname, "22", &hints, &ai);
     if (ret != 0) {
         virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                       VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                      _("Error while getting %s address info"),
-                      hostname);
+                      _("Error while getting %s address info"), hostname);
         goto err;
     }
 
@@ -192,10 +249,10 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     while (cur != NULL) {
         sock = socket(cur->ai_family, cur->ai_socktype, cur->ai_protocol);
         if (sock >= 0) {
-            if (connect (sock, cur->ai_addr, cur->ai_addrlen) == 0) {
+            if (connect(sock, cur->ai_addr, cur->ai_addrlen) == 0) {
                 goto connected;
             }
-            close (sock);
+            close(sock);
         }
         cur = cur->ai_next;
     }
@@ -203,10 +260,10 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     virRaiseError(conn, NULL, NULL, 0, VIR_FROM_PHYP,
                   VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                   _("Failed to connect to %s"), hostname);
-    freeaddrinfo (ai);
+    freeaddrinfo(ai);
     goto err;
 
-connected:
+  connected:
 
     (*internal_socket) = sock;
 
@@ -407,7 +464,6 @@ phypGetLparID(LIBSSH2_SESSION * session, const char *managed_system,
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     const char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -439,7 +495,6 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -463,7 +518,7 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
 }
 
 
-/* Search into the uuid_db for a lpar_uuid given a lpar_id
+/* Search into the uuid_table for a lpar_uuid given a lpar_id
  * and a managed system name
  *
  * return:  0 - record found
@@ -472,11 +527,12 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
 int
 phypGetLparUUID(unsigned char *uuid, int lpar_id, virConnectPtr conn)
 {
-    uuid_dbPtr uuid_db = conn->privateData;
-    lparPtr *lpars = uuid_db->lpars;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    lparPtr *lpars = uuid_table->lpars;
     unsigned int i = 0;
 
-    for (i = 0; i < uuid_db->nlpars; i++) {
+    for (i = 0; i < uuid_table->nlpars; i++) {
         if (lpars[i]->id == lpar_id) {
             memmove(uuid, lpars[i]->uuid, VIR_UUID_BUFLEN);
             return 0;
@@ -507,20 +563,21 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
 
     if (type) {
         if (virAsprintf(&cmd,
-                        "lshwres -m %s -r mem --level lpar -F curr_mem --filter lpar_ids=%d",
+                        "lshwres -m %s -r mem --level lpar -F curr_mem "
+                        "--filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
             virReportOOMError(conn);
             goto err;
         }
     } else {
         if (virAsprintf(&cmd,
-                        "lshwres -m %s -r mem --level lpar -F curr_max_mem --filter lpar_ids=%d",
+                        "lshwres -m %s -r mem --level lpar -F "
+                        "curr_max_mem --filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
             virReportOOMError(conn);
             goto err;
         }
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -550,19 +607,45 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
 unsigned long
 phypGetLparCPU(virConnectPtr conn, const char *managed_system, int lpar_id)
 {
+    return phypGetLparCPUGeneric(conn, managed_system, lpar_id, 0);
+}
+
+static int
+phypGetLparCPUMAX(virDomainPtr dom)
+{
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
+    char *managed_system = phyp_driver->managed_system;
+
+    return phypGetLparCPUGeneric(dom->conn, managed_system, dom->id, 1);
+}
+
+unsigned long
+phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
+                      int lpar_id, int type)
+{
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
     char *cmd;
     int exit_status = 0;
     int vcpus = 0;
 
-    if (virAsprintf(&cmd,
-                    "lshwres -m %s -r proc --level lpar -F curr_procs --filter lpar_ids=%d",
-                    managed_system, lpar_id) < 0) {
-        virReportOOMError(conn);
-        goto err;
+    if (type) {
+        if (virAsprintf(&cmd,
+                        "lshwres -m %s -r proc --level lpar -F "
+                        "curr_max_procs --filter lpar_ids=%d",
+                        managed_system, lpar_id) < 0) {
+            virReportOOMError(conn);
+            goto err;
+        }
+    } else {
+        if (virAsprintf(&cmd,
+                        "lshwres -m %s -r proc --level lpar -F "
+                        "curr_procs --filter lpar_ids=%d",
+                        managed_system, lpar_id) < 0) {
+            virReportOOMError(conn);
+            goto err;
+        }
     }
-    PHYP_CMD_DEBUG;
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
     if (ret == NULL)
@@ -599,12 +682,12 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
     int exit_status = 0;
 
     if (virAsprintf(&cmd,
-                    "lshwres -m %s -r virtualio --rsubtype scsi -F remote_slot_num --filter lpar_names=%s",
+                    "lshwres -m %s -r virtualio --rsubtype scsi -F "
+                    "remote_slot_num --filter lpar_names=%s",
                     managed_system, lpar_name) < 0) {
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
     if (ret == NULL)
@@ -626,7 +709,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
 
   err:
     VIR_FREE(cmd);
-    return 0;
+    return -1;
 }
 
 char *
@@ -640,16 +723,16 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
     int exit_status = 0;
 
     if ((remote_slot =
-         phypGetRemoteSlot(conn, managed_system, lpar_name)) == 0)
+         phypGetRemoteSlot(conn, managed_system, lpar_name)) == -1)
         goto err;
 
     if (virAsprintf(&cmd,
-                    "lshwres -m %s -r virtualio --rsubtype scsi -F backing_devices --filter slots=%d",
+                    "lshwres -m %s -r virtualio --rsubtype scsi -F "
+                    "backing_devices --filter slots=%d",
                     managed_system, remote_slot) < 0) {
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -696,24 +779,12 @@ int
 phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     char *cmd;
     int exit_status = 0;
     char *char_ptr = NULL;
-    char *managed_system = conn->uri->path;
-
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
+    char *managed_system = phyp_driver->managed_system;
 
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s -F state --filter lpar_ids=%d",
@@ -721,7 +792,6 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -752,27 +822,65 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
 }
 
 int
+phypGetVIOSPartitionID(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *cmd;
+    int exit_status = 0;
+    int id = -1;
+    char *char_ptr;
+    char *managed_system = phyp_driver->managed_system;
+
+    if (virAsprintf(&cmd,
+                    "lssyscfg -m %s -r lpar -F lpar_id,lpar_env|grep "
+                    "vioserver|sed -s 's/,.*$//g'", managed_system) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
+    char *ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &id) == -1)
+        goto err;
+
+    return id;
+
+  err:
+    VIR_FREE(cmd);
+    return -1;
+}
+
+int
 phypDiskType(virConnectPtr conn, char *backing_device)
 {
+    phyp_driverPtr phyp_driver = conn->privateData;
     ConnectionData *connection_data = conn->networkPrivateData;
     LIBSSH2_SESSION *session = connection_data->session;
     char *cmd;
     int exit_status = 0;
+    char *char_ptr;
+    char *managed_system = phyp_driver->managed_system;
+    int vios_id = phyp_driver->vios_id;
 
     if (virAsprintf(&cmd,
-                    "ioscli lssp -field name type -fmt , -all|grep %s|sed -e 's/^.*,//g'",
-                    backing_device) < 0) {
+                    "viosvrcmd -m %s -p %d -c \"lssp -field name type "
+                    "-fmt , -all|grep %s|sed -e 's/^.*,//g'\"",
+                    managed_system, vios_id, backing_device) < 0) {
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
     if (ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
@@ -805,12 +913,13 @@ static int
 phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     int exit_status = 0;
     int ndom = 0;
     char *char_ptr;
     char *cmd;
-    char *managed_system = conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     const char *state;
 
     if (type == 0)
@@ -820,26 +929,12 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     else
         state = " ";
 
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
-
     if (virAsprintf(&cmd,
-                    "lssyscfg -r lpar -m %s -F lpar_id,state %s |grep -c ^[0-9]*",
-                    managed_system, state) < 0) {
+                    "lssyscfg -r lpar -m %s -F lpar_id,state %s |grep -c "
+                    "^[0-9]*", managed_system, state) < 0) {
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -874,15 +969,16 @@ phypNumDomains(virConnectPtr conn)
  * in different states: Running, and all:
  *
  * type: 0 - Running
- *       * - all
+ *       1 - all
  * */
 static int
 phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
                        unsigned int type)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    char *managed_system = conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
     int got = 0;
     char *char_ptr;
@@ -896,18 +992,6 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
     else
         state = " ";
 
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
-
     memset(id_c, 0, 10);
 
     if (virAsprintf
@@ -917,7 +1001,6 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
     /* I need to parse the textual return in order to get the ret */
@@ -957,34 +1040,21 @@ static int
 phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    char *managed_system = conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
     int got = 0;
-    char *char_ptr = NULL;
     char *cmd;
     char *domains;
 
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
-
     if (virAsprintf
         (&cmd,
-         "lssyscfg -r lpar -m %s -F name,state | grep \"Not Activated\" | sed -e 's/,.*$//g'",
-         managed_system) < 0) {
+         "lssyscfg -r lpar -m %s -F name,state | grep \"Not Activated\" | "
+         "sed -e 's/,.*$//g'", managed_system) < 0) {
         virReportOOMError(conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, conn);
 
@@ -1030,29 +1100,18 @@ static virDomainPtr
 phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     virDomainPtr dom = NULL;
     int lpar_id = 0;
-    char *managed_system = conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     unsigned char *lpar_uuid = NULL;
 
     if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
         virReportOOMError(dom->conn);
 
-    /* need to shift one byte in order to remove the first "/" of uri component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char *char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
-
     lpar_id = phypGetLparID(session, managed_system, lpar_name, conn);
-    if (lpar_id < 0)
+    if (lpar_id == -1)
         goto err;
 
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
@@ -1075,26 +1134,15 @@ static virDomainPtr
 phypDomainLookupByID(virConnectPtr conn, int lpar_id)
 {
     ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     virDomainPtr dom = NULL;
-    char *managed_system = conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
     unsigned char *lpar_uuid = NULL;
 
     if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
         virReportOOMError(dom->conn);
-
-    /* need to shift one byte in order to remove the first "/" of uri component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char *char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
 
     char *lpar_name = phypGetLparNAME(session, managed_system, lpar_id,
                                       conn);
@@ -1124,10 +1172,11 @@ static char *
 phypDomainDumpXML(virDomainPtr dom, int flags)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
     virDomainDefPtr def = NULL;
     char *ret = NULL;
-    char *managed_system = dom->conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     unsigned char *lpar_uuid = NULL;
 
     if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
@@ -1135,18 +1184,6 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
 
     if (VIR_ALLOC(def) < 0)
         virReportOOMError(dom->conn);
-
-    /* need to shift one byte in order to remove the first "/" of uri component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char *char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
 
     def->virtType = VIR_DOMAIN_VIRT_PHYP;
     def->id = dom->id;
@@ -1189,32 +1226,23 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
 
     ret = virDomainDefFormat(dom->conn, def, flags);
 
-  err:
-    VIR_FREE(def);
+    virDomainDefFree(def);
     return ret;
+
+  err:
+    virDomainDefFree(def);
+    return NULL;
 }
 
 static int
 phypDomainResume(virDomainPtr dom)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    char *managed_system = dom->conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
-    char *char_ptr = NULL;
     char *cmd;
-
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
 
     if (virAsprintf
         (&cmd,
@@ -1223,38 +1251,31 @@ phypDomainResume(virDomainPtr dom)
         virReportOOMError(dom->conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, dom->conn);
 
-  err:
+    if (exit_status < 0)
+        goto err;
+
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return 0;
 
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
 }
 
 static int
 phypDomainShutdown(virDomainPtr dom)
 {
     ConnectionData *connection_data = dom->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    char *managed_system = dom->conn->uri->path;
+    char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
-    char *char_ptr = NULL;
     char *cmd;
-
-    /* need to shift one byte in order to remove the first "/" of URI component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
 
     if (virAsprintf
         (&cmd,
@@ -1263,33 +1284,27 @@ phypDomainShutdown(virDomainPtr dom)
         virReportOOMError(dom->conn);
         goto err;
     }
-    PHYP_CMD_DEBUG;
 
     char *ret = phypExec(session, cmd, &exit_status, dom->conn);
+
+    if (exit_status < 0)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
 
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return 0;
-
 }
 
 static int
 phypDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 {
-    char *managed_system = dom->conn->uri->path;
-
-    /* need to shift one byte in order to remove the first "/" of uri component */
-    if (managed_system[0] == '/')
-        managed_system++;
-
-    /* here we are handling only the first component of the path,
-     * so skipping the second:
-     * */
-    char *char_ptr = strchr(managed_system, '/');
-
-    if (char_ptr)
-        *char_ptr = '\0';
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
+    char *managed_system = phyp_driver->managed_system;
 
     info->state = phypGetLparState(dom->conn, dom->id);
 
@@ -1306,6 +1321,210 @@ phypDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         VIR_WARN("%s", "Unable to determine domain's CPU.");
 
     return 0;
+}
+
+static int
+phypDomainDestroy(virDomainPtr dom)
+{
+    ConnectionData *connection_data = dom->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int exit_status = 0;
+    char *cmd;
+
+    if (virAsprintf
+        (&cmd,
+         "rmsyscfg -m %s -r lpar --id %d", managed_system, dom->id) < 0) {
+        virReportOOMError(dom->conn);
+        goto err;
+    }
+
+    char *ret = phypExec(session, cmd, &exit_status, dom->conn);
+
+    if (exit_status < 0)
+        goto err;
+
+    if (phypUUIDTable_RemLpar(dom->conn, dom->id) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+
+}
+
+static virDomainPtr
+phypDomainCreateAndStart(virConnectPtr conn,
+                         const char *xml,
+                         unsigned int flags ATTRIBUTE_UNUSED)
+{
+
+    ConnectionData *connection_data = conn->networkPrivateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virDomainDefPtr def = NULL;
+    virDomainPtr dom = NULL;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    lparPtr *lpars = uuid_table->lpars;
+    unsigned int i = 0;
+    char *managed_system = phyp_driver->managed_system;
+
+    if (!(def = virDomainDefParseString(conn, phyp_driver->caps, xml,
+                                        VIR_DOMAIN_XML_SECURE)))
+        goto err;
+
+    /* checking if this name already exists on this system */
+    if (phypGetLparID(session, managed_system, def->name, conn) == -1) {
+        VIR_WARN("%s", "LPAR name already exists.");
+        goto err;
+    }
+
+    /* checking if ID or UUID already exists on this system */
+    for (i = 0; i < uuid_table->nlpars; i++) {
+        if (lpars[i]->id == def->id || lpars[i]->uuid == def->uuid) {
+            VIR_WARN("%s", "LPAR ID or UUID already exists.");
+            goto err;
+        }
+    }
+
+    if ((dom = virGetDomain(conn, def->name, def->uuid)) == NULL)
+        goto err;
+
+    if (phypBuildLpar(conn, def) == -1)
+        goto err;
+
+    if (phypDomainResume(dom) == -1)
+        goto err;
+
+    return dom;
+
+  err:
+    virDomainDefFree(def);
+    VIR_FREE(dom);
+    return NULL;
+}
+
+static char *
+phypConnectGetCapabilities(virConnectPtr conn)
+{
+    phyp_driverPtr phyp_driver = conn->privateData;
+    char *xml;
+
+    if ((xml = virCapabilitiesFormatXML(phyp_driver->caps)) == NULL)
+        virReportOOMError(conn);
+
+    return xml;
+}
+
+virCapsPtr
+phypCapsInit(void)
+{
+    struct utsname utsname;
+    virCapsPtr caps;
+    virCapsGuestPtr guest;
+
+    uname(&utsname);
+
+    if ((caps = virCapabilitiesNew(utsname.machine, 0, 0)) == NULL)
+        goto no_memory;
+
+    /* Some machines have problematic NUMA toplogy causing
+     * unexpected failures. We don't want to break the QEMU
+     * driver in this scenario, so log errors & carry on
+     */
+    if (nodeCapsInitNUMA(caps) < 0) {
+        virCapabilitiesFreeNUMAInfo(caps);
+        VIR_WARN0
+            ("Failed to query host NUMA topology, disabling NUMA capabilities");
+    }
+
+    /* XXX shouldn't 'borrow' KVM's prefix */
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]) {
+                                0x52, 0x54, 0x00});
+
+    if ((guest = virCapabilitiesAddGuest(caps,
+                                         "linux",
+                                         utsname.machine,
+                                         sizeof(int) == 4 ? 32 : 8,
+                                         NULL, NULL, 0, NULL)) == NULL)
+        goto no_memory;
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      "phyp", NULL, NULL, 0, NULL) == NULL)
+        goto no_memory;
+
+    return caps;
+
+  no_memory:
+    virCapabilitiesFree(caps);
+    return NULL;
+}
+
+static int
+phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
+{
+    ConnectionData *connection_data = dom->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = dom->conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int exit_status = 0;
+    char *cmd;
+    char operation;
+    unsigned long ncpus = 0;
+    unsigned int amount = 0;
+
+    if ((ncpus = phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0)
+        goto err;
+
+    if (nvcpus > phypGetLparCPUMAX(dom)) {
+        VIR_ERROR("%s",
+                  "You are trying to set a number of CPUs bigger than "
+                  "the max possible..");
+        goto err;
+    }
+
+    if (ncpus > nvcpus) {
+        operation = 'r';
+        amount = nvcpus - ncpus;
+    } else if (ncpus < nvcpus) {
+        operation = 'a';
+        amount = nvcpus - ncpus;
+    } else
+        goto exit;
+
+    if (virAsprintf
+        (&cmd,
+         "chhwres -r proc -m %s --id %d -o %c --procunits %d 2>&1 |sed"
+         "-e 's/^.*\\([0-9]\\+.[0-9]\\+\\).*$/\\1/g'",
+         managed_system, dom->id, operation, amount) < 0) {
+        virReportOOMError(dom->conn);
+        goto err;
+    }
+
+    char *ret = phypExec(session, cmd, &exit_status, dom->conn);
+
+    if (exit_status < 0) {
+        VIR_ERROR("%s",
+                  "Possibly you don't have IBM Tools installed in your LPAR."
+                  "Contact your support to enable this feature.");
+        goto err;
+    }
+
+  exit:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
 
 }
 
@@ -1320,10 +1539,10 @@ virDriver phypDriver = {
     NULL,                       /* getHostname */
     NULL,                       /* getMaxVcpus */
     NULL,                       /* nodeGetInfo */
-    NULL,                       /* getCapabilities */
+    phypConnectGetCapabilities, /* getCapabilities */
     phypListDomains,            /* listDomains */
     phypNumDomains,             /* numOfDomains */
-    NULL,                       /* domainCreateXML */
+    phypDomainCreateAndStart,   /* domainCreateXML */
     phypDomainLookupByID,       /* domainLookupByID */
     NULL,                       /* domainLookupByUUID */
     phypDomainLookupByName,     /* domainLookupByName */
@@ -1331,7 +1550,7 @@ virDriver phypDriver = {
     phypDomainResume,           /* domainResume */
     phypDomainShutdown,         /* domainShutdown */
     NULL,                       /* domainReboot */
-    NULL,                       /* domainDestroy */
+    phypDomainDestroy,          /* domainDestroy */
     NULL,                       /* domainGetOSType */
     NULL,                       /* domainGetMaxMemory */
     NULL,                       /* domainSetMaxMemory */
@@ -1340,10 +1559,10 @@ virDriver phypDriver = {
     NULL,                       /* domainSave */
     NULL,                       /* domainRestore */
     NULL,                       /* domainCoreDump */
-    NULL,                       /* domainSetVcpus */
+    phypDomainSetCPU,           /* domainSetVcpus */
     NULL,                       /* domainPinVcpu */
     NULL,                       /* domainGetVcpus */
-    NULL,                       /* domainGetMaxVcpus */
+    phypGetLparCPUMAX,          /* domainGetMaxVcpus */
     NULL,                       /* domainGetSecurityLabel */
     NULL,                       /* nodeGetSecurityModel */
     phypDomainDumpXML,          /* domainDumpXML */
@@ -1381,52 +1600,429 @@ virDriver phypDriver = {
 };
 
 int
-phypRegister(void)
+phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
 {
-    virRegisterDriver(&phypDriver);
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    char *cmd;
+    int exit_status = 0;
+
+    if (virAsprintf
+        (&cmd,
+         "mksyscfg -m %s -r lpar -p %s -i min_mem=%d,desired_mem=%d,"
+         "max_mem=%d,desired_procs=%d,virtual_scsi_adapters=%s",
+         managed_system, def->name, (int) def->memory,
+         (int) def->memory, (int) def->maxmem, (int) def->vcpus,
+         def->disks[0]->src) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
+    char *ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0) {
+        VIR_ERROR("%s\"%s\"", "Unable to create LPAR. Reason: ", ret);
+        goto err;
+    }
+
+    if (phypUUIDTable_AddLpar(conn, def->uuid, def->id) == -1) {
+        VIR_ERROR("%s", "Unable to add LPAR to the table");
+        goto err;
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
     return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
 }
 
-void
-init_uuid_db(virConnectPtr conn)
+int
+phypUUIDTable_RemLpar(virConnectPtr conn, int id)
 {
-    uuid_dbPtr uuid_db;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    unsigned int i = 0;
+
+    for (i = 0; i <= uuid_table->nlpars; i++) {
+        if (uuid_table->lpars[i]->id == id) {
+            uuid_table->lpars[i]->id = -1;
+            if (!memset(uuid_table->lpars[i]->uuid, '0', VIR_UUID_BUFLEN))
+                goto exit;
+        }
+    }
+
+    if (phypUUIDTable_WriteFile(conn) == -1)
+        goto err;
+
+    if (phypUUIDTable_Push(conn) == -1)
+        goto err;
+
+  exit:
+    return 0;
+
+  err:
+    return -1;
+}
+
+int
+phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
+{
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+
+    uuid_table->nlpars++;
+    unsigned int i = uuid_table->nlpars;
+    i--;
+
+    if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
+    if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
+    uuid_table->lpars[i]->id = id;
+    if (memmove(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN) == NULL)
+        goto err;
+
+    if (phypUUIDTable_WriteFile(conn) == -1)
+        goto err;
+
+    if (phypUUIDTable_Push(conn) == -1)
+        goto err;
+
+    return 0;
+
+  err:
+    return -1;
+}
+
+int
+phypUUIDTable_ReadFile(virConnectPtr conn)
+{
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    unsigned int i = 0;
+    int fd = -1;
+    char local_file[] = "./uuid_table";
+    int rc = 0;
+    char buffer[1024];
+
+    if ((fd = open(local_file, O_RDONLY)) == -1) {
+        VIR_WARN("%s", "Unable to write information to local file.");
+        goto err;
+    }
+
+    /* Creating a new data base and writing to local file */
+    if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
+        for (i = 0; i < uuid_table->nlpars; i++) {
+
+            rc = read(fd, buffer, sizeof(int));
+            if (rc == sizeof(int)) {
+                if (VIR_ALLOC(uuid_table->lpars[i]) < 0)
+                    virReportOOMError(conn);
+                uuid_table->lpars[i]->id = (*buffer);
+            } else {
+                VIR_WARN("%s",
+                         "Unable to read from information to local file.");
+                goto err;
+            }
+
+            rc = read(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN);
+            if (rc != VIR_UUID_BUFLEN) {
+                VIR_WARN("%s",
+                         "Unable to read information to local file.");
+                goto err;
+            }
+        }
+    }
+
+    close(fd);
+    return 0;
+
+  err:
+    close(fd);
+    return -1;
+}
+
+int
+phypUUIDTable_WriteFile(virConnectPtr conn)
+{
+    phyp_driverPtr phyp_driver = conn->privateData;
+    uuid_tablePtr uuid_table = phyp_driver->uuid_table;
+    unsigned int i = 0;
+    int fd = -1;
+    char local_file[] = "./uuid_table";
+
+    if ((fd = creat(local_file, 0755)) == -1)
+        goto err;
+
+    for (i = 0; i < uuid_table->nlpars; i++) {
+        if (safewrite(fd, &uuid_table->lpars[i]->id,
+                      sizeof(uuid_table->lpars[i]->id)) ==
+            sizeof(uuid_table->lpars[i]->id)) {
+            VIR_ERROR("%s", "Unable to write information to local file.");
+            goto err;
+        }
+
+        if (safewrite(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN) !=
+            VIR_UUID_BUFLEN) {
+            VIR_ERROR("%s", "Unable to write information to local file.");
+            goto err;
+        }
+    }
+
+    close(fd);
+    return 0;
+
+  err:
+    close(fd);
+    return -1;
+}
+
+int
+phypUUIDTable_Init(virConnectPtr conn)
+{
+    uuid_tablePtr uuid_table;
+    phyp_driverPtr phyp_driver;
     int nids = 0;
     int *ids = NULL;
     unsigned int i = 0;
 
     if ((nids = phypNumDomainsGeneric(conn, 2)) == 0)
-        goto exit;
+        goto err;
 
-    if (VIR_ALLOC_N(ids, nids) < 0)
+    if (VIR_ALLOC_N(ids, nids) < 0) {
         virReportOOMError(conn);
-
-    if (VIR_ALLOC(uuid_db) < 0)
-        virReportOOMError(conn);
+        goto err;
+    }
 
     if (phypListDomainsGeneric(conn, ids, nids, 1) == 0)
+        goto err;
+
+    phyp_driver = conn->privateData;
+    uuid_table = phyp_driver->uuid_table;
+    uuid_table->nlpars = nids;
+
+    /* try to get the table from server */
+    if (phypUUIDTable_Pull(conn) == -1) {
+        /* file not found in the server, creating a new one */
+        if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
+            for (i = 0; i < uuid_table->nlpars; i++) {
+                if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
+                    virReportOOMError(conn);
+                    goto err;
+                }
+                uuid_table->lpars[i]->id = ids[i];
+
+                if (virUUIDGenerate(uuid_table->lpars[i]->uuid) < 0)
+                    VIR_WARN("%s %d", "Unable to generate UUID for domain",
+                             ids[i]);
+            }
+        } else
+            goto err;
+
+        if (phypUUIDTable_WriteFile(conn) == -1)
+            goto err;
+
+        if (phypUUIDTable_Push(conn) == -1)
+            goto err;
+    } else {
+        if (phypUUIDTable_ReadFile(conn) == -1)
+            goto err;
         goto exit;
-
-    uuid_db = conn->privateData;
-    uuid_db->nlpars = nids;
-
-    if (VIR_ALLOC_N(uuid_db->lpars, uuid_db->nlpars) >= 0) {
-        for (i = 0; i < uuid_db->nlpars; i++) {
-            if (VIR_ALLOC(uuid_db->lpars[i]) < 0)
-                virReportOOMError(conn);
-            uuid_db->lpars[i]->id = ids[i];
-
-            if (virUUIDGenerate(uuid_db->lpars[i]->uuid) < 0)
-                VIR_WARN("%s %d", "Unable to generate UUID for domain",
-                         ids[i]);
-        }
     }
+
   exit:
     VIR_FREE(ids);
-    return;
+    return 0;
+
+  err:
+    VIR_FREE(ids);
+    return -1;
 }
 
-static int
+int
+phypUUIDTable_Push(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    LIBSSH2_CHANNEL *channel = NULL;
+    struct stat local_fileinfo;
+    char buffer[1024];
+    int rc = 0;
+    FILE *fd;
+    size_t nread, sent;
+    char *ptr;
+    char remote_file[] = "/home/hscroot/libvirt_uuid_table";
+    char local_file[] = "./uuid_table";
+
+    if (stat(local_file, &local_fileinfo) == -1) {
+        VIR_WARN0("Unable to stat local file.");
+        goto err;
+    }
+
+    if (!(fd = fopen(local_file, "rb"))) {
+        VIR_WARN0("Unable to open local file.");
+        goto err;
+    }
+
+    do {
+        channel =
+            libssh2_scp_send(session, remote_file,
+                             0x1FF & local_fileinfo.st_mode,
+                             (unsigned long) local_fileinfo.st_size);
+
+        if ((!channel) && (libssh2_session_last_errno(session) !=
+                           LIBSSH2_ERROR_EAGAIN))
+            goto err;
+    } while (!channel);
+
+    do {
+        nread = fread(buffer, 1, sizeof(buffer), fd);
+        if (nread <= 0) {
+            /* end of file */
+            break;
+        }
+        ptr = buffer;
+        sent = 0;
+
+        do {
+            /* write the same data over and over, until error or completion */
+            rc = libssh2_channel_write(channel, ptr, nread);
+            if (LIBSSH2_ERROR_EAGAIN == rc) {   /* must loop around */
+                continue;
+            } else {
+                /* rc indicates how many bytes were written this time */
+                sent += rc;
+            }
+        } while (rc > 0 && sent < nread);
+        ptr += sent;
+        nread -= sent;
+    } while (1);
+
+    goto exit;
+
+  exit:
+    if (channel) {
+        libssh2_channel_send_eof(channel);
+        libssh2_channel_wait_eof(channel);
+        libssh2_channel_wait_closed(channel);
+        libssh2_channel_free(channel);
+        channel = NULL;
+    }
+    return 0;
+
+  err:
+    if (channel) {
+        libssh2_channel_send_eof(channel);
+        libssh2_channel_wait_eof(channel);
+        libssh2_channel_wait_closed(channel);
+        libssh2_channel_free(channel);
+        channel = NULL;
+    }
+    return -1;
+}
+
+int
+phypUUIDTable_Pull(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    LIBSSH2_CHANNEL *channel = NULL;
+    struct stat fileinfo;
+    char buffer[1024];
+    int rc = 0;
+    int fd;
+    int got = 0;
+    int amount = 0;
+    int total = 0;
+    int sock = 0;
+    char remote_file[] = "/home/hscroot/libvirt_uuid_table";
+    char local_file[] = "./uuid_table";
+
+    /* Trying to stat the remote file. */
+    do {
+        channel = libssh2_scp_recv(session, remote_file, &fileinfo);
+
+        if (!channel) {
+            if (libssh2_session_last_errno(session) !=
+                LIBSSH2_ERROR_EAGAIN) {
+                goto err;;
+            } else {
+                waitsocket(sock, session);
+            }
+        }
+    } while (!channel);
+
+    /* Creating a new data base based on remote file */
+    if ((fd = creat(local_file, 0755)) == -1)
+        goto err;
+
+    /* Request a file via SCP */
+    while (got < fileinfo.st_size) {
+        do {
+            amount = sizeof(buffer);
+
+            if ((fileinfo.st_size - got) < amount) {
+                amount = fileinfo.st_size - got;
+            }
+
+            rc = libssh2_channel_read(channel, buffer, amount);
+            if (rc > 0) {
+                if (safewrite(fd, buffer, rc) != rc)
+                    VIR_WARN("%s",
+                             "Unable to write information to local file.");
+
+                got += rc;
+                total += rc;
+            }
+        } while (rc > 0);
+
+        if ((rc == LIBSSH2_ERROR_EAGAIN)
+            && (got < fileinfo.st_size)) {
+            /* this is due to blocking that would occur otherwise
+             * so we loop on this condition */
+
+            waitsocket(sock, session);  /* now we wait */
+            continue;
+        }
+        break;
+    }
+    close(fd);
+    goto exit;
+
+  exit:
+    if (channel) {
+        libssh2_channel_send_eof(channel);
+        libssh2_channel_wait_eof(channel);
+        libssh2_channel_wait_closed(channel);
+        libssh2_channel_free(channel);
+        channel = NULL;
+    }
+    return 0;
+
+  err:
+    if (channel) {
+        libssh2_channel_send_eof(channel);
+        libssh2_channel_wait_eof(channel);
+        libssh2_channel_wait_closed(channel);
+        libssh2_channel_free(channel);
+        channel = NULL;
+    }
+    return -1;
+}
+
+int
 escape_specialcharacters(char *src, char *dst, size_t dstlen)
 {
     size_t len = strlen(src);
@@ -1437,12 +2033,30 @@ escape_specialcharacters(char *src, char *dst, size_t dstlen)
 
     for (i = 0; i < len; i++) {
         switch (src[i]) {
-            case '&': case ';': case '`': case '@':
-            case '"': case '|': case '*': case '?':
-            case '~': case '<': case '>': case '^':
-            case '(': case ')': case '[': case ']':
-            case '{': case '}': case '$': case '%':
-            case '#': case '\\': case '\n': case '\r':
+            case '&':
+            case ';':
+            case '`':
+            case '@':
+            case '"':
+            case '|':
+            case '*':
+            case '?':
+            case '~':
+            case '<':
+            case '>':
+            case '^':
+            case '(':
+            case ')':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '$':
+            case '%':
+            case '#':
+            case '\\':
+            case '\n':
+            case '\r':
             case '\t':
                 continue;
             default:
@@ -1487,4 +2101,11 @@ waitsocket(int socket_fd, LIBSSH2_SESSION * session)
     rc = select(socket_fd + 1, readfd, writefd, NULL, &timeout);
 
     return rc;
+}
+
+int
+phypRegister(void)
+{
+    virRegisterDriver(&phypDriver);
+    return 0;
 }
