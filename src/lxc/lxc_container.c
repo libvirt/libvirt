@@ -225,26 +225,38 @@ static int lxcContainerWaitForContinue(int control)
 
 
 /**
- * lxcContainerEnableInterfaces:
+ * lxcContainerRenameAndEnableInterfaces:
  * @nveths: number of interfaces
  * @veths: interface names
  *
- * This function will enable the interfaces for this container.
+ * This function will rename the interfaces to ethN
+ * with id ascending order from zero and enable the
+ * renamed interfaces for this container.
  *
  * Returns 0 on success or nonzero in case of error
  */
-static int lxcContainerEnableInterfaces(unsigned int nveths,
-                                        char **veths)
+static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
+                                                 char **veths)
 {
     int rc = 0;
     unsigned int i;
+    char *newname = NULL;
 
     for (i = 0 ; i < nveths ; i++) {
-        DEBUG("Enabling %s", veths[i]);
-        rc =  vethInterfaceUpOrDown(veths[i], 1);
-        if (0 != rc) {
+        rc = virAsprintf(&newname, "eth%d", i);
+        if (rc < 0)
             goto error_out;
-        }
+
+        DEBUG("Renaming %s to %s", veths[i], newname);
+        rc = setInterfaceName(veths[i], newname);
+        if (0 != rc)
+            goto error_out;
+
+        DEBUG("Enabling %s", newname);
+        rc =  vethInterfaceUpOrDown(newname, 1);
+        if (0 != rc)
+            goto error_out;
+        VIR_FREE(newname);
     }
 
     /* enable lo device only if there were other net devices */
@@ -252,6 +264,7 @@ static int lxcContainerEnableInterfaces(unsigned int nveths,
         rc = vethInterfaceUpOrDown("lo", 1);
 
 error_out:
+    VIR_FREE(newname);
     return rc;
 }
 
@@ -757,8 +770,9 @@ static int lxcContainerChild( void *data )
     if (lxcContainerWaitForContinue(argv->monitor) < 0)
         return -1;
 
-    /* enable interfaces */
-    if (lxcContainerEnableInterfaces(argv->nveths, argv->veths) < 0)
+    /* rename and enable interfaces */
+    if (lxcContainerRenameAndEnableInterfaces(argv->nveths,
+                                              argv->veths) < 0)
         return -1;
 
     /* drop a set of root capabilities */

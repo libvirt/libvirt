@@ -247,3 +247,34 @@ int setMacAddr(const char* iface, const char* macaddr)
 error_out:
     return rc;
 }
+
+/**
+ * setInterfaceName
+ * @iface: name of device
+ * @new: new name of @iface
+ *
+ * Changes the name of the given device with the
+ * given new name using this command:
+ *     ip link set @iface name @new
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+int setInterfaceName(const char* iface, const char* new)
+{
+    int rc = -1;
+    const char *argv[] = {
+        "ip", "link", "set", iface, "name", new, NULL
+    };
+    int cmdResult;
+
+    if (NULL == iface || NULL == new) {
+        goto error_out;
+    }
+
+    rc = virRun(NULL, argv, &cmdResult);
+    if (0 == rc)
+        rc = cmdResult;
+
+error_out:
+    return rc;
+}
