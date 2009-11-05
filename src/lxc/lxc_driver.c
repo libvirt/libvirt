@@ -1992,39 +1992,46 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
 
     autostart = (autostart != 0);
 
-    if (vm->autostart != autostart) {
-        if ((configFile = virDomainConfigFile(dom->conn, driver->configDir, vm->def->name)) == NULL)
+    if (vm->autostart == autostart) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    configFile = virDomainConfigFile(dom->conn, driver->configDir,
+                                     vm->def->name);
+    if (configFile == NULL)
+        goto cleanup;
+    autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir,
+                                        vm->def->name);
+    if (autostartLink == NULL)
+        goto cleanup;
+
+    if (autostart) {
+        int err;
+
+        if ((err = virFileMakePath(driver->autostartDir))) {
+            virReportSystemError(dom->conn, err,
+                                 _("Cannot create autostart directory %s"),
+                                 driver->autostartDir);
             goto cleanup;
-        if ((autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir, vm->def->name)) == NULL)
-            goto cleanup;
-
-        if (autostart) {
-            int err;
-
-            if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(dom->conn, err,
-                                     _("Cannot create autostart directory %s"),
-                                     driver->autostartDir);
-                goto cleanup;
-            }
-
-            if (symlink(configFile, autostartLink) < 0) {
-                virReportSystemError(dom->conn, errno,
-                                     _("Failed to create symlink '%s to '%s'"),
-                                     autostartLink, configFile);
-                goto cleanup;
-            }
-        } else {
-            if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                virReportSystemError(dom->conn, errno,
-                                     _("Failed to delete symlink '%s'"),
-                                     autostartLink);
-                goto cleanup;
-            }
         }
 
-        vm->autostart = autostart;
+        if (symlink(configFile, autostartLink) < 0) {
+            virReportSystemError(dom->conn, errno,
+                                 _("Failed to create symlink '%s to '%s'"),
+                                 autostartLink, configFile);
+            goto cleanup;
+        }
+    } else {
+        if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+            virReportSystemError(dom->conn, errno,
+                                 _("Failed to delete symlink '%s'"),
+                                 autostartLink);
+            goto cleanup;
+        }
     }
+
+    vm->autostart = autostart;
     ret = 0;
 
 cleanup:
