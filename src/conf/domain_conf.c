@@ -1365,8 +1365,8 @@ virDomainChrDefParseXML(virConnectPtr conn,
     nodeName = (const char *) node->name;
     if ((def->targetType = virDomainChrTargetTypeFromString(nodeName)) < 0) {
         /* channel is handled below */
-        if(STRNEQ(nodeName, "channel")) {
-            virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+        if (STRNEQ(nodeName, "channel")) {
+            virDomainReportError(conn, VIR_ERR_XML_ERROR,
                               _("unknown target type for character device: %s"),
                                  nodeName);
             return NULL;
@@ -1421,10 +1421,10 @@ virDomainChrDefParseXML(virConnectPtr conn,
                     protocol = virXMLPropString(cur, "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                 /* If target type isn't set yet, expect it to be set here */
-                if(def->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_NULL) {
+                if (def->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_NULL) {
                     targetType = virXMLPropString(cur, "type");
-                    if(targetType == NULL) {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                    if (targetType == NULL) {
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR, "%s",
                                              _("character device target does "
                                                "not define a type"));
                         goto error;
@@ -1432,7 +1432,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
                     if ((def->targetType =
                         virDomainChrTargetTypeFromString(targetType)) < 0)
                     {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                              _("unknown target type for "
                                                "character device: %s"),
                                              targetType);
@@ -1446,14 +1446,14 @@ virDomainChrDefParseXML(virConnectPtr conn,
                 case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
                 case VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE:
                     portStr = virXMLPropString(cur, "port");
-                    if(portStr == NULL) {
+                    if (portStr == NULL) {
                         /* Not required. It will be assigned automatically
                          * later */
                         break;
                     }
 
-                    if(virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+                    if (virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                              _("Invalid port number: %s"),
                                              portStr);
                         goto error;
@@ -1464,32 +1464,39 @@ virDomainChrDefParseXML(virConnectPtr conn,
                     addrStr = virXMLPropString(cur, "address");
                     portStr = virXMLPropString(cur, "port");
 
-                    if(addrStr == NULL) {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                    if (addrStr == NULL) {
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR, "%s",
                                              _("guestfwd channel does not "
                                                "define a target address"));
                         goto error;
                     }
-                    if(VIR_ALLOC(def->target.addr) < 0) {
+                    if (VIR_ALLOC(def->target.addr) < 0) {
                         virReportOOMError(conn);
                         goto error;
                     }
-                    if(virSocketParseAddr(addrStr, def->target.addr, 0) < 0)
+                    if (virSocketParseAddr(addrStr, def->target.addr, 0) < 0)
                     {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                              _("%s is not a valid address"),
                                              addrStr);
                         goto error;
                     }
 
-                    if(portStr == NULL) {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                    if (def->target.addr->stor.ss_family != AF_INET) {
+                        virDomainReportError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                                     "%s", _("guestfwd channel only supports "
+                                             "IPv4 addresses"));
+                        goto error;
+                    }
+
+                    if (portStr == NULL) {
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR, "%s",
                                              _("guestfwd channel does "
                                                "not define a target port"));
                         goto error;
                     }
-                    if(virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
-                        virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+                    if (virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
+                        virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                              _("Invalid port number: %s"),
                                              portStr);
                         goto error;
@@ -1498,7 +1505,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
                     break;
 
                 default:
-                    virDomainReportError(conn, VIR_ERR_INVALID_DOMAIN,
+                    virDomainReportError(conn, VIR_ERR_XML_ERROR,
                                          _("unexpected target type type %u"),
                                          def->targetType);
                 }
@@ -2732,7 +2739,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     if (!(flags & VIR_DOMAIN_XML_INACTIVE))
-        if((virXPathLong(conn, "string(./@id)", ctxt, &id)) < 0)
+        if ((virXPathLong(conn, "string(./@id)", ctxt, &id)) < 0)
             id = -1;
     def->id = (int)id;
 

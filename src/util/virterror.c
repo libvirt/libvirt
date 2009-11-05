@@ -1089,6 +1089,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Secret not found: %s");
             break;
+        case VIR_ERR_CONFIG_UNSUPPORTED:
+            if (info == NULL)
+                errmsg = _("unsupported configuration");
+            else
+                errmsg = _("unsupported configuration: %s");
+            break;
     }
     return (errmsg);
 }
