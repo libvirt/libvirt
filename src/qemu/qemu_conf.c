@@ -894,6 +894,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_PCIDEVICE;
     if (strstr(help, "-mem-path"))
         flags |= QEMUD_CMD_FLAG_MEM_PATH;
+    if (strstr(help, "-chardev"))
+        flags |= QEMUD_CMD_FLAG_CHARDEV;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
