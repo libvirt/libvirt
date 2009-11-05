@@ -1222,7 +1222,7 @@ qemudInitCpus(virConnectPtr conn,
               const char *migrateFrom) {
 #if HAVE_SCHED_GETAFFINITY
     cpu_set_t mask;
-    int i, maxcpu = QEMUD_CPUMASK_LEN;
+    int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
 
     if (nodeGetInfo(conn, &nodeinfo) < 0)
@@ -1230,8 +1230,9 @@ qemudInitCpus(virConnectPtr conn,
 
     /* setaffinity fails if you set bits for CPUs which
      * aren't present, so we have to limit ourselves */
-    if (maxcpu > nodeinfo.cpus)
-        maxcpu = nodeinfo.cpus;
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
 
     CPU_ZERO(&mask);
     if (vm->def->cpumask) {
@@ -3339,7 +3340,7 @@ qemudDomainPinVcpu(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     cpu_set_t mask;
-    int i, maxcpu;
+    int i, maxcpu, hostcpus;
     virNodeInfo nodeinfo;
     int ret = -1;
 
@@ -3371,13 +3372,14 @@ qemudDomainPinVcpu(virDomainPtr dom,
     if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
         goto cleanup;
 
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
     maxcpu = maplen * 8;
-    if (maxcpu > nodeinfo.cpus)
-        maxcpu = nodeinfo.cpus;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
 
     CPU_ZERO(&mask);
     for (i = 0 ; i < maxcpu ; i++) {
-        if ((cpumap[i/8] >> (i % 8)) & 1)
+        if (VIR_CPU_USABLE(cpumap, maplen, 0, i))
             CPU_SET(i, &mask);
     }
 
@@ -3409,7 +3411,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virNodeInfo nodeinfo;
-    int i, v, maxcpu;
+    int i, v, maxcpu, hostcpus;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -3434,9 +3436,10 @@ qemudDomainGetVcpus(virDomainPtr dom,
     if (nodeGetInfo(dom->conn, &nodeinfo) < 0)
         goto cleanup;
 
+    hostcpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
     maxcpu = maplen * 8;
-    if (maxcpu > nodeinfo.cpus)
-        maxcpu = nodeinfo.cpus;
+    if (maxcpu > hostcpus)
+        maxcpu = hostcpus;
 
     /* Clamp to actual number of vcpus */
     if (maxinfo > vm->nvcpupids)
