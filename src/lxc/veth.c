@@ -92,13 +92,13 @@ int vethCreate(char* veth1, int veth1MaxLen,
     while ((1 > strlen(veth1)) || STREQ(veth1, veth2)) {
         vethDev = getFreeVethName(veth1, veth1MaxLen, 0);
         ++vethDev;
-        DEBUG("assigned veth1: %s", veth1);
+        DEBUG("Assigned veth1: %s", veth1);
     }
 
     while ((1 > strlen(veth2)) || STREQ(veth1, veth2)) {
         vethDev = getFreeVethName(veth2, veth2MaxLen, vethDev);
         ++vethDev;
-        DEBUG("assigned veth2: %s", veth2);
+        DEBUG("Assigned veth2: %s", veth2);
     }
 
     DEBUG("veth1: %s veth2: %s", veth1, veth2);

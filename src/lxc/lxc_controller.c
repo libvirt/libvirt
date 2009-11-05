@@ -330,7 +330,7 @@ static int lxcControllerMain(int monitor,
     epollEvent.data.fd = monitor;
     if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, monitor, &epollEvent)) {
         virReportSystemError(NULL, errno, "%s",
-                             _("epoll_ctl(contPty) failed"));
+                             _("epoll_ctl(monitor) failed"));
         goto cleanup;
     }
 
@@ -338,7 +338,7 @@ static int lxcControllerMain(int monitor,
     epollEvent.data.fd = client;
     if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, client, &epollEvent)) {
         virReportSystemError(NULL, errno, "%s",
-                             _("epoll_ctl(contPty) failed"));
+                             _("epoll_ctl(client) failed"));
         goto cleanup;
     }
 
@@ -358,13 +358,13 @@ static int lxcControllerMain(int monitor,
                 epollEvent.data.fd = client;
                 if (0 > epoll_ctl(epollFd, EPOLL_CTL_ADD, client, &epollEvent)) {
                     virReportSystemError(NULL, errno, "%s",
-                                         _("epoll_ctl(contPty) failed"));
+                                         _("epoll_ctl(client) failed"));
                     goto cleanup;
                 }
             } else if (client != -1 && epollEvent.data.fd == client) {
                 if (0 > epoll_ctl(epollFd, EPOLL_CTL_DEL, client, &epollEvent)) {
                     virReportSystemError(NULL, errno, "%s",
-                                         _("epoll_ctl(contPty) failed"));
+                                         _("epoll_ctl(client) failed"));
                     goto cleanup;
                 }
                 close(client);
@@ -452,7 +452,7 @@ static int lxcControllerMoveInterfaces(unsigned int nveths,
     for (i = 0 ; i < nveths ; i++)
         if (moveInterfaceToNetNs(veths[i], container) < 0) {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to move interface %s to ns %d"),
+                     _("Failed to move interface %s to ns %d"),
                      veths[i], container);
             return -1;
         }
@@ -477,7 +477,7 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
     for (i = 0 ; i < nveths ; i++)
         if (vethDelete(veths[i]) < 0)
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to delete veth: %s"), veths[i]);
+                     _("Failed to delete veth: %s"), veths[i]);
             /* will continue to try to cleanup any other interfaces */
 
     return 0;
@@ -540,13 +540,13 @@ lxcControllerRun(virDomainDefPtr def,
         VIR_DEBUG0("Setting up private /dev/pts");
         if (unshare(CLONE_NEWNS) < 0) {
             virReportSystemError(NULL, errno, "%s",
-                                 _("cannot unshare mount namespace"));
+                                 _("Cannot unshare mount namespace"));
             goto cleanup;
         }
 
         if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
             virReportSystemError(NULL, errno, "%s",
-                                 _("failed to switch root mount into slave mode"));
+                                 _("Failed to switch root mount into slave mode"));
             goto cleanup;
         }
 
@@ -558,7 +558,7 @@ lxcControllerRun(virDomainDefPtr def,
 
         if (virFileMakePath(devpts) < 0) {
             virReportSystemError(NULL, errno,
-                                 _("failed to make path %s"),
+                                 _("Failed to make path %s"),
                                  devpts);
             goto cleanup;
         }
@@ -566,13 +566,13 @@ lxcControllerRun(virDomainDefPtr def,
         VIR_DEBUG("Mouting 'devpts' on %s", devpts);
         if (mount("devpts", devpts, "devpts", 0, "newinstance,ptmxmode=0666") < 0) {
             virReportSystemError(NULL, errno,
-                                 _("failed to mount devpts on %s"),
+                                 _("Failed to mount devpts on %s"),
                                  devpts);
             goto cleanup;
         }
 
         if (access(devptmx, R_OK) < 0) {
-            VIR_WARN0("kernel does not support private devpts, using shared devpts");
+            VIR_WARN0("Kernel does not support private devpts, using shared devpts");
             VIR_FREE(devptmx);
         }
     }
@@ -584,7 +584,7 @@ lxcControllerRun(virDomainDefPtr def,
                              &containerPtyPath,
                              0) < 0) {
             virReportSystemError(NULL, errno, "%s",
-                                 _("failed to allocate tty"));
+                                 _("Failed to allocate tty"));
             goto cleanup;
         }
     } else {
@@ -593,7 +593,7 @@ lxcControllerRun(virDomainDefPtr def,
                            &containerPtyPath,
                            0) < 0) {
             virReportSystemError(NULL, errno, "%s",
-                                 _("failed to allocate tty"));
+                                 _("Failed to allocate tty"));
             goto cleanup;
         }
     }
@@ -801,7 +801,7 @@ int main(int argc, char *argv[])
     /* Accept initial client which is the libvirtd daemon */
     if ((client = accept(monitor, NULL, 0)) < 0) {
         virReportSystemError(NULL, errno, "%s",
-                             _("Failed connection from LXC driver"));
+                             _("Failed to accept a connection from driver"));
         goto cleanup;
     }
 
