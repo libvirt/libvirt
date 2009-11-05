@@ -614,7 +614,9 @@ cleanup:
 
 /**
  * lxcVmCleanup:
- * @vm: Ptr to VM to clean up
+ * @conn: pointer to connection
+ * @driver: pointer to driver structure
+ * @vm: pointer to VM to clean up
  *
  * waitpid() on the container process.  kill and wait the tty process
  * This is called by both lxcDomainDestroy and lxcSigHandler when a
@@ -622,7 +624,7 @@ cleanup:
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcVMCleanup(virConnectPtr conn,
+static int lxcVmCleanup(virConnectPtr conn,
                         lxc_driver_t *driver,
                         virDomainObjPtr  vm)
 {
@@ -683,7 +685,10 @@ static int lxcVMCleanup(virConnectPtr conn,
 
 /**
  * lxcSetupInterfaces:
+ * @conn: pointer to connection
  * @def: pointer to virtual machine structure
+ * @nveths: number of interfaces
+ * @veths: interface names
  *
  * Sets up the container interfaces by creating the veth device pairs and
  * attaching the parent end to the appropriate bridge.  The container end
@@ -860,7 +865,7 @@ static int lxcVmTerminate(virConnectPtr conn,
 
     vm->state = VIR_DOMAIN_SHUTDOWN;
 
-    return lxcVMCleanup(conn, driver, vm);
+    return lxcVmCleanup(conn, driver, vm);
 }
 
 static void lxcMonitorEvent(int watch,
@@ -1344,7 +1349,7 @@ cleanup:
 
 /**
  * lxcDomainShutdown:
- * @dom: Ptr to domain to shutdown
+ * @dom: pointer to domain to shutdown
  *
  * Sends SIGINT to container root process to request it to shutdown
  *
@@ -1477,7 +1482,7 @@ static void lxcDomainEventQueue(lxc_driver_t *driver,
 
 /**
  * lxcDomainDestroy:
- * @dom: Ptr to domain to destroy
+ * @dom: pointer to domain to destroy
  *
  * Sends SIGKILL to container root process to terminate the container
  *

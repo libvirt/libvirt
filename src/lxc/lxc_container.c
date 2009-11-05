@@ -91,7 +91,7 @@ struct __lxc_child_argv {
 
 /**
  * lxcContainerExecInit:
- * @vmDef: Ptr to vm definition structure
+ * @vmDef: pointer to vm definition structure
  *
  * Exec the container init string. The container init will replace then
  * be running in the current process
@@ -110,8 +110,8 @@ static int lxcContainerExecInit(virDomainDefPtr vmDef)
 
 /**
  * lxcContainerSetStdio:
- * @control: the conrol FD
- * @ttyPath: Name of tty to set as the container console
+ * @control: control FD from parent
+ * @ttyfd: FD of tty to set as the container console
  *
  * Sets the given tty as the primary conosole for the container as well as
  * stdout, stdin and stderr.
@@ -168,7 +168,7 @@ cleanup:
 
 /**
  * lxcContainerSendContinue:
- * @monitor: control FD to child
+ * @control: control FD to child
  *
  * Sends the continue message via the socket pair stored in the vm
  * structure.
@@ -196,7 +196,7 @@ error_out:
 
 /**
  * lxcContainerWaitForContinue:
- * @control: control FD from parent
+ * @control: Control FD from parent
  *
  * This function will wait for the container continue message from the
  * parent process.  It will send this message on the socket pair stored in
@@ -225,8 +225,9 @@ static int lxcContainerWaitForContinue(int control)
 
 
 /**
- * lxcEnableInterfaces:
- * @vm: Pointer to vm structure
+ * lxcContainerEnableInterfaces:
+ * @nveths: number of interfaces
+ * @veths: interface names
  *
  * This function will enable the interfaces for this container.
  *
@@ -696,8 +697,8 @@ static int lxcContainerDropCapabilities(void)
 
 
 /**
- * lxcChild:
- * @argv: Pointer to container arguments
+ * lxcContainerChild:
+ * @data: pointer to container arguments
  *
  * This function is run in the process clone()'d in lxcStartContainer.
  * Perform a number of container setup tasks:
@@ -776,8 +777,11 @@ static int userns_supported(void)
 
 /**
  * lxcContainerStart:
- * @driver: pointer to driver structure
- * @vm: pointer to virtual machine structure
+ * @def: pointer to virtual machine structure
+ * @nveths: number of interfaces
+ * @veths: interface names
+ * @control: control FD to the container
+ * @ttyPath: path of tty to set as the container console
  *
  * Starts a container process by calling clone() with the namespace flags
  *

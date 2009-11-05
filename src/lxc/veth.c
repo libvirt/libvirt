@@ -182,12 +182,12 @@ error_out:
 
 /**
  * moveInterfaceToNetNs:
- * @interface: name of device
+ * @iface: name of device
  * @pidInNs: PID of process in target net namespace
  *
  * Moves the given device into the target net namespace specified by the given
  * pid using this command:
- *     ip link set interface netns pidInNs
+ *     ip link set @iface netns @pidInNs
  *
  * Returns 0 on success or -1 in case of error
  */

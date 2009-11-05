@@ -269,9 +269,11 @@ typedef struct _lxcTtyForwardFd_t {
 } lxcTtyForwardFd_t;
 
 /**
- * lxcTtyForward:
- * @appPty: Open fd for application facing Pty
- * @contPty: Open fd for container facing Pty
+ * lxcControllerMain
+ * @monitor: server socket fd to accept client requests
+ * @client: initial client which is the libvirtd daemon
+ * @appPty: open fd for application facing Pty
+ * @contPty: open fd for container facing Pty
  *
  * Forwards traffic between fds.  Data read from appPty will be written to contPty
  * This process loops forever.
@@ -461,8 +463,8 @@ static int lxcControllerMoveInterfaces(unsigned int nveths,
 
 /**
  * lxcCleanupInterfaces:
- * @conn: pointer to connection
- * @vm: pointer to virtual machine structure
+ * @nveths: number of interfaces
+ * @veths: interface names
  *
  * Cleans up the container interfaces by deleting the veth device pairs.
  *
