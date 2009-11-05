@@ -977,7 +977,7 @@ if test "$with_phyp" = "check"; then
 
     if test "$with_phyp" != "no"; then
         saved_libs="$LIBS"
-        LIBS="$LIBS -lssh2"
+        LIBS="$LIBS -L$libssh2_path -lssh2"
         AC_TRY_LINK([#include <libssh2.h>], [
             (void) libssh2_session_block_directions(NULL);
         ], [
