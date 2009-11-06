@@ -382,7 +382,7 @@ iptRulesNew(const char *table,
     return NULL;
 }
 
-static int
+static int ATTRIBUTE_SENTINEL
 iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 {
     va_list args;

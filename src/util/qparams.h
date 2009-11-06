@@ -38,10 +38,12 @@ struct qparam_set {
 };
 
 /* New parameter set. */
-extern struct qparam_set *new_qparam_set (int init_alloc, ...);
+extern struct qparam_set *new_qparam_set (int init_alloc, ...)
+    ATTRIBUTE_SENTINEL;
 
 /* Appending parameters. */
-extern int append_qparams (struct qparam_set *ps, ...);
+extern int append_qparams (struct qparam_set *ps, ...)
+    ATTRIBUTE_SENTINEL;
 extern int append_qparam (struct qparam_set *ps,
                           const char *name, const char *value);
 
