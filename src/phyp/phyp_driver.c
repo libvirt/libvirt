@@ -980,7 +980,7 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return 0;
+    return -1;
 }
 
 static int
@@ -1065,7 +1065,7 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return 0;
+    return -1;
 }
 
 static int
@@ -1130,7 +1130,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
         VIR_FREE(names[i]);
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return 0;
+    return -1;
 }
 
 static virDomainPtr
@@ -1843,16 +1843,33 @@ phypUUIDTable_Init(virConnectPtr conn)
     int *ids = NULL;
     unsigned int i = 0;
 
-    if ((nids = phypNumDomainsGeneric(conn, 2)) == 0)
+    if ((nids = phypNumDomainsGeneric(conn, 2)) < 0)
         goto err;
+
+    /* exit early if there are no domains */
+    if (nids == 0)
+        return 0;
 
     if (VIR_ALLOC_N(ids, nids) < 0) {
         virReportOOMError(conn);
         goto err;
     }
 
-    if (phypListDomainsGeneric(conn, ids, nids, 1) == 0)
+    if ((nids = phypListDomainsGeneric(conn, ids, nids, 1)) < 0)
         goto err;
+
+    /* exit early if there are no domains */
+    /* FIXME: phypNumDomainsGeneric() returned > 0 but phypListDomainsGeneric()
+     *        returned 0. indicates this an error condition?
+     *        an even stricter check would be to treat
+     *
+     *          phypNumDomainsGeneric() != phypListDomainsGeneric()
+     *
+     *        as an error */
+    if (nids == 0) {
+        VIR_FREE(ids);
+        return 0;
+    }
 
     phyp_driver = conn->privateData;
     uuid_table = phyp_driver->uuid_table;
