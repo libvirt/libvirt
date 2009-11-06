@@ -369,6 +369,7 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
                         const char *pidfile,
                         const char ***argv) {
     int i, len, r;
+    int nbleases = 0;
     char *pidfileArg;
     char buf[1024];
 
@@ -402,6 +403,8 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
         2 + /* --except-interface lo */
         2 + /* --listen-address 10.0.0.1 */
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
+        /* --dhcp-lease-max=xxx if needed */
+        (network->def->nranges ? 0 : 1) +
         /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
         (2 * network->def->nhosts) +
         /* --enable-tftp --tftp-root /srv/tftp */
@@ -465,6 +468,12 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
                  network->def->ranges[r].end);
 
         APPEND_ARG(*argv, i++, "--dhcp-range");
+        APPEND_ARG(*argv, i++, buf);
+        nbleases += network->def->ranges[r].size;
+    }
+
+    if (network->def->nranges > 0) {
+        snprintf(buf, sizeof(buf), "--dhcp-lease-max=%d", nbleases);
         APPEND_ARG(*argv, i++, buf);
     }
 
