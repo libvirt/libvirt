@@ -2182,7 +2182,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     for (i = 0 ; i < def->nchannels ; i++) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
-        const char *argStr;
         char id[16];
 
         virDomainChrDefPtr channel = def->channels[i];
@@ -2199,24 +2198,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
 
             qemudBuildCommandLineChrDevChardevStr(channel, id, &buf);
-            argStr = virBufferContentAndReset(&buf);
-            if (argStr == NULL)
+            if (virBufferError(&buf))
                 goto error;
 
             ADD_ARG_LIT("-chardev");
-            ADD_ARG_LIT(argStr);
-
-            VIR_FREE(argStr);
+            ADD_ARG(virBufferContentAndReset(&buf));
 
             qemudBuildCommandLineChrDevTargetStr(channel, id, &buf);
-            argStr = virBufferContentAndReset(&buf);
-            if (argStr == NULL)
+            if (virBufferError(&buf))
                 goto error;
 
             ADD_ARG_LIT("-net");
-            ADD_ARG_LIT(argStr);
-
-            VIR_FREE(argStr);
+            ADD_ARG(virBufferContentAndReset(&buf));
         }
     }
 
