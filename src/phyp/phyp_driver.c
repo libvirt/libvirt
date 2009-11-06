@@ -508,16 +508,13 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (ret == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto err;
 
     char *char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
-
-    if (exit_status < 0 || ret == NULL)
-        goto err;
 
     VIR_FREE(cmd);
     return ret;
@@ -593,16 +590,13 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (ret == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *mem_char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
-    if (mem_char_ptr)
-        *mem_char_ptr = '\0';
-
-    if (exit_status < 0)
-        goto err;
+    if (char_ptr)
+        *char_ptr = '\0';
 
     if (virStrToLong_i(ret, &char_ptr, 10, &memory) == -1)
         goto err;
@@ -641,6 +635,7 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     LIBSSH2_SESSION *session = connection_data->session;
     char *cmd = NULL;
     char *ret = NULL;
+    char *char_ptr;
     int exit_status = 0;
     int vcpus = 0;
 
@@ -663,18 +658,15 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     }
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (ret == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
     if (char_ptr)
         *char_ptr = '\0';
 
     if (virStrToLong_i(ret, &char_ptr, 10, &vcpus) == -1)
-        goto err;
-
-    if (exit_status < 0)
         goto err;
 
     VIR_FREE(cmd);
@@ -708,16 +700,13 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
     }
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    if (ret == NULL)
+    if (exit_status < 0 || ret == NULL)
         goto err;
 
-    char *char_ptr2 = strchr(ret, '\n');
+    char_ptr = strchr(ret, '\n');
 
-    if (char_ptr2)
-        *char_ptr2 = '\0';
-
-    if (exit_status < 0)
-        goto err;
+    if (char_ptr)
+        *char_ptr = '\0';
 
     if (virStrToLong_i(ret, &char_ptr, 10, &remote_slot) == -1)
         goto err;
