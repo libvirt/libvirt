@@ -1131,29 +1131,21 @@ phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
     virDomainPtr dom = NULL;
     int lpar_id = 0;
     char *managed_system = phyp_driver->managed_system;
-    unsigned char *lpar_uuid = NULL;
-
-    if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
-        virReportOOMError(dom->conn);
+    unsigned char lpar_uuid[VIR_UUID_BUFLEN];
 
     lpar_id = phypGetLparID(session, managed_system, lpar_name, conn);
     if (lpar_id == -1)
-        goto err;
+        return NULL;
 
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
-        goto err;
+        return NULL;
 
     dom = virGetDomain(conn, lpar_name, lpar_uuid);
 
     if (dom)
         dom->id = lpar_id;
 
-    VIR_FREE(lpar_uuid);
     return dom;
-
-  err:
-    VIR_FREE(lpar_uuid);
-    return NULL;
 }
 
 static virDomainPtr
@@ -1165,10 +1157,7 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
     virDomainPtr dom = NULL;
     char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
-    unsigned char *lpar_uuid = NULL;
-
-    if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
-        virReportOOMError(dom->conn);
+    unsigned char lpar_uuid[VIR_UUID_BUFLEN];
 
     char *lpar_name = phypGetLparNAME(session, managed_system, lpar_id,
                                       conn);
@@ -1185,12 +1174,10 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
         dom->id = lpar_id;
 
     VIR_FREE(lpar_name);
-    VIR_FREE(lpar_uuid);
     return dom;
 
   err:
     VIR_FREE(lpar_name);
-    VIR_FREE(lpar_uuid);
     return NULL;
 }
 
@@ -1200,17 +1187,15 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
     ConnectionData *connection_data = dom->conn->networkPrivateData;
     phyp_driverPtr phyp_driver = dom->conn->privateData;
     LIBSSH2_SESSION *session = connection_data->session;
-    virDomainDefPtr def = NULL;
-    char *ret = NULL;
+    virDomainDef def;
     char *managed_system = phyp_driver->managed_system;
 
-    if (VIR_ALLOC(def) < 0)
-        virReportOOMError(dom->conn);
+    memset(&def, 0, sizeof(virDomainDef));
 
-    def->virtType = VIR_DOMAIN_VIRT_PHYP;
-    def->id = dom->id;
+    def.virtType = VIR_DOMAIN_VIRT_PHYP;
+    def.id = dom->id;
 
-    char *lpar_name = phypGetLparNAME(session, managed_system, def->id,
+    char *lpar_name = phypGetLparNAME(session, managed_system, def.id,
                                       dom->conn);
 
     if (lpar_name == NULL) {
@@ -1218,36 +1203,32 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
         goto err;
     }
 
-    if (phypGetLparUUID(def->uuid, dom->id, dom->conn) == -1) {
+    if (phypGetLparUUID(def.uuid, dom->id, dom->conn) == -1) {
         VIR_ERROR("%s", "Unable to generate random uuid.");
         goto err;
     }
 
-    if ((def->maxmem =
+    if ((def.maxmem =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
         VIR_ERROR("%s", "Unable to determine domain's max memory.");
         goto err;
     }
 
-    if ((def->memory =
+    if ((def.memory =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0) {
         VIR_ERROR("%s", "Unable to determine domain's memory.");
         goto err;
     }
 
-    if ((def->vcpus =
+    if ((def.vcpus =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
         VIR_ERROR("%s", "Unable to determine domain's CPU.");
         goto err;
     }
 
-    ret = virDomainDefFormat(dom->conn, def, flags);
-
-    virDomainDefFree(def);
-    return ret;
+    return virDomainDefFormat(dom->conn, &def, flags);
 
   err:
-    virDomainDefFree(def);
     return NULL;
 }
 
