@@ -1502,84 +1502,66 @@ static int qemudBuildCommandLineChrDevTargetStr(virDomainChrDefPtr dev,
     return ret;
 }
 
-/* This function outputs an all-in-one character device command line option */
-static int qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
-                                          char *buf,
-                                          int buflen)
+static void qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
+                                           virBufferPtr buf)
 {
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        if (virStrcpy(buf, "null", buflen) == NULL)
-            return -1;
+        virBufferAddLit(buf, "null");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        if (virStrcpy(buf, "vc", buflen) == NULL)
-            return -1;
+        virBufferAddLit(buf, "vc");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (virStrcpy(buf, "pty", buflen) == NULL)
-            return -1;
+        virBufferAddLit(buf, "pty");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        if (snprintf(buf, buflen, "%s",
-                     dev->data.file.path) >= buflen)
-            return -1;
+        virBufferStrcat(buf, dev->data.file.path, NULL);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (snprintf(buf, buflen, "file:%s",
-                     dev->data.file.path) >= buflen)
-            return -1;
+        virBufferVSprintf(buf, "file:%s", dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (snprintf(buf, buflen, "pipe:%s",
-                     dev->data.file.path) >= buflen)
-            return -1;
+        virBufferVSprintf(buf, "pipe:%s", dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        if (virStrcpy(buf, "stdio", buflen) == NULL)
-            return -1;
+        virBufferAddLit(buf, "stdio");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (snprintf(buf, buflen, "udp:%s:%s@%s:%s",
-                     dev->data.udp.connectHost,
-                     dev->data.udp.connectService,
-                     dev->data.udp.bindHost,
-                     dev->data.udp.bindService) >= buflen)
-            return -1;
+        virBufferVSprintf(buf, "udp:%s:%s@%s:%s",
+                          dev->data.udp.connectHost,
+                          dev->data.udp.connectService,
+                          dev->data.udp.bindHost,
+                          dev->data.udp.bindService);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         if (dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET) {
-            if (snprintf(buf, buflen, "telnet:%s:%s%s",
-                         dev->data.tcp.host,
-                         dev->data.tcp.service,
-                         dev->data.tcp.listen ? ",server,nowait" : "") >= buflen)
-                return -1;
+            virBufferVSprintf(buf, "telnet:%s:%s%s",
+                              dev->data.tcp.host,
+                              dev->data.tcp.service,
+                              dev->data.tcp.listen ? ",server,nowait" : "");
         } else {
-            if (snprintf(buf, buflen, "tcp:%s:%s%s",
-                         dev->data.tcp.host,
-                         dev->data.tcp.service,
-                         dev->data.tcp.listen ? ",server,nowait" : "") >= buflen)
-                return -1;
+            virBufferVSprintf(buf, "tcp:%s:%s%s",
+                              dev->data.tcp.host,
+                              dev->data.tcp.service,
+                              dev->data.tcp.listen ? ",server,nowait" : "");
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (snprintf(buf, buflen, "unix:%s%s",
-                     dev->data.nix.path,
-                     dev->data.nix.listen ? ",server,nowait" : "") >= buflen)
-            return -1;
+        virBufferVSprintf(buf, "unix:%s%s",
+                          dev->data.nix.path,
+                          dev->data.nix.listen ? ",server,nowait" : "");
         break;
     }
-
-    return 0;
 }
 
 #define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
@@ -1867,13 +1849,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-nographic");
 
     if (monitor_chr) {
-        char buf[4096];
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-        if (qemudBuildCommandLineChrDevStr(monitor_chr, buf, sizeof(buf)) < 0)
+        qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
+        if (virBufferError(&buf))
             goto error;
 
         ADD_ARG_LIT("-monitor");
-        ADD_ARG_LIT(buf);
+        ADD_ARG(virBufferContentAndReset(&buf));
     }
 
     if (def->localtime)
@@ -2153,14 +2136,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("none");
     } else {
         for (i = 0 ; i < def->nserials ; i++) {
-            char buf[4096];
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr serial = def->serials[i];
 
-            if (qemudBuildCommandLineChrDevStr(serial, buf, sizeof(buf)) < 0)
+            qemudBuildCommandLineChrDevStr(serial, &buf);
+            if (virBufferError(&buf))
                 goto error;
 
             ADD_ARG_LIT("-serial");
-            ADD_ARG_LIT(buf);
+            ADD_ARG(virBufferContentAndReset(&buf));
         }
     }
 
@@ -2169,14 +2153,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("none");
     } else {
         for (i = 0 ; i < def->nparallels ; i++) {
-            char buf[4096];
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr parallel = def->parallels[i];
 
-            if (qemudBuildCommandLineChrDevStr(parallel, buf, sizeof(buf)) < 0)
+            qemudBuildCommandLineChrDevStr(parallel, &buf);
+            if (virBufferError(&buf))
                 goto error;
 
             ADD_ARG_LIT("-parallel");
-            ADD_ARG_LIT(buf);
+            ADD_ARG(virBufferContentAndReset(&buf));
         }
     }
 
