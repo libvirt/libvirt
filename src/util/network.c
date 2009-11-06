@@ -33,7 +33,7 @@ static int getIPv4Addr(virSocketAddrPtr addr, virIPv4AddrPtr tab) {
     val = ntohl(addr->inet4.sin_addr.s_addr);
 
     for (i = 0;i < 4;i++) {
-        (*tab)[i] = val & 0xFF;
+        (*tab)[3 - i] = val & 0xFF;
         val >>= 8;
     }
 
