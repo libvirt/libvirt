@@ -22,28 +22,28 @@
 
     <ul>
       <li>
-	The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
+        The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
       </li>
       <li>
-	The <a href="http://bellard.org/qemu/">QEMU</a> emulator
+        The <a href="http://bellard.org/qemu/">QEMU</a> emulator
       </li>
       <li>
-	The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
+        The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
       </li>
       <li>
-	The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
+        The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
       </li>
       <li>
-	The <a href="http://openvz.org/">OpenVZ</a> Linux container system
+        The <a href="http://openvz.org/">OpenVZ</a> Linux container system
       </li>
       <li>
-	The <a href="http://virt.kernelnewbies.org/lguest">lGuest</a> paravirtualized hypervisor
+        The <a href="http://virt.kernelnewbies.org/lguest">lGuest</a> paravirtualized hypervisor
       </li>
       <li>
-	The <a href="http://virt.kernelnewbies.org/Linux-VServer">Linux-VServer</a> container system
+        The <a href="http://virt.kernelnewbies.org/Linux-VServer">Linux-VServer</a> container system
       </li>
       <li>
-	The <a href="http://virt.kernelnewbies.org/UML">User Mode Linux</a> paravirtualized hypervisor
+        The <a href="http://virt.kernelnewbies.org/UML">User Mode Linux</a> paravirtualized hypervisor
       </li>
     </ul>
 
@@ -51,13 +51,13 @@
 
     <ul>
       <li>
-	<a href="http://virt.kernelnewbies.org/">Kernel Newbies Virtualization guide</a>
+        <a href="http://virt.kernelnewbies.org/">Kernel Newbies Virtualization guide</a>
       </li>
       <li>
-	<a href="http://www-128.ibm.com/developerworks/linux/library/l-linuxvirt/?ca=dgr-lnxw01Virtual-Linux">IBM developerworks virtualization guide</a>
+        <a href="http://www-128.ibm.com/developerworks/linux/library/l-linuxvirt/?ca=dgr-lnxw01Virtual-Linux">IBM developerworks virtualization guide</a>
       </li>
       <li>
-	<a href="http://en.wikipedia.org/wiki/Virtualization">Wikipedia Virtualization</a>
+        <a href="http://en.wikipedia.org/wiki/Virtualization">Wikipedia Virtualization</a>
       </li>
     </ul>
 

@@ -18,9 +18,9 @@ tools and VM description files.</p>
 <ul>
 <li>
 <p style="margin-bottom: 0in">A working OpenNebula installation,
-	version 1.2 or higher.
-	</p>
-	</li>
+        version 1.2 or higher.
+        </p>
+        </li>
 </ul>
 <h2>
 <a name="uris"></a>Connections to OpenNebula driver</h2>
@@ -38,9 +38,9 @@ connection Uris for the driver are:
 <p>There are some limitations on the XML attributes that may be
 specified when interfacing OpenNebula. The following xml example
 details the attributes and options supported by the OpenNebula
-driver:</p> 
+driver:</p>
 
-<h3>Paravirtualized guest direct kernel boot 
+<h3>Paravirtualized guest direct kernel boot
 </h3>
 <pre>    &lt;domain type='one'&gt;
     &lt;name&gt;vm01&lt;/name&gt;
@@ -80,7 +80,7 @@ driver:</p>
             &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
         &lt;/interface&gt;
 
-        &lt;!--ONE Network--&gt; 
+        &lt;!--ONE Network--&gt;
         &lt;interface type='network'&gt;
           &lt;source network='onenetwork'/&gt;
         &lt;/interface&gt;
@@ -93,7 +93,7 @@ attach the interface to a previously configured network (named
 <tt>onenetwork</tt>) within the <a href="http://opennebula.org/">OpenNebula</a> system, typically with the
 <tt>onevnet</tt> CLI command.</p>
 
-<p><b>Note</b>: OpenNebula supports the simultaneous use of different hypervisors, so you can specify any os type (linux or hvm) supported by your cluster.    
+<p><b>Note</b>: OpenNebula supports the simultaneous use of different hypervisors, so you can specify any os type (linux or hvm) supported by your cluster.
 </p>
 
 <h2>Links</h2>

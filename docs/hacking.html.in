@@ -8,50 +8,50 @@
 
     <ol>
       <li>Discuss any large changes on the mailing list first.  Post patches
-	early and listen to feedback.</li>
+        early and listen to feedback.</li>
 
       <li><p>Post patches in unified diff format.  A command similar to this
-	  should work:</p>
-	<pre>
+          should work:</p>
+        <pre>
   diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch
 </pre>
-	<p>
-	  or:
-	</p>
-	<pre>
+        <p>
+          or:
+        </p>
+        <pre>
   cvs diff -up > libvirt-myfeature.patch
 </pre></li>
       <li>Split large changes into a series of smaller patches, self-contained
-	if possible, with an explanation of each patch and an explanation of how
-	the sequence of patches fits together.</li>
+        if possible, with an explanation of each patch and an explanation of how
+        the sequence of patches fits together.</li>
       <li>Make sure your patches apply against libvirt CVS.  Developers
-	only follow CVS and don't care much about released versions.</li>
+        only follow CVS and don't care much about released versions.</li>
       <li><p>Run the automated tests on your code before submitting any changes.
-	  In particular, configure with compile warnings set to -Werror:</p>
-	<pre>
+          In particular, configure with compile warnings set to -Werror:</p>
+        <pre>
   ./configure --enable-compile-warnings=error
 </pre>
-	<p>
-	  and run the tests:
-	</p>
-	<pre>
+        <p>
+          and run the tests:
+        </p>
+        <pre>
   make check
   make syntax-check
   make -C tests valgrind
 </pre>
-	<p>
-	  The latter test checks for memory leaks.
-	</p>
+        <p>
+          The latter test checks for memory leaks.
+        </p>
 
       <li>Update tests and/or documentation, particularly if you are adding
-	a new feature or changing the output of a program.</li>
+        a new feature or changing the output of a program.</li>
     </ol>
 
     <p>
       There is more on this subject, including lots of links to background
       reading on the subject, on
       <a href="http://et.redhat.com/~rjones/how-to-supply-code-to-open-source-projects/">
-	Richard Jones' guide to working with open source projects</a>
+        Richard Jones' guide to working with open source projects</a>
     </p>
 
 
@@ -77,8 +77,8 @@
     (setq c-indent-level 4)
     (setq c-basic-offset 4))
   (add-hook 'c-mode-hook
-	    '(lambda () (if (string-match "/libvirt" (buffer-file-name))
-			    (libvirt-c-mode))))
+            '(lambda () (if (string-match "/libvirt" (buffer-file-name))
+                            (libvirt-c-mode))))
 </pre>
 
     <h2><a name="formatting">Code formatting (especially for new code)</a></h2>
@@ -118,30 +118,30 @@
     <ul>
       <li>If you're using "int" or "long", odds are good that there's a better type.</li>
       <li>If a variable is counting something, be sure to declare it with an
-	unsigned type.</li>
+        unsigned type.</li>
       <li>If it's memory-size-related, use size_t (use ssize_t only if required).</li>
       <li>If it's file-size related, use uintmax_t, or maybe off_t.</li>
       <li>If it's file-offset related (i.e., signed), use off_t.</li>
       <li>If it's just counting small numbers use "unsigned int";
-	(on all but oddball embedded systems, you can assume that that
-	type is at least four bytes wide).</li>
+        (on all but oddball embedded systems, you can assume that that
+        type is at least four bytes wide).</li>
       <li>If a variable has boolean semantics, give it the "bool" type
-	and use the corresponding "true" and "false" macros.  It's ok
-	to include &lt;stdbool.h&gt;, since libvirt's use of gnulib ensures
-	  that it exists and is usable.</li>
+        and use the corresponding "true" and "false" macros.  It's ok
+        to include &lt;stdbool.h&gt;, since libvirt's use of gnulib ensures
+          that it exists and is usable.</li>
       <li>In the unusual event that you require a specific width, use a
-	standard type like int32_t, uint32_t, uint64_t, etc.</li>
+        standard type like int32_t, uint32_t, uint64_t, etc.</li>
       <li>While using "bool" is good for readability, it comes with minor caveats:
-	<ul>
-	  <li>Don't use "bool" in places where the type size must be constant across
-	    all systems, like public interfaces and on-the-wire protocols.  Note
-	    that it would be possible (albeit wasteful) to use "bool" in libvirt's
-	    logical wire protocol, since XDR maps that to its lower-level bool_t
-	    type, which *is* fixed-size.</li>
-	  <li>Don't compare a bool variable against the literal, "true",
-	    since a value with a logical non-false value need not be "1".
-	    I.e., don't write "if (seen == true) ...".  Rather, write "if (seen)...".</li>
-	</ul>
+        <ul>
+          <li>Don't use "bool" in places where the type size must be constant across
+            all systems, like public interfaces and on-the-wire protocols.  Note
+            that it would be possible (albeit wasteful) to use "bool" in libvirt's
+            logical wire protocol, since XDR maps that to its lower-level bool_t
+            type, which *is* fixed-size.</li>
+          <li>Don't compare a bool variable against the literal, "true",
+            since a value with a logical non-false value need not be "1".
+            I.e., don't write "if (seen == true) ...".  Rather, write "if (seen)...".</li>
+        </ul>
       </li>
     </ul>
 
@@ -250,14 +250,14 @@
 
     <ul>
       <li><p>For strict equality:</p>
-	<pre>
+        <pre>
      STREQ(a,b)
      STRNEQ(a,b)
 </pre>
       </li>
 
       <li><p>For case sensitive equality:</p>
-	<pre>
+        <pre>
      STRCASEEQ(a,b)
      STRCASENEQ(a,b)
 </pre>
@@ -265,7 +265,7 @@
 
       <li><p>For strict equality of a substring:</p>
 
-	<pre>
+        <pre>
      STREQLEN(a,b,n)
      STRNEQLEN(a,b,n)
 </pre>
@@ -273,7 +273,7 @@
 
       <li><p>For case sensitive equality of a substring:</p>
 
-	<pre>
+        <pre>
      STRCASEEQLEN(a,b,n)
      STRCASENEQLEN(a,b,n)
 </pre>
@@ -281,7 +281,7 @@
 
       <li><p>For strict equality of a prefix:</p>
 
-	<pre>
+        <pre>
      STRPREFIX(a,b)
 </pre>
       </li>
@@ -379,7 +379,7 @@
 
     <pre>
     int virAsprintf(char **strp, const char *fmt, ...)
-	ATTRIBUTE_FORMAT(printf, 2, 3);
+        ATTRIBUTE_FORMAT(printf, 2, 3);
 </pre>
 
     <p>
@@ -416,16 +416,16 @@
     </p>
     <ul>
       <li>if a recently commited patch breaks compilation on a platform
-	or for a given driver then it's fine to commit a minimal fix
-	directly without getting the review feedback first</li>
+        or for a given driver then it's fine to commit a minimal fix
+        directly without getting the review feedback first</li>
       <li>if make check or make syntax-chek breaks, if there is
-	an obvious fix, it's fine to commit immediately.
-	The patch should still be sent to the list (or tell what the fix was if
-	trivial) and 'make check syntax-check' should pass too before commiting
-	anything</li>
+        an obvious fix, it's fine to commit immediately.
+        The patch should still be sent to the list (or tell what the fix was if
+        trivial) and 'make check syntax-check' should pass too before commiting
+        anything</li>
       <li>
-	fixes for documentation and code comments can be managed
-	in the same way, but still make sure they get reviewed if non-trivial.
+        fixes for documentation and code comments can be managed
+        in the same way, but still make sure they get reviewed if non-trivial.
       </li>
     </ul>
   </body>

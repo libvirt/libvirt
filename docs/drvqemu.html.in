@@ -14,23 +14,23 @@
 
     <ul>
       <li>
-	<strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
-	for the presence of <code>qemu</code>, <code>qemu-system-x86_64</code>,
-	<code>qemu-system-mips</code>,<code>qemu-system-mipsel</code>,
-	<code>qemu-system-sparc</code>,<code>qemu-system-ppc</code>. The results
-	of this can be seen from the capabilities XML output.
+        <strong>QEMU emulators</strong>: The driver will probe <code>/usr/bin</code>
+        for the presence of <code>qemu</code>, <code>qemu-system-x86_64</code>,
+        <code>qemu-system-mips</code>,<code>qemu-system-mipsel</code>,
+        <code>qemu-system-sparc</code>,<code>qemu-system-ppc</code>. The results
+        of this can be seen from the capabilities XML output.
       </li>
       <li>
-	<strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
-	for the presence of <code>qemu-kvm</code> and <code>/dev/kvm</code> device
-	node. If both are found, then KVM fullyvirtualized, hardware accelerated
-	guests will be available.
+        <strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+        for the presence of <code>qemu-kvm</code> and <code>/dev/kvm</code> device
+        node. If both are found, then KVM fullyvirtualized, hardware accelerated
+        guests will be available.
       </li>
       <li>
-	<strong>Xenner hypervisor</strong>: The driver will probe <code>/usr/bin</code>
-	for the presence of <code>xenner</code> and <code>/dev/kvm</code> device
-	node. If both are found, then Xen paravirtualized guests can be run using
-	the KVM hardware acceleration.
+        <strong>Xenner hypervisor</strong>: The driver will probe <code>/usr/bin</code>
+        for the presence of <code>xenner</code> and <code>/dev/kvm</code> device
+        node. If both are found, then Xen paravirtualized guests can be run using
+        the KVM hardware acceleration.
       </li>
     </ul>
 
@@ -556,7 +556,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
 
     <h3>Xen paravirtualized guests with hardware acceleration</h3>
 
-    
+
 
   </body>
 </html>

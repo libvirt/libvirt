@@ -21,42 +21,42 @@
     <dl>
       <dt>virsh</dt>
       <dd>
-	An interactive shell, and batch scriptable tool for performing
-	management tasks on all libvirt managed domains, networks and
-	storage. This is part of the libvirt core distribution.
+        An interactive shell, and batch scriptable tool for performing
+        management tasks on all libvirt managed domains, networks and
+        storage. This is part of the libvirt core distribution.
       </dd>
       <dt><a href="http://virt-manager.org/">virt-install</a></dt>
       <dd>
-	Provides a way to provision new virtual machines from a
-	OS distribution install tree. It supports provisioning from
-	local CD images, and the network over NFS, HTTP and FTP.
+        Provides a way to provision new virtual machines from a
+        OS distribution install tree. It supports provisioning from
+        local CD images, and the network over NFS, HTTP and FTP.
       </dd>
       <dt><a href="http://virt-manager.org/">virt-clone</a></dt>
       <dd>
-	Allows the disk image(s) and configuration for an existing
-	virtual machine to be cloned to form a new virtual machine.
-	It automates copying of data across to new disk images, and
-	updates the UUID, Mac address and name in the configuration
+        Allows the disk image(s) and configuration for an existing
+        virtual machine to be cloned to form a new virtual machine.
+        It automates copying of data across to new disk images, and
+        updates the UUID, Mac address and name in the configuration
       </dd>
       <dt><a href="http://virt-manager.org/">virt-image</a></dt>
       <dd>
-	Provides a way to deploy virtual appliances. It defines a
-	simplified portable XML format describing the pre-requisites
-	of a virtual machine. At time of deployment this is translated
-	into the domain XML format for execution under any libvirt
-	hypervisor meeting the pre-requisites.
+        Provides a way to deploy virtual appliances. It defines a
+        simplified portable XML format describing the pre-requisites
+        of a virtual machine. At time of deployment this is translated
+        into the domain XML format for execution under any libvirt
+        hypervisor meeting the pre-requisites.
       </dd>
       <dt><a href="http://et.redhat.com/~rjones/virt-df/">virt-df</a></dt>
       <dd>
-	Examine the utilization of each filesystem in a virtual machine
-	from the comfort of the host machine. This tool peeks into the
-	guest disks and determines how much space is used. It can cope
-	with common Linux filesystems and LVM volumes.
+        Examine the utilization of each filesystem in a virtual machine
+        from the comfort of the host machine. This tool peeks into the
+        guest disks and determines how much space is used. It can cope
+        with common Linux filesystems and LVM volumes.
       </dd>
       <dt><a href="http://et.redhat.com/~rjones/virt-top/">virt-top</a></dt>
       <dd>
-	Watch the CPU, memory, network and disk utilization of all
-	virtual machines running on a host.
+        Watch the CPU, memory, network and disk utilization of all
+        virtual machines running on a host.
       </dd>
     </dl>
 
@@ -65,17 +65,17 @@
     <dl>
       <dt><a href="http://virt-manager.org/">virt-manager</a></dt>
       <dd>
-	A general purpose desktop management tool, able to manage
-	virtual machines across both local and remotely accessed
-	hypervisors. It is targeted at home and small office usage
-	upto managing 10-20 hosts and their VMs.
+        A general purpose desktop management tool, able to manage
+        virtual machines across both local and remotely accessed
+        hypervisors. It is targeted at home and small office usage
+        upto managing 10-20 hosts and their VMs.
       </dd>
       <dt><a href="http://virt-manager.org/">virt-viewer</a></dt>
       <dd>
-	A lightweight tool for accessing the graphical console
-	associated with a virtual machine. It can securely connect
-	to remote consoles supporting the VNC protocol. Also provides
-	an optional mozilla browser plugin.
+        A lightweight tool for accessing the graphical console
+        associated with a virtual machine. It can securely connect
+        to remote consoles supporting the VNC protocol. Also provides
+        an optional mozilla browser plugin.
       </dd>
     </dl>
 
@@ -84,18 +84,18 @@
     <dl>
       <dt><a href="http://ovirt.org/">oVirt</a></dt>
       <dd>
-	oVirt provides the ability to manage large numbers of virtual
-	machines across an entire data center of hosts. It integrates
-	with FreeIPA for Kerberos authentication, and in the future,
-	certificate management.
+        oVirt provides the ability to manage large numbers of virtual
+        machines across an entire data center of hosts. It integrates
+        with FreeIPA for Kerberos authentication, and in the future,
+        certificate management.
       </dd>
       <dt><a href="http://community.abiquo.com/display/AbiCloud">AbiCloud</a></dt>
       <dd>
-	AbiCloud is an open source cloud platform manager which allows to
-	easily deploy a private cloud in your datacenter. One of the key
-	differences of AbiCloud is the web rich interface for managing the
-	infrastructure. You can deploy a new service just dragging and
-	dropping a VM.
+        AbiCloud is an open source cloud platform manager which allows to
+        easily deploy a private cloud in your datacenter. One of the key
+        differences of AbiCloud is the web rich interface for managing the
+        infrastructure. You can deploy a new service just dragging and
+        dropping a VM.
       </dd>
     </dl>
 
@@ -104,10 +104,10 @@
     <dl>
       <dt><a href="http://et.redhat.com/~rjones/virt-p2v/">virt-p2v</a></dt>
       <dd>
-	A tool for converting a physical machine into a virtual machine. It
-	is a LiveCD which is booted on the machine to be converted. It collects
-	a little information from the user and then copies the disks over to
-	a remote machine and defines the XML for a domain to run the guest.
+        A tool for converting a physical machine into a virtual machine. It
+        is a LiveCD which is booted on the machine to be converted. It collects
+        a little information from the user and then copies the disks over to
+        a remote machine and defines the XML for a domain to run the guest.
       </dd>
     </dl>
 
@@ -115,13 +115,13 @@
     <dl>
       <dt><a href="http://honk.sigxcpu.org/projects/libvirt/#munin">for munin</a></dt>
       <dd>
-	The plugins provided by Guido Günther allow to monitor various things
+        The plugins provided by Guido Günther allow to monitor various things
         like network and block I/O with
         <a href="http://munin.projects.linpro.no/">Munin</a>.
       </dd>
       <dt><a href="http://collectd.org/plugins/libvirt.shtml">for collectd</a></dt>
       <dd>
-	The libvirt-plugin is part of <a href="http://collectd.org/">collectd</a>
+        The libvirt-plugin is part of <a href="http://collectd.org/">collectd</a>
         and gather statistics about virtualized guests on a system. This
         way, you can collect CPU, network interface and block device usage
         for each guest without installing collectd on the guest systems.
@@ -130,8 +130,8 @@
       </dd>
       <dt><a href="http://et.redhat.com/~rjones/nagios-virt/">nagios-virt</a></dt>
       <dd>
-	Nagios-virt is a configuration tool for adding monitoring of your
-	virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
+        Nagios-virt is a configuration tool for adding monitoring of your
+        virtualised domains to <a href="http://www.nagios.org/">Nagios</a>.
         You can use this tool to either set up a new Nagios installation for
         your Xen or QEMU/KVM guests, or to integrate with your existing Nagios
         installation.

@@ -18,31 +18,31 @@
 
     <ul>
       <li>
-	<strong>XenD</strong>: Access to the Xen daemon is a mandatory
-	requirement for the libvirt Xen driver. It requires that the UNIX
-	socket interface be enabled in the <code>/etc/xen/xend-config.sxp</code>
-	configuration file. Specifically the config settings
-	<code>(xend-unix-server yes)</code>. This path is usually restricted
-	to only allow the <code>root</code> user access. As an alternative,
-	the HTTP interface can be used, however, this has significant security
-	implications.
+        <strong>XenD</strong>: Access to the Xen daemon is a mandatory
+        requirement for the libvirt Xen driver. It requires that the UNIX
+        socket interface be enabled in the <code>/etc/xen/xend-config.sxp</code>
+        configuration file. Specifically the config settings
+        <code>(xend-unix-server yes)</code>. This path is usually restricted
+        to only allow the <code>root</code> user access. As an alternative,
+        the HTTP interface can be used, however, this has significant security
+        implications.
       </li>
       <li>
-	<strong>XenStoreD</strong>: Access to the Xenstore daemon enables
-	more efficient codepaths for looking up domain information which
-	lowers the CPU overhead of management.
+        <strong>XenStoreD</strong>: Access to the Xenstore daemon enables
+        more efficient codepaths for looking up domain information which
+        lowers the CPU overhead of management.
       </li>
       <li>
-	<strong>Hypercalls</strong>: The ability to make direct hypercalls
-	allows the most efficient codepaths in the driver to be used for
-	monitoring domain status.
+        <strong>Hypercalls</strong>: The ability to make direct hypercalls
+        allows the most efficient codepaths in the driver to be used for
+        monitoring domain status.
       </li>
       <li>
-	<strong>XM config</strong>: When using Xen releases prior to 3.0.4,
-	there is no inactive domain management in XenD. For such releases,
-	libvirt will automatically process XM configuration files kept in
-	the <code>/etc/xen</code> directory. It is important not to place
-	any other non-config files in this directory.
+        <strong>XM config</strong>: When using Xen releases prior to 3.0.4,
+        there is no inactive domain management in XenD. For such releases,
+        libvirt will automatically process XM configuration files kept in
+        the <code>/etc/xen</code> directory. It is important not to place
+        any other non-config files in this directory.
       </li>
     </ul>
 

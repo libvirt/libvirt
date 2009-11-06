@@ -145,20 +145,20 @@
 
     <ol class="ordinarylist">
       <li>SHOULD log a message with VIR_DEBUG() indicating that it is
-	being called and its parameters;</li>
+        being called and its parameters;</li>
       <li>MUST call virResetLastError();</li>
       <li>SHOULD confirm that the connection is valid with
-	VIR_IS_CONNECT(conn);</li>
+        VIR_IS_CONNECT(conn);</li>
       <li><strong>SECURITY: If the API requires a connection with write
-	  privileges, MUST confirm that the connection flags do not
-	  indicate that the connection is read-only;</strong></li>
+          privileges, MUST confirm that the connection flags do not
+          indicate that the connection is read-only;</strong></li>
       <li>SHOULD do basic validation of the parameters that are being
-	passed in;</li>
+        passed in;</li>
       <li>MUST confirm that the driver for this connection exists and that
-	it implements this function;</li>
+        it implements this function;</li>
       <li>MUST call the internal API;</li>
       <li>SHOULD log a message with VIR_DEBUG() indicating that it is
-	returning, its return value, and status.</li>
+        returning, its return value, and status.</li>
       <li>MUST return status to the caller.</li>
     </ol>
 

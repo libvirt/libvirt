@@ -84,7 +84,7 @@
       which is garanteed to be unique for long term usage and across a
       set of nodes.</li>
     </ul>
-    
+
     <h2><a name="Functions" id="Functions">Functions and naming
       conventions</a></h2>
     <p> The naming of the functions present in the library is usually
@@ -93,7 +93,7 @@
     <p> For each first class object you will find apis
       for the following actions:</p>
     <ul>
-      <li><b>Lookup</b>:...LookupByName, 
+      <li><b>Lookup</b>:...LookupByName,
       <li><b>Enumeration</b>:virConnectList... and virConnectNumOf...:
         those are used to enumerate a set of object available to an given
         hypervisor connection like:
@@ -119,7 +119,7 @@
       <li><b>Destruction</b>: ... </li>
     </ul>
     <p> For more in-depth details of the storage related APIs see
-      <a href="storage.html">the storage management page</a>, 
+      <a href="storage.html">the storage management page</a>,
     <h2><a name="Driver" id="Driver">The libvirt drivers</a></h2>
     <p></p>
     <p class="image">

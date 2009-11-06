@@ -34,27 +34,27 @@
     <dl>
       <dt><code>name</code></dt>
       <dd>Providing a name for the pool which is unique to the host.
-	This is mandatory when defining a pool. <span class="since">Since 0.4.1</span></dd>
+        This is mandatory when defining a pool. <span class="since">Since 0.4.1</span></dd>
       <dt><code>uuid</code></dt>
       <dd>Providing an identifier for the pool which is globally unique.
-	This is optional when defining a pool, a UUID will be generated if
-	omitted. <span class="since">Since 0.4.1</span></dd>
+        This is optional when defining a pool, a UUID will be generated if
+        omitted. <span class="since">Since 0.4.1</span></dd>
       <dt><code>allocation</code></dt>
       <dd>Providing the total storage allocation for the pool. This may
-	be larger than the sum of the allocation of all volumes due to
-	metadata overhead. This value is in bytes. This is not applicable
-	when creating a pool. <span class="since">Since 0.4.1</span></dd>
+        be larger than the sum of the allocation of all volumes due to
+        metadata overhead. This value is in bytes. This is not applicable
+        when creating a pool. <span class="since">Since 0.4.1</span></dd>
       <dt><code>capacity</code></dt>
       <dd>Providing the total storage capacity for the pool. Due to
-	underlying device constraints it may not be possible to use the
-	full capacity for storage volumes. This value is in bytes. This
-	is not applicable when creating a pool. <span class="since">Since 0.4.1</span></dd>
+        underlying device constraints it may not be possible to use the
+        full capacity for storage volumes. This value is in bytes. This
+        is not applicable when creating a pool. <span class="since">Since 0.4.1</span></dd>
       <dt><code>available</code></dt>
       <dd>Providing the free space available for allocating new volumes
-	in the pool. Due to underlying device constraints it may not be
-	possible to allocate the entire free space to a single volume.
-	This value is in bytes. This is not applicable when creating a
-	pool. <span class="since">Since 0.4.1</span></dd>
+        in the pool. Due to underlying device constraints it may not be
+        possible to allocate the entire free space to a single volume.
+        This value is in bytes. This is not applicable when creating a
+        pool. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
     <h3><a name="StoragePoolSource">Source elements</a></h3>
@@ -71,38 +71,38 @@
           &lt;host name="iscsi.example.com"/&gt;
           &lt;device path="demo-target"/&gt;
         &lt;/source&gt;
-	...</pre>
+        ...</pre>
 
     <dl>
       <dt><code>device</code></dt>
       <dd>Provides the source for pools backed by physical devices.
-	May be repeated multiple times depending on backend driver. Contains
-	a single attribute <code>path</code> which is the fully qualified
-	path to the block device node. <span class="since">Since 0.4.1</span></dd>
+        May be repeated multiple times depending on backend driver. Contains
+        a single attribute <code>path</code> which is the fully qualified
+        path to the block device node. <span class="since">Since 0.4.1</span></dd>
       <dt><code>directory</code></dt>
       <dd>Provides the source for pools backed by directories. May
-	only occur once. Contains a single attribute <code>path</code>
-	which is the fully qualified path to the block device node.
-	<span class="since">Since 0.4.1</span></dd>
+        only occur once. Contains a single attribute <code>path</code>
+        which is the fully qualified path to the block device node.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
-	remote server. Will be used in combination with a <code>directory</code>
-	or <code>device</code> element. Contains an attribute <code>name</code>
-	which is the hostname or IP address of the server. May optionally
-	contain a <code>port</code> attribute for the protocol specific
-	port number. <span class="since">Since 0.4.1</span></dd>
+        remote server. Will be used in combination with a <code>directory</code>
+        or <code>device</code> element. Contains an attribute <code>name</code>
+        which is the hostname or IP address of the server. May optionally
+        contain a <code>port</code> attribute for the protocol specific
+        port number. <span class="since">Since 0.4.1</span></dd>
       <dt><code>name</code></dt>
       <dd>Provides the source for pools backed by storage from a
-	named element (e.g., a logical volume group name).
-	remote server. Contains a string identifier.
-	<span class="since">Since 0.4.5</span></dd>
+        named element (e.g., a logical volume group name).
+        remote server. Contains a string identifier.
+        <span class="since">Since 0.4.5</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the format of the pool. This
-	contains a single attribute <code>type</code> whose value is
-	backend specific. This is typically used to indicate filesystem
-	type, or network filesystem type, or partition table type, or
-	LVM metadata type. All drivers are required to have a default
-	value for this, so it is optional. <span class="since">Since 0.4.1</span></dd>
+        contains a single attribute <code>type</code> whose value is
+        backend specific. This is typically used to indicate filesystem
+        type, or network filesystem type, or partition table type, or
+        LVM metadata type. All drivers are required to have a default
+        value for this, so it is optional. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
     <h3><a name="StoragePoolTarget">Target elements</a></h3>
@@ -133,27 +133,27 @@
     <dl>
       <dt><code>path</code></dt>
       <dd>Provides the location at which the pool will be mapped into
-	the local filesystem namespace. For a filesystem/directory based
-	pool it will be the name of the directory in which volumes will
-	be created. For device based pools it will be the name of the directory in which
-	devices nodes exist. For the latter <code>/dev/</code> may seem
-	like the logical choice, however, devices nodes there are not
-	guaranteed stable across reboots, since they are allocated on
-	demand. It is preferable to use a stable location such as one
-	of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
-	<span class="since">Since 0.4.1</span>
+        the local filesystem namespace. For a filesystem/directory based
+        pool it will be the name of the directory in which volumes will
+        be created. For device based pools it will be the name of the directory in which
+        devices nodes exist. For the latter <code>/dev/</code> may seem
+        like the logical choice, however, devices nodes there are not
+        guaranteed stable across reboots, since they are allocated on
+        demand. It is preferable to use a stable location such as one
+        of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
+        <span class="since">Since 0.4.1</span>
       </dd>
       <dt><code>permissions</code></dt>
       <dd>Provides information about the default permissions to use
-	when creating volumes. This is currently only useful for directory
-	or filesystem based pools, where the volumes allocated are simple
-	files. For pools where the volumes are device nodes, the hotplug
-	scripts determine permissions. It contains 4 child elements. The
-	<code>mode</code> element contains the octal permission set. The
-	<code>owner</code> element contains the numeric user ID. The <code>group</code>
-	element contains the numeric group ID. The <code>label</code> element
-	contains the MAC (eg SELinux) label string.
-	<span class="since">Since 0.4.1</span>
+        when creating volumes. This is currently only useful for directory
+        or filesystem based pools, where the volumes allocated are simple
+        files. For pools where the volumes are device nodes, the hotplug
+        scripts determine permissions. It contains 4 child elements. The
+        <code>mode</code> element contains the octal permission set. The
+        <code>owner</code> element contains the numeric user ID. The <code>group</code>
+        element contains the numeric group ID. The <code>label</code> element
+        contains the MAC (eg SELinux) label string.
+        <span class="since">Since 0.4.1</span>
       </dd>
       <dt><code>encryption</code></dt>
       <dd>If present, specifies how the volume is encrypted.  See
@@ -192,41 +192,41 @@
 
     <pre>
       &lt;volume&gt;
-	&lt;name&gt;sparse.img&lt;/name&gt;
-	&lt;key&gt;/var/lib/xen/images/sparse.img&lt;/key&gt;
+        &lt;name&gt;sparse.img&lt;/name&gt;
+        &lt;key&gt;/var/lib/xen/images/sparse.img&lt;/key&gt;
         &lt;allocation&gt;0&lt;/allocation&gt;
-	&lt;capacity unit="T"&gt;1&lt;/capacity&gt;
+        &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
         ...</pre>
 
     <dl>
       <dt><code>name</code></dt>
       <dd>Providing a name for the volume which is unique to the pool.
-	This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
+        This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
       <dt><code>key</code></dt>
       <dd>Providing an identifier for the volume which is globally unique.
-	This is optional when defining a volume, a key will be generated if
-	omitted. <span class="since">Since 0.4.1</span></dd>
+        This is optional when defining a volume, a key will be generated if
+        omitted. <span class="since">Since 0.4.1</span></dd>
       <dt><code>allocation</code></dt>
       <dd>Providing the total storage allocation for the volume. This
-	may be smaller than the logical capacity if the volume is sparsely
-	allocated. It may also be larger than the logical capacity if the
-	volume has substantial metadata overhead. This value is in bytes.
-	If omitted when creating a volume, the volume will be fully
-	allocated at time of creation. If set to a value smaller than the
-	capacity, the pool has the <strong>option</strong> of deciding
-	to sparsely allocate a volume. It does not have to honour requests
-	for sparse allocation though. <span class="since">Since 0.4.1</span></dd>
+        may be smaller than the logical capacity if the volume is sparsely
+        allocated. It may also be larger than the logical capacity if the
+        volume has substantial metadata overhead. This value is in bytes.
+        If omitted when creating a volume, the volume will be fully
+        allocated at time of creation. If set to a value smaller than the
+        capacity, the pool has the <strong>option</strong> of deciding
+        to sparsely allocate a volume. It does not have to honour requests
+        for sparse allocation though. <span class="since">Since 0.4.1</span></dd>
       <dt><code>capacity</code></dt>
       <dd>Providing the logical capacity for the volume. This value is
-	in bytes. This is compulsory when creating a volume.
-	<span class="since">Since 0.4.1</span></dd>
+        in bytes. This is compulsory when creating a volume.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>source</code></dt>
       <dd>Provides information about the underlying storage allocation
-	of the volume. This may not be available for some pool types.
-	<span class="since">Since 0.4.1</span></dd>
+        of the volume. This may not be available for some pool types.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>target</code></dt>
       <dd>Provides information about the representation of the volume
-	on the local host. <span class="since">Since 0.4.1</span></dd>
+        on the local host. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
     <h3><a name="StorageVolTarget">Target elements</a></h3>
@@ -240,7 +240,7 @@
 
     <pre>
         ...
-	&lt;target&gt;
+        &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
           &lt;format type='qcow2'/&gt;
           &lt;permissions&gt;
@@ -249,33 +249,33 @@
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
-	&lt;/target&gt;</pre>
+        &lt;/target&gt;</pre>
 
     <dl>
       <dt><code>path</code></dt>
       <dd>Provides the location at which the volume can be accessed on
-	the local filesystem, as an absolute path. This is a readonly
-	attribute, so shouldn't be specified when creating a volume.
-	<span class="since">Since 0.4.1</span></dd>
+        the local filesystem, as an absolute path. This is a readonly
+        attribute, so shouldn't be specified when creating a volume.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the pool specific volume format.
-	For disk pools it will provide the partition type. For filesystem
-	or directory pools it will provide the file format type, eg cow,
-	qcow, vmdk, raw. If omitted when creating a volume, the pool's
-	default format will be used. The actual format is specified via
-	the <code>type</code> attribute. Consult the pool-specific docs for
+        For disk pools it will provide the partition type. For filesystem
+        or directory pools it will provide the file format type, eg cow,
+        qcow, vmdk, raw. If omitted when creating a volume, the pool's
+        default format will be used. The actual format is specified via
+        the <code>type</code> attribute. Consult the pool-specific docs for
         the list of valid values. <span class="since">Since 0.4.1</span></dd>
       <dt><code>permissions</code></dt>
       <dd>Provides information about the default permissions to use
-	when creating volumes. This is currently only useful for directory
-	or filesystem based pools, where the volumes allocated are simple
-	files. For pools where the volumes are device nodes, the hotplug
-	scripts determine permissions. It contains 4 child elements. The
-	<code>mode</code> element contains the octal permission set. The
-	<code>owner</code> element contains the numeric user ID. The <code>group</code>
-	element contains the numeric group ID. The <code>label</code> element
-	contains the MAC (eg SELinux) label string.
-	<span class="since">Since 0.4.1</span>
+        when creating volumes. This is currently only useful for directory
+        or filesystem based pools, where the volumes allocated are simple
+        files. For pools where the volumes are device nodes, the hotplug
+        scripts determine permissions. It contains 4 child elements. The
+        <code>mode</code> element contains the octal permission set. The
+        <code>owner</code> element contains the numeric user ID. The <code>group</code>
+        element contains the numeric group ID. The <code>label</code> element
+        contains the MAC (eg SELinux) label string.
+        <span class="since">Since 0.4.1</span>
       </dd>
     </dl>
 
@@ -305,25 +305,25 @@
     <dl>
       <dt><code>path</code></dt>
       <dd>Provides the location at which the backing store can be accessed on
-	the local filesystem, as an absolute path. If omitted, there is no
+        the local filesystem, as an absolute path. If omitted, there is no
         backing store for this volume.
-	<span class="since">Since 0.6.0</span></dd>
+        <span class="since">Since 0.6.0</span></dd>
       <dt><code>format</code></dt>
       <dd>Provides information about the pool specific backing store format.
-	For disk pools it will provide the partition type. For filesystem
-	or directory pools it will provide the file format type, eg cow,
-	qcow, vmdk, raw. Consult the pool-specific docs for the list of valid
+        For disk pools it will provide the partition type. For filesystem
+        or directory pools it will provide the file format type, eg cow,
+        qcow, vmdk, raw. Consult the pool-specific docs for the list of valid
         values. Most file formats require a backing store of the same format,
         however, the qcow2 format allows a different backing store format.
         <span class="since">Since 0.6.0</span></dd>
       <dt><code>permissions</code></dt>
       <dd>Provides information about the permissions of the backing file.
         It contains 4 child elements. The
-	<code>mode</code> element contains the octal permission set. The
-	<code>owner</code> element contains the numeric user ID. The <code>group</code>
-	element contains the numeric group ID. The <code>label</code> element
-	contains the MAC (eg SELinux) label string.
-	<span class="since">Since 0.6.0</span>
+        <code>mode</code> element contains the octal permission set. The
+        <code>owner</code> element contains the numeric user ID. The <code>group</code>
+        element contains the numeric group ID. The <code>label</code> element
+        contains the MAC (eg SELinux) label string.
+        <span class="since">Since 0.6.0</span>
       </dd>
     </dl>
 
@@ -362,10 +362,10 @@
 
     <pre>
       &lt;volume&gt;
-	&lt;name&gt;sparse.img&lt;/name&gt;
-	&lt;allocation&gt;0&lt;/allocation&gt;
-	&lt;capacity unit="T"&gt;1&lt;/capacity&gt;
-	&lt;target&gt;
+        &lt;name&gt;sparse.img&lt;/name&gt;
+        &lt;allocation&gt;0&lt;/allocation&gt;
+        &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
+        &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
           &lt;permissions&gt;
             &lt;owner&gt;0744&lt;/owner&gt;
@@ -373,7 +373,7 @@
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
-	&lt;/target&gt;
+        &lt;/target&gt;
       &lt;/volume&gt;</pre>
   </body>
 </html>

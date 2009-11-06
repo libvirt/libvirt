@@ -202,10 +202,10 @@
                 <a href="html/libvirt-virterror.html">virterror</a>
                 <span>error handling interfaces for the libvirt library</span>
               </li>
-	      <li>
-		<a href="hvsupport.html">Driver support</a>
-		<span>matrix of API support per hypervisor per release</span>
-	      </li>
+              <li>
+                <a href="hvsupport.html">Driver support</a>
+                <span>matrix of API support per hypervisor per release</span>
+              </li>
             </ul>
           </li>
           <li>
@@ -226,10 +226,10 @@
             <a href="internals.html">Internals</a>
             <span>Working on the internals of libvirt API, driver and daemon code</span>
             <ul>
-	      <li>
-		<a href="hacking.html">Contributor guidelines</a>
-		<span>General hacking guidelines for contributors</span>
-	      </li>
+              <li>
+                <a href="hacking.html">Contributor guidelines</a>
+                <span>General hacking guidelines for contributors</span>
+              </li>
               <li>
                 <a href="api_extension.html">API extensions</a>
                 <span>Adding new public libvirt APIs</span>

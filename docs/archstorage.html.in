@@ -7,16 +7,16 @@
     </p>
     <ol>
       <li>
-	<strong>Volume</strong> - a single storage volume which can
-	be assigned to a guest, or used for creating further pools. A
-	volume is either a block device, a raw file, or a special format
-	file.
+        <strong>Volume</strong> - a single storage volume which can
+        be assigned to a guest, or used for creating further pools. A
+        volume is either a block device, a raw file, or a special format
+        file.
       </li>
       <li>
-	<strong>Pool</strong> - provides a means for taking a chunk
-	of storage and carving it up into volumes. A pool can be used to
-	manage things such as a physical disk, a NFS server, a iSCSI target,
-	a host adapter, an LVM group.
+        <strong>Pool</strong> - provides a means for taking a chunk
+        of storage and carving it up into volumes. A pool can be used to
+        manage things such as a physical disk, a NFS server, a iSCSI target,
+        a host adapter, an LVM group.
       </li>
     </ol>
 

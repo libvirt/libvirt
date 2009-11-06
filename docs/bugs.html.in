@@ -30,26 +30,26 @@
     <h2>Linux Distribution specific bug reports</h2>
     <ul>
       <li>
-	If you are using official binaries from a <strong>Fedora distribution</strong>, enter
-	tickets against the <code>Fedora</code> product and the <code>libvirt</code>
-	component.
-	<ul>
-	  <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Fedora">View Fedora libvirt tickets</a></li>
-	  <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">New Fedora libvirt ticket</a></li>
-	</ul>
+        If you are using official binaries from a <strong>Fedora distribution</strong>, enter
+        tickets against the <code>Fedora</code> product and the <code>libvirt</code>
+        component.
+        <ul>
+          <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Fedora">View Fedora libvirt tickets</a></li>
+          <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Fedora&amp;component=libvirt">New Fedora libvirt ticket</a></li>
+        </ul>
       </li>
       <li>
-	If you are using official binaries from <strong>Red Hat Enterprise Linux distribution</strong>,
-	tickets against the <code>Red Hat Enterprise Linux 5</code> product and
-	the <code>libvirt</code> component.
-	<ul>
-	  <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Red%20Hat%20Enterprise%20Linux%205">View Red Hat Enterprise Linux libvirt tickets</a></li>
-	  <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Red%20Hat%20Enterprise%20Linux%205&amp;component=libvirt">New Red Hat Enterprise Linux libvirt ticket</a></li>
-	</ul>
+        If you are using official binaries from <strong>Red Hat Enterprise Linux distribution</strong>,
+        tickets against the <code>Red Hat Enterprise Linux 5</code> product and
+        the <code>libvirt</code> component.
+        <ul>
+          <li><a href="http://bugzilla.redhat.com/buglist.cgi?component=libvirt&amp;product=Red%20Hat%20Enterprise%20Linux%205">View Red Hat Enterprise Linux libvirt tickets</a></li>
+          <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Red%20Hat%20Enterprise%20Linux%205&amp;component=libvirt">New Red Hat Enterprise Linux libvirt ticket</a></li>
+        </ul>
       </li>
       <li>
-	If you are using official binaries from another Linux distribution first
-	follow their own bug reporting guidelines.
+        If you are using official binaries from another Linux distribution first
+        follow their own bug reporting guidelines.
       </li>
     </ul>
 
@@ -65,7 +65,7 @@
 
     <ul>
       <li>The version number of the libvirt build, or date of the CVS
-	checkout</li>
+        checkout</li>
       <li>The hardware architecture being used</li>
       <li>The name of the hypervisor (Xen, QEMU, KVM)</li>
       <li>The XML config of the guest domain if relevant</li>

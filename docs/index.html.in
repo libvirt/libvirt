@@ -7,26 +7,26 @@
 
     <ul>
       <li>
-	A toolkit to interact with the virtualization capabilities
-	of recent versions of Linux (and other OSes).
+        A toolkit to interact with the virtualization capabilities
+        of recent versions of Linux (and other OSes).
       </li>
       <li>
-	Free software available under the
-	<a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
-	  Lesser General Public License</a>.
+        Free software available under the
+        <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
+          Lesser General Public License</a>.
       </li>
 
       <li>
-	A long term stable C API
+        A long term stable C API
       </li>
       <li>
-	A set of bindings for common languages
+        A set of bindings for common languages
       </li>
       <li>
-	A <a href="CIM/">CIM provider</a> for the DMTF virtualization schema
+        A <a href="CIM/">CIM provider</a> for the DMTF virtualization schema
       </li>
       <li>
-	A <a href="/qpid/">QMF agent</a> for the AMQP/QPid messaging system
+        A <a href="/qpid/">QMF agent</a> for the AMQP/QPid messaging system
       </li>
     </ul>
 
@@ -34,29 +34,29 @@
 
     <ul>
       <li>
-	The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
-	on Linux and Solaris hosts.
+        The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a> hypervisor
+        on Linux and Solaris hosts.
       </li>
       <li>
-	The <a href="http://bellard.org/qemu/">QEMU</a> emulator
+        The <a href="http://bellard.org/qemu/">QEMU</a> emulator
       </li>
       <li>
-	The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
+        The <a href="http://kvm.qumranet.com/kvmwiki">KVM</a> Linux hypervisor
       </li>
       <li>
-	The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
+        The <a href="http://lxc.sourceforge.net/">LXC</a> Linux container system
       </li>
       <li>
-	The <a href="http://openvz.org/">OpenVZ</a> Linux container system
+        The <a href="http://openvz.org/">OpenVZ</a> Linux container system
       </li>
       <li>
-	The <a href="http://user-mode-linux.sourceforge.net/">User Mode Linux</a> paravirtualized kernel
+        The <a href="http://user-mode-linux.sourceforge.net/">User Mode Linux</a> paravirtualized kernel
       </li>
       <li>
-	The <a href="http://www.virtualbox.org/">VirtualBox</a> hypervisor
+        The <a href="http://www.virtualbox.org/">VirtualBox</a> hypervisor
       </li>
       <li>
-	Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems
+        Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems
       </li>
     </ul>
 
