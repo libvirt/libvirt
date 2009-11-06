@@ -1040,9 +1040,13 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
         goto err;
     else {
         while (got < nids) {
-            if (ret[i] == '\n') {
-                if (virStrToLong_i(id_c, &char_ptr, 10, &ids[got]) == -1)
-                    return 0;
+            if (ret[i] == '\0')
+                break;
+            else if (ret[i] == '\n') {
+                if (virStrToLong_i(id_c, &char_ptr, 10, &ids[got]) == -1) {
+                    VIR_ERROR("Cannot parse number from '%s'", id_c);
+                    goto err;
+                }
                 memset(id_c, 0, 10);
                 j = 0;
                 got++;
@@ -1112,7 +1116,8 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
                 }
                 char_ptr2++;
                 domains = char_ptr2;
-            }
+            } else
+                break;
         }
     }
 
