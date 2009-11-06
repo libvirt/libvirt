@@ -45,6 +45,7 @@ typedef virNetworkDHCPRangeDef *virNetworkDHCPRangeDefPtr;
 struct _virNetworkDHCPRangeDef {
     char *start;
     char *end;
+    int size;
 };
 
 typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;

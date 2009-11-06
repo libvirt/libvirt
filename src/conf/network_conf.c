@@ -36,6 +36,7 @@
 #include "virterror_internal.h"
 #include "datatypes.h"
 #include "network_conf.h"
+#include "network.h"
 #include "memory.h"
 #include "xml.h"
 #include "uuid.h"
@@ -230,15 +231,47 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "range")) {
-            xmlChar *start, *end;
+            char *start, *end;
+            virSocketAddr saddr, eaddr;
+            int range;
 
-            if (!(start = xmlGetProp(cur, BAD_CAST "start"))) {
+            if (!(start = (char *) xmlGetProp(cur, BAD_CAST "start"))) {
                 cur = cur->next;
                 continue;
             }
-            if (!(end = xmlGetProp(cur, BAD_CAST "end"))) {
-                cur = cur->next;
+            if (!(end = (char *) xmlGetProp(cur, BAD_CAST "end"))) {
                 xmlFree(start);
+                cur = cur->next;
+                continue;
+            }
+
+            if (virSocketParseAddr(start, &saddr, 0) < 0) {
+                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                                      _("cannot parse dhcp start address '%s'"),
+                                      start);
+                xmlFree(start);
+                xmlFree(end);
+                cur = cur->next;
+                continue;
+            }
+            if (virSocketParseAddr(end, &eaddr, 0) < 0) {
+                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                                      _("cannot parse dhcp end address '%s'"),
+                                      end);
+                xmlFree(start);
+                xmlFree(end);
+                cur = cur->next;
+                continue;
+            }
+
+            range = virSocketGetRange(&saddr, &eaddr);
+            if (range < 0) {
+                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                                      _("dhcp range '%s' to '%s' invalid"),
+                                      start, end);
+                xmlFree(start);
+                xmlFree(end);
+                cur = cur->next;
                 continue;
             }
 
@@ -250,6 +283,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             }
             def->ranges[def->nranges].start = (char *)start;
             def->ranges[def->nranges].end = (char *)end;
+            def->ranges[def->nranges].size = range;
             def->nranges++;
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
