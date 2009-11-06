@@ -1735,7 +1735,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     int fd = -1;
     char local_file[] = "./uuid_table";
     int rc = 0;
-    char buffer[1024];
+    int id;
 
     if ((fd = open(local_file, O_RDONLY)) == -1) {
         VIR_WARN("%s", "Unable to write information to local file.");
@@ -1746,13 +1746,13 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
         for (i = 0; i < uuid_table->nlpars; i++) {
 
-            rc = read(fd, buffer, sizeof(int));
+            rc = read(fd, &id, sizeof(int));
             if (rc == sizeof(int)) {
                 if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
                     virReportOOMError(conn);
                     goto err;
                 }
-                uuid_table->lpars[i]->id = (*buffer);
+                uuid_table->lpars[i]->id = id;
             } else {
                 VIR_WARN("%s",
                          "Unable to read from information to local file.");
@@ -1790,7 +1790,7 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
 
     for (i = 0; i < uuid_table->nlpars; i++) {
         if (safewrite(fd, &uuid_table->lpars[i]->id,
-                      sizeof(uuid_table->lpars[i]->id)) ==
+                      sizeof(uuid_table->lpars[i]->id)) !=
             sizeof(uuid_table->lpars[i]->id)) {
             VIR_ERROR("%s", "Unable to write information to local file.");
             goto err;
@@ -1944,8 +1944,13 @@ phypUUIDTable_Push(virConnectPtr conn)
     do {
         nread = fread(buffer, 1, sizeof(buffer), fd);
         if (nread <= 0) {
-            /* end of file */
-            break;
+            if (feof(fd)) {
+                /* end of file */
+                break;
+            } else {
+                VIR_ERROR("Failed to read from '%s'", local_file);
+                goto err;
+            }
         }
         ptr = buffer;
         sent = 0;
@@ -1955,7 +1960,7 @@ phypUUIDTable_Push(virConnectPtr conn)
             rc = libssh2_channel_write(channel, ptr, nread);
             if (LIBSSH2_ERROR_EAGAIN == rc) {   /* must loop around */
                 continue;
-            } else {
+            } else if (rc > 0) {
                 /* rc indicates how many bytes were written this time */
                 sent += rc;
             }
