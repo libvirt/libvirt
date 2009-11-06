@@ -237,7 +237,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     struct addrinfo hints;
     int ret;
 
-    memset(&hints, '\0', sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = 0;
@@ -1214,10 +1214,6 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
     virDomainDefPtr def = NULL;
     char *ret = NULL;
     char *managed_system = phyp_driver->managed_system;
-    unsigned char *lpar_uuid = NULL;
-
-    if (VIR_ALLOC_N(lpar_uuid, VIR_UUID_BUFLEN) < 0)
-        virReportOOMError(dom->conn);
 
     if (VIR_ALLOC(def) < 0)
         virReportOOMError(dom->conn);
@@ -1233,12 +1229,7 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
         goto err;
     }
 
-    if (phypGetLparUUID(lpar_uuid, dom->id, dom->conn) == -1) {
-        VIR_ERROR("%s", "Unable to generate random uuid.");
-        goto err;
-    }
-
-    if (!memcpy(def->uuid, lpar_uuid, VIR_UUID_BUFLEN)) {
+    if (phypGetLparUUID(def->uuid, dom->id, dom->conn) == -1) {
         VIR_ERROR("%s", "Unable to generate random uuid.");
         goto err;
     }
@@ -1695,8 +1686,7 @@ phypUUIDTable_RemLpar(virConnectPtr conn, int id)
     for (i = 0; i <= uuid_table->nlpars; i++) {
         if (uuid_table->lpars[i]->id == id) {
             uuid_table->lpars[i]->id = -1;
-            if (!memset(uuid_table->lpars[i]->uuid, '0', VIR_UUID_BUFLEN))
-                goto exit;
+            memset(uuid_table->lpars[i]->uuid, 0, VIR_UUID_BUFLEN);
         }
     }
 
@@ -1706,7 +1696,6 @@ phypUUIDTable_RemLpar(virConnectPtr conn, int id)
     if (phypUUIDTable_Push(conn) == -1)
         goto err;
 
-  exit:
     return 0;
 
   err:
@@ -1734,8 +1723,7 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     }
 
     uuid_table->lpars[i]->id = id;
-    if (memmove(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN) == NULL)
-        goto err;
+    memmove(uuid_table->lpars[i]->uuid, uuid, VIR_UUID_BUFLEN);
 
     if (phypUUIDTable_WriteFile(conn) == -1)
         goto err;
