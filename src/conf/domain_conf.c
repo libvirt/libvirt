@@ -3431,8 +3431,10 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
         goto error;
     if (n) {
         obj->nvcpupids = n;
-        if (VIR_REALLOC_N(obj->vcpupids, obj->nvcpupids) < 0)
+        if (VIR_REALLOC_N(obj->vcpupids, obj->nvcpupids) < 0) {
+            virReportOOMError(conn);
             goto error;
+        }
 
         for (i = 0 ; i < n ; i++) {
             char *pidstr = virXMLPropString(nodes[i], "pid");

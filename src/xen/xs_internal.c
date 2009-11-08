@@ -305,17 +305,15 @@ xenStoreOpen(virConnectPtr conn,
 #ifndef PROXY
     /* Init activeDomainList */
     if (VIR_ALLOC(priv->activeDomainList) < 0) {
-        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("failed to allocate activeDomainList"));
+        virReportOOMError(conn);
         return -1;
     }
 
     /* Init watch list before filling in domInfoList,
        so we can know if it is the first time through
        when the callback fires */
-    if ( VIR_ALLOC(priv->xsWatchList) < 0 ) {
-        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("failed to allocate xsWatchList"));
+    if (VIR_ALLOC(priv->xsWatchList) < 0) {
+        virReportOOMError(conn);
         return -1;
     }
 
@@ -892,7 +890,8 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
     }
     if (str == NULL)
         str = strdup("linux");
-
+    if (str == NULL)
+        virReportOOMError(conn);
 
     return (str);
 }
@@ -944,6 +943,10 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
 
         if (match) {
             ret = strdup(list[i]);
+
+            if (ret == NULL)
+                virReportOOMError(conn);
+
             break;
         }
     }
@@ -995,15 +998,19 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
             if (val == NULL)
                 break;
             if ((devlen != len) || memcmp(val, dev, len)) {
-                free (val);
+                VIR_FREE (val);
             } else {
                 ret = strdup(list[i]);
-                free (val);
-                free (list);
+
+                if (ret == NULL)
+                    virReportOOMError(conn);
+
+                VIR_FREE (val);
+                VIR_FREE (list);
                 return (ret);
             }
         }
-        free (list);
+        VIR_FREE (list);
     }
     snprintf(dir, sizeof(dir), "/local/domain/0/backend/tap/%d", id);
     list = xs_directory(priv->xshandle, 0, dir, &num);
@@ -1014,15 +1021,19 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
             if (val == NULL)
                 break;
             if ((devlen != len) || memcmp(val, dev, len)) {
-                free (val);
+                VIR_FREE (val);
             } else {
                 ret = strdup(list[i]);
-                free (val);
-                free (list);
+
+                if (ret == NULL)
+                    virReportOOMError(conn);
+
+                VIR_FREE (val);
+                VIR_FREE (list);
                 return (ret);
             }
         }
-        free (list);
+        VIR_FREE (list);
     }
     return (NULL);
 }
@@ -1100,7 +1111,7 @@ int xenStoreAddWatch(virConnectPtr conn,
                      xenStoreWatchCallback cb,
                      void *opaque)
 {
-    xenStoreWatchPtr watch;
+    xenStoreWatchPtr watch = NULL;
     int n;
     xenStoreWatchListPtr list;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -1123,25 +1134,38 @@ int xenStoreAddWatch(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(watch) < 0)
-        return -1;
+        goto no_memory;
+
     watch->path   = strdup(path);
     watch->token  = strdup(token);
     watch->cb     = cb;
     watch->opaque = opaque;
 
+    if (watch->path == NULL || watch->token == NULL) {
+        goto no_memory;
+    }
+
     /* Make space on list */
     n = list->count;
     if (VIR_REALLOC_N(list->watches, n + 1) < 0) {
-        virXenStoreError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("reallocating list"));
-        VIR_FREE(watch);
-        return -1;
+        goto no_memory;
     }
 
     list->watches[n] = watch;
     list->count++;
 
     return xs_watch(priv->xshandle, watch->path, watch->token);
+
+  no_memory:
+    if (watch) {
+        VIR_FREE(watch->path);
+        VIR_FREE(watch->token);
+        VIR_FREE(watch);
+    }
+
+    virReportOOMError(conn);
+
+    return -1;
 }
 
 /*

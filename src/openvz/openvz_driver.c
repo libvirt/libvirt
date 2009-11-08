@@ -767,9 +767,11 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (vmdef->os.init == NULL &&
-        !(vmdef->os.init = strdup("/sbin/init"))) {
-        goto cleanup;
+    if (vmdef->os.init == NULL) {
+        if (!(vmdef->os.init = strdup("/sbin/init"))) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
     }
 
     vm = virDomainFindByName(&driver->domains, vmdef->name);
@@ -844,9 +846,12 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
-    if (vmdef->os.init == NULL &&
-        !(vmdef->os.init = strdup("/sbin/init")))
-        goto cleanup;
+    if (vmdef->os.init == NULL) {
+        if (!(vmdef->os.init = strdup("/sbin/init"))) {
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     vm = virDomainFindByName(&driver->domains, vmdef->name);
     if (vm) {

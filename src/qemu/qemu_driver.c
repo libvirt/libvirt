@@ -364,17 +364,13 @@ qemudSecurityCapsInit(virSecurityDriverPtr secdrv,
 
     caps->host.secModel.model = strdup(model);
     if (!caps->host.secModel.model) {
-        char ebuf[1024];
-        VIR_ERROR(_("Failed to copy secModel model: %s"),
-                  virStrerror(errno, ebuf, sizeof ebuf));
+        virReportOOMError(NULL);
         return -1;
     }
 
     caps->host.secModel.doi = strdup(doi);
     if (!caps->host.secModel.doi) {
-        char ebuf[1024];
-        VIR_ERROR(_("Failed to copy secModel DOI: %s"),
-                  virStrerror(errno, ebuf, sizeof ebuf));
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -5851,8 +5847,10 @@ static struct qemuStreamMigFile *qemuStreamMigOpen(virStreamPtr st,
     int timeout = 3;
     int ret;
 
-    if (VIR_ALLOC(qemust) < 0)
+    if (VIR_ALLOC(qemust) < 0) {
+        virReportOOMError(st->conn);
         return NULL;
+    }
 
     qemust->fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (qemust->fd < 0)

@@ -689,8 +689,10 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     int i;
     const char *defaultArch, *defaultMachine;
 
-    if (VIR_ALLOC(def) < 0)
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
         return NULL;
+    }
 
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
@@ -1100,7 +1102,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             }
 
             if (VIR_ALLOC(net) < 0)
-                goto cleanup;
+                goto no_memory;
 
             if (mac[0]) {
                 unsigned int rawmac[6];
@@ -1234,7 +1236,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 goto skippci;
 
             if (VIR_ALLOC(hostdev) < 0)
-                goto cleanup;
+                goto no_memory;
 
             hostdev->managed = 0;
             hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
@@ -1922,8 +1924,10 @@ static
 int xenXMConfigSetInt(virConfPtr conf, const char *setting, long l) {
     virConfValuePtr value = NULL;
 
-    if (VIR_ALLOC(value) < 0)
+    if (VIR_ALLOC(value) < 0) {
+        virReportOOMError(NULL);
         return -1;
+    }
 
     value->type = VIR_CONF_LONG;
     value->next = NULL;
@@ -1937,13 +1941,16 @@ static
 int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) {
     virConfValuePtr value = NULL;
 
-    if (VIR_ALLOC(value) < 0)
+    if (VIR_ALLOC(value) < 0) {
+        virReportOOMError(NULL);
         return -1;
+    }
 
     value->type = VIR_CONF_STRING;
     value->next = NULL;
     if (!(value->str = strdup(str))) {
         VIR_FREE(value);
+        virReportOOMError(NULL);
         return -1;
     }
 
@@ -2133,8 +2140,10 @@ xenXMDomainConfigFormatPCI(virConnectPtr conn,
     if (!hasPCI)
         return 0;
 
-    if (VIR_ALLOC(pciVal) < 0)
+    if (VIR_ALLOC(pciVal) < 0) {
+        virReportOOMError(conn);
         return -1;
+    }
 
     pciVal->type = VIR_CONF_LIST;
     pciVal->list = NULL;
@@ -2149,8 +2158,10 @@ xenXMDomainConfigFormatPCI(virConnectPtr conn,
                             def->hostdevs[i]->source.subsys.u.pci.domain,
                             def->hostdevs[i]->source.subsys.u.pci.bus,
                             def->hostdevs[i]->source.subsys.u.pci.slot,
-                            def->hostdevs[i]->source.subsys.u.pci.function) < 0)
+                            def->hostdevs[i]->source.subsys.u.pci.function) < 0) {
+                virReportOOMError(conn);
                 goto error;
+            }
 
             if (VIR_ALLOC(val) < 0) {
                 VIR_FREE(buf);
@@ -2748,6 +2759,7 @@ cleanup:
 
 struct xenXMListIteratorContext {
     virConnectPtr conn;
+    int oom;
     int max;
     int count;
     char ** names;
@@ -2757,13 +2769,18 @@ static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const char *name, 
     struct xenXMListIteratorContext *ctx = data;
     virDomainPtr dom = NULL;
 
+    if (ctx->oom)
+        return;
+
     if (ctx->count == ctx->max)
         return;
 
     dom = xenDaemonLookupByName(ctx->conn, name);
     if (!dom) {
-        ctx->names[ctx->count] = strdup(name);
-        ctx->count++;
+        if (!(ctx->names[ctx->count] = strdup(name)))
+            ctx->oom = 1;
+        else
+            ctx->count++;
     } else {
         virDomainFree(dom);
     }
@@ -2777,7 +2794,7 @@ static void xenXMListIterator(void *payload ATTRIBUTE_UNUSED, const char *name, 
 int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
     xenUnifiedPrivatePtr priv;
     struct xenXMListIteratorContext ctx;
-    int ret = -1;
+    int i, ret = -1;
 
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -2794,11 +2811,21 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
         maxnames = virHashSize(priv->configCache);
 
     ctx.conn = conn;
+    ctx.oom = 0;
     ctx.count = 0;
     ctx.max = maxnames;
     ctx.names = names;
 
     virHashForEach(priv->nameConfigMap, xenXMListIterator, &ctx);
+
+    if (ctx.oom) {
+        for (i = 0; i < ctx.count; i++)
+            VIR_FREE(ctx.names[i]);
+
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
     ret = ctx.count;
 
 cleanup:

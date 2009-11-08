@@ -2262,6 +2262,7 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int count = 0;
+    int i;
 
     if (names == NULL || maxnames < 0) {
         goto failure;
@@ -2329,6 +2330,10 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     return count;
 
   failure:
+    for (i = 0; i < count; ++i) {
+        VIR_FREE(names[i]);
+    }
+
     count = -1;
 
     goto cleanup;

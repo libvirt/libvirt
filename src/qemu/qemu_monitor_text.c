@@ -201,8 +201,10 @@ qemuMonitorSend(const virDomainObjPtr vm,
     size_t len;
     int ret = -1;
 
-    if (virAsprintf(&full, "%s\r", cmd) < 0)
+    if (virAsprintf(&full, "%s\r", cmd) < 0) {
+        virReportOOMError(NULL);
         return -1;
+    }
 
     len = strlen(full);
 

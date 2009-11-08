@@ -326,6 +326,14 @@ getNewStyleBlockDevice(virConnectPtr conn,
         }
 
         *block_device = strdup(block_dirent->d_name);
+
+        if (*block_device == NULL) {
+            virReportOOMError(conn);
+            closedir(block_dir);
+            retval = -1;
+            goto out;
+        }
+
         VIR_DEBUG(_("Block device is '%s'"), *block_device);
 
         break;
@@ -360,9 +368,16 @@ getOldStyleBlockDevice(virConnectPtr conn,
         blockp++;
         *block_device = strdup(blockp);
 
+        if (*block_device == NULL) {
+            virReportOOMError(conn);
+            retval = -1;
+            goto out;
+        }
+
         VIR_DEBUG(_("Block device is '%s'"), *block_device);
     }
 
+out:
     return retval;
 }
 

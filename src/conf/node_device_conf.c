@@ -1057,13 +1057,18 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt, int create
     /* Extract device name */
     if (create == EXISTING_DEVICE) {
         def->name = virXPathString(conn, "string(./name[1])", ctxt);
+
+        if (!def->name) {
+            virNodeDeviceReportError(conn, VIR_ERR_NO_NAME, NULL);
+            goto error;
+        }
     } else {
         def->name = strdup("new device");
-    }
 
-    if (!def->name) {
-        virNodeDeviceReportError(conn, VIR_ERR_NO_NAME, NULL);
-        goto error;
+        if (!def->name) {
+            virReportOOMError(conn);
+            goto error;
+        }
     }
 
     /* Extract device parent, if any */

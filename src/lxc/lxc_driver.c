@@ -445,6 +445,9 @@ static char *lxcGetOSType(virDomainPtr dom)
 
     ret = strdup(vm->def->os.type);
 
+    if (ret == NULL)
+        virReportOOMError(dom->conn);
+
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
@@ -724,14 +727,18 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         if (NULL == def->nets[i]->ifname) {
             def->nets[i]->ifname = strdup(parentVeth);
         }
-        if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0)
+        if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
+            virReportOOMError(conn);
             goto error_exit;
-        if (((*veths)[(*nveths)++] = strdup(containerVeth)) == NULL)
+        }
+        if (((*veths)[(*nveths)] = strdup(containerVeth)) == NULL) {
+            virReportOOMError(conn);
             goto error_exit;
+        }
+        (*nveths)++;
 
         if (NULL == def->nets[i]->ifname) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("Failed to allocate veth names"));
+            virReportOOMError(conn);
             goto error_exit;
         }
 
@@ -1771,13 +1778,19 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
-                                 int *nparams)
+static char *lxcGetSchedulerType(virDomainPtr domain, int *nparams)
 {
+    char *schedulerType = NULL;
+
     if (nparams)
         *nparams = 1;
 
-    return strdup("posix");
+    schedulerType = strdup("posix");
+
+    if (schedulerType == NULL)
+        virReportOOMError(domain->conn);
+
+    return schedulerType;
 }
 
 static int lxcSetSchedulerParameters(virDomainPtr domain,

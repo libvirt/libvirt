@@ -1333,13 +1333,18 @@ cleanup:
     return ret;
 }
 
-static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+static char *vboxDomainGetOSType(virDomainPtr dom) {
     /* Returning "hvm" always as suggested on list, cause
      * this functions seems to be badly named and it
      * is supposed to pass the ABI name and not the domain
      * operating system driver as I had imagined ;)
      */
-    return strdup("hvm");
+    char *osType = strdup("hvm");
+
+    if (osType == NULL)
+        virReportOOMError(dom->conn);
+
+    return osType;
 }
 
 static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory) {
@@ -1881,7 +1886,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 if (valueDisplayUtf8)
                                     sdlDisplay = strdup(valueDisplayUtf8);
                                 if (sdlDisplay == NULL) {
-                                    vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                    virReportOOMError(dom->conn);
                                     /* just don't go to cleanup yet as it is ok to have
                                      * sdlDisplay as NULL and we check it below if it
                                      * exist and then only use it there
@@ -1895,7 +1900,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                                 if (valueDisplayUtf8)
                                     guiDisplay = strdup(valueDisplayUtf8);
                                 if (guiDisplay == NULL) {
-                                    vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                    virReportOOMError(dom->conn);
                                     /* just don't go to cleanup yet as it is ok to have
                                      * guiDisplay as NULL and we check it below if it
                                      * exist and then only use it there
@@ -1932,7 +1937,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
                             def->graphics[def->ngraphics]->data.desktop.display = strdup(getenv("DISPLAY"));
                             if (def->graphics[def->ngraphics]->data.desktop.display == NULL) {
-                                vboxError(dom->conn, VIR_ERR_SYSTEM_ERROR, "%s", "strdup failed");
+                                virReportOOMError(dom->conn);
                                 /* just don't go to cleanup yet as it is ok to have
                                  * display as NULL
                                  */
@@ -3983,6 +3988,11 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
 
     def->os.type = strdup("hvm");
 
+    if (def->os.type == NULL) {
+        virReportOOMError(dom->conn);
+        goto cleanup;
+    }
+
     dev = virDomainDeviceDefParse(dom->conn, data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL) {
@@ -4175,6 +4185,11 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
     }
 
     def->os.type = strdup("hvm");
+
+    if (def->os.type == NULL) {
+        virReportOOMError(dom->conn);
+        goto cleanup;
+    }
 
     dev = virDomainDeviceDefParse(dom->conn, data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);

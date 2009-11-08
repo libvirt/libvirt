@@ -386,8 +386,8 @@ openvzReadFSConf(virConnectPtr conn,
         if (VIR_ALLOC(fs) < 0)
             goto no_memory;
 
-        if(virAsprintf(&veid_str, "%d", veid) < 0)
-          goto error;
+        if (virAsprintf(&veid_str, "%d", veid) < 0)
+            goto no_memory;
 
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
         fs->src = openvz_replace(temp, "$VEID", veid_str);
@@ -547,8 +547,10 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     int fd = -1, temp_fd = -1;
     char line[PATH_MAX] ;
 
-    if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0)
+    if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0) {
+        virReportOOMError(NULL);
         return -1;
+    }
 
     fd = open(conf_file, O_RDONLY);
     if (fd == -1)
@@ -733,8 +735,10 @@ openvzCopyDefaultConfig(int vpsid)
     if (confdir == NULL)
         goto cleanup;
 
-    if (virAsprintf(&default_conf_file, "%s/ve-%s.conf-sample", confdir, configfile_value) < 0)
+    if (virAsprintf(&default_conf_file, "%s/ve-%s.conf-sample", confdir, configfile_value) < 0) {
+        virReportOOMError(NULL);
         goto cleanup;
+    }
 
     if (openvzLocateConfFile(vpsid, conf_file, PATH_MAX, "conf")<0)
         goto cleanup;

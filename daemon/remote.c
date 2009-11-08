@@ -565,7 +565,7 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
         remoteDispatchFormatError (rerr, "%s", _("nparams too large"));
         return -1;
     }
-    if (VIR_ALLOC_N(params, nparams)) {
+    if (VIR_ALLOC_N(params, nparams) < 0) {
         remoteDispatchOOMError(rerr);
         return -1;
     }
@@ -721,10 +721,8 @@ remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     ret->buffer.buffer_len = size;
     if (VIR_ALLOC_N (ret->buffer.buffer_val, size) < 0) {
-        char ebuf[1024];
         virDomainFree (dom);
-        remoteDispatchFormatError (rerr, "%s",
-                                   virStrerror(errno, ebuf, sizeof ebuf));
+        remoteDispatchOOMError(rerr);
         return -1;
     }
 
@@ -772,10 +770,8 @@ remoteDispatchDomainMemoryPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     ret->buffer.buffer_len = size;
     if (VIR_ALLOC_N (ret->buffer.buffer_val, size) < 0) {
-        char ebuf[1024];
         virDomainFree (dom);
-        remoteDispatchFormatError (rerr, "%s",
-                                   virStrerror(errno, ebuf, sizeof ebuf));
+        remoteDispatchOOMError(rerr);
         return -1;
     }
 

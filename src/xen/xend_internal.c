@@ -1055,8 +1055,13 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
                    "%s", _("domain information incomplete, missing name"));
       goto error;
     }
-    if (domname)
+    if (domname) {
       *domname = strdup(name);
+      if (*domname == NULL) {
+          virReportOOMError(xend);
+          goto error;
+      }
+    }
 
     if (sexpr_uuid(uuid, root, "domain/uuid") < 0) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
@@ -2946,8 +2951,10 @@ xenDaemonOpen(virConnectPtr conn,
             goto failed;
     } else if (STRCASEEQ (conn->uri->scheme, "http")) {
         if (conn->uri->port &&
-            virAsprintf(&port, "%d", conn->uri->port) == -1)
+            virAsprintf(&port, "%d", conn->uri->port) == -1) {
+            virReportOOMError(conn);
             goto failed;
+        }
 
         if (xenDaemonOpen_tcp(conn,
                               conn->uri->server ? conn->uri->server : "localhost",
@@ -3163,6 +3170,9 @@ xenDaemonDomainGetOSType(virDomainPtr domain)
     } else {
         type = strdup("linux");
     }
+
+    if (type == NULL)
+        virReportOOMError(domain->conn);
 
     sexpr_free(root);
 
@@ -3959,6 +3969,10 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             if (id >= 0) {
                 if (!memcmp(uuid, ident, VIR_UUID_BUFLEN)) {
                     name = strdup(*tmp);
+
+                    if (name == NULL)
+                        virReportOOMError(conn);
+
                     break;
                 }
             }
@@ -3979,7 +3993,14 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             id = sexpr_int(root, "domain/domid");
         else
             id = -1;
-        name = domname ? strdup(domname) : NULL;
+
+        if (domname) {
+            name = strdup(domname);
+
+            if (name == NULL)
+                virReportOOMError(conn);
+        }
+
         sexpr_free(root);
     }
 
@@ -4308,8 +4329,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
         autonode->u.s.car->u.value = (autostart ? strdup("start")
                                                 : strdup("ignore"));
         if (!(autonode->u.s.car->u.value)) {
-            virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("no memory"));
+            virReportOOMError(domain->conn);
             goto error;
         }
 
@@ -4628,7 +4648,7 @@ error:
 static int
 xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
     struct sexpr *root = NULL;
-    int ret = -1;
+    int i, ret = -1;
     struct sexpr *_for_i, *node;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
@@ -4651,12 +4671,19 @@ xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
         if (node->kind != SEXPR_VALUE)
             continue;
 
-        names[ret++] = strdup(node->u.value);
+        if ((names[ret++] = strdup(node->u.value)) == NULL) {
+            virReportOOMError(conn);
+            goto error;
+        }
+
         if (ret >= maxnames)
             break;
     }
 
 error:
+    for (i = 0; i < ret; ++i)
+        VIR_FREE(names[i]);
+
     sexpr_free(root);
     return(ret);
 }
@@ -4708,14 +4735,14 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
     if (STREQ (ret, "credit")) {
         schedulertype = strdup("credit");
         if (schedulertype == NULL){
-            virXendError(domain->conn, VIR_ERR_SYSTEM_ERROR, "%s", _("strdup failed"));
+            virReportOOMError(domain->conn);
             goto error;
         }
         *nparams = XEN_SCHED_CRED_NPARAM;
     } else if (STREQ (ret, "sedf")) {
         schedulertype = strdup("sedf");
         if (schedulertype == NULL){
-            virXendError(domain->conn, VIR_ERR_SYSTEM_ERROR, "%s", _("strdup failed"));
+            virReportOOMError(domain->conn);
             goto error;
         }
         *nparams = XEN_SCHED_SEDF_NPARAM;

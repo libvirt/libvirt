@@ -107,6 +107,7 @@ xenInotifyXenCacheLookup(virConnectPtr conn,
 
     if (!*name) {
         DEBUG0("Error getting dom from def");
+        virReportOOMError(conn);
         return -1;
     }
     return 0;
@@ -145,8 +146,7 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
             if (!memcmp(rawuuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN)) {
                 *name = strdup(priv->configInfoList->doms[i]->name);
                 if (!*name) {
-                    virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                       _("finding dom for %s"), uuid_str);
+                    virReportOOMError(conn);
                     return -1;
                 }
                 memcpy(uuid, priv->configInfoList->doms[i]->uuid, VIR_UUID_BUFLEN);
@@ -159,8 +159,10 @@ xenInotifyXendDomainsDirLookup(virConnectPtr conn, const char *filename,
         return -1;
     }
 
-    if (!(*name = strdup(dom->name)))
+    if (!(*name = strdup(dom->name))) {
+        virReportOOMError(conn);
         return -1;
+    }
     memcpy(uuid, dom->uuid, VIR_UUID_BUFLEN);
     virDomainFree(dom);
     /* succeeded too find domain by uuid */
@@ -380,7 +382,7 @@ cleanup:
  * Returns 0 or -1 in case of error.
  */
 virDrvOpenStatus
-xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
+xenInotifyOpen(virConnectPtr conn,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags ATTRIBUTE_UNUSED)
 {
@@ -397,8 +399,7 @@ xenInotifyOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
         priv->useXenConfigCache = 0;
 
         if (VIR_ALLOC(priv->configInfoList) < 0) {
-            virXenInotifyError(NULL, VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("failed to allocate configInfoList"));
+            virReportOOMError(conn);
             return -1;
         }
 

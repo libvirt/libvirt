@@ -870,12 +870,12 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     if(VIR_ALLOC(priv->callbackList)<0) {
-        error(conn, VIR_ERR_INVALID_ARG, _("Error allocating callbacks list"));
+        virReportOOMError(conn);
         goto failed;
     }
 
     if(VIR_ALLOC(priv->domainEvents)<0) {
-        error(conn, VIR_ERR_INVALID_ARG, _("Error allocating domainEvents"));
+        virReportOOMError(conn);
         goto failed;
     }
 
@@ -2751,8 +2751,17 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -3086,7 +3095,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
     /* Serialise the scheduler parameters. */
     args.params.params_len = nparams;
     if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        error (domain->conn, VIR_ERR_RPC, _("out of memory allocating array"));
+        virReportOOMError(domain->conn);
         goto done;
     }
 
@@ -3432,8 +3441,17 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -3505,8 +3523,17 @@ remoteListDefinedNetworks (virConnectPtr conn,
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -3921,8 +3948,17 @@ remoteListInterfaces (virConnectPtr conn, char **const names, int maxnames)
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -3993,8 +4029,17 @@ remoteListDefinedInterfaces (virConnectPtr conn, char **const names, int maxname
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -4314,8 +4359,17 @@ remoteListStoragePools (virConnectPtr conn, char **const names, int maxnames)
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -4383,8 +4437,17 @@ remoteListDefinedStoragePools (virConnectPtr conn,
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -4890,8 +4953,17 @@ remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int ma
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(pool->conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -5290,8 +5362,17 @@ static int remoteNodeListDevices(virConnectPtr conn,
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -5443,8 +5524,17 @@ static int remoteNodeDeviceListCaps(virNodeDevicePtr dev,
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.names.names_len; ++i)
+    for (i = 0; i < ret.names.names_len; ++i) {
         names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError(dev->conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.names.names_len;
 
@@ -6496,8 +6586,17 @@ remoteSecretListSecrets (virConnectPtr conn, char **uuids, int maxuuids)
      * names and the list of pointers, so we have to strdup the
      * names here.
      */
-    for (i = 0; i < ret.uuids.uuids_len; ++i)
+    for (i = 0; i < ret.uuids.uuids_len; ++i) {
         uuids[i] = strdup (ret.uuids.uuids_val[i]);
+
+        if (uuids[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(uuids[i]);
+
+            virReportOOMError(conn);
+            goto cleanup;
+        }
+    }
 
     rv = ret.uuids.uuids_len;
 
@@ -6707,8 +6806,10 @@ remoteStreamOpen(virStreamPtr st,
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *stpriv;
 
-    if (VIR_ALLOC(stpriv) < 0)
+    if (VIR_ALLOC(stpriv) < 0) {
+        virReportOOMError(st->conn);
         return NULL;
+    }
 
     /* Initialize call object used to receive replies */
     stpriv->proc_nr = proc_nr;
@@ -7106,8 +7207,10 @@ prepareCall(virConnectPtr conn,
     struct remote_message_header hdr;
     struct remote_thread_call *rv;
 
-    if (VIR_ALLOC(rv) < 0)
+    if (VIR_ALLOC(rv) < 0) {
+        virReportOOMError(conn);
         return NULL;
+    }
 
     if (virCondInit(&rv->cond) < 0) {
         VIR_FREE(rv);

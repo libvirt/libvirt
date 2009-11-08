@@ -1732,7 +1732,8 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
                 goto err;
             }
         }
-    }
+    } else
+        virReportOOMError(conn);
 
     close(fd);
     return 0;
@@ -1833,8 +1834,10 @@ phypUUIDTable_Init(virConnectPtr conn)
                     VIR_WARN("%s %d", "Unable to generate UUID for domain",
                              ids[i]);
             }
-        } else
+        } else {
+            virReportOOMError(conn);
             goto err;
+        }
 
         if (phypUUIDTable_WriteFile(conn) == -1)
             goto err;

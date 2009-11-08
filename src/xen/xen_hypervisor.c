@@ -1114,11 +1114,15 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
         switch (op.u.getschedulerid.sched_id){
             case XEN_SCHEDULER_SEDF:
                 schedulertype = strdup("sedf");
+                if (schedulertype == NULL)
+                    virReportOOMError(domain->conn);
                 if (nparams)
                     *nparams = 6;
                 break;
             case XEN_SCHEDULER_CREDIT:
                 schedulertype = strdup("credit");
+                if (schedulertype == NULL)
+                    virReportOOMError(domain->conn);
                 if (nparams)
                     *nparams = 2;
                 break;
@@ -2755,6 +2759,7 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
 {
     xenUnifiedPrivatePtr priv;
     xen_getdomaininfo dominfo;
+    char *ostype = NULL;
 
     priv = (xenUnifiedPrivatePtr) dom->conn->privateData;
     if (priv->handle < 0)
@@ -2774,8 +2779,14 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
         return (NULL);
 
     if (XEN_GETDOMAININFO_FLAGS(dominfo) & DOMFLAGS_HVM)
-        return strdup("hvm");
-    return strdup("linux");
+        ostype = strdup("hvm");
+    else
+        ostype = strdup("linux");
+
+    if (ostype == NULL)
+        virReportOOMError(dom->conn);
+
+    return ostype;
 }
 
 virDomainPtr

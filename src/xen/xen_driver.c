@@ -138,14 +138,20 @@ xenDomainUsedCpus(virDomainPtr dom)
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
         return(NULL);
 
-    if (VIR_ALLOC_N(cpulist, priv->nbNodeCpus) < 0)
+    if (VIR_ALLOC_N(cpulist, priv->nbNodeCpus) < 0) {
+        virReportOOMError(dom->conn);
         goto done;
-    if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0)
+    }
+    if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0) {
+        virReportOOMError(dom->conn);
         goto done;
+    }
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (xalloc_oversized(nb_vcpu, cpumaplen) ||
-        VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0)
+        VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0) {
+        virReportOOMError(dom->conn);
         goto done;
+    }
 
     if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
                                           cpumap, cpumaplen)) >= 0) {

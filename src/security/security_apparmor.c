@@ -56,13 +56,16 @@ profile_status(const char *str, const int check_enforcing)
     int rc = -1;
 
     /* create string that is '<str> \0' for accurate matching */
-    if (virAsprintf(&tmp, "%s ", str) == -1)
+    if (virAsprintf(&tmp, "%s ", str) == -1) {
+        virReportOOMError(NULL);
         return rc;
+    }
 
     if (check_enforcing != 0) {
         /* create string that is '<str> (enforce)\0' for accurate matching */
         if (virAsprintf(&etmp, "%s (enforce)", str) == -1) {
             VIR_FREE(tmp);
+            virReportOOMError(NULL);
             return rc;
         }
     }

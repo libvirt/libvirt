@@ -417,17 +417,17 @@ qemudParseMachineTypesStr(const char *output,
             continue;
 
         if (VIR_ALLOC(machine) < 0)
-            goto error;
+            goto no_memory;
 
         if (!(machine->name = strndup(p, t - p))) {
             VIR_FREE(machine);
-            goto error;
+            goto no_memory;
         }
 
         if (VIR_REALLOC_N(list, nitems + 1) < 0) {
             VIR_FREE(machine->name);
             VIR_FREE(machine);
-            goto error;
+            goto no_memory;
         }
 
         p = t;
@@ -446,7 +446,7 @@ qemudParseMachineTypesStr(const char *output,
                 continue;
 
             if (!(machine->canonical = strndup(p, t - p)))
-                goto error;
+                goto no_memory;
         }
     } while ((p = next));
 
@@ -455,7 +455,8 @@ qemudParseMachineTypesStr(const char *output,
 
     return 0;
 
-error:
+  no_memory:
+    virReportOOMError(NULL);
     virCapabilitiesFreeMachines(list, nitems);
     return -1;
 }
@@ -537,23 +538,22 @@ qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
         return 0;
     }
 
-    if (VIR_ALLOC_N(list, info->nmachines) < 0)
+    if (VIR_ALLOC_N(list, info->nmachines) < 0) {
+        virReportOOMError(NULL);
         return 0;
+    }
 
     for (i = 0; i < info->nmachines; i++) {
         if (VIR_ALLOC(list[i]) < 0) {
-            virCapabilitiesFreeMachines(list, info->nmachines);
-            return 0;
+            goto no_memory;
         }
         if (info->machines[i]->name &&
             !(list[i]->name = strdup(info->machines[i]->name))) {
-            virCapabilitiesFreeMachines(list, info->nmachines);
-            return 0;
+            goto no_memory;
         }
         if (info->machines[i]->canonical &&
             !(list[i]->canonical = strdup(info->machines[i]->canonical))) {
-            virCapabilitiesFreeMachines(list, info->nmachines);
-            return 0;
+            goto no_memory;
         }
     }
 
@@ -561,6 +561,11 @@ qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
     *nmachines = info->nmachines;
 
     return 1;
+
+  no_memory:
+    virReportOOMError(NULL);
+    virCapabilitiesFreeMachines(list, info->nmachines);
+    return 0;
 }
 
 static int
@@ -668,15 +673,19 @@ qemudCapsInitGuest(virCapsPtr caps,
     if (info->machine) {
         virCapsGuestMachinePtr machine;
 
-        if (VIR_ALLOC(machine) < 0)
+        if (VIR_ALLOC(machine) < 0) {
+            virReportOOMError(NULL);
             return -1;
+        }
 
         if (!(machine->name = strdup(info->machine))) {
+            virReportOOMError(NULL);
             VIR_FREE(machine);
             return -1;
         }
 
         if (VIR_ALLOC_N(machines, nmachines) < 0) {
+            virReportOOMError(NULL);
             VIR_FREE(machine->name);
             VIR_FREE(machine);
             return -1;
@@ -1166,7 +1175,10 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         if (brname == NULL)
             return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        brname = strdup(net->data.bridge.brname);
+        if (!(brname = strdup(net->data.bridge.brname))) {
+            virReportOOMError(conn);
+            return -1;
+        }
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("Network type %d is not supported"), net->type);
@@ -1276,12 +1288,15 @@ qemuAssignNetNames(virDomainDefPtr def,
 
     if (virAsprintf(&nic_name, "%s.%d",
                     net->model ? net->model : "nic",
-                    nic_index) < 0)
+                    nic_index) < 0) {
+        virReportOOMError(NULL);
         return -1;
+    }
 
     if (virAsprintf(&hostnet_name, "%s.%d",
                     qemuNetTypeToHostNet(net->type),
                     hostnet_index) < 0) {
+        virReportOOMError(NULL);
         VIR_FREE(nic_name);
         return -1;
     }
@@ -2434,7 +2449,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                            hostdev->source.subsys.u.pci.function);
             if (ret < 0) {
                 pcidev = NULL;
-                goto error;
+                goto no_memory;
             }
             ADD_ARG_LIT("-pcidevice");
             ADD_ARG_LIT(pcidev);
@@ -2589,6 +2604,7 @@ no_memory:
     for (i = 0 ; i < argcount ; i++)
         VIR_FREE(arglist[i]);
     VIR_FREE(arglist);
+    virReportOOMError(NULL);
     return -1;
 }
 
@@ -3177,12 +3193,19 @@ qemuParseCommandLineChr(virConnectPtr conn,
             def->data.udp.connectHost = strndup(val, svc1-val);
         else
             def->data.udp.connectHost = strdup(val);
+
+        if (!def->data.udp.connectHost)
+            goto no_memory;
+
         if (svc1) {
             svc1++;
             if (host2)
                 def->data.udp.connectService = strndup(svc1, host2-svc1);
             else
                 def->data.udp.connectService = strdup(svc1);
+
+            if (!def->data.udp.connectService)
+                goto no_memory;
         }
 
         if (host2) {
@@ -3191,10 +3214,15 @@ qemuParseCommandLineChr(virConnectPtr conn,
                 def->data.udp.bindHost = strndup(host2, svc2-host2);
             else
                 def->data.udp.bindHost = strdup(host2);
+
+            if (!def->data.udp.bindHost)
+                goto no_memory;
         }
         if (svc2) {
             svc2++;
             def->data.udp.bindService = strdup(svc2);
+            if (!def->data.udp.bindService)
+                goto no_memory;
         }
     } else if (STRPREFIX(val, "tcp:") ||
                STRPREFIX(val, "telnet:")) {
@@ -3217,12 +3245,16 @@ qemuParseCommandLineChr(virConnectPtr conn,
             def->data.tcp.listen = 1;
 
         def->data.tcp.host = strndup(val, svc-val);
+        if (!def->data.tcp.host)
+            goto no_memory;
         svc++;
         if (opt) {
             def->data.tcp.service = strndup(svc, opt-svc);
         } else {
             def->data.tcp.service = strdup(svc);
         }
+        if (!def->data.tcp.service)
+            goto no_memory;
     } else if (STRPREFIX(val, "unix:")) {
         const char *opt;
         val += strlen("unix:");
