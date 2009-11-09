@@ -764,12 +764,12 @@ qemu-kvm -net nic,model=? /dev/null
 
     </dl>
 
-    <h4><a name="elementsConsole">Consoles, serial &amp; parallel devices</a></h4>
+    <h4><a name="elementsConsole">Consoles, serial, parallel &amp; channel devices</a></h4>
 
     <p>
       A character device provides a way to interact with the virtual machine.
-      Paravirtualized consoles, serial ports and parallel ports are all
-      classed as character devices and so represented using the same syntax.
+      Paravirtualized consoles, serial ports, parallel ports and channels are
+      all classed as character devices and so represented using the same syntax.
     </p>
 
     <pre>
@@ -786,6 +786,10 @@ qemu-kvm -net nic,model=? /dev/null
           &lt;source path='/dev/pts/4'/&gt;
           &lt;target port='0'/&gt;
         &lt;/console&gt;
+        &lt;channel type='unix'&gt;
+          &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
+          &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
+        &lt;/channel&gt;
         &lt;/devices&gt;
       &lt;/domain&gt;</pre>
 
@@ -861,6 +865,36 @@ qemu-kvm -net nic,model=? /dev/null
       element has the same attributes as for a serial port. There is usually
       only 1 console.
     </p>
+
+    <h6><a name="elementCharChannel">Channel</a></h6>
+
+    <p>
+      This represents a private communication channel between the host and the
+      guest.
+    </p>
+
+    <pre>
+      ...
+      &lt;channel type='unix'&gt;
+        &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
+        &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
+      &lt;/channel&gt;
+      ...</pre>
+
+    <p>
+      This can be implemented in a variety of ways. The specific type of
+      channel is given in the <code>type</code> attribute of the
+      <code>target</code> element. Different channel types have different
+      <code>target</code> attributes.
+    </p>
+
+    <dl>
+      <dt><code>guestfwd</code></dt>
+      <dd>TCP traffic sent by the guest to a given IP address and port is
+        forwarded to the channel device on the host. The <code>target</code>
+        element must have <code>address</code> and <code>port</code> attributes.
+        <span class="since">Since 0.7.3</span></dd>
+    </dl>
 
     <h5><a name="elementsCharHostInterface">Host interface</a></h5>
 
