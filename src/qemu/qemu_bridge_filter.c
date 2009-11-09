@@ -44,7 +44,6 @@ networkAddEbtablesRules(struct qemud_driver *driver) {
                              __FILE__);
         return err;
     }
-    ebtablesSaveRules(driver->ebtables);
 
     return 0;
 }

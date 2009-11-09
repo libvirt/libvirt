@@ -65,12 +65,6 @@ enum {
 };
 
 static void
-ebtRulesSave(ebtRules *rules)
-{
-    (void) rules;
-}
-
-static void
 ebtRuleFree(ebtRule *rule)
 {
     VIR_FREE(rule->rule);
@@ -313,22 +307,6 @@ ebtablesContextFree(ebtablesContext *ctx)
     if (ctx->nat_postrouting)
         ebtRulesFree(ctx->nat_postrouting);
     VIR_FREE(ctx);
-}
-
-/**
- * ebtablesSaveRules:
- * @ctx: pointer to the EB table context
- *
- * Saves all the EB table rules associated with a context
- * to disk so that if ebtables is restarted, the rules
- * will automatically be reload.
- */
-void
-ebtablesSaveRules(ebtablesContext *ctx)
-{
-    ebtRulesSave(ctx->input_filter);
-    ebtRulesSave(ctx->forward_filter);
-    ebtRulesSave(ctx->nat_postrouting);
 }
 
 int

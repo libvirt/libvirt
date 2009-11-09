@@ -180,7 +180,6 @@ ebtablesAddForwardAllowIn;
 ebtablesAddForwardPolicyReject;
 ebtablesContextNew;
 ebtablesRemoveForwardAllowIn;
-ebtablesSaveRules;
 
 
 # event.h
