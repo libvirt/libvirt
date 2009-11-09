@@ -789,28 +789,87 @@ qemu-kvm -net nic,model=? /dev/null
         &lt;/devices&gt;
       &lt;/domain&gt;</pre>
 
+    <p>
+      In each of these directives, the top-level element name (parallel, serial,
+      console, channel) describes how the device is presented to the guest. The
+      guest interface is configured by the <code>target</code> element.
+    </p>
 
-    <dl>
-      <dt><code>parallel</code></dt>
-      <dd>Represents a parallel port</dd>
-      <dt><code>serial</code></dt>
-      <dd>Represents a serial port</dd>
-      <dt><code>console</code></dt>
-      <dd>Represents the primary console. This can be the paravirtualized
-        console with Xen guests, or duplicates the primary serial port
-        for fully virtualized guests without a paravirtualized console.</dd>
-      <dt><code>source</code></dt>
-      <dd>The attributes available for the <code>source</code> element
-        vary according to the <code>type</code> attribute on the parent
-        tag. Allowed variations will be described below</dd>
-      <dt><code>target</code></dt>
-      <dd>The port number of the character device is specified via the
-        <code>port</code> attribute, numbered starting from 1. There is
-        usually only one console device, and 0, 1 or 2 serial devices
-        or parallel devices.
-    </dl>
+    <p>
+      The interface presented to the host is given in the <code>type</code>
+      attribute of the top-level element. The host interface is
+      configured by the <code>source</code> element.
+    </p>
 
-    <h5><a name="elementsCharSTDIO">Domain logfile</a></h5>
+    <h5><a name="elementsCharGuestInterface">Guest interface</a></h5>
+
+    <p>
+      A character device presents itself to the guest as one of the following
+      types.
+    </p>
+
+    <h6><a name="elementCharParallel">Parallel port</a></h6>
+
+    <pre>
+      ...
+      &lt;parallel type='pty'&gt;
+        &lt;source path='/dev/pts/2'/&gt;
+        &lt;target port='0'/&gt;
+      &lt;/parallel&gt;
+      ...</pre>
+
+    <p>
+      <code>target</code> can have a <code>port</code> attribute, which
+      specifies the port number. Ports are numbered starting from 1. There are
+      usually 0, 1 or 2 parallel ports.
+    </p>
+
+    <h6><a name="elementCharSerial">Serial port</a></h6>
+
+    <pre>
+      ...
+      &lt;serial type='pty'&gt;
+        &lt;source path='/dev/pts/3'/&gt;
+        &lt;target port='0'/&gt;
+      &lt;/serial&gt;
+      ...</pre>
+
+    <p>
+      <code>target</code> can have a <code>port</code> attribute, which
+      specifies the port number. Ports are numbered starting from 1. There are
+      usually 0, 1 or 2 serial ports.
+    </p>
+
+    <h6><a name="elementCharConsole">Console</a></h6>
+
+    <p>
+      This represents the primary console. This can be the paravirtualized
+      console with Xen guests, or duplicates the primary serial port for fully
+      virtualized guests without a paravirtualized console.
+    </p>
+
+    <pre>
+      ...
+      &lt;console type='pty'&gt;
+        &lt;source path='/dev/pts/4'/&gt;
+        &lt;target port='0'/&gt;
+      &lt;/console&gt;
+      ...</pre>
+
+    <p>
+      If the console is presented as a serial port, the <code>target</code>
+      element has the same attributes as for a serial port. There is usually
+      only 1 console.
+    </p>
+
+    <h5><a name="elementsCharHostInterface">Host interface</a></h5>
+
+    <p>
+      A character device presents itself to the host as one of the following
+      types.
+    </p>
+
+    <h6><a name="elementsCharSTDIO">Domain logfile</a></h6>
 
     <p>
       This disables all input on the character device, and sends output
@@ -825,7 +884,7 @@ qemu-kvm -net nic,model=? /dev/null
       ...</pre>
 
 
-    <h5><a name="elementsCharFle">Device logfile</a></h5>
+    <h6><a name="elementsCharFle">Device logfile</a></h6>
 
     <p>
       A file is opened and all data sent to the character
@@ -840,7 +899,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharVC">Virtual console</a></h5>
+    <h6><a name="elementsCharVC">Virtual console</a></h6>
 
     <p>
       Connects the character device to the graphical framebuffer in
@@ -855,7 +914,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharNull">Null device</a></h5>
+    <h6><a name="elementsCharNull">Null device</a></h6>
 
     <p>
       Connects the character device to the void. No data is ever
@@ -869,7 +928,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharPTY">Pseudo TTY</a></h5>
+    <h6><a name="elementsCharPTY">Pseudo TTY</a></h6>
 
     <p>
       A Pseudo TTY is allocated using /dev/ptmx. A suitable client
@@ -892,7 +951,7 @@ qemu-kvm -net nic,model=? /dev/null
       with existing syntax for &lt;console&gt; tags.
     </p>
 
-    <h5><a name="elementsCharHost">Host device proxy</a></h5>
+    <h6><a name="elementsCharHost">Host device proxy</a></h6>
 
     <p>
       The character device is passed through to the underlying
@@ -910,7 +969,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharPipe">Named pipe</a></h5>
+    <h6><a name="elementsCharPipe">Named pipe</a></h6>
 
     <p>
       The character device writes output to a named pipe. See pipe(7) for
@@ -925,7 +984,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharTCP">TCP client/server</a></h5>
+    <h6><a name="elementsCharTCP">TCP client/server</a></h6>
 
     <p>
       The character device acts as a TCP client connecting to a
@@ -973,7 +1032,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharUDP">UDP network console</a></h5>
+    <h6><a name="elementsCharUDP">UDP network console</a></h6>
 
     <p>
       The character device acts as a UDP netconsole service,
@@ -989,7 +1048,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;/serial&gt;
       ...</pre>
 
-    <h5><a name="elementsCharUNIX">UNIX domain socket client/server</a></h5>
+    <h6><a name="elementsCharUNIX">UNIX domain socket client/server</a></h6>
 
     <p>
       The character device acts as a UNIX domain socket server,
