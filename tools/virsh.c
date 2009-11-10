@@ -4627,8 +4627,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (format) {
         virBufferAddLit(&buf, "  <target>\n");
-        if (format)
-            virBufferVSprintf(&buf, "    <format type='%s'/>\n",format);
+        virBufferVSprintf(&buf, "    <format type='%s'/>\n",format);
         virBufferAddLit(&buf, "  </target>\n");
     }
     virBufferAddLit(&buf, "</volume>\n");
@@ -6835,6 +6834,7 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     if (fd == -1) {
         vshError(ctl, _("mkstemp: failed to create temporary file: %s"),
                  strerror(errno));
+        free (ret);
         return NULL;
     }
 
@@ -7675,7 +7675,7 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by UUID */
-    if (network==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
+    if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
         vshDebug(ctl, 5, "%s: <%s> trying as network UUID\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(ctl->conn, n);
@@ -7715,7 +7715,7 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by NAME */
-    if ((iface == NULL) && (flag & VSH_BYNAME)) {
+    if ((flag & VSH_BYNAME)) {
         vshDebug(ctl, 5, "%s: <%s> trying as interface NAME\n",
                  cmd->def->name, optname);
         iface = virInterfaceLookupByName(ctl->conn, n);
@@ -7752,13 +7752,13 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
         *name = n;
 
     /* try it by UUID */
-    if (pool==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
+    if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
         vshDebug(ctl, 5, "%s: <%s> trying as pool UUID\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
-    if (pool==NULL && (flag & VSH_BYNAME)) {
+    if (pool == NULL && (flag & VSH_BYNAME)) {
         vshDebug(ctl, 5, "%s: <%s> trying as pool NAME\n",
                  cmd->def->name, optname);
         pool = virStoragePoolLookupByName(ctl->conn, n);

@@ -359,7 +359,6 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
                          void *opaque) {
     struct qemud_server *server = (struct qemud_server *)opaque;
     siginfo_t siginfo;
-    int ret;
 
     virMutexLock(&server->lock);
 
@@ -370,8 +369,6 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
         virMutexUnlock(&server->lock);
         return;
     }
-
-    ret = 0;
 
     switch (siginfo.si_signo) {
     case SIGHUP:
@@ -391,9 +388,6 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
         VIR_INFO(_("Received unexpected signal %d"), siginfo.si_signo);
         break;
     }
-
-    if (ret != 0)
-        server->quitEventThread = 1;
 
     virMutexUnlock(&server->lock);
 }
