@@ -101,6 +101,12 @@ phypOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
+    if (conn->uri->user == NULL) {
+        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("Missing username in phyp:// URI"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
     if (VIR_ALLOC(phyp_driver) < 0) {
         virReportOOMError(conn);
         goto failure;
@@ -225,10 +231,31 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     const char *password = NULL;
     int sock;
     int rc;
-
     struct addrinfo *ai = NULL, *cur;
     struct addrinfo hints;
     int ret;
+    char *pubkey = NULL;
+    char *pvtkey = NULL;
+    char *userhome = virGetUserDirectory(NULL, geteuid());
+    struct stat pvt_stat, pub_stat;
+    int i;
+    int hasPassphrase = 0;
+    virConnectCredential creds[] = {
+        {VIR_CRED_PASSPHRASE, "password", "Password", NULL, NULL, 0},
+    };
+
+    if (userhome == NULL)
+        goto err;
+
+    if (virAsprintf(&pubkey, "%s/.ssh/id_rsa.pub", userhome) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
+
+    if (virAsprintf(&pvtkey, "%s/.ssh/id_rsa", userhome) < 0) {
+        virReportOOMError(conn);
+        goto err;
+    }
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV;
@@ -280,21 +307,20 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     /* Trying authentication by pubkey */
+    if (stat(pvtkey, &pvt_stat) || stat(pubkey, &pub_stat))
+        goto keyboard_interactive;
+
     while ((rc =
             libssh2_userauth_publickey_fromfile(session, username,
-                                                "/home/user/"
-                                                ".ssh/id_rsa.pub",
-                                                "/home/user/"
-                                                ".ssh/id_rsa",
-                                                password)) ==
+                                                pubkey,
+                                                pvtkey,
+                                                NULL)) ==
            LIBSSH2_ERROR_EAGAIN) ;
-    if (rc) {
-        int i;
-        int hasPassphrase = 0;
 
-        virConnectCredential creds[] = {
-            {VIR_CRED_PASSPHRASE, "password", "Password", NULL, NULL, 0},
-        };
+    if (rc == LIBSSH2_ERROR_SOCKET_NONE
+        || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
+        || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
+  keyboard_interactive:
 
         if (!auth || !auth->cb) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
@@ -341,15 +367,29 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
             goto disconnect;
         } else
             goto exit;
+
+    } else if (rc == LIBSSH2_ERROR_NONE) {
+        goto exit;
+
+    } else if (rc == LIBSSH2_ERROR_ALLOC || rc == LIBSSH2_ERROR_SOCKET_SEND
+               || rc == LIBSSH2_ERROR_SOCKET_TIMEOUT) {
+        goto err;
     }
+
   disconnect:
     libssh2_session_disconnect(session, "Disconnecting...");
     libssh2_session_free(session);
   err:
+    VIR_FREE(userhome);
+    VIR_FREE(pubkey);
+    VIR_FREE(pvtkey);
     VIR_FREE(password);
     return NULL;
 
   exit:
+    VIR_FREE(userhome);
+    VIR_FREE(pubkey);
+    VIR_FREE(pvtkey);
     VIR_FREE(password);
     return session;
 }
