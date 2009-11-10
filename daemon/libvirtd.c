@@ -2939,7 +2939,7 @@ libvirt management daemon:\n\
 \n\
   Default paths:\n\
 \n\
-    Configuration file (unless overridden by -c):\n\
+    Configuration file (unless overridden by -f):\n\
       " SYSCONF_DIR "/libvirt/libvirtd.conf\n\
 \n\
     Sockets (as root):\n\
