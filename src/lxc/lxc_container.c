@@ -753,6 +753,7 @@ static int lxcContainerChild( void *data )
         virReportSystemError(NULL, errno,
                              _("Failed to open tty %s"),
                              ttyPath);
+        VIR_FREE(ttyPath);
         return -1;
     }
     VIR_FREE(ttyPath);

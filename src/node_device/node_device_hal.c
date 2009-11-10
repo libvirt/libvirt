@@ -364,7 +364,7 @@ static int gather_capabilities(LibHalContext *ctx, const char *udi,
 {
     char *bus_name = NULL;
     virNodeDevCapsDefPtr caps = NULL;
-    char **hal_cap_names;
+    char **hal_cap_names = NULL;
     int rv, i;
 
     if (STREQ(udi, "/org/freedesktop/Hal/devices/computer")) {
@@ -778,11 +778,6 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     virNodeDeviceObjListFree(&driverState->devs);
     if (hal_ctx)
         (void)libhal_ctx_free(hal_ctx);
-    if (udi) {
-        for (i = 0; i < num_devs; i++)
-            VIR_FREE(udi[i]);
-        VIR_FREE(udi);
-    }
     nodeDeviceUnlock(driverState);
     VIR_FREE(driverState);
 

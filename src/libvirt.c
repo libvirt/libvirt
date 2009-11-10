@@ -1122,7 +1122,7 @@ do_open (const char *name,
               (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
-            if (0 && STREQ(virStorageDriverTab[i]->name, "remote")) {
+            if (STREQ(virStorageDriverTab[i]->name, "remote")) {
                 virLibConnWarning (NULL, VIR_WAR_NO_STORAGE,
                                    "Is the daemon running ?");
             }

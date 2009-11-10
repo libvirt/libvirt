@@ -80,7 +80,8 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
                 backend->startPool(NULL, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 storageLog("Failed to autostart storage pool '%s': %s",
-                           pool->def->name, err ? err->message : NULL);
+                           pool->def->name, err ? err->message :
+                           "no error message found");
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -90,7 +91,8 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
                 if (backend->stopPool)
                     backend->stopPool(NULL, pool);
                 storageLog("Failed to autostart storage pool '%s': %s",
-                           pool->def->name, err ? err->message : NULL);
+                           pool->def->name, err ? err->message :
+                           "no error message found");
                 virStoragePoolObjUnlock(pool);
                 continue;
             }

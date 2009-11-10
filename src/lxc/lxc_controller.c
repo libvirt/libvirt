@@ -501,7 +501,7 @@ lxcControllerRun(virDomainDefPtr def,
 {
     int rc = -1;
     int control[2] = { -1, -1};
-    int containerPty;
+    int containerPty = -1;
     char *containerPtyPath;
     pid_t container = -1;
     virDomainFSDefPtr root;
@@ -734,7 +734,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    if (getuid() && 0) {
+    if (getuid() != 0) {
         fprintf(stderr, "%s: must be run as the 'root' user\n", argv[0]);
         goto cleanup;
     }

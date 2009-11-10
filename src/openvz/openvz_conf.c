@@ -329,12 +329,14 @@ openvz_replace(const char* str,
                const char* to) {
     const char* offset = NULL;
     const char* str_start = str;
-    int to_len = strlen(to);
-    int from_len = strlen(from);
+    int to_len;
+    int from_len;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if(!from)
+    if ((!from) || (!to))
         return NULL;
+    from_len = strlen(from);
+    to_len = strlen(to);
 
     while((offset = strstr(str_start, from)))
     {

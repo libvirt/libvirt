@@ -440,9 +440,6 @@ sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
     for (token = strsep(&ptr, "/"); token; token = strsep(&ptr, "/")) {
         const struct sexpr *i;
 
-        if (token == NULL)
-            continue;
-
         sexpr = sexpr->u.s.cdr;
         for (i = sexpr; i->kind != SEXPR_NIL; i = i->u.s.cdr) {
             if (i->kind != SEXPR_CONS ||

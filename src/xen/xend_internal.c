@@ -1369,16 +1369,14 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
                 goto no_memory;
         }
 
-        if (connectPort) {
-            if (connectHost) {
-                virBufferVSprintf(buf,
-                                  "      <source mode='connect' host='%s' service='%s'/>\n",
-                                  connectHost, connectPort);
-            } else {
-                virBufferVSprintf(buf,
-                                  "      <source mode='connect' service='%s'/>\n",
-                                  connectPort);
-            }
+        if (connectHost) {
+            virBufferVSprintf(buf,
+                              "      <source mode='connect' host='%s' service='%s'/>\n",
+                              connectHost, connectPort);
+        } else {
+            virBufferVSprintf(buf,
+                              "      <source mode='connect' service='%s'/>\n",
+                              connectPort);
         }
         if (bindPort) {
             if (bindHost) {

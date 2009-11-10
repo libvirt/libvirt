@@ -1180,9 +1180,9 @@ qemudReadLogOutput(virConnectPtr conn,
         usleep(100*1000);
         retries--;
     }
-    if (retries == 0)
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Timed out while reading %s log output"), what);
+
+    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("Timed out while reading %s log output"), what);
     return -1;
 }
 
@@ -4635,6 +4635,7 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         newdisk->src = NULL;
         origdisk->type = newdisk->type;
     }
+    VIR_FREE(devname);
 
     return ret;
 }

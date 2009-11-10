@@ -937,9 +937,10 @@ doRemoteOpen (virConnectPtr conn,
         if (priv->pid > 0) {
             pid_t reap;
             do {
+retry:
                 reap = waitpid(priv->pid, NULL, 0);
                 if (reap == -1 && errno == EINTR)
-                    continue;
+                    goto retry;
             } while (reap != -1 && reap != priv->pid);
         }
 #endif
@@ -1400,9 +1401,10 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     if (priv->pid > 0) {
         pid_t reap;
         do {
+retry:
             reap = waitpid(priv->pid, NULL, 0);
             if (reap == -1 && errno == EINTR)
-                continue;
+                goto retry;
         } while (reap != -1 && reap != priv->pid);
     }
 #endif

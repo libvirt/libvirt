@@ -576,8 +576,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
     virHashRemoveSet(priv->configCache, xenXMConfigReaper, xenXMConfigFree, &args);
     ret = 0;
 
-    if (dh)
-        closedir(dh);
+    closedir(dh);
 
     return (ret);
 }
@@ -2229,8 +2228,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
     if (xenXMConfigSetInt(conf, "vcpus", def->vcpus) < 0)
         goto no_memory;
 
-    if (def->cpumask &&
-        !(cpus = virDomainCpuSetFormat(conn, def->cpumask, def->cpumasklen)) < 0)
+    if ((def->cpumask != NULL) &&
+        ((cpus = virDomainCpuSetFormat(conn, def->cpumask,
+                                       def->cpumasklen)) == NULL))
         goto cleanup;
 
     if (cpus &&
