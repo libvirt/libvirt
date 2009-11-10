@@ -1,5 +1,6 @@
 #
-# General private symbols. See Makefile.am.
+# General private symbols. Add symbols here, and see Makefile.am for
+# more details.
 #
 
 
