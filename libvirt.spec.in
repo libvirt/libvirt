@@ -72,6 +72,10 @@
 %define with_xen 0
 %endif
 
+# Numactl is not available on s390[x]
+%ifarch s390 s390x
+%define with_numactl 0
+%endif
 
 # RHEL doesn't ship OpenVZ, VBox, UML, OpenNebula, PowerHypervisor or ESX
 %if 0%{?rhel}
