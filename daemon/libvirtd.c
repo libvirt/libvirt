@@ -615,6 +615,21 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
         int opt = 1;
         setsockopt (fds[*nfds_r], SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt);
 
+#ifdef IPV6_V6ONLY
+        if (runp->ai_family == PF_INET6) {
+            int on = 1;
+            /*
+             * Normally on Linux an INET6 socket will bind to the INET4
+             * address too. If getaddrinfo returns results with INET4
+             * first though, this will result in INET6 binding failing.
+             * We can trivially cope with multiple server sockets, so
+             * we force it to only listen on IPv6
+             */
+            setsockopt(fds[*nfds_r], IPPROTO_IPV6,IPV6_V6ONLY,
+                       (void*)&on, sizeof on);
+        }
+#endif
+
         if (bind (fds[*nfds_r], runp->ai_addr, runp->ai_addrlen) == -1) {
             if (errno != EADDRINUSE) {
                 VIR_ERROR(_("bind: %s"), virStrerror (errno, ebuf, sizeof ebuf));
