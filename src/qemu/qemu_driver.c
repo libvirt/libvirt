@@ -3347,6 +3347,7 @@ static int qemudDomainSave(virDomainPtr dom,
     char *xml = NULL;
     struct qemud_save_header header;
     int ret = -1;
+    int rc;
     virDomainEventPtr event = NULL;
 
     memset(&header, 0, sizeof(header));
@@ -3435,11 +3436,24 @@ static int qemudDomainSave(virDomainPtr dom,
     }
     fd = -1;
 
+    if (driver->privileged &&
+        chown(path, driver->user, driver->group) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("unable to set ownership of '%s' to user %d:%d"),
+                             path, driver->user, driver->group);
+        goto endjob;
+    }
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSavedStateLabel &&
+        driver->securityDriver->domainSetSavedStateLabel(dom->conn, vm, path) == -1)
+        goto endjob;
+
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
         qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitor(vm);
-        ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
+        rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
         qemuDomainObjExitMonitor(vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
@@ -3450,12 +3464,27 @@ static int qemudDomainSave(virDomainPtr dom,
             NULL
         };
         qemuDomainObjEnterMonitor(vm);
-        ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
+        rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
         qemuDomainObjExitMonitor(vm);
     }
 
-    if (ret < 0)
+    if (rc < 0)
         goto endjob;
+
+    if (driver->privileged &&
+        chown(path, 0, 0) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("unable to set ownership of '%s' to user %d:%d"),
+                             path, 0, 0);
+        goto endjob;
+    }
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSavedStateLabel &&
+        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, path) == -1)
+        goto endjob;
+
+    ret = 0;
 
     /* Shut it down */
     qemudShutdownVMDaemon(dom->conn, driver, vm);

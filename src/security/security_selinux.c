@@ -523,6 +523,7 @@ done:
     return ret;
 }
 
+
 static int
 SELinuxRestoreSecurityPCILabel(virConnectPtr conn,
                                pciDevice *dev ATTRIBUTE_UNUSED,
@@ -623,6 +624,26 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
     return rc;
 }
 
+
+static int
+SELinuxSetSavedStateLabel(virConnectPtr conn,
+                          virDomainObjPtr vm,
+                          const char *savefile)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    return SELinuxSetFilecon(conn, savefile, secdef->imagelabel);
+}
+
+
+static int
+SELinuxRestoreSavedStateLabel(virConnectPtr conn,
+                              const char *savefile)
+{
+    return SELinuxRestoreSecurityFileLabel(conn, savefile);
+}
+
+
 static int
 SELinuxSecurityVerify(virConnectPtr conn, virDomainDefPtr def)
 {
@@ -692,4 +713,6 @@ virSecurityDriver virSELinuxSecurityDriver = {
     .domainSetSecurityLabel     = SELinuxSetSecurityLabel,
     .domainSetSecurityHostdevLabel = SELinuxSetSecurityHostdevLabel,
     .domainRestoreSecurityHostdevLabel = SELinuxRestoreSecurityHostdevLabel,
+    .domainSetSavedStateLabel = SELinuxSetSavedStateLabel,
+    .domainRestoreSavedStateLabel = SELinuxRestoreSavedStateLabel,
 };
