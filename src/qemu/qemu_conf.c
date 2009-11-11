@@ -322,7 +322,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
     p = virConfGetValue (conf, "mac_filter");
     CHECK_TYPE ("mac_filter", VIR_CONF_LONG);
-    if (p) {
+    if (p && p->l) {
         driver->macFilter = p->l;
         if (!(driver->ebtables = ebtablesContextNew("qemu"))) {
             driver->macFilter = 0;
