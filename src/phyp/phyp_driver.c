@@ -2174,8 +2174,8 @@ waitsocket(int socket_fd, LIBSSH2_SESSION * session)
     fd_set *readfd = NULL;
     int dir;
 
-    timeout.tv_sec = 10;
-    timeout.tv_usec = 0;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 1000;
 
     FD_ZERO(&fd);
 
