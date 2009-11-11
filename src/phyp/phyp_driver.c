@@ -255,11 +255,6 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     char *pvtkey = NULL;
     char *userhome = virGetUserDirectory(NULL, geteuid());
     struct stat pvt_stat, pub_stat;
-    int i;
-    int hasPassphrase = 0;
-    virConnectCredential creds[] = {
-        {VIR_CRED_PASSPHRASE, "password", "Password", NULL, NULL, 0},
-    };
 
     if (userhome == NULL)
         goto err;
@@ -324,8 +319,10 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     /* Trying authentication by pubkey */
-    if (stat(pvtkey, &pvt_stat) || stat(pubkey, &pub_stat))
+    if (stat(pvtkey, &pvt_stat) || stat(pubkey, &pub_stat)) {
+        rc = LIBSSH2_ERROR_SOCKET_NONE;
         goto keyboard_interactive;
+    }
 
     while ((rc =
             libssh2_userauth_publickey_fromfile(session, username,
@@ -334,10 +331,16 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
                                                 NULL)) ==
            LIBSSH2_ERROR_EAGAIN) ;
 
+  keyboard_interactive:
     if (rc == LIBSSH2_ERROR_SOCKET_NONE
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
-  keyboard_interactive:
+        int i;
+        int hasPassphrase = 0;
+
+        virConnectCredential creds[] = {
+            {VIR_CRED_PASSPHRASE, "password", "Password", NULL, NULL, 0},
+        };
 
         if (!auth || !auth->cb) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
