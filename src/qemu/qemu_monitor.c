@@ -179,7 +179,7 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
     if (mon->msg && mon->msg->txOffset == mon->msg->txLength)
         msg = mon->msg;
 
-    VIR_DEBUG("Process %d", mon->bufferOffset);
+    VIR_DEBUG("Process %d", (int)mon->bufferOffset);
     len = qemuMonitorTextIOProcess(mon,
                                    mon->buffer, mon->bufferOffset,
                                    msg);
@@ -196,7 +196,7 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
         VIR_FREE(mon->buffer);
         mon->bufferOffset = mon->bufferLength = 0;
     }
-    VIR_DEBUG("Process done %d used %d", mon->bufferOffset, len);
+    VIR_DEBUG("Process done %d used %d", (int)mon->bufferOffset, len);
     if (msg && msg->finished)
         virCondBroadcast(&mon->notify);
     return len;
@@ -319,7 +319,7 @@ qemuMonitorIORead(qemuMonitorPtr mon)
         mon->buffer[mon->bufferOffset] = '\0';
     }
 
-    VIR_DEBUG("Now read %d bytes of data", mon->bufferOffset);
+    VIR_DEBUG("Now read %d bytes of data", (int)mon->bufferOffset);
 
     return ret;
 }

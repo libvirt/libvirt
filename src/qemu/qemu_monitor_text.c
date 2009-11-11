@@ -172,7 +172,7 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     /* Don't print raw data in debug because its full of control chars */
     /*VIR_DEBUG("Process data %d byts of data [%s]", len - used, data + used);*/
-    VIR_DEBUG("Process data %d byts of data", len - used);
+    VIR_DEBUG("Process data %d byts of data", (int)(len - used));
 
     /* Look for a non-zero reply followed by prompt */
     if (msg && !msg->finished) {
