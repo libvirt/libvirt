@@ -63,7 +63,8 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "virtio",
               "xen",
               "usb",
-              "uml")
+              "uml",
+              "sata")
 
 
 VIR_ENUM_DECL(qemuDiskCacheV1)
