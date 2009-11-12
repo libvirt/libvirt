@@ -1301,9 +1301,47 @@ xenUnifiedDomainMigrateFinish (virConnectPtr dconn,
                                const char *cookie ATTRIBUTE_UNUSED,
                                int cookielen ATTRIBUTE_UNUSED,
                                const char *uri ATTRIBUTE_UNUSED,
-                               unsigned long flags ATTRIBUTE_UNUSED)
+                               unsigned long flags)
 {
-    return xenUnifiedDomainLookupByName (dconn, dname);
+    virDomainPtr dom = NULL;
+    char *domain_xml = NULL;
+    virDomainPtr dom_new = NULL;
+
+    dom = xenUnifiedDomainLookupByName (dconn, dname);
+    if (! dom) {
+        return NULL;
+    }
+
+    if (flags & VIR_MIGRATE_PERSIST_DEST) {
+        domain_xml = xenDaemonDomainDumpXML (dom, 0, NULL);
+        if (! domain_xml) {
+            xenUnifiedError(dconn, VIR_ERR_MIGRATE_PERSIST_FAILED,
+                            _("failed to get XML representation of migrated domain"));
+            goto failure;
+        }
+
+        dom_new = xenDaemonDomainDefineXML (dconn, domain_xml);
+        if (! dom_new) {
+            xenUnifiedError (dconn, VIR_ERR_MIGRATE_PERSIST_FAILED,
+                             _("failed to define domain on destination host"));
+            goto failure;
+        }
+
+        /* Free additional reference added by Define */
+        virDomainFree (dom_new);
+    }
+
+    VIR_FREE (domain_xml);
+
+    return dom;
+
+
+failure:
+    virDomainFree (dom);
+
+    VIR_FREE (domain_xml);
+
+    return NULL;
 }
 
 static int

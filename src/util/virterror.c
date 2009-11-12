@@ -1101,6 +1101,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Timed out during operation: %s");
             break;
+        case VIR_ERR_MIGRATE_PERSIST_FAILED:
+            if (info == NULL)
+                errmsg = _("Failed to make domain persistent after migration");
+            else
+                errmsg = _("Failed to make domain persistent after migration: %s");
+            break;
     }
     return (errmsg);
 }

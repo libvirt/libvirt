@@ -4396,6 +4396,8 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     int ret;
     char *p, *hostname = NULL;
 
+    int undefined_source = 0;
+
     /* Xen doesn't support renaming domains during migration. */
     if (dname) {
         virXendError (conn, VIR_ERR_NO_SUPPORT,
@@ -4414,11 +4416,24 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         return -1;
     }
 
-    /* Check the flags. */
+    /*
+     * Check the flags.
+     */
     if ((flags & VIR_MIGRATE_LIVE)) {
         strcpy (live, "1");
         flags &= ~VIR_MIGRATE_LIVE;
     }
+
+    /* Undefine the VM on the source host after migration? */
+    if (flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
+       undefined_source = 1;
+       flags &= ~VIR_MIGRATE_UNDEFINE_SOURCE;
+    }
+
+    /* Ignore the persist_dest flag here */
+    if (flags & VIR_MIGRATE_PERSIST_DEST)
+        flags &= ~VIR_MIGRATE_PERSIST_DEST;
+
     /* XXX we could easily do tunnelled & peer2peer migration too
        if we want to. support these... */
     if (flags != 0) {
@@ -4503,6 +4518,9 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
                    "resource", "0", /* required, xend ignores it */
                    NULL);
     VIR_FREE (hostname);
+
+    if (ret == 0 && undefined_source)
+        xenDaemonDomainUndefine (domain);
 
     DEBUG0("migration done");
 
