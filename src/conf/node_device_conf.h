@@ -41,6 +41,7 @@ enum virNodeDevCapType {
     VIR_NODE_DEV_CAP_USB_INTERFACE,	/* USB interface */
     VIR_NODE_DEV_CAP_NET,		/* Network device */
     VIR_NODE_DEV_CAP_SCSI_HOST,		/* SCSI Host Bus Adapter */
+    VIR_NODE_DEV_CAP_SCSI_TARGET,	/* SCSI Target */
     VIR_NODE_DEV_CAP_SCSI,		/* SCSI device */
     VIR_NODE_DEV_CAP_STORAGE,		/* Storage device */
     VIR_NODE_DEV_CAP_LAST
@@ -132,6 +133,9 @@ struct _virNodeDevCapsDef {
             char *wwpn;
             unsigned flags;
         } scsi_host;
+        struct {
+            char *name;
+        } scsi_target;
         struct {
             unsigned host;
             unsigned bus;

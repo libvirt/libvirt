@@ -601,6 +601,32 @@ out:
 }
 
 
+static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
+                                 virNodeDeviceDefPtr def)
+{
+    int ret = -1;
+    const char *sysname = NULL;
+    union _virNodeDevCapData *data = &def->caps->data;
+
+    sysname = udev_device_get_sysname(device);
+
+    data->scsi_target.name = strdup(sysname);
+    if (data->scsi_target.name == NULL) {
+        virReportOOMError(NULL);
+        goto out;
+    }
+
+    if (udevGenerateDeviceName(device, def, NULL) != 0) {
+        goto out;
+    }
+
+    ret = 0;
+
+out:
+    return ret;
+}
+
+
 static int udevGetSCSIType(unsigned int type, char **typestring)
 {
     int ret = 0;
@@ -948,6 +974,11 @@ static int udevGetDeviceType(struct udev_device *device,
         goto out;
     }
 
+    if (devtype != NULL && STREQ(devtype, "scsi_target")) {
+        *type = VIR_NODE_DEV_CAP_SCSI_TARGET;
+        goto out;
+    }
+
     if (devtype != NULL && STREQ(devtype, "scsi_device")) {
         *type = VIR_NODE_DEV_CAP_SCSI;
         goto out;
@@ -1007,6 +1038,9 @@ static int udevGetDeviceDetails(struct udev_device *device,
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         ret = udevProcessSCSIHost(device, def);
+        break;
+    case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        ret = udevProcessSCSITarget(device, def);
         break;
     case VIR_NODE_DEV_CAP_SCSI:
         ret = udevProcessSCSIDevice(device, def);

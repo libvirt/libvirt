@@ -46,6 +46,7 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "usb",
               "net",
               "scsi_host",
+              "scsi_target",
               "scsi",
               "storage")
 
@@ -387,6 +388,12 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             }
 
             break;
+
+        case VIR_NODE_DEV_CAP_SCSI_TARGET:
+            virBufferVSprintf(&buf, "    <target>%s</target>\n",
+                              data->scsi_target.name);
+            break;
+
         case VIR_NODE_DEV_CAP_SCSI:
             virBufferVSprintf(&buf, "    <host>%d</host>\n", data->scsi.host);
             virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->scsi.bus);
@@ -659,6 +666,36 @@ out:
     ctxt->node = orignode;
     return ret;
 }
+
+
+static int
+virNodeDevCapScsiTargetParseXML(virConnectPtr conn,
+                                xmlXPathContextPtr ctxt,
+                                virNodeDeviceDefPtr def,
+                                xmlNodePtr node,
+                                union _virNodeDevCapData *data)
+{
+    xmlNodePtr orignode;
+    int ret = -1;
+
+    orignode = ctxt->node;
+    ctxt->node = node;
+
+    data->scsi_target.name = virXPathString(conn, "string(./name[1])", ctxt);
+    if (!data->scsi_target.name) {
+        virNodeDeviceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("no target name supplied for '%s'"),
+                                 def->name);
+        goto out;
+    }
+
+    ret = 0;
+
+out:
+    ctxt->node = orignode;
+    return ret;
+}
+
 
 static int
 virNodeDevCapScsiHostParseXML(virConnectPtr conn,
@@ -1064,6 +1101,9 @@ virNodeDevCapsDefParseXML(virConnectPtr conn,
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         ret = virNodeDevCapScsiHostParseXML(conn, ctxt, def, node, &caps->data, create);
         break;
+    case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        ret = virNodeDevCapScsiTargetParseXML(conn, ctxt, def, node, &caps->data);
+        break;
     case VIR_NODE_DEV_CAP_SCSI:
         ret = virNodeDevCapScsiParseXML(conn, ctxt, def, node, &caps->data);
         break;
@@ -1386,6 +1426,9 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         VIR_FREE(data->scsi_host.wwnn);
         VIR_FREE(data->scsi_host.wwpn);
+        break;
+    case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        VIR_FREE(data->scsi_target.name);
         break;
     case VIR_NODE_DEV_CAP_SCSI:
         VIR_FREE(data->scsi.type);
