@@ -341,6 +341,7 @@ virNodeDeviceHasCap;
 virNodeDeviceObjRemove;
 virNodeDevCapTypeToString;
 virNodeDeviceFindByName;
+virNodeDeviceFindBySysfsPath;
 virNodeDeviceObjListFree;
 virNodeDeviceDefFree;
 virNodeDevCapsDefFree;

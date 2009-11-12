@@ -91,6 +91,26 @@ int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap)
     return 0;
 }
 
+
+virNodeDeviceObjPtr
+virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
+                             const char *sysfs_path)
+{
+    unsigned int i;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjLock(devs->objs[i]);
+        if ((devs->objs[i]->def->sysfs_path != NULL) &&
+            (STREQ(devs->objs[i]->def->sysfs_path, sysfs_path))) {
+            return devs->objs[i];
+        }
+        virNodeDeviceObjUnlock(devs->objs[i]);
+    }
+
+    return NULL;
+}
+
+
 virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
                                             const char *name)
 {
@@ -117,6 +137,8 @@ void virNodeDeviceDefFree(virNodeDeviceDefPtr def)
     VIR_FREE(def->name);
     VIR_FREE(def->parent);
     VIR_FREE(def->driver);
+    VIR_FREE(def->sysfs_path);
+    VIR_FREE(def->parent_sysfs_path);
 
     caps = def->caps;
     while (caps) {
@@ -228,9 +250,17 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
-
-    if (def->parent)
+    if (def->sysfs_path != NULL) {
+        virBufferEscapeString(&buf, "  <sysfs_path>%s</sysfs_path>\n",
+                              def->sysfs_path);
+    }
+    if (def->parent) {
         virBufferEscapeString(&buf, "  <parent>%s</parent>\n", def->parent);
+    }
+    if (def->parent_sysfs_path != NULL) {
+        virBufferEscapeString(&buf, "  <parent_sysfs_path>%s</parent_sysfs_path>\n",
+                              def->parent_sysfs_path);
+    }
     if (def->driver) {
         virBufferAddLit(&buf, "  <driver>\n");
         virBufferEscapeString(&buf, "    <name>%s</name>\n", def->driver);
@@ -248,12 +278,6 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             if (data->system.product_name)
                 virBufferEscapeString(&buf, "    <product>%s</product>\n",
                                       data->system.product_name);
-            if (data->system.dmi_devpath)
-                virBufferEscapeString(&buf, "    <dmi_devpath>%s</dmi_devpath>\n",
-                                      data->system.dmi_devpath);
-            if (data->system.description)
-                virBufferEscapeString(&buf, "    <description>%s</description>\n",
-                                      data->system.description);
             virBufferAddLit(&buf, "    <hardware>\n");
             if (data->system.hardware.vendor_name)
                 virBufferEscapeString(&buf, "      <vendor>%s</vendor>\n",
@@ -331,9 +355,6 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                               data->usb_if.subclass);
             virBufferVSprintf(&buf, "    <protocol>%d</protocol>\n",
                               data->usb_if.protocol);
-            if (data->usb_if.interface_name)
-                virBufferVSprintf(&buf, "    <interface_name>%s</interface_name>\n",
-                                  data->usb_if.interface_name);
             if (data->usb_if.description)
                 virBufferVSprintf(&buf, "    <description>%s</description>\n",
                                   data->usb_if.description);
@@ -1340,8 +1361,6 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     switch (caps->type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
         VIR_FREE(data->system.product_name);
-        VIR_FREE(data->system.dmi_devpath);
-        VIR_FREE(data->system.description);
         VIR_FREE(data->system.hardware.vendor_name);
         VIR_FREE(data->system.hardware.version);
         VIR_FREE(data->system.hardware.serial);
@@ -1358,7 +1377,6 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->usb_dev.vendor_name);
         break;
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
-        VIR_FREE(data->usb_if.interface_name);
         VIR_FREE(data->usb_if.description);
         break;
     case VIR_NODE_DEV_CAP_NET:

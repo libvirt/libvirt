@@ -17,7 +17,8 @@ src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
 src/network/bridge_driver.c
 src/node_device/node_device_driver.c
-src/node_device/node_device_hal_linux.c
+src/node_device/node_device_linux_sysfs.c
+src/node_device/node_device_udev.c
 src/nodeinfo.c
 src/opennebula/one_conf.c
 src/opennebula/one_driver.c

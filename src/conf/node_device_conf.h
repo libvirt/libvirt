@@ -82,8 +82,6 @@ struct _virNodeDevCapsDef {
     union _virNodeDevCapData {
         struct {
             char *product_name;
-            char *description;
-            char *dmi_devpath;
             struct {
                 char *vendor_name;
                 char *version;
@@ -120,7 +118,6 @@ struct _virNodeDevCapsDef {
             unsigned _class;		/* "class" is reserved in C */
             unsigned subclass;
             unsigned protocol;
-            char *interface_name;
             char *description;
         } usb_if;
         struct {
@@ -164,7 +161,9 @@ typedef struct _virNodeDeviceDef virNodeDeviceDef;
 typedef virNodeDeviceDef *virNodeDeviceDefPtr;
 struct _virNodeDeviceDef {
     char *name;                         /* device name (unique on node) */
+    char *sysfs_path;                   /* udev name/sysfs path */
     char *parent;			/* optional parent device name */
+    char *parent_sysfs_path;            /* udev parent name/sysfs path */
     char *driver;                       /* optional driver name */
     virNodeDevCapsDefPtr caps;		/* optional device capabilities */
 };
@@ -206,6 +205,9 @@ int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
 
 virNodeDeviceObjPtr virNodeDeviceFindByName(const virNodeDeviceObjListPtr devs,
                                             const char *name);
+virNodeDeviceObjPtr
+virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
+                             const char *sysfs_path);
 
 virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
                                            virNodeDeviceObjListPtr devs,

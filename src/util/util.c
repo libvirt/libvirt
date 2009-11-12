@@ -2128,3 +2128,31 @@ void virFileWaitForDevices(virConnectPtr conn)
 void virFileWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
 #endif
 #endif
+
+int virBuildPathInternal(char **path, ...)
+{
+    char *path_component = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    va_list ap;
+    int ret = 0;
+
+    va_start(ap, *path);
+
+    path_component = va_arg(ap, char *);
+    virBufferAdd(&buf, path_component, -1);
+
+    while ((path_component = va_arg(ap, char *)) != NULL)
+    {
+        virBufferAddChar(&buf, '/');
+        virBufferAdd(&buf, path_component, -1);
+    }
+
+    va_end(ap);
+
+    *path = virBufferContentAndReset(&buf);
+    if (*path == NULL) {
+        ret = -1;
+    }
+
+    return ret;
+}

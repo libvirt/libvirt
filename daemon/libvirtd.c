@@ -877,8 +877,7 @@ static struct qemud_server *qemudInitialize(void) {
 #ifdef WITH_STORAGE_DIR
     storageRegister();
 #endif
-#if defined(WITH_NODE_DEVICES) && \
-    (defined(HAVE_HAL) || defined(HAVE_DEVKIT))
+#if defined(WITH_NODE_DEVICES)
     nodedevRegister();
 #endif
     secretRegister();

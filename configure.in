@@ -1654,7 +1654,7 @@ test "$enable_shared" = no && lt_cv_objdir=.
 LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
-dnl HAL or DeviceKit library for host device enumeration
+dnl HAL, DeviceKit, or libudev library for host device enumeration
 HAL_REQUIRED=0.0
 HAL_CFLAGS=
 HAL_LIBS=
@@ -1748,8 +1748,46 @@ AM_CONDITIONAL([HAVE_DEVKIT], [test "x$with_devkit" = "xyes"])
 AC_SUBST([DEVKIT_CFLAGS])
 AC_SUBST([DEVKIT_LIBS])
 
+UDEV_REQUIRED=145
+UDEV_CFLAGS=
+UDEV_LIBS=
+AC_ARG_WITH([udev],
+  [  --with-udev        use libudev for host device enumeration],
+  [],
+  [with_udev=check])
+
+if test "$with_libvirtd" = "no" ; then
+  with_udev=no
+fi
+if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
+  PKG_CHECK_MODULES(UDEV, libudev >= $UDEV_REQUIRED,
+    [with_udev=yes], [
+    if test "x$with_udev" = "xcheck" ; then
+       with_udev=no
+    else
+       AC_MSG_ERROR(
+         [You must install libudev-devel >= $UDEV_REQUIRED to compile libvirt])
+    fi
+  ])
+  if test "x$with_udev" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_UDEV], 1,
+      [use UDEV for host device enumeration])
+
+    old_CFLAGS=$CFLAGS
+    old_LDFLAGS=$LDFLAGS
+    CFLAGS="$CFLAGS $UDEV_CFLAGS"
+    LDFLAGS="$LDFLAGS $UDEV_LIBS"
+    AC_CHECK_FUNCS([udev_new],,[with_udev=no])
+    CFLAGS="$old_CFLAGS"
+    LDFLAGS="$old_LDFLAGS"
+  fi
+fi
+AM_CONDITIONAL([HAVE_UDEV], [test "x$with_udev" = "xyes"])
+AC_SUBST([UDEV_CFLAGS])
+AC_SUBST([UDEV_LIBS])
+
 with_nodedev=no;
-if test "$with_devkit" = "yes" -o "$with_hal" = "yes";
+if test "$with_devkit" = "yes" -o "$with_hal" = "yes" -o "$with_udev" = "yes";
 then
   with_nodedev=yes
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
@@ -1913,6 +1951,11 @@ if test "$with_devkit" = "yes" ; then
 AC_MSG_NOTICE([  devkit: $DEVKIT_CFLAGS $DEVKIT_LIBS])
 else
 AC_MSG_NOTICE([  devkit: no])
+fi
+if test "$with_udev" = "yes" ; then
+AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS])
+else
+AC_MSG_NOTICE([    udev: no])
 fi
 if test "$with_netcf" = "yes" ; then
 AC_MSG_NOTICE([   netcf: $NETCF_CFLAGS $NETCF_LIBS])

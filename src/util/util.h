@@ -248,4 +248,7 @@ char *virFileFindMountPoint(const char *type);
 
 void virFileWaitForDevices(virConnectPtr conn);
 
+#define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
+int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
+
 #endif /* __VIR_UTIL_H__ */
