@@ -742,6 +742,16 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
         goto failure;
     }
 
+    /* Populate with known devices */
+    driverState->privateData = hal_ctx;
+
+    /* We need to unlock state now, since setting these callbacks cause
+     * a dbus RPC call, and while this call is waiting for the reply,
+     * a signal may already arrive, triggering the callback and thus
+     * requiring the lock !
+     */
+    nodeDeviceUnlock(driverState);
+
     /* Register HAL event callbacks */
     if (!libhal_ctx_set_device_added(hal_ctx, device_added) ||
         !libhal_ctx_set_device_removed(hal_ctx, device_removed) ||
@@ -753,10 +763,6 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    /* Populate with known devices */
-    driverState->privateData = hal_ctx;
-
-    nodeDeviceUnlock(driverState);
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
         VIR_ERROR0("libhal_get_all_devices failed\n");
