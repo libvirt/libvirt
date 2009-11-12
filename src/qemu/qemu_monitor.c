@@ -474,6 +474,8 @@ qemuMonitorOpen(virDomainObjPtr vm,
         goto cleanup;
     }
 
+    if (mon->fd == -1) goto cleanup;
+
     if (virSetCloseExec(mon->fd) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("Unable to set monitor close-on-exec flag"));
