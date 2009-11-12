@@ -694,12 +694,11 @@ static int lxcContainerDropCapabilities(void)
         return -1;
     }
 
-    /* Need to prevent them regaining any caps on exec */
-    if ((ret = capng_lock()) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                 _("Failed to lock capabilities: %d"), ret);
-        return -1;
-    }
+    /* We do not need to call capng_lock() in this case. The bounding
+     * set restriction will prevent them reacquiring sys_boot/module/time,
+     * etc which is all that matters for the container. Once inside the
+     * container it is fine for SECURE_NOROOT / SECURE_NO_SETUID_FIXUP to
+     * be unmasked  - they can never escape the bounding set. */
 
 #else
     VIR_WARN0(_("libcap-ng support not compiled in, unable to clear capabilities"));
