@@ -5167,6 +5167,7 @@ static virDriver testDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     testGetVersion, /* version */
+    NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
     testGetMaxVCPUs, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */

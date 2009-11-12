@@ -466,6 +466,14 @@ static int remoteDispatchGetHostname(
     remote_error *err,
     void *args,
     remote_get_hostname_ret *ret);
+static int remoteDispatchGetLibVersion(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    void *args,
+    remote_get_lib_version_ret *ret);
 static int remoteDispatchGetMaxVcpus(
     struct qemud_server *server,
     struct qemud_client *client,

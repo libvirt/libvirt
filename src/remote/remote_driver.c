@@ -1550,6 +1550,30 @@ done:
     return rv;
 }
 
+static int
+remoteGetLibVersion (virConnectPtr conn, unsigned long *libVer)
+{
+    int rv = -1;
+    remote_get_lib_version_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_GET_LIB_VERSION,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_get_lib_version_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    if (libVer) *libVer = ret.lib_ver;
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static char *
 remoteGetHostname (virConnectPtr conn)
 {
@@ -8740,6 +8764,7 @@ static virDriver remote_driver = {
     remoteSupportsFeature, /* supports_feature */
     remoteType, /* type */
     remoteGetVersion, /* version */
+    remoteGetLibVersion, /* libvirtVersion */
     remoteGetHostname, /* getHostname */
     remoteGetMaxVcpus, /* getMaxVcpus */
     remoteNodeGetInfo, /* nodeGetInfo */

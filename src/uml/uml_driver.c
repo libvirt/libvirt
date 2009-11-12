@@ -1822,6 +1822,7 @@ static virDriver umlDriver = {
     NULL, /* supports_feature */
     umlGetType, /* type */
     umlGetVersion, /* version */
+    NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
     NULL, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */

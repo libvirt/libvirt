@@ -302,6 +302,10 @@ struct remote_get_version_ret {
     hyper hv_ver;
 };
 
+struct remote_get_lib_version_ret {
+    hyper lib_ver;
+};
+
 struct remote_get_hostname_ret {
     remote_nonnull_string hostname;
 };
@@ -1606,8 +1610,8 @@ enum remote_procedure {
     REMOTE_PROC_NETWORK_IS_PERSISTENT = 153,
     REMOTE_PROC_STORAGE_POOL_IS_ACTIVE = 154,
     REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
-    REMOTE_PROC_INTERFACE_IS_ACTIVE = 156
-
+    REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
+    REMOTE_PROC_GET_LIB_VERSION = 157
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

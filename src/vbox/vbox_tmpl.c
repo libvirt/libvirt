@@ -6500,6 +6500,7 @@ virDriver NAME(Driver) = {
     NULL, /* supports_feature */
     NULL, /* type */
     vboxGetVersion, /* version */
+    NULL, /* libvirtVersion (impl. in libvirt.c) */
     virGetHostname, /* getHostname */
     vboxGetMaxVcpus, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */

@@ -728,6 +728,31 @@ libvirt_virGetVersion (PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
         return Py_BuildValue ((char *) "kk", libVer, typeVer);
 }
 
+static PyObject *
+libvirt_virConnectGetLibVersion (PyObject *self ATTRIBUTE_UNUSED,
+                                     PyObject *args)
+{
+    unsigned long libVer;
+    int c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectGetLibVersion",
+                          &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
+    c_retval = virConnectGetLibVersion(conn, &libVer);
+
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == -1)
+        return VIR_PY_INT_FAIL;
+
+    return PyInt_FromLong (libVer);
+}
 
 static PyObject *
 libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
@@ -2398,6 +2423,7 @@ libvirt_virEventInvokeTimeoutCallback(PyObject *self ATTRIBUTE_UNUSED,
 static PyMethodDef libvirtMethods[] = {
 #include "libvirt-export.c"
     {(char *) "virGetVersion", libvirt_virGetVersion, METH_VARARGS, NULL},
+    {(char *) "virConnectGetLibVersion", libvirt_virConnectGetLibVersion, METH_VARARGS, NULL},
     {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},

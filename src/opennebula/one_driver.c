@@ -715,6 +715,7 @@ static virDriver oneDriver = {
     NULL, /* supports_feature */
     NULL, /* type */
     oneVersion, /* version */
+    NULL, /* libvirtVersion (impl. in libvirt.c) */
     NULL, /* getHostname */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */

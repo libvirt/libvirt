@@ -787,3 +787,8 @@
     .args_filter = (xdrproc_t) xdr_remote_interface_is_active_args,
     .ret_filter = (xdrproc_t) xdr_remote_interface_is_active_ret,
 },
+{   /* GetLibVersion => 157 */
+    .fn = (dispatch_fn) remoteDispatchGetLibVersion,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_remote_get_lib_version_ret,
+},

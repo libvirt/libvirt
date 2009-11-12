@@ -1468,6 +1468,7 @@ static virDriver openvzDriver = {
     NULL, /* supports_feature */
     openvzGetType, /* type */
     openvzGetVersion, /* version */
+    NULL, /* libvirtVersion (impl. in libvirt.c) */
     NULL, /* getHostname */
     openvzGetMaxVCPUs, /* getMaxVcpus */
     nodeGetInfo, /* nodeGetInfo */

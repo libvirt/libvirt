@@ -309,6 +309,15 @@ xdr_remote_get_version_ret (XDR *xdrs, remote_get_version_ret *objp)
 }
 
 bool_t
+xdr_remote_get_lib_version_ret (XDR *xdrs, remote_get_lib_version_ret *objp)
+{
+
+         if (!xdr_int64_t (xdrs, &objp->lib_ver))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_get_hostname_ret (XDR *xdrs, remote_get_hostname_ret *objp)
 {
 

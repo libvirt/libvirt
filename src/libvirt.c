@@ -1440,6 +1440,50 @@ error:
 }
 
 /**
+ * virConnectGetLibVersion:
+ * @conn: pointer to the hypervisor connection
+ * @libVer: returns the libvirt library version used on the connection (OUT)
+ *
+ * Provides @libVer, which is the version of libvirt used by the
+ *   daemon running on the @conn host
+ *
+ * Returns -1 in case of failure, 0 otherwise, and values for @libVer have
+ *      the format major * 1,000,000 + minor * 1,000 + release.
+ */
+int
+virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
+{
+    int ret = -1;
+    DEBUG("conn=%p, libVir=%p", conn, libVer);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (libVer == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->libvirtVersion) {
+        ret = conn->driver->libvirtVersion(conn, libVer);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+   *libVer = LIBVIR_VERSION_NUMBER;
+    ret = 0;
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(conn);
+    return ret;
+}
+
+/**
  * virConnectGetHostname:
  * @conn: pointer to a hypervisor connection
  *

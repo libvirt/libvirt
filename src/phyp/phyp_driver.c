@@ -1584,6 +1584,7 @@ virDriver phypDriver = {
     NULL,                       /* supports_feature */
     NULL,                       /* type */
     NULL,                       /* version */
+    NULL,                       /* libvirtVersion (impl. in libvirt.c) */
     NULL,                       /* getHostname */
     NULL,                       /* getMaxVcpus */
     NULL,                       /* nodeGetInfo */

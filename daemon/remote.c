@@ -259,6 +259,26 @@ remoteDispatchGetVersion (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchGetLibVersion (struct qemud_server *server ATTRIBUTE_UNUSED,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
+                             remote_message_header *hdr ATTRIBUTE_UNUSED,
+                             remote_error *rerr,
+                             void *args ATTRIBUTE_UNUSED,
+                             remote_get_lib_version_ret *ret)
+{
+    unsigned long libVer;
+
+    if (virConnectGetLibVersion (conn, &libVer) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->lib_ver = libVer;
+    return 0;
+}
+
+static int
 remoteDispatchGetHostname (struct qemud_server *server ATTRIBUTE_UNUSED,
                            struct qemud_client *client ATTRIBUTE_UNUSED,
                            virConnectPtr conn,

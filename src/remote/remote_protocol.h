@@ -179,6 +179,11 @@ struct remote_get_version_ret {
 };
 typedef struct remote_get_version_ret remote_get_version_ret;
 
+struct remote_get_lib_version_ret {
+        int64_t lib_ver;
+};
+typedef struct remote_get_lib_version_ret remote_get_lib_version_ret;
+
 struct remote_get_hostname_ret {
         remote_nonnull_string hostname;
 };
@@ -1771,6 +1776,7 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_POOL_IS_ACTIVE = 154,
         REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
         REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
+        REMOTE_PROC_GET_LIB_VERSION = 157,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1828,6 +1834,7 @@ extern  bool_t xdr_remote_supports_feature_args (XDR *, remote_supports_feature_
 extern  bool_t xdr_remote_supports_feature_ret (XDR *, remote_supports_feature_ret*);
 extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
+extern  bool_t xdr_remote_get_lib_version_ret (XDR *, remote_get_lib_version_ret*);
 extern  bool_t xdr_remote_get_hostname_ret (XDR *, remote_get_hostname_ret*);
 extern  bool_t xdr_remote_get_uri_ret (XDR *, remote_get_uri_ret*);
 extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*);
@@ -2098,6 +2105,7 @@ extern bool_t xdr_remote_supports_feature_args ();
 extern bool_t xdr_remote_supports_feature_ret ();
 extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
+extern bool_t xdr_remote_get_lib_version_ret ();
 extern bool_t xdr_remote_get_hostname_ret ();
 extern bool_t xdr_remote_get_uri_ret ();
 extern bool_t xdr_remote_get_max_vcpus_args ();

@@ -71,6 +71,9 @@ typedef const char *
 typedef int
         (*virDrvGetVersion)		(virConnectPtr conn,
                                          unsigned long *hvVer);
+typedef int
+        (*virDrvGetLibVersion)      (virConnectPtr conn,
+                                     unsigned long *libVer);
 typedef char *
     (*virDrvGetHostname)    (virConnectPtr conn);
 typedef char *
@@ -366,6 +369,7 @@ struct _virDriver {
     virDrvDrvSupportsFeature   supports_feature;
     virDrvGetType			type;
     virDrvGetVersion		version;
+    virDrvGetLibVersion		libvirtVersion;
     virDrvGetHostname       getHostname;
     virDrvGetMaxVcpus		getMaxVcpus;
     virDrvNodeGetInfo		nodeGetInfo;

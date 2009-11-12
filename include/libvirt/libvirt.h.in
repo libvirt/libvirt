@@ -489,6 +489,8 @@ int                     virConnectClose         (virConnectPtr conn);
 const char *            virConnectGetType       (virConnectPtr conn);
 int                     virConnectGetVersion    (virConnectPtr conn,
                                                  unsigned long *hvVer);
+int                     virConnectGetLibVersion (virConnectPtr conn,
+                                                 unsigned long *libVer);
 char *                  virConnectGetHostname   (virConnectPtr conn);
 char *                  virConnectGetURI        (virConnectPtr conn);
 

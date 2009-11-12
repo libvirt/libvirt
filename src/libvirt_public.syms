@@ -331,6 +331,7 @@ LIBVIRT_0.7.2 {
 
 LIBVIRT_0.7.3 {
     global:
+	virConnectGetLibVersion;
 	virConnectIsEncrypted;
 	virConnectIsSecure;
 	virDomainIsActive;
