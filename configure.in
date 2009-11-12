@@ -1781,10 +1781,19 @@ if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
     CFLAGS="$old_CFLAGS"
     LDFLAGS="$old_LDFLAGS"
   fi
+  PCIACCESS_REQUIRED=0.10.0
+  PCIACCESS_CFLAGS=
+  PCIACCESS_LIBS=
+  PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= $PCIACCESS_REQUIRED], [], [PCIACCESS_FOUND=no])
+  if test "$PCIACCESS_FOUND" = "no" ; then
+     AC_MSG_ERROR([You must install libpciaccess/libpciaccess-devel >= $PCIACCESS_REQUIRED to compile libvirt])
+   fi
 fi
 AM_CONDITIONAL([HAVE_UDEV], [test "x$with_udev" = "xyes"])
 AC_SUBST([UDEV_CFLAGS])
 AC_SUBST([UDEV_LIBS])
+AC_SUBST([PCIACCESS_CFLAGS])
+AC_SUBST([PCIACCESS_LIBS])
 
 with_nodedev=no;
 if test "$with_hal" = "yes" -o "$with_udev" = "yes";
@@ -1948,7 +1957,7 @@ else
 AC_MSG_NOTICE([     hal: no])
 fi
 if test "$with_udev" = "yes" ; then
-AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS])
+AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS $PCIACCESS_CFLAGS PCIACCESS_LIBS])
 else
 AC_MSG_NOTICE([    udev: no])
 fi

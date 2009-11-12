@@ -645,8 +645,8 @@ libvirt_driver_nodedev_la_LDFLAGS += $(HAL_LIBS)
 endif
 if HAVE_UDEV
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
-libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS)
-libvirt_driver_nodedev_la_LDFLAGS += $(UDEV_LIBS)
+libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS) $(PCIACCESS_CFLAGS)
+libvirt_driver_nodedev_la_LDFLAGS += $(UDEV_LIBS) $(PCIACCESS_LIBS)
 endif
 
 if WITH_DRIVER_MODULES

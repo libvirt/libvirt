@@ -22,6 +22,7 @@
 
 #include <config.h>
 #include <libudev.h>
+#include <pciaccess.h>
 #include <scsi/scsi.h>
 #include <c-ctype.h>
 
@@ -351,6 +352,61 @@ static void udevLogFunction(struct udev *udev ATTRIBUTE_UNUSED,
 }
 
 
+static int udevTranslatePCIIds(unsigned int vendor,
+                               unsigned int product,
+                               char **vendor_string,
+                               char **product_string)
+{
+    int ret = -1;
+    struct pci_id_match m;
+    const char *vendor_name = NULL, *device_name = NULL;
+
+    if (pci_system_init() != 0) {
+        VIR_ERROR0("Failed to initialize libpciaccess\n");
+        goto out;
+    }
+
+    m.vendor_id = vendor;
+    m.device_id = product;
+    m.subvendor_id = PCI_MATCH_ANY;
+    m.subdevice_id = PCI_MATCH_ANY;
+    m.device_class = 0;
+    m.device_class_mask = 0;
+    m.match_data = 0;
+
+    /* pci_get_strings returns void */
+    pci_get_strings(&m,
+                    &vendor_name,
+                    &device_name,
+                    NULL,
+                    NULL);
+
+    if (vendor_name != NULL) {
+        *vendor_string = strdup(vendor_name);
+        if (*vendor_string == NULL) {
+            virReportOOMError(NULL);
+            goto out;
+        }
+    }
+
+    if (device_name != NULL) {
+        *product_string = strdup(device_name);
+        if (*product_string == NULL) {
+            virReportOOMError(NULL);
+            goto out;
+        }
+    }
+
+    /* pci_system_cleanup returns void */
+    pci_system_cleanup();
+
+    ret = 0;
+
+out:
+    return ret;
+}
+
+
 static int udevProcessPCI(struct udev_device *device,
                           virNodeDeviceDefPtr def)
 {
@@ -411,8 +467,12 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    /* XXX FIXME: to do the vendor name and product name, we have to
-     * parse /usr/share/hwdata/pci.ids.  Use libpciaccess perhaps? */
+    if (udevTranslatePCIIds(data->pci_dev.vendor,
+                            data->pci_dev.product,
+                            &data->pci_dev.vendor_name,
+                            &data->pci_dev.product_name) != 0) {
+        goto out;
+    }
 
     if (udevGenerateDeviceName(device, def, NULL) != 0) {
         goto out;
