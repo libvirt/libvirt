@@ -82,6 +82,8 @@ struct _virNodeDevCapsDef {
     union _virNodeDevCapData {
         struct {
             char *product_name;
+            char *description;
+            char *dmi_devpath;
             struct {
                 char *vendor_name;
                 char *version;
@@ -101,6 +103,7 @@ struct _virNodeDevCapsDef {
             unsigned function;
             unsigned product;
             unsigned vendor;
+            unsigned class;
             char *product_name;
             char *vendor_name;
         } pci_dev;
@@ -117,10 +120,12 @@ struct _virNodeDevCapsDef {
             unsigned _class;		/* "class" is reserved in C */
             unsigned subclass;
             unsigned protocol;
+            char *interface_name;
             char *description;
         } usb_if;
         struct {
             char *address;
+            unsigned address_len;
             char *ifname;
             enum virNodeDevNetCapType subtype;  /* LAST -> no subtype */
         } net;
@@ -139,6 +144,8 @@ struct _virNodeDevCapsDef {
         } scsi;
         struct {
             unsigned long long size;
+            unsigned long long num_blocks;
+            unsigned long long logical_block_size;
             unsigned long long removable_media_size;
             char *block;
             char *bus;

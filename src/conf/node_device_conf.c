@@ -248,6 +248,12 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
             if (data->system.product_name)
                 virBufferEscapeString(&buf, "    <product>%s</product>\n",
                                       data->system.product_name);
+            if (data->system.dmi_devpath)
+                virBufferEscapeString(&buf, "    <dmi_devpath>%s</dmi_devpath>\n",
+                                      data->system.dmi_devpath);
+            if (data->system.description)
+                virBufferEscapeString(&buf, "    <description>%s</description>\n",
+                                      data->system.description);
             virBufferAddLit(&buf, "    <hardware>\n");
             if (data->system.hardware.vendor_name)
                 virBufferEscapeString(&buf, "      <vendor>%s</vendor>\n",
@@ -325,6 +331,9 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                               data->usb_if.subclass);
             virBufferVSprintf(&buf, "    <protocol>%d</protocol>\n",
                               data->usb_if.protocol);
+            if (data->usb_if.interface_name)
+                virBufferVSprintf(&buf, "    <interface_name>%s</interface_name>\n",
+                                  data->usb_if.interface_name);
             if (data->usb_if.description)
                 virBufferVSprintf(&buf, "    <description>%s</description>\n",
                                   data->usb_if.description);
@@ -394,10 +403,26 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                                   "</media_available>\n", avl ? 1 : 0);
                 virBufferVSprintf(&buf, "      <media_size>%llu</media_size>\n",
                                   data->storage.removable_media_size);
+                if (data->storage.logical_block_size > 0)
+                    virBufferVSprintf(&buf, "      <logical_block_size>%llu"
+                                      "</logical_block_size>\n",
+                                      data->storage.logical_block_size);
+                if (data->storage.num_blocks > 0)
+                    virBufferVSprintf(&buf,
+                                      "      <num_blocks>%llu</num_blocks>\n",
+                                      data->storage.num_blocks);
                 virBufferAddLit(&buf, "    </capability>\n");
             } else {
                 virBufferVSprintf(&buf, "    <size>%llu</size>\n",
                                   data->storage.size);
+                if (data->storage.logical_block_size > 0)
+                    virBufferVSprintf(&buf, "    <logical_block_size>%llu"
+                                      "</logical_block_size>\n",
+                                      data->storage.logical_block_size);
+                if (data->storage.num_blocks > 0)
+                    virBufferVSprintf(&buf,
+                                      "    <num_blocks>%llu</num_blocks>\n",
+                                      data->storage.num_blocks);
             }
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE)
                 virBufferAddLit(&buf,
@@ -1315,6 +1340,8 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     switch (caps->type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
         VIR_FREE(data->system.product_name);
+        VIR_FREE(data->system.dmi_devpath);
+        VIR_FREE(data->system.description);
         VIR_FREE(data->system.hardware.vendor_name);
         VIR_FREE(data->system.hardware.version);
         VIR_FREE(data->system.hardware.serial);
@@ -1331,6 +1358,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->usb_dev.vendor_name);
         break;
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
+        VIR_FREE(data->usb_if.interface_name);
         VIR_FREE(data->usb_if.description);
         break;
     case VIR_NODE_DEV_CAP_NET:
