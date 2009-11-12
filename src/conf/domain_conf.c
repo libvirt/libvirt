@@ -4408,7 +4408,6 @@ virDomainInputDefFormat(virConnectPtr conn,
 static int
 virDomainGraphicsDefFormat(virConnectPtr conn,
                            virBufferPtr buf,
-                           virDomainDefPtr vm,
                            virDomainGraphicsDefPtr def,
                            int flags)
 {
@@ -4425,7 +4424,7 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         if (def->data.vnc.port &&
-            (!def->data.vnc.autoport || vm->id != -1))
+            (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_XML_INACTIVE)))
             virBufferVSprintf(buf, " port='%d'",
                               def->data.vnc.port);
         else if (def->data.vnc.autoport)
@@ -4580,7 +4579,10 @@ char *virDomainDefFormat(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (def->id >= 0)
+    if (def->id == -1)
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (!(flags & VIR_DOMAIN_XML_INACTIVE))
         virBufferVSprintf(&buf, "<domain type='%s' id='%d'>\n", type, def->id);
     else
         virBufferVSprintf(&buf, "<domain type='%s'>\n", type);
@@ -4771,7 +4773,7 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
         for (n = 0 ; n < def->ngraphics ; n++)
-            if (virDomainGraphicsDefFormat(conn, &buf, def, def->graphics[n], flags) < 0)
+            if (virDomainGraphicsDefFormat(conn, &buf, def->graphics[n], flags) < 0)
                 goto cleanup;
     }
 
