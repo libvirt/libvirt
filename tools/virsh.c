@@ -523,6 +523,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     char *doc;
     char *thatHost = NULL;
     char *thisHost = NULL;
+    virDomainInfo dominfo;
 
     if (!(thisHost = virGetHostname(ctl->conn))) {
         vshError(ctl, "%s", _("Failed to get local hostname"));
@@ -536,6 +537,16 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
 
     if (STRNEQ(thisHost, thatHost)) {
         vshError(ctl, "%s", _("Cannot connect to a remote console device"));
+        goto cleanup;
+    }
+
+    if (virDomainGetInfo(dom, &dominfo) < 0) {
+        vshError(ctl, "%s", _("Unable to get domain status"));
+        goto cleanup;
+    }
+
+    if (dominfo.state == VIR_DOMAIN_SHUTOFF) {
+        vshError(ctl, "%s", _("The domain is not running"));
         goto cleanup;
     }
 
