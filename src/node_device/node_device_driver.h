@@ -42,9 +42,6 @@
 #ifdef HAVE_HAL
 int halNodeRegister(void);
 #endif
-#ifdef HAVE_DEVKIT
-int devkitNodeRegister(void);
-#endif
 #ifdef HAVE_UDEV
 int udevNodeRegister(void);
 #endif

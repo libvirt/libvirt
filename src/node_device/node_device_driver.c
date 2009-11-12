@@ -670,9 +670,6 @@ int nodedevRegister(void) {
 #ifdef HAVE_HAL
     return halNodeRegister();
 #endif
-#ifdef HAVE_DEVKIT
-    return devkitNodeRegister();
-#endif
 #ifdef HAVE_UDEV
     return udevNodeRegister();
 #endif

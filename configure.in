@@ -1787,7 +1787,7 @@ AC_SUBST([UDEV_CFLAGS])
 AC_SUBST([UDEV_LIBS])
 
 with_nodedev=no;
-if test "$with_devkit" = "yes" -o "$with_hal" = "yes" -o "$with_udev" = "yes";
+if test "$with_hal" = "yes" -o "$with_udev" = "yes";
 then
   with_nodedev=yes
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
@@ -1946,11 +1946,6 @@ if test "$with_hal" = "yes" ; then
 AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
 else
 AC_MSG_NOTICE([     hal: no])
-fi
-if test "$with_devkit" = "yes" ; then
-AC_MSG_NOTICE([  devkit: $DEVKIT_CFLAGS $DEVKIT_LIBS])
-else
-AC_MSG_NOTICE([  devkit: no])
 fi
 if test "$with_udev" = "yes" ; then
 AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS])
