@@ -48,6 +48,7 @@
 #include "event.h"
 #include "nodeinfo.h"
 #include "uuid.h"
+#include "stats_linux.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -1956,6 +1957,65 @@ cleanup:
     return ret;
 }
 
+#ifdef __linux__
+static int
+lxcDomainInterfaceStats(virDomainPtr dom,
+                        const char *path,
+                        struct _virDomainInterfaceStats *stats)
+{
+    lxc_driver_t *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int i;
+    int ret = -1;
+
+    lxcDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    lxcDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(dom->conn, dom, VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        lxcError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
+                 "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    /* Check the path is one of the domain's network interfaces. */
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        if (vm->def->nets[i]->ifname &&
+            STREQ(vm->def->nets[i]->ifname, path)) {
+            ret = 0;
+            break;
+        }
+    }
+
+    if (ret == 0)
+        ret = linuxDomainInterfaceStats(dom->conn, path, stats);
+    else
+        lxcError(dom->conn, dom, VIR_ERR_INVALID_ARG,
+                 _("Invalid path, '%s' is not a known interface"), path);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+#else
+static int
+lxcDomainInterfaceStats(virDomainPtr dom,
+                        const char *path ATTRIBUTE_UNUSED,
+                        struct _virDomainInterfaceStats *stats ATTRIBUTE_UNUSED)
+    lxcError(dom->conn, dom, VIR_ERR_NO_SUPPORT, "%s", __FUNCTION__);
+    return -1;
+}
+#endif
+
 static int lxcDomainGetAutostart(virDomainPtr dom,
                                    int *autostart) {
     lxc_driver_t *driver = dom->conn->privateData;
@@ -2325,7 +2385,7 @@ static virDriver lxcDriver = {
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
+    lxcDomainInterfaceStats, /* domainInterfaceStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
