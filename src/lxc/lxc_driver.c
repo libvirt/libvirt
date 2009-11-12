@@ -942,7 +942,8 @@ static void lxcMonitorEvent(int watch,
     }
 
 cleanup:
-    virDomainObjUnlock(vm);
+    if (vm)
+        virDomainObjUnlock(vm);
     if (event) {
         lxcDriverLock(driver);
         lxcDomainEventQueue(driver, event);
@@ -1226,7 +1227,7 @@ static int lxcVmStart(virConnectPtr conn,
              vm->monitor,
              VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
              lxcMonitorEvent,
-             driver, NULL)) < 0) {
+             vm, NULL)) < 0) {
         lxcVmTerminate(conn, driver, vm, 0);
         goto cleanup;
     }
