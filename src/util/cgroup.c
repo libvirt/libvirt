@@ -442,7 +442,7 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
     return rc;
 }
 
-static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group)
+static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group, int create)
 {
     int i;
     int rc = 0;
@@ -461,7 +461,8 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group)
 
         VIR_DEBUG("Make controller %s", path);
         if (access(path, F_OK) != 0) {
-            if (mkdir(path, 0755) < 0) {
+            if (!create ||
+                mkdir(path, 0755) < 0) {
                 rc = -errno;
                 VIR_FREE(path);
                 break;
@@ -548,7 +549,7 @@ static int virCgroupAppRoot(int privileged,
     if (rc != 0)
         goto cleanup;
 
-    rc = virCgroupMakeGroup(rootgrp, *group);
+    rc = virCgroupMakeGroup(rootgrp, *group, 1);
 
 cleanup:
     virCgroupFree(&rootgrp);
@@ -647,9 +648,8 @@ int virCgroupForDriver(const char *name,
     rc = virCgroupNew(path, group);
     VIR_FREE(path);
 
-    if (rc == 0 &&
-        create) {
-        rc = virCgroupMakeGroup(rootgrp, *group);
+    if (rc == 0) {
+        rc = virCgroupMakeGroup(rootgrp, *group, create);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -695,9 +695,8 @@ int virCgroupForDomain(virCgroupPtr driver,
     rc = virCgroupNew(path, group);
     VIR_FREE(path);
 
-    if (rc == 0 &&
-        create) {
-        rc = virCgroupMakeGroup(driver, *group);
+    if (rc == 0) {
+        rc = virCgroupMakeGroup(driver, *group, create);
         if (rc != 0)
             virCgroupFree(group);
     }
