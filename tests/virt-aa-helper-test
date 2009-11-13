@@ -155,13 +155,11 @@ testme "1" "no -u with -R" "-R"
 testme "1" "non-existent uuid" "-R -u $nonexistent_uuid"
 testme "1" "no -u with -r" "-r"
 testme "1" "old '-n' option" "-c -n foo -u $valid_uuid" "$test_xml"
-testme "1" "invalid bits" "-c -b 15 -u $valid_uuid" "$test_xml"
-testme "1" "invalid bits2" "-c -b a -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" > "$test_xml"
 testme "1" "bad disk" "-c -u $valid_uuid" "$test_xml"
 
-cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" | sed "s,</devices>,<disk type='file' device='disk'><source file='$disk2'<target dev='hda' bus='ide'/></disk></devices>,g" > "$test_xml"
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$bad_disk,g" | sed "s,</devices>,<disk type='file' device='disk'><source file='$disk2'/><target dev='hda' bus='ide'/></disk></devices>,g" > "$test_xml"
 testme "1" "bad disk2" "-c -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</devices>,<devices>,g" > "$test_xml"
@@ -173,14 +171,28 @@ testme "1" "disk in /boot" "-r -u $valid_uuid" "$test_xml"
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,/boot/initrd,g" > "$test_xml"
 testme "1" "-r with invalid -f" "-r -u $valid_uuid -f $bad_disk" "$test_xml"
 
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1</disk>,g" > "$test_xml"
+testme "1" "-c with malformed xml" "-c -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,<type arch='x86_64' machine='pc'>hvm</type>,,g" > "$test_xml"
+testme "1" "-c with no os.type" "-c -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,<type arch='x86_64' machine='pc'>hvm</type>,<type>hvm</type>,g" > "$test_xml"
+testme "1" "-c with no architecture" "-c -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,hvm</type>,hvm_invalid</type>,g" > "$test_xml"
+testme "1" "-c with invalid hvm" "-c -u $valid_uuid" "$test_xml"
+
 
 echo "Expected pass:" >$output
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" > "$test_xml"
-testme "0" "create" "-c -u $valid_uuid" "$test_xml"
-testme "0" "create with bits (32)" "-c -b 32 -u $valid_uuid" "$test_xml"
-testme "0" "create with bits (64)" "-c -b 64 -u $valid_uuid" "$test_xml"
-testme "0" "create with hvm" "-c -H hvm -u $valid_uuid" "$test_xml"
-testme "0" "create with hvm and bits" "-c -H hvm --bits 32 -u $valid_uuid" "$test_xml"
+testme "0" "create (x86_64)" "-c -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,arch='x86_64',arch='i686',g" > "$test_xml"
+testme "0" "create (i686)" "-c -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,arch='x86_64',arch='ppc',g" > "$test_xml"
+testme "0" "create (ppc)" "-c -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><disk type='file' device='disk'><source file='$disk2'/><target dev='hdb' bus='ide'/></disk>,g" > "$test_xml"
 testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml"

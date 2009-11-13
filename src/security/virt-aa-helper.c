@@ -50,6 +50,7 @@ typedef struct {
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
     char *hvm;                  /* type of hypervisor (eg hvm, xen) */
+    char *arch;                 /* machine architecture */
     int bits;                   /* bits in the guest */
     char *newdisk;              /* newly added disk */
 } vahControl;
@@ -65,6 +66,7 @@ vahDeinit(vahControl * ctl)
         virCapabilitiesFree(ctl->caps);
     free(ctl->files);
     free(ctl->hvm);
+    free(ctl->arch);
     free(ctl->newdisk);
 
     return 0;
@@ -85,8 +87,6 @@ vah_usage(void)
             "    -R | --remove                  unload profile\n"
             "    -h | --help                    this help\n"
             "    -u | --uuid <uuid>             uuid (profile name)\n"
-            "    -H | --hvm <hvm>               hypervisor type\n"
-            "    -b | --bits <bits>             architecture bits\n"
             "\n", progname);
 
     fprintf(stdout, "This command is intended to be used by libvirtd "
@@ -551,35 +551,132 @@ valid_path(const char *path, const bool readonly)
     return 0;
 }
 
+/* Called from SAX on parsing errors in the XML. */
+static void
+catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+{
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+
+    if (ctxt) {
+        if (virGetLastError() == NULL &&
+            ctxt->lastError.level == XML_ERR_FATAL &&
+            ctxt->lastError.message != NULL) {
+                char *err_str = NULL;
+                if (virAsprintf(&err_str, "XML error at line %d: %s",
+                                ctxt->lastError.line,
+                                ctxt->lastError.message) == -1)
+                    vah_error(NULL, 0, "Could not get XML error");
+                else {
+                    vah_error(NULL, 0, err_str);
+                    VIR_FREE(err_str);
+                }
+        }
+    }
+}
+
+/*
+ * Parse the xml we received to fill in the following:
+ * ctl->hvm
+ * ctl->arch
+ * ctl->bits
+ *
+ * These are suitable for setting up a virCapsPtr
+ */
+static int
+caps_mockup(vahControl * ctl, const char *xmlStr)
+{
+    int rc = -1;
+    xmlParserCtxtPtr pctxt = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr root;
+
+    /* Set up a parser context so we can catch the details of XML errors. */
+    pctxt = xmlNewParserCtxt ();
+    if (!pctxt || !pctxt->sax)
+        goto cleanup;
+    pctxt->sax->error = catchXMLError;
+
+    xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "domain.xml", NULL,
+                          XML_PARSE_NOENT | XML_PARSE_NONET |
+                          XML_PARSE_NOWARNING);
+    if (!xml) {
+        if (virGetLastError() == NULL)
+            vah_error(NULL, 0, "failed to parse xml document");
+        goto cleanup;
+    }
+
+    if ((root = xmlDocGetRootElement(xml)) == NULL) {
+        vah_error(NULL, 0, "missing root element");
+        goto cleanup;
+    }
+
+    if (!xmlStrEqual(root->name, BAD_CAST "domain")) {
+        vah_error(NULL, 0, "incorrect root element");
+        goto cleanup;
+    }
+
+    if ((ctxt = xmlXPathNewContext(xml)) == NULL) {
+        vah_error(ctl, 0, "could not allocate memory");
+        goto cleanup;
+    }
+    ctxt->node = root;
+
+    ctl->hvm = virXPathString(NULL, "string(./os/type[1])", ctxt);
+    if (!ctl->hvm || STRNEQ(ctl->hvm, "hvm")) {
+        vah_error(ctl, 0, "os.type is not 'hvm'");
+        goto cleanup;
+    }
+    ctl->arch = virXPathString(NULL, "string(./os/type[1]/@arch)", ctxt);
+    if (!ctl->arch) {
+        /* The XML we are given should have an arch, but in case it doesn't,
+         * just use the host's arch.
+         */
+        struct utsname utsname;
+
+        /* Really, this never fails - look at the man-page. */
+        uname (&utsname);
+        if ((ctl->arch = strdup(utsname.machine)) == NULL) {
+            vah_error(ctl, 0, "could not allocate memory");
+            goto cleanup;
+        }
+    }
+    if (STREQ(ctl->arch, "x86_64"))
+        ctl->bits = 64;
+    else
+        ctl->bits = 32;
+
+    rc = 0;
+
+  cleanup:
+    xmlFreeParserCtxt (pctxt);
+    xmlFreeDoc (xml);
+    xmlXPathFreeContext(ctxt);
+
+    return rc;
+}
+
 static int
 get_definition(vahControl * ctl, const char *xmlStr)
 {
     int rc = -1;
-    struct utsname utsname;
     virCapsGuestPtr guest;  /* this is freed when caps is freed */
 
     /*
      * mock up some capabilities. We don't currently use these explicitly,
      * but need them for virDomainDefParseString().
      */
+    if (caps_mockup(ctl, xmlStr) != 0)
+        goto exit;
 
-    /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
-
-    /* set some defaults if not specified */
-    if (!ctl->bits)
-        ctl->bits = 32;
-    if (!ctl->hvm)
-        ctl->hvm = strdup("hvm");
-
-    if ((ctl->caps = virCapabilitiesNew(utsname.machine, 1, 1)) == NULL) {
+    if ((ctl->caps = virCapabilitiesNew(ctl->arch, 1, 1)) == NULL) {
         vah_error(ctl, 0, "could not allocate memory");
         goto exit;
     }
 
     if ((guest = virCapabilitiesAddGuest(ctl->caps,
                                          ctl->hvm,
-                                         utsname.machine,
+                                         ctl->arch,
                                          ctl->bits,
                                          NULL,
                                          NULL,
@@ -794,24 +891,14 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
         {"replace", 0, 0, 'r'},
         {"remove", 0, 0, 'R'},
         {"uuid", 1, 0, 'u'},
-        {"hvm", 1, 0, 'H'},
-        {"bits", 1, 0, 'b'},
         {0, 0, 0, 0}
     };
-    int bits;
 
     while ((arg = getopt_long(argc, argv, "acdDhrRH:b:u:f:", opt,
             &idx)) != -1) {
         switch (arg) {
             case 'a':
                 ctl->cmd = 'a';
-                break;
-            case 'b':
-                bits = atoi(optarg);
-                if (bits == 32 || bits == 64)
-                    ctl->bits = bits;
-                else
-                    vah_error(ctl, 1, "invalid bits (should be 32 or 64)");
                 break;
             case 'c':
                 ctl->cmd = 'c';
@@ -829,10 +916,6 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
             case 'h':
                 vah_usage();
                 exit(EXIT_SUCCESS);
-                break;
-            case 'H':
-                if ((ctl->hvm = strdup(optarg)) == NULL)
-                    vah_error(ctl, 1, "could not allocate memory for hvm");
                 break;
             case 'r':
                 ctl->cmd = 'r';
