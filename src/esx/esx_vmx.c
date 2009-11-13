@@ -1758,7 +1758,8 @@ esxVMX_ParseEthernet(virConnectPtr conn, virConfPtr conf, int controller,
         STRCASENEQ(virtualDev, "e1000")) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                  "'vmxnet3' or 'e1000' but found '%s'", virtualDev_name, virtualDev);
+                  "'vmxnet3' or 'e1000' but found '%s'", virtualDev_name,
+                  virtualDev);
         goto failure;
     }
 
@@ -2646,11 +2647,12 @@ esxVMX_FormatEthernet(virConnectPtr conn, virDomainNetDefPtr def,
     if (def->model != NULL) {
         if (STRCASENEQ(def->model, "vlance") &&
             STRCASENEQ(def->model, "vmxnet") &&
+            STRCASENEQ(def->model, "vmxnet3") &&
             STRCASENEQ(def->model, "e1000")) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                       "Expecting domain XML entry 'devices/interfase/model' "
-                      "to be 'vlance' or 'vmxnet' or 'e1000' but found '%s'",
-                      def->model);
+                      "to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' but "
+                      "found '%s'", def->model);
             return -1;
         }
 
