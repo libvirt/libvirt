@@ -13,107 +13,105 @@
     The uri of the driver protocol is "vbox". Some example connection URIs for the driver are:
     </p>
 
-    <pre>
-    vbox:///session                      (local access to per-user instance)
-    vbox+unix:///session                 (local access to per-user instance)
-    vbox+tcp://user@example.com/session  (remote access, SASl/Kerberos)
-    vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
-    </pre>
+<pre>
+vbox:///session                      (local access to per-user instance)
+vbox+unix:///session                 (local access to per-user instance)
+vbox+tcp://user@example.com/session  (remote access, SASl/Kerberos)
+vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
+</pre>
 
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
 
-    <pre>
-    &lt;domain type='vbox'&gt;
-    &lt;name&gt;vbox&lt;/name&gt;
-    &lt;uuid&gt;4dab22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+<pre>
+&lt;domain type='vbox'&gt;
+  &lt;name&gt;vbox&lt;/name&gt;
+  &lt;uuid&gt;4dab22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
 
-    &lt;os&gt;
-        &lt;type&gt;hvm&lt;/type&gt;
-        &lt;boot dev='cdrom'/&gt;
-        &lt;boot dev='hd'/&gt;
-        &lt;boot dev='fd'/&gt;
-        &lt;boot dev='network'/&gt;
-    &lt;/os&gt;
+  &lt;os&gt;
+    &lt;type&gt;hvm&lt;/type&gt;
+    &lt;boot dev='cdrom'/&gt;
+    &lt;boot dev='hd'/&gt;
+    &lt;boot dev='fd'/&gt;
+    &lt;boot dev='network'/&gt;
+  &lt;/os&gt;
 
-    &lt;memory&gt;654321&lt;/memory&gt;
-    &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;memory&gt;654321&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
 
-    &lt;features&gt;
-        &lt;pae/&gt;
-        &lt;acpi/&gt;
-        &lt;apic/&gt;
-    &lt;/features&gt;
+  &lt;features&gt;
+    &lt;pae/&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+  &lt;/features&gt;
 
-    &lt;devices&gt;
-        &lt;disk type='file' device='cdrom'&gt;
-            &lt;source file='/home/user/Downloads/slax-6.0.9.iso'/&gt;
-            &lt;target dev='hdc'/&gt;
-            &lt;readonly/&gt;
-        &lt;/disk&gt;
+  &lt;devices&gt;
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;source file='/home/user/Downloads/slax-6.0.9.iso'/&gt;
+      &lt;target dev='hdc'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
 
-        &lt;disk type='file' device='disk'&gt;
-            &lt;source file='/home/user/tmp/vbox.vdi'/&gt;
-            &lt;target dev='hdd'/&gt;
-        &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/tmp/vbox.vdi'/&gt;
+      &lt;target dev='hdd'/&gt;
+    &lt;/disk&gt;
 
-        &lt;disk type='file' device='floppy'&gt;
-            &lt;source file='/home/user/tmp/WIN98C.IMG'/&gt;
-            &lt;target dev='fda'/&gt;
-        &lt;/disk&gt;
+    &lt;disk type='file' device='floppy'&gt;
+      &lt;source file='/home/user/tmp/WIN98C.IMG'/&gt;
+      &lt;target dev='fda'/&gt;
+    &lt;/disk&gt;
 
-        &lt;!--BRIDGE--&gt;
-        &lt;interface type='bridge'&gt;
-            &lt;source bridge='eth0'/&gt;
-            &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-            &lt;model type='am79c973'/&gt;
-        &lt;/interface&gt;
+    &lt;!--BRIDGE--&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='eth0'/&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;model type='am79c973'/&gt;
+    &lt;/interface&gt;
 
-        &lt;!--NAT--&gt;
-        &lt;interface type='user'&gt;
-            &lt;mac address='56:16:3e:5d:c7:9e'/&gt;
-            &lt;model type='82540eM'/&gt;
-        &lt;/interface&gt;
+    &lt;!--NAT--&gt;
+    &lt;interface type='user'&gt;
+      &lt;mac address='56:16:3e:5d:c7:9e'/&gt;
+      &lt;model type='82540eM'/&gt;
+    &lt;/interface&gt;
 
-        &lt;sound model='sb16'/&gt;
+    &lt;sound model='sb16'/&gt;
 
-        &lt;parallel type='dev'&gt;
-            &lt;source path='/dev/pts/1'/&gt;
-            &lt;target port='0'/&gt;
-        &lt;/parallel&gt;
+    &lt;parallel type='dev'&gt;
+      &lt;source path='/dev/pts/1'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/parallel&gt;
 
-        &lt;parallel type='dev'&gt;
-            &lt;source path='/dev/pts/2'/&gt;
-            &lt;target port='1'/&gt;
-        &lt;/parallel&gt;
+    &lt;parallel type='dev'&gt;
+      &lt;source path='/dev/pts/2'/&gt;
+      &lt;target port='1'/&gt;
+    &lt;/parallel&gt;
 
-        &lt;serial type="dev"&gt;
-            &lt;source path="/dev/ttyS0"/&gt;
-            &lt;target port="0"/&gt;
-        &lt;/serial&gt;
+    &lt;serial type="dev"&gt;
+      &lt;source path="/dev/ttyS0"/&gt;
+      &lt;target port="0"/&gt;
+    &lt;/serial&gt;
 
-        &lt;serial type="pipe"&gt;
-            &lt;source path="/tmp/serial.txt"/&gt;
-            &lt;target port="1"/&gt;
-        &lt;/serial&gt;
+    &lt;serial type="pipe"&gt;
+      &lt;source path="/tmp/serial.txt"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
 
-        &lt;hostdev mode='subsystem' type='usb'&gt;
-            &lt;source&gt;
-                &lt;vendor id='0x1234'/&gt;
-                &lt;product id='0xbeef'/&gt;
-            &lt;/source&gt;
-        &lt;/hostdev&gt;
+    &lt;hostdev mode='subsystem' type='usb'&gt;
+      &lt;source&gt;
+        &lt;vendor id='0x1234'/&gt;
+        &lt;product id='0xbeef'/&gt;
+      &lt;/source&gt;
+    &lt;/hostdev&gt;
 
-        &lt;hostdev mode='subsystem' type='usb'&gt;
-            &lt;source&gt;
-                &lt;vendor id='0x4321'/&gt;
-                &lt;product id='0xfeeb'/&gt;
-            &lt;/source&gt;
-        &lt;/hostdev&gt;
-
-    &lt;/devices&gt;
-
-    &lt;/domain&gt;
-    </pre>
+    &lt;hostdev mode='subsystem' type='usb'&gt;
+      &lt;source&gt;
+        &lt;vendor id='0x4321'/&gt;
+        &lt;product id='0xfeeb'/&gt;
+      &lt;/source&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+</pre>
 
     </body>
 </html>

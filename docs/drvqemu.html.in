@@ -43,16 +43,16 @@
     is "qemu". Some example conection URIs for the libvirt driver are:
     </p>
 
-    <pre>
-    qemu:///session                      (local access to per-user instance)
-    qemu+unix:///session                 (local access to per-user instance)
+<pre>
+qemu:///session                      (local access to per-user instance)
+qemu+unix:///session                 (local access to per-user instance)
 
-    qemu:///system                       (local access to system instance)
-    qemu+unix:///system                  (local access to system instance)
-    qemu://example.com/system            (remote access, TLS/x509)
-    qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
-    qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
-    </pre>
+qemu:///system                       (local access to system instance)
+qemu+unix:///system                  (local access to system instance)
+qemu://example.com/system            (remote access, TLS/x509)
+qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
+qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
+</pre>
 
     <h2><a name="security">Driver security architecture</a></h2>
 
@@ -167,7 +167,7 @@
           parent directories
         </p>
 <pre>
-  chmod o+x  /path/to/directory
+chmod o+x /path/to/directory
 </pre>
         <p>
           In particular note that if using the "system" instance
@@ -383,12 +383,12 @@
       The list of shared devices a guest is allowed access to is
     </p>
 
-    <pre>
-      /dev/null, /dev/full, /dev/zero,
-      /dev/random, /dev/urandom,
-      /dev/ptmx, /dev/kvm, /dev/kqemu,
-      /dev/rtc, /dev/hpet, /dev/net/tun
-    </pre>
+<pre>
+/dev/null, /dev/full, /dev/zero,
+/dev/random, /dev/urandom,
+/dev/ptmx, /dev/kvm, /dev/kqemu,
+/dev/rtc, /dev/hpet, /dev/net/tun
+</pre>
 
     <p>
       In the event of unanticipated needs arising, this can be customized
@@ -397,10 +397,10 @@
       should be run as root, prior to starting libvirtd
     </p>
 
-    <pre>
-      mkdir /dev/cgroup
-      mount -t cgroup none /dev/cgroup -o devices
-    </pre>
+<pre>
+mkdir /dev/cgroup
+mount -t cgroup none /dev/cgroup -o devices
+</pre>
 
     <p>
       libvirt will then place each virtual machine in a cgroup at
@@ -430,6 +430,7 @@ LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 \
 /dev/HostVG/QEMUGuest1 -net none -serial none \
 -parallel none -usb
 EOF
+
 $ virsh domxml-from-native qemu-argv demo.args
 &lt;domain type='qemu'&gt;
   &lt;uuid&gt;00000000-0000-0000-0000-000000000000&lt;/uuid&gt;
@@ -452,7 +453,7 @@ $ virsh domxml-from-native qemu-argv demo.args
     &lt;/disk&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;
-    </pre>
+</pre>
 
     <p>NB, don't include the literral \ in the args, put everything on one line</p>
 
@@ -488,6 +489,7 @@ $ virsh domxml-from-native qemu-argv demo.args
   &lt;/devices&gt;
 &lt;/domain&gt;
 EOF
+
 $ virsh domxml-to-native qemu-argv demo.xml
   LC_ALL=C PATH=/usr/bin:/bin HOME=/home/test \
   USER=test LOGNAME=test /usr/bin/qemu -S -M pc \
@@ -495,7 +497,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
   -monitor pty -no-acpi -boot c -drive \
   file=/dev/HostVG/QEMUGuest1,if=ide,index=0 -net none \
   -serial none -parallel none -usb
-    </pre>
+</pre>
 
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
 

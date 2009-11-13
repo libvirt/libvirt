@@ -54,13 +54,13 @@
     the libvirt driver are:
     </p>
 
-    <pre>
-    xen:///                        (local access, direct)
-    xen+unix:///                   (local access, via daemon)
-    xen://example.com/             (remote access, TLS/x509)
-    xen+tcp://example.com/         (remote access, SASl/Kerberos)
-    xen+ssh://root@example.com/    (remote access, SSH tunnelled)
-    </pre>
+<pre>
+xen:///                        (local access, direct)
+xen+unix:///                   (local access, via daemon)
+xen://example.com/             (remote access, TLS/x509)
+xen+tcp://example.com/         (remote access, SASl/Kerberos)
+xen+ssh://root@example.com/    (remote access, SSH tunnelled)
+</pre>
 
     <h2><a name="imex">Import and export of libvirt domain XML configs</a></h2>
 
@@ -114,8 +114,7 @@
     &lt;input type='mouse' bus='xen'/&gt;
     &lt;graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'/&gt;
   &lt;/devices&gt;
-&lt;/domain&gt;
-    </pre>
+&lt;/domain&gt;</pre>
 
     <h3><a name="xmlexport">Converting from domain XML to XM config files</a></h3>
 
@@ -125,7 +124,7 @@
       format.
     </p>
 
-    <pre># virsh  -c xen:/// domxml-to-native xen-xm rhel5pv.xml
+    <pre>$ virsh -c xen:/// domxml-to-native xen-xm rhel5pv.xml
 name = "rhel5pv"
 uuid = "8f07fe28-753f-2729-d76d-bdbd892f949a"
 maxmem = 2500
@@ -143,8 +142,7 @@ vnc = 1
 vncunused = 1
 vnclisten = "0.0.0.0"
 disk = [ "tap:aio:/var/lib/xen/images/rhel5pv.img,xvda,w", "tap:qcow:/root/qcow1-xen.img,xvdd,w" ]
-vif = [ "mac=00:16:3e:60:36:ba,bridge=virbr0,script=vif-bridge,vifname=vif5.0" ]
-    </pre>
+vif = [ "mac=00:16:3e:60:36:ba,bridge=virbr0,script=vif-bridge,vifname=vif5.0" ]</pre>
 
     <h2><a name="xmlconfig">Example domain XML config</a></h2>
 

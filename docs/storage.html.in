@@ -45,8 +45,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -101,8 +100,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -172,8 +170,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -215,8 +212,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/dev/HostVG&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -248,8 +244,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/dev&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -338,8 +333,7 @@ libvirt.
         &lt;target&gt;
           &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
         &lt;/target&gt;
-      &lt;/pool&gt;
-    </pre>
+      &lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>

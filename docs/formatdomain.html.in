@@ -750,8 +750,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;video type='vga' nvram='8192' heads='1'&gt;
         &lt;acceleration accel3d='yes' accel3d='yes' /&gt;
       &lt;/video&gt;
-      ...
-    </pre>
+      ...</pre>
 
     <dl>
       <dt><code>video</code></dt>

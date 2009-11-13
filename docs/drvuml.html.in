@@ -24,16 +24,16 @@
     URIs are
     </p>
 
-    <pre>
-    uml:///session                       (local access to per-user instance)
-    uml+unix:///session                  (local access to per-user instance)
+<pre>
+uml:///session                       (local access to per-user instance)
+uml+unix:///session                  (local access to per-user instance)
 
-    uml:///system                        (local access to system instance)
-    uml+unix:///system                   (local access to system instance)
-    uml://example.com/system             (remote access, TLS/x509)
-    uml+tcp://example.com/system         (remote access, SASl/Kerberos)
-    uml+ssh://root@example.com/system    (remote access, SSH tunnelled)
-    </pre>
+uml:///system                        (local access to system instance)
+uml+unix:///system                   (local access to system instance)
+uml://example.com/system             (remote access, TLS/x509)
+uml+tcp://example.com/system         (remote access, SASl/Kerberos)
+uml+ssh://root@example.com/system    (remote access, SSH tunnelled)
+</pre>
 
     <h2>Example XML configuration</h2>
 
@@ -58,7 +58,7 @@
       thus accessible with "virsh console" or equivalent tools
     </p>
 
-    <pre>
+<pre>
 &lt;domain type='uml'&gt;
   &lt;name&gt;demo&lt;/name&gt;
   &lt;uuid&gt;b4433fc2-a22e-ffb3-0a3d-9c173b395800&lt;/uuid&gt;
@@ -77,6 +77,6 @@
     &lt;console type='pty'/&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;
-    </pre>
+</pre>
   </body>
 </html>

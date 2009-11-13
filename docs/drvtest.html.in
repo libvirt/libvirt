@@ -12,14 +12,14 @@
     for the libvirt driver are:
     </p>
 
-    <pre>
-    test:///default                     (local access, default config)
-    test:///path/to/driver/config.xml   (local access, custom config)
-    test+unix:///default                (local access, default config, via daemon)
-    test://example.com/default          (remote access, TLS/x509)
-    test+tcp://example.com/default      (remote access, SASl/Kerberos)
-    test+ssh://root@example.com/default (remote access, SSH tunnelled)
-    </pre>
+<pre>
+test:///default                     (local access, default config)
+test:///path/to/driver/config.xml   (local access, custom config)
+test+unix:///default                (local access, default config, via daemon)
+test://example.com/default          (remote access, TLS/x509)
+test+tcp://example.com/default      (remote access, SASl/Kerberos)
+test+ssh://root@example.com/default (remote access, SSH tunnelled)
+</pre>
 
   </body>
 </html>

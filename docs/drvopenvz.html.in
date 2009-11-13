@@ -19,13 +19,13 @@
     the libvirt driver are:
     </p>
 
-    <pre>
-    openvz:///system                     (local access)
-    openvz+unix:///system                (local access)
-    openvz://example.com/system          (remote access, TLS/x509)
-    openvz+tcp://example.com/system      (remote access, SASl/Kerberos)
-    openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
-    </pre>
+<pre>
+openvz:///system                     (local access)
+openvz+unix:///system                (local access)
+openvz://example.com/system          (remote access, TLS/x509)
+openvz+tcp://example.com/system      (remote access, SASl/Kerberos)
+openvz+ssh://root@example.com/system (remote access, SSH tunnelled)
+</pre>
 
     <h2>Notes on bridged networking</h2>
 
@@ -60,10 +60,10 @@
     must be created containing
     </p>
 
-    <pre>
+<pre>
 #!/bin/bash
 EXTERNAL_SCRIPT="/usr/sbin/vznetaddbr"
-    </pre>
+</pre>
 
     <p>
     The host OS is now ready to allow bridging of guest containers, which
@@ -83,7 +83,7 @@ EXTERNAL_SCRIPT="/usr/sbin/vznetaddbr"
     matches the templates known to OpenVZ tools.
     </p>
 
-    <pre>
+<pre>
 &lt;domain type='openvz' id='104'&gt;
   &lt;name&gt;104&lt;/name&gt;
   &lt;uuid&gt;86c12009-e591-a159-6e9f-91d18b85ef78&lt;/uuid&gt;
@@ -104,7 +104,7 @@ EXTERNAL_SCRIPT="/usr/sbin/vznetaddbr"
     &lt;/interface&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;
-    </pre>
+</pre>
 
   </body>
 </html>
