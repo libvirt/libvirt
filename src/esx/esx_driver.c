@@ -247,7 +247,7 @@ esxCapsInit(virConnectPtr conn)
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
  * - esx+http  80
- * - esx+https 433
+ * - esx+https 443
  * - gsx+http  8222
  * - gsx+https 8333
  *
@@ -2791,13 +2791,13 @@ esxDomainUndefine(virDomainPtr domain)
  *
  * - reservation (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, in megaherz)
  *
- *   Amount of CPU resource that is guaranteed available to the domain.
+ *   The amount of CPU resource that is guaranteed to be available to the domain.
  *
  *
  * - limit (VIR_DOMAIN_SCHED_FIELD_LLONG >= 0, or -1, in megaherz)
  *
- *   The CPU utilization of the domain will not exceed this limit, even if
- *   there are available CPU resources. If the limit is set to -1, the CPU
+ *   The CPU utilization of the domain will be limited to this value, even if
+ *   more CPU resources are available. If the limit is set to -1, the CPU
  *   utilization of the domain is unlimited. If the limit is not set to -1, it
  *   must be greater than or equal to the reservation.
  *

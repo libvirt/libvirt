@@ -1,0 +1,497 @@
+<html><body>
+    <h1>VMware ESX hypervisor driver</h1>
+    <ul id="toc"></ul>
+    <p>
+        The libvirt VMware ESX driver can manage VMware ESX/ESXi 3.5/4.0 and
+        VMware GSX 2.0, also called VMware Server 2.0, and possibly later
+        versions.
+    </p>
+
+
+    <h2><a name="prereq">Deployment pre-requisites</a></h2>
+    <p>
+        None. Any out-of-the-box installation of ESX/GSX should work. No
+        preparations are required on the server side, no libvirtd must be
+        installed on the ESX server. The driver uses version 2.5 of the remote,
+        SOAP based
+        <a href="http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/">
+        VMware Virtual Infrastructure API</a> to communicate with the
+        ESX server, like the VMware Virtual Infrastructure Client does. Since
+        version 4.0 this API is called
+        <a href="http://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/">
+        VMware vSphere API</a>.
+    </p>
+
+    <h2><a name="uri">Connections to the VMware ESX driver</a></h2>
+    <p>
+        Some example remote connection URIs for the driver are:
+    </p>
+<pre>
+esx://example.com                  (ESX over HTTPS)
+gsx://example.com                  (GSX over HTTPS)
+esx://example.com/?transport=http  (ESX over HTTP)
+esx://example.com/?no_verify=1     (ESX over HTTPS, but doesn't verify the server's SSL certificate)
+</pre>
+
+
+    <h3><a name="uriformat">URI Format</a></h3>
+    <p>
+        URIs have this general form ('[...]' marks an optional part).
+    </p>
+<pre>
+type://[username@]hostname[:port]/[?extraparameters]
+</pre>
+    <p>
+        The <code>type://</code> is either <code>esx://</code> or
+        <code>gsx://</code> and the driver selects the default port depending
+        on it. For ESX the default HTTPS port is 443, for GSX it is 8333. If
+        the port parameter is given, it overrides the default port.
+    </p>
+
+
+    <h4>Extra parameters</h4>
+    <p>
+        Extra parameters can be added to a URI as part of the query string
+        (the part following '?'). The driver understands the extra parameters
+        shown below.
+    </p>
+    <table class="top_table">
+        <tr>
+            <th>Name</th>
+            <th>Values</th>
+            <th>Meaning</th>
+        </tr>
+        <tr>
+            <td>
+                <code>transport</code>
+            </td>
+            <td>
+                <code>http</code> or <code>https</code>
+            </td>
+            <td>
+                Overrides the default HTTPS transport. For ESX the default
+                HTTP port is 80, for GSX it is 8222.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <code>vcenter</code>
+            </td>
+            <td>
+                Hostname of a VMware vCenter
+            </td>
+            <td>
+                In order to perform a migration the driver needs to know the
+                VMware vCenter for the ESX server.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <code>no_verify</code>
+            </td>
+            <td>
+                <code>0</code> or <code>1</code>
+            </td>
+            <td>
+                If set to 1, this disables libcurl client checks of the server's
+                SSL certificate. The default value it 0.
+            </td>
+        </tr>
+    </table>
+
+
+    <h3><a name="auth">Authentication</a></h3>
+    <p>
+        In order to perform any useful operation the driver needs to log into
+        the ESX server. Therefore, only <code>virConnectOpenAuth</code> can be
+        used to connect to an ESX server, <code>virConnectOpen</code> and
+        <code>virConnectOpenReadOnly</code> don't work.
+        To log into an ESX server or vCenter the driver will request
+        credentials using the callback passed to the
+        <code>virConnectOpenAuth</code> function. The driver passes the
+        hostname as challenge parameter to the callback. This enables the
+        callback to distinguish between requests for ESX server and vCenter.
+    </p>
+    <p>
+        <strong>Note</strong>: During the ongoing driver development, testing
+        is done using an unrestricted <code>root</code> account. Problems may
+        occur if you use a restricted account. Detailed testing with restricted
+        accounts has not been done yet.
+    </p>
+
+
+    <h2><a name="xmlspecial">Specialties in the domain XML config</a></h2>
+    <p>
+        There are several specialties in the domain XML config for ESX domains.
+    </p>
+
+    <h3>Restrictions</h3>
+    <p>
+        There are some restrictions for some values of the domain XML config.
+        The driver will complain if this restrictions are violated.
+    </p>
+    <ul>
+        <li>
+            Memory size has to be a multiple of 4096
+        </li>
+        <li>
+            Number of virtual CPU has to be 1 or a multiple of 2
+        </li>
+        <li>
+            Valid MAC address prefixes are <code>00:0c:29</code> and
+            <code>00:50:56</code>
+        </li>
+    </ul>
+
+
+    <h3>Datastore references</h3>
+    <p>
+        Storage is managed in datastores. VMware uses a special path format to
+        reference files in a datastore. Basically, the datastore name is put
+        into squared braces in front of the path.
+    </p>
+<pre>
+[datastore] directory/filename
+</pre>
+    <p>
+        To define a new domain the driver converts the domain XML into a
+        VMware VMX file and uploads it to a datastore known to the ESX server.
+        Because multiple datastores may be known to an ESX server the driver
+        needs to decide to which datastores the VMX file should be uploaded.
+        The driver deduces this information from the path of the source of the
+        first file-based harddisk listed in the domain XML.
+    </p>
+
+
+    <h3>Available hardware</h3>
+    <p>
+        VMware ESX supports different models of SCSI controllers and network
+        cards.
+    </p>
+
+    <h4>SCSI controller models</h4>
+    <dl>
+        <dt><code>buslogic</code></dt>
+        <dd>
+            BusLogic SCSI controller for older guests.
+        </dd>
+        <dt><code>lsilogic</code></dt>
+        <dd>
+            LSI Logic SCSI controller for recent guests.
+        </dd>
+    </dl>
+    <p>
+        Here a domain XML snippet:
+    </p>
+<pre>
+    ...
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='<strong>lsilogic</strong>'/&gt;
+      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+    ...
+</pre>
+
+
+    <h4>Network card models</h4>
+    <dl>
+        <dt><code>vlance</code></dt>
+        <dd>
+            AMD PCnet32 network card for older guests.
+        </dd>
+        <dt><code>vmxnet</code>, <code>vmxnet3</code></dt>
+        <dd>
+            Special VMware VMXnet network card, requires VMware tools inside
+            the guest.
+        </dd>
+        <dt><code>e1000</code></dt>
+        <dd>
+            Intel E1000 network card for recent guests.
+        </dd>
+    </dl>
+    <p>
+        Here a domain XML snippet:
+    </p>
+<pre>
+    ...
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:50:56:25:48:c7'/&gt;
+      &lt;source bridge='VM Network'/&gt;
+      &lt;model type='<strong>e1000</strong>'/&gt;
+    &lt;/interface&gt;
+    ...
+</pre>
+
+
+    <h2><a name="importexport">Import and export of domain XML configs</a></h2>
+    <p>
+        The ESX driver currently supports a native config format known as
+        <code>vmware-vmx</code> to handle VMware VMX configs.
+    </p>
+
+
+    <h3><a name="xmlimport">Converting from VMware VMX config to domain XML config</a></h3>
+    <p>
+        The <code>virsh domxml-from-native</code> provides a way to convert an
+        existing VMware VMX config into a domain XML config that can then be
+        used by libvirt.
+    </p>
+<pre>
+$ cat &gt; demo.vmx &lt;&lt; EOF
+#!/usr/bin/vmware
+config.version = "8"
+virtualHW.version = "4"
+floppy0.present = "false"
+nvram = "Fedora11.nvram"
+deploymentPlatform = "windows"
+virtualHW.productCompatibility = "hosted"
+tools.upgrade.policy = "useGlobal"
+powerType.powerOff = "default"
+powerType.powerOn = "default"
+powerType.suspend = "default"
+powerType.reset = "default"
+displayName = "Fedora11"
+extendedConfigFile = "Fedora11.vmxf"
+scsi0.present = "true"
+scsi0.sharedBus = "none"
+scsi0.virtualDev = "lsilogic"
+memsize = "1024"
+scsi0:0.present = "true"
+scsi0:0.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Fedora11/Fedora11.vmdk"
+scsi0:0.deviceType = "scsi-hardDisk"
+ide0:0.present = "true"
+ide0:0.clientDevice = "true"
+ide0:0.deviceType = "cdrom-raw"
+ide0:0.startConnected = "false"
+ethernet0.present = "true"
+ethernet0.networkName = "VM Network"
+ethernet0.addressType = "vpx"
+ethernet0.address = "00:50:56:91:48:c7"
+chipset.onlineStandby = "false"
+guestOSAltName = "Red Hat Enterprise Linux 5 (32-Bit)"
+guestOS = "rhel5"
+uuid.bios = "50 11 5e 16 9b dc 49 d7-f1 71 53 c4 d7 f9 17 10"
+snapshot.action = "keep"
+sched.cpu.min = "0"
+sched.cpu.units = "mhz"
+sched.cpu.shares = "normal"
+sched.mem.minsize = "0"
+sched.mem.shares = "normal"
+toolScripts.afterPowerOn = "true"
+toolScripts.afterResume = "true"
+toolScripts.beforeSuspend = "true"
+toolScripts.beforePowerOff = "true"
+scsi0:0.redo = ""
+tools.syncTime = "false"
+uuid.location = "56 4d b5 06 a2 bd fb eb-ae 86 f7 d8 49 27 d0 c4"
+sched.cpu.max = "unlimited"
+sched.swap.derivedName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Fedora11/Fedora11-7de040d8.vswp"
+tools.remindInstall = "TRUE"
+EOF
+
+$ virsh -c esx://example.com domxml-from-native vmware-vmx demo.vmx
+Enter username for example.com [root]:
+Enter root password for example.com:
+&lt;domain type='vmware'&gt;
+  &lt;name&gt;Fedora11&lt;/name&gt;
+  &lt;uuid&gt;50115e16-9bdc-49d7-f171-53c4d7f91710&lt;/uuid&gt;
+  &lt;memory&gt;1048576&lt;/memory&gt;
+  &lt;currentMemory&gt;1048576&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='i686'&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;clock offset='utc'/&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='lsilogic'/&gt;
+      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:50:56:91:48:c7'/&gt;
+      &lt;source bridge='VM Network'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+</pre>
+
+
+    <h3><a name="xmlexport">Converting from domain XML config to VMware VMX config</a></h3>
+    <p>
+      The <code>virsh domxml-to-native</code> provides a way to convert a
+      domain XML config into a VMware VMX config.
+    </p>
+<pre>
+$ cat &gt; demo.xml &lt;&lt; EOF
+&lt;domain type='vmware'&gt;
+  &lt;name&gt;Fedora11&lt;/name&gt;
+  &lt;uuid&gt;50115e16-9bdc-49d7-f171-53c4d7f91710&lt;/uuid&gt;
+  &lt;memory&gt;1048576&lt;/memory&gt;
+  &lt;currentMemory&gt;1048576&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64'&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='lsilogic'/&gt;
+      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:50:56:25:48:c7'/&gt;
+      &lt;source bridge='VM Network'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+EOF
+
+$ virsh -c esx://example.com domxml-to-native vmware-vmx demo.xml
+Enter username for example.com [root]:
+Enter root password for example.com:
+config.version = "8"
+virtualHW.version = "4"
+guestOS = "other-64"
+uuid.bios = "50 11 5e 16 9b dc 49 d7-f1 71 53 c4 d7 f9 17 10"
+displayName = "Fedora11"
+memsize = "1024"
+numvcpus = "1"
+scsi0.present = "true"
+scsi0.virtualDev = "lsilogic"
+scsi0:0.present = "true"
+scsi0:0.deviceType = "scsi-hardDisk"
+scsi0:0.fileName = "/vmfs/volumes/local-storage/Fedora11/Fedora11.vmdk"
+ethernet0.present = "true"
+ethernet0.networkName = "VM Network"
+ethernet0.connectionType = "bridged"
+ethernet0.addressType = "static"
+ethernet0.address = "00:50:56:25:48:C7"
+</pre>
+
+
+    <h2><a name="xmlconfig">Example domain XML configs</a></h2>
+
+    <h3>Fedora11 on x86_64</h3>
+<pre>
+&lt;domain type='vmware'&gt;
+  &lt;name&gt;Fedora11&lt;/name&gt;
+  &lt;uuid&gt;50115e16-9bdc-49d7-f171-53c4d7f91710&lt;/uuid&gt;
+  &lt;memory&gt;1048576&lt;/memory&gt;
+  &lt;currentMemory&gt;1048576&lt;/currentMemory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64'&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='00:50:56:25:48:c7'/&gt;
+      &lt;source bridge='VM Network'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+</pre>
+
+
+    <h2><a name="migration">Migration</a></h2>
+    <p>
+        A migration cannot be initiated on an ESX server directly, a VMware
+        vCenter is necessary for this. The vCenter hostname has to be passed
+        to the driver via the <code>vcenter</code> query parameter.
+    </p>
+<pre>
+esx://example.com/?vcenter=example-vcenter.com
+</pre>
+    <p>
+        Here an example how to migrate the domain <code>Fedora11</code> from
+        ESX server <code>example-src.com</code> to ESX server
+        <code>example-dst.com</code> involving vCenter
+        <code>example-vcenter.com</code> using <code>virsh</code>.
+    </p>
+<pre>
+$ virsh -c esx://example-src.com/?vcenter=example-vcenter.com migrate Fedora11 esx://example-dst.com/?vcenter=example-vcenter.com
+Enter username for example-src.com [root]:
+Enter root password for example-src.com:
+Enter username for example-vcenter.com [administrator]:
+Enter administrator password for example-vcenter.com:
+Enter username for example-dst.com [root]:
+Enter root password for example-dst.com:
+Enter username for example-vcenter.com [administrator]:
+Enter administrator password for example-vcenter.com:
+</pre>
+
+
+    <h2><a name="scheduler">Scheduler configuration</a></h2>
+    <p>
+        The driver exposes the ESX CPU scheduler. The parameters listed below
+        are available to control the scheduler.
+    </p>
+    <dl>
+        <dt><code>reservation</code></dt>
+        <dd>
+            The amount of CPU resource in MHz that is guaranteed to be
+            available to the domain. Valid values are 0 and greater.
+        </dd>
+        <dt><code>limit</code></dt>
+        <dd>
+            The CPU utilization of the domain will be
+            limited to this value in MHz, even if more CPU resources are
+            available. If the limit is set to -1, the CPU utilization of the
+            domain is unlimited. If the limit is not set to -1, it must be
+            greater than or equal to the reservation.
+        </dd>
+        <dt><code>shares</code></dt>
+        <dd>
+            Shares are used to determine relative CPU
+            allocation between domains. In general, a domain with more shares
+            gets proportionally more of the CPU resource. Valid values are 0
+            and greater. The special values -1, -2 and -3 represent the
+            predefined shares level <code>low</code>, <code>normal</code> and
+            <code>high</code>.
+        </dd>
+    </dl>
+
+
+    <h2><a name="tools">VMware tools</a></h2>
+    <p>
+        Some actions require installed VMware tools. If the VMware tools are
+        not installed in the guest and one of the actions below is to be
+        performed the ESX server raises an error and the driver reports it.
+    </p>
+    <ul>
+        <li>
+            <code>virDomainReboot</code>
+        </li>
+        <li>
+            <code>virDomainShutdown</code>
+        </li>
+    </ul>
+
+
+    <h2><a name="links">Links</a></h2>
+    <ul>
+        <li>
+            <a href="http://www.vmware.com/support/developer/vc-sdk/">
+                VMware vSphere Web Services SDK Documentation
+            </a>
+        </li>
+        <li>
+            <a href="http://www.vmware.com/pdf/esx3_memory.pdf">
+                The Role of Memory in VMware ESX Server 3
+            </a>
+        </li>
+        <li>
+            <a href="http://www.sanbarrow.com/vmx.html">
+                VMware VMX config parameters
+            </a>
+        </li>
+    </ul>
+</body></html>
