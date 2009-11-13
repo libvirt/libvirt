@@ -755,6 +755,10 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
     }
 
     virBufferVSprintf(buf, "  \"%s\" %s,\n", tmp, perms);
+    if (readonly) {
+        virBufferVSprintf(buf, "  # don't audit writes to readonly media\n");
+        virBufferVSprintf(buf, "  deny \"%s\" w,\n", tmp);
+    }
 
   clean:
     free(tmp);
