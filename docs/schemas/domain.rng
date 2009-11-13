@@ -1052,11 +1052,11 @@
   </define>
   <define name="guestfwdTarget">
     <element name="target">
-        <attribute name="type">
-            <value>guestfwd</value>
-        </attribute>
-        <attribute name="address"/>
-        <attribute name="port"/>
+      <attribute name="type">
+        <value>guestfwd</value>
+      </attribute>
+      <attribute name="address"/>
+      <attribute name="port"/>
     </element>
   </define>
   <define name="channel">
