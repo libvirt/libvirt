@@ -106,7 +106,7 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 
 %.html: %.html.tmp
 	@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" > /dev/null ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
 	  $(XMLLINT) --nonet --format --valid $< > $@ || : ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
@@ -117,7 +117,7 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )
 	-@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" > /dev/null ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating the resulting XHTML pages" ; \
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
