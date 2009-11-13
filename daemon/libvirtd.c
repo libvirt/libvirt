@@ -3153,7 +3153,7 @@ int main(int argc, char **argv) {
      * seriously delay OS bootup process */
     if (virStateInitialize(server->privileged) < 0) {
         VIR_ERROR0("Driver state initialization failed");
-        goto error;
+        goto shutdown;
     }
 
     /* Start accepting new clients from network */
