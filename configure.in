@@ -34,6 +34,12 @@ AVAHI_REQUIRED="0.6.0"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 NETCF_REQUIRED="0.1.3"
+UDEV_REQUIRED=145
+PCIACCESS_REQUIRED=0.10.0
+XMLRPC_REQUIRED=1.14.0
+HAL_REQUIRED=0.5.0
+DEVMAPPER_REQUIRED=1.0.0
+LIBCURL_REQUIRED="7.18.0"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -471,8 +477,6 @@ PKG_PROG_PKG_CONFIG
 
 dnl OpenNebula driver Compilation setting
 dnl
-
-XMLRPC_REQUIRED=1.14.0
 
 XMLRPC_CFLAGS=
 XMLRPC_LIBS=
@@ -1304,7 +1308,6 @@ fi
 AM_CONDITIONAL([WITH_STORAGE_MPATH], [test "$with_storage_mpath" = "yes"])
 
 if test "$with_storage_mpath" = "yes"; then
-   DEVMAPPER_REQUIRED=0.0
    DEVMAPPER_CFLAGS=
    DEVMAPPER_LIBS=
    PKG_CHECK_MODULES([DEVMAPPER], [devmapper >= $DEVMAPPER_REQUIRED], [], [DEVMAPPER_FOUND=no])
@@ -1379,7 +1382,6 @@ dnl
 
 LIBCURL_CFLAGS=""
 LIBCURL_LIBS=""
-LIBCURL_REQUIRED="7.18.0"
 LIBCURL_FOUND="no"
 
 if test "$with_esx" = "yes" -o "$with_esx" = "check"; then
@@ -1655,7 +1657,6 @@ LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
 dnl HAL, DeviceKit, or libudev library for host device enumeration
-HAL_REQUIRED=0.0
 HAL_CFLAGS=
 HAL_LIBS=
 AC_ARG_WITH([hal],
@@ -1694,61 +1695,7 @@ AM_CONDITIONAL([HAVE_HAL], [test "x$with_hal" = "xyes"])
 AC_SUBST([HAL_CFLAGS])
 AC_SUBST([HAL_LIBS])
 
-DEVKIT_REQUIRED=0.0
-DEVKIT_CFLAGS=
-DEVKIT_LIBS=
-AC_ARG_WITH([devkit],
-  [  --with-devkit      use DeviceKit for host device enumeration],
-  [],
-  [with_devkit=no])
 
-if test "$with_libvirtd" = "no" ; then
-  with_devkit=no
-fi
-
-dnl Extra check needed while devkit pkg-config info missing glib2 dependency
-PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 0.0,,[
-  if test "x$with_devkit" = "xcheck"; then
-    with_devkit=no
-  elif test "x$with_devkit" = "xyes"; then
-    AC_MSG_ERROR([required package DeviceKit requires package glib-2.0])
-  fi])
-
-if test "x$with_devkit" = "xyes" -o "x$with_devkit" = "xcheck"; then
-  PKG_CHECK_MODULES(DEVKIT, devkit-gobject >= $DEVKIT_REQUIRED,
-    [with_devkit=yes], [
-    if test "x$with_devkit" = "xcheck" ; then
-       with_devkit=no
-    else
-       AC_MSG_ERROR(
-         [You must install DeviceKit-devel >= $DEVKIT_REQUIRED to compile libvirt])
-    fi
-  ])
-  if test "x$with_devkit" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_DEVKIT], 1,
-      [use DeviceKit for host device enumeration])
-
-    dnl Add glib2 flags explicitly while devkit pkg-config info missing glib2 dependency
-    DEVKIT_CFLAGS="$GLIB2_CFLAGS $DEVKIT_CFLAGS"
-    DEVKIT_LIBS="$GLIB2_LIBS $DEVKIT_LIBS"
-
-    dnl Add more flags apparently required for devkit to work properly
-    DEVKIT_CFLAGS="$DEVKIT_CFLAGS -D_POSIX_PTHREAD_SEMANTICS -D_REENTRANT"
-
-    old_CFLAGS=$CFLAGS
-    old_LDFLAGS=$LDFLAGS
-    CFLAGS="$CFLAGS $DEVKIT_CFLAGS"
-    LDFLAGS="$LDFLAGS $DEVKIT_LIBS"
-    AC_CHECK_FUNCS([devkit_client_connect],,[with_devkit=no])
-    CFLAGS="$old_CFLAGS"
-    LDFLAGS="$old_LDFLAGS"
-  fi
-fi
-AM_CONDITIONAL([HAVE_DEVKIT], [test "x$with_devkit" = "xyes"])
-AC_SUBST([DEVKIT_CFLAGS])
-AC_SUBST([DEVKIT_LIBS])
-
-UDEV_REQUIRED=145
 UDEV_CFLAGS=
 UDEV_LIBS=
 AC_ARG_WITH([udev],
@@ -1781,7 +1728,6 @@ if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
     CFLAGS="$old_CFLAGS"
     LDFLAGS="$old_LDFLAGS"
   fi
-  PCIACCESS_REQUIRED=0.10.0
   PCIACCESS_CFLAGS=
   PCIACCESS_LIBS=
   PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= $PCIACCESS_REQUIRED], [], [PCIACCESS_FOUND=no])
