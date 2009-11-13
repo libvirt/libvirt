@@ -517,6 +517,10 @@ valid_path(const char *path, const bool readonly)
     if (strchr(path, '"') != NULL)
         return 1;
 
+    /* Require an absolute path */
+    if (STRNEQLEN(path, "/", 1))
+        return 1;
+
     if (!virFileExists(path))
         vah_warning("path does not exist, skipping file type checks");
     else {
@@ -717,6 +721,16 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
 
     if (path == NULL)
         return rc;
+
+    /* Skip files without an absolute path. Not having one confuses the
+     * apparmor parser and this also ensures things like tcp consoles don't
+     * get added to the profile.
+     */
+    if (STRNEQLEN(path, "/", 1)) {
+        vah_warning(path);
+        vah_warning("  skipped non-absolute path");
+        return 0;
+    }
 
     if (virFileExists(path)) {
         if ((tmp = realpath(path, NULL)) == NULL) {
