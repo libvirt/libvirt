@@ -1,4 +1,4 @@
-# Last Modified: Wed Jul  8 09:57:41 2009
+# Last Modified: Fri Nov  6 16:41:59 2009
 
   #include <abstractions/base>
   #include <abstractions/consoles>
@@ -24,6 +24,31 @@
   #/sys/devices/*/*/usb[0-9]*/** r,
   #/dev/bus/usb/*/[0-9]* rw,
 
+  # WARNING: this gives the guest direct access to host hardware and specific
+  # portions of shared memory. This is required for sound using ALSA with kvm,
+  # but may constitute a security risk. If your environment does not require
+  # the use of sound in your VMs, feel free to comment out or prepend 'deny' to
+  # the rules for files in /dev.
+  /dev/shm/ r,
+  /dev/shm/pulse-shm* r,
+  /dev/shm/pulse-shm* rwk,
+  /dev/snd/* rw,
+  capability ipc_lock,
+  # 'kill' is not required for sound and is a security risk. Do not enable
+  # unless you absolutely need it.
+  deny capability kill,
+
+  /etc/pulse/client.conf r,
+  @{HOME}/.pulse-cookie rwk,
+  owner /root/.pulse-cookie rwk,
+  owner /root/.pulse/ rw,
+  owner /root/.pulse/* rw,
+  /usr/share/alsa/** r,
+  owner /tmp/pulse-*/ rw,
+  owner /tmp/pulse-*/* rw,
+  /var/lib/dbus/machine-id r,
+
+  # access to firmware's etc
   /usr/share/kvm/** r,
   /usr/share/qemu/** r,
   /usr/share/bochs/** r,
@@ -69,3 +94,16 @@
   /usr/bin/qemu-sparc32plus rmix,
   /usr/bin/qemu-sparc64 rmix,
   /usr/bin/qemu-x86_64 rmix,
+
+  # for save and resume
+  /bin/dash rmix,
+  /bin/dd rmix,
+  /bin/cat rmix,
+
+  # The svirt driver does not relabel the state file
+  # (https://bugzilla.redhat.com/show_bug.cgi?id=529363) resulting in denied
+  # messages. Uncommenting these lines can work around this somewhat by
+  # allowing users to save state files in the specified directory. We use
+  # 'owner' to make sure we don't overwrite the user's files.
+  #owner @{HOME}/libvirt-state-files/ r,
+  #owner @{HOME}/libvirt-state-files/** rw,
