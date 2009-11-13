@@ -692,6 +692,7 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     DBusError err;
     char **udi = NULL;
     int num_devs, i;
+    int ret = -1;
 
     /* Ensure caps_tbl is sorted by capability name */
     qsort(caps_tbl, ARRAY_CARDINALITY(caps_tbl), sizeof(caps_tbl[0]),
@@ -728,7 +729,11 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
         goto failure;
     }
     if (!libhal_ctx_init(hal_ctx, &err)) {
-        VIR_ERROR0("libhal_ctx_init failed\n");
+        VIR_ERROR0("libhal_ctx_init failed, haldaemon is probably not running\n");
+        /* We don't want to show a fatal error here,
+           otherwise entire libvirtd shuts down when
+           hald isn't running */
+        ret = 0;
         goto failure;
     }
 
@@ -787,7 +792,7 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     nodeDeviceUnlock(driverState);
     VIR_FREE(driverState);
 
-    return -1;
+    return ret;
 }
 
 
