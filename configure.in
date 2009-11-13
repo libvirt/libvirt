@@ -1656,7 +1656,7 @@ test "$enable_shared" = no && lt_cv_objdir=.
 LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
 AC_SUBST([LV_LIBTOOL_OBJDIR])
 
-dnl HAL, DeviceKit, or libudev library for host device enumeration
+dnl HAL library check for host device enumeration
 HAL_CFLAGS=
 HAL_LIBS=
 AC_ARG_WITH([hal],
@@ -1696,8 +1696,11 @@ AC_SUBST([HAL_CFLAGS])
 AC_SUBST([HAL_LIBS])
 
 
+dnl udev/libpciaccess library check for alternate host device enumeration
 UDEV_CFLAGS=
 UDEV_LIBS=
+PCIACCESS_CFLAGS=
+PCIACCESS_LIBS=
 AC_ARG_WITH([udev],
   [  --with-udev        use libudev for host device enumeration],
   [],
@@ -1708,7 +1711,7 @@ if test "$with_libvirtd" = "no" ; then
 fi
 if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
   PKG_CHECK_MODULES(UDEV, libudev >= $UDEV_REQUIRED,
-    [with_udev=yes], [
+    [], [
     if test "x$with_udev" = "xcheck" ; then
        with_udev=no
     else
@@ -1716,24 +1719,22 @@ if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
          [You must install libudev-devel >= $UDEV_REQUIRED to compile libvirt])
     fi
   ])
+  if test "x$with_udev" != "xno"; then
+    PKG_CHECK_MODULES(PCIACCESS, pciaccess >= $PCIACCESS_REQUIRED,
+      [with_udev=yes],
+      [
+        if test "x$with_udev" = "xcheck" ; then
+          with_udev=no
+        else
+          AC_MSG_ERROR(
+           [You must install libpciaccess-devel >= $PCIACCESS_REQUIRED to compile libvirt])
+        fi
+      ])
+  fi
   if test "x$with_udev" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_UDEV], 1,
       [use UDEV for host device enumeration])
-
-    old_CFLAGS=$CFLAGS
-    old_LDFLAGS=$LDFLAGS
-    CFLAGS="$CFLAGS $UDEV_CFLAGS"
-    LDFLAGS="$LDFLAGS $UDEV_LIBS"
-    AC_CHECK_FUNCS([udev_new],,[with_udev=no])
-    CFLAGS="$old_CFLAGS"
-    LDFLAGS="$old_LDFLAGS"
   fi
-  PCIACCESS_CFLAGS=
-  PCIACCESS_LIBS=
-  PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= $PCIACCESS_REQUIRED], [], [PCIACCESS_FOUND=no])
-  if test "$PCIACCESS_FOUND" = "no" ; then
-     AC_MSG_ERROR([You must install libpciaccess/libpciaccess-devel >= $PCIACCESS_REQUIRED to compile libvirt])
-   fi
 fi
 AM_CONDITIONAL([HAVE_UDEV], [test "x$with_udev" = "xyes"])
 AC_SUBST([UDEV_CFLAGS])
