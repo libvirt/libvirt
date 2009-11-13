@@ -1495,29 +1495,6 @@ static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
     }
 }
 
-static int qemudBuildCommandLineChrDevTargetStr(virDomainChrDefPtr dev,
-                                                const char *const id,
-                                                virBufferPtr buf)
-{
-    int ret = 0;
-    const char *addr = NULL;
-
-    int port;
-    switch (dev->targetType) {
-    case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
-        addr = virSocketFormatAddr(dev->target.addr);
-        port = virSocketGetPort(dev->target.addr);
-
-        virBufferVSprintf(buf, "user,guestfwd=tcp:%s:%i-chardev:%s",
-                          addr, port, id);
-
-        VIR_FREE(addr);
-        break;
-    }
-
-    return ret;
-}
-
 static void qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
                                            virBufferPtr buf)
 {
@@ -2205,7 +2182,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT("-chardev");
             ADD_ARG(virBufferContentAndReset(&buf));
 
-            qemudBuildCommandLineChrDevTargetStr(channel, id, &buf);
+            const char *addr = virSocketFormatAddr(channel->target.addr);
+            int port = virSocketGetPort(channel->target.addr);
+
+            virBufferVSprintf(&buf, "user,guestfwd=tcp:%s:%i-chardev:%s",
+                              addr, port, id);
+
+            VIR_FREE(addr);
+
             if (virBufferError(&buf))
                 goto error;
 
