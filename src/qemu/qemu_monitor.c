@@ -456,6 +456,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     mon->vm = vm;
     mon->eofCB = eofCB;
     qemuMonitorLock(mon);
+    virDomainObjRef(vm);
 
     switch (vm->monitor_chr->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -498,8 +499,6 @@ qemuMonitorOpen(virDomainObjPtr vm,
                          _("unable to register monitor events"));
         goto cleanup;
     }
-
-    virDomainObjRef(vm);
 
     VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
     qemuMonitorUnlock(mon);
