@@ -878,7 +878,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 
     nodeinfo->memory = memorySize / 1024; /* Scale from bytes to kilobytes */
     nodeinfo->cpus = cpuInfo_numCpuCores;
-    nodeinfo->mhz = cpuInfo_hz / (1024 * 1024); /* Scale from hz to mhz */
+    nodeinfo->mhz = cpuInfo_hz / (1000 * 1000); /* Scale from hz to mhz */
     nodeinfo->nodes = numaInfo_numNodes;
     nodeinfo->sockets = cpuInfo_numCpuPackages;
     nodeinfo->cores = cpuInfo_numCpuPackages > 0
