@@ -1496,6 +1496,7 @@ ESX_VI__TEMPLATE__FREE(HostCpuIdInfo,
 {
     esxVI_HostCpuIdInfo_Free(&item->_next);
 
+    esxVI_Int_Free(&item->level);
     VIR_FREE(item->vendor);
     VIR_FREE(item->eax);
     VIR_FREE(item->ebx);
