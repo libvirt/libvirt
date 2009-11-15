@@ -133,7 +133,7 @@ esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
 
 int
 esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
-                   int *noVerify)
+                   int *noVerify, int *autoAnswer)
 {
     int result = 0;
     int i;
@@ -146,6 +146,14 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
 
     if (vCenter != NULL) {
         *vCenter = NULL;
+    }
+
+    if (noVerify != NULL) {
+        *noVerify = 0;
+    }
+
+    if (autoAnswer != NULL) {
+        *autoAnswer = 0;
     }
 
 #ifdef HAVE_XMLURI_QUERY_RAW
@@ -199,6 +207,18 @@ esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
                 (*noVerify != 0 && *noVerify != 1)) {
                 ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
                           "Query parameter 'no_verify' has unexpected value "
+                          "'%s' (should be 0 or 1)", queryParam->value);
+                goto failure;
+            }
+        } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
+            if (autoAnswer == NULL) {
+                continue;
+            }
+
+            if (virStrToLong_i(queryParam->value, NULL, 10, autoAnswer) < 0 ||
+                (*autoAnswer != 0 && *autoAnswer != 1)) {
+                ESX_ERROR(conn, VIR_ERR_INVALID_ARG,
+                          "Query parameter 'auto_answer' has unexpected value "
                           "'%s' (should be 0 or 1)", queryParam->value);
                 goto failure;
             }

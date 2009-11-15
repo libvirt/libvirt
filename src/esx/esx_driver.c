@@ -21,15 +21,6 @@
  *
  */
 
-/*
- * Some links to relevant documentation:
- *
- * - Memory model:        http://www.vmware.com/pdf/esx3_memory.pdf
- * - VI API reference:    http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
- * - VMX-file parameters: http://www.sanbarrow.com/vmx.html
- * - CPUID:               http://www.sandpile.org/ia32/cpuid.htm
- */
-
 #include <config.h>
 
 #include <netdb.h>
@@ -63,6 +54,7 @@ typedef struct _esxPrivate {
     int32_t maxVcpus;
     esxVI_Boolean supportsVMotion;
     esxVI_Boolean supportsLongMode; /* aka x86_64 */
+    esxVI_Boolean autoAnswer;
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
 
@@ -242,7 +234,7 @@ esxCapsInit(virConnectPtr conn)
 
 
 /*
- * URI format: {esx|gsx}://[<user>@]<server>[:<port>][?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}]
+ * URI format: {esx|gsx}://[<user>@]<server>[:<port>][?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}][&auto_answer={0|1}]
  *
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
@@ -258,6 +250,10 @@ esxCapsInit(virConnectPtr conn)
  *
  * If the no_verify parameter is set to 1, this disables libcurl client checks
  * of the server's certificate. The default value it 0.
+ *
+ * If the auto_answer parameter is set to 1, the driver will respond to all
+ * virtual machine questions with the default answer, otherwise virtual machine
+ * questions will be reported as errors. The default value it 0.
  */
 static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
@@ -268,6 +264,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     char *url = NULL;
     char *vCenter = NULL;
     int noVerify = 0; // boolean
+    int autoAnswer = 0; // boolean
     char *username = NULL;
     char *password = NULL;
 
@@ -296,13 +293,19 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     priv->maxVcpus = -1;
     priv->supportsVMotion = esxVI_Boolean_Undefined;
     priv->supportsLongMode = esxVI_Boolean_Undefined;
+    priv->autoAnswer = esxVI_Boolean_False;
     priv->usedCpuTimeCounterId = -1;
 
-    /* Request credentials and login to host/vCenter */
-    if (esxUtil_ParseQuery(conn, &priv->transport, &vCenter, &noVerify) < 0) {
+    if (esxUtil_ParseQuery(conn, &priv->transport, &vCenter, &noVerify,
+                           &autoAnswer) < 0) {
         goto failure;
     }
 
+    if (autoAnswer) {
+        priv->autoAnswer = esxVI_Boolean_True;
+    }
+
+    /* Request credentials and login to host/vCenter */
     if (esxUtil_ResolveHostname(conn, conn->uri->server, hostIpAddress,
                                 NI_MAXHOST) < 0) {
         goto failure;
@@ -1360,10 +1363,9 @@ esxDomainSuspend(virDomainPtr domain)
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, propertyNameList,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, propertyNameList,
+           &virtualMachine, priv->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1378,6 +1380,7 @@ esxDomainSuspend(virDomainPtr domain)
     if (esxVI_SuspendVM_Task(domain->conn, priv->host, virtualMachine->obj,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -1420,10 +1423,9 @@ esxDomainResume(virDomainPtr domain)
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, propertyNameList,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, propertyNameList,
+           &virtualMachine, priv->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1438,6 +1440,7 @@ esxDomainResume(virDomainPtr domain)
     if (esxVI_PowerOnVM_Task(domain->conn, priv->host, virtualMachine->obj,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -1577,10 +1580,9 @@ esxDomainDestroy(virDomainPtr domain)
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, propertyNameList,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, propertyNameList,
+           &virtualMachine, priv->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1595,6 +1597,7 @@ esxDomainDestroy(virDomainPtr domain)
     if (esxVI_PowerOffVM_Task(domain->conn, priv->host, virtualMachine->obj,
                               &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -1707,10 +1710,9 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         goto failure;
     }
 
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, NULL,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_Long_Alloc(domain->conn, &spec->memoryMB) < 0) {
         goto failure;
@@ -1722,6 +1724,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     if (esxVI_ReconfigVM_Task(domain->conn, priv->host, virtualMachine->obj,
                               spec, &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -1761,10 +1764,9 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
         goto failure;
     }
 
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, NULL,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_ResourceAllocationInfo_Alloc(domain->conn,
                                            &spec->memoryAllocation) < 0 ||
@@ -1778,6 +1780,7 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
     if (esxVI_ReconfigVM_Task(domain->conn, priv->host, virtualMachine->obj,
                               spec, &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -2100,10 +2103,9 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         goto failure;
     }
 
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, NULL,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_Int_Alloc(domain->conn, &spec->numCPUs) < 0) {
         goto failure;
@@ -2114,6 +2116,7 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     if (esxVI_ReconfigVM_Task(domain->conn, priv->host, virtualMachine->obj,
                               spec, &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -2483,10 +2486,9 @@ esxDomainCreate(virDomainPtr domain)
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, propertyNameList,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, propertyNameList,
+           &virtualMachine, priv->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -2501,6 +2503,7 @@ esxDomainCreate(virDomainPtr domain)
     if (esxVI_PowerOnVM_Task(domain->conn, priv->host, virtualMachine->obj,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -2690,6 +2693,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
                               datastoreRelatedPath, NULL, esxVI_Boolean_False,
                               resourcePool, hostSystem->obj, &task) < 0 ||
         esxVI_WaitForTaskCompletion(conn, priv->host, task,
+                                    def->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -2977,10 +2981,9 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
         goto failure;
     }
 
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, NULL,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->host, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
         esxVI_VirtualMachineConfigSpec_Alloc(domain->conn, &spec) < 0 ||
         esxVI_ResourceAllocationInfo_Alloc(domain->conn,
                                            &spec->cpuAllocation) < 0) {
@@ -3068,6 +3071,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     if (esxVI_ReconfigVM_Task(domain->conn, priv->host, virtualMachine->obj,
                               spec, &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }
@@ -3106,7 +3110,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
     char *transport = NULL;
 
     if (uri_in == NULL) {
-        if (esxUtil_ParseQuery(dconn, &transport, NULL, NULL) < 0) {
+        if (esxUtil_ParseQuery(dconn, &transport, NULL, NULL, NULL) < 0) {
             return -1;
         }
 
@@ -3181,14 +3185,10 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Lookup VirtualMachine, HostSystem and ResourcePool */
-    if (esxVI_LookupVirtualMachineByUuid(domain->conn, priv->vCenter,
-                                         domain->uuid, NULL,
-                                         &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0) {
-        goto failure;
-    }
-
-    if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
+    if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+          (domain->conn, priv->vCenter, domain->uuid, NULL, &virtualMachine,
+           priv->autoAnswer) < 0 ||
+        esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "parent") < 0 ||
         esxVI_LookupHostSystemByIp(domain->conn, priv->vCenter, hostIpAddress,
                                    propertyNameList, &hostSystem) < 0) {
@@ -3231,6 +3231,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     if (esxVI_MigrateVM_Task(domain->conn, priv->vCenter, virtualMachine->obj,
                              resourcePool, hostSystem->obj, &task) < 0 ||
         esxVI_WaitForTaskCompletion(domain->conn, priv->vCenter, task,
+                                    domain->uuid, priv->autoAnswer,
                                     &taskInfoState) < 0) {
         goto failure;
     }

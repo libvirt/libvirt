@@ -80,8 +80,15 @@ int esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *hostSystem,
                           esxVI_ManagedObjectReference **task);
 
+int esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
+                     esxVI_ManagedObjectReference *task);
+
 int esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
                        esxVI_ManagedObjectReference *virtualMachine);
+
+int esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
+                   esxVI_ManagedObjectReference *virtualMachine,
+                   const char *questionId, const char *answerChoice);
 
 int esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
                        esxVI_PropertyFilterSpec *propertyFilterSpec,

@@ -982,7 +982,6 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
     goto cleanup;
 }
 
-
 int
 esxVI_List_Serialize(virConnectPtr conn, esxVI_List *list, const char *element,
                      virBufferPtr output, esxVI_Boolean required,
@@ -1075,6 +1074,8 @@ esxVI_Alloc(virConnectPtr conn, void **ptrptr, size_t size)
 
     return 0;
 }
+
+
 
 int
 esxVI_CheckSerializationNecessity(virConnectPtr conn, const char *element,
@@ -1479,6 +1480,33 @@ esxVI_GetVirtualMachinePowerState(virConnectPtr conn,
 
 
 int
+esxVI_GetVirtualMachineQuestionInfo
+  (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
+   esxVI_VirtualMachineQuestionInfo **questionInfo)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (questionInfo == NULL || *questionInfo != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    for (dynamicProperty = virtualMachine->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "runtime.question")) {
+            if (esxVI_VirtualMachineQuestionInfo_CastFromAnyType
+                  (conn, dynamicProperty->val, questionInfo) < 0) {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+
+int
 esxVI_LookupNumberOfDomainsByPowerState(virConnectPtr conn, esxVI_Context *ctx,
                                         esxVI_VirtualMachinePowerState powerState,
                                         esxVI_Boolean inverse)
@@ -1827,6 +1855,60 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+  (virConnectPtr conn, esxVI_Context *ctx, const unsigned char *uuid,
+   esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
+   esxVI_Boolean autoAnswer)
+{
+    int result = 0;
+    esxVI_String *completePropertyNameList = NULL;
+    esxVI_VirtualMachineQuestionInfo *questionInfo = NULL;
+    esxVI_TaskInfo *pendingTaskInfoList = NULL;
+
+    if (esxVI_String_DeepCopyList(conn, &completePropertyNameList,
+                                  propertyNameList) < 0 ||
+        esxVI_String_AppendValueListToList(conn, &completePropertyNameList,
+                                           "runtime.question\0"
+                                           "recentTask\0") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(conn, ctx, uuid,
+                                         completePropertyNameList,
+                                         virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachineQuestionInfo(conn, *virtualMachine,
+                                            &questionInfo) < 0 ||
+        esxVI_LookupPendingTaskInfoListByVirtualMachine
+           (conn, ctx, *virtualMachine, &pendingTaskInfoList) < 0) {
+        goto failure;
+    }
+
+    if (questionInfo != NULL &&
+        esxVI_HandleVirtualMachineQuestion(conn, ctx, (*virtualMachine)->obj,
+                                           questionInfo, autoAnswer) < 0) {
+        goto failure;
+    }
+
+    if (pendingTaskInfoList != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_OPERATION_INVALID,
+                     "Other tasks are pending for this domain");
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_String_Free(&completePropertyNameList);
+    esxVI_VirtualMachineQuestionInfo_Free(&questionInfo);
+    esxVI_TaskInfo_Free(&pendingTaskInfoList);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
                             const char *name, esxVI_String *propertyNameList,
                             esxVI_ObjectContent **datastore,
@@ -1986,6 +2068,164 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
 
 
 
+int esxVI_LookupTaskInfoByTask(virConnectPtr conn, esxVI_Context *ctx,
+                               esxVI_ManagedObjectReference *task,
+                               esxVI_TaskInfo **taskInfo)
+{
+    int result = 0;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *objectContent = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (taskInfo == NULL || *taskInfo != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList, "info") < 0 ||
+        esxVI_LookupObjectContentByType(conn, ctx, task, "Task",
+                                        propertyNameList, esxVI_Boolean_False,
+                                        &objectContent) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "info")) {
+            if (esxVI_TaskInfo_CastFromAnyType(conn, dynamicProperty->val,
+                                               taskInfo) < 0) {
+                goto failure;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&objectContent);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
+esxVI_LookupPendingTaskInfoListByVirtualMachine
+  (virConnectPtr conn, esxVI_Context *ctx, esxVI_ObjectContent *virtualMachine,
+   esxVI_TaskInfo **pendingTaskInfoList)
+{
+    int result = 0;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ManagedObjectReference *recentTaskList = NULL;
+    esxVI_ManagedObjectReference *recentTask = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_TaskInfo *taskInfo = NULL;
+
+    if (pendingTaskInfoList == NULL || *pendingTaskInfoList != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    /* Get list of recent tasks */
+    for (dynamicProperty = virtualMachine->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "recentTask")) {
+            if (esxVI_ManagedObjectReference_CastListFromAnyType
+                  (conn, dynamicProperty->val, &recentTaskList, "Task") < 0) {
+                goto failure;
+            }
+
+            break;
+        }
+    }
+
+    /* Lookup task info for each task */
+    for (recentTask = recentTaskList; recentTask != NULL;
+         recentTask = recentTask->_next) {
+        if (esxVI_LookupTaskInfoByTask(conn, ctx, recentTask, &taskInfo) < 0) {
+            goto failure;
+        }
+
+        if (taskInfo->state == esxVI_TaskInfoState_Queued ||
+            taskInfo->state == esxVI_TaskInfoState_Running) {
+            if (esxVI_TaskInfo_AppendToList(conn, pendingTaskInfoList,
+                                            taskInfo) < 0) {
+                goto failure;
+            }
+
+            taskInfo = NULL;
+        } else {
+            esxVI_TaskInfo_Free(&taskInfo);
+        }
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ManagedObjectReference_Free(&recentTaskList);
+    esxVI_TaskInfo_Free(&taskInfo);
+
+    return result;
+
+  failure:
+    esxVI_TaskInfo_Free(pendingTaskInfoList);
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
+esxVI_LookupAndHandleVirtualMachineQuestion(virConnectPtr conn,
+                                            esxVI_Context *ctx,
+                                            const unsigned char *uuid,
+                                            esxVI_Boolean autoAnswer)
+{
+    int result = 0;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_VirtualMachineQuestionInfo *questionInfo = NULL;
+
+    if (esxVI_String_AppendValueToList(conn, &propertyNameList,
+                                       "runtime.question") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(conn, ctx, uuid, propertyNameList,
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachineQuestionInfo(conn, virtualMachine,
+                                            &questionInfo) < 0) {
+        goto failure;
+    }
+
+    if (questionInfo != NULL &&
+        esxVI_HandleVirtualMachineQuestion(conn, ctx, virtualMachine->obj,
+                                           questionInfo, autoAnswer) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_VirtualMachineQuestionInfo_Free(&questionInfo);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
 int
 esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
                               const char *name, const char *request,
@@ -2134,8 +2374,109 @@ esxVI_SimpleVirtualMachineMethod(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_HandleVirtualMachineQuestion
+  (virConnectPtr conn, esxVI_Context *ctx,
+   esxVI_ManagedObjectReference *virtualMachine,
+   esxVI_VirtualMachineQuestionInfo *questionInfo,
+   esxVI_Boolean autoAnswer)
+{
+    int result = 0;
+    esxVI_ElementDescription *elementDescription = NULL;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    esxVI_ElementDescription *answerChoice = NULL;
+    int answerIndex = 0;
+    char *possibleAnswers = NULL;
+
+    if (questionInfo->choice->choiceInfo != NULL) {
+        for (elementDescription = questionInfo->choice->choiceInfo;
+             elementDescription != NULL;
+             elementDescription = elementDescription->_next) {
+            virBufferVSprintf(&buffer, "'%s'", elementDescription->label);
+
+            if (elementDescription->_next != NULL) {
+                virBufferAddLit(&buffer, ", ");
+            }
+
+            if (answerChoice == NULL &&
+                questionInfo->choice->defaultIndex != NULL &&
+                questionInfo->choice->defaultIndex->value == answerIndex) {
+                answerChoice = elementDescription;
+            }
+
+            ++answerIndex;
+        }
+
+        if (virBufferError(&buffer)) {
+            virReportOOMError(conn);
+            goto failure;
+        }
+
+        possibleAnswers = virBufferContentAndReset(&buffer);
+    }
+
+    if (autoAnswer == esxVI_Boolean_True) {
+        if (possibleAnswers == NULL) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Pending question blocks virtual machine execution, "
+                         "question is '%s', no possible answers",
+                         questionInfo->text);
+            goto failure;
+        } else if (answerChoice == NULL) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Pending question blocks virtual machine execution, "
+                         "question is '%s', possible answers are %s, but no "
+                         "default answer is specified", questionInfo->text,
+                         possibleAnswers);
+            goto failure;
+        }
+
+        VIR_INFO("Pending question blocks virtual machine execution, "
+                 "question is '%s', possible answers are %s, responding "
+                 "with default answer '%s'", questionInfo->text,
+                 possibleAnswers, answerChoice->label);
+
+        if (esxVI_AnswerVM(conn, ctx, virtualMachine, questionInfo->id,
+                           answerChoice->key) < 0) {
+            goto failure;
+        }
+    } else {
+        if (possibleAnswers != NULL) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Pending question blocks virtual machine execution, "
+                         "question is '%s', possible answers are %s",
+                         questionInfo->text, possibleAnswers);
+        } else {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Pending question blocks virtual machine execution, "
+                         "question is '%s', no possible answers",
+                         questionInfo->text);
+        }
+
+        goto failure;
+    }
+
+  cleanup:
+    VIR_FREE(possibleAnswers);
+
+    return result;
+
+  failure:
+    if (possibleAnswers == NULL) {
+        possibleAnswers = virBufferContentAndReset(&buffer);
+    }
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
                             esxVI_ManagedObjectReference *task,
+                            const unsigned char *virtualMachineUuid,
+                            esxVI_Boolean autoAnswer,
                             esxVI_TaskInfoState *finalState)
 {
     int result = 0;
@@ -2150,6 +2491,7 @@ esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_PropertyChange *propertyChange = NULL;
     esxVI_AnyType *propertyValue = NULL;
     esxVI_TaskInfoState state = esxVI_TaskInfoState_Undefined;
+    esxVI_TaskInfo *taskInfo = NULL;
 
     version = strdup("");
 
@@ -2186,6 +2528,35 @@ esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
     while (state != esxVI_TaskInfoState_Success &&
            state != esxVI_TaskInfoState_Error) {
         esxVI_UpdateSet_Free(&updateSet);
+
+        if (virtualMachineUuid != NULL) {
+            if (esxVI_LookupAndHandleVirtualMachineQuestion
+                  (conn, ctx, virtualMachineUuid, autoAnswer) < 0) {
+                /*
+                 * FIXME: Disable error reporting here, so possible errors from
+                 *        esxVI_LookupTaskInfoByTask() and esxVI_CancelTask()
+                 *        don't overwrite the actual error
+                 */
+                if (esxVI_LookupTaskInfoByTask(conn, ctx, task, &taskInfo)) {
+                    goto failure;
+                }
+
+                if (taskInfo->cancelable == esxVI_Boolean_True) {
+                    if (esxVI_CancelTask(conn, ctx, task) < 0) {
+                        VIR_ERROR0("Cancelable task is blocked by an "
+                                   "unanswered question but cancelation "
+                                   "failed");
+                    }
+                } else {
+                    VIR_ERROR0("Non-cancelable task is blocked by an "
+                               "unanswered question");
+                }
+
+                /* FIXME: Enable error reporting here again */
+
+                goto failure;
+            }
+        }
 
         if (esxVI_WaitForUpdates(conn, ctx, version, &updateSet) < 0) {
             goto failure;
@@ -2259,6 +2630,7 @@ esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_ManagedObjectReference_Free(&propertyFilter);
     VIR_FREE(version);
     esxVI_UpdateSet_Free(&updateSet);
+    esxVI_TaskInfo_Free(&taskInfo);
 
     return result;
 

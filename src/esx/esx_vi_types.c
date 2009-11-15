@@ -1202,6 +1202,9 @@ static const esxVI_Enumeration _esxVI_TaskInfoState_Enumeration = {
 /* esxVI_TaskInfoState_CastFromAnyType */
 ESX_VI__TEMPLATE__ENUMERATION__CAST_FROM_ANY_TYPE(TaskInfoState);
 
+/* esxVI_TaskInfoState_Deserialize */
+ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(TaskInfoState);
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1315,6 +1318,9 @@ esxVI_ManagedObjectReference_DeepCopy(virConnectPtr conn,
     return -1;
 }
 
+/* esxVI_ManagedObjectReference_AppendToList */
+ESX_VI__TEMPLATE__LIST__APPEND(ManagedObjectReference);
+
 int
 esxVI_ManagedObjectReference_CastFromAnyType
   (virConnectPtr conn, esxVI_AnyType *anyType,
@@ -1337,6 +1343,76 @@ esxVI_ManagedObjectReference_CastFromAnyType
     return esxVI_ManagedObjectReference_Deserialize(conn, anyType->_node,
                                                     managedObjectReference,
                                                     expectedType);
+}
+
+int
+esxVI_ManagedObjectReference_CastListFromAnyType
+  (virConnectPtr conn, esxVI_AnyType *anyType,
+   esxVI_ManagedObjectReference **managedObjectReferenceList,
+   const char *expectedType)
+{
+    int result = 0;
+    xmlNodePtr childNode = NULL;
+    esxVI_AnyType *childAnyType = NULL;
+    esxVI_ManagedObjectReference *managedObjectReference = NULL;
+
+    if (managedObjectReferenceList == NULL ||
+        *managedObjectReferenceList != NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        goto failure;
+    }
+
+    if (anyType == NULL) {
+        return 0;
+    }
+
+    if (STRNEQ(anyType->other, "ArrayOfManagedObjectReference")) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                     "Expecting type to be 'ArrayOfManagedObjectReference' "
+                     "but found '%s'", anyType->other);
+        goto failure;
+    }
+
+    for (childNode = anyType->_node->children; childNode != NULL;
+         childNode = childNode->next) {
+        if (childNode->type != XML_ELEMENT_NODE) {
+            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                         "Wrong XML element type %d", childNode->type);
+            goto failure;
+        }
+
+        esxVI_AnyType_Free(&childAnyType);
+
+        if (esxVI_AnyType_Deserialize(conn, childNode, &childAnyType) < 0) {
+            goto failure;
+        }
+
+        managedObjectReference = NULL;
+
+        if (esxVI_ManagedObjectReference_CastFromAnyType
+              (conn, childAnyType, &managedObjectReference,
+               expectedType) < 0) {
+            goto failure;
+        }
+
+        if (esxVI_ManagedObjectReference_AppendToList
+              (conn, managedObjectReferenceList, managedObjectReference) < 0) {
+            goto failure;
+        }
+    }
+
+
+  cleanup:
+    esxVI_AnyType_Free(&childAnyType);
+
+    return result;
+
+  failure:
+    esxVI_ManagedObjectReference_Free(managedObjectReferenceList);
+
+    result = -1;
+
+    goto cleanup;
 }
 
 int
@@ -2427,6 +2503,41 @@ ESX_VI__TEMPLATE__DESERIALIZE(UserSession,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: VirtualMachineQuestionInfo
+ */
+
+/* esxVI_VirtualMachineQuestionInfo_Alloc */
+ESX_VI__TEMPLATE__ALLOC(VirtualMachineQuestionInfo);
+
+/* esxVI_VirtualMachineQuestionInfo_Free */
+ESX_VI__TEMPLATE__FREE(VirtualMachineQuestionInfo,
+{
+    VIR_FREE(item->id);
+    VIR_FREE(item->text);
+    esxVI_ChoiceOption_Free(&item->choice);
+    /*esxVI_VirtualMachineMessage_Free(&item->message);*//* FIXME */
+});
+
+/* esxVI_VirtualMachineQuestionInfo_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(VirtualMachineQuestionInfo);
+
+/* esxVI_VirtualMachineQuestionInfo_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE(VirtualMachineQuestionInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, id);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, text);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(ChoiceOption, choice);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(message); /* FIXME */
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(id);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(text);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(choice);
+});
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Type: ElementDescription extends Description
  *
  *          In contrast to SelectionSpec and TraversalSpec just merge
@@ -2447,6 +2558,9 @@ ESX_VI__TEMPLATE__FREE(ElementDescription,
     VIR_FREE(item->key);
 });
 
+/* esxVI_ElementDescription_AppendToList */
+ESX_VI__TEMPLATE__LIST__APPEND(ElementDescription);
+
 /* esxVI_ElementDescription_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(ElementDescription,
 {
@@ -2458,6 +2572,37 @@ ESX_VI__TEMPLATE__DESERIALIZE(ElementDescription,
     ESX_VI__TEMPLATE__PROPERTY__REQUIRED(label);
     ESX_VI__TEMPLATE__PROPERTY__REQUIRED(summary);
     ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
+});
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: ChoiceOption extends OptionType
+ *
+ *          In contrast to SelectionSpec and TraversalSpec just merge
+ *          OptionType into ChoiceOption for simplicity, because
+ *          only ChoiceOption is used.
+ */
+
+/* esxVI_ChoiceOption_Alloc */
+ESX_VI__TEMPLATE__ALLOC(ChoiceOption);
+
+/* esxVI_ChoiceOption_Free */
+ESX_VI__TEMPLATE__FREE(ChoiceOption,
+{
+    esxVI_ElementDescription_Free(&item->choiceInfo);
+    esxVI_Int_Free(&item->defaultIndex);
+});
+
+/* esxVI_ChoiceOption_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE(ChoiceOption,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Boolean, valueIsReadonly);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(ElementDescription, choiceInfo);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, defaultIndex);
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(choiceInfo);
 });
 
 
@@ -2699,3 +2844,76 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfEntityMetric,
 
 /* esxVI_PerfEntityMetric_DeserializeList */
 ESX_VI__TEMPLATE__LIST__DESERIALIZE(PerfEntityMetric);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: TaskInfo
+ */
+
+/* esxVI_TaskInfo_Alloc */
+ESX_VI__TEMPLATE__ALLOC(TaskInfo);
+
+/* esxVI_TaskInfo_Free */
+ESX_VI__TEMPLATE__FREE(TaskInfo,
+{
+    esxVI_TaskInfo_Free(&item->_next);
+
+    VIR_FREE(item->key);
+    esxVI_ManagedObjectReference_Free(&item->task);
+    VIR_FREE(item->name);
+    VIR_FREE(item->descriptionId);
+    esxVI_ManagedObjectReference_Free(&item->entity);
+    VIR_FREE(item->entityName);
+    /*esxVI_ManagedObjectReference_Free(&item->locked);*//* FIXME */
+    /*esxVI_MethodFault_Free(&item->error);*//* FIXME */
+    esxVI_AnyType_Free(&item->result);
+    esxVI_Int_Free(&item->progress);
+    /*esxVI_TaskReason_Free(&item->reason);*//* FIXME */
+    esxVI_DateTime_Free(&item->queueTime);
+    esxVI_DateTime_Free(&item->startTime);
+    esxVI_DateTime_Free(&item->completeTime);
+    esxVI_Int_Free(&item->eventChainId);
+});
+
+/* esxVI_TaskInfo_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(TaskInfo);
+
+/* esxVI_TaskInfo_AppendToList */
+ESX_VI__TEMPLATE__LIST__APPEND(TaskInfo);
+
+/* esxVI_TaskInfo_Deserialize */
+ESX_VI__TEMPLATE__DESERIALIZE(TaskInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, key);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_EXPECTED(ManagedObjectReference,
+                                                     "Task", task);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, name);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, descriptionId);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_EXPECTED(ManagedObjectReference,
+                                                     NULL, entity);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, entityName);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(locked); /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(TaskInfoState, state);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Boolean, cancelled);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Boolean, cancelable);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(error); /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(AnyType, result);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, progress);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(reason); /* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, queueTime);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, startTime);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, completeTime);
+    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, eventChainId);
+},
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(task);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(descriptionId);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(state);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(cancelled);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(cancelable);
+    /*ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reason);*//* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(queueTime);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(eventChainId);
+});

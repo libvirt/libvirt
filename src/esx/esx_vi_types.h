@@ -90,13 +90,16 @@ typedef struct _esxVI_ResourcePoolResourceUsage esxVI_ResourcePoolResourceUsage;
 typedef struct _esxVI_VirtualMachineConfigSpec esxVI_VirtualMachineConfigSpec;
 typedef struct _esxVI_Event esxVI_Event;
 typedef struct _esxVI_UserSession esxVI_UserSession;
+typedef struct _esxVI_VirtualMachineQuestionInfo esxVI_VirtualMachineQuestionInfo;
 typedef struct _esxVI_ElementDescription esxVI_ElementDescription;
+typedef struct _esxVI_ChoiceOption esxVI_ChoiceOption;
 typedef struct _esxVI_PerfMetricId esxVI_PerfMetricId;
 typedef struct _esxVI_PerfCounterInfo esxVI_PerfCounterInfo;
 typedef struct _esxVI_PerfQuerySpec esxVI_PerfQuerySpec;
 typedef struct _esxVI_PerfSampleInfo esxVI_PerfSampleInfo;
 typedef struct _esxVI_PerfMetricIntSeries esxVI_PerfMetricIntSeries;
 typedef struct _esxVI_PerfEntityMetric esxVI_PerfEntityMetric;
+typedef struct _esxVI_TaskInfo esxVI_TaskInfo;
 
 
 
@@ -403,6 +406,8 @@ enum _esxVI_TaskInfoState {
 int esxVI_TaskInfoState_CastFromAnyType(virConnectPtr conn,
                                         esxVI_AnyType *anyType,
                                         esxVI_TaskInfoState *taskInfoState);
+int esxVI_TaskInfoState_Deserialize(virConnectPtr conn, xmlNodePtr node,
+                                    esxVI_TaskInfoState *taskInfoState);
 
 
 
@@ -480,11 +485,19 @@ void esxVI_ManagedObjectReference_Free
 int esxVI_ManagedObjectReference_DeepCopy(virConnectPtr conn,
                                           esxVI_ManagedObjectReference **dest,
                                           esxVI_ManagedObjectReference *src);
+int esxVI_ManagedObjectReference_AppendToList
+      (virConnectPtr conn,
+       esxVI_ManagedObjectReference **managedObjectReferenceList,
+       esxVI_ManagedObjectReference *managedObjectReference);
 int esxVI_ManagedObjectReference_CastFromAnyType(virConnectPtr conn,
                                                  esxVI_AnyType *anyType,
                                                  esxVI_ManagedObjectReference
                                                  **managedObjectReference,
                                                  const char *expectedType);
+int esxVI_ManagedObjectReference_CastListFromAnyType
+      (virConnectPtr conn, esxVI_AnyType *anyType,
+       esxVI_ManagedObjectReference **managedObjectReferenceList,
+       const char *expectedType);
 int esxVI_ManagedObjectReference_Serialize
       (virConnectPtr conn,
        esxVI_ManagedObjectReference *managedObjectReference,
@@ -1065,6 +1078,32 @@ int esxVI_UserSession_Deserialize(virConnectPtr conn, xmlNodePtr node,
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: VirtualMachineQuestionInfo
+ */
+
+/* FIXME: implement the rest */
+struct _esxVI_VirtualMachineQuestionInfo {
+    char *id;                                              /* required */
+    char *text;                                            /* required */
+    esxVI_ChoiceOption *choice;                            /* required */
+    /*esxVI_VirtualMachineMessage *message;*/              /* optional, list */
+};
+
+int esxVI_VirtualMachineQuestionInfo_Alloc
+      (virConnectPtr conn,
+       esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
+void esxVI_VirtualMachineQuestionInfo_Free
+       (esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
+int esxVI_VirtualMachineQuestionInfo_CastFromAnyType
+      (virConnectPtr conn, esxVI_AnyType *anyType,
+       esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
+int esxVI_VirtualMachineQuestionInfo_Deserialize
+      (virConnectPtr conn, xmlNodePtr node,
+       esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Type: ElementDescription extends Description
  *
  *          In contrast to SelectionSpec and TraversalSpec just merge
@@ -1087,9 +1126,37 @@ int esxVI_ElementDescription_Alloc
       (virConnectPtr conn, esxVI_ElementDescription **elementDescription);
 void esxVI_ElementDescription_Free
        (esxVI_ElementDescription **elementDescription);
+int esxVI_ElementDescription_AppendToList
+      (virConnectPtr conn, esxVI_ElementDescription **elementDescriptionList,
+       esxVI_ElementDescription *elementDescription);
 int esxVI_ElementDescription_Deserialize
       (virConnectPtr conn, xmlNodePtr node,
        esxVI_ElementDescription **elementDescription);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: ChoiceOption extends OptionType
+ *
+ *          In contrast to SelectionSpec and TraversalSpec just merge
+ *          OptionType into ChoiceOption for simplicity, because
+ *          only ChoiceOption is used.
+ */
+
+struct _esxVI_ChoiceOption {
+    /* OptionType */
+    esxVI_Boolean valueIsReadonly;                         /* optional */
+
+    /* ChoiceOption */
+    esxVI_ElementDescription *choiceInfo;                  /* required, list */
+    esxVI_Int *defaultIndex;                               /* optional */
+};
+
+int esxVI_ChoiceOption_Alloc(virConnectPtr conn,
+                             esxVI_ChoiceOption **choiceOption);
+void esxVI_ChoiceOption_Free(esxVI_ChoiceOption **choiceOption);
+int esxVI_ChoiceOption_Deserialize(virConnectPtr conn, xmlNodePtr node,
+                                   esxVI_ChoiceOption **choiceOption);
 
 
 
@@ -1271,5 +1338,44 @@ int esxVI_PerfEntityMetric_Deserialize
 int esxVI_PerfEntityMetric_DeserializeList
       (virConnectPtr conn, xmlNodePtr node,
        esxVI_PerfEntityMetric **perfEntityMetricList);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Type: TaskInfo
+ */
+
+struct _esxVI_TaskInfo {
+    esxVI_TaskInfo *_next;                                 /* optional */
+
+    char *key;                                             /* required */
+    esxVI_ManagedObjectReference *task;                    /* required */
+    char *name;                                            /* optional */
+    char *descriptionId;                                   /* required */
+    esxVI_ManagedObjectReference *entity;                  /* optional */
+    char *entityName;                                      /* optional */
+    /*esxVI_ManagedObjectReference *locked;*/                  /* optional, list *//* FIXME */
+    esxVI_TaskInfoState state;                             /* required */
+    esxVI_Boolean cancelled;                               /* required */
+    esxVI_Boolean cancelable;                              /* required */
+    /*esxVI_MethodFault *error;*/                              /* optional *//* FIXME */
+    esxVI_AnyType *result;                                 /* optional */
+    esxVI_Int *progress;                                   /* optional */
+    /*esxVI_TaskReason *reason;*/                              /* required *//* FIXME */
+    esxVI_DateTime *queueTime;                             /* required */
+    esxVI_DateTime *startTime;                             /* optional */
+    esxVI_DateTime *completeTime;                          /* optional */
+    esxVI_Int *eventChainId;                               /* required */
+};
+
+int esxVI_TaskInfo_Alloc(virConnectPtr conn, esxVI_TaskInfo **taskInfo);
+void esxVI_TaskInfo_Free(esxVI_TaskInfo **taskInfoList);
+int esxVI_TaskInfo_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
+                                   esxVI_TaskInfo **taskInfo);
+int esxVI_TaskInfo_AppendToList(virConnectPtr conn,
+                                esxVI_TaskInfo **taskInfoList,
+                                esxVI_TaskInfo *taskInfo);
+int esxVI_TaskInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+                               esxVI_TaskInfo **taskInfo);
 
 #endif /* __ESX_VI_TYPES_H__ */

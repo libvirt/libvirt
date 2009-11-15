@@ -229,6 +229,10 @@ int esxVI_GetVirtualMachinePowerState
       (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachinePowerState *powerState);
 
+int esxVI_GetVirtualMachineQuestionInfo
+      (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
+       esxVI_VirtualMachineQuestionInfo **questionInfo);
+
 int esxVI_LookupNumberOfDomainsByPowerState
       (virConnectPtr conn, esxVI_Context *ctx,
        esxVI_VirtualMachinePowerState powerState, esxVI_Boolean inverse);
@@ -252,11 +256,30 @@ int esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
                                      esxVI_ObjectContent **virtualMachine,
                                      esxVI_Occurence occurence);
 
+int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
+      (virConnectPtr conn, esxVI_Context *ctx, const unsigned char *uuid,
+       esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
+       esxVI_Boolean autoAnswer);
+
 int esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
                                 const char *name,
                                 esxVI_String *propertyNameList,
                                 esxVI_ObjectContent **datastore,
                                 esxVI_Occurence occurence);
+
+int esxVI_LookupTaskInfoByTask(virConnectPtr conn, esxVI_Context *ctx,
+                               esxVI_ManagedObjectReference *task,
+                               esxVI_TaskInfo **taskInfo);
+
+int esxVI_LookupPendingTaskInfoListByVirtualMachine
+      (virConnectPtr conn, esxVI_Context *ctx,
+       esxVI_ObjectContent *virtualMachine,
+       esxVI_TaskInfo **pendingTaskInfoList);
+
+int esxVI_LookupAndHandleVirtualMachineQuestion(virConnectPtr conn,
+                                                esxVI_Context *ctx,
+                                                const unsigned char *uuid,
+                                                esxVI_Boolean autoAnswer);
 
 int esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
                                   const char *name, const char *request,
@@ -271,8 +294,16 @@ int esxVI_SimpleVirtualMachineMethod
       (virConnectPtr conn, esxVI_Context *ctx, const char *name,
        esxVI_ManagedObjectReference *virtualMachine);
 
+int esxVI_HandleVirtualMachineQuestion
+      (virConnectPtr conn, esxVI_Context *ctx,
+       esxVI_ManagedObjectReference *virtualMachine,
+       esxVI_VirtualMachineQuestionInfo *questionInfo,
+       esxVI_Boolean autoAnswer);
+
 int esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *task,
+                                const unsigned char *virtualMachineUuid,
+                                esxVI_Boolean autoAnswer,
                                 esxVI_TaskInfoState *finalState);
 
 #endif /* __ESX_VI_H__ */

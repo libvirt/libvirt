@@ -577,6 +577,61 @@ esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
+esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
+                 esxVI_ManagedObjectReference *task)
+{
+    int result = 0;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *request = NULL;
+    esxVI_Response *response = NULL;
+
+    if (ctx->service == NULL) {
+        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        return -1;
+    }
+
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
+    virBufferAddLit(&buffer, "<CancelTask xmlns=\"urn:vim25\">");
+
+    if (esxVI_ManagedObjectReference_Serialize(conn, task, "_this", &buffer,
+                                               esxVI_Boolean_True) < 0) {
+        goto failure;
+    }
+
+    virBufferAddLit(&buffer, "</CancelTask>");
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    request = virBufferContentAndReset(&buffer);
+
+    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
+                              esxVI_Boolean_False) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    VIR_FREE(request);
+    esxVI_Response_Free(&response);
+
+    return result;
+
+  failure:
+    if (request == NULL) {
+        request = virBufferContentAndReset(&buffer);
+    }
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
                    esxVI_ManagedObjectReference *virtualMachine)
 {
@@ -617,6 +672,62 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
 
   failure:
     virBufferFreeAndReset(&buffer);
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
+esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
+               esxVI_ManagedObjectReference *virtualMachine,
+               const char *questionId, const char *answerChoice)
+{
+    int result = 0;
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *request = NULL;
+    esxVI_Response *response = NULL;
+
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
+    virBufferAddLit(&buffer, "<AnswerVM xmlns=\"urn:vim25\">");
+
+    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
+                                               &buffer,
+                                               esxVI_Boolean_True) < 0 ||
+        esxVI_String_SerializeValue(conn, questionId, "questionId",
+                                    &buffer, esxVI_Boolean_True) < 0 ||
+        esxVI_String_SerializeValue(conn, answerChoice, "answerChoice",
+                                    &buffer, esxVI_Boolean_True) < 0) {
+        goto failure;
+    }
+
+    virBufferAddLit(&buffer, "</AnswerVM>");
+    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    request = virBufferContentAndReset(&buffer);
+
+    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
+                              esxVI_Boolean_False) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    VIR_FREE(request);
+    esxVI_Response_Free(&response);
+
+    return result;
+
+  failure:
+    if (request == NULL) {
+        request = virBufferContentAndReset(&buffer);
+    }
 
     result = -1;
 
