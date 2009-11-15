@@ -109,6 +109,14 @@ typedef privcmd_hypercall_t hypercall_t;
 #define SYS_IFACE_MIN_VERS_NUMA 4
 #endif
 
+/* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
+ * headers.  Its semanitc was retained with XEN_LEGACY_MAX_VCPUS.
+ * Ensure MAX_VIRT_CPUS is defined accordingly.
+ */
+#if !defined(MAX_VIRT_CPUS) && defined(XEN_LEGACY_MAX_VCPUS)
+#define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
+#endif
+
 static int xen_ioctl_hypercall_cmd = 0;
 static int initialized = 0;
 static int in_init = 0;
