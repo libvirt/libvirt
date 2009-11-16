@@ -1973,9 +1973,19 @@ static int xenXMDomainConfigFormatDisk(virConnectPtr conn,
             if (STREQ(disk->driverName, "tap"))
                 virBufferVSprintf(&buf, "%s:", disk->driverType ? disk->driverType : "aio");
         } else {
-            virBufferVSprintf(&buf, "%s:",
-                              disk->type == VIR_DOMAIN_DISK_TYPE_FILE ?
-                              "file" : "phy");
+            switch (disk->type) {
+            case VIR_DOMAIN_DISK_TYPE_FILE:
+                virBufferAddLit(&buf, "file:");
+                break;
+            case VIR_DOMAIN_DISK_TYPE_BLOCK:
+                virBufferAddLit(&buf, "phy:");
+                break;
+            default:
+                xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported disk type %s"),
+                           virDomainDiskTypeToString(disk->type));
+                goto cleanup;
+            }
         }
         virBufferVSprintf(&buf, "%s", disk->src);
     }

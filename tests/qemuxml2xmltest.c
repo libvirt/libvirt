@@ -98,6 +98,8 @@ mymain(int argc, char **argv)
     DO_TEST("disk-many");
     DO_TEST("disk-xenvbd");
     DO_TEST("disk-usb");
+    DO_TEST("floppy-drive-fat");
+    DO_TEST("disk-drive-fat");
     DO_TEST("disk-drive-fmt-qcow");
     DO_TEST("disk-drive-cache-v1-wt");
     DO_TEST("disk-drive-cache-v1-wb");

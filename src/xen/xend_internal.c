@@ -5375,11 +5375,16 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else {
             if (def->type == VIR_DOMAIN_DISK_TYPE_FILE) {
                 virBufferVSprintf(buf, "(uname 'file:%s')", def->src);
-            } else {
+            } else if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                 if (def->src[0] == '/')
                     virBufferVSprintf(buf, "(uname 'phy:%s')", def->src);
                 else
                     virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", def->src);
+            } else {
+                virXendError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                             _("unsupported disk type %s"),
+                             virDomainDiskTypeToString(def->type));
+                return -1;
             }
         }
     }

@@ -434,6 +434,22 @@
             <ref name="diskspec"/>
           </interleave>
         </group>
+        <group>
+          <attribute name="type">
+            <value>dir</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="source">
+                <attribute name="dir">
+                  <ref name="absFilePath"/>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
+            <ref name="diskspec"/>
+          </interleave>
+        </group>
         <ref name="diskspec"/>
       </choice>
     </element>

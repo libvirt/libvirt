@@ -1994,8 +1994,30 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
 
-            virBufferVSprintf(&opt, "file=%s", disk->src ? disk->src : "");
-            virBufferVSprintf(&opt, ",if=%s", bus);
+            if (disk->src) {
+                if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+                    /* QEMU only supports magic FAT format for now */
+                    if (disk->driverType &&
+                        STRNEQ(disk->driverType, "fat")) {
+                        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                         _("unsupported disk driver type for '%s'"),
+                                         disk->driverType);
+                        goto error;
+                    }
+                    if (!disk->readonly) {
+                        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                         _("cannot create virtual FAT disks in read-write mode"));
+                        goto error;
+                    }
+                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                        virBufferVSprintf(&opt, "file=fat:floppy:%s,", disk->src);
+                    else
+                        virBufferVSprintf(&opt, "file=fat:%s,", disk->src);
+                } else {
+                    virBufferVSprintf(&opt, "file=%s,", disk->src);
+                }
+            }
+            virBufferVSprintf(&opt, "if=%s", bus);
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
                 virBufferAddLit(&opt, ",media=cdrom");
             virBufferVSprintf(&opt, ",index=%d", idx);
@@ -2003,6 +2025,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
                 virBufferAddLit(&opt, ",boot=on");
             if (disk->driverType &&
+                disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
                 qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
                 virBufferVSprintf(&opt, ",format=%s", disk->driverType);
             if (disk->serial &&
@@ -2071,7 +2094,27 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 }
             }
 
-            snprintf(file, PATH_MAX, "%s", disk->src);
+            if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+                /* QEMU only supports magic FAT format for now */
+                if (disk->driverType &&
+                    STRNEQ(disk->driverType, "fat")) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unsupported disk driver type for '%s'"),
+                                     disk->driverType);
+                    goto error;
+                }
+                if (!disk->readonly) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("cannot create virtual FAT disks in read-write mode"));
+                    goto error;
+                }
+                if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                    snprintf(file, PATH_MAX, "fat:floppy:%s", disk->src);
+                else
+                    snprintf(file, PATH_MAX, "fat:%s", disk->src);
+            } else {
+                snprintf(file, PATH_MAX, "%s", disk->src);
+            }
 
             ADD_ARG_LIT(dev);
             ADD_ARG_LIT(file);

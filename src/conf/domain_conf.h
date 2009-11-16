@@ -67,6 +67,7 @@ enum virDomainVirtType {
 enum virDomainDiskType {
     VIR_DOMAIN_DISK_TYPE_BLOCK,
     VIR_DOMAIN_DISK_TYPE_FILE,
+    VIR_DOMAIN_DISK_TYPE_DIR,
 
     VIR_DOMAIN_DISK_TYPE_LAST
 };

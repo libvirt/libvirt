@@ -90,7 +90,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
-              "file")
+              "file",
+              "dir")
 
 VIR_ENUM_IMPL(virDomainDiskDevice, VIR_DOMAIN_DISK_DEVICE_LAST,
               "disk",
@@ -777,10 +778,22 @@ virDomainDiskDefParseXML(virConnectPtr conn,
             if ((source == NULL) &&
                 (xmlStrEqual(cur->name, BAD_CAST "source"))) {
 
-                if (def->type == VIR_DOMAIN_DISK_TYPE_FILE)
+                switch (def->type) {
+                case VIR_DOMAIN_DISK_TYPE_FILE:
                     source = virXMLPropString(cur, "file");
-                else
+                    break;
+                case VIR_DOMAIN_DISK_TYPE_BLOCK:
                     source = virXMLPropString(cur, "dev");
+                    break;
+                case VIR_DOMAIN_DISK_TYPE_DIR:
+                    source = virXMLPropString(cur, "dir");
+                    break;
+                default:
+                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                         _("unexpected disk type %s"),
+                                         virDomainDiskTypeToString(def->type));
+                    goto error;
+                }
 
                 /* People sometimes pass a bogus '' source path
                    when they mean to omit the source element
@@ -3951,12 +3964,25 @@ virDomainDiskDefFormat(virConnectPtr conn,
     }
 
     if (def->src) {
-        if (def->type == VIR_DOMAIN_DISK_TYPE_FILE)
+        switch (def->type) {
+        case VIR_DOMAIN_DISK_TYPE_FILE:
             virBufferEscapeString(buf, "      <source file='%s'/>\n",
                                   def->src);
-        else
+            break;
+        case VIR_DOMAIN_DISK_TYPE_BLOCK:
             virBufferEscapeString(buf, "      <source dev='%s'/>\n",
                                   def->src);
+            break;
+        case VIR_DOMAIN_DISK_TYPE_DIR:
+            virBufferEscapeString(buf, "      <source dir='%s'/>\n",
+                                  def->src);
+            break;
+        default:
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected disk type %s"),
+                                 virDomainDiskTypeToString(def->type));
+            return -1;
+        }
     }
 
     virBufferVSprintf(buf, "      <target dev='%s' bus='%s'/>\n",

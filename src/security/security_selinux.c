@@ -687,6 +687,9 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
 
     if (secdef->imagelabel) {
         for (i = 0 ; i < vm->def->ndisks ; i++) {
+            /* XXX fixme - we need to recursively label the entriy tree :-( */
+            if (vm->def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
+                continue;
             if (SELinuxSetSecurityImageLabel(conn, vm, vm->def->disks[i]) < 0)
                 return -1;
         }
