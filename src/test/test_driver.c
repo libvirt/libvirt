@@ -2029,7 +2029,7 @@ static int testDomainGetMaxVcpus(virDomainPtr domain)
 static int testSetVcpus(virDomainPtr domain,
                         unsigned int nrCpus) {
     testConnPtr privconn = domain->conn->privateData;
-    virDomainObjPtr privdom;
+    virDomainObjPtr privdom = NULL;
     int ret = -1, maxvcpus;
 
     /* Do this first before locking */
