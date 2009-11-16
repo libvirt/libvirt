@@ -1904,7 +1904,7 @@ else
 AC_MSG_NOTICE([     hal: no])
 fi
 if test "$with_udev" = "yes" ; then
-AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS $PCIACCESS_CFLAGS PCIACCESS_LIBS])
+AC_MSG_NOTICE([    udev: $UDEV_CFLAGS $UDEV_LIBS $PCIACCESS_CFLAGS $PCIACCESS_LIBS])
 else
 AC_MSG_NOTICE([    udev: no])
 fi
