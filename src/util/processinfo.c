@@ -38,6 +38,48 @@ int virProcessInfoSetAffinity(pid_t pid,
                               int maxcpu)
 {
     int i;
+#ifdef CPU_ALLOC
+    /* New method dynamically allocates cpu mask, allowing unlimted cpus */
+    int numcpus = 1024;
+    size_t masklen;
+    cpu_set_t *mask;
+
+    /* Not only may the statically allocated cpu_set_t be too small,
+     * but there is no way to ask the kernel what size is large enough.
+     * So you have no option but to pick a size, try, catch EINVAL,
+     * enlarge, and re-try.
+     *
+     * http://lkml.org/lkml/2009/7/28/620
+     */
+realloc:
+    masklen = CPU_ALLOC_SIZE(numcpus);
+    mask = CPU_ALLOC(numcpus);
+
+    if (!mask) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    CPU_ZERO_S(masklen, mask);
+    for (i = 0 ; i < maxcpu ; i++) {
+        if (VIR_CPU_USABLE(map, maplen, 0, i))
+            CPU_SET_S(i, masklen, mask);
+    }
+
+    if (sched_setaffinity(pid, masklen, mask) < 0) {
+        CPU_FREE(mask);
+        if (errno == EINVAL &&
+            numcpus < (1024 << 8)) { /* 262144 cpus ought to be enough for anyone */
+            numcpus = numcpus << 2;
+            goto realloc;
+        }
+        virReportSystemError(NULL, errno,
+                             _("cannot set CPU affinity on process %d"), pid);
+        return -1;
+    }
+    CPU_FREE(mask);
+#else
+    /* Legacy method uses a fixed size cpu mask, only allows upto 1024 cpus */
     cpu_set_t mask;
 
     CPU_ZERO(&mask);
@@ -51,6 +93,7 @@ int virProcessInfoSetAffinity(pid_t pid,
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
+#endif
 
     return 0;
 }
@@ -61,6 +104,46 @@ int virProcessInfoGetAffinity(pid_t pid,
                               int maxcpu)
 {
     int i;
+#ifdef CPU_ALLOC
+    /* New method dynamically allocates cpu mask, allowing unlimted cpus */
+    int numcpus = 1024;
+    size_t masklen;
+    cpu_set_t *mask;
+
+    /* Not only may the statically allocated cpu_set_t be too small,
+     * but there is no way to ask the kernel what size is large enough.
+     * So you have no option but to pick a size, try, catch EINVAL,
+     * enlarge, and re-try.
+     *
+     * http://lkml.org/lkml/2009/7/28/620
+     */
+realloc:
+    masklen = CPU_ALLOC_SIZE(numcpus);
+    mask = CPU_ALLOC(numcpus);
+
+    if (!mask) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    CPU_ZERO_S(masklen, mask);
+    if (sched_getaffinity(pid, masklen, mask) < 0) {
+        CPU_FREE(mask);
+        if (errno == EINVAL &&
+            numcpus < (1024 << 8)) { /* 262144 cpus ought to be enough for anyone */
+            numcpus = numcpus << 2;
+            goto realloc;
+        }
+        virReportSystemError(NULL, errno,
+                             _("cannot set CPU affinity on process %d"), pid);
+        return -1;
+    }
+
+    for (i = 0 ; i < maxcpu ; i++)
+        if (CPU_ISSET_S(i, masklen, mask))
+            VIR_USE_CPU(map, i);
+#else
+    /* Legacy method uses a fixed size cpu mask, only allows upto 1024 cpus */
     cpu_set_t mask;
 
     CPU_ZERO(&mask);
@@ -73,6 +156,7 @@ int virProcessInfoGetAffinity(pid_t pid,
     for (i = 0 ; i < maxcpu ; i++)
         if (CPU_ISSET(i, &mask))
             VIR_USE_CPU(map, i);
+#endif
 
     return 0;
 }
