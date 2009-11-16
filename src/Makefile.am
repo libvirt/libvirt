@@ -55,6 +55,7 @@ UTIL_SOURCES =							\
 		util/logging.c util/logging.h			\
 		util/memory.c util/memory.h			\
 		util/pci.c util/pci.h				\
+		util/processinfo.c util/processinfo.h		\
 		util/hostusb.c util/hostusb.h			\
 		util/network.c util/network.h			\
 		util/qparams.c util/qparams.h			\

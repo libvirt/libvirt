@@ -52,6 +52,7 @@ src/util/conf.c
 src/util/iptables.c
 src/util/logging.c
 src/util/pci.c
+src/util/processinfo.c
 src/util/storage_file.c
 src/util/util.c
 src/util/uuid.c

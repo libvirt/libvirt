@@ -374,6 +374,11 @@ pciDeviceListUnlock;
 pciDeviceListSteal;
 
 
+# processinfo.h
+virProcessInfoSetAffinity;
+virProcessInfoGetAffinity;
+
+
 # qparams.h
 qparam_get_query;
 qparam_query_parse;

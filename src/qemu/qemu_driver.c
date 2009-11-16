@@ -47,10 +47,6 @@
 #include <sys/ioctl.h>
 #include <sys/un.h>
 
-#if HAVE_SCHED_H
-#include <sched.h>
-#endif
-
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
@@ -72,6 +68,7 @@
 #include "node_device_conf.h"
 #include "pci.h"
 #include "hostusb.h"
+#include "processinfo.h"
 #include "security/security_driver.h"
 #include "cgroup.h"
 #include "libvirt_internal.h"
@@ -1362,11 +1359,11 @@ qemudInitCpus(virConnectPtr conn,
               struct qemud_driver *driver,
               virDomainObjPtr vm,
               const char *migrateFrom) {
-#if HAVE_SCHED_GETAFFINITY
-    cpu_set_t mask;
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned char *cpumap;
+    int cpumaplen;
 
     if (nodeGetInfo(conn, &nodeinfo) < 0)
         return -1;
@@ -1377,25 +1374,37 @@ qemudInitCpus(virConnectPtr conn,
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
-    CPU_ZERO(&mask);
-    if (vm->def->cpumask) {
-        for (i = 0 ; i < maxcpu ; i++)
-            if (vm->def->cpumask[i])
-                CPU_SET(i, &mask);
-    } else {
-        for (i = 0 ; i < maxcpu ; i++)
-            CPU_SET(i, &mask);
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
+        virReportOOMError(conn);
+        return -1;
     }
 
+    if (vm->def->cpumask) {
+        /* XXX why don't we keep 'cpumask' in the libvirt cpumap
+         * format to start with ?!?! */
+        for (i = 0 ; i < maxcpu && i < vm->def->cpumasklen ; i++)
+            if (vm->def->cpumask[i])
+                VIR_USE_CPU(cpumap, i);
+    } else {
+        /* You may think this is redundant, but we can't assume libvirtd
+         * itself is running on all pCPUs, so we need to explicitly set
+         * the spawned QEMU instance to all pCPUs if no map is given in
+         * its config file */
+        for (i = 0 ; i < maxcpu ; i++)
+            VIR_USE_CPU(cpumap, i);
+    }
+
+    /* The XML config only gives a per-VM affinity, so we apply
+     * the same mapping to all vCPUs */
     for (i = 0 ; i < vm->nvcpupids ; i++) {
-        if (sched_setaffinity(vm->vcpupids[i],
-                              sizeof(mask), &mask) < 0) {
-            virReportSystemError(conn, errno, "%s",
-                                 _("failed to set CPU affinity"));
+        if (virProcessInfoSetAffinity(vm->vcpupids[i],
+                                      cpumap, cpumaplen, maxcpu) < 0) {
+            VIR_FREE(cpumap);
             return -1;
         }
     }
-#endif /* HAVE_SCHED_GETAFFINITY */
+    VIR_FREE(cpumap);
 
     /* XXX This resume doesn't really belong here. Move it up to caller */
     if (migrateFrom == NULL) {
@@ -3660,7 +3669,6 @@ cleanup:
 }
 
 
-#if HAVE_SCHED_GETAFFINITY
 static int
 qemudDomainPinVcpu(virDomainPtr dom,
                    unsigned int vcpu,
@@ -3668,8 +3676,7 @@ qemudDomainPinVcpu(virDomainPtr dom,
                    int maplen) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    cpu_set_t mask;
-    int i, maxcpu, hostcpus;
+    int maxcpu, hostcpus;
     virNodeInfo nodeinfo;
     int ret = -1;
 
@@ -3706,18 +3713,10 @@ qemudDomainPinVcpu(virDomainPtr dom,
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
-    CPU_ZERO(&mask);
-    for (i = 0 ; i < maxcpu ; i++) {
-        if (VIR_CPU_USABLE(cpumap, maplen, 0, i))
-            CPU_SET(i, &mask);
-    }
-
     if (vm->vcpupids != NULL) {
-        if (sched_setaffinity(vm->vcpupids[vcpu], sizeof(mask), &mask) < 0) {
-            virReportSystemError(dom->conn, errno, "%s",
-                                 _("cannot set affinity"));
+        if (virProcessInfoSetAffinity(vm->vcpupids[vcpu],
+                                      cpumap, maplen, maxcpu) < 0)
             goto cleanup;
-        }
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("cpu affinity is not supported"));
@@ -3797,19 +3796,11 @@ qemudDomainGetVcpus(virDomainPtr dom,
             memset(cpumaps, 0, maplen * maxinfo);
             if (vm->vcpupids != NULL) {
                 for (v = 0 ; v < maxinfo ; v++) {
-                    cpu_set_t mask;
                     unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
-                    CPU_ZERO(&mask);
 
-                    if (sched_getaffinity(vm->vcpupids[v], sizeof(mask), &mask) < 0) {
-                        virReportSystemError(dom->conn, errno, "%s",
-                                             _("cannot get affinity"));
+                    if (virProcessInfoGetAffinity(vm->vcpupids[v],
+                                                  cpumap, maplen, maxcpu) < 0)
                         goto cleanup;
-                    }
-
-                    for (i = 0 ; i < maxcpu ; i++)
-                        if (CPU_ISSET(i, &mask))
-                            VIR_USE_CPU(cpumap, i);
                 }
             } else {
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
@@ -3825,7 +3816,6 @@ cleanup:
         virDomainObjUnlock(vm);
     return ret;
 }
-#endif /* HAVE_SCHED_GETAFFINITY */
 
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom) {
@@ -7513,13 +7503,8 @@ static virDriver qemuDriver = {
     qemudDomainRestore, /* domainRestore */
     qemudDomainCoreDump, /* domainCoreDump */
     qemudDomainSetVcpus, /* domainSetVcpus */
-#if HAVE_SCHED_GETAFFINITY
     qemudDomainPinVcpu, /* domainPinVcpu */
     qemudDomainGetVcpus, /* domainGetVcpus */
-#else
-    NULL, /* domainPinVcpu */
-    NULL, /* domainGetVcpus */
-#endif
     qemudDomainGetMaxVcpus, /* domainGetMaxVcpus */
     qemudDomainGetSecurityLabel, /* domainGetSecurityLabel */
     qemudNodeGetSecurityModel, /* nodeGetSecurityModel */
