@@ -2623,6 +2623,26 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         return (NULL);
     }
 
+    /*
+     * check that if there is another domain defined with the same uuid
+     * it has the same name
+     */
+    if ((entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID,
+                               (const void *)&(def->uuid))) != NULL) {
+        if ((entry->def != NULL) && (entry->def->name != NULL) &&
+            (STRNEQ(def->name, entry->def->name))) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+            virUUIDFormat(entry->def->uuid, uuidstr);
+            xenXMError(conn, VIR_ERR_OPERATION_FAILED,
+                       _("domain '%s' is already defined with uuid %s"),
+                       entry->def->name, uuidstr);
+            entry = NULL;
+            goto error;
+        }
+        entry = NULL;
+    }
+
     if (virHashLookup(priv->nameConfigMap, def->name)) {
         /* domain exists, we will overwrite it */
 
