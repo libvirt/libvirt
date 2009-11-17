@@ -1635,7 +1635,7 @@ int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to remove host metnwork in qemu with '%s'"), cmd);
+                         _("failed to remove host network in qemu with '%s'"), cmd);
         goto cleanup;
     }
 
