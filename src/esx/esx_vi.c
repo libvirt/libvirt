@@ -1828,7 +1828,7 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
         } else {
             virUUIDFormat(uuid, uuid_string);
 
-            ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+            ESX_VI_ERROR(conn, VIR_ERR_NO_DOMAIN,
                          "Could not find domain with UUID '%s'", uuid_string);
             goto failure;
         }
