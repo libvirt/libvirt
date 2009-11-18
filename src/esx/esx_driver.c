@@ -234,7 +234,7 @@ esxCapsInit(virConnectPtr conn)
 
 
 /*
- * URI format: {esx|gsx}://[<user>@]<server>[:<port>][?transport={http|https}][&vcenter=<vcenter>][&no_verify={0|1}][&auto_answer={0|1}]
+ * URI format: {esx|gsx}://[<user>@]<server>[:<port>]/[<query parameter> ...]
  *
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
@@ -243,10 +243,19 @@ esxCapsInit(virConnectPtr conn)
  * - gsx+http  8222
  * - gsx+https 8333
  *
+ * Optional query parameters:
+ * - transport={http|https}
+ * - vcenter={<vcenter>|*}
+ * - no_verify={0|1}
+ * - auto_answer={0|1}
+ *
  * If no transport parameter is specified https is used.
  *
  * The vcenter parameter is only necessary for migration, because the vCenter
- * server is in charge to initiate a migration between two ESX hosts.
+ * server is in charge to initiate a migration between two ESX hosts. The
+ * vcenter parameter can be set to an explicity hostname or to *. If set to *,
+ * the driver will check if the ESX host is managed by a vCenter and connect to
+ * it. If the ESX host is not managed by a vCenter an error is reported.
  *
  * If the no_verify parameter is set to 1, this disables libcurl client checks
  * of the server's certificate. The default value it 0.
@@ -258,6 +267,7 @@ esxCapsInit(virConnectPtr conn)
 static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
+    virDrvOpenStatus result = VIR_DRV_OPEN_SUCCESS;
     esxPrivate *priv = NULL;
     char hostIpAddress[NI_MAXHOST] = "";
     char vCenterIpAddress[NI_MAXHOST] = "";
@@ -267,6 +277,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     int autoAnswer = 0; // boolean
     char *username = NULL;
     char *password = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
 
     /* Decline if the URI is NULL or the scheme is neither 'esx' nor 'gsx' */
     if (conn->uri == NULL || conn->uri->scheme == NULL ||
@@ -305,18 +318,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         priv->autoAnswer = esxVI_Boolean_True;
     }
 
-    /* Request credentials and login to host/vCenter */
-    if (esxUtil_ResolveHostname(conn, conn->uri->server, hostIpAddress,
-                                NI_MAXHOST) < 0) {
-        goto failure;
-    }
-
-    if (vCenter != NULL &&
-        esxUtil_ResolveHostname(conn, vCenter, vCenterIpAddress,
-                                NI_MAXHOST) < 0) {
-        goto failure;
-    }
-
     /*
      * Set the port dependent on the transport protocol if no port is
      * specified. This allows us to rely on the port parameter being
@@ -340,6 +341,11 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     }
 
     /* Login to host */
+    if (esxUtil_ResolveHostname(conn, conn->uri->server, hostIpAddress,
+                                NI_MAXHOST) < 0) {
+        goto failure;
+    }
+
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->transport,
                     conn->uri->server, conn->uri->port) < 0) {
         virReportOOMError(conn);
@@ -394,12 +400,77 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
     }
 
-    VIR_FREE(url);
-    VIR_FREE(password);
-    VIR_FREE(username);
-
     /* Login to vCenter */
     if (vCenter != NULL) {
+        VIR_FREE(url);
+        VIR_FREE(password);
+        VIR_FREE(username);
+
+        /* If a vCenter is specified resolve the hostname */
+        if (STRNEQ(vCenter, "*") &&
+            esxUtil_ResolveHostname(conn, vCenter, vCenterIpAddress,
+                                    NI_MAXHOST) < 0) {
+            goto failure;
+        }
+
+        /* Lookup the vCenter from the ESX host */
+        if (esxVI_String_AppendValueToList
+              (conn, &propertyNameList, "summary.managementServerIp") < 0 ||
+            esxVI_LookupHostSystemByIp(conn, priv->host, hostIpAddress,
+                                       propertyNameList, &hostSystem) < 0) {
+            goto failure;
+        }
+
+        for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+             dynamicProperty = dynamicProperty->_next) {
+            if (STREQ(dynamicProperty->name,
+                      "summary.managementServerIp")) {
+                if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                             esxVI_Type_String) < 0) {
+                    goto failure;
+                }
+
+                /* Get the vCenter IP address or verify the specified one */
+                if (STREQ(vCenter, "*")) {
+                    VIR_FREE(vCenter);
+
+                    vCenter = strdup(dynamicProperty->val->string);
+
+                    if (vCenter == NULL) {
+                        virReportOOMError(conn);
+                        goto failure;
+                    }
+
+                    if (virStrcpyStatic(vCenterIpAddress,
+                                        dynamicProperty->val->string) == NULL) {
+                        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                  "vCenter IP address %s too big for "
+                                  "destination", dynamicProperty->val->string);
+                        goto failure;
+                    }
+                } else if (STRNEQ(vCenterIpAddress,
+                           dynamicProperty->val->string)) {
+                    ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                              "This host is managed by a vCenter with IP "
+                              "address %s, but a mismachting vCenter '%s' "
+                              "(%s) has been specified",
+                              dynamicProperty->val->string, vCenter,
+                              vCenterIpAddress);
+                    goto failure;
+                }
+
+                break;
+            } else {
+                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+            }
+        }
+
+        if (STREQ(vCenter, "*")) {
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "This host is not managed by a vCenter");
+            goto failure;
+        }
+
         if (virAsprintf(&url, "%s://%s/sdk", priv->transport,
                         vCenter) < 0) {
             virReportOOMError(conn);
@@ -440,11 +511,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                       conn->uri->server);
             goto failure;
         }
-
-        VIR_FREE(url);
-        VIR_FREE(vCenter);
-        VIR_FREE(password);
-        VIR_FREE(username);
     }
 
     conn->privateData = priv;
@@ -456,14 +522,17 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    return VIR_DRV_OPEN_SUCCESS;
-
-  failure:
+  cleanup:
     VIR_FREE(url);
     VIR_FREE(vCenter);
     VIR_FREE(password);
     VIR_FREE(username);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
 
+    return result;
+
+  failure:
     if (priv != NULL) {
         esxVI_Context_Free(&priv->host);
         esxVI_Context_Free(&priv->vCenter);
@@ -474,7 +543,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(priv);
     }
 
-    return VIR_DRV_OPEN_ERROR;
+    result = VIR_DRV_OPEN_ERROR;
+
+    goto cleanup;
 }
 
 
