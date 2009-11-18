@@ -22,9 +22,6 @@
 
 #include <config.h>
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
 #include <libxml/parser.h>
 #include <libxml/xpathInternals.h>
 
