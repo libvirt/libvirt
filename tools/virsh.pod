@@ -40,12 +40,11 @@ Most B<virsh> commands require root privileges to run due to the
 communications channels used to talk to the hypervisor.  Running as
 non root will return an error.
 
-Most B<virsh> commands act asynchronously, so just because the B<virsh>
-program returned, doesn't mean the action is complete.  This is
-important, as many operations on domains, like create and shutdown,
-can take considerable time (30 seconds or more) to bring the machine
-into a fully compliant state.  If you want to know when one of these
-actions has finished you must poll through virsh list periodically.
+Most B<virsh> commands act synchronously, except maybe shutdown,
+setvcpus and setmem. In those case the fact that the B<virsh>
+program returned, may not mean the action is complete and you
+must poll periodically to detect that the guest completed the
+operation.
 
 =head1 GENERIC COMMANDS
 
