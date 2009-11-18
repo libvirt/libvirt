@@ -118,6 +118,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
 static int qemuDetectVcpuPIDs(virConnectPtr conn,
+                              struct qemud_driver *driver,
                               virDomainObjPtr vm);
 
 static int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
@@ -1314,6 +1315,7 @@ qemudWaitForMonitor(virConnectPtr conn,
 
 static int
 qemuDetectVcpuPIDs(virConnectPtr conn,
+                   struct qemud_driver *driver,
                    virDomainObjPtr vm) {
     pid_t *cpupids = NULL;
     int ncpupids;
@@ -1331,12 +1333,12 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
 
     /* What follows is now all KVM specific */
 
-    qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) < 0) {
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
         return -1;
     }
-    qemuDomainObjExitMonitor(vm);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     /* Treat failure to get VCPU<->PID mapping as non-fatal */
     if (ncpupids == 0)
@@ -1357,6 +1359,7 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
 
 static int
 qemudInitCpus(virConnectPtr conn,
+              struct qemud_driver *driver,
               virDomainObjPtr vm,
               const char *migrateFrom) {
 #if HAVE_SCHED_GETAFFINITY
@@ -1397,15 +1400,15 @@ qemudInitCpus(virConnectPtr conn,
     /* XXX This resume doesn't really belong here. Move it up to caller */
     if (migrateFrom == NULL) {
         /* Allow the CPUS to start executing */
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
             if (virGetLastError() == NULL)
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("resume operation failed"));
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
             return -1;
         }
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
     return 0;
@@ -1422,12 +1425,12 @@ qemuInitPasswords(struct qemud_driver *driver,
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         (vm->def->graphics[0]->data.vnc.passwd || driver->vncPassword)) {
 
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorSetVNCPassword(priv->mon,
                                         vm->def->graphics[0]->data.vnc.passwd ?
                                         vm->def->graphics[0]->data.vnc.passwd :
                                         driver->vncPassword);
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
     return ret;
@@ -2294,21 +2297,21 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemudWaitForMonitor(conn, driver, vm, pos) < 0)
         goto abort;
 
-    if (qemuDetectVcpuPIDs(conn, vm) < 0)
+    if (qemuDetectVcpuPIDs(conn, driver, vm) < 0)
         goto abort;
 
-    if (qemudInitCpus(conn, vm, migrateFrom) < 0)
+    if (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)
         goto abort;
 
     if (qemuInitPasswords(driver, vm) < 0)
         goto abort;
 
-    qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, vm->def->memory) < 0) {
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto abort;
     }
-    qemuDomainObjExitMonitor(vm);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (virDomainSaveStatus(conn, driver->stateDir, vm) < 0)
         goto abort;
