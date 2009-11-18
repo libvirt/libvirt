@@ -931,6 +931,11 @@
     -->
   <define name="qemucdev">
     <ref name="qemucdevSrcType"/>
+    <optional>
+      <attribute name="tty">
+        <ref name="devicePath"/>
+      </attribute>
+    </optional>
     <interleave>
       <ref name="qemucdevSrcDef"/>
       <optional>
