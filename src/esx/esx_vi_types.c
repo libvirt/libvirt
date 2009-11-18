@@ -229,7 +229,7 @@
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        for (childNode = node->xmlChildrenNode; childNode != NULL;            \
+        for (childNode = node->children; childNode != NULL;                   \
              childNode = childNode->next) {                                   \
             if (childNode->type != XML_ELEMENT_NODE) {                        \
                 ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,                    \
@@ -272,8 +272,7 @@
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        string = (char *)xmlNodeListGetString(node->doc,                      \
-                                              node->xmlChildrenNode, 1);      \
+        string = (char *)xmlNodeListGetString(node->doc, node->children, 1);  \
                                                                               \
         if (string == NULL) {                                                 \
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,                        \
@@ -639,7 +638,7 @@ esxVI_AnyType_Deserialize(virConnectPtr conn, xmlNodePtr node,
     }
 
     (*anyType)->value =
-      (char *)xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+      (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
     if ((*anyType)->value == NULL) {
         (*anyType)->value = strdup("");
@@ -883,7 +882,7 @@ esxVI_String_Deserialize(virConnectPtr conn, xmlNodePtr node,
     }
 
     (*string)->value =
-      (char *)xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+      (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
     if ((*string)->value == NULL) {
         (*string)->value = strdup("");
@@ -914,7 +913,7 @@ esxVI_String_DeserializeValue(virConnectPtr conn, xmlNodePtr node,
         return -1;
     }
 
-    *value = (char *)xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+    *value = (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
     if (*value == NULL) {
         *value = strdup("");
@@ -1049,7 +1048,7 @@ esxVI_DateTime_Deserialize(virConnectPtr conn, xmlNodePtr node,
     }
 
     (*dateTime)->value =
-      (char *)xmlNodeListGetString(node->doc, node->xmlChildrenNode, 1);
+      (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
     if ((*dateTime)->value == NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,

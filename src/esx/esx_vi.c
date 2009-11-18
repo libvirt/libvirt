@@ -949,7 +949,7 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
         return -1;
     }
 
-    for (childNode = anyType->_node->xmlChildrenNode; childNode != NULL;
+    for (childNode = anyType->_node->children; childNode != NULL;
          childNode = childNode->next) {
         if (childNode->type != XML_ELEMENT_NODE) {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
