@@ -507,30 +507,6 @@ esxClose(virConnectPtr conn)
 }
 
 
-static int
-esxIsSecure(virConnectPtr conn)
-{
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
-
-    if (STRCASEEQ(priv->transport, "https")) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-
-static int
-esxIsEncrypted(virConnectPtr conn)
-{
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
-
-    if (STRCASEEQ(priv->transport, "https")) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
 
 static esxVI_Boolean
 esxSupportsVMotion(virConnectPtr conn)
@@ -746,7 +722,6 @@ esxGetHostname(virConnectPtr conn)
 
     goto cleanup;
 }
-
 
 
 
@@ -1097,13 +1072,10 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     esxPrivate *priv = (esxPrivate *)conn->privateData;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    int id_candidate = -1;
-    char *name_candidate = NULL;
-    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
-    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    int id = -1;
+    char *name = NULL;
     virDomainPtr domain = NULL;
 
     if (esxVI_EnsureSession(conn, priv->host) < 0) {
@@ -1111,64 +1083,35 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
 
     if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
-                                           "configStatus\0"
                                            "name\0"
-                                           "runtime.powerState\0"
-                                           "config.uuid\0") < 0 ||
-        esxVI_LookupObjectContentByType(conn, priv->host, priv->host->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
+                                           "runtime.powerState\0") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(conn, priv->host, uuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachineIdentity(conn, virtualMachine,
+                                        &id, &name, NULL) < 0 ||
+        esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
+                                          &powerState) < 0) {
         goto failure;
     }
 
-    for (virtualMachine = virtualMachineList; virtualMachine != NULL;
-         virtualMachine = virtualMachine->_next) {
-        VIR_FREE(name_candidate);
-
-        if (esxVI_GetVirtualMachineIdentity(conn, virtualMachine,
-                                            &id_candidate, &name_candidate,
-                                            uuid_candidate) < 0) {
-            goto failure;
-        }
-
-        if (memcmp(uuid, uuid_candidate,
-                   VIR_UUID_BUFLEN * sizeof(unsigned char)) != 0) {
-            continue;
-        }
-
-        if (esxVI_GetVirtualMachinePowerState(conn, virtualMachine,
-                                              &powerState) < 0) {
-            goto failure;
-        }
-
-        domain = virGetDomain(conn, name_candidate, uuid_candidate);
-
-        if (domain == NULL) {
-            goto failure;
-        }
-
-        /* Only running/suspended virtual machines have an ID != -1 */
-        if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-            domain->id = id_candidate;
-        } else {
-            domain->id = -1;
-        }
-
-        break;
-    }
+    domain = virGetDomain(conn, name, uuid);
 
     if (domain == NULL) {
-        virUUIDFormat(uuid, uuid_string);
+        goto failure;
+    }
 
-        ESX_ERROR(conn, VIR_ERR_NO_DOMAIN, "No domain with UUID '%s'",
-                  uuid_string);
+    /* Only running/suspended virtual machines have an ID != -1 */
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+        domain->id = id;
+    } else {
+        domain->id = -1;
     }
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_candidate);
+    esxVI_ObjectContent_Free(&virtualMachine);
+    VIR_FREE(name);
 
     return domain;
 
@@ -1262,89 +1205,6 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 }
 
 
-static int
-esxDomainIsActive(virDomainPtr dom)
-{
-    esxPrivate *priv = (esxPrivate *)dom->conn->privateData;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *virtualMachineList = NULL;
-    esxVI_ObjectContent *virtualMachine = NULL;
-    esxVI_VirtualMachinePowerState powerState;
-    int id_candidate = -1;
-    char *name_candidate = NULL;
-    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
-    char uuid_string[VIR_UUID_STRING_BUFLEN];
-    int ret = -1;
-
-    if (esxVI_EnsureSession(dom->conn, priv->host) < 0) {
-        goto cleanup;
-    }
-
-    if (esxVI_String_AppendValueListToList(dom->conn, &propertyNameList,
-                                           "configStatus\0"
-                                           "name\0"
-                                           "runtime.powerState\0"
-                                           "config.uuid\0") < 0 ||
-        esxVI_LookupObjectContentByType(dom->conn, priv->host, priv->host->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
-        goto cleanup;
-    }
-
-    for (virtualMachine = virtualMachineList; virtualMachine != NULL;
-         virtualMachine = virtualMachine->_next) {
-        VIR_FREE(name_candidate);
-
-        if (esxVI_GetVirtualMachineIdentity(dom->conn, virtualMachine,
-                                            &id_candidate, &name_candidate,
-                                            uuid_candidate) < 0) {
-            goto cleanup;
-        }
-
-        if (memcmp(dom->uuid, uuid_candidate,
-                   VIR_UUID_BUFLEN * sizeof(unsigned char)) != 0) {
-            continue;
-        }
-
-        if (esxVI_GetVirtualMachinePowerState(dom->conn, virtualMachine,
-                                              &powerState) < 0) {
-            goto cleanup;
-        }
-
-        /* Only running/suspended virtual machines have an ID != -1 */
-        if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-            ret = 1;
-        } else {
-            ret = 0;
-        }
-
-        break;
-    }
-
-    if (ret == -1) {
-        virUUIDFormat(dom->uuid, uuid_string);
-
-        ESX_ERROR(dom->conn, VIR_ERR_NO_DOMAIN, "No domain with UUID '%s'",
-                  uuid_string);
-    }
-
-  cleanup:
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_candidate);
-
-    return ret;
-}
-
-
-static int
-esxDomainIsPersistent(virDomainPtr dom ATTRIBUTE_UNUSED)
-{
-    /* ESX has no concept of transient domains, so
-     * all of them are persistent */
-    return 1;
-}
 
 static int
 esxDomainSuspend(virDomainPtr domain)
@@ -3351,6 +3211,87 @@ esxNodeGetFreeMemory(virConnectPtr conn)
     result = 0;
 
     goto cleanup;
+}
+
+
+
+static int
+esxIsEncrypted(virConnectPtr conn)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+
+    if (STRCASEEQ(priv->transport, "https")) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
+
+static int
+esxIsSecure(virConnectPtr conn)
+{
+    esxPrivate *priv = (esxPrivate *)conn->privateData;
+
+    if (STRCASEEQ(priv->transport, "https")) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
+
+static int
+esxDomainIsActive(virDomainPtr domain)
+{
+    int result = 0;
+    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+
+    if (esxVI_EnsureSession(domain->conn, priv->host) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
+                                       "runtime.powerState") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
+                                         domain->uuid, propertyNameList,
+                                         &virtualMachine,
+                                         esxVI_Occurence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
+                                          &powerState) < 0) {
+        goto failure;
+    }
+
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+
+  cleanup:
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_String_Free(&propertyNameList);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+static int
+esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
+{
+    /* ESX has no concept of transient domains, so all of them are persistent */
+    return 1;
 }
 
 
