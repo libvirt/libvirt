@@ -250,16 +250,8 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
-    if (def->sysfs_path != NULL) {
-        virBufferEscapeString(&buf, "  <sysfs_path>%s</sysfs_path>\n",
-                              def->sysfs_path);
-    }
     if (def->parent) {
         virBufferEscapeString(&buf, "  <parent>%s</parent>\n", def->parent);
-    }
-    if (def->parent_sysfs_path != NULL) {
-        virBufferEscapeString(&buf, "  <parent_sysfs_path>%s</parent_sysfs_path>\n",
-                              def->parent_sysfs_path);
     }
     if (def->driver) {
         virBufferAddLit(&buf, "  <driver>\n");
