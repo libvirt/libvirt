@@ -470,7 +470,7 @@ static void dev_create(const char *udi)
 
     dev->privateData = privData;
     dev->privateFree = free_udi;
-    dev->devicePath = devicePath;
+    dev->def->sysfs_path = devicePath;
 
     virNodeDeviceObjUnlock(dev);
 

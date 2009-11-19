@@ -1230,13 +1230,6 @@ static int udevAddOneDevice(struct udev_device *device)
         goto out;
     }
 
-    dev->devicePath = strdup(udev_device_get_devpath(device));
-    if (dev->devicePath == NULL) {
-        virReportOOMError(NULL);
-        virNodeDeviceObjRemove(&driverState->devs, dev);
-        goto out;
-    }
-
     virNodeDeviceObjUnlock(dev);
 
     ret = 0;

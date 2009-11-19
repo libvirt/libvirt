@@ -178,7 +178,6 @@ typedef virNodeDeviceObj *virNodeDeviceObjPtr;
 struct _virNodeDeviceObj {
     virMutex lock;
 
-    char *devicePath;                   /* OS specific path to device metadat, eg sysfs */
     virNodeDeviceDefPtr def;		/* device definition */
     void *privateData;			/* driver-specific private data */
     void (*privateFree)(void *data);	/* destructor for private data */

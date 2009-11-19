@@ -85,7 +85,7 @@ static int update_driver_name(virConnectPtr conn,
 
     VIR_FREE(dev->def->driver);
 
-    if (virAsprintf(&driver_link, "%s/driver", dev->devicePath) < 0) {
+    if (virAsprintf(&driver_link, "%s/driver", dev->def->sysfs_path) < 0) {
         virReportOOMError(conn);
         goto cleanup;
     }

@@ -156,7 +156,6 @@ void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
     if (!dev)
         return;
 
-    VIR_FREE(dev->devicePath);
     virNodeDeviceDefFree(dev->def);
     if (dev->privateFree)
         (*dev->privateFree)(dev->privateData);
