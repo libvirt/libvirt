@@ -175,6 +175,7 @@ nodeListDevices(virConnectPtr conn,
             virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
             if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
                 virNodeDeviceObjUnlock(driver->devs.objs[i]);
+                virReportOOMError(conn);
                 goto failure;
             }
         }
@@ -379,8 +380,10 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
         names[ncaps] = strdup(virNodeDevCapTypeToString(caps->type));
-        if (names[ncaps++] == NULL)
+        if (names[ncaps++] == NULL) {
+            virReportOOMError(dev->conn);
             goto cleanup;
+        }
     }
     ret = ncaps;
 
