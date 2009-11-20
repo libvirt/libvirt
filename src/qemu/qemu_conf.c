@@ -878,6 +878,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_KQEMU;
     if (strstr(help, "-no-kvm"))
         flags |= QEMUD_CMD_FLAG_KVM;
+    if (strstr(help, "-enable-kvm"))
+        flags |= QEMUD_CMD_FLAG_ENABLE_KVM;
     if (strstr(help, "-no-reboot"))
         flags |= QEMUD_CMD_FLAG_NO_REBOOT;
     if (strstr(help, "-name"))
@@ -1595,6 +1597,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct utsname ut;
     int disableKQEMU = 0;
     int disableKVM = 0;
+    int enableKVM = 0;
     int qargc = 0, qarga = 0;
     const char **qargv = NULL;
     int qenvc = 0, qenva = 0;
@@ -1652,6 +1655,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
         def->virtType == VIR_DOMAIN_VIRT_QEMU)
         disableKVM = 1;
+
+    /* Should explicitly enable KVM if
+     * 1. Guest domain is 'kvm'
+     * 2. The qemu binary has the -enable-kvm flag
+     * NOTE: user must be responsible for loading the kvm modules
+     */
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_ENABLE_KVM) &&
+        def->virtType == VIR_DOMAIN_VIRT_KVM)
+        enableKVM = 1;
 
     /*
      * Need to force a 32-bit guest CPU type if
@@ -1780,6 +1792,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-no-kqemu");
     if (disableKVM)
         ADD_ARG_LIT("-no-kvm");
+    if (enableKVM)
+        ADD_ARG_LIT("-enable-kvm");
     ADD_ARG_LIT("-m");
     ADD_ARG_LIT(memory);
     if (def->hugepage_backed) {
