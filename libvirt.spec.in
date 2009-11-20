@@ -802,6 +802,14 @@ fi
 %endif
 
 %changelog
+* Fri Nov 20 2009 Daniel Veillard <veillard@redhat.com> - 0.7.3-1
+- udev node device backend
+- API to check object properties
+- better QEmu monitor processing
+- MAC address based port filtering for qemu
+- support IPv6 and multiple addresses per interfaces
+- a lot of fixes
+
 * Tue Sep 15 2009 Daniel Veillard <veillard@redhat.com> - 0.7.1-1
 - ESX, VBox driver updates
 - mutipath support

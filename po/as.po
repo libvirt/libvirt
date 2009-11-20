@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2009-11-17 12:21+0100\n"
+"POT-Creation-Date: 2009-11-20 17:25+0100\n"
 "PO-Revision-Date: 2009-09-08 14:24+0530\n"
 "Last-Translator: Amitakhya Phukan <aphukan@fedoraproject.org>\n"
 "Language-Team: Assamese <>\n"
@@ -197,8 +197,8 @@ msgstr "qemud_server ৰ বাবে struct বিতৰণ কৰোঁতে 
 
 #: daemon/libvirtd.c:829 daemon/libvirtd.c:1325 src/conf/domain_conf.c:668
 #: src/conf/interface_conf.c:1374 src/conf/network_conf.c:175
-#: src/conf/node_device_conf.c:197 src/conf/storage_conf.c:1462
-#: src/openvz/openvz_conf.c:463 src/qemu/qemu_driver.c:800
+#: src/conf/node_device_conf.c:196 src/conf/storage_conf.c:1462
+#: src/openvz/openvz_conf.c:463 src/qemu/qemu_driver.c:801
 #: src/remote/remote_driver.c:978 src/remote/remote_driver.c:7128
 #: src/remote/remote_driver.c:7307 src/remote/remote_driver.c:7492
 #: src/test/test_driver.c:508 src/test/test_driver.c:753
@@ -819,7 +819,7 @@ msgid "unknown interface type '%s'"
 msgstr "অজ্ঞাত সংযোগমাধ্যমৰ ধৰণ '%s'"
 
 # c-format
-#: src/conf/domain_conf.c:1159 src/qemu/qemu_conf.c:2984
+#: src/conf/domain_conf.c:1159 src/qemu/qemu_conf.c:2998
 #, fuzzy, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "অবৈধ MAC ঠিকনা: %s"
@@ -1155,7 +1155,7 @@ msgstr "সুৰক্ষাৰ imagelabel নাই"
 #: src/conf/domain_conf.c:3579 src/conf/domain_conf.c:3651
 #: src/conf/interface_conf.c:937 src/conf/interface_conf.c:977
 #: src/conf/network_conf.c:560 src/conf/network_conf.c:600
-#: src/conf/node_device_conf.c:1281 src/conf/secret_conf.c:241
+#: src/conf/node_device_conf.c:1272 src/conf/secret_conf.c:241
 #: src/conf/storage_conf.c:800 src/conf/storage_conf.c:1210
 msgid "missing root element"
 msgstr "root সামগ্ৰী অনুপস্থিত"
@@ -1318,7 +1318,7 @@ msgid "unsupported monitor type '%s'"
 msgstr "'%s' ধরনের মনিটর সমর্থিত নয়"
 
 #: src/conf/domain_conf.c:3501 src/conf/interface_conf.c:902
-#: src/conf/network_conf.c:525 src/conf/node_device_conf.c:1233
+#: src/conf/network_conf.c:525 src/conf/node_device_conf.c:1224
 #: src/conf/secret_conf.c:203 src/conf/storage_conf.c:729
 #, c-format
 msgid "at line %d: %s"
@@ -1327,7 +1327,7 @@ msgstr "at line %d: %s"
 #: src/conf/domain_conf.c:3532 src/conf/domain_conf.c:3573
 #: src/conf/domain_conf.c:3645 src/conf/interface_conf.c:931
 #: src/conf/interface_conf.c:971 src/conf/network_conf.c:554
-#: src/conf/network_conf.c:594 src/conf/node_device_conf.c:1275
+#: src/conf/network_conf.c:594 src/conf/node_device_conf.c:1266
 #: src/conf/secret_conf.c:234 src/conf/storage_conf.c:793
 #: src/conf/storage_conf.c:1203
 msgid "failed to parse xml document"
@@ -1335,7 +1335,7 @@ msgstr "xml নথি বিশ্লেষণ কৰোঁতে ব্যৰ�
 
 #: src/conf/domain_conf.c:3603 src/conf/domain_conf.c:3674
 #: src/conf/interface_conf.c:870 src/conf/network_conf.c:622
-#: src/conf/node_device_conf.c:1202 src/conf/secret_conf.c:117
+#: src/conf/node_device_conf.c:1193 src/conf/secret_conf.c:117
 msgid "incorrect root element"
 msgstr "root সামগ্ৰী সঠিক নহয়"
 
@@ -1496,7 +1496,7 @@ msgid "cannot remove config %s"
 msgstr "%s ৰ বিন্যাস আঁতৰাওঁতে ব্যৰ্থ"
 
 # c-format
-#: src/conf/domain_conf.c:5278
+#: src/conf/domain_conf.c:5278 src/xen/xm_internal.c:2638
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "ডোমেইন '%s' ৰ সৈতে uuid %s ইতিমধ্যে সংজ্ঞা দিয়া হৈছে"
@@ -1757,329 +1757,329 @@ msgstr "Bridge সৃষ্টি কৰা max id %d ৰ অধিক হ'ল"
 msgid "bridge name '%s' already in use."
 msgstr "bridge নাম '%s' ইতিমধ্যে ব্যৱহৃত ।"
 
-#: src/conf/node_device_conf.c:546
+#: src/conf/node_device_conf.c:537
 #, c-format
 msgid "no block device path supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো ব্ল'ক যন্ত্ৰৰ পথ নাই"
 
-#: src/conf/node_device_conf.c:559
+#: src/conf/node_device_conf.c:550
 #, c-format
 msgid "error parsing storage capabilities for '%s'"
 msgstr "'%s' ৰ কাৰণে ভঁৰালৰ কাৰ্যক্ষমতা বিশ্লেষণ কৰিবলৈ ভুল"
 
-#: src/conf/node_device_conf.c:569
+#: src/conf/node_device_conf.c:560
 #, c-format
 msgid "missing storage capability type for '%s'"
 msgstr "'%s' ৰ কাৰণে হেৰুৱা ভঁৰালৰ কাৰ্যক্ষমতা"
 
-#: src/conf/node_device_conf.c:589
+#: src/conf/node_device_conf.c:580
 #, c-format
 msgid "no removable media size supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো আঁতৰাব পৰা মিডিয়াৰ আকাৰ দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:590
+#: src/conf/node_device_conf.c:581
 #, c-format
 msgid "invalid removable media size supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো আঁতৰাব পৰা মিডিয়াৰ আকাৰ অবৈধ"
 
 # c-format
-#: src/conf/node_device_conf.c:600
+#: src/conf/node_device_conf.c:591
 #, c-format
 msgid "unknown storage capability type '%s' for '%s'"
 msgstr "অজ্ঞাত ভঁৰাল ক্ষমতাৰ ধৰণ '%s', '%s' ৰ কাৰণে"
 
 # c-format
-#: src/conf/node_device_conf.c:612
+#: src/conf/node_device_conf.c:603
 #, c-format
 msgid "no size supplied for '%s'"
 msgstr "%s ৰ বিন্যাস নথিপত্ৰ অনুপস্থিত"
 
 # c-format
-#: src/conf/node_device_conf.c:613
+#: src/conf/node_device_conf.c:604
 #, c-format
 msgid "invalid size supplied for '%s'"
 msgstr "ধ্বনি মডেল '%s' বৈধ নহয়"
 
-#: src/conf/node_device_conf.c:640 src/conf/node_device_conf.c:718
+#: src/conf/node_device_conf.c:631 src/conf/node_device_conf.c:709
 #, c-format
 msgid "no SCSI host ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI গৃহস্থ ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:641 src/conf/node_device_conf.c:719
+#: src/conf/node_device_conf.c:632 src/conf/node_device_conf.c:710
 #, c-format
 msgid "invalid SCSI host ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে অবৈধ SCSI গৃহস্থ ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:646
+#: src/conf/node_device_conf.c:637
 #, c-format
 msgid "no SCSI bus ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI bus ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:647
+#: src/conf/node_device_conf.c:638
 #, c-format
 msgid "invalid SCSI bus ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে অবৈধ SCSI bus ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:652
+#: src/conf/node_device_conf.c:643
 #, c-format
 msgid "no SCSI target ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI লক্ষ্য ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:653
+#: src/conf/node_device_conf.c:644
 #, c-format
 msgid "invalid SCSI target ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে অবৈধ SCSI লক্ষ্য ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:658
+#: src/conf/node_device_conf.c:649
 #, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI LUN ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:659
+#: src/conf/node_device_conf.c:650
 #, c-format
 msgid "invalid SCSI LUN ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে অবৈধ SCSI LUN ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:687
+#: src/conf/node_device_conf.c:678
 #, fuzzy, c-format
 msgid "no target name supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI লক্ষ্য ID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:725
+#: src/conf/node_device_conf.c:716
 #, c-format
 msgid "error parsing SCSI host capabilities for '%s'"
 msgstr "'%s'-র জন্য SCSI হোস্টের ক্ষমতা পার্স করতে সমস্যা"
 
 # c-format
-#: src/conf/node_device_conf.c:735
+#: src/conf/node_device_conf.c:726
 #, c-format
 msgid "missing SCSI host capability type for '%s'"
 msgstr "'%s'-র জন্য SCSI হোস্টের ক্ষমতার ধরন অনুপস্থিত"
 
 # c-format
 # c-format
-#: src/conf/node_device_conf.c:757
+#: src/conf/node_device_conf.c:748
 #, c-format
 msgid "no WWNN supplied for '%s'"
 msgstr "'%s'-র জন্য WWNN উল্লিখিত হয়নি"
 
 # c-format
 # c-format
-#: src/conf/node_device_conf.c:765
+#: src/conf/node_device_conf.c:756
 #, c-format
 msgid "no WWPN supplied for '%s'"
 msgstr "'%s'-র জন্য WWPN উল্লিখিত হয়নি"
 
 # c-format
 # c-format
-#: src/conf/node_device_conf.c:773
+#: src/conf/node_device_conf.c:764
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "SCSI হোস্টের অজানা ক্ষমতার ধরন '%s', '%s'-র জন্য উল্লিখিত হয়েছে"
 
 # c-format
-#: src/conf/node_device_conf.c:807
+#: src/conf/node_device_conf.c:798
 #, c-format
 msgid "no network interface supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো নে'টৱৰ্ক সংযোগমাধ্যম দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:822
+#: src/conf/node_device_conf.c:813
 #, c-format
 msgid "invalid network type supplied for '%s'"
 msgstr "%s ত অবৈধ নে'টৱৰ্ক নিৰ্দেশক যন্ত্ৰ"
 
-#: src/conf/node_device_conf.c:850
+#: src/conf/node_device_conf.c:841
 #, c-format
 msgid "no USB interface number supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:851
+#: src/conf/node_device_conf.c:842
 #, c-format
 msgid "invalid USB interface number supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যা"
 
-#: src/conf/node_device_conf.c:856
+#: src/conf/node_device_conf.c:847
 #, c-format
 msgid "no USB interface class supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাইUSB সংযোগমাধ্যম"
 
-#: src/conf/node_device_conf.c:857
+#: src/conf/node_device_conf.c:848
 #, c-format
 msgid "invalid USB interface class supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যা"
 
-#: src/conf/node_device_conf.c:862
+#: src/conf/node_device_conf.c:853
 #, c-format
 msgid "no USB interface subclass supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:863
+#: src/conf/node_device_conf.c:854
 #, c-format
 msgid "invalid USB interface subclass supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যা"
 
-#: src/conf/node_device_conf.c:868
+#: src/conf/node_device_conf.c:859
 #, c-format
 msgid "no USB interface protocol supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:869
+#: src/conf/node_device_conf.c:860
 #, c-format
 msgid "invalid USB interface protocol supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যাপুল ভিতৰ"
 
-#: src/conf/node_device_conf.c:919
+#: src/conf/node_device_conf.c:910
 #, c-format
 msgid "no USB bus number supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:920
+#: src/conf/node_device_conf.c:911
 #, c-format
 msgid "invalid USB bus number supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যা"
 
-#: src/conf/node_device_conf.c:925
+#: src/conf/node_device_conf.c:916
 #, c-format
 msgid "no USB device number supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB সংযোগমাধ্যম সংখ্যা দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:926
+#: src/conf/node_device_conf.c:917
 #, c-format
 msgid "invalid USB device number supplied for '%s'"
 msgstr "%s ত অবৈধ USB সংযোগমাধ্যম সংখ্যা দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:931
+#: src/conf/node_device_conf.c:922
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB vendor ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:932
+#: src/conf/node_device_conf.c:923
 #, c-format
 msgid "invalid USB vendor ID supplied for '%s'"
 msgstr "%s ত অবৈধ USB vendor ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:937
+#: src/conf/node_device_conf.c:928
 #, c-format
 msgid "no USB product ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB উৎপাদন ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:938
+#: src/conf/node_device_conf.c:929
 #, c-format
 msgid "invalid USB product ID supplied for '%s'"
 msgstr "%s ত অবৈধ USB উৎপাদন ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:965
+#: src/conf/node_device_conf.c:956
 #, c-format
 msgid "no PCI domain ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI domain ID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:966
+#: src/conf/node_device_conf.c:957
 #, c-format
 msgid "invalid PCI domain ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI domain ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:971
+#: src/conf/node_device_conf.c:962
 #, c-format
 msgid "no PCI bus ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI bus ID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:972
+#: src/conf/node_device_conf.c:963
 #, c-format
 msgid "invalid PCI bus ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI bus ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:977
+#: src/conf/node_device_conf.c:968
 #, c-format
 msgid "no PCI slot ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI slot ID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:978
+#: src/conf/node_device_conf.c:969
 #, c-format
 msgid "invalid PCI slot ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI slot ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:983
+#: src/conf/node_device_conf.c:974
 #, c-format
 msgid "no PCI function ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI function ID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:984
+#: src/conf/node_device_conf.c:975
 #, c-format
 msgid "invalid PCI function ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI function ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:989
+#: src/conf/node_device_conf.c:980
 #, c-format
 msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI vendor ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:990
+#: src/conf/node_device_conf.c:981
 #, c-format
 msgid "invalid PCI vendor ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI vendor ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:995
+#: src/conf/node_device_conf.c:986
 #, c-format
 msgid "no PCI product ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI উৎপাদন ID দিয়া হোৱা নাই"
 
-#: src/conf/node_device_conf.c:996
+#: src/conf/node_device_conf.c:987
 #, c-format
 msgid "invalid PCI product ID supplied for '%s'"
 msgstr "%s ত অবৈধ PCI উৎপাদন ID দিয়া হৈছে"
 
-#: src/conf/node_device_conf.c:1031
+#: src/conf/node_device_conf.c:1022
 #, c-format
 msgid "no system UUID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো প্ৰণালীৰ UUID দিয়া হোৱা নাই"
 
 # c-format
-#: src/conf/node_device_conf.c:1037
+#: src/conf/node_device_conf.c:1028
 #, c-format
 msgid "malformed uuid element for '%s'"
 msgstr "'%s' ৰ কাৰণে ভুল uuid পদাৰ্থ"
 
-#: src/conf/node_device_conf.c:1072
+#: src/conf/node_device_conf.c:1063
 msgid "missing capability type"
 msgstr "হেৰুৱা কাৰ্য্যক্ষমতাৰ ধৰণ"
 
 # c-format
-#: src/conf/node_device_conf.c:1078
+#: src/conf/node_device_conf.c:1069
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "অজ্ঞাত auth ধৰণ '%s'"
 
 # c-format
-#: src/conf/node_device_conf.c:1115
+#: src/conf/node_device_conf.c:1106
 #, c-format
 msgid "unknown capability type '%d' for '%s'"
 msgstr "অজ্ঞাত '%d' ক্ষমতাৰ ধৰণ '%s' ৰ কাৰণে"
 
-#: src/conf/node_device_conf.c:1167
+#: src/conf/node_device_conf.c:1158
 #, c-format
 msgid "no device capabilities for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো যন্ত্ৰৰ কাৰ্য্যক্ষমতা নাই"
 
-#: src/conf/node_device_conf.c:1335
+#: src/conf/node_device_conf.c:1326
 msgid "Device is not a fibre channel HBA"
 msgstr "ডিভাইসটি ফাইবার চ্যানেল HBA নয়"
 
 # c-format
 # c-format
-#: src/conf/node_device_conf.c:1365
+#: src/conf/node_device_conf.c:1356
 #, c-format
 msgid "Could not find parent HBA for '%s'"
 msgstr "'%s'-র জন্য ঊর্ধ্বতন HBA পাওয়া যায়নি"
 
 # c-format
-#: src/conf/node_device_conf.c:1385
+#: src/conf/node_device_conf.c:1376
 #, c-format
 msgid "Parent HBA %s is not capable of vport operations"
 msgstr "ঊর্ধ্বতন HBA %s, vport-র কর্ম সঞ্চালন করতে সক্ষম নয়"
@@ -2471,7 +2471,7 @@ msgstr "virDomainGetXMLDesc secure flag ৰ লগত"
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare এ uri নিৰ্ধাৰণ নকৰিলে"
 
-#: src/libvirt.c:3066 src/qemu/qemu_driver.c:7075
+#: src/libvirt.c:3066 src/qemu/qemu_driver.c:7078
 msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare এ uri নিৰ্ধাৰণ নকৰিলে"
 
@@ -2491,7 +2491,7 @@ msgstr "ফ্লেগৰ মান শূণ্য হোৱা আৱশ্�
 msgid "buffer is NULL"
 msgstr "প্ৰশমকৰ মান NULL"
 
-#: src/libvirt.c:4278 src/qemu/qemu_driver.c:5982
+#: src/libvirt.c:4278 src/qemu/qemu_driver.c:5985
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ফ্ল্যাগের পরামিতি VIR_MEMORY_VIRTUAL অথবা VIR_MEMORY_PHYSICAL হওয়া আবশ্যক"
 
@@ -3028,7 +3028,7 @@ msgid "No domain with id %d"
 msgstr "id %d নামৰ কোনো ডোমেইন নাই"
 
 # c-format
-#: src/lxc/lxc_driver.c:1571 src/qemu/qemu_driver.c:430
+#: src/lxc/lxc_driver.c:1571 src/qemu/qemu_driver.c:431
 #, c-format
 msgid "Failed to autostart VM '%s': %s\n"
 msgstr "VM '%s' autostart কৰোঁতে ব্যৰ্থ: %s\n"
@@ -3041,7 +3041,7 @@ msgstr "অজ্ঞাত মুক্তি: %s"
 
 # c-format
 #: src/lxc/lxc_driver.c:1876 src/lxc/lxc_driver.c:1934
-#: src/qemu/qemu_driver.c:5645 src/qemu/qemu_driver.c:5716
+#: src/qemu/qemu_driver.c:5648 src/qemu/qemu_driver.c:5719
 #, c-format
 msgid "No such domain %s"
 msgstr "ডোমেইন %s পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ"
@@ -3052,12 +3052,12 @@ msgid "Invalid type for cpu_shares tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable-র ক্ষেত্রে অবৈধ ধরন, 'ullong' প্রত্যাশিত"
 
 # c-format
-#: src/lxc/lxc_driver.c:1896 src/qemu/qemu_driver.c:5674
+#: src/lxc/lxc_driver.c:1896 src/qemu/qemu_driver.c:5677
 #, c-format
 msgid "Invalid parameter `%s'"
 msgstr "পথ বৈধ নহয়: %s"
 
-#: src/lxc/lxc_driver.c:1925 src/qemu/qemu_driver.c:5708
+#: src/lxc/lxc_driver.c:1925 src/qemu/qemu_driver.c:5711
 msgid "Invalid parameter count"
 msgstr "অবৈধ তৰ্ক"
 
@@ -3088,7 +3088,7 @@ msgid "Cannot create autostart directory %s"
 msgstr "autostart পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/lxc/lxc_driver.c:2099 src/qemu/qemu_driver.c:5572
+#: src/lxc/lxc_driver.c:2099 src/qemu/qemu_driver.c:5575
 #: src/uml/uml_driver.c:1718
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
@@ -3096,7 +3096,7 @@ msgstr "'%s' symlink ক '%s' লৈ নিৰ্মাণ কৰোঁতে �
 
 # c-format
 #: src/lxc/lxc_driver.c:2106 src/network/bridge_driver.c:1522
-#: src/qemu/qemu_driver.c:5579 src/storage/storage_driver.c:1037
+#: src/qemu/qemu_driver.c:5582 src/storage/storage_driver.c:1037
 #: src/uml/uml_driver.c:1725
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -3112,7 +3112,7 @@ msgstr "স্থগিত কৰাৰ কাৰ্য্য বিফল"
 msgid "Resume operation failed"
 msgstr "পুনৰাৰম্ভৰ কাৰ্য্য বিফল"
 
-#: src/network/bridge_driver.c:244 src/qemu/qemu_conf.c:1191
+#: src/network/bridge_driver.c:244 src/qemu/qemu_conf.c:1193
 #: src/uml/uml_conf.c:114
 msgid "cannot initialize bridge support"
 msgstr "ব্ৰিজ সমৰ্থন আৰম্ভ কৰোঁতে ব্যৰ্থ: %s"
@@ -3328,44 +3328,44 @@ msgid "cannot resolve driver link %s"
 msgstr "%s ড্রাইভার লিংক মীমাংসা করতে ব্যর্থ"
 
 # c-format
-#: src/node_device/node_device_driver.c:280
-#: src/node_device/node_device_driver.c:309
-#: src/node_device/node_device_driver.c:344
-#: src/node_device/node_device_driver.c:375 src/test/test_driver.c:4808
+#: src/node_device/node_device_driver.c:281
+#: src/node_device/node_device_driver.c:310
+#: src/node_device/node_device_driver.c:345
+#: src/node_device/node_device_driver.c:376 src/test/test_driver.c:4808
 #: src/test/test_driver.c:4834 src/test/test_driver.c:4870
 #: src/test/test_driver.c:4901
 #, c-format
 msgid "no node device with matching name '%s'"
 msgstr "'%s'-র সমতূল্য নাম সহ কোনো নোড ডিভাইস উপস্থিত নেই"
 
-#: src/node_device/node_device_driver.c:320 src/test/test_driver.c:4845
+#: src/node_device/node_device_driver.c:321 src/test/test_driver.c:4845
 msgid "no parent for this device"
 msgstr "এই যন্ত্ৰৰ পেৰেন্ট"
 
 # c-format
-#: src/node_device/node_device_driver.c:419
+#: src/node_device/node_device_driver.c:422
 #, c-format
 msgid "Invalid vport operation (%d)"
 msgstr "অবৈধ vport কর্ম (%d)"
 
 # c-format
 # c-format
-#: src/node_device/node_device_driver.c:436
+#: src/node_device/node_device_driver.c:439
 #, c-format
 msgid "Vport operation path is '%s'"
 msgstr "Vport কর্মের পাথ হল '%s'"
 
 # c-format
-#: src/node_device/node_device_driver.c:450
+#: src/node_device/node_device_driver.c:453
 #, c-format
 msgid "Write of '%s' to '%s' during vport create/delete failed"
 msgstr "vport নির্মাণ/অপসারণের সময় '%s'-কে '%s'-এ লিখতে ব্যর্থ"
 
-#: src/node_device/node_device_driver.c:459
+#: src/node_device/node_device_driver.c:462
 msgid "Vport operation complete"
 msgstr "Vport কর্ম সমাপ্ত"
 
-#: src/node_device/node_device_driver.c:472
+#: src/node_device/node_device_driver.c:475
 msgid "Could not get current time"
 msgstr "বর্তমান সময় প্রাপ্ত করতে ব্যর্থ"
 
@@ -3475,7 +3475,7 @@ msgstr "OpenNebula লৈ ভাৰ্চুৱেল যন্ত্ৰ প্�
 msgid "no domain with matching uuid"
 msgstr "uuid ৰ সৈতে কোনো সুসংগত ডোমেইন নাই"
 
-#: src/opennebula/one_driver.c:289 src/qemu/qemu_driver.c:4581
+#: src/opennebula/one_driver.c:289 src/qemu/qemu_driver.c:4584
 #: src/uml/uml_driver.c:1630
 msgid "cannot undefine transient domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
@@ -3507,18 +3507,18 @@ msgstr "id %d নামৰ কোনো ডোমেইন নাই"
 msgid "Wrong state to perform action"
 msgstr "কাৰ্য্য কৰিবলৈ ভুল অৱস্থা"
 
-#: src/opennebula/one_driver.c:577 src/qemu/qemu_driver.c:2913
-#: src/qemu/qemu_driver.c:2969 src/qemu/qemu_driver.c:3027
-#: src/qemu/qemu_driver.c:3067 src/qemu/qemu_driver.c:3386
-#: src/qemu/qemu_driver.c:3549 src/qemu/qemu_driver.c:5782
-#: src/qemu/qemu_driver.c:5849 src/qemu/qemu_driver.c:5991
-#: src/qemu/qemu_driver.c:7177 src/xen/xen_hypervisor.c:1097
+#: src/opennebula/one_driver.c:577 src/qemu/qemu_driver.c:2916
+#: src/qemu/qemu_driver.c:2972 src/qemu/qemu_driver.c:3030
+#: src/qemu/qemu_driver.c:3070 src/qemu/qemu_driver.c:3389
+#: src/qemu/qemu_driver.c:3552 src/qemu/qemu_driver.c:5785
+#: src/qemu/qemu_driver.c:5852 src/qemu/qemu_driver.c:5994
+#: src/qemu/qemu_driver.c:7180 src/xen/xen_hypervisor.c:1097
 #: src/xen/xen_hypervisor.c:1181 src/xen/xen_hypervisor.c:1290
 msgid "domain is not running"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয় নহয়"
 
 #: src/opennebula/one_driver.c:580 src/opennebula/one_driver.c:613
-#: src/qemu/qemu_driver.c:2685 src/uml/uml_driver.c:1280
+#: src/qemu/qemu_driver.c:2688 src/uml/uml_driver.c:1280
 #: src/uml/uml_driver.c:1310 src/vbox/vbox_tmpl.c:790
 #, c-format
 msgid "no domain with matching id %d"
@@ -3723,7 +3723,7 @@ msgstr "id সৈতে মিল থকা কোনো ডোমেইন ন�
 msgid "domain is not in shutoff state"
 msgstr "ডোমেইন বৰ্তমানে shutoff অৱস্থাত নাই"
 
-#: src/openvz/openvz_driver.c:1021 src/qemu/qemu_driver.c:4575
+#: src/openvz/openvz_driver.c:1021 src/qemu/qemu_driver.c:4578
 #: src/uml/uml_driver.c:1624
 msgid "cannot delete active domain"
 msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভৱ নহয়"
@@ -3732,7 +3732,7 @@ msgstr "সক্ৰিয় ডোমেইন আঁতৰুৱা সম্ভ
 msgid "Could not read container config"
 msgstr "সংযোগৰ URI ৰ বিশ্লেষণ কৰিব পৰা ন'গ'ল"
 
-#: src/openvz/openvz_driver.c:1116 src/qemu/qemu_driver.c:2572
+#: src/openvz/openvz_driver.c:1116 src/qemu/qemu_driver.c:2575
 #, c-format
 msgid "unknown type '%s'"
 msgstr "অজ্ঞাত ধৰণ '%s'"
@@ -3873,12 +3873,12 @@ msgstr "'%s' লৈ অনুবৰ্তন প্ৰক্ৰিয়াৰ অ�
 msgid "Unable to read 'qemu -M ?' output"
 msgstr "'qemu -M ?' ফলাফল পড়তে ব্যর্থ"
 
-#: src/qemu/qemu_conf.c:505 src/qemu/qemu_conf.c:1095
+#: src/qemu/qemu_conf.c:505 src/qemu/qemu_conf.c:1097
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr "qemu %d pid %lu ৰ পৰা অপ্ৰত্যাশিত প্ৰস্থান অৱস্থা"
 
-#: src/qemu/qemu_conf.c:513 src/qemu/qemu_conf.c:1103
+#: src/qemu/qemu_conf.c:513 src/qemu/qemu_conf.c:1105
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr "অপ্ৰত্যাশিত প্ৰস্থান অৱস্থা '%d', qemu সম্ভৱত বিফল"
@@ -3890,856 +3890,856 @@ msgid "Failed to stat %s, most peculiar : %s"
 msgstr "%s stat করতে ব্যর্থ, অত্যন্ত আশ্চর্যজনক : %s"
 
 # c-format
-#: src/qemu/qemu_conf.c:1038
+#: src/qemu/qemu_conf.c:1040
 #, c-format
 msgid "cannot parse QEMU version number in '%s'"
 msgstr "'%s' ত QEMU সংস্কৰণ সংখ্যা বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:1071
+#: src/qemu/qemu_conf.c:1073
 msgid "Unable to read QEMU help output"
 msgstr "QEMU সহায়ৰ নিৰ্গম পঢ়িব পৰা ন'গ'ল"
 
 # c-format
-#: src/qemu/qemu_conf.c:1142 src/qemu/qemu_driver.c:2174
-#: src/qemu/qemu_driver.c:4270
+#: src/qemu/qemu_conf.c:1144 src/qemu/qemu_driver.c:2177
+#: src/qemu/qemu_driver.c:4273
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "QEMU বাইনেৰি %s অনুসন্ধান কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_conf.c:1185
+#: src/qemu/qemu_conf.c:1187
 #, c-format
 msgid "Network type %d is not supported"
 msgstr "%d প্ৰকৃতিৰ নে'টৱৰ্ক সমৰ্থিত নহয়"
 
 # c-format
-#: src/qemu/qemu_conf.c:1216 src/uml/uml_conf.c:133
+#: src/qemu/qemu_conf.c:1218 src/uml/uml_conf.c:133
 #, c-format
 msgid "Failed to add tap interface to bridge. %s is not a bridge device"
 msgstr "tap সংযোগ মাধ্যম ব্ৰিজত যোগ কৰিবলৈ বিফল । %s এটা ব্ৰিজ যন্ত্ৰ নহয়"
 
 # c-format
-#: src/qemu/qemu_conf.c:1220 src/uml/uml_conf.c:137
+#: src/qemu/qemu_conf.c:1222 src/uml/uml_conf.c:137
 #, c-format
 msgid "Failed to add tap interface to bridge '%s'"
 msgstr "'%s' ব্রিজে tap ইন্টারফেস যোগ করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_conf.c:1224 src/uml/uml_conf.c:141
+#: src/qemu/qemu_conf.c:1226 src/uml/uml_conf.c:141
 #, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s'"
 msgstr "tap ইন্টারফেস '%s'-কে '%s' ব্রিজে যোগ করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_conf.c:1235
+#: src/qemu/qemu_conf.c:1237
 #, fuzzy, c-format
 msgid "failed to add ebtables rule to allow MAC address on  '%s'"
 msgstr "'%s'ৰ পৰা DHCP ৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_conf.c:1569
+#: src/qemu/qemu_conf.c:1571
 #, fuzzy, c-format
 msgid "driver serial '%s' contains unsafe characters"
 msgstr "মডেলৰ নামত অবৈধ অক্ষৰ আছে"
 
-#: src/qemu/qemu_conf.c:1618
+#: src/qemu/qemu_conf.c:1621
 msgid "TCP migration is not supported with this QEMU binary"
 msgstr "hypervisor ৰ দ্বাৰা এই আপেক্ষকৰ বাবে কোনো সমৰ্থন নাই"
 
-#: src/qemu/qemu_conf.c:1626 src/qemu/qemu_conf.c:1632
+#: src/qemu/qemu_conf.c:1629 src/qemu/qemu_conf.c:1635
 msgid "STDIO migration is not supported with this QEMU binary"
 msgstr "এই QEMU binary ৰ লগত STDIO প্ৰব্ৰজন অসমৰ্থিত"
 
-#: src/qemu/qemu_conf.c:1788
+#: src/qemu/qemu_conf.c:1802
 msgid "hugetlbfs filesystem is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:1793
+#: src/qemu/qemu_conf.c:1807
 msgid "hugepages are disabled by administrator config"
 msgstr ""
 
 # c-format
-#: src/qemu/qemu_conf.c:1798
+#: src/qemu/qemu_conf.c:1812
 #, fuzzy, c-format
 msgid "hugepage backing not supported by '%s'"
 msgstr "ইন্টারফেসের ধরন '%s' সমর্থিত নয়"
 
-#: src/qemu/qemu_conf.c:1828
+#: src/qemu/qemu_conf.c:1842
 #, fuzzy, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "আদেশ '%s' ৰ দ্বাৰা   %s বিকল্প সমৰ্থিত হয় না"
 
 # c-format
-#: src/qemu/qemu_conf.c:1914
+#: src/qemu/qemu_conf.c:1928
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "ডিস্ক '%s' ৰ কাৰণে অসমৰ্থিত '%s' চালকৰ নাম"
 
 # c-format
-#: src/qemu/qemu_conf.c:1954 src/qemu/qemu_conf.c:2036
+#: src/qemu/qemu_conf.c:1968 src/qemu/qemu_conf.c:2050
 #, c-format
 msgid "unsupported usb disk type for '%s'"
 msgstr "'%s' ধৰণৰ ডিস্ক সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_conf.c:1964 src/qemu/qemu_conf.c:2055 src/uml/uml_conf.c:477
+#: src/qemu/qemu_conf.c:1978 src/qemu/qemu_conf.c:2069 src/uml/uml_conf.c:477
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr "'%s' ধৰণৰ ডিস্ক সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_conf.c:2174
+#: src/qemu/qemu_conf.c:2188
 msgid "guestfwd requires QEMU to support -chardev"
 msgstr ""
 
-#: src/qemu/qemu_conf.c:2304
+#: src/qemu/qemu_conf.c:2318
 msgid "only one video card is currently supported"
 msgstr "বর্তমানে শুধুমাত্র একটি ভিডিও কার্ড সমর্থিত হবে"
 
 # c-format
-#: src/qemu/qemu_conf.c:2315 src/qemu/qemu_conf.c:2341
+#: src/qemu/qemu_conf.c:2329 src/qemu/qemu_conf.c:2355
 #, c-format
 msgid "video type %s is not supported with QEMU"
 msgstr "QEMU-র সাথে %s ধরনের ভিডিও সমর্থিত নয়"
 
-#: src/qemu/qemu_conf.c:2361
+#: src/qemu/qemu_conf.c:2375
 msgid "invalid sound model"
 msgstr "ধ্বনি মডেল বৈধ নহয়"
 
-#: src/qemu/qemu_conf.c:2379
+#: src/qemu/qemu_conf.c:2393
 #, fuzzy
 msgid "invalid watchdog model"
 msgstr "ধ্বনি মডেল বৈধ নহয়"
 
-#: src/qemu/qemu_conf.c:2388
+#: src/qemu/qemu_conf.c:2402
 #, fuzzy
 msgid "invalid watchdog action"
 msgstr "বৈধ সংযোগ অনুপস্থিত"
 
-#: src/qemu/qemu_conf.c:2428 src/qemu/qemu_monitor_text.c:1348
+#: src/qemu/qemu_conf.c:2442 src/qemu/qemu_monitor_text.c:1348
 msgid "PCI device assignment is not supported by this version of qemu"
 msgstr "qemu-র এই সংস্করণ দ্বারা PCI-র ডিভাইস বরাদ্দকরণ সমর্থিত নয়"
 
 # c-format
-#: src/qemu/qemu_conf.c:2643
+#: src/qemu/qemu_conf.c:2657
 #, c-format
 msgid "malformed keyword arguments in '%s'"
 msgstr "'%s' ত ভুল মূলশব্দৰ তৰ্ক"
 
-#: src/qemu/qemu_conf.c:2776
+#: src/qemu/qemu_conf.c:2790
 #, c-format
 msgid "cannot parse drive index '%s'"
 msgstr "ড্ৰাইভ সূচী '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:2785
+#: src/qemu/qemu_conf.c:2799
 #, c-format
 msgid "missing file parameter in drive '%s'"
 msgstr "'%s' ড্ৰাইভত হেৰুৱা নথিপত্ৰৰ স্থিতিমাপ"
 
-#: src/qemu/qemu_conf.c:2792
+#: src/qemu/qemu_conf.c:2806
 #, c-format
 msgid "missing index parameter in drive '%s'"
 msgstr "'%s' ড্ৰাইভত হেৰুৱা সূচীৰ স্থিতিমাপ"
 
-#: src/qemu/qemu_conf.c:2852
+#: src/qemu/qemu_conf.c:2866
 #, c-format
 msgid "cannot parse NIC vlan in '%s'"
 msgstr "'%s' ত NIC vlan বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:2864
+#: src/qemu/qemu_conf.c:2878
 #, c-format
 msgid "cannot find NIC definition for vlan %d"
 msgstr "vlan %d ৰ  কাৰণে NIC সংজ্ঞা পোৱা নাযায়"
 
-#: src/qemu/qemu_conf.c:2923
+#: src/qemu/qemu_conf.c:2937
 #, c-format
 msgid "cannot parse vlan in '%s'"
 msgstr "'%s' ত vlan বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:2953
+#: src/qemu/qemu_conf.c:2967
 #, c-format
 msgid "cannot parse NIC definition '%s'"
 msgstr "'%s' ৰ  কাৰণে NIC সংজ্ঞা পোৱা নাযায়"
 
 # c-format
-#: src/qemu/qemu_conf.c:3024 src/qemu/qemu_conf.c:3082
+#: src/qemu/qemu_conf.c:3038 src/qemu/qemu_conf.c:3096
 #, c-format
 msgid "unknown PCI device syntax '%s'"
 msgstr "অজ্ঞাত PCI device syntax '%s'"
 
-#: src/qemu/qemu_conf.c:3032 src/qemu/qemu_conf.c:3105
+#: src/qemu/qemu_conf.c:3046 src/qemu/qemu_conf.c:3119
 #, c-format
 msgid "cannot extract PCI device bus '%s'"
 msgstr "PCI device bus '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3039
+#: src/qemu/qemu_conf.c:3053
 #, c-format
 msgid "cannot extract PCI device slot '%s'"
 msgstr "PCI device slot '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3046
+#: src/qemu/qemu_conf.c:3060
 #, c-format
 msgid "cannot extract PCI device function '%s'"
 msgstr "PCI device function '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3091
+#: src/qemu/qemu_conf.c:3105
 #, c-format
 msgid "cannot extract USB device vendor '%s'"
 msgstr "USB device vendor '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3098
+#: src/qemu/qemu_conf.c:3112
 #, c-format
 msgid "cannot extract PCI device product '%s'"
 msgstr "PCI device product '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3112
+#: src/qemu/qemu_conf.c:3126
 #, c-format
 msgid "cannot extract PCI device address '%s'"
 msgstr "PCI device address '%s'উদ্ঘাটন কৰিব নোৱাৰি"
 
 # c-format
-#: src/qemu/qemu_conf.c:3225
+#: src/qemu/qemu_conf.c:3239
 #, c-format
 msgid "cannot find port number in character device %s"
 msgstr "কেৰেক্টাৰ যন্ত্ৰ '%s' ত প'ৰ্ট সংখ্যা বিচাৰিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_conf.c:3265
+#: src/qemu/qemu_conf.c:3279
 #, c-format
 msgid "unknown character device syntax %s"
 msgstr "অজ্ঞাত character device syntax %s"
 
-#: src/qemu/qemu_conf.c:3299
+#: src/qemu/qemu_conf.c:3313
 msgid "no emulator path found"
 msgstr "emulator ৰ পথ পোৱা ন'গ'ল"
 
-#: src/qemu/qemu_conf.c:3351
+#: src/qemu/qemu_conf.c:3365
 #, c-format
 msgid "missing value for %s argument"
 msgstr "%s তৰ্কৰ পৰা হেৰুৱা মান"
 
-#: src/qemu/qemu_conf.c:3396
+#: src/qemu/qemu_conf.c:3410
 #, c-format
 msgid "cannot parse VNC port '%s'"
 msgstr "VNC port '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3420
+#: src/qemu/qemu_conf.c:3434
 #, c-format
 msgid "cannot parse memory level '%s'"
 msgstr "স্মৃতিশক্তিৰ স্তৰ '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3429
+#: src/qemu/qemu_conf.c:3443
 #, c-format
 msgid "cannot parse CPU count '%s'"
 msgstr "CPU count '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_conf.c:3437
+#: src/qemu/qemu_conf.c:3451
 #, c-format
 msgid "cannot parse UUID '%s'"
 msgstr "UUID '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
 # c-format
-#: src/qemu/qemu_conf.c:3702
+#: src/qemu/qemu_conf.c:3716
 #, c-format
 msgid "unknown video adapter type '%s'"
 msgstr "অজানা ধরনের ভিডিও অ্যাডাপ্টার '%s'"
 
-#: src/qemu/qemu_conf.c:3722
+#: src/qemu/qemu_conf.c:3736
 #, c-format
 msgid "unknown QEMU argument '%s' during conversion"
 msgstr "সলনি কৰোঁতে অজ্ঞাত QEMU তৰ্ক '%s'"
 
-#: src/qemu/qemu_conf.c:3725
+#: src/qemu/qemu_conf.c:3739
 #, c-format
 msgid "unknown argument '%s'"
 msgstr "অজ্ঞাত তৰ্ক '%s'"
 
-#: src/qemu/qemu_driver.c:174 src/qemu/qemu_driver.c:216
+#: src/qemu/qemu_driver.c:175 src/qemu/qemu_driver.c:217
 #: src/xen/xm_internal.c:502
 msgid "cannot get time of day"
 msgstr "দিনৰ বৰ্তমান সময় পোৱা হৈছে"
 
 # c-format
-#: src/qemu/qemu_driver.c:187 src/qemu/qemu_driver.c:230
+#: src/qemu/qemu_driver.c:188 src/qemu/qemu_driver.c:231
 #, fuzzy
 msgid "cannot acquire state change lock"
 msgstr "বিন্যাস নথিপত্ৰ %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:190 src/qemu/qemu_driver.c:233
+#: src/qemu/qemu_driver.c:191 src/qemu/qemu_driver.c:234
 #, fuzzy
 msgid "cannot acquire job mutex"
 msgstr "mutex আৰম্ভ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:359 src/qemu/qemu_driver.c:391
+#: src/qemu/qemu_driver.c:360 src/qemu/qemu_driver.c:392
 #: src/uml/uml_driver.c:825
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "%s লগ নথিপত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:365 src/qemu/qemu_driver.c:397
+#: src/qemu/qemu_driver.c:366 src/qemu/qemu_driver.c:398
 #: src/uml/uml_driver.c:834
 msgid "Unable to set VM logfile close-on-exec flag"
 msgstr "VM লগ নথিপত্ৰৰ close on exec ফ্লেগ %s নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:383
+#: src/qemu/qemu_driver.c:384
 #, c-format
 msgid "failed to build logfile name %s/%s.log"
 msgstr "%s লগ নথিপত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %s"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:403
+#: src/qemu/qemu_driver.c:404
 #, c-format
 msgid "Unable to seek to %lld in %s"
 msgstr "%lld অব্দি, %s-র মধ্যে অনুসন্ধান করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:488
+#: src/qemu/qemu_driver.c:489
 #, fuzzy, c-format
 msgid "Failed to remove domain XML for %s: %s"
 msgstr "%sৰ পৰা ডোমেইন পুনৰুদ্ধাৰ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:493
+#: src/qemu/qemu_driver.c:494
 #, c-format
 msgid "Failed to remove PID file for %s: %s"
 msgstr "%s ৰ কাৰণে PID নথিপত্ৰ আঁতৰাওঁতে ব্যৰ্থ: %s"
 
-#: src/qemu/qemu_driver.c:557
+#: src/qemu/qemu_driver.c:558
 #, fuzzy, c-format
 msgid "missing <encryption> for volume %s"
 msgstr "%s যন্ত্ৰৰ বাবে উৎসৰ তথ্য নাই"
 
-#: src/qemu/qemu_driver.c:560
+#: src/qemu/qemu_driver.c:561
 #, c-format
 msgid "unexpected passphrase request for volume %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:585
+#: src/qemu/qemu_driver.c:586
 #, fuzzy
 msgid "cannot find secrets without a connection"
 msgstr "অধিবেশন বিচাৰি পোৱা ন'গ'ল"
 
-#: src/qemu/qemu_driver.c:593 src/storage/storage_backend.c:385
+#: src/qemu/qemu_driver.c:594 src/storage/storage_backend.c:385
 #, fuzzy
 msgid "secret storage not supported"
 msgstr "TCP সার্ভার প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
 
-#: src/qemu/qemu_driver.c:606
+#: src/qemu/qemu_driver.c:607
 #, fuzzy, c-format
 msgid "invalid <encryption> for volume %s"
 msgstr "%s ত অবৈধ সংযোগ নিৰ্দেশক যন্ত্ৰ"
 
-#: src/qemu/qemu_driver.c:624
+#: src/qemu/qemu_driver.c:625
 #, c-format
 msgid "format='qcow' passphrase for %s must not contain a '\\0'"
 msgstr ""
 
 # c-format
-#: src/qemu/qemu_driver.c:658
+#: src/qemu/qemu_driver.c:659
 #, fuzzy, c-format
 msgid "Failed to connect monitor for %s\n"
 msgstr "%sৰ পৰা নে'টৱৰ্ক নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %d\n"
 
-#: src/qemu/qemu_driver.c:763
+#: src/qemu/qemu_driver.c:764
 msgid "Failed to start security driver"
 msgstr "নে'টৱৰ্ক অনুসন্ধান কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:768
+#: src/qemu/qemu_driver.c:769
 msgid "No security driver available"
 msgstr "কোনো সুৰক্ষাৰ চালক নাই"
 
 # c-format
-#: src/qemu/qemu_driver.c:870
+#: src/qemu/qemu_driver.c:871
 #, c-format
 msgid "Failed to create state dir '%s': %s\n"
 msgstr "state dir  '%s' সৃষ্টি কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:876
+#: src/qemu/qemu_driver.c:877
 #, fuzzy, c-format
 msgid "Failed to create lib dir '%s': %s\n"
 msgstr "state dir  '%s' সৃষ্টি কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:882
+#: src/qemu/qemu_driver.c:883
 #, fuzzy, c-format
 msgid "Failed to create cache dir '%s': %s\n"
 msgstr "state dir  '%s' সৃষ্টি কৰোঁতে ব্যৰ্থ: %s\n"
 
-#: src/qemu/qemu_driver.c:925 src/qemu/qemu_driver.c:3442
-#: src/qemu/qemu_driver.c:3477
+#: src/qemu/qemu_driver.c:926 src/qemu/qemu_driver.c:3445
+#: src/qemu/qemu_driver.c:3480
 #, fuzzy, c-format
 msgid "unable to set ownership of '%s' to user %d:%d"
 msgstr "এই প্ল্যাটফর্মের জন্য হোস্ট ডিভাইসের মালিকানা নির্ধারণ করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:931
+#: src/qemu/qemu_driver.c:932
 #, fuzzy, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
 msgstr "%s: সুৰক্ষা সন্দৰ্ভ '\\%s' %s ত নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থ: %s."
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:956
+#: src/qemu/qemu_driver.c:957
 #, fuzzy, c-format
 msgid "unable to create hugepage path %s"
 msgstr "%s-র জন্য cgroup নির্মাণ করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:963
+#: src/qemu/qemu_driver.c:964
 #, fuzzy, c-format
 msgid "unable to set ownership on %s to %d:%d"
 msgstr "এই প্ল্যাটফর্মের জন্য হোস্ট ডিভাইসের মালিকানা নির্ধারণ করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:1156
+#: src/qemu/qemu_driver.c:1157
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr "%s আৰম্ভ কৰোঁতে প্ৰাপ্ত ফলাফল পঢ়োঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:1165
+#: src/qemu/qemu_driver.c:1166
 #, c-format
 msgid "Out of space while reading %s log output"
 msgstr "%s আৰম্ভ কৰোঁতে প্ৰাপ্ত ফলাফল পঢ়োঁতে অৱশিষ্ট স্থান উপলব্ধ নাই"
 
 # c-format
-#: src/qemu/qemu_driver.c:1172
+#: src/qemu/qemu_driver.c:1173
 #, c-format
 msgid "Process exited while reading %s log output"
 msgstr "%s লগ নিৰ্গম পঢ়োঁতে প্ৰক্ৰিয়া অন্ত হৈছে"
 
 # c-format
-#: src/qemu/qemu_driver.c:1185
+#: src/qemu/qemu_driver.c:1186
 #, c-format
 msgid "Timed out while reading %s log output"
 msgstr "%s আৰম্ভ কৰোঁতে প্ৰাপ্ত ফলাফল পঢ়োঁতে সময় অন্ত হৈছে"
 
 # c-format
-#: src/qemu/qemu_driver.c:1297
+#: src/qemu/qemu_driver.c:1298
 #, c-format
 msgid "Unable to close logfile: %s\n"
 msgstr "লগ নথিপত্ৰ বন্ধ কৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:1304
+#: src/qemu/qemu_driver.c:1305
 #, c-format
 msgid "unable to start guest: %s"
 msgstr "tty ৰ বৈশিষ্ট্য নিৰ্ধাৰণ কৰোঁতে ব্যৰ্থ: %s"
 
-#: src/qemu/qemu_driver.c:1347
+#: src/qemu/qemu_driver.c:1349
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:1391
+#: src/qemu/qemu_driver.c:1394
 msgid "failed to set CPU affinity"
 msgstr "ডোমেইন '%s' প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:1404 src/qemu/qemu_driver.c:2979
-#: src/qemu/qemu_driver.c:7325
+#: src/qemu/qemu_driver.c:1407 src/qemu/qemu_driver.c:2982
+#: src/qemu/qemu_driver.c:7328
 msgid "resume operation failed"
 msgstr "পুনৰাৰম্ভৰ কাৰ্য্য বিফল"
 
 # c-format
-#: src/qemu/qemu_driver.c:1619
+#: src/qemu/qemu_driver.c:1622
 #, c-format
 msgid "Failed to allocate pciDeviceList: %s\n"
 msgstr "pciDeviceList বরাদ্দ করতে ব্যর্থ: %s\n"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1638
+#: src/qemu/qemu_driver.c:1641
 #, c-format
 msgid "Failed to reset PCI device: %s\n"
 msgstr "PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s\n"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1649
+#: src/qemu/qemu_driver.c:1652
 #, c-format
 msgid "Failed to re-attach PCI device: %s\n"
 msgstr "PCI ডিভাইস পুনরায় সংযুক্ত করতে ব্যর্থ: %s\n"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1686
+#: src/qemu/qemu_driver.c:1689
 #, c-format
 msgid "Unable to create cgroup for %s"
 msgstr "%s-র জন্য cgroup নির্মাণ করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:1700
+#: src/qemu/qemu_driver.c:1703
 #, c-format
 msgid "Unable to deny all devices for %s"
 msgstr "%s-র জন্য সকল পরিসেবা প্রত্যাখ্যান করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:1713
+#: src/qemu/qemu_driver.c:1716
 #, c-format
 msgid "Unable to allow device %s for %s"
 msgstr "%s ডিভাইসটি %s-র জন্য অনুমোদন করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:1722
+#: src/qemu/qemu_driver.c:1725
 msgid "unable to allow /dev/pts/ devices"
 msgstr "/dev/pts/ ডিভাইস অনুমোদন করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:1730
+#: src/qemu/qemu_driver.c:1733
 msgid "unable to allow /dev/snd/ devices"
 msgstr "/dev/snd/ ডিভাইস অনুমোদন করতে ব্যর্থ"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1741 src/qemu/qemu_driver.c:5105
+#: src/qemu/qemu_driver.c:1744 src/qemu/qemu_driver.c:5108
 #, c-format
 msgid "unable to allow device %s"
 msgstr "%s ডিভাইস অনুমোদন করতে ব্যর্থ"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1774 src/qemu/qemu_driver.c:5096
+#: src/qemu/qemu_driver.c:1777 src/qemu/qemu_driver.c:5099
 #, c-format
 msgid "Unable to find cgroup for %s\n"
 msgstr "%s-র জন্য cgroup সন্ধান করতে ব্যর্থ\n"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1797
+#: src/qemu/qemu_driver.c:1800
 #, c-format
 msgid "unable to find cgroup for domain %s"
 msgstr "%s ডোমেইনের জন্য cgroup সন্ধান করতে ব্যর্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:1805
+#: src/qemu/qemu_driver.c:1808
 #, c-format
 msgid "unable to add domain %s task %d to cgroup"
 msgstr "ডোমেইন %s ও কর্ম %d-কে cgroup-এ যোগ করতে ব্যর্থ"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:1843 src/qemu/qemu_driver.c:1886
-#: src/qemu/qemu_driver.c:1954
+#: src/qemu/qemu_driver.c:1846 src/qemu/qemu_driver.c:1889
+#: src/qemu/qemu_driver.c:1957
 #, c-format
 msgid "cannot set ownership on %s"
 msgstr "%s-র মালিকানা নির্ধারণ করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:1938
+#: src/qemu/qemu_driver.c:1941
 msgid "unable to set host device ownership on this platform"
 msgstr "এই প্ল্যাটফর্মের জন্য হোস্ট ডিভাইসের মালিকানা নির্ধারণ করতে ব্যর্থ"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:2061
+#: src/qemu/qemu_driver.c:2064
 #, c-format
 msgid "cannot change to '%d' group"
 msgstr "'%d' দলে পরিবর্তন করতে ব্যর্থ"
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:2069
+#: src/qemu/qemu_driver.c:2072
 #, c-format
 msgid "cannot change to '%d' user"
 msgstr "'%d' ব্যবহারকারীতে পরিবর্তন করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:2129 src/uml/uml_driver.c:789
+#: src/qemu/qemu_driver.c:2132 src/uml/uml_driver.c:789
 msgid "VM is already active"
 msgstr "VM বৰ্তমানে সক্ৰিয়"
 
-#: src/qemu/qemu_driver.c:2150
+#: src/qemu/qemu_driver.c:2153
 msgid "Unable to find an unused VNC port"
 msgstr "এটা অব্যৱহৃত VNC পোৰ্ট চিনাক্ত কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:2158 src/uml/uml_driver.c:811
+#: src/qemu/qemu_driver.c:2161 src/uml/uml_driver.c:811
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "লগ পঞ্জিকা %s নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:2200
+#: src/qemu/qemu_driver.c:2203
 #, c-format
 msgid "Cannot remove stale PID file for %s"
 msgstr "%s ৰ কাৰণে stale PID নথিপত্ৰ আঁতৰাওঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:2207
+#: src/qemu/qemu_driver.c:2210
 msgid "Failed to build pidfile path."
 msgstr "pidfile পথ সৃষ্টি কৰিব পৰা ন'গ'ল"
 
 # c-format
-#: src/qemu/qemu_driver.c:2220 src/qemu/qemu_driver.c:2223
+#: src/qemu/qemu_driver.c:2223 src/qemu/qemu_driver.c:2226
 #, c-format
 msgid "Unable to write envv to logfile: %s\n"
 msgstr "লগ নথিপত্ৰত argv লিখোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:2230 src/qemu/qemu_driver.c:2233
-#: src/qemu/qemu_driver.c:2238
+#: src/qemu/qemu_driver.c:2233 src/qemu/qemu_driver.c:2236
+#: src/qemu/qemu_driver.c:2241
 #, c-format
 msgid "Unable to write argv to logfile: %s\n"
 msgstr "লগ নথিপত্ৰত argv লিখোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:2242
+#: src/qemu/qemu_driver.c:2245
 #, c-format
 msgid "Unable to seek to end of logfile: %s\n"
 msgstr "লগ নথিপত্ৰৰ অন্ত বিচাৰোঁতে ব্যৰ্থ: %s\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:2259
+#: src/qemu/qemu_driver.c:2262
 #, c-format
 msgid "Domain %s didn't show up\n"
 msgstr "ডোমেইন %s দেখা ন'গ'ল\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:2371
+#: src/qemu/qemu_driver.c:2374
 #, fuzzy, c-format
 msgid "failed to remove ebtables rule to allow MAC address on  '%s'"
 msgstr "'%s'ৰ পৰা DHCP ৰ অনুৰোধ অনুমোদনৰ বাবে iptables নিয়ম যোগ কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:2380
+#: src/qemu/qemu_driver.c:2383
 #, c-format
 msgid "Failed to send SIGTERM to %s (%d)"
 msgstr "Failed to send SIGTERM to %s (%d)"
 
-#: src/qemu/qemu_driver.c:2468
+#: src/qemu/qemu_driver.c:2471
 msgid "qemu state driver is not active"
 msgstr "qemu state ড্রাইভার সক্রিয় নয়"
 
 # c-format
-#: src/qemu/qemu_driver.c:2476
+#: src/qemu/qemu_driver.c:2479
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///system"
 msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///system প্রচেষ্টা করুন"
 
 # c-format
-#: src/qemu/qemu_driver.c:2483
+#: src/qemu/qemu_driver.c:2486
 #, c-format
 msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///session প্রচেষ্টা করুন"
 
 # c-format
-#: src/qemu/qemu_driver.c:2545
+#: src/qemu/qemu_driver.c:2548
 #, c-format
 msgid "Unable to open %s"
 msgstr "%s খোলোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:2712 src/qemu/qemu_driver.c:2905
-#: src/qemu/qemu_driver.c:2960 src/qemu/qemu_driver.c:3018
-#: src/qemu/qemu_driver.c:3058 src/qemu/qemu_driver.c:3109
-#: src/qemu/qemu_driver.c:3136 src/qemu/qemu_driver.c:3161
-#: src/qemu/qemu_driver.c:3193 src/qemu/qemu_driver.c:3249
-#: src/qemu/qemu_driver.c:3377 src/qemu/qemu_driver.c:3540
-#: src/qemu/qemu_driver.c:3614 src/qemu/qemu_driver.c:3681
-#: src/qemu/qemu_driver.c:3751 src/qemu/qemu_driver.c:3842
-#: src/qemu/qemu_driver.c:3877 src/qemu/qemu_driver.c:4135
-#: src/qemu/qemu_driver.c:4364 src/qemu/qemu_driver.c:4569
-#: src/qemu/qemu_driver.c:5069 src/qemu/qemu_driver.c:5451
-#: src/qemu/qemu_driver.c:5515 src/qemu/qemu_driver.c:5542
-#: src/qemu/qemu_driver.c:5773 src/qemu/qemu_driver.c:5843
-#: src/qemu/qemu_driver.c:5903 src/qemu/qemu_driver.c:5976
-#: src/qemu/qemu_driver.c:7168 src/uml/uml_driver.c:1368
+#: src/qemu/qemu_driver.c:2715 src/qemu/qemu_driver.c:2908
+#: src/qemu/qemu_driver.c:2963 src/qemu/qemu_driver.c:3021
+#: src/qemu/qemu_driver.c:3061 src/qemu/qemu_driver.c:3112
+#: src/qemu/qemu_driver.c:3139 src/qemu/qemu_driver.c:3164
+#: src/qemu/qemu_driver.c:3196 src/qemu/qemu_driver.c:3252
+#: src/qemu/qemu_driver.c:3380 src/qemu/qemu_driver.c:3543
+#: src/qemu/qemu_driver.c:3617 src/qemu/qemu_driver.c:3684
+#: src/qemu/qemu_driver.c:3754 src/qemu/qemu_driver.c:3845
+#: src/qemu/qemu_driver.c:3880 src/qemu/qemu_driver.c:4138
+#: src/qemu/qemu_driver.c:4367 src/qemu/qemu_driver.c:4572
+#: src/qemu/qemu_driver.c:5072 src/qemu/qemu_driver.c:5454
+#: src/qemu/qemu_driver.c:5518 src/qemu/qemu_driver.c:5545
+#: src/qemu/qemu_driver.c:5776 src/qemu/qemu_driver.c:5846
+#: src/qemu/qemu_driver.c:5906 src/qemu/qemu_driver.c:5979
+#: src/qemu/qemu_driver.c:7171 src/uml/uml_driver.c:1368
 #: src/uml/uml_driver.c:1393 src/uml/uml_driver.c:1426
 #, c-format
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s' ৰ সৈতে সুসংগত ডোমেইন অনুপস্থিত"
 
 # c-format
-#: src/qemu/qemu_driver.c:2737 src/qemu/qemu_driver.c:7275
+#: src/qemu/qemu_driver.c:2740 src/qemu/qemu_driver.c:7278
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "'%s' নামৰ সৈতে মিল থকা কোনো ডোমেইন নাই"
 
-#: src/qemu/qemu_driver.c:3167 src/uml/uml_driver.c:1399
+#: src/qemu/qemu_driver.c:3170 src/uml/uml_driver.c:1399
 msgid "cannot set max memory lower than current memory"
 msgstr "বৰ্তমান স্মৃতিশক্তিৰ তূলনাত সৰ্বাধিক স্মৃতিশক্তিৰ পৰিমাণ কম হ'ব নোৱাৰে"
 
-#: src/qemu/qemu_driver.c:3199 src/uml/uml_driver.c:1438
+#: src/qemu/qemu_driver.c:3202 src/uml/uml_driver.c:1438
 msgid "cannot set memory higher than max memory"
 msgstr "সৰ্বাধিক স্মৃতিশক্তিতকৈ অধিক পৰিমাণৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:3217 src/uml/uml_driver.c:1432
+#: src/qemu/qemu_driver.c:3220 src/uml/uml_driver.c:1432
 msgid "cannot set memory of an active domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:3365
+#: src/qemu/qemu_driver.c:3368
 msgid "Invalid save image format specified in configuration file"
 msgstr "কনফিগারেশন ফাইলের মধ্যে ইমেজ সংরক্ষণের অবৈধ বিন্যাস চিহ্নিত হয়েছে"
 
-#: src/qemu/qemu_driver.c:3407 src/qemu/qemu_driver.c:7128
+#: src/qemu/qemu_driver.c:3410 src/qemu/qemu_driver.c:7131
 msgid "failed to get domain xml"
 msgstr "ডোমেইন xml প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3415
+#: src/qemu/qemu_driver.c:3418
 #, c-format
 msgid "failed to create '%s'"
 msgstr "'%s' নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3421
+#: src/qemu/qemu_driver.c:3424
 msgid "failed to write save header"
 msgstr "সংৰক্ষণৰ হেডাৰ লিখোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3427
+#: src/qemu/qemu_driver.c:3430
 msgid "failed to write xml"
 msgstr "xml লিখোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:3433
+#: src/qemu/qemu_driver.c:3436
 #, c-format
 msgid "unable to save file %s"
 msgstr "%s নথিপত্ৰ ৰক্ষা কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3584
+#: src/qemu/qemu_driver.c:3587
 msgid "resuming after dump failed"
 msgstr "ডাম্প বিফল হওয়ার পরে পুনরারম্ভ করা হচ্ছে"
 
-#: src/qemu/qemu_driver.c:3623
+#: src/qemu/qemu_driver.c:3626
 msgid "cannot change vcpu count of an active domain"
 msgstr "সক্ৰিয় ডোমেইনত vcpu ৰ সংখ্যা পৰিবৰ্তন কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3629 src/qemu/qemu_driver.c:3848
-#: src/qemu/qemu_driver.c:3883
+#: src/qemu/qemu_driver.c:3632 src/qemu/qemu_driver.c:3851
+#: src/qemu/qemu_driver.c:3886
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "'%d' ডোমেইন সংজ্ঞাত অজ্ঞাত virt type উল্লেখিত"
 
-#: src/qemu/qemu_driver.c:3636
+#: src/qemu/qemu_driver.c:3639
 msgid "could not determine max vcpus for the domain"
 msgstr "ডোমেইনৰ ক্ষেত্ৰত প্ৰযোজ্য সৰ্বাধিক vcpu নিৰ্ধাৰণ কৰা নাযায়"
 
-#: src/qemu/qemu_driver.c:3642
+#: src/qemu/qemu_driver.c:3645
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
 msgstr ""
 "ডোমেইনৰ বাবে নিৰ্ধাৰিত সৰ্বাধিক vcpu ৰ পৰা অনুৰোধ কৰা vcpu ৰ সংখ্যা অধিক: %d > %d"
 
-#: src/qemu/qemu_driver.c:3687 src/test/test_driver.c:2188
+#: src/qemu/qemu_driver.c:3690 src/test/test_driver.c:2188
 msgid "cannot pin vcpus on an inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনত vcpu pin কৰা সম্ভৱ নহয়"
 
-#: src/qemu/qemu_driver.c:3693
+#: src/qemu/qemu_driver.c:3696
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu সংখ্যা সীমা বহিৰ্ভূত %d > %d"
 
-#: src/qemu/qemu_driver.c:3715
+#: src/qemu/qemu_driver.c:3718
 msgid "cannot set affinity"
 msgstr "affinity নিৰ্ধাৰণ কৰিব নোৱাৰি: %s"
 
-#: src/qemu/qemu_driver.c:3720
+#: src/qemu/qemu_driver.c:3723
 msgid "cpu affinity is not supported"
 msgstr "cpu affinity সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:3758
+#: src/qemu/qemu_driver.c:3761
 #, fuzzy
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনত vcpu pin কৰা সম্ভৱ নহয়"
 
-#: src/qemu/qemu_driver.c:3787
+#: src/qemu/qemu_driver.c:3790
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU স্থাপনাও ও pCPU-র সময় প্রাপ্ত করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:3803
+#: src/qemu/qemu_driver.c:3806
 msgid "cannot get affinity"
 msgstr "affinity পোৱা নাযায়: %s"
 
-#: src/qemu/qemu_driver.c:3813
+#: src/qemu/qemu_driver.c:3816
 msgid "cpu affinity is not available"
 msgstr "cpu affinity পোৱা নাযায়"
 
-#: src/qemu/qemu_driver.c:3906
+#: src/qemu/qemu_driver.c:3909
 msgid "Failed to get security label"
 msgstr "সুৰক্ষাৰ লেবেল প্ৰাপ্ত কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3937
+#: src/qemu/qemu_driver.c:3940
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "সুৰক্ষা মডেলৰ শব্দৰ সংখ্যা সৰ্বাধিক %d bytes ৰ অধিক"
 
-#: src/qemu/qemu_driver.c:3947
+#: src/qemu/qemu_driver.c:3950
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "সুৰক্ষা DOI ৰ শব্দৰ সংখ্যা সৰ্বাধিক %d bytes ৰ অধিক"
 
-#: src/qemu/qemu_driver.c:3978
+#: src/qemu/qemu_driver.c:3981
 msgid "cannot read domain image"
 msgstr "ডোমেইনৰ প্ৰতিমূৰ্ত্তি নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3984
+#: src/qemu/qemu_driver.c:3987
 msgid "failed to read qemu header"
 msgstr "qemu হেডাৰ পঢ়োঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:3990
+#: src/qemu/qemu_driver.c:3993
 msgid "image magic is incorrect"
 msgstr "image magic সঠিক নহয়"
 
-#: src/qemu/qemu_driver.c:3996
+#: src/qemu/qemu_driver.c:3999
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "image ৰ সংস্কৰণ সমৰ্থিত নহয় (%d > %d)"
 
-#: src/qemu/qemu_driver.c:4008
+#: src/qemu/qemu_driver.c:4011
 msgid "failed to read XML"
 msgstr "XML পঢ়োঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:4016 src/qemu/qemu_driver.c:6454
-#: src/qemu/qemu_driver.c:6679
+#: src/qemu/qemu_driver.c:4019 src/qemu/qemu_driver.c:6457
+#: src/qemu/qemu_driver.c:6682
 msgid "failed to parse XML"
 msgstr "XML বিশ্লষণ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:4028 src/qemu/qemu_driver.c:6469
-#: src/qemu/qemu_driver.c:6694
+#: src/qemu/qemu_driver.c:4031 src/qemu/qemu_driver.c:6472
+#: src/qemu/qemu_driver.c:6697
 msgid "failed to assign new VM"
 msgstr "নতুন VM ধাৰ্য কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:4041
+#: src/qemu/qemu_driver.c:4044
 #, fuzzy, c-format
 msgid "Invalid compressed save format %d"
 msgstr "কম্প্রেশনের বিন্যাস %d বৈধ নয়"
 
 # c-format
-#: src/qemu/qemu_driver.c:4053
+#: src/qemu/qemu_driver.c:4056
 #, c-format
 msgid "Failed to start decompression binary %s"
 msgstr "ডিকম্প্রেশনের জন্য বাইনারি %s আরম্ভ করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:4091
+#: src/qemu/qemu_driver.c:4094
 msgid "failed to resume domain"
 msgstr "ডোমেইন পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:4182 src/qemu/qemu_driver.c:4220
+#: src/qemu/qemu_driver.c:4185 src/qemu/qemu_driver.c:4223
 #: src/xen/xen_driver.c:1182 src/xen/xen_driver.c:1221
 #, c-format
 msgid "unsupported config type %s"
 msgstr "অসমৰ্থিত বিন্যাসৰ ধৰণ %s"
 
 # c-format
-#: src/qemu/qemu_driver.c:4279 src/qemu/qemu_driver.c:6490
+#: src/qemu/qemu_driver.c:4282 src/qemu/qemu_driver.c:6493
 #, c-format
 msgid "Cannot determine QEMU argv syntax %s"
 msgstr "QEMU argv syntax %s অনুসন্ধান কৰোঁতে ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:4373
+#: src/qemu/qemu_driver.c:4376
 #, fuzzy
 msgid "domain is already running"
 msgstr "ডোমেইন '%s' বৰ্তমানে চলমান"
 
-#: src/qemu/qemu_driver.c:4616
+#: src/qemu/qemu_driver.c:4619
 #, c-format
 msgid "cannot convert disk '%s' to bus/device index"
 msgstr "ডিষ্ক '%s' ক bus/device index লৈ সলনি কৰিব নোৱাৰি"
 
 # c-format
-#: src/qemu/qemu_driver.c:4642
+#: src/qemu/qemu_driver.c:4645
 #, c-format
 msgid "Unsupported disk name mapping for bus '%s'"
 msgstr "'%s' ধৰণৰ ডিস্ক সমৰ্থিত নহয়"
 
-#: src/qemu/qemu_driver.c:4678
+#: src/qemu/qemu_driver.c:4681
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "bus '%s' আৰু লক্ষ্য '%s' থকা যন্ত্ৰ নাই"
 
-#: src/qemu/qemu_driver.c:4696
+#: src/qemu/qemu_driver.c:4699
 #, c-format
 msgid ""
 "Emulator version does not support removable media for device '%s' and target "
@@ -4748,22 +4748,22 @@ msgstr ""
 "Emulator সংস্কৰণে যন্ত্ৰ '%s' আৰু লক্ষ্য '%s' ৰ কাৰণে আঁতৰাব পৰা মিডিয়াৰ সমৰ্থন নকৰে"
 
 # c-format
-#: src/qemu/qemu_driver.c:4742 src/qemu/qemu_driver.c:4778
+#: src/qemu/qemu_driver.c:4745 src/qemu/qemu_driver.c:4781
 #, c-format
 msgid "target %s already exists"
 msgstr "লক্ষ্য %s ইতিমধ্যে আছে"
 
-#: src/qemu/qemu_driver.c:4785
+#: src/qemu/qemu_driver.c:4788
 #, fuzzy
 msgid "disk source path is missing"
 msgstr "সুৰক্ষাৰ লেবেল নাই"
 
-#: src/qemu/qemu_driver.c:4820
+#: src/qemu/qemu_driver.c:4823
 msgid "installed qemu version does not support host_net_add"
 msgstr "ইনস্টল করা qemu সংস্করণ দ্বারা host_net_add সমর্থন করা হয় না"
 
 # c-format
-#: src/qemu/qemu_driver.c:4828
+#: src/qemu/qemu_driver.c:4831
 #, c-format
 msgid ""
 "network device type '%s' cannot be attached: qemu is not using a unix socket "
@@ -4773,100 +4773,100 @@ msgstr ""
 "ব্যবহার করা হচ্ছে না"
 
 # c-format
-#: src/qemu/qemu_driver.c:4908
+#: src/qemu/qemu_driver.c:4911
 msgid "Unable to remove network backend\n"
 msgstr "নেটওয়ার্কের ব্যাক-এন্ড মুছে ফেলতে ব্যর্থ\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:4912
+#: src/qemu/qemu_driver.c:4915
 #, fuzzy, c-format
 msgid "Failed to remove network backend for vlan %d, net %s"
 msgstr "'%s' সহযোগে নেটওয়ার্কের ব্যাক-এন্ড মুছে ফেলতে ব্যর্থ\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:4922
+#: src/qemu/qemu_driver.c:4925
 #, c-format
 msgid "Failed to close tapfd with '%s'\n"
 msgstr "'%s' সহযোগে tapfd বন্ধ করতে ব্যর্থ\n"
 
 # c-format
-#: src/qemu/qemu_driver.c:5030 src/qemu/qemu_driver.c:5412
+#: src/qemu/qemu_driver.c:5033 src/qemu/qemu_driver.c:5415
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev মোড '%s' সমর্থিত নয়"
 
 # c-format
-#: src/qemu/qemu_driver.c:5048 src/qemu/qemu_driver.c:5423
+#: src/qemu/qemu_driver.c:5051 src/qemu/qemu_driver.c:5426
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys-র ধরন '%s' সমর্থিত নয়"
 
-#: src/qemu/qemu_driver.c:5078
+#: src/qemu/qemu_driver.c:5081
 msgid "cannot attach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:5137
+#: src/qemu/qemu_driver.c:5140
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি ।"
 
-#: src/qemu/qemu_driver.c:5145
+#: src/qemu/qemu_driver.c:5148
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "ডিষ্ক যন্ত্ৰৰ ধৰণ '%s' ক hotplug কৰিব নোৱাৰি ।"
 
 # c-format
-#: src/qemu/qemu_driver.c:5159
+#: src/qemu/qemu_driver.c:5162
 #, c-format
 msgid "device type '%s' cannot be attached"
 msgstr "যন্ত্ৰৰ ধৰণ '%s' সংযুক্ত কৰিব নোৱাৰি"
 
 # c-format
-#: src/qemu/qemu_driver.c:5203
+#: src/qemu/qemu_driver.c:5206
 #, c-format
 msgid "disk %s not found"
 msgstr "%s ডিষ্ক পোৱা ন'গ'ল"
 
 # c-format
-#: src/qemu/qemu_driver.c:5209
+#: src/qemu/qemu_driver.c:5212
 #, c-format
 msgid "disk %s cannot be detached - no PCI address for device"
 msgstr "ডিস্ক %s বিচ্ছিন্ন করা সম্ভব নয় - ডিভাইসের PCI ঠিকানা উপস্থিত নেই"
 
 # c-format
-#: src/qemu/qemu_driver.c:5266
+#: src/qemu/qemu_driver.c:5269
 #, c-format
 msgid "network device %02x:%02x:%02x:%02x:%02x:%02x not found"
 msgstr "নেটওয়ার্ক ডিভাইস %02x:%02x:%02x:%02x:%02x:%02x পাওয়া যায়নি"
 
-#: src/qemu/qemu_driver.c:5275
+#: src/qemu/qemu_driver.c:5278
 msgid "network device cannot be detached - device state missing"
 msgstr "নেটওয়ার্ক ডিভাইস বিচ্ছিন্ন করা সম্ভব নয় - ডিভাইসের অবস্থা অনুপস্থিত"
 
 # c-format
-#: src/qemu/qemu_driver.c:5342
+#: src/qemu/qemu_driver.c:5345
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "হোস্ট pci ডিভাইস %.4x:%.2x:%.2x.%.1x পাওয়া যায়নি"
 
-#: src/qemu/qemu_driver.c:5352
+#: src/qemu/qemu_driver.c:5355
 msgid "hostdev cannot be detached - device state missing"
 msgstr "hostdev বিচ্ছিন্ন করা সম্ভব নয় - ডিভাইসের অবস্থা অনুপস্থিত"
 
-#: src/qemu/qemu_driver.c:5460
+#: src/qemu/qemu_driver.c:5463
 msgid "cannot detach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে যন্ত্ৰ সংযুক্ত কৰা নাযাব"
 
-#: src/qemu/qemu_driver.c:5485
+#: src/qemu/qemu_driver.c:5488
 msgid "only SCSI or virtio disk device can be detached dynamically"
 msgstr "অকল CDROM ডিস্ক যন্ত্ৰ সংযুক্ত কৰা যাব"
 
-#: src/qemu/qemu_driver.c:5548 src/uml/uml_driver.c:1694
+#: src/qemu/qemu_driver.c:5551 src/uml/uml_driver.c:1694
 msgid "cannot set autostart for transient domain"
 msgstr "সক্ৰিয় ডোমেইনৰ স্মৃতিশক্তি নিৰ্ধাৰণ কৰা নাযাব"
 
 # c-format
-#: src/qemu/qemu_driver.c:5565 src/storage/storage_driver.c:1022
+#: src/qemu/qemu_driver.c:5568 src/storage/storage_driver.c:1022
 #: src/uml/uml_driver.c:1711
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -4874,206 +4874,206 @@ msgstr "autostart পঞ্জিকা %s নিৰ্মাণ কৰোঁত
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:5651 src/qemu/qemu_driver.c:5722
+#: src/qemu/qemu_driver.c:5654 src/qemu/qemu_driver.c:5725
 #, c-format
 msgid "cannot find cgroup for domain %s"
 msgstr "%s ডোমেইনের cgroup পাওয়া যায়নি"
 
-#: src/qemu/qemu_driver.c:5662
+#: src/qemu/qemu_driver.c:5665
 msgid "invalid type for cpu_shares tunable, expected a 'ullong'"
 msgstr "cpu_shares tunable-র ক্ষেত্রে অবৈধ ধরন, 'ullong' প্রত্যাশিত"
 
-#: src/qemu/qemu_driver.c:5669
+#: src/qemu/qemu_driver.c:5672
 msgid "unable to set cpu shares tunable"
 msgstr "cpu শেয়ারগুলি tunable রূপে ধার্য করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:5729
+#: src/qemu/qemu_driver.c:5732
 msgid "unable to get cpu shares tunable"
 msgstr "cpu শেয়ারগুলি tunable রূপে প্রাপ্ত করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:5736
+#: src/qemu/qemu_driver.c:5739
 #, fuzzy
 msgid "Field cpu_shares too long for destination"
 msgstr "topology ৰ তথ্য বিশ্লেষণ কৰিব পৰা ন'গ'ল"
 
-#: src/qemu/qemu_driver.c:5795 src/test/test_driver.c:2599
+#: src/qemu/qemu_driver.c:5798 src/test/test_driver.c:2599
 #, c-format
 msgid "invalid path: %s"
 msgstr "পথ বৈধ নহয়: %s"
 
-#: src/qemu/qemu_driver.c:5866 src/test/test_driver.c:2654
+#: src/qemu/qemu_driver.c:5869 src/test/test_driver.c:2654
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "পথ বৈধ নহয়, '%s' পৰিচিত সংযোগ মাধ্যম নহয়"
 
-#: src/qemu/qemu_driver.c:5909 src/uml/uml_driver.c:1768
+#: src/qemu/qemu_driver.c:5912 src/uml/uml_driver.c:1768
 msgid "NULL or empty path"
 msgstr "NULL বা পথ ৰিক্ত"
 
 # c-format
-#: src/qemu/qemu_driver.c:5928
+#: src/qemu/qemu_driver.c:5931
 #, c-format
 msgid "%s: failed to open"
 msgstr "%s: খুলিবলৈ ব্যৰ্থ"
 
 # c-format
-#: src/qemu/qemu_driver.c:5939
+#: src/qemu/qemu_driver.c:5942
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
 
-#: src/qemu/qemu_driver.c:5946 src/uml/uml_driver.c:1805
+#: src/qemu/qemu_driver.c:5949 src/uml/uml_driver.c:1805
 msgid "invalid path"
 msgstr "অবৈধ পথ"
 
 # c-format
-#: src/qemu/qemu_driver.c:6003
+#: src/qemu/qemu_driver.c:6006
 #, c-format
 msgid "mkstemp(\"%s\") failed"
 msgstr "mkstemp(\"%s\") বিফল"
 
 # c-format
-#: src/qemu/qemu_driver.c:6025
+#: src/qemu/qemu_driver.c:6028
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "%s বিনেস নথিপত্ৰ পঢ়োঁতে বিফল"
 
-#: src/qemu/qemu_driver.c:6157 src/qemu/qemu_driver.c:6194
-#: src/qemu/qemu_driver.c:6260 src/qemu/qemu_driver.c:6376
+#: src/qemu/qemu_driver.c:6160 src/qemu/qemu_driver.c:6197
+#: src/qemu/qemu_driver.c:6263 src/qemu/qemu_driver.c:6379
 msgid "stream is not open"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6164 src/qemu/qemu_driver.c:6201
+#: src/qemu/qemu_driver.c:6167 src/qemu/qemu_driver.c:6204
 #, fuzzy
 msgid "stream does not have a callback registered"
 msgstr "নে'টৱৰ্ক '%s' ৰ এটা bridge নাম নাই ।"
 
-#: src/qemu/qemu_driver.c:6267
+#: src/qemu/qemu_driver.c:6270
 msgid "stream already has a callback registered"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6277
+#: src/qemu/qemu_driver.c:6280
 #, fuzzy
 msgid "cannot register file watch on stream"
 msgstr "context"
 
-#: src/qemu/qemu_driver.c:6392
+#: src/qemu/qemu_driver.c:6395
 #, fuzzy
 msgid "cannot write to stream"
 msgstr "হেডাৰ লিখোঁতে ব্যৰ্থ"
 
-#: src/qemu/qemu_driver.c:6436 src/qemu/qemu_driver.c:6602
+#: src/qemu/qemu_driver.c:6439 src/qemu/qemu_driver.c:6605
 msgid "no domain XML passed"
 msgstr "নোডৰ ডোমেইন তালিকা"
 
-#: src/qemu/qemu_driver.c:6441
+#: src/qemu/qemu_driver.c:6444
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6446
+#: src/qemu/qemu_driver.c:6449
 msgid "tunnelled migration requested but NULL stream passed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6500
+#: src/qemu/qemu_driver.c:6503
 msgid "Destination qemu is too old to support tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6532
+#: src/qemu/qemu_driver.c:6535
 #, c-format
 msgid "cannot open unix socket '%s' for tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6596
+#: src/qemu/qemu_driver.c:6599
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6643
+#: src/qemu/qemu_driver.c:6646
 msgid "only tcp URIs are supported for KVM/QEMU migrations"
 msgstr "KVM/QEMU মাইগ্রেশনের জন্য শুধুমাত্র tcp URI সমর্থিত হবে"
 
-#: src/qemu/qemu_driver.c:6666
+#: src/qemu/qemu_driver.c:6669
 msgid "URI ended with incorrect ':port'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6777
+#: src/qemu/qemu_driver.c:6780
 #, fuzzy, c-format
 msgid "cannot parse URI %s"
 msgstr "UUID '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:6808
+#: src/qemu/qemu_driver.c:6811
 msgid "migrate did not successfully complete"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6833
+#: src/qemu/qemu_driver.c:6836
 msgid "tunnelled migration failed to read from qemu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6842
+#: src/qemu/qemu_driver.c:6845
 #, fuzzy
 msgid "Failed to write migration data to remote libvirtd"
 msgstr "ছকেট %d লিখোঁতে ব্যৰ্থ\n"
 
-#: src/qemu/qemu_driver.c:6900
+#: src/qemu/qemu_driver.c:6903
 #, fuzzy
 msgid "cannot open tunnelled migration socket"
 msgstr "ছকেট খুলিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:6908
+#: src/qemu/qemu_driver.c:6911
 #, c-format
 msgid "Unix socket '%s' too big for destination"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6915
+#: src/qemu/qemu_driver.c:6918
 #, c-format
 msgid "Cannot bind to unix socket '%s' for tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6921
+#: src/qemu/qemu_driver.c:6924
 #, c-format
 msgid "Cannot listen on unix socket '%s' for tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6929
+#: src/qemu/qemu_driver.c:6932
 #, fuzzy, c-format
 msgid "Cannot extract Qemu version from '%s'"
 msgstr "USB device vendor '%s' উদ্ঘাটন কৰিব নোৱাৰি"
 
-#: src/qemu/qemu_driver.c:6937
+#: src/qemu/qemu_driver.c:6940
 msgid "Source qemu is too old to support tunnelled migration"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:6973
+#: src/qemu/qemu_driver.c:6976
 msgid "tunnelled migration monitor command failed"
 msgstr ""
 
 # c-format
-#: src/qemu/qemu_driver.c:6996
+#: src/qemu/qemu_driver.c:6999
 #, fuzzy
 msgid "migrate failed"
 msgstr "কাৰ্য্যকৰণ বিফল: %s"
 
-#: src/qemu/qemu_driver.c:7005
+#: src/qemu/qemu_driver.c:7008
 msgid "tunnelled migration failed to accept from qemu"
 msgstr ""
 
 # c-format
 # c-format
-#: src/qemu/qemu_driver.c:7115
+#: src/qemu/qemu_driver.c:7118
 #, fuzzy, c-format
 msgid "Failed to connect to remote libvirt URI %s"
 msgstr "'%s'-এ libvirtd-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/qemu/qemu_driver.c:7121
+#: src/qemu/qemu_driver.c:7124
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr ""
 
 # c-format
-#: src/qemu/qemu_driver.c:7234
+#: src/qemu/qemu_driver.c:7237
 #, c-format
 msgid "Failed to resume guest %s after failure\n"
 msgstr "ডোমেইন %s পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ\n"
 
-#: src/qemu/qemu_driver.c:7396 src/xen/xen_driver.c:1705
+#: src/qemu/qemu_driver.c:7399 src/xen/xen_driver.c:1705
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "যন্ত্ৰ %s এটা PCI যন্ত্ৰ নহয়"
@@ -9101,47 +9101,47 @@ msgstr "ডোমেইন"
 msgid "unexpected lifecycle action %d"
 msgstr "অপ্ৰত্যাশিত lifecycle কাৰ্য্য %d"
 
-#: src/xen/xm_internal.c:2631
+#: src/xen/xm_internal.c:2651
 msgid "can't retrieve config filename for domain to overwrite"
 msgstr "ডোমেইম"
 
-#: src/xen/xm_internal.c:2637
+#: src/xen/xm_internal.c:2657
 msgid "can't retrieve config entry for domain to overwrite"
 msgstr "ডোমেইম"
 
-#: src/xen/xm_internal.c:2648 src/xen/xm_internal.c:2655
+#: src/xen/xm_internal.c:2668 src/xen/xm_internal.c:2675
 msgid "failed to remove old domain from config map"
 msgstr "ডোমেইম"
 
-#: src/xen/xm_internal.c:2664
+#: src/xen/xm_internal.c:2684
 msgid "config file name is too long"
 msgstr "নাম"
 
-#: src/xen/xm_internal.c:2682
+#: src/xen/xm_internal.c:2702
 msgid "unable to get current time"
 msgstr "বৰ্তমানMemorySize পৰীক্ষা কৰোঁতে ব্যৰ্থ"
 
-#: src/xen/xm_internal.c:2691 src/xen/xm_internal.c:2698
+#: src/xen/xm_internal.c:2711 src/xen/xm_internal.c:2718
 msgid "unable to store config file handle"
 msgstr "%s বিনেস নথিপত্ৰ পঢ়োঁতে বিফল"
 
-#: src/xen/xm_internal.c:2932 src/xen/xm_internal.c:3035
+#: src/xen/xm_internal.c:2952 src/xen/xm_internal.c:3055
 msgid "unknown device"
 msgstr "অজ্ঞাত যন্ত্ৰ"
 
-#: src/xen/xm_internal.c:3095
+#: src/xen/xm_internal.c:3115
 #, c-format
 msgid "cannot check link %s points to config %s"
 msgstr "সংযোগ %s এ %s বিন্যাসলৈ নিৰ্দেশ দিয়াটো পৰীক্ষা কৰিব নোৱাৰি"
 
 # c-format
-#: src/xen/xm_internal.c:3124
+#: src/xen/xm_internal.c:3144
 #, c-format
 msgid "failed to create link %s to %s"
 msgstr "%s লগ নথিপত্ৰ নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %s"
 
 # c-format
-#: src/xen/xm_internal.c:3132
+#: src/xen/xm_internal.c:3152
 #, c-format
 msgid "failed to remove link %s"
 msgstr "ডোমেইন %s পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ"
