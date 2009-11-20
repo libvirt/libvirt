@@ -53,12 +53,13 @@
 %define with_storage_mpath 0%{!?_without_storage_mpath:%{server_drivers}}
 %define with_numactl       0%{!?_without_numactl:%{server_drivers}}
 %define with_selinux       0%{!?_without_selinux:%{server_drivers}}
-%define with_hal           0%{!?_without_hal:%{server_drivers}}
 
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_capng         0%{!?_without_capng:0}
 %define with_netcf         0%{!?_without_netcf:0}
+%define with_udev          0%{!?_without_udev:0}
+%define with_hal           0%{!?_without_hal:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -133,6 +134,13 @@
 %define with_netcf     0%{!?_without_netcf:%{server_drivers}}
 %endif
 
+# udev is used to manage host devices in Fedora 12 / RHEL-6 or newer
+%if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
+%define with_udev     0%{!?_without_udev:%{server_drivers}}
+%else
+%define with_hal       0%{!?_without_hal:%{server_drivers}}
+%endif
+
 # Force QEMU to run as non-root
 %if 0%{?fedora} >= 12 || 0%{?rhel} >= 6
 %define qemu_user  qemu
@@ -178,6 +186,9 @@ Requires: iptables
 # needed for device enumeration
 %if %{with_hal}
 Requires: hal
+%endif
+%if %{with_udev}
+Requires: udev >= 145
 %endif
 %if %{with_polkit}
 %if 0%{?fedora} >= 12 || 0%{?rhel} >=6
@@ -241,6 +252,10 @@ BuildRequires: gettext
 BuildRequires: gnutls-devel
 %if %{with_hal}
 BuildRequires: hal-devel
+%endif
+%if %{with_udev}
+BuildRequires: libudev-devel >= 145
+BuildRequires: libpciaccess-devel >= 0.10.9
 %endif
 %if %{with_avahi}
 BuildRequires: avahi-devel
@@ -476,6 +491,10 @@ of recent versions of Linux (and other OSes).
 %define _without_hal --without-hal
 %endif
 
+%if ! %{with_udev}
+%define _without_udev --without-udev
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -502,6 +521,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_netcf} \
            %{?_without_selinux} \
            %{?_without_hal} \
+           %{?_without_udev} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
