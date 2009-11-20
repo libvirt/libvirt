@@ -211,5 +211,15 @@
       <return type='char *' info='the UUID string or None in case of error'/>
       <arg name='secret' type='virSecretPtr' info='a secret object'/>
     </function>
+    <function name='virConnectListInterfaces' file='python'>
+      <info>list the running interfaces, stores the pointers to the names in @names</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
+    <function name='virConnectListDefinedInterfaces' file='python'>
+      <info>list the defined interfaces, stores the pointers to the names in @names</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
   </symbols>
 </api>
