@@ -5,7 +5,7 @@
     <p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
-    <h3>0.7.3: Nov 20 2009</h3>
+    <h3>0.7.4: Nov 20 2009</h3>
     <ul>
       <li>Features:
       Implement a node device backend using libudev (David Allan)
@@ -240,6 +240,9 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       Don't copy old machines from a domain which has none (Mark McLoughlin)
       </li>
     </ul>
+    <h3>0.7.3: Nov 20 2009</h3>
+    <p>Broken release use 0.7.4</p>
+
     <h3>0.7.2: Oct 14 2009</h3>
       <ul>
         <li>Features:

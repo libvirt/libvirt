@@ -268,7 +268,8 @@ NODE_DEVICE_DRIVER_HAL_SOURCES =				\
 		node_device/node_device_hal.h
 
 NODE_DEVICE_DRIVER_UDEV_SOURCES =				\
-		node_device/node_device_udev.c
+		node_device/node_device_udev.c			\
+		node_device/node_device_udev.h
 
 
 #########################
