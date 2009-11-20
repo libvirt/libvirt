@@ -484,7 +484,8 @@
       of the box which does NAT'ing to the default route and has an IP range of
       <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
       associated tun device created with a name of vnetN, which can also be
-      overridden with the &lt;target&gt; element.
+      overridden with the &lt;target&gt; element (see
+      <a href="#elementsNICSTargetOverride">overriding the target element</a>).
     </p>
 
     <pre>
@@ -514,10 +515,11 @@
       there is a bridge device on the host which has one or more of the hosts
       physical NICs enslaved. The guest VM will have an associated tun device
       created with a name of vnetN, which can also be overridden with the
-      &lt;target&gt; element. The tun device will be enslaved to the bridge.
-      The IP range / network configuration is whatever is used on the LAN. This
-      provides the guest VM full incoming &amp; outgoing net access just like a
-      physical machine.
+      &lt;target&gt; element (see
+      <a href="#elementsNICSTargetOverride">overriding the target element</a>).
+      The tun device will be enslaved to the bridge. The IP range / network
+      configuration is whatever is used on the LAN. This provides the guest VM
+      full incoming &amp; outgoing net access just like a physical machine.
     </p>
 
     <pre>
@@ -650,6 +652,25 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       Typical values for QEMU and KVM include:
       ne2k_isa i82551 i82557b i82559er ne2k_pci pcnet rtl8139 e1000 virtio
+    </p>
+
+    <h5><a name="elementsNICSTargetOverride">Overriding the target element</a></h5>
+
+    <pre>
+      ...
+      &lt;interface type='network'&gt;
+        &lt;source network='default'/&gt;
+        <b>&lt;target dev='vnet1'/&gt;</b>
+      &lt;/interface&gt;
+      ...</pre>
+
+    <p>
+        If no target is specified, certain hypervisors will automatically
+        generate a name for the created tun device. This name can be manually
+        specifed, however the name <i>must not start with either 'vnet' or
+        'vif'</i>, which are prefixes reserved by libvirt and certain
+        hypervisors. Manually specified targets using these prefixes will be
+        ignored.
     </p>
 
     <h4><a name="elementsInput">Input devices</a></h4>
