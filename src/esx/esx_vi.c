@@ -514,7 +514,7 @@ esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
         goto failure;
     } else if (responseCode != 200) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d while trying to download '%s'",
+                     "HTTP response code %d for download from '%s'",
                      responseCode, url);
         goto failure;
     }
@@ -560,7 +560,7 @@ esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
         return -1;
     } else if (responseCode != 200 && responseCode != 201) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d while trying to upload to '%s'",
+                     "HTTP response code %d for upload to '%s'",
                      responseCode, url);
         return -1;
     }
@@ -570,11 +570,15 @@ esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
 
 int
 esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
-                      const char *request, const char *xpathExpression,
-                      esxVI_Response **response, esxVI_Boolean expectList)
+                      const char *methodName, const char *request,
+                      esxVI_Response **response, esxVI_Occurrence occurrence)
 {
+    int result = 0;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
+    char *xpathExpression = NULL;
+    xmlXPathContextPtr xpathContext = NULL;
+    xmlNodePtr responseNode = NULL;
 
     if (request == NULL || response == NULL || *response != NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -608,108 +612,146 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
 
     (*response)->content = virBufferContentAndReset(&buffer);
 
-    if ((*response)->responseCode == 500 ||
-        (xpathExpression != NULL && (*response)->responseCode == 200)) {
+    if ((*response)->responseCode == 500 || (*response)->responseCode == 200) {
         (*response)->document = xmlReadDoc(BAD_CAST (*response)->content, "",
                                            NULL, XML_PARSE_NONET);
 
         if ((*response)->document == NULL) {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "Could not parse XML response");
+                         "Response for call to '%s' could not be parsed",
+                         methodName);
             goto failure;
         }
 
         if (xmlDocGetRootElement((*response)->document) == NULL) {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "XML response is an empty document");
+                         "Response for call to '%s' is an empty XML document",
+                         methodName);
             goto failure;
         }
 
-        (*response)->xpathContext = xmlXPathNewContext((*response)->document);
+        xpathContext = xmlXPathNewContext((*response)->document);
 
-        if ((*response)->xpathContext == NULL) {
+        if (xpathContext == NULL) {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                          "Could not create XPath context");
             goto failure;
         }
 
-        xmlXPathRegisterNs((*response)->xpathContext, BAD_CAST "soapenv",
+        xmlXPathRegisterNs(xpathContext, BAD_CAST "soapenv",
                            BAD_CAST "http://schemas.xmlsoap.org/soap/envelope/");
-        xmlXPathRegisterNs((*response)->xpathContext, BAD_CAST "vim",
-                           BAD_CAST "urn:vim25");
+        xmlXPathRegisterNs(xpathContext, BAD_CAST "vim", BAD_CAST "urn:vim25");
 
         if ((*response)->responseCode == 500) {
             (*response)->node =
               virXPathNode(conn, "/soapenv:Envelope/soapenv:Body/soapenv:Fault",
-                           (*response)->xpathContext);
+                           xpathContext);
 
             if ((*response)->node == NULL) {
                 ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                             "HTTP response code %d. VI Fault is unknown, "
-                             "XPath evaluation failed",
-                             (int)(*response)->responseCode);
+                             "HTTP response code %d for call to '%s'. "
+                             "Fault is unknown, XPath evaluation failed",
+                             (*response)->responseCode, methodName);
                 goto failure;
             }
 
             if (esxVI_Fault_Deserialize(conn, (*response)->node, &fault) < 0) {
                 ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                             "HTTP response code %d. VI Fault is unknown, "
-                             "deserialization failed",
-                             (int)(*response)->responseCode);
+                             "HTTP response code %d for call to '%s'. "
+                             "Fault is unknown, deserialization failed",
+                             (*response)->responseCode, methodName);
                 goto failure;
             }
 
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                         "HTTP response code %d. VI Fault: %s - %s",
-                         (int)(*response)->responseCode,
-                         fault->faultcode, fault->faultstring);
-
+                         "HTTP response code %d for call to '%s'. "
+                         "Fault: %s - %s", (*response)->responseCode,
+                         methodName, fault->faultcode, fault->faultstring);
             goto failure;
-        } else if (expectList == esxVI_Boolean_True) {
-            xmlNodePtr *nodeSet = NULL;
-            int nodeSet_size;
-
-            nodeSet_size = virXPathNodeSet(conn, xpathExpression,
-                                           (*response)->xpathContext,
-                                           &nodeSet);
-
-            if (nodeSet_size < 0) {
-                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                             "XPath evaluation of '%s' failed",
-                             xpathExpression);
+        } else {
+            if (virAsprintf(&xpathExpression,
+                            "/soapenv:Envelope/soapenv:Body/vim:%sResponse",
+                            methodName) < 0) {
+                virReportOOMError(conn);
                 goto failure;
-            } else if (nodeSet_size == 0) {
-                (*response)->node = NULL;
-            } else {
-                (*response)->node = nodeSet[0];
             }
 
-            VIR_FREE(nodeSet);
-        } else {
-            (*response)->node = virXPathNode(conn, xpathExpression,
-                                             (*response)->xpathContext);
+            responseNode = virXPathNode(conn, xpathExpression, xpathContext);
 
-            if ((*response)->node == NULL) {
+            if (responseNode == NULL) {
                 ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                             "XPath evaluation of '%s' failed",
-                             xpathExpression);
+                             "XPath evaluation of response for call to '%s' "
+                             "failed", methodName);
+                goto failure;
+            }
+
+            xpathContext->node = responseNode;
+            (*response)->node = virXPathNode(conn, "./vim:returnval",
+                                             xpathContext);
+
+            switch (occurrence) {
+              case esxVI_Occurrence_RequiredItem:
+                if ((*response)->node == NULL) {
+                    ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Call to '%s' returned an empty result, "
+                                 "expecting a non-empty result", methodName);
+                    goto failure;
+                }
+
+                break;
+
+              case esxVI_Occurrence_OptionalItem:
+                if ((*response)->node != NULL &&
+                    (*response)->node->next != NULL) {
+                    ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Call to '%s' returned a list, expecting "
+                                 "exactly one item", methodName);
+                    goto failure;
+                }
+
+                break;
+
+              case esxVI_Occurrence_List:
+                /* Any amount of items is valid */
+                break;
+
+              case esxVI_Occurrence_None:
+                if ((*response)->node != NULL) {
+                    ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                                 "Call to '%s' returned something, expecting "
+                                 "an empty result", methodName);
+                    goto failure;
+                }
+
+                break;
+
+              default:
+                ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                             "Invalid argument (occurrence)");
                 goto failure;
             }
         }
-    } else if ((*response)->responseCode != 200) {
+    } else {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                     "HTTP response code %d", (*response)->responseCode);
+                     "HTTP response code %d for call to '%s'",
+                     (*response)->responseCode, methodName);
         goto failure;
     }
 
-    return 0;
+  cleanup:
+    VIR_FREE(xpathExpression);
+    xmlXPathFreeContext(xpathContext);
+
+    return result;
 
   failure:
     virBufferFreeAndReset(&buffer);
     esxVI_Response_Free(response);
     esxVI_Fault_Free(&fault);
 
-    return -1;
+    result = -1;
+
+    goto cleanup;
 }
 
 
@@ -725,8 +767,6 @@ ESX_VI__TEMPLATE__ALLOC(Response);
 ESX_VI__TEMPLATE__FREE(Response,
 {
     VIR_FREE(item->content);
-
-    xmlXPathFreeContext(item->xpathContext);
 
     if (item->document != NULL) {
         xmlFreeDoc(item->document);
@@ -2229,24 +2269,23 @@ esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
                               esxVI_ManagedObjectReference **task)
 {
     int result = 0;
-    char *xpathExpression = NULL;
+    char *methodName = NULL;
     esxVI_Response *response = NULL;
 
-    if (virAsprintf(&xpathExpression,
-                    ESX_VI__SOAP__RESPONSE_XPATH("%s_Task"), name) < 0) {
+    if (virAsprintf(&methodName, "%s_Task", name) < 0) {
         virReportOOMError(conn);
         goto failure;
     }
 
-    if (esxVI_Context_Execute(conn, ctx, request, xpathExpression, &response,
-                              esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, methodName, request, &response,
+                              esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_ManagedObjectReference_Deserialize(conn, response->node, task,
                                                  "Task") < 0) {
         goto failure;
     }
 
   cleanup:
-    VIR_FREE(xpathExpression);
+    VIR_FREE(methodName);
     esxVI_Response_Free(&response);
 
     return result;
@@ -2349,8 +2388,8 @@ esxVI_SimpleVirtualMachineMethod(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, name, request, &response,
+                              esxVI_Occurrence_None) < 0) {
         goto failure;
     }
 

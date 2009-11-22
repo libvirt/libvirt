@@ -49,9 +49,6 @@
     "</soapenv:Body>"                                                         \
     "</soapenv:Envelope>"
 
-#define ESX_VI__SOAP__RESPONSE_XPATH(_type)                                   \
-    "/soapenv:Envelope/soapenv:Body/vim:"_type"Response/vim:returnval"
-
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -79,9 +76,8 @@ esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
         return -1;
     }
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("RetrieveServiceContent"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "RetrieveServiceContent", request,
+                              &response, esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_ServiceContent_Deserialize(conn, response->node,
                                          serviceContent) < 0) {
         goto failure;
@@ -144,9 +140,8 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("Login"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "Login", request, &response,
+                              esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_UserSession_Deserialize(conn, response->node, userSession) < 0) {
         goto failure;
     }
@@ -200,8 +195,8 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, "Logout", request, &response,
+                              esxVI_Occurrence_None) < 0) {
         goto failure;
     }
 
@@ -265,9 +260,8 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("SessionIsActive"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "SessionIsActive", request,
+                              &response, esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_Boolean_Deserialize(conn, response->node, active) < 0) {
         goto failure;
     }
@@ -331,9 +325,8 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("RetrieveProperties"),
-                              &response, esxVI_Boolean_True) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "RetrieveProperties", request,
+                              &response, esxVI_Occurrence_List) < 0 ||
         esxVI_ObjectContent_DeserializeList(conn, response->node,
                                             objectContentList) < 0) {
         goto failure;
@@ -608,8 +601,8 @@ esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, "UnregisterVM", request, &response,
+                              esxVI_Occurrence_None) < 0) {
         goto failure;
     }
 
@@ -659,8 +652,8 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, "AnswerVM", request, &response,
+                              esxVI_Occurrence_None) < 0) {
         goto failure;
     }
 
@@ -781,9 +774,8 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("CreateFilter"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "CreateFilter", request, &response,
+                              esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_ManagedObjectReference_Deserialize(conn, response->node,
                                                  propertyFilter,
                                                  "PropertyFilter") < 0) {
@@ -839,8 +831,8 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, "DestroyPropertyFilter", request,
+                              &response, esxVI_Occurrence_None) < 0) {
         goto failure;
     }
 
@@ -901,9 +893,8 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("WaitForUpdates"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "WaitForUpdates", request,
+                              &response, esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_UpdateSet_Deserialize(conn, response->node, updateSet) < 0) {
         goto failure;
     }
@@ -1003,9 +994,8 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("ValidateMigration"),
-                              &response, esxVI_Boolean_True) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "ValidateMigration", request,
+                              &response, esxVI_Occurrence_List) < 0 ||
         esxVI_Event_DeserializeList(conn, response->node, eventList) < 0) {
         goto failure;
     }
@@ -1073,9 +1063,8 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("FindByIp"),
-                              &response, esxVI_Boolean_False) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "FindByIp", request, &response,
+                              esxVI_Occurrence_OptionalItem) < 0 ||
         esxVI_ManagedObjectReference_Deserialize
           (conn, response->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
@@ -1149,10 +1138,8 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    /* FIXME: Use esxVI_Occurrence instead of expectList */
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("FindByUuid"),
-                              &response, esxVI_Boolean_True) < 0) {
+    if (esxVI_Context_Execute(conn, ctx, "FindByUuid", request, &response,
+                              esxVI_Occurrence_OptionalItem) < 0) {
         goto failure;
     }
 
@@ -1233,9 +1220,8 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("QueryAvailablePerfMetric"),
-                              &response, esxVI_Boolean_True) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "QueryAvailablePerfMetric", request,
+                              &response, esxVI_Occurrence_List) < 0 ||
         esxVI_PerfMetricId_DeserializeList(conn, response->node,
                                            perfMetricIdList) < 0) {
         goto failure;
@@ -1298,9 +1284,8 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("QueryPerfCounter"),
-                              &response, esxVI_Boolean_True) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "QueryPerfCounter", request,
+                              &response, esxVI_Occurrence_List) < 0 ||
         esxVI_PerfCounterInfo_DeserializeList(conn, response->node,
                                               perfCounterInfoList) < 0) {
         goto failure;
@@ -1363,9 +1348,8 @@ esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request,
-                              ESX_VI__SOAP__RESPONSE_XPATH("QueryPerf"),
-                              &response, esxVI_Boolean_True) < 0 ||
+    if (esxVI_Context_Execute(conn, ctx, "QueryPerf", request, &response,
+                              esxVI_Occurrence_List) < 0 ||
         esxVI_PerfEntityMetric_DeserializeList(conn, response->node,
                                                perfEntityMetricList) < 0) {
         goto failure;

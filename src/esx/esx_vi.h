@@ -62,7 +62,8 @@ enum _esxVI_Occurrence {
     esxVI_Occurrence_Undefined = 0,
     esxVI_Occurrence_RequiredItem,
     esxVI_Occurrence_OptionalItem,
-    esxVI_Occurrence_List
+    esxVI_Occurrence_List,
+    esxVI_Occurrence_None
 };
 
 
@@ -100,8 +101,8 @@ int esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
 int esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
                              const char *url, const char *content);
 int esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
-                          const char *request, const char *xpathExpression,
-                          esxVI_Response **response, esxVI_Boolean expectList);
+                          const char *methodName, const char *request,
+                          esxVI_Response **response, esxVI_Occurrence occurrence);
 
 
 
@@ -113,7 +114,6 @@ struct _esxVI_Response {
     int responseCode;                                 /* required */
     char *content;                                    /* required */
     xmlDocPtr document;                               /* optional */
-    xmlXPathContextPtr xpathContext;                  /* optional */
     xmlNodePtr node;                                  /* optional, list */
 };
 
