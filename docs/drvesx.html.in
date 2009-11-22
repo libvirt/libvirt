@@ -15,7 +15,7 @@
         installed on the ESX server. The driver uses version 2.5 of the remote,
         SOAP based
         <a href="http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/">
-        VMware Virtual Infrastructure API</a> to communicate with the
+        VMware Virtual Infrastructure API</a> (VI API) to communicate with the
         ESX server, like the VMware Virtual Infrastructure Client does. Since
         version 4.0 this API is called
         <a href="http://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/">
@@ -78,11 +78,12 @@ type://[username@]hostname[:port]/[?extraparameters]
                 <code>vcenter</code>
             </td>
             <td>
-                Hostname of a VMware vCenter
+                Hostname of a VMware vCenter or <code>*</code>
             </td>
             <td>
                 In order to perform a migration the driver needs to know the
-                VMware vCenter for the ESX server.
+                VMware vCenter for the ESX server. If set to <code>*</code>,
+                the driver connects to the vCenter known to the ESX server.
             </td>
         </tr>
         <tr>
@@ -95,6 +96,20 @@ type://[username@]hostname[:port]/[?extraparameters]
             <td>
                 If set to 1, this disables libcurl client checks of the server's
                 SSL certificate. The default value it 0.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <code>auto_answer</code>
+            </td>
+            <td>
+                <code>0</code> or <code>1</code>
+            </td>
+            <td>
+                If set to 1, the driver answers all
+                <a href="#questions">questions</a> with the default answer.
+                If set to 0, questions are reported as errors. The default
+                value it 0.
             </td>
         </tr>
     </table>
@@ -117,6 +132,25 @@ type://[username@]hostname[:port]/[?extraparameters]
         is done using an unrestricted <code>root</code> account. Problems may
         occur if you use a restricted account. Detailed testing with restricted
         accounts has not been done yet.
+    </p>
+
+
+    <h2><a name="questions">Questions blocking tasks</a></h2>
+    <p>
+        Some methods of the VI API start tasks, for example
+        <code>PowerOnVM_Task()</code>. Such tasks may be blocked by questions
+        if the ESX server detects an issue with the domain that requires user
+        interaction. The ESX driver cannot prompt the user to answer a
+        question, libvirt doesn't have an API for something like this.
+    </p>
+    <p>
+        The VI API provides the <code>AnswerVM()</code> method to
+        programmatically answer a questions. So the driver has two options
+        how to handle such a situation: either answer the questions with the
+        default answer or report the question as an error and cancel the
+        blocked task if possible. The
+        <a href="#uriformat"><code>auto_answer</code></a> query parameter
+        controls the answering behavior.
     </p>
 
 
@@ -404,8 +438,12 @@ ethernet0.address = "00:50:56:25:48:C7"
     <h2><a name="migration">Migration</a></h2>
     <p>
         A migration cannot be initiated on an ESX server directly, a VMware
-        vCenter is necessary for this. The vCenter hostname has to be passed
-        to the driver via the <code>vcenter</code> query parameter.
+        vCenter is necessary for this. The <code>vcenter</code> query
+        parameter must be set either to the hostname or IP address of the
+        vCenter managing the ESX server or to <code>*</code>. Setting it
+        to <code>*</code> causes the driver to connect to the vCenter known to
+        the ESX server. If the ESX server is not managed by a vCenter an error
+        is reported.
     </p>
 <pre>
 esx://example.com/?vcenter=example-vcenter.com
@@ -413,11 +451,11 @@ esx://example.com/?vcenter=example-vcenter.com
     <p>
         Here an example how to migrate the domain <code>Fedora11</code> from
         ESX server <code>example-src.com</code> to ESX server
-        <code>example-dst.com</code> involving vCenter
+        <code>example-dst.com</code> implicitly involving vCenter
         <code>example-vcenter.com</code> using <code>virsh</code>.
     </p>
 <pre>
-$ virsh -c esx://example-src.com/?vcenter=example-vcenter.com migrate Fedora11 esx://example-dst.com/?vcenter=example-vcenter.com
+$ virsh -c esx://example-src.com/?vcenter=* migrate Fedora11 esx://example-dst.com/?vcenter=*
 Enter username for example-src.com [root]:
 Enter root password for example-src.com:
 Enter username for example-vcenter.com [administrator]:

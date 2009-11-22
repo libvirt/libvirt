@@ -18,8 +18,8 @@ Automatic question handling
 What is a question in the ESX context?
 --------------------------------------
 
-The VI API contains calls that start tasks, for example PowerOnVM_Task(). Such
-tasks may be blocked by a question if the ESX host detects an issue with the
+The VI API contains methods that start tasks, for example PowerOnVM_Task(). Such
+tasks may be blocked by questions if the ESX host detects an issue with the
 virtual machine that requires user interaction.
 
 An example: If a virtual machine has a serial port that is realized via a file,
@@ -29,8 +29,8 @@ Until this question is answered the power-on task is blocked and the virtual
 machine won't get powered on.
 
 The ESX driver cannot prompt the user to answer a question, libvirt doesn't
-have an API for something like this. The VI API provides a AnswerVM() method to
-programmatically answer such questions. A question comes together with a list
+have an API for something like this. The VI API provides the AnswerVM() method
+to programmatically answer such questions. A question comes together with a list
 of possible answers. One of this answers is marked as the default one. For all
 questions I've seen so far the default answer is always a non-destructive one.
 
