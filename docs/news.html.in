@@ -3,240 +3,240 @@
   <body>
     <h1 >Releases</h1>
     <p>Here is the list of official releases, however since it is early on in the
-development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
+development of libvirt, it is preferable when possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
     <h3>0.7.4: Nov 20 2009</h3>
     <ul>
       <li>Features:
-      Implement a node device backend using libudev (David Allan)
-      New APIs for checking some object properties (Daniel P. Berrange)
-      Fully asynchronous monitor I/O processing (Daniel P. Berrange)
-      add MAC address based port filtering to qemu (Gerhard Stenzel)
+      Implement a node device backend using libudev (David Allan),
+      New APIs for checking some object properties (Daniel P. Berrange),
+      Fully asynchronous monitor I/O processing (Daniel P. Berrange),
+      add MAC address based port filtering to qemu (Gerhard Stenzel),
       Support for IPv6 / multiple addresses per interfaces (Laine Stump)
       </li>
 
       <li>Documentation:
-      Document overriding domain interface target (Cole Robinson)
-      514532 Fix man page, most operation are synchronous (Daniel Veillard)
-      Fix typo in error message (Matthew Booth)
-      esx: Add documentation to the website (Matthias Bolte)
-      AppArmor updates of examples (Jamie Strandboge)
-      Add documentation for &lt;channel&gt; domain element (Matthew Booth)
-      Separate character device doc guest and host parts (Matthew Booth)
-      Add a Python example that lists active ESX domains (Matthias Bolte)
-      LXC fix wrong or out-of-date function descriptions (Ryota Ozaki)
-      docs: &lt;clock&gt; property is 'offset', not 'sync' (Cole Robinson)
-      Update the documentation for virDomainMigrateToURI (Chris Lalancette)
+      Document overriding domain interface target (Cole Robinson),
+      514532 Fix man page, most operation are synchronous (Daniel Veillard),
+      Fix typo in error message (Matthew Booth),
+      esx: Add documentation to the website (Matthias Bolte),
+      AppArmor updates of examples (Jamie Strandboge),
+      Add documentation for &lt;channel&gt; domain element (Matthew Booth),
+      Separate character device doc guest and host parts (Matthew Booth),
+      Add a Python example that lists active ESX domains (Matthias Bolte),
+      LXC fix wrong or out-of-date function descriptions (Ryota Ozaki),
+      docs: &lt;clock&gt; property is 'offset', not 'sync' (Cole Robinson),
+      Update the documentation for virDomainMigrateToURI (Chris Lalancette),
       fix virDomainMigrateToURI doc (Dan Kenigsberg)
       </li>
 
       <li>Bug fixes:
-      504262 Check for duplicated UUID in XM Xen defines (Daniel Veillard)
-      512069 fix domain XML schemas for backward compatibility (Daniel Veillard)
-      qemu-kvm needs -enable-kvm flag for VT optimization (Steve Yarmie)
-      fix deprecated iptables command syntax (Steve Yarmie)
-      Ensure driver lock is released when entering QEMU monitor (Daniel P. Berrange)
-      only remove masquerade roles for VIR_NETWORK_FORWARD_NAT (Guido Günther)
-      esx: Fix CPU clock Hz to MHz conversion (Matthias Bolte)
-      esx: Fix memory leak in esxVI_HostCpuIdInfo_Free() (Matthias Bolte)
-      esx: Fix MAC address formatting (Matthias Bolte)
-      Fix compilation of libvirt against xen-unstable (Jim Fehlig)
-      Fix probing for libpciaccess (Daniel P. Berrange)
-      Fix incorrect reference counting logic in qemu monitor open (Daniel P. Berrange)
-      Don't return fatal error in HAL driver init if HAL isn't running (Daniel P. Berrange)
-      Fix cleanup when state driver init fails (Daniel P. Berrange)
-      AppArmor handling of accesses to readonly files (Jamie Strandboge)
-      AppArmor require absolute paths (Jamie Strandboge)
-      Check that domain is running when starting console (Daniel P. Berrange)
-      Fix incorrect variable passed to LXC event callback (Daniel P. Berrange)
-      Fix race condition in HAL driver startup (Daniel P. Berrange)
-      Remove capng_lock() call when spawning LXC container init process (Daniel P. Berrange)
-      Fix initscript to check daemon pidfile (Daniel P. Berrange)
-      Filter out stale domains from xenstore listing (Daniel P. Berrange)
-      Fix logic in xenUnifiedNumOfDomains to match xenUnifiedListDomains (Jonas Eriksson)
-      Disable IPv6 socket auto-binding to IPv4 socket (Daniel P. Berrange)
-      Fix save and restore with non-privileged guests and SELinux (Daniel P. Berrange)
-      Prevent initializing ebtables if disabled in qemu.conf (Ryota Ozaki)
-      phyp: too much timeout when polling socket (Eduardo Otubo)
-      phyp: ssh authentication with public key fixed (Eduardo Otubo)
-      opennebula: Fix potential memory/mutex leak in state driver startup (Matthias Bolte)
-      phyp: Break potential infinite loops (Matthias Bolte)
-      phyp: Fix memory/session leaks and potential invalid frees (Matthias Bolte)
-      storage: conf: Fix memory leak in encryption parsing (Cole Robinson)
-      Fix improper error return in virInterfaceDefParseProtoIPvX (Laine Stump)
-      Fix virInterfaceIpDefPtr leak during virInterfaceIpDefFree (Laine Stump)
-      give up python interpreter lock before calling cb (Dan Kenigsberg)
-      ESX: Fix memory leak in list handling functions. (Matthias Bolte)
-      Fix --with-init-script configure option (Matthew Booth)
-      Don't let parent of daemon exit until basic initialization is done (Daniel P. Berrange)
-      Fix configure detection of device mapper (Pritesh Kothari)
-      Remote code caught EINTR making it ininterruptable (Daniel Veillard)
-      virterror: Add a missing 'break' for VIR_ERR_INVALID_SECRET (Cole Robinson)
-      Fix p2p migration without a passed uri. (Cole Robinson)
-      Fix problems in the Xen inotify driver. (Matthias Bolte)
-      Remove a completely bogus reference increment in the Xen driver. (Chris Lalancette)
-      528575 avoid libvirtd crash on LCX domain autostart (Daniel Veillard)
-      Fix SELinux linking issues (Jim Fehlig)
-      node device: Fix locking issue in virNodeDeviceDestroy (Cole Robinson)
-      LXC fix virCgroupGetValueStr problem with \n (Ryota Ozaki)
-      Avoid crash in virBufferEscapeString (Laine Stump)
+      504262 Check for duplicated UUID in XM Xen defines (Daniel Veillard),
+      512069 fix domain XML schemas for backward compatibility (Daniel Veillard),
+      qemu-kvm needs -enable-kvm flag for VT optimization (Steve Yarmie),
+      fix deprecated iptables command syntax (Steve Yarmie),
+      Ensure driver lock is released when entering QEMU monitor (Daniel P. Berrange),
+      only remove masquerade roles for VIR_NETWORK_FORWARD_NAT (Guido Günther),
+      esx: Fix CPU clock Hz to MHz conversion (Matthias Bolte),
+      esx: Fix memory leak in esxVI_HostCpuIdInfo_Free() (Matthias Bolte),
+      esx: Fix MAC address formatting (Matthias Bolte),
+      Fix compilation of libvirt against xen-unstable (Jim Fehlig),
+      Fix probing for libpciaccess (Daniel P. Berrange),
+      Fix incorrect reference counting logic in qemu monitor open (Daniel P. Berrange),
+      Don't return fatal error in HAL driver init if HAL isn't running (Daniel P. Berrange),
+      Fix cleanup when state driver init fails (Daniel P. Berrange),
+      AppArmor handling of accesses to readonly files (Jamie Strandboge),
+      AppArmor require absolute paths (Jamie Strandboge),
+      Check that domain is running when starting console (Daniel P. Berrange),
+      Fix incorrect variable passed to LXC event callback (Daniel P. Berrange),
+      Fix race condition in HAL driver startup (Daniel P. Berrange),
+      Remove capng_lock() call when spawning LXC container init process (Daniel P. Berrange),
+      Fix initscript to check daemon pidfile (Daniel P. Berrange),
+      Filter out stale domains from xenstore listing (Daniel P. Berrange),
+      Fix logic in xenUnifiedNumOfDomains to match xenUnifiedListDomains (Jonas Eriksson),
+      Disable IPv6 socket auto-binding to IPv4 socket (Daniel P. Berrange),
+      Fix save and restore with non-privileged guests and SELinux (Daniel P. Berrange),
+      Prevent initializing ebtables if disabled in qemu.conf (Ryota Ozaki),
+      phyp: too much timeout when polling socket (Eduardo Otubo),
+      phyp: ssh authentication with public key fixed (Eduardo Otubo),
+      opennebula: Fix potential memory/mutex leak in state driver startup (Matthias Bolte),
+      phyp: Break potential infinite loops (Matthias Bolte),
+      phyp: Fix memory/session leaks and potential invalid frees (Matthias Bolte),
+      storage: conf: Fix memory leak in encryption parsing (Cole Robinson),
+      Fix improper error return in virInterfaceDefParseProtoIPvX (Laine Stump),
+      Fix virInterfaceIpDefPtr leak during virInterfaceIpDefFree (Laine Stump),
+      give up python interpreter lock before calling cb (Dan Kenigsberg),
+      ESX: Fix memory leak in list handling functions. (Matthias Bolte),
+      Fix --with-init-script configure option (Matthew Booth),
+      Don't let parent of daemon exit until basic initialization is done (Daniel P. Berrange),
+      Fix configure detection of device mapper (Pritesh Kothari),
+      Remote code caught EINTR making it ininterruptable (Daniel Veillard),
+      virterror: Add a missing 'break' for VIR_ERR_INVALID_SECRET (Cole Robinson),
+      Fix p2p migration without a passed uri. (Cole Robinson),
+      Fix problems in the Xen inotify driver. (Matthias Bolte),
+      Remove a completely bogus reference increment in the Xen driver. (Chris Lalancette),
+      528575 avoid libvirtd crash on LCX domain autostart (Daniel Veillard),
+      Fix SELinux linking issues (Jim Fehlig),
+      node device: Fix locking issue in virNodeDeviceDestroy (Cole Robinson),
+      LXC fix virCgroupGetValueStr problem with \n (Ryota Ozaki),
+      Avoid crash in virBufferEscapeString (Laine Stump),
       LXC complement PATH environment variable (Ryota Ozaki)
       </li>
 
       <li>Improvements:
-      Enable udev instead of hal on F12 / RHEL-6 or later (Daniel P. Berrange)
-      python: Actually implement list*Interfaces bindings (Cole Robinson)
-      esx: Handle 'vmxnet3' in esxVMX_FormatEthernet() (Matthias Bolte)
-      Fix check for existance of cgroups at creation (Daniel P. Berrange)
-      Fix virt-aa-helper when host and os.type arch differ (Jamie Strandboge)
-      Add translation of PCI vendor and product IDs (David Allan)
-      Add scsi_target device type (David Allan)
-      Add several fields to node device capabilities (David Allan)
-      Add virConnectGetLibvirtVersion API (Cole Robinson)
-      Implement finer grained migration control for Xen (Maximilian Wilhelm)
-      Support for SATA Disks in virDomainDiskBus (pritesh)
-      LXC implement missing DomainInterfaceStats API (Ryota Ozaki)
-      disable mac_filter config switch by default (Gerhard Stenzel)
-      phyp: Reorder keyboard_interactive label in openSSHSession() (Eduardo Otubo)
-      Implmentation of new APIs to checking state/persistence of objects (Daniel P. Berrange)
-      Allow timeouts waiting for QEMU job lock (Daniel P. Berrange)
-      Release driver and domain lock when running monitor commands (Daniel P. Berrange)
-      Add reference counting on virDomainObjPtr objects (Daniel P. Berrange)
-      Locking of the qemuMonitorPtr object (Daniel P. Berrange)
-      Wrap text mode monitor APIs, pass qemuMonitorPtr directly to APIs (Daniel P. Berrange)
-      Move encryption lookup back into qemu driver file (Daniel P. Berrange)
-      Make use of private data structure for monitor state (Daniel P. Berrange)
-      Add a new timed condition variable wait API (Daniel P. Berrange)
-      Fix errno handling for pthreads wrappers (Daniel P. Berrange)
-      524280 pass max lease option to dnsmasq (Daniel Veillard)
-      Store the range size when adding a DHCP range (Daniel Veillard)
-      qemu: Allow cpu pinning for all logical CPUs, not just physical (Cole Robinson)
-      qemu: Use same create/define overwrite logic for migration prepare. (Cole Robinson)
-      qemu: Break out function to check if we can create/define/restore (Cole Robinson)
-      Add sentinel attribute for NULL terminated arg lists (Paolo Bonzini)
-      test: Update inactive guest config on shutdown (Cole Robinson)
-      test: Add testDomainShutdownState helper (Cole Robinson)
-      Properly convert port numbers to/from network byte order (Matthew Booth)
-      phyp add create() and destroy() support (Eduardo Otubo)
-      Support for &lt;channel&gt; in domain and QEmu backend (Matthew Booth)
-      Detect availability of QEMU -chardev CLI option (Matthew Booth)
-      Allow character devices to have different target types (Matthew Booth)
-      LXC allow container to have ethN interfaces (Ryota Ozaki)
-      New ebtables module wrapper (Gerhard Stenzel)
-      test: Implement virDomainPinVcpu (Cole Robinson)
-      test: Implement virDomainGetVcpus (Cole Robinson)
-      test: Update vcpu runtime info in SetVcpus (Cole Robinson)
-      test: Use privateData to track running VM vcpu state (Cole Robinson)
-      test: Break out wrapper for setting up started domain state. (Cole Robinson)
-      test: Fixes for SetVcpus (Cole Robinson)
-      Make monitor type (miimon/arpmon) optional in bond xml (Laine Stump)
-      Support reporting live interface IP/netmask (Laine Stump)
-      Make startmode optional in toplevel interface definition (Laine Stump)
-      Move libvirtd event loop into background thread (Daniel P. Berrange)
-      Allow NULL mac address in virGetInterface (Laine Stump)
-      ESX: Don't automatically follow redirects. (Matthias Bolte)
-      ESX: Change disk selection for datastore detection. (Matthias Bolte)
-      ESX: Fallback to the preliminary name if the datastore cannot be found. (Matthias Bolte)
-      Set KMEMSIZE for OpenVZ domains being defined (Yuji NISHIDA)
-      Allow for a driver specific private data blob in virDomainObjPtr (Daniel P. Berrange)
-      More network utility functions (Matthew Booth)
-      Add symbols from new network.h module (Daniel Veillard)
-      Set of new network related utilities (Daniel Veillard)
-      Convert virDomainObjListPtr to use a hash of domain objects (Daniel P. Berrange)
-      qemu: migrate: Don't require manual URI to specify a port (Cole Robinson)
-      test: Support virStorageFindPoolSources (Cole Robinson)
-      storage: Add ParseSourceString function for use with FindPoolSources. (Cole Robinson)
-      Add support for an external TFTP boot server (Paolo Bonzini)
-      test: Support virNodeDeviceCreate and virNodeDeviceDestroy (Cole Robinson)
-      Consolidate virXPathNodeSet() (Daniel Veillard)
-      Support QEMU watchdog device. (Richard Jones)
-      Do not log rotate very small logs (Dan Kenigsberg)
-      LXC implement missing macaddr assignment feature (Ryota Ozaki)
-      tests: Initialize virRandom in for test suite. (Cole Robinson)
-      tests: Add storage volume XML 2 XML tests. (Cole Robinson)
-      tests: Add network XML to XML tests. (Cole Robinson)
-      schema: Update network schema. (Cole Robinson)
-      tests: Add XML 2 XML tests for storage pools. (Cole Robinson)
-      tests: Break out duplicate schema verification functionality. (Cole Robinson)
-      tests: Fix text output for interface XML 2 XML (Cole Robinson)
-      Add ocfs2 to list of fs pool types (Jim Fehlig)
+      Enable udev instead of hal on F12 / RHEL-6 or later (Daniel P. Berrange),
+      python: Actually implement list*Interfaces bindings (Cole Robinson),
+      esx: Handle 'vmxnet3' in esxVMX_FormatEthernet() (Matthias Bolte),
+      Fix check for existance of cgroups at creation (Daniel P. Berrange),
+      Fix virt-aa-helper when host and os.type arch differ (Jamie Strandboge),
+      Add translation of PCI vendor and product IDs (David Allan),
+      Add scsi_target device type (David Allan),
+      Add several fields to node device capabilities (David Allan),
+      Add virConnectGetLibvirtVersion API (Cole Robinson),
+      Implement finer grained migration control for Xen (Maximilian Wilhelm),
+      Support for SATA Disks in virDomainDiskBus (pritesh),
+      LXC implement missing DomainInterfaceStats API (Ryota Ozaki),
+      disable mac_filter config switch by default (Gerhard Stenzel),
+      phyp: Reorder keyboard_interactive label in openSSHSession() (Eduardo Otubo),
+      Implmentation of new APIs to checking state/persistence of objects (Daniel P. Berrange),
+      Allow timeouts waiting for QEMU job lock (Daniel P. Berrange),
+      Release driver and domain lock when running monitor commands (Daniel P. Berrange),
+      Add reference counting on virDomainObjPtr objects (Daniel P. Berrange),
+      Locking of the qemuMonitorPtr object (Daniel P. Berrange),
+      Wrap text mode monitor APIs, pass qemuMonitorPtr directly to APIs (Daniel P. Berrange),
+      Move encryption lookup back into qemu driver file (Daniel P. Berrange),
+      Make use of private data structure for monitor state (Daniel P. Berrange),
+      Add a new timed condition variable wait API (Daniel P. Berrange),
+      Fix errno handling for pthreads wrappers (Daniel P. Berrange),
+      524280 pass max lease option to dnsmasq (Daniel Veillard),
+      Store the range size when adding a DHCP range (Daniel Veillard),
+      qemu: Allow cpu pinning for all logical CPUs, not just physical (Cole Robinson),
+      qemu: Use same create/define overwrite logic for migration prepare. (Cole Robinson),
+      qemu: Break out function to check if we can create/define/restore (Cole Robinson),
+      Add sentinel attribute for NULL terminated arg lists (Paolo Bonzini),
+      test: Update inactive guest config on shutdown (Cole Robinson),
+      test: Add testDomainShutdownState helper (Cole Robinson),
+      Properly convert port numbers to/from network byte order (Matthew Booth),
+      phyp add create() and destroy() support (Eduardo Otubo),
+      Support for &lt;channel&gt; in domain and QEmu backend (Matthew Booth),
+      Detect availability of QEMU -chardev CLI option (Matthew Booth),
+      Allow character devices to have different target types (Matthew Booth),
+      LXC allow container to have ethN interfaces (Ryota Ozaki),
+      New ebtables module wrapper (Gerhard Stenzel),
+      test: Implement virDomainPinVcpu (Cole Robinson),
+      test: Implement virDomainGetVcpus (Cole Robinson),
+      test: Update vcpu runtime info in SetVcpus (Cole Robinson),
+      test: Use privateData to track running VM vcpu state (Cole Robinson),
+      test: Break out wrapper for setting up started domain state. (Cole Robinson),
+      test: Fixes for SetVcpus (Cole Robinson),
+      Make monitor type (miimon/arpmon) optional in bond xml (Laine Stump),
+      Support reporting live interface IP/netmask (Laine Stump),
+      Make startmode optional in toplevel interface definition (Laine Stump),
+      Move libvirtd event loop into background thread (Daniel P. Berrange),
+      Allow NULL mac address in virGetInterface (Laine Stump),
+      ESX: Don't automatically follow redirects. (Matthias Bolte),
+      ESX: Change disk selection for datastore detection. (Matthias Bolte),
+      ESX: Fallback to the preliminary name if the datastore cannot be found. (Matthias Bolte),
+      Set KMEMSIZE for OpenVZ domains being defined (Yuji NISHIDA),
+      Allow for a driver specific private data blob in virDomainObjPtr (Daniel P. Berrange),
+      More network utility functions (Matthew Booth),
+      Add symbols from new network.h module (Daniel Veillard),
+      Set of new network related utilities (Daniel Veillard),
+      Convert virDomainObjListPtr to use a hash of domain objects (Daniel P. Berrange),
+      qemu: migrate: Don't require manual URI to specify a port (Cole Robinson),
+      test: Support virStorageFindPoolSources (Cole Robinson),
+      storage: Add ParseSourceString function for use with FindPoolSources. (Cole Robinson),
+      Add support for an external TFTP boot server (Paolo Bonzini),
+      test: Support virNodeDeviceCreate and virNodeDeviceDestroy (Cole Robinson),
+      Consolidate virXPathNodeSet() (Daniel Veillard),
+      Support QEMU watchdog device. (Richard Jones),
+      Do not log rotate very small logs (Dan Kenigsberg),
+      LXC implement missing macaddr assignment feature (Ryota Ozaki),
+      tests: Initialize virRandom in for test suite. (Cole Robinson),
+      tests: Add storage volume XML 2 XML tests. (Cole Robinson),
+      tests: Add network XML to XML tests. (Cole Robinson),
+      schema: Update network schema. (Cole Robinson),
+      tests: Add XML 2 XML tests for storage pools. (Cole Robinson),
+      tests: Break out duplicate schema verification functionality. (Cole Robinson),
+      tests: Fix text output for interface XML 2 XML (Cole Robinson),
+      Add ocfs2 to list of fs pool types (Jim Fehlig),
       Finer grained migration control (Chris Lalancette)
       </li>
 
       <li>Cleanups:
-      remove sysfs_path and parent_sysfs_path from XML (Dave Allan)
-      Removing devicePath member from dev struct (Dave Allan)
-      report OOM in two places in node_device_driver.c (Dave Allan)
-      Whitespace cleanup for pre-tags on the website (Matthias Bolte)
-      Fix type in configure output summary (Daniel P. Berrange)
-      Remove a compilation warning on uninitialized var (Daniel Veillard)
-      Change DTD references to use public instead of system identifier (Matthias Bolte)
-      Remove obsolete devicekit checks (Daniel P. Berrange)
-      Small guestfwd code cleanup (Matthew Booth)
-      Small indentation cleanup of domain schema (Matthew Booth)
-      AppArmor code cleanups (Jamie Strandboge)
-      Fix formatting of XML for an inactive guest (Daniel P. Berrange)
-      Remove DevKit node device backend (David Allan)
-      Exclude numactl on s390[x] (Daniel P. Berrange)
-      Fix error handling in qemuMonitorOpen (Ryota Ozaki)
-      Fix warning on make due to missing cast (int) (Ryota Ozaki)
-      Various fixes following a code review part 2 (Daniel Veillard)
-      Various fixes following a code review (Daniel Veillard)
-      Move code for low level QEMU monitor interaction into separate file (Daniel P. Berrange)
-      Make pciDeviceList struct opaque (Daniel P. Berrange)
-      Add missing OOM error checks, reports and cleanups (Matthias Bolte)
-      Removes the ebtablesSaveRules() function (Gerhard Stenzel)
-      phyp: Use actual error code instead of 0 (Matthias Bolte)
-      phyp: Don't use VIR_ALLOC if a stack variable is good enough (Matthias Bolte)
-      phyp: Fix several UUID table related problems (Matthias Bolte)
-      phyp: Check for exit_status &lt; 0 before parsing the result (Matthias Bolte)
-      phyp: memcpy/memmove/memset can't fail, so don't check for error (Matthias Bolte)
-      phyp: Make generic domain listing functions return -1 in case of error (Matthias Bolte)
-      Fix configure check for libssh2 (Matthias Bolte)
-      Repair getIPv4Addr after the ntohl conversion (Daniel Veillard)
-      Cleanup whitespace in docs (Matthew Booth)
-      Use virBuffer when building QEMU char dev command line (Matthew Booth)
-      Cleanup virBuffer usage in qemdBuildCommandLine (Matthew Booth)
-      Fix some cut-and-paste error in migration code (Paolo Bonzini)
-      Ensure guestfwd address is IPv4 and various cleanups (Matthew Booth)
-      LXC cleanup deep indentation in lxcDomainSetAutostart (Ryota Ozaki)
-      LXC messages cleanup and fix lxcError (Ryota Ozaki)
-      qemu: Remove compiled out localhost migration support (Cole Robinson)
-      Various error reporting fixes (Cole Robinson)
-      Improve error reporting for virConnectGetHostname calls (Cole Robinson)
-      Fix up NLS warnings. (Chris Lalancette)
-      Remove redundant virFileDeletePID() call (Chris Lalancette)
-      Fix return value in virStateInitialize impl for LXC (Daniel P. Berrange)
-      ESX: Unify naming of VI API utility and convenience functions. (Matthias Bolte)
-      Rename internal APis (Daniel P. Berrange)
-      Pull signal setup code out into separate method (Daniel P. Berrange)
-      Fix duplicating logging of errors in libvirtd (Daniel P. Berrange)
-      Fix initialization order bugs (Daniel P. Berrange)
-      Misc cleanup to network socket init (Daniel P. Berrange)
-      Annotate many methods with ATTRIBUTE_RETURN_CHECK &amp; fix problems (Daniel P. Berrange)
-      Don't use private struct member names of in6_addr (Matthias Bolte)
-      Fix typo in network.c function comments (Matthew Booth)
-      libvirt-devel should only require libvirt-client (Mark McLoughlin)
-      qemu: Fix an error message in GetVcpus (Cole Robinson)
-      storage: Break out function to add pool source to a SourceList. (Cole Robinson)
-      storage: Break out pool source parsing to a separate function. (Cole Robinson)
-      Fix some typos in comments (Dan Kenigsberg)
-      Fix error message in qemudLoadDriverConfig() (Matthias Bolte)
-      Add a new syntax-check rule for gethostname. (Chris Lalancette)
-      Various syntax-check fixes. (Chris Lalancette)
-      Tighten up nonreentrant syntax-check. (Chris Lalancette)
-      Replace a gethostname by virGetHostname in libvirtd.c (Chris Lalancette)
-      Replace two strcmp() by STREQ() in qemu_driver.c (Chris Lalancette)
-      Replace gethostname by virGetHostname in xend_internal.c (Chris Lalancette)
-      Add a default log_level to qemudSetLogging to remove a build warning. (Chris Lalancette)
-      Better error message when libvirtd fails to start. (Chris Lalancette)
-      Fix potential false-positive OOM error reporting. (Matthias Bolte)
-      Fix virsh.c compilation warning (Jim Fehlig)
-      Fix a make dist error due to wrong EXTRA_DIST paths (Daniel Veillard)
-      node device: Break out get_wwns and get_parent_node helpers (Cole Robinson)
-      tests: Centralize VIR_TEST_DEBUG lookup, and document it (Cole Robinson)
-      Remove bogus const annotations to hash iterator (Daniel P. Berrange)
-      Remove bashisms from schema tests. (Matthias Bolte)
+      remove sysfs_path and parent_sysfs_path from XML (Dave Allan),
+      Removing devicePath member from dev struct (Dave Allan),
+      report OOM in two places in node_device_driver.c (Dave Allan),
+      Whitespace cleanup for pre-tags on the website (Matthias Bolte),
+      Fix type in configure output summary (Daniel P. Berrange),
+      Remove a compilation warning on uninitialized var (Daniel Veillard),
+      Change DTD references to use public instead of system identifier (Matthias Bolte),
+      Remove obsolete devicekit checks (Daniel P. Berrange),
+      Small guestfwd code cleanup (Matthew Booth),
+      Small indentation cleanup of domain schema (Matthew Booth),
+      AppArmor code cleanups (Jamie Strandboge),
+      Fix formatting of XML for an inactive guest (Daniel P. Berrange),
+      Remove DevKit node device backend (David Allan),
+      Exclude numactl on s390[x] (Daniel P. Berrange),
+      Fix error handling in qemuMonitorOpen (Ryota Ozaki),
+      Fix warning on make due to missing cast (int) (Ryota Ozaki),
+      Various fixes following a code review part 2 (Daniel Veillard),
+      Various fixes following a code review (Daniel Veillard),
+      Move code for low level QEMU monitor interaction into separate file (Daniel P. Berrange),
+      Make pciDeviceList struct opaque (Daniel P. Berrange),
+      Add missing OOM error checks, reports and cleanups (Matthias Bolte),
+      Removes the ebtablesSaveRules() function (Gerhard Stenzel),
+      phyp: Use actual error code instead of 0 (Matthias Bolte),
+      phyp: Don't use VIR_ALLOC if a stack variable is good enough (Matthias Bolte),
+      phyp: Fix several UUID table related problems (Matthias Bolte),
+      phyp: Check for exit_status &lt; 0 before parsing the result (Matthias Bolte),
+      phyp: memcpy/memmove/memset can't fail, so don't check for error (Matthias Bolte),
+      phyp: Make generic domain listing functions return -1 in case of error (Matthias Bolte),
+      Fix configure check for libssh2 (Matthias Bolte),
+      Repair getIPv4Addr after the ntohl conversion (Daniel Veillard),
+      Cleanup whitespace in docs (Matthew Booth),
+      Use virBuffer when building QEMU char dev command line (Matthew Booth),
+      Cleanup virBuffer usage in qemdBuildCommandLine (Matthew Booth),
+      Fix some cut-and-paste error in migration code (Paolo Bonzini),
+      Ensure guestfwd address is IPv4 and various cleanups (Matthew Booth),
+      LXC cleanup deep indentation in lxcDomainSetAutostart (Ryota Ozaki),
+      LXC messages cleanup and fix lxcError (Ryota Ozaki),
+      qemu: Remove compiled out localhost migration support (Cole Robinson),
+      Various error reporting fixes (Cole Robinson),
+      Improve error reporting for virConnectGetHostname calls (Cole Robinson),
+      Fix up NLS warnings. (Chris Lalancette),
+      Remove redundant virFileDeletePID() call (Chris Lalancette),
+      Fix return value in virStateInitialize impl for LXC (Daniel P. Berrange),
+      ESX: Unify naming of VI API utility and convenience functions. (Matthias Bolte),
+      Rename internal APis (Daniel P. Berrange),
+      Pull signal setup code out into separate method (Daniel P. Berrange),
+      Fix duplicating logging of errors in libvirtd (Daniel P. Berrange),
+      Fix initialization order bugs (Daniel P. Berrange),
+      Misc cleanup to network socket init (Daniel P. Berrange),
+      Annotate many methods with ATTRIBUTE_RETURN_CHECK &amp; fix problems (Daniel P. Berrange),
+      Don't use private struct member names of in6_addr (Matthias Bolte),
+      Fix typo in network.c function comments (Matthew Booth),
+      libvirt-devel should only require libvirt-client (Mark McLoughlin),
+      qemu: Fix an error message in GetVcpus (Cole Robinson),
+      storage: Break out function to add pool source to a SourceList. (Cole Robinson),
+      storage: Break out pool source parsing to a separate function. (Cole Robinson),
+      Fix some typos in comments (Dan Kenigsberg),
+      Fix error message in qemudLoadDriverConfig() (Matthias Bolte),
+      Add a new syntax-check rule for gethostname. (Chris Lalancette),
+      Various syntax-check fixes. (Chris Lalancette),
+      Tighten up nonreentrant syntax-check. (Chris Lalancette),
+      Replace a gethostname by virGetHostname in libvirtd.c (Chris Lalancette),
+      Replace two strcmp() by STREQ() in qemu_driver.c (Chris Lalancette),
+      Replace gethostname by virGetHostname in xend_internal.c (Chris Lalancette),
+      Add a default log_level to qemudSetLogging to remove a build warning. (Chris Lalancette),
+      Better error message when libvirtd fails to start. (Chris Lalancette),
+      Fix potential false-positive OOM error reporting. (Matthias Bolte),
+      Fix virsh.c compilation warning (Jim Fehlig),
+      Fix a make dist error due to wrong EXTRA_DIST paths (Daniel Veillard),
+      node device: Break out get_wwns and get_parent_node helpers (Cole Robinson),
+      tests: Centralize VIR_TEST_DEBUG lookup, and document it (Cole Robinson),
+      Remove bogus const annotations to hash iterator (Daniel P. Berrange),
+      Remove bashisms from schema tests. (Matthias Bolte),
       Don't copy old machines from a domain which has none (Mark McLoughlin)
       </li>
     </ul>
