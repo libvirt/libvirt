@@ -608,7 +608,7 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(virConnectPtr conn,
     if (ctx != NULL) {
         if (esxVI_LookupDatastoreByName(conn, ctx, preliminaryDatastoreName,
                                         NULL, &datastore,
-                                        esxVI_Occurence_OptionalItem) < 0) {
+                                        esxVI_Occurrence_OptionalItem) < 0) {
             goto failure;
         }
 

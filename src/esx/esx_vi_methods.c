@@ -1149,7 +1149,7 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    /* FIXME: Use esxVI_Occurence instead of expectList */
+    /* FIXME: Use esxVI_Occurrence instead of expectList */
     if (esxVI_Context_Execute(conn, ctx, request,
                               ESX_VI__SOAP__RESPONSE_XPATH("FindByUuid"),
                               &response, esxVI_Boolean_True) < 0) {

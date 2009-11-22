@@ -1803,7 +1803,7 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
                                  const unsigned char *uuid,
                                  esxVI_String *propertyNameList,
                                  esxVI_ObjectContent **virtualMachine,
-                                 esxVI_Occurence occurence)
+                                 esxVI_Occurrence occurrence)
 {
     int result = 0;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
@@ -1820,7 +1820,7 @@ esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
     }
 
     if (managedObjectReference == NULL) {
-        if (occurence == esxVI_Occurence_OptionalItem) {
+        if (occurrence == esxVI_Occurrence_OptionalItem) {
             return 0;
         } else {
             virUUIDFormat(uuid, uuid_string);
@@ -1870,7 +1870,7 @@ esxVI_LookupVirtualMachineByUuidAndPrepareForTask
         esxVI_LookupVirtualMachineByUuid(conn, ctx, uuid,
                                          completePropertyNameList,
                                          virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachineQuestionInfo(conn, *virtualMachine,
                                             &questionInfo) < 0 ||
         esxVI_LookupPendingTaskInfoListByVirtualMachine
@@ -1909,7 +1909,7 @@ int
 esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
                             const char *name, esxVI_String *propertyNameList,
                             esxVI_ObjectContent **datastore,
-                            esxVI_Occurence occurence)
+                            esxVI_Occurrence occurrence)
 {
     int result = 0;
     esxVI_String *completePropertyNameList = NULL;
@@ -1943,7 +1943,7 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
     }
 
     if (datastoreList == NULL) {
-        if (occurence == esxVI_Occurence_OptionalItem) {
+        if (occurrence == esxVI_Occurrence_OptionalItem) {
             goto cleanup;
         } else {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
@@ -2038,7 +2038,7 @@ esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
         }
     }
 
-    if (occurence != esxVI_Occurence_OptionalItem) {
+    if (occurrence != esxVI_Occurrence_OptionalItem) {
         if (numInaccessibleDatastores > 0) {
             ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                          "Could not find datastore '%s', maybe it's "
@@ -2196,7 +2196,7 @@ esxVI_LookupAndHandleVirtualMachineQuestion(virConnectPtr conn,
                                        "runtime.question") < 0 ||
         esxVI_LookupVirtualMachineByUuid(conn, ctx, uuid, propertyNameList,
                                          &virtualMachine,
-                                         esxVI_Occurence_RequiredItem) < 0 ||
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachineQuestionInfo(conn, virtualMachine,
                                             &questionInfo) < 0) {
         goto failure;

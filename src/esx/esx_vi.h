@@ -33,7 +33,7 @@
 
 typedef enum _esxVI_APIVersion esxVI_APIVersion;
 typedef enum _esxVI_ProductVersion esxVI_ProductVersion;
-typedef enum _esxVI_Occurence esxVI_Occurence;
+typedef enum _esxVI_Occurrence esxVI_Occurrence;
 typedef struct _esxVI_Context esxVI_Context;
 typedef struct _esxVI_Response esxVI_Response;
 typedef struct _esxVI_Enumeration esxVI_Enumeration;
@@ -58,11 +58,11 @@ enum _esxVI_ProductVersion {
     esxVI_ProductVersion_VPX40
 };
 
-enum _esxVI_Occurence {
-    esxVI_Occurence_Undefined = 0,
-    esxVI_Occurence_RequiredItem,
-    esxVI_Occurence_OptionalItem,
-    esxVI_Occurence_List
+enum _esxVI_Occurrence {
+    esxVI_Occurrence_Undefined = 0,
+    esxVI_Occurrence_RequiredItem,
+    esxVI_Occurrence_OptionalItem,
+    esxVI_Occurrence_List
 };
 
 
@@ -254,7 +254,7 @@ int esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
                                      const unsigned char *uuid,
                                      esxVI_String *propertyNameList,
                                      esxVI_ObjectContent **virtualMachine,
-                                     esxVI_Occurence occurence);
+                                     esxVI_Occurrence occurrence);
 
 int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
       (virConnectPtr conn, esxVI_Context *ctx, const unsigned char *uuid,
@@ -265,7 +265,7 @@ int esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
                                 const char *name,
                                 esxVI_String *propertyNameList,
                                 esxVI_ObjectContent **datastore,
-                                esxVI_Occurence occurence);
+                                esxVI_Occurrence occurrence);
 
 int esxVI_LookupTaskInfoByTask(virConnectPtr conn, esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *task,
