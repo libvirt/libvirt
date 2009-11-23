@@ -1,5 +1,6 @@
 ^gnulib/
 ^ChangeLog-old$
+^docs/
 ^examples/domain-events/events-c/event-test\.c$
 ^src/internal\.h$
 ^src/lxc/lxc_container\.c$
