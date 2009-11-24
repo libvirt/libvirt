@@ -2778,6 +2778,7 @@ qemuParseCommandLineDisk(virConnectPtr conn,
 
     def->bus = VIR_DOMAIN_DISK_BUS_IDE;
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+    def->type = VIR_DOMAIN_DISK_TYPE_FILE;
 
     for (i = 0 ; i < nkeywords ; i++) {
         if (STREQ(keywords[i], "file")) {
