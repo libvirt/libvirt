@@ -1071,6 +1071,7 @@ qemudActive(void) {
  */
 static int
 qemudShutdown(void) {
+    int i;
 
     if (!qemu_driver)
         return -1;
@@ -1095,6 +1096,12 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->saveImageFormat);
     VIR_FREE(qemu_driver->hugetlbfs_mount);
     VIR_FREE(qemu_driver->hugepage_path);
+
+    if (qemu_driver->cgroupDeviceACL) {
+        for (i = 0 ; qemu_driver->cgroupDeviceACL[i] != NULL ; i++)
+            VIR_FREE(qemu_driver->cgroupDeviceACL[i]);
+        VIR_FREE(qemu_driver->cgroupDeviceACL);
+    }
 
     /* Free domain callback list */
     virDomainEventCallbackListFree(qemu_driver->domainEventCallbacks);
