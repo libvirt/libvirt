@@ -5284,6 +5284,17 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    if ((driver->macFilter) && (detach->ifname != NULL)) {
+        if ((errno = networkDisallowMacOnPort(conn,
+                                              driver,
+                                              detach->ifname,
+                                              detach->mac))) {
+            virReportSystemError(conn, errno,
+             _("failed to remove ebtables rule on  '%s'"),
+                                 detach->ifname);
+        }
+    }
+
     if (vm->def->nnets > 1) {
         memmove(vm->def->nets + i,
                 vm->def->nets + i + 1,
