@@ -253,3 +253,19 @@
    fun:virtTestMain
    fun:main
 }
+{
+   cg1
+   Memcheck:Param
+   capget(data)
+   fun:capget
+   fun:capng_clear
+   fun:__virExec
+   fun:virExecWithHook
+   fun:virExec
+   fun:qemudProbeMachineTypes
+   fun:qemudCapsInitGuest
+   fun:qemudCapsInit
+   fun:qemudStartup
+   fun:virStateInitialize
+   fun:main
+}
