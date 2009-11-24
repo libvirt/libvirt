@@ -149,6 +149,7 @@ static void testDomainObjPrivateFree(void *data)
 {
     testDomainObjPrivatePtr priv = data;
 
+    VIR_FREE(priv->vcpu_infos);
     VIR_FREE(priv->cpumaps);
     VIR_FREE(priv);
 }
@@ -1163,6 +1164,7 @@ static int testClose(virConnectPtr conn)
     testDriverLock(privconn);
     virCapabilitiesFree(privconn->caps);
     virDomainObjListDeinit(&privconn->domains);
+    virNodeDeviceObjListFree(&privconn->devs);
     virNetworkObjListFree(&privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
