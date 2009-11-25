@@ -4696,12 +4696,17 @@ xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
             break;
     }
 
+cleanup:
+    sexpr_free(root);
+    return(ret);
+
 error:
     for (i = 0; i < ret; ++i)
         VIR_FREE(names[i]);
 
-    sexpr_free(root);
-    return(ret);
+    ret = -1;
+
+    goto cleanup;
 }
 
 /**
