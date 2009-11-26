@@ -693,7 +693,8 @@ cleanup:
 
 int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
                                const char *devname,
-                               const char *newmedia)
+                               const char *newmedia,
+                               const char *format ATTRIBUTE_UNUSED)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -1016,8 +1017,8 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
-                             int background,
-                             const char *unixfile)
+                                 int background,
+                                 const char *unixfile)
 {
     char *dest = NULL;
     int ret = -1;

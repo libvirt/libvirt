@@ -776,12 +776,13 @@ int qemuMonitorEjectMedia(qemuMonitorPtr mon,
 
 int qemuMonitorChangeMedia(qemuMonitorPtr mon,
                            const char *devname,
-                           const char *newmedia)
+                           const char *newmedia,
+                           const char *format)
 {
-    DEBUG("mon=%p, fd=%d devname=%s newmedia=%s",
-          mon, mon->fd, devname, newmedia);
+    DEBUG("mon=%p, fd=%d devname=%s newmedia=%s format=%s",
+          mon, mon->fd, devname, newmedia, format);
 
-    return qemuMonitorTextChangeMedia(mon, devname, newmedia);
+    return qemuMonitorTextChangeMedia(mon, devname, newmedia, format);
 }
 
 

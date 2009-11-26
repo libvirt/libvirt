@@ -62,7 +62,8 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
                               const char *devname);
 int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
                                const char *devname,
-                               const char *newmedia);
+                               const char *newmedia,
+                               const char *format);
 
 
 int qemuMonitorTextSaveVirtualMemory(qemuMonitorPtr mon,

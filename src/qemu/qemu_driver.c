@@ -4737,7 +4737,14 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (newdisk->src) {
-        ret = qemuMonitorChangeMedia(priv->mon, devname, newdisk->src);
+        const char *format = NULL;
+        if (newdisk->type != VIR_DOMAIN_DISK_TYPE_DIR) {
+            if (newdisk->driverType)
+                format = newdisk->driverType;
+            else if (origdisk->driverType)
+                format = origdisk->driverType;
+        }
+        ret = qemuMonitorChangeMedia(priv->mon, devname, newdisk->src, format);
     } else {
         ret = qemuMonitorEjectMedia(priv->mon, devname);
     }

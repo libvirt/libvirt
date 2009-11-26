@@ -136,7 +136,8 @@ int qemuMonitorEjectMedia(qemuMonitorPtr mon,
                           const char *devname);
 int qemuMonitorChangeMedia(qemuMonitorPtr mon,
                            const char *devname,
-                           const char *newmedia);
+                           const char *newmedia,
+                           const char *format);
 
 
 int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
