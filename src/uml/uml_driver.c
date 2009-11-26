@@ -65,7 +65,36 @@
 /* For storing short-lived temporary files. */
 #define TEMPDIR LOCAL_STATE_DIR "/cache/libvirt"
 
+typedef struct _umlDomainObjPrivate umlDomainObjPrivate;
+typedef umlDomainObjPrivate *umlDomainObjPrivatePtr;
+struct _umlDomainObjPrivate {
+    int monitor;
+    int monitorWatch;
+};
+
+
 static int umlShutdown(void);
+
+static void *umlDomainObjPrivateAlloc(void)
+{
+    umlDomainObjPrivatePtr priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    priv->monitor = -1;
+    priv->monitorWatch = -1;
+
+    return priv;
+}
+
+static void umlDomainObjPrivateFree(void *data)
+{
+    umlDomainObjPrivatePtr priv = data;
+
+    VIR_FREE(priv);
+}
+
 
 static void umlDriverLock(struct uml_driver *driver)
 {
@@ -382,6 +411,8 @@ umlStartup(int privileged) {
     if ((uml_driver->caps = umlCapsInit()) == NULL)
         goto out_of_memory;
 
+    uml_driver->caps->privateDataAllocFunc = umlDomainObjPrivateAlloc;
+    uml_driver->caps->privateDataFreeFunc = umlDomainObjPrivateFree;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
         VIR_ERROR0(_("cannot initialize inotify"));
@@ -606,6 +637,7 @@ static int umlOpenMonitor(virConnectPtr conn,
     struct sockaddr_un addr;
     struct stat sb;
     int retries = 0;
+    umlDomainObjPrivatePtr priv = vm->privateData;
 
     if (umlMonitorAddress(conn, driver, vm, &addr) < 0)
         return -1;
@@ -621,7 +653,7 @@ restat:
         return -1;
     }
 
-    if ((vm->monitor = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
+    if ((priv->monitor = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
         virReportSystemError(conn, errno,
                              "%s", _("cannot open socket"));
         return -1;
@@ -630,11 +662,11 @@ restat:
     memset(addr.sun_path, 0, sizeof addr.sun_path);
     sprintf(addr.sun_path + 1, "libvirt-uml-%u", vm->pid);
     VIR_DEBUG("Reply address for monitor is '%s'", addr.sun_path+1);
-    if (bind(vm->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
+    if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
         virReportSystemError(conn, errno,
                              "%s", _("cannot bind socket"));
-        close(vm->monitor);
-        vm->monitor = -1;
+        close(priv->monitor);
+        priv->monitor = -1;
         return -1;
     }
 
@@ -673,6 +705,7 @@ static int umlMonitorCommand(virConnectPtr conn,
     int retlen = 0, ret = 0;
     struct sockaddr_un addr;
     unsigned int addrlen;
+    umlDomainObjPrivatePtr priv = vm->privateData;
 
     VIR_DEBUG("Run command '%s'", cmd);
 
@@ -697,7 +730,7 @@ static int umlMonitorCommand(virConnectPtr conn,
         return -1;
     }
 
-    if (sendto(vm->monitor, &req, sizeof req, 0,
+    if (sendto(priv->monitor, &req, sizeof req, 0,
                (struct sockaddr *)&addr, sizeof addr) != (sizeof req)) {
         virReportSystemError(conn, errno,
                              _("cannot send command %s"),
@@ -707,7 +740,7 @@ static int umlMonitorCommand(virConnectPtr conn,
 
     do {
         addrlen = sizeof(addr);
-        if (recvfrom(vm->monitor, &res, sizeof res, 0,
+        if (recvfrom(priv->monitor, &res, sizeof res, 0,
                      (struct sockaddr *)&addr, &addrlen) < 0) {
             virReportSystemError(conn, errno,
                                  _("cannot read reply %s"),
@@ -781,6 +814,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     struct stat sb;
     fd_set keepfd;
     char ebuf[1024];
+    umlDomainObjPrivatePtr priv = vm->privateData;
 
     FD_ZERO(&keepfd);
 
@@ -867,7 +901,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         VIR_WARN(_("Unable to write argv to logfile: %s"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
-    vm->monitor = -1;
+    priv->monitor = -1;
 
     ret = virExecDaemonize(conn, argv, progenv, &keepfd, &pid,
                            -1, &logfd, &logfd,
@@ -900,14 +934,16 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm)
 {
     int ret;
+    umlDomainObjPrivatePtr priv = vm->privateData;
+
     if (!virDomainObjIsActive(vm))
         return;
 
     virKillProcess(vm->pid, SIGTERM);
 
-    if (vm->monitor != -1)
-        close(vm->monitor);
-    vm->monitor = -1;
+    if (priv->monitor != -1)
+        close(priv->monitor);
+    priv->monitor = -1;
 
     if ((ret = waitpid(vm->pid, NULL, 0)) != vm->pid) {
         VIR_WARN(_("Got unexpected pid %d != %d"),
@@ -917,8 +953,6 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->pid = -1;
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
-    VIR_FREE(vm->vcpupids);
-    vm->nvcpupids = 0;
 
     umlCleanupTapDevices(conn, vm);
 
