@@ -584,6 +584,7 @@ virStrerror;
 
 
 # xml.h
+virXPathBoolean;
 virXPathLong;
 virXPathNode;
 virXPathNodeSet;

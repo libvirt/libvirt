@@ -26,6 +26,9 @@
 
 #include "internal.h"
 #include "util.h"
+#include "buf.h"
+
+#include <libxml/xpath.h>
 
 typedef struct _virCapsGuestFeature virCapsGuestFeature;
 typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
@@ -117,6 +120,8 @@ struct _virCaps {
     unsigned int emulatorRequired : 1;
     void *(*privateDataAllocFunc)(void);
     void (*privateDataFreeFunc)(void *);
+    int (*privateDataXMLFormat)(virBufferPtr, void *);
+    int (*privateDataXMLParse)(xmlXPathContextPtr, void *);
 };
 
 

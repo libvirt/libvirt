@@ -79,6 +79,7 @@ char *qemuMonitorEscapeArg(const char *in);
 char *qemuMonitorEscapeShell(const char *in);
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
+                               virDomainChrDefPtr config,
                                qemuMonitorEOFNotify eofCB);
 
 int qemuMonitorClose(qemuMonitorPtr mon);

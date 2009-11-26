@@ -615,10 +615,6 @@ static void virDomainObjFree(virDomainObjPtr dom)
     virDomainDefFree(dom->def);
     virDomainDefFree(dom->newDef);
 
-    virDomainChrDefFree(dom->monitor_chr);
-
-    VIR_FREE(dom->vcpupids);
-
     if (dom->privateDataFreeFunc)
         (dom->privateDataFreeFunc)(dom->privateData);
 
@@ -675,8 +671,6 @@ static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
 
     virDomainObjLock(domain);
     domain->state = VIR_DOMAIN_SHUTOFF;
-    domain->monitorWatch = -1;
-    domain->monitor = -1;
     domain->refs = 1;
 
     VIR_DEBUG("obj=%p", domain);
@@ -3389,9 +3383,6 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     xmlNodePtr config;
     xmlNodePtr oldnode;
     virDomainObjPtr obj;
-    char *monitorpath;
-    xmlNodePtr *nodes = NULL;
-    int n, i;
 
     if (!(obj = virDomainObjNew(conn, caps)))
         return NULL;
@@ -3430,69 +3421,13 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     }
     obj->pid = (pid_t)val;
 
-    if (VIR_ALLOC(obj->monitor_chr) < 0) {
-        virReportOOMError(conn);
+    if (caps->privateDataXMLParse &&
+        ((caps->privateDataXMLParse)(ctxt, obj->privateData)) < 0)
         goto error;
-    }
-
-    if (!(monitorpath =
-          virXPathString(conn, "string(./monitor[1]/@path)", ctxt))) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("no monitor path"));
-        goto error;
-    }
-
-    tmp = virXPathString(conn, "string(./monitor[1]/@type)", ctxt);
-    if (tmp)
-        obj->monitor_chr->type = virDomainChrTypeFromString(tmp);
-    else
-        obj->monitor_chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
-    VIR_FREE(tmp);
-
-    switch (obj->monitor_chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        obj->monitor_chr->data.file.path = monitorpath;
-        break;
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        obj->monitor_chr->data.nix.path = monitorpath;
-        break;
-    default:
-        VIR_FREE(monitorpath);
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("unsupported monitor type '%s'"),
-                             virDomainChrTypeToString(obj->monitor_chr->type));
-        break;
-    }
-
-    n = virXPathNodeSet(conn, "./vcpus/vcpu", ctxt, &nodes);
-    if (n < 0)
-        goto error;
-    if (n) {
-        obj->nvcpupids = n;
-        if (VIR_REALLOC_N(obj->vcpupids, obj->nvcpupids) < 0) {
-            virReportOOMError(conn);
-            goto error;
-        }
-
-        for (i = 0 ; i < n ; i++) {
-            char *pidstr = virXMLPropString(nodes[i], "pid");
-            if (!pidstr)
-                goto error;
-
-            if (virStrToLong_i(pidstr, NULL, 10, &(obj->vcpupids[i])) < 0) {
-                VIR_FREE(pidstr);
-                goto error;
-            }
-            VIR_FREE(pidstr);
-        }
-        VIR_FREE(nodes);
-    }
 
     return obj;
 
 error:
-    VIR_FREE(nodes);
-    virDomainChrDefFree(obj->monitor_chr);
     virDomainObjUnref(obj);
     return NULL;
 }
@@ -4858,43 +4793,20 @@ char *virDomainDefFormat(virConnectPtr conn,
 }
 
 char *virDomainObjFormat(virConnectPtr conn,
+                         virCapsPtr caps,
                          virDomainObjPtr obj,
                          int flags)
 {
     char *config_xml = NULL, *xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *monitorpath;
 
     virBufferVSprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
                       virDomainStateTypeToString(obj->state),
                       obj->pid);
 
-    /* obj->monitor_chr is set only for qemu */
-    if (obj->monitor_chr) {
-        switch (obj->monitor_chr->type) {
-        case VIR_DOMAIN_CHR_TYPE_UNIX:
-            monitorpath = obj->monitor_chr->data.nix.path;
-            break;
-        default:
-        case VIR_DOMAIN_CHR_TYPE_PTY:
-            monitorpath = obj->monitor_chr->data.file.path;
-            break;
-        }
-
-        virBufferEscapeString(&buf, "  <monitor path='%s'", monitorpath);
-        virBufferVSprintf(&buf, " type='%s'/>\n",
-                          virDomainChrTypeToString(obj->monitor_chr->type));
-    }
-
-
-    if (obj->nvcpupids) {
-        int i;
-        virBufferAddLit(&buf, "  <vcpus>\n");
-        for (i = 0 ; i < obj->nvcpupids ; i++) {
-            virBufferVSprintf(&buf, "    <vcpu pid='%d'/>\n", obj->vcpupids[i]);
-        }
-        virBufferAddLit(&buf, "  </vcpus>\n");
-    }
+    if (caps->privateDataXMLFormat &&
+        ((caps->privateDataXMLFormat)(&buf, obj->privateData)) < 0)
+        goto error;
 
     if (!(config_xml = virDomainDefFormat(conn,
                                           obj->def,
@@ -4994,6 +4906,7 @@ cleanup:
 }
 
 int virDomainSaveStatus(virConnectPtr conn,
+                        virCapsPtr caps,
                         const char *statusDir,
                         virDomainObjPtr obj)
 {
@@ -5001,7 +4914,7 @@ int virDomainSaveStatus(virConnectPtr conn,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainObjFormat(conn, obj, flags)))
+    if (!(xml = virDomainObjFormat(conn, caps, obj, flags)))
         goto cleanup;
 
     if (virDomainSaveXML(conn, statusDir, obj->def, xml))

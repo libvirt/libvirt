@@ -527,6 +527,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
 qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
+                virDomainChrDefPtr config,
                 qemuMonitorEOFNotify eofCB)
 {
     qemuMonitorPtr mon;
@@ -555,20 +556,20 @@ qemuMonitorOpen(virDomainObjPtr vm,
     mon->eofCB = eofCB;
     qemuMonitorLock(mon);
 
-    switch (vm->monitor_chr->type) {
+    switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         mon->hasSendFD = 1;
-        mon->fd = qemuMonitorOpenUnix(vm->monitor_chr->data.nix.path);
+        mon->fd = qemuMonitorOpenUnix(config->data.nix.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        mon->fd = qemuMonitorOpenPty(vm->monitor_chr->data.file.path);
+        mon->fd = qemuMonitorOpenPty(config->data.file.path);
         break;
 
     default:
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unable to handle monitor type: %s"),
-                         virDomainChrTypeToString(vm->monitor_chr->type));
+                         virDomainChrTypeToString(config->type));
         goto cleanup;
     }
 

@@ -2300,7 +2300,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -2365,7 +2365,7 @@ static int lxcDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
-    if (virDomainSaveStatus(dom->conn, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 

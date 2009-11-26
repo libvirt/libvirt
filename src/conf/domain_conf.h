@@ -644,14 +644,8 @@ struct _virDomainObj {
     virMutex lock;
     int refs;
 
-    int monitor;
-    virDomainChrDefPtr monitor_chr;
-    int monitorWatch;
     int pid;
     int state;
-
-    int nvcpupids;
-    int *vcpupids;
 
     unsigned int autostart : 1;
     unsigned int persistent : 1;
@@ -744,6 +738,7 @@ char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,
                          int flags);
 char *virDomainObjFormat(virConnectPtr conn,
+                         virCapsPtr caps,
                          virDomainObjPtr obj,
                          int flags);
 
@@ -770,6 +765,7 @@ int virDomainSaveConfig(virConnectPtr conn,
                         const char *configDir,
                         virDomainDefPtr def);
 int virDomainSaveStatus(virConnectPtr conn,
+                        virCapsPtr caps,
                         const char *statusDir,
                         virDomainObjPtr obj);
 
