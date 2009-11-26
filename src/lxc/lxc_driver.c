@@ -53,6 +53,14 @@
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
+typedef struct _lxcDomainObjPrivate lxcDomainObjPrivate;
+typedef lxcDomainObjPrivate *lxcDomainObjPrivatePtr;
+struct _lxcDomainObjPrivate {
+    int monitor;
+    int monitorWatch;
+};
+
+
 static int lxcStartup(int privileged);
 static int lxcShutdown(void);
 static lxc_driver_t *lxc_driver = NULL;
@@ -67,6 +75,27 @@ static void lxcDriverUnlock(lxc_driver_t *driver)
 {
     virMutexUnlock(&driver->lock);
 }
+
+static void *lxcDomainObjPrivateAlloc(void)
+{
+    lxcDomainObjPrivatePtr priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    priv->monitor = -1;
+    priv->monitorWatch = -1;
+
+    return priv;
+}
+
+static void lxcDomainObjPrivateFree(void *data)
+{
+    lxcDomainObjPrivatePtr priv = data;
+
+    VIR_FREE(priv);
+}
+
 
 static void lxcDomainEventFlush(int timer, void *opaque);
 static void lxcDomainEventQueue(lxc_driver_t *driver,
@@ -671,6 +700,7 @@ static int lxcVmCleanup(virConnectPtr conn,
     int childStatus = -1;
     virCgroupPtr cgroup;
     int i;
+    lxcDomainObjPrivatePtr priv = vm->privateData;
 
     while (((waitRc = waitpid(vm->pid, &childStatus, 0)) == -1) &&
            errno == EINTR)
@@ -689,8 +719,8 @@ static int lxcVmCleanup(virConnectPtr conn,
         DEBUG("container exited with rc: %d", rc);
     }
 
-    virEventRemoveHandle(vm->monitorWatch);
-    close(vm->monitor);
+    virEventRemoveHandle(priv->monitorWatch);
+    close(priv->monitor);
 
     virFileDeletePid(driver->stateDir, vm->def->name);
     virDomainDeleteConfig(conn, driver->stateDir, NULL, vm);
@@ -698,7 +728,8 @@ static int lxcVmCleanup(virConnectPtr conn,
     vm->state = VIR_DOMAIN_SHUTOFF;
     vm->pid = -1;
     vm->def->id = -1;
-    vm->monitor = -1;
+    priv->monitor = -1;
+    priv->monitorWatch = -1;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         vethInterfaceUpOrDown(vm->def->nets[i]->ifname, 0);
@@ -919,12 +950,15 @@ static void lxcMonitorEvent(int watch,
     lxc_driver_t *driver = lxc_driver;
     virDomainObjPtr vm = data;
     virDomainEventPtr event = NULL;
+    lxcDomainObjPrivatePtr priv;
 
     lxcDriverLock(driver);
     virDomainObjLock(vm);
     lxcDriverUnlock(driver);
 
-    if (vm->monitor != fd || vm->monitorWatch != watch) {
+    priv = vm->privateData;
+
+    if (priv->monitor != fd || priv->monitorWatch != watch) {
         virEventRemoveHandle(watch);
         goto cleanup;
     }
@@ -1157,6 +1191,7 @@ static int lxcVmStart(virConnectPtr conn,
     int logfd = -1;
     unsigned int nveths = 0;
     char **veths = NULL;
+    lxcDomainObjPrivatePtr priv = vm->privateData;
 
     if ((r = virFileMakePath(driver->logDir)) < 0) {
         virReportSystemError(conn, r,
@@ -1209,7 +1244,7 @@ static int lxcVmStart(virConnectPtr conn,
     /* Connect to the controller as a client *first* because
      * this will block until the child has written their
      * pid file out to disk */
-    if ((vm->monitor = lxcMonitorClient(conn, driver, vm)) < 0)
+    if ((priv->monitor = lxcMonitorClient(conn, driver, vm)) < 0)
         goto cleanup;
 
     /* And get its pid */
@@ -1223,8 +1258,8 @@ static int lxcVmStart(virConnectPtr conn,
     vm->def->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
 
-    if ((vm->monitorWatch = virEventAddHandle(
-             vm->monitor,
+    if ((priv->monitorWatch = virEventAddHandle(
+             priv->monitor,
              VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
              lxcMonitorEvent,
              vm, NULL)) < 0) {
@@ -1240,9 +1275,9 @@ cleanup:
             vethDelete(veths[i]);
         VIR_FREE(veths[i]);
     }
-    if (rc != 0 && vm->monitor != -1) {
-        close(vm->monitor);
-        vm->monitor = -1;
+    if (rc != 0 && priv->monitor != -1) {
+        close(priv->monitor);
+        priv->monitor = -1;
     }
     if (parentTty != -1)
         close(parentTty);
@@ -1610,16 +1645,19 @@ lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
     lxc_driver_t *driver = opaque;
     char *config = NULL;
     virDomainDefPtr tmp;
+    lxcDomainObjPrivatePtr priv;
 
     virDomainObjLock(vm);
-    if ((vm->monitor = lxcMonitorClient(NULL, driver, vm)) < 0) {
+
+    priv = vm->privateData;
+    if ((priv->monitor = lxcMonitorClient(NULL, driver, vm)) < 0) {
         goto cleanup;
     }
 
     /* Read pid from controller */
     if ((virFileReadPid(lxc_driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        close(vm->monitor);
-        vm->monitor = -1;
+        close(priv->monitor);
+        priv->monitor = -1;
         goto cleanup;
     }
 
@@ -1639,10 +1677,19 @@ lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
     if (vm->pid != 0) {
         vm->def->id = vm->pid;
         vm->state = VIR_DOMAIN_RUNNING;
+
+        if ((priv->monitorWatch = virEventAddHandle(
+                 priv->monitor,
+                 VIR_EVENT_HANDLE_ERROR | VIR_EVENT_HANDLE_HANGUP,
+                 lxcMonitorEvent,
+                 vm, NULL)) < 0) {
+            lxcVmTerminate(NULL, driver, vm, 0);
+            goto cleanup;
+        }
     } else {
         vm->def->id = -1;
-        close(vm->monitor);
-        vm->monitor = -1;
+        close(priv->monitor);
+        priv->monitor = -1;
     }
 
 cleanup:
@@ -1714,6 +1761,9 @@ static int lxcStartup(int privileged)
 
     if ((lxc_driver->caps = lxcCapsInit()) == NULL)
         goto cleanup;
+
+    lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
+    lxc_driver->caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
 
     if (virDomainLoadAllConfigs(NULL,
                                 lxc_driver->caps,
