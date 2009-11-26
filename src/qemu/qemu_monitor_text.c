@@ -1038,7 +1038,7 @@ int qemuMonitorTextMigrateCancel(qemuMonitorPtr mon)
 {
     char *info = NULL;
 
-    if (qemuMonitorCommand(mon, "migrate cancel", &info) < 0) {
+    if (qemuMonitorCommand(mon, "migrate_cancel", &info) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("cannot run monitor command to cancel migration"));
         return -1;
