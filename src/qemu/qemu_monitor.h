@@ -78,10 +78,13 @@ typedef int (*qemuMonitorDiskSecretLookup)(qemuMonitorPtr mon,
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                qemuMonitorEOFNotify eofCB);
 
-void qemuMonitorClose(qemuMonitorPtr mon);
+int qemuMonitorClose(qemuMonitorPtr mon);
 
 void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
+
+int qemuMonitorRef(qemuMonitorPtr mon);
+int qemuMonitorUnref(qemuMonitorPtr mon);
 
 void qemuMonitorRegisterDiskSecretLookup(qemuMonitorPtr mon,
                                          qemuMonitorDiskSecretLookup secretCB);

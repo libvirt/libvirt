@@ -42,7 +42,7 @@ struct _qemuMonitor {
     virMutex lock;
     virCond notify;
 
-    virDomainObjPtr dom;
+    int refs;
 
     int fd;
     int watch;
@@ -67,11 +67,13 @@ struct _qemuMonitor {
      * the next monitor msg */
     int lastErrno;
 
-    /* If the monitor callback is currently active */
+    /* If the monitor EOF callback is currently active (stops more commands being run) */
     unsigned eofcb: 1;
-    /* If the monitor callback should free the closed monitor */
+    /* If the monitor is in process of shutting down */
     unsigned closed: 1;
+
 };
+
 
 void qemuMonitorLock(qemuMonitorPtr mon)
 {
@@ -84,19 +86,32 @@ void qemuMonitorUnlock(qemuMonitorPtr mon)
 }
 
 
-static void qemuMonitorFree(qemuMonitorPtr mon, int lockDomain)
+static void qemuMonitorFree(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("mon=%p, lockDomain=%d", mon, lockDomain);
-    if (mon->vm) {
-        if (lockDomain)
-            virDomainObjLock(mon->vm);
-        if (!virDomainObjUnref(mon->vm) && lockDomain)
-            virDomainObjUnlock(mon->vm);
-    }
+    VIR_DEBUG("mon=%p", mon);
     if (virCondDestroy(&mon->notify) < 0)
     {}
     virMutexDestroy(&mon->lock);
     VIR_FREE(mon);
+}
+
+int qemuMonitorRef(qemuMonitorPtr mon)
+{
+    mon->refs++;
+    return mon->refs;
+}
+
+int qemuMonitorUnref(qemuMonitorPtr mon)
+{
+    mon->refs--;
+
+    if (mon->refs == 0) {
+        qemuMonitorUnlock(mon);
+        qemuMonitorFree(mon);
+        return 0;
+    }
+
+    return mon->refs;
 }
 
 
@@ -348,6 +363,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
     int quit = 0, failed = 0;
 
     qemuMonitorLock(mon);
+    qemuMonitorRef(mon);
     VIR_DEBUG("Monitor %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
 
     if (mon->fd != fd || mon->watch != watch) {
@@ -407,23 +423,17 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
      * but is this safe ?  I think it is, because the callback
      * will try to acquire the virDomainObjPtr mutex next */
     if (failed || quit) {
+        qemuMonitorEOFNotify eofCB = mon->eofCB;
+        virDomainObjPtr vm = mon->vm;
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
-        mon->eofcb = 1;
-        qemuMonitorUnlock(mon);
+        if (qemuMonitorUnref(mon) > 0)
+            qemuMonitorUnlock(mon);
         VIR_DEBUG("Triggering EOF callback error? %d", failed);
-        mon->eofCB(mon, mon->vm, failed);
-
-        qemuMonitorLock(mon);
-        if (mon->closed) {
-            qemuMonitorUnlock(mon);
-            VIR_DEBUG("Delayed free of monitor %p", mon);
-            qemuMonitorFree(mon, 1);
-        } else {
-            qemuMonitorUnlock(mon);
-        }
+        (eofCB)(mon, vm, failed);
     } else {
-        qemuMonitorUnlock(mon);
+        if (qemuMonitorUnref(mon) > 0)
+            qemuMonitorUnlock(mon);
     }
 }
 
@@ -453,10 +463,10 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
     mon->fd = -1;
+    mon->refs = 1;
     mon->vm = vm;
     mon->eofCB = eofCB;
     qemuMonitorLock(mon);
-    virDomainObjRef(vm);
 
     switch (vm->monitor_chr->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -512,10 +522,14 @@ cleanup:
 }
 
 
-void qemuMonitorClose(qemuMonitorPtr mon)
+int qemuMonitorClose(qemuMonitorPtr mon)
 {
+    int refs;
+
     if (!mon)
-        return;
+        return 0;
+
+    VIR_DEBUG("mon=%p", mon);
 
     qemuMonitorLock(mon);
     if (!mon->closed) {
@@ -523,18 +537,17 @@ void qemuMonitorClose(qemuMonitorPtr mon)
             virEventRemoveHandle(mon->watch);
         if (mon->fd != -1)
             close(mon->fd);
-        /* NB: don't reset  fd / watch fields, since active
-         * callback may still want them */
+        /* NB: ordinarily one might immediately set mon->watch to -1
+         * and mon->fd to -1, but there may be a callback active
+         * that is still relying on these fields being valid. So
+         * we merely close them, but not clear their values and
+         * use this explicit 'closed' flag to track this state */
         mon->closed = 1;
     }
 
-    if (mon->eofcb) {
-        VIR_DEBUG("Mark monitor to be deleted %p", mon);
+    if ((refs = qemuMonitorUnref(mon)) > 0)
         qemuMonitorUnlock(mon);
-    } else {
-        VIR_DEBUG("Delete monitor now %p", mon);
-        qemuMonitorFree(mon, 0);
-    }
+    return refs;
 }
 
 
@@ -552,7 +565,6 @@ int qemuMonitorSend(qemuMonitorPtr mon,
 
     if (mon->eofcb) {
         msg->lastErrno = EIO;
-        qemuMonitorUnlock(mon);
         return -1;
     }
 

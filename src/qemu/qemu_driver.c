@@ -272,6 +272,7 @@ static void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     qemuMonitorLock(priv->mon);
+    qemuMonitorRef(priv->mon);
     virDomainObjUnlock(obj);
 }
 
@@ -283,9 +284,19 @@ static void qemuDomainObjEnterMonitor(virDomainObjPtr obj)
 static void qemuDomainObjExitMonitor(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
 
-    qemuMonitorUnlock(priv->mon);
+    refs = qemuMonitorUnref(priv->mon);
+
+    if (refs > 0)
+        qemuMonitorUnlock(priv->mon);
+
     virDomainObjLock(obj);
+
+    if (refs == 0) {
+        virDomainObjUnref(obj);
+        priv->mon = NULL;
+    }
 }
 
 
@@ -302,6 +313,7 @@ static void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver, vir
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     qemuMonitorLock(priv->mon);
+    qemuMonitorRef(priv->mon);
     virDomainObjUnlock(obj);
     qemuDriverUnlock(driver);
 }
@@ -315,10 +327,20 @@ static void qemuDomainObjEnterMonitorWithDriver(struct qemud_driver *driver, vir
 static void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    int refs;
 
-    qemuMonitorUnlock(priv->mon);
+    refs = qemuMonitorUnref(priv->mon);
+
+    if (refs > 0)
+        qemuMonitorUnlock(priv->mon);
+
     qemuDriverLock(driver);
     virDomainObjLock(obj);
+
+    if (refs == 0) {
+        virDomainObjUnref(obj);
+        priv->mon = NULL;
+    }
 }
 
 
@@ -652,6 +674,10 @@ static int
 qemuConnectMonitor(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted while the monitor is active */
+    virDomainObjRef(vm);
 
     if ((priv->mon = qemuMonitorOpen(vm, qemuHandleMonitorEOF)) == NULL) {
         VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
@@ -2400,8 +2426,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
                              _("Failed to send SIGTERM to %s (%d)"),
                              vm->def->name, vm->pid);
 
-    if (priv->mon) {
-        qemuMonitorClose(priv->mon);
+    if (priv->mon &&
+        qemuMonitorClose(priv->mon) == 0) {
+        virDomainObjUnref(vm);
         priv->mon = NULL;
     }
 
