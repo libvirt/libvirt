@@ -1389,13 +1389,10 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
 }
 
 static int
-qemudInitCpus(virConnectPtr conn,
-              struct qemud_driver *driver,
-              virDomainObjPtr vm,
-              const char *migrateFrom) {
+qemudInitCpuAffinity(virConnectPtr conn,
+                     virDomainObjPtr vm) {
     int i, hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
     virNodeInfo nodeinfo;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned char *cpumap;
     int cpumaplen;
 
@@ -1439,20 +1436,6 @@ qemudInitCpus(virConnectPtr conn,
         }
     }
     VIR_FREE(cpumap);
-
-    /* XXX This resume doesn't really belong here. Move it up to caller */
-    if (migrateFrom == NULL) {
-        /* Allow the CPUS to start executing */
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
-            if (virGetLastError() == NULL)
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("resume operation failed"));
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            return -1;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-    }
 
     return 0;
 }
@@ -2343,7 +2326,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuDetectVcpuPIDs(conn, driver, vm) < 0)
         goto abort;
 
-    if (qemudInitCpus(conn, driver, vm, migrateFrom) < 0)
+    if (qemudInitCpuAffinity(conn, vm) < 0)
         goto abort;
 
     if (qemuInitPasswords(driver, vm) < 0)
@@ -2354,7 +2337,19 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto abort;
     }
+
+    if (migrateFrom == NULL) {
+        /* Allow the CPUS to start executing */
+        if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
+            if (virGetLastError() == NULL)
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("resume operation failed"));
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto abort;
+        }
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
 
     if (virDomainSaveStatus(conn, driver->stateDir, vm) < 0)
         goto abort;
