@@ -49,9 +49,17 @@ test -f src/libvirt.c || {
 	exit 1
 }
 
-if test -z "$*"; then
+
+EXTRA_ARGS=
+if test "x$1" = "x--system"; then
+    shift
+    EXTRA_ARGS="--prefix=/usr --sysconfdir=/etc --localstatedir=/var"
+    echo "Running ./configure with $EXTRA_ARGS $@"
+else
+    if test -z "$*"; then
 	echo "I am going to run ./configure with no arguments - if you wish "
         echo "to pass any to it, please specify them on the $0 command line."
+    fi
 fi
 
 # Ensure that whenever we pull in a gnulib update or otherwise change to a
@@ -77,7 +85,7 @@ if test x$OBJ_DIR != x; then
     cd "$OBJ_DIR"
 fi
 
-$srcdir/configure "$@" && {
+$srcdir/configure $EXTRA_ARGS "$@" && {
     echo
     echo "Now type 'make' to compile libvirt."
 }
