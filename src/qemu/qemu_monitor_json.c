@@ -45,8 +45,51 @@
 
 #define LINE_ENDING "\r\n"
 
+static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data);
+
+struct {
+    const char *type;
+    void (*handler)(qemuMonitorPtr mon, virJSONValuePtr data);
+} eventHandlers[] = {
+    { "SHUTDOWN", qemuMonitorJSONHandleShutdown, },
+    { "RESET", qemuMonitorJSONHandleReset, },
+    { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
+    { "STOP", qemuMonitorJSONHandleStop, },
+};
+
+
 static int
-qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
+                              virJSONValuePtr obj)
+{
+    char *type;
+    int i;
+    VIR_DEBUG("mon=%p obj=%p", mon, obj);
+
+    type = virJSONValueObjectGetString(obj, "event");
+    if (!type) {
+        VIR_WARN0("missing event type in message");
+        errno = EINVAL;
+        return -1;
+    }
+
+    for (i = 0 ; i < ARRAY_CARDINALITY(eventHandlers) ; i++) {
+        if (STREQ(eventHandlers[i].type, type)) {
+            virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
+            VIR_DEBUG("handle %s handler=%p data=%p", type,
+                      eventHandlers[i].handler, data);
+            (eventHandlers[i].handler)(mon, data);
+            break;
+        }
+    }
+    return 0;
+}
+
+static int
+qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                              const char *line,
                              qemuMonitorMessagePtr msg)
 {
@@ -73,8 +116,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     if (virJSONValueObjectHasKey(obj, "event") == 1) {
-        VIR_DEBUG0("Got an event");
-        ret = 0;
+        ret = qemuMonitorJSONIOProcessEvent(mon, obj);
         goto cleanup;
     }
 
@@ -410,6 +452,27 @@ error:
     virJSONValueFree(jargs);
     va_end(args);
     return NULL;
+}
+
+
+static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitShutdown(mon);
+}
+
+static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitReset(mon);
+}
+
+static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitPowerdown(mon);
+}
+
+static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+{
+    qemuMonitorEmitStop(mon);
 }
 
 
