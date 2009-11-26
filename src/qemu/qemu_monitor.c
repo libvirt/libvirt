@@ -703,6 +703,66 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorEmitShutdown(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainShutdown)
+        ret = mon->cb->domainShutdown(mon, mon->vm);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
+int qemuMonitorEmitReset(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainReset)
+        ret = mon->cb->domainReset(mon, mon->vm);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
+int qemuMonitorEmitPowerdown(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainPowerdown)
+        ret = mon->cb->domainPowerdown(mon, mon->vm);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
+int qemuMonitorEmitStop(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainStop)
+        ret = mon->cb->domainStop(mon, mon->vm);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
 int
 qemuMonitorStartCPUs(qemuMonitorPtr mon,
                      virConnectPtr conn)

@@ -76,6 +76,15 @@ struct _qemuMonitorCallbacks {
                             const char *path,
                             char **secret,
                             size_t *secretLen);
+
+    int (*domainShutdown)(qemuMonitorPtr mon,
+                          virDomainObjPtr vm);
+    int (*domainReset)(qemuMonitorPtr mon,
+                       virDomainObjPtr vm);
+    int (*domainPowerdown)(qemuMonitorPtr mon,
+                           virDomainObjPtr vm);
+    int (*domainStop)(qemuMonitorPtr mon,
+                      virDomainObjPtr vm);
 };
 
 
@@ -106,6 +115,10 @@ int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
                              char **secret,
                              size_t *secretLen);
 
+int qemuMonitorEmitShutdown(qemuMonitorPtr mon);
+int qemuMonitorEmitReset(qemuMonitorPtr mon);
+int qemuMonitorEmitPowerdown(qemuMonitorPtr mon);
+int qemuMonitorEmitStop(qemuMonitorPtr mon);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);
