@@ -51,88 +51,6 @@ typedef int qemuMonitorExtraPromptHandler(qemuMonitorPtr mon,
                                           void *data);
 
 
-static char *qemuMonitorEscape(const char *in, int shell)
-{
-    int len = 0;
-    int i, j;
-    char *out;
-
-    /* To pass through the QEMU monitor, we need to use escape
-       sequences: \r, \n, \", \\
-
-       To pass through both QEMU + the shell, we need to escape
-       the single character ' as the five characters '\\''
-    */
-
-    for (i = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\r':
-        case '\n':
-        case '"':
-        case '\\':
-            len += 2;
-            break;
-        case '\'':
-            if (shell)
-                len += 5;
-            else
-                len += 1;
-            break;
-        default:
-            len += 1;
-            break;
-        }
-    }
-
-    if (VIR_ALLOC_N(out, len + 1) < 0)
-        return NULL;
-
-    for (i = j = 0; in[i] != '\0'; i++) {
-        switch(in[i]) {
-        case '\r':
-            out[j++] = '\\';
-            out[j++] = 'r';
-            break;
-        case '\n':
-            out[j++] = '\\';
-            out[j++] = 'n';
-            break;
-        case '"':
-        case '\\':
-            out[j++] = '\\';
-            out[j++] = in[i];
-            break;
-        case '\'':
-            if (shell) {
-                out[j++] = '\'';
-                out[j++] = '\\';
-                out[j++] = '\\';
-                out[j++] = '\'';
-                out[j++] = '\'';
-            } else {
-                out[j++] = in[i];
-            }
-            break;
-        default:
-            out[j++] = in[i];
-            break;
-        }
-    }
-    out[j] = '\0';
-
-    return out;
-}
-
-static char *qemuMonitorEscapeArg(const char *in)
-{
-    return qemuMonitorEscape(in, 0);
-}
-
-static char *qemuMonitorEscapeShell(const char *in)
-{
-    return qemuMonitorEscape(in, 1);
-}
-
 /* When connecting to a monitor, QEMU will print a greeting like
  *
  * QEMU 0.11.0 monitor - type 'help' for more information
@@ -903,11 +821,6 @@ cleanup:
 #define MIGRATION_TRANSFER_PREFIX "transferred ram: "
 #define MIGRATION_REMAINING_PREFIX "remaining ram: "
 #define MIGRATION_TOTAL_PREFIX "total ram: "
-
-VIR_ENUM_DECL(qemuMonitorMigrationStatus)
-VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
-              QEMU_MONITOR_MIGRATION_STATUS_LAST,
-              "inactive", "active", "completed", "failed", "cancelled")
 
 int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                                       int *status,

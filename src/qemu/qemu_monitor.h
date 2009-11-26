@@ -75,6 +75,9 @@ typedef int (*qemuMonitorDiskSecretLookup)(qemuMonitorPtr mon,
                                            char **secret,
                                            size_t *secretLen);
 
+char *qemuMonitorEscapeArg(const char *in);
+char *qemuMonitorEscapeShell(const char *in);
+
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                qemuMonitorEOFNotify eofCB);
 
@@ -157,6 +160,8 @@ enum {
 
     QEMU_MONITOR_MIGRATION_STATUS_LAST
 };
+
+VIR_ENUM_DECL(qemuMonitorMigrationStatus)
 
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
                                   int *status,
