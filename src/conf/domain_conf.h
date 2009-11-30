@@ -64,6 +64,32 @@ enum virDomainVirtType {
     VIR_DOMAIN_VIRT_LAST,
 };
 
+enum virDomainDeviceAddressType {
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
+
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
+};
+
+typedef struct _virDomainDevicePCIAddress virDomainDevicePCIAddress;
+typedef virDomainDevicePCIAddress *virDomainDevicePCIAddressPtr;
+struct _virDomainDevicePCIAddress {
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int slot;
+    unsigned int function;
+};
+
+typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
+typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
+struct _virDomainDeviceInfo {
+    int type;
+    union {
+        virDomainDevicePCIAddress pci;
+    } addr;
+};
+
+
 /* Two types of disk backends */
 enum virDomainDiskType {
     VIR_DOMAIN_DISK_TYPE_BLOCK,
@@ -119,19 +145,9 @@ struct _virDomainDiskDef {
     int cachemode;
     unsigned int readonly : 1;
     unsigned int shared : 1;
-    struct {
-        unsigned domain;
-        unsigned bus;
-        unsigned slot;
-    } pci_addr;
+    virDomainDeviceInfo info;
     virStorageEncryptionPtr encryption;
 };
-
-static inline int
-virDiskHasValidPciAddr(virDomainDiskDefPtr def)
-{
-    return def->pci_addr.domain || def->pci_addr.bus || def->pci_addr.slot;
-}
 
 
 /* Two types of disk backends */
@@ -199,21 +215,14 @@ struct _virDomainNetDef {
         } internal;
     } data;
     char *ifname;
+    virDomainDeviceInfo info;
+    /* XXX figure out how to remove this */
     char *nic_name;
+    /* XXX figure out how to remove this */
     char *hostnet_name;
-    struct {
-        unsigned domain;
-        unsigned bus;
-        unsigned slot;
-    } pci_addr;
+    /* XXX figure out how to remove this */
     int vlan;
 };
-
-static inline int
-virNetHasValidPciAddr(virDomainNetDefPtr def)
-{
-    return def->pci_addr.domain || def->pci_addr.bus || def->pci_addr.slot;
-}
 
 enum virDomainChrTargetType {
     VIR_DOMAIN_CHR_TARGET_TYPE_NULL = 0,
@@ -442,17 +451,7 @@ struct _virDomainHostdevDef {
                     unsigned vendor;
                     unsigned product;
                 } usb;
-                struct {
-                     unsigned domain;
-                     unsigned bus;
-                     unsigned slot;
-                     unsigned function;
-                    struct {
-                        unsigned domain;
-                        unsigned bus;
-                        unsigned slot;
-                    } guest_addr;
-                } pci;
+                virDomainDevicePCIAddress pci; /* host address */
             } u;
         } subsys;
         struct {
@@ -463,15 +462,8 @@ struct _virDomainHostdevDef {
         } caps;
     } source;
     char* target;
+    virDomainDeviceInfo info; /* Guest address */
 };
-
-static inline int
-virHostdevHasValidGuestAddr(virDomainHostdevDefPtr def)
-{
-    return def->source.subsys.u.pci.guest_addr.domain ||
-           def->source.subsys.u.pci.guest_addr.bus ||
-           def->source.subsys.u.pci.guest_addr.slot;
-}
 
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
@@ -673,6 +665,7 @@ virDomainObjIsActive(virDomainObjPtr dom)
     return dom->def->id != -1;
 }
 
+
 int virDomainObjListInit(virDomainObjListPtr objs);
 void virDomainObjListDeinit(virDomainObjListPtr objs);
 
@@ -695,6 +688,13 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
+int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
+                                   virDomainDevicePCIAddressPtr b);
+int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+                                  int type);
+int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
+int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info);
+void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjRef(virDomainObjPtr vm);
 /* Returns 1 if the object was freed, 0 if more refs exist */
@@ -832,6 +832,8 @@ VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainDevice)
+VIR_ENUM_DECL(virDomainDeviceAddress)
+VIR_ENUM_DECL(virDomainDeviceAddressMode)
 VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)

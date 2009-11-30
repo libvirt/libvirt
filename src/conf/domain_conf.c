@@ -88,6 +88,10 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "hostdev",
               "watchdog")
 
+VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
+              "none",
+              "pci")
+
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
               "file",
@@ -357,6 +361,7 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->driverName);
     VIR_FREE(def->driverType);
     virStorageEncryptionFree(def->encryption);
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
 }
@@ -408,8 +413,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     }
 
     VIR_FREE(def->ifname);
-    VIR_FREE(def->nic_name);
     VIR_FREE(def->hostnet_name);
+
+    virDomainDeviceInfoClear(&def->info);
+
     VIR_FREE(def);
 }
 
@@ -483,6 +490,7 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
         return;
 
     VIR_FREE(def->target);
+    virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
 }
 
@@ -731,6 +739,220 @@ void virDomainRemoveInactive(virDomainObjListPtr doms,
 }
 
 
+int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+                                  int type)
+{
+    if (info->type != type)
+        return 0;
+
+    switch (info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        return virDomainDevicePCIAddressIsValid(&info->addr.pci);
+    }
+
+    return 0;
+}
+
+
+int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr)
+{
+    return addr->domain || addr->bus || addr->slot;
+}
+
+
+int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info)
+{
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        return 1;
+    return 0;
+}
+
+
+void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
+{
+    memset(&info->addr, 0, sizeof(info->addr));
+    info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+}
+
+
+/* Generate a string representation of a device address
+ * @param address Device address to stringify
+ */
+static int virDomainDeviceInfoFormat(virBufferPtr buf,
+                                     virDomainDeviceInfoPtr info)
+{
+    if (!info) {
+        virDomainReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("missing device information"));
+        return -1;
+    }
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        return 0;
+
+    /* We'll be in domain/devices/[device type]/ so 3 level indent */
+    virBufferVSprintf(buf, "      <address type='%s'",
+                      virDomainDeviceAddressTypeToString(info->type));
+
+    switch (info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        virBufferVSprintf(buf, " domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'",
+                          info->addr.pci.domain,
+                          info->addr.pci.bus,
+                          info->addr.pci.slot,
+                          info->addr.pci.function);
+        break;
+
+    default:
+        virDomainReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("unknown address type '%d'"), info->type);
+        return -1;
+    }
+
+    virBufferAddLit(buf, "/>\n");
+
+    return 0;
+}
+
+
+int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
+                                   virDomainDevicePCIAddressPtr b)
+{
+    if (a->domain == b->domain &&
+        a->bus    == b->bus &&
+        a->slot   == b->slot &&
+        a->function == b->function)
+        return 1;
+
+    return 0;
+}
+
+
+static int
+virDomainDevicePCIAddressParseXML(virConnectPtr conn,
+                                  xmlNodePtr node,
+                                  virDomainDevicePCIAddressPtr addr)
+{
+    char *domain, *slot, *bus, *function;
+    int ret = -1;
+
+    memset(addr, 0, sizeof(*addr));
+
+    domain   = virXMLPropString(node, "domain");
+    bus      = virXMLPropString(node, "bus");
+    slot     = virXMLPropString(node, "slot");
+    function = virXMLPropString(node, "function");
+
+    if (domain &&
+        virStrToLong_ui(domain, NULL, 16, &addr->domain) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'domain' attribute"));
+        goto cleanup;
+    }
+
+    if (bus &&
+        virStrToLong_ui(bus, NULL, 16, &addr->bus) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'bus' attribute"));
+        goto cleanup;
+    }
+
+    if (slot &&
+        virStrToLong_ui(slot, NULL, 16, &addr->slot) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'slot' attribute"));
+        goto cleanup;
+    }
+
+    if (function &&
+        virStrToLong_ui(function, NULL, 16, &addr->function) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'function' attribute"));
+        goto cleanup;
+    }
+
+    if (!virDomainDevicePCIAddressIsValid(addr)) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Insufficient specification for PCI address"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(domain);
+    VIR_FREE(bus);
+    VIR_FREE(slot);
+    VIR_FREE(function);
+    return ret;
+}
+
+
+/* Parse the XML definition for a device address
+ * @param node XML nodeset to parse for device address definition
+ */
+static int
+virDomainDeviceInfoParseXML(virConnectPtr conn,
+                            xmlNodePtr node,
+                            virDomainDeviceInfoPtr info,
+                            unsigned int flags ATTRIBUTE_UNUSED)
+{
+    xmlNodePtr cur;
+    xmlNodePtr address = NULL;
+    char *type = NULL;
+    int ret = -1;
+
+    virDomainDeviceInfoClear(info);
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (address == NULL &&
+                xmlStrEqual(cur->name, BAD_CAST "address")) {
+                address = cur;
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (!address)
+        return 0;
+
+    type = virXMLPropString(address, "type");
+
+    if (type) {
+        if ((info->type = virDomainDeviceAddressTypeFromString(type)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown address type '%s'"), type);
+            goto cleanup;
+        }
+    } else {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("No type specified for device address"));
+        goto cleanup;
+    }
+
+    switch (info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        if (virDomainDevicePCIAddressParseXML(conn, address, &info->addr.pci) < 0)
+            goto cleanup;
+        break;
+
+    default:
+        /* Should not happen */
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("Unknown device address type"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(type);
+    return ret;
+}
+
+
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
  */
@@ -819,6 +1041,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
                 def->shared = 1;
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
+                /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
             } else if (encryption == NULL &&
                        xmlStrEqual(cur->name, BAD_CAST "encryption")) {
@@ -928,15 +1151,20 @@ virDomainDiskDefParseXML(virConnectPtr conn,
         goto error;
     }
 
-    if (devaddr &&
-        sscanf(devaddr, "%x:%x:%x",
-               &def->pci_addr.domain,
-               &def->pci_addr.bus,
-               &def->pci_addr.slot) < 3) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to parse devaddr parameter '%s'"),
-                             devaddr);
-        goto error;
+    if (devaddr) {
+        if (sscanf(devaddr, "%x:%x:%x",
+                   &def->info.addr.pci.domain,
+                   &def->info.addr.pci.bus,
+                   &def->info.addr.pci.slot) < 3) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Unable to parse devaddr parameter '%s'"),
+                                 devaddr);
+            goto error;
+        }
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    } else {
+        if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+            goto error;
     }
 
     def->src = source;
@@ -1153,6 +1381,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
                 model = virXMLPropString(cur, "type");
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
+                /* Legacy back-compat. Don't add any more attributes here */
                 nic_name = virXMLPropString(cur, "nic");
                 hostnet_name = virXMLPropString(cur, "hostnet");
                 devaddr = virXMLPropString(cur, "devaddr");
@@ -1173,14 +1402,28 @@ virDomainNetDefParseXML(virConnectPtr conn,
         virCapabilitiesGenerateMac(caps, def->mac);
     }
 
-    if (devaddr &&
-        sscanf(devaddr, "%x:%x:%x",
-               &def->pci_addr.domain,
-               &def->pci_addr.bus,
-               &def->pci_addr.slot) < 3) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to parse devaddr parameter '%s'"),
-                             devaddr);
+    if (devaddr) {
+        if (sscanf(devaddr, "%x:%x:%x",
+                   &def->info.addr.pci.domain,
+                   &def->info.addr.pci.bus,
+                   &def->info.addr.pci.slot) < 3) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("Unable to parse devaddr parameter '%s'"),
+                                 devaddr);
+            goto error;
+        }
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    } else {
+        if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+            goto error;
+    }
+
+    /* XXX what about ISA/USB based NIC models - once we support
+     * them we should make sure address type is correct */
+    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Network interfaces must use 'pci' address type"));
         goto error;
     }
 
@@ -2321,83 +2564,27 @@ virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+                virDomainDevicePCIAddressPtr addr =
+                    &def->source.subsys.u.pci;
 
-                char *domain = virXMLPropString(cur, "domain");
-                if (domain) {
-                    if (virStrToLong_ui(domain, NULL, 0,
-                                    &def->source.subsys.u.pci.domain) < 0) {
-                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse domain %s"),
-                                             domain);
-                        VIR_FREE(domain);
-                        goto out;
-                    }
-                    VIR_FREE(domain);
-                }
-
-                char *bus = virXMLPropString(cur, "bus");
-                if (bus) {
-                    if (virStrToLong_ui(bus, NULL, 0,
-                                        &def->source.subsys.u.pci.bus) < 0) {
-                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse bus %s"), bus);
-                        VIR_FREE(bus);
-                        goto out;
-                    }
-                    VIR_FREE(bus);
-                } else {
-                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("pci address needs bus id"));
+                if (virDomainDevicePCIAddressParseXML(conn, cur, addr) < 0)
                     goto out;
-                }
-
-                char *slot = virXMLPropString(cur, "slot");
-                if (slot) {
-                    if (virStrToLong_ui(slot, NULL, 0,
-                                        &def->source.subsys.u.pci.slot) < 0)  {
-                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse slot %s"),
-                                             slot);
-                        VIR_FREE(slot);
-                        goto out;
-                    }
-                    VIR_FREE(slot);
-                } else {
-                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                         "%s", _("pci address needs slot id"));
-                    goto out;
-                }
-
-                char *function = virXMLPropString(cur, "function");
-                if (function) {
-                    if (virStrToLong_ui(function, NULL, 0,
-                                    &def->source.subsys.u.pci.function) < 0)  {
-                        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                             _("cannot parse function %s"),
-                                             function);
-                        VIR_FREE(function);
-                        goto out;
-                    }
-                    VIR_FREE(function);
-                } else {
-                    virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                         _("pci address needs function id"));
-                    goto out;
-                }
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
+                /* Legacy back-compat. Don't add any more attributes here */
                 char *devaddr = virXMLPropString(cur, "devaddr");
                 if (devaddr &&
                     sscanf(devaddr, "%x:%x:%x",
-                           &def->source.subsys.u.pci.guest_addr.domain,
-                           &def->source.subsys.u.pci.guest_addr.bus,
-                           &def->source.subsys.u.pci.guest_addr.slot) < 3) {
+                           &def->info.addr.pci.domain,
+                           &def->info.addr.pci.bus,
+                           &def->info.addr.pci.slot) < 3) {
                     virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                          _("Unable to parse devaddr parameter '%s'"),
                                          devaddr);
                     VIR_FREE(devaddr);
                     goto out;
                 }
+                def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             } else {
                 virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                      _("unknown pci source type '%s'"),
@@ -2475,12 +2662,27 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
                         if (virDomainHostdevSubsysPciDefParseXML(conn, cur, def, flags) < 0)
                             goto error;
                 }
-            } else {
-                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                     _("unknown node %s"), cur->name);
             }
         }
         cur = cur->next;
+    }
+
+    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+            goto error;
+    }
+
+    if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        switch (def->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("PCI host devices must use 'pci' address type"));
+                goto error;
+            }
+            break;
+        }
     }
 
 cleanup:
@@ -3869,8 +4071,7 @@ virDomainLifecycleDefFormat(virConnectPtr conn,
 static int
 virDomainDiskDefFormat(virConnectPtr conn,
                        virBufferPtr buf,
-                       virDomainDiskDefPtr def,
-                       int flags)
+                       virDomainDiskDefPtr def)
 {
     const char *type = virDomainDiskTypeToString(def->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
@@ -3947,15 +4148,8 @@ virDomainDiskDefFormat(virConnectPtr conn,
         virStorageEncryptionFormat(conn, buf, def->encryption) < 0)
         return -1;
 
-    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
-        virBufferAddLit(buf, "      <state");
-        if (virDiskHasValidPciAddr(def))
-            virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
-                              def->pci_addr.domain,
-                              def->pci_addr.bus,
-                              def->pci_addr.slot);
-        virBufferAddLit(buf, "/>\n");
-    }
+    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        return -1;
 
     virBufferAddLit(buf, "    </disk>\n");
 
@@ -4089,20 +4283,17 @@ virDomainNetDefFormat(virConnectPtr conn,
                               def->model);
 
     if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
+        /* Legacy back-compat. Don't add any more attributes here */
         virBufferAddLit(buf, "      <state");
-        if (def->nic_name)
-            virBufferEscapeString(buf, " nic='%s'", def->nic_name);
         if (def->hostnet_name)
             virBufferEscapeString(buf, " hostnet='%s'", def->hostnet_name);
-        if (virNetHasValidPciAddr(def))
-            virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
-                              def->pci_addr.domain,
-                              def->pci_addr.bus,
-                              def->pci_addr.slot);
         if (def->vlan > 0)
             virBufferVSprintf(buf, " vlan='%d'", def->vlan);
         virBufferAddLit(buf, "/>\n");
     }
+
+    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        return -1;
 
     virBufferAddLit(buf, "    </interface>\n");
 
@@ -4477,8 +4668,7 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
 static int
 virDomainHostdevDefFormat(virConnectPtr conn,
                           virBufferPtr buf,
-                          virDomainHostdevDefPtr def,
-                          int flags)
+                          virDomainHostdevDefPtr def)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     const char *type;
@@ -4512,25 +4702,19 @@ virDomainHostdevDefFormat(virConnectPtr conn,
                               def->source.subsys.u.usb.bus,
                               def->source.subsys.u.usb.device);
         }
-    }
-    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+    } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
         virBufferVSprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
                           def->source.subsys.u.pci.domain,
                           def->source.subsys.u.pci.bus,
                           def->source.subsys.u.pci.slot,
                           def->source.subsys.u.pci.function);
-        if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
-            virBufferAddLit(buf, "      <state");
-            if (virHostdevHasValidGuestAddr(def))
-                virBufferVSprintf(buf, " devaddr='%.4x:%.2x:%.2x'",
-                                  def->source.subsys.u.pci.guest_addr.domain,
-                                  def->source.subsys.u.pci.guest_addr.bus,
-                                  def->source.subsys.u.pci.guest_addr.slot);
-            virBufferAddLit(buf, "/>\n");
-        }
     }
 
     virBufferAddLit(buf, "      </source>\n");
+
+    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        return -1;
+
     virBufferAddLit(buf, "    </hostdev>\n");
 
     return 0;
@@ -4695,7 +4879,7 @@ char *virDomainDefFormat(virConnectPtr conn,
                               def->emulator);
 
     for (n = 0 ; n < def->ndisks ; n++)
-        if (virDomainDiskDefFormat(conn, &buf, def->disks[n], flags) < 0)
+        if (virDomainDiskDefFormat(conn, &buf, def->disks[n]) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)
@@ -4763,7 +4947,7 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     for (n = 0 ; n < def->nhostdevs ; n++)
-        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n], flags) < 0)
+        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n]) < 0)
             goto cleanup;
 
     if (def->watchdog)

@@ -385,6 +385,9 @@
     <optional>
       <ref name="encryption"/>
     </optional>
+    <optional>
+      <ref name="address"/>
+    </optional>
   </define>
   <!--
       A disk description can be either of type file or block
@@ -714,6 +717,9 @@
           <attribute name="type"/>
           <empty/>
         </element>
+      </optional>
+      <optional>
+	<ref name="address"/>
       </optional>
     </interleave>
   </define>
@@ -1134,10 +1140,15 @@
           <choice>
             <ref name="usbproduct"/>
             <ref name="usbaddress"/>
-            <ref name="pciaddress"/>
+            <element name="address">
+              <ref name="pciaddress"/>
+            </element>
           </choice>
         </element>
       </group>
+      <optional>
+        <ref name="address"/>
+      </optional>
     </element>
   </define>
   <define name="usbproduct">
@@ -1163,22 +1174,20 @@
     </element>
   </define>
   <define name="pciaddress">
-    <element name="address">
-      <optional>
-        <attribute name="domain">
-          <ref name="pciDomain"/>
-        </attribute>
-      </optional>
-      <attribute name="bus">
-        <ref name="pciBus"/>
+    <optional>
+      <attribute name="domain">
+        <ref name="pciDomain"/>
       </attribute>
-      <attribute name="slot">
-        <ref name="pciSlot"/>
-      </attribute>
-      <attribute name="function">
-        <ref name="pciFunc"/>
-      </attribute>
-    </element>
+    </optional>
+    <attribute name="bus">
+      <ref name="pciBus"/>
+    </attribute>
+    <attribute name="slot">
+      <ref name="pciSlot"/>
+    </attribute>
+    <attribute name="function">
+      <ref name="pciFunc"/>
+    </attribute>
   </define>
   <!--
       Devices attached to a domain.
@@ -1286,6 +1295,20 @@
       </interleave>
     </element>
   </define>
+
+  <define name="address">
+    <element name="address">
+      <choice>
+	<group>
+	  <attribute name="type">
+	    <value>pci</value>
+	  </attribute>
+	  <ref name="pciaddress"/>
+	</group>
+      </choice>
+    </element>
+  </define>
+
   <!--
        Type library
 

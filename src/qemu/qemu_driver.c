@@ -5111,13 +5111,15 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     ret = qemuMonitorAddPCIDisk(priv->mon,
                                 dev->data.disk->src,
                                 type,
-                                &dev->data.disk->pci_addr.domain,
-                                &dev->data.disk->pci_addr.bus,
-                                &dev->data.disk->pci_addr.slot);
+                                &dev->data.disk->info.addr.pci.domain,
+                                &dev->data.disk->info.addr.pci.bus,
+                                &dev->data.disk->info.addr.pci.slot);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0)
+    if (ret == 0) {
+        dev->data.disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
+    }
 
     return ret;
 }
@@ -5240,12 +5242,13 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
-                                 &net->pci_addr.domain,
-                                 &net->pci_addr.bus,
-                                 &net->pci_addr.slot) < 0) {
+                                 &net->info.addr.pci.domain,
+                                 &net->info.addr.pci.bus,
+                                 &net->info.addr.pci.slot) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto try_remove;
     }
+    net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     ret = 0;
@@ -5328,12 +5331,13 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
                                       hostdev->source.subsys.u.pci.bus,
                                       hostdev->source.subsys.u.pci.slot,
                                       hostdev->source.subsys.u.pci.function,
-                                      &hostdev->source.subsys.u.pci.guest_addr.domain,
-                                      &hostdev->source.subsys.u.pci.guest_addr.bus,
-                                      &hostdev->source.subsys.u.pci.guest_addr.slot);
+                                      &hostdev->info.addr.pci.domain,
+                                      &hostdev->info.addr.pci.bus,
+                                      &hostdev->info.addr.pci.slot);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
         goto error;
+    hostdev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
@@ -5563,18 +5567,18 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!virDiskHasValidPciAddr(detach)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("disk %s cannot be detached - no PCI address for device"),
-                           detach->dst);
+    if (!virDomainDeviceAddressIsValid(&detach->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED, "%s",
+                         _("device cannot be detached without a PCI address"));
         goto cleanup;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   detach->pci_addr.domain,
-                                   detach->pci_addr.bus,
-                                   detach->pci_addr.slot) < 0) {
+                                   detach->info.addr.pci.domain,
+                                   detach->info.addr.pci.bus,
+                                   detach->info.addr.pci.slot) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }
@@ -5629,7 +5633,14 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!virNetHasValidPciAddr(detach) || detach->vlan < 0 || !detach->hostnet_name) {
+    if (!virDomainDeviceAddressIsValid(&detach->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("device cannot be detached without a PCI address"));
+        goto cleanup;
+    }
+
+    if (detach->vlan < 0 || !detach->hostnet_name) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "%s", _("network device cannot be detached - device state missing"));
         goto cleanup;
@@ -5637,9 +5648,9 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   detach->pci_addr.domain,
-                                   detach->pci_addr.bus,
-                                   detach->pci_addr.slot) < 0) {
+                                   detach->info.addr.pci.domain,
+                                   detach->info.addr.pci.bus,
+                                   detach->info.addr.pci.slot) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
@@ -5717,17 +5728,18 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (!virHostdevHasValidGuestAddr(detach)) {
+    if (!virDomainDeviceAddressIsValid(&detach->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("hostdev cannot be detached - device state missing"));
+                         "%s", _("device cannot be detached without a PCI address"));
         return -1;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   detach->source.subsys.u.pci.guest_addr.domain,
-                                   detach->source.subsys.u.pci.guest_addr.bus,
-                                   detach->source.subsys.u.pci.guest_addr.slot) < 0) {
+                                   detach->info.addr.pci.domain,
+                                   detach->info.addr.pci.bus,
+                                   detach->info.addr.pci.slot) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         return -1;
     }
