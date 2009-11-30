@@ -25,7 +25,7 @@ static int testDevice(const char *path, int expect)
     if (actual == expect) {
         return 0;
     } else {
-        if (virtTestGetDebug())
+        if (virTestGetDebug())
             fprintf(stderr, "Expect %-6d Actual %-6d\n", expect, actual);
         return -1;
     }
@@ -55,7 +55,7 @@ mymain(int argc ATTRIBUTE_UNUSED,
      * register a handler to stop error messages cluttering
      * up display
      */
-    if (!virtTestGetDebug())
+    if (!virTestGetDebug())
         virSetErrorFunc(NULL, testQuietError);
 
 #define DO_TEST(dev, num)                                              \

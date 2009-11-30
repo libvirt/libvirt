@@ -1,5 +1,11 @@
 # source this file; set up for tests
 
+test -z "$abs_srcdir" && abs_srcdir=$(pwd)
+test -z "$abs_builddir" && abs_builddir=$(pwd)
+test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
+test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+test -z "$LC_ALL" && LC_ALL=C
+
 # Skip this test if the shell lacks support for functions.
 unset function_test
 eval 'function_test() { return 11; }; function_test'
@@ -7,6 +13,59 @@ if test $? != 11; then
   echo "$0: /bin/sh lacks support for functions; skipping this test." 1>&2
   (exit 77); exit 77
 fi
+
+test_intro()
+{
+  name=$1
+  if test "$verbose" = "0" ; then
+    echo "TEST: $name"
+    echo -n "      "
+  fi
+}
+
+test_result()
+{
+  counter=$1
+  name=$2
+  status=$3
+  if test "$verbose" = "0" ; then
+    mod=`eval "expr \( $counter - 1 \) % 40"`
+    if test "$counter" != 1 -a "$mod" = 0 ; then
+        printf " %-3d\n" `eval "expr $counter - 1"`
+        echo -n "      "
+    fi
+    if test "$status" = "0" ; then
+        echo -n "."
+    else
+        echo -n "!"
+    fi
+  else
+    if test "$status" = "0" ; then
+      printf "%3d) %-60s ... OK\n" "$counter" "$name"
+    else
+      printf "%3d) %-60s ... FAILED\n" "$counter" "$name"
+    fi
+  fi
+}
+
+test_final()
+{
+  counter=$1
+  status=$2
+
+  if test "$verbose" = "0" ; then
+    mod=`eval "expr \( $counter + 1 \) % 40"`
+    for i in `seq $mod 40`
+    do
+      echo -n " "
+    done
+    if test "$status" = "0" ; then
+      printf " %-3d OK\n" $counter
+    else
+      printf " %-3d FAILED\n" $counter
+    fi
+  fi
+}
 
 skip_test_()
 {
@@ -136,6 +195,11 @@ test_dir_=$(pwd)
 
 this_test_() { echo "./$0" | sed 's,.*/,,'; }
 this_test=$(this_test_)
+
+verbose=0
+if test -n "$VIR_TEST_DEBUG" -o -n "$VIR_TEST_VERBOSE" ; then
+  verbose=1
+fi
 
 # This is a stub function that is run upon trap (upon regular exit and
 # interrupt).  Override it with a per-test function, e.g., to unmount

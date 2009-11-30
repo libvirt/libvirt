@@ -2,15 +2,14 @@
 # Get coverage of libvirtd's config-parsing code.
 
 test -z "$srcdir" && srcdir=$(pwd)
-test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
-test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+LC_ALL=C
+. "$srcdir/test-lib.sh"
 
-if test "$VERBOSE" = yes; then
-  set -x
+if test "$verbose" = yes; then
   $abs_top_builddir/daemon/libvirtd --version
 fi
 
-. "$srcdir/test-lib.sh"
+test_intro "$this_test"
 
 test -z "$CONFIG_HEADER" && CONFIG_HEADER="$abs_top_builddir/config.h"
 
@@ -30,10 +29,12 @@ sed -n 's/^#\([^ #]\)/\1/p' "$conf" > tmp.conf
 # time and running libvirtd with the resulting config.  Each libvirtd
 # invocation must fail.
 n=$(wc -l < tmp.conf)
-i=1
+i=0
+fail=0
 while :; do
+  i=$(expr $i + 1)
+
   param_name=$(sed -n "$i"'s/ = .*//p' tmp.conf)
-  printf "testing with corrupted config: $param_name\n" 1>&2
   rhs=$(sed -n "$i"'s/.* = \(.*\)/\1/p' tmp.conf)
   f=in$i.conf
   case $rhs in
@@ -59,9 +60,8 @@ while :; do
   # Check that the diagnostic we want appears
   grep "$msg" err 1>/dev/null 2>&1
   RET=$?
+  test_result $i "corrupted config $param_name" $RET
   test "$RET" = "0" || fail=1
-
-  i=$(expr $i + 1)
 done
 
 # Run with the unmodified config file.
@@ -76,13 +76,18 @@ sed 's,^log_outputs.*,log_outputs="3:file:'"$(pwd)/log"'",' tmp.conf > k \
     || fail=1
 mv k tmp.conf || fail=1
 
-printf "running libvirtd with a valid config file ($sleep_secs seconds)\n" 1>&2
 $abs_top_builddir/daemon/libvirtd --pid-file=pid-file --config=tmp.conf > log 2>&1 & pid=$!
 sleep $sleep_secs
 kill $pid
 
+RET=0
 # Expect an orderly shut-down and successful exit.
-wait $pid || fail=1
+wait $pid || RET=1
+
+test_result $i "valid config file (sleeping $sleep_secs seconds)" $RET
+test $RET = 0 || fail=1
+
+test_final $i $fail
 
 # "cat log" would print this for non-root:
 #   Cannot set group when not running as root

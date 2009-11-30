@@ -17,13 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 test -z "$srcdir" && srcdir=$(pwd)
-test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
-test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
-
-if test "$VERBOSE" = yes; then
-  set -x
-  $abs_top_builddir/tools/virsh --version
-fi
 
 . "$srcdir/test-lib.sh"
 
@@ -35,10 +28,24 @@ $abs_top_builddir/tools/virsh -c $test_url help > cmds || framework_failure
 cmds=$(sed -n 's/^    \([^ ][^ ]*\) .*/\1/p' cmds) || framework_failure
 test -n "$cmds" || framework_failure
 
+test_intro "virsh-all"
+
+counter=0
 for i in $cmds; do
-    echo testing $i... 1>&2
-    # For now, just run the command and ignore output and exit status.
+    counter=`eval "expr $counter + 1"`
+
+    # For now, just run the command and ignore output
     $abs_top_builddir/tools/virsh -c $test_url $i < /dev/null > /dev/null 2>&1
+    # Temporarily ignoring exit status
+    #status=$?
+    status=0
+    test_result $counter $i $status
+
+    if test "$status" = "1" ; then
+       fail=1
+    fi
 done
+
+test_final $counter $fail
 
 (exit $fail); exit $fail

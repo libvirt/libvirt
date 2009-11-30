@@ -1,7 +1,8 @@
 #!/bin/sh
 
 : ${srcdir=.}
-. $srcdir/schematestutils.sh
+. $srcdir/test-lib.sh
+. $abs_srcdir/schematestutils.sh
 
 DIRS="../src/network networkxml2xmlin networkxml2xmlout"
 SCHEMA="network.rng"

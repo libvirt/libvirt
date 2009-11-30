@@ -75,7 +75,7 @@ testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
         k = virDiskNameToIndex(name);
 
         if (k != i) {
-            if (virtTestGetDebug() > 0) {
+            if (virTestGetDebug() > 0) {
                 fprintf(stderr, "\nExpect [%d]\n", i);
                 fprintf(stderr, "Actual [%d]\n", k);
             }

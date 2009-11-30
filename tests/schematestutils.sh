@@ -1,12 +1,11 @@
 #!/bin/sh
 
-test -z "$srcdir" && srcdir=`pwd`
-test -z "$abs_srcdir" && abs_srcdir=`pwd`
-
 check_schema () {
 
 DIRS=$1
-SCHEMA="$srcdir/../docs/schemas/$2"
+SCHEMA="$abs_srcdir/../docs/schemas/$2"
+
+test_intro $this_test
 
 n=0
 f=0
@@ -17,20 +16,21 @@ do
   for xml in $XML
   do
     n=`expr $n + 1`
-    printf "%4d) %.60s  " $n $(basename $(dirname $xml))"/"$(basename $xml)
     cmd="xmllint --relaxng $SCHEMA --noout $xml"
     result=`$cmd 2>&1`
     ret=$?
-    if test $ret = 0; then
-        echo "OK"
-    else
-        echo "FAILED"
+
+    test_result $n $(basename $(dirname $xml))"/"$(basename $xml) $ret
+    if test "$verbose" = "1" -a $ret != 0 ; then
         echo -e "$cmd\n$result"
+    fi
+    if test "$ret" != 0 ; then
         f=`expr $f + 1`
     fi
   done
 done
-echo "Validated $n files, $f failed"
+
+test_final $n $f
 
 ret=0
 test $f != 0 && ret=255
