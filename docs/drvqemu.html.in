@@ -39,7 +39,7 @@
     <p>
     The libvirt QEMU driver is a multi-instance driver, providing a single
     system wide privileged driver (the "system" instance), and per-user
-    unprivileged drivers (the "session" instance). The of the driver protocol
+    unprivileged drivers (the "session" instance). The URI driver protocol
     is "qemu". Some example conection URIs for the libvirt driver are:
     </p>
 
