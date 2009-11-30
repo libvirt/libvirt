@@ -552,7 +552,7 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
-static int
+static int ATTRIBUTE_SENTINEL
 xend_op(virConnectPtr xend, const char *name, const char *key, ...)
 {
     char buffer[1024];
