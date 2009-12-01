@@ -1189,6 +1189,21 @@
       <ref name="pciFunc"/>
     </attribute>
   </define>
+  <define name="driveaddress">
+    <optional>
+      <attribute name="controller">
+        <ref name="driveController"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="bus">
+	<ref name="driveBus"/>
+      </attribute>
+    </optional>
+    <attribute name="unit">
+      <ref name="driveUnit"/>
+    </attribute>
+  </define>
   <!--
       Devices attached to a domain.
     -->
@@ -1304,6 +1319,12 @@
 	    <value>pci</value>
 	  </attribute>
 	  <ref name="pciaddress"/>
+	</group>
+	<group>
+	  <attribute name="type">
+	    <value>drive</value>
+	  </attribute>
+	  <ref name="driveaddress"/>
 	</group>
       </choice>
     </element>
@@ -1432,6 +1453,21 @@
   <define name="pciFunc">
     <data type="string">
       <param name="pattern">(0x)?[0-7]</param>
+    </data>
+  </define>
+  <define name="driveController">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}</param>
+    </data>
+  </define>
+  <define name="driveBus">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}</param>
+    </data>
+  </define>
+  <define name="driveUnit">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}</param>
     </data>
   </define>
   <define name="featureName">

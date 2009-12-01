@@ -67,6 +67,7 @@ enum virDomainVirtType {
 enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -80,12 +81,21 @@ struct _virDomainDevicePCIAddress {
     unsigned int function;
 };
 
+typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
+typedef virDomainDeviceDriveAddress *virDomainDeviceDriveAddressPtr;
+struct _virDomainDeviceDriveAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned int unit;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
     int type;
     union {
         virDomainDevicePCIAddress pci;
+        virDomainDeviceDriveAddress drive;
     } addr;
 };
 
@@ -690,9 +700,12 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
                                    virDomainDevicePCIAddressPtr b);
+int virDomainDeviceDriveAddressEqual(virDomainDeviceDriveAddressPtr a,
+                                     virDomainDeviceDriveAddressPtr b);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
+int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr);
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefFree(virDomainDefPtr vm);

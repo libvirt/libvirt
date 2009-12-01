@@ -90,7 +90,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
-              "pci")
+              "pci",
+              "drive");
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -748,6 +749,9 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         return virDomainDevicePCIAddressIsValid(&info->addr.pci);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        return virDomainDeviceDriveAddressIsValid(&info->addr.drive);
     }
 
     return 0;
@@ -757,6 +761,13 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr)
 {
     return addr->domain || addr->bus || addr->slot;
+}
+
+
+int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRIBUTE_UNUSED)
+{
+    /*return addr->controller || addr->bus || addr->unit;*/
+    return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
 
 
@@ -803,6 +814,13 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.pci.function);
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        virBufferVSprintf(buf, " controller='%d' bus='%d' unit='%d'",
+                          info->addr.drive.controller,
+                          info->addr.drive.bus,
+                          info->addr.drive.unit);
+        break;
+
     default:
         virDomainReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                              _("unknown address type '%d'"), info->type);
@@ -822,6 +840,18 @@ int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
         a->bus    == b->bus &&
         a->slot   == b->slot &&
         a->function == b->function)
+        return 1;
+
+    return 0;
+}
+
+
+int virDomainDeviceDriveAddressEqual(virDomainDeviceDriveAddressPtr a,
+                                     virDomainDeviceDriveAddressPtr b)
+{
+    if (a->controller == b->controller &&
+        a->bus == b->bus &&
+        a->unit == b->unit)
         return 1;
 
     return 0;
@@ -888,6 +918,56 @@ cleanup:
 }
 
 
+static int
+virDomainDeviceDriveAddressParseXML(virConnectPtr conn,
+                                    xmlNodePtr node,
+                                    virDomainDeviceDriveAddressPtr addr)
+{
+    char *bus, *unit, *controller;
+    int ret = -1;
+
+    memset(addr, 0, sizeof(*addr));
+
+    controller = virXMLPropString(node, "controller");
+    bus = virXMLPropString(node, "bus");
+    unit = virXMLPropString(node, "unit");
+
+    if (controller &&
+        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'controller' attribute"));
+        goto cleanup;
+    }
+
+    if (bus &&
+        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'bus' attribute"));
+        goto cleanup;
+    }
+
+    if (unit &&
+        virStrToLong_ui(unit, NULL, 10, &addr->unit) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'unit' attribute"));
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceDriveAddressIsValid(addr)) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Insufficient specification for drive address"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(controller);
+    VIR_FREE(bus);
+    VIR_FREE(unit);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -935,6 +1015,11 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (virDomainDevicePCIAddressParseXML(conn, address, &info->addr.pci) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        if (virDomainDeviceDriveAddressParseXML(conn, node, &info->addr.drive) < 0)
             goto cleanup;
         break;
 
