@@ -521,6 +521,25 @@
       </choice>
     </attribute>
   </define>
+  <define name="controller">
+    <element name="controller">
+      <optional>
+        <attribute name="type">
+          <choice>
+            <value>fdc</value>
+            <value>ide</value>
+            <value>scsi</value>
+          </choice>
+        </attribute>
+      </optional>
+      <attribute name="index">
+        <ref name="unsignedInt"/>
+      </attribute>
+      <optional>
+	<ref name="address"/>
+      </optional>
+    </element>
+  </define>
   <define name="filesystem">
     <element name="filesystem">
       <choice>
@@ -1225,6 +1244,7 @@
         <zeroOrMore>
           <choice>
             <ref name="disk"/>
+            <ref name="controller"/>
             <ref name="filesystem"/>
             <ref name="interface"/>
             <ref name="input"/>

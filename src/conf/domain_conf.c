@@ -86,7 +86,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "sound",
               "video",
               "hostdev",
-              "watchdog")
+              "watchdog",
+              "controller")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -118,6 +119,12 @@ VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
               "none",
               "writethrough",
               "writeback")
+
+VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
+              "ide",
+              "fdc",
+              "scsi",
+              "sata")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -367,6 +374,16 @@ void virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def);
 }
 
+void virDomainControllerDefFree(virDomainControllerDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def);
+}
+
 void virDomainFSDefFree(virDomainFSDefPtr def)
 {
     if (!def)
@@ -528,6 +545,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         virDomainWatchdogDefFree(def->data.watchdog);
         break;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        virDomainControllerDefFree(def->data.controller);
+        break;
     }
 
     VIR_FREE(def);
@@ -560,6 +580,10 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0 ; i < def->ndisks ; i++)
         virDomainDiskDefFree(def->disks[i]);
     VIR_FREE(def->disks);
+
+    for (i = 0 ; i < def->ncontrollers ; i++)
+        virDomainControllerDefFree(def->controllers[i]);
+    VIR_FREE(def->controllers);
 
     for (i = 0 ; i < def->nfss ; i++)
         virDomainFSDefFree(def->fss[i]);
@@ -1334,6 +1358,63 @@ cleanup:
     goto cleanup;
 }
 
+
+/* Parse the XML definition for a controller
+ * @param node XML nodeset to parse for controller definition
+ */
+static virDomainControllerDefPtr
+virDomainControllerDefParseXML(virConnectPtr conn,
+                               xmlNodePtr node,
+                               int flags)
+{
+    virDomainControllerDefPtr def;
+    char *type = NULL;
+    char *idx = NULL;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    type = virXMLPropString(node, "type");
+    if (type) {
+        if ((def->type = virDomainDiskBusTypeFromString(type)) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown disk controller type '%s'"), type);
+            goto error;
+        }
+    }
+
+    idx = virXMLPropString(node, "index");
+    if (idx) {
+        if (virStrToLong_i(idx, NULL, 10, &def->idx) < 0) {
+            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse disk controller index %s"), idx);
+            goto error;
+        }
+    }
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
+
+    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Disk controllers must use the 'pci' address type"));
+        goto error;
+    }
+
+cleanup:
+    VIR_FREE(type);
+    VIR_FREE(idx);
+
+    return def;
+
+ error:
+    virDomainControllerDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
 
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
@@ -2995,6 +3076,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
         dev->type = VIR_DOMAIN_DEVICE_HOSTDEV;
         if (!(dev->data.hostdev = virDomainHostdevDefParseXML(conn, node, flags)))
             goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "controller")) {
+        dev->type = VIR_DOMAIN_DEVICE_CONTROLLER;
+        if (!(dev->data.controller = virDomainControllerDefParseXML(conn, node, flags)))
+            goto error;
     } else {
         virDomainReportError(conn, VIR_ERR_XML_ERROR,
                              "%s", _("unknown device type"));
@@ -3064,6 +3149,59 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
 
     def->disks[insertAt] = disk;
     def->ndisks++;
+}
+
+
+int virDomainControllerInsert(virDomainDefPtr def,
+                              virDomainControllerDefPtr controller)
+{
+
+    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0)
+        return -1;
+
+    virDomainControllerInsertPreAlloced(def, controller);
+
+    return 0;
+}
+
+void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
+                                         virDomainControllerDefPtr controller)
+{
+    int i;
+    /* Tenatively plan to insert controller at the end. */
+    int insertAt = -1;
+
+    /* Then work backwards looking for controllers of
+     * the same type. If we find a controller with a
+     * index greater than the new one, insert at
+     * that position
+     */
+    for (i = (def->ncontrollers - 1) ; i >= 0 ; i--) {
+        /* If bus matches and current controller is after
+         * new controller, then new controller should go here */
+        if ((def->controllers[i]->type == controller->type) &&
+            (def->controllers[i]->idx > controller->idx)) {
+            insertAt = i;
+        } else if (def->controllers[i]->type == controller->type &&
+                   insertAt == -1) {
+            /* Last controller with match bus is before the
+             * new controller, then put new controller just after
+             */
+            insertAt = i + 1;
+        }
+    }
+
+    /* No controllers with this bus yet, so put at end of list */
+    if (insertAt == -1)
+        insertAt = def->ncontrollers;
+
+    if (insertAt < def->ncontrollers)
+        memmove(def->controllers + insertAt + 1,
+                def->controllers + insertAt,
+                (sizeof(def->controllers[0]) * (def->ncontrollers-insertAt)));
+
+    def->controllers[insertAt] = controller;
+    def->ncontrollers++;
 }
 
 
@@ -3379,6 +3517,25 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             goto error;
 
         def->disks[def->ndisks++] = disk;
+    }
+    VIR_FREE(nodes);
+
+    /* analysis of the controller devices */
+    if ((n = virXPathNodeSet(conn, "./devices/controller", ctxt, &nodes)) < 0) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract controller devices"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->controllers, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainControllerDefPtr controller = virDomainControllerDefParseXML(conn,
+                                                                              nodes[i],
+                                                                              flags);
+        if (!controller)
+            goto error;
+
+        def->controllers[def->ncontrollers++] = controller;
     }
     VIR_FREE(nodes);
 
@@ -4299,6 +4456,35 @@ virDomainDiskDefFormat(virConnectPtr conn,
 }
 
 static int
+virDomainControllerDefFormat(virConnectPtr conn,
+                             virBufferPtr buf,
+                             virDomainControllerDefPtr def)
+{
+    const char *type = virDomainControllerTypeToString(def->type);
+
+    if (!type) {
+        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected controller type %d"), def->type);
+        return -1;
+    }
+
+    virBufferVSprintf(buf,
+                      "    <controller type='%s' index='%d'",
+                      type, def->idx);
+
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </controller>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}
+
+static int
 virDomainFSDefFormat(virConnectPtr conn,
                      virBufferPtr buf,
                      virDomainFSDefPtr def)
@@ -5043,6 +5229,10 @@ char *virDomainDefFormat(virConnectPtr conn,
 
     for (n = 0 ; n < def->ndisks ; n++)
         if (virDomainDiskDefFormat(conn, &buf, def->disks[n]) < 0)
+            goto cleanup;
+
+    for (n = 0 ; n < def->ncontrollers ; n++)
+        if (virDomainControllerDefFormat(conn, &buf, def->controllers[n]) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)

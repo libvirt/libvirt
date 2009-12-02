@@ -160,6 +160,25 @@ struct _virDomainDiskDef {
 };
 
 
+enum virDomainControllerType {
+    VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+    VIR_DOMAIN_CONTROLLER_TYPE_FDC,
+    VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+    VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+
+    VIR_DOMAIN_CONTROLLER_TYPE_LAST
+};
+
+/* Stores the virtual disk controller configuration */
+typedef struct _virDomainControllerDef virDomainControllerDef;
+typedef virDomainControllerDef *virDomainControllerDefPtr;
+struct _virDomainControllerDef {
+    int type;
+    int idx;
+    virDomainDeviceInfo info;
+};
+
+
 /* Two types of disk backends */
 enum virDomainFSType {
     VIR_DOMAIN_FS_TYPE_MOUNT,   /* Better named 'bind' */
@@ -488,6 +507,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_VIDEO,
     VIR_DOMAIN_DEVICE_HOSTDEV,
     VIR_DOMAIN_DEVICE_WATCHDOG,
+    VIR_DOMAIN_DEVICE_CONTROLLER,
 
     VIR_DOMAIN_DEVICE_LAST,
 };
@@ -498,6 +518,7 @@ struct _virDomainDeviceDef {
     int type;
     union {
         virDomainDiskDefPtr disk;
+        virDomainControllerDefPtr controller;
         virDomainFSDefPtr fs;
         virDomainNetDefPtr net;
         virDomainInputDefPtr input;
@@ -610,6 +631,9 @@ struct _virDomainDef {
     int ndisks;
     virDomainDiskDefPtr *disks;
 
+    int ncontrollers;
+    virDomainControllerDefPtr *controllers;
+
     int nfss;
     virDomainFSDefPtr *fss;
 
@@ -693,6 +717,7 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
+void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
@@ -775,6 +800,11 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 void virDomainDiskDefAssignAddress(virDomainDiskDefPtr def);
 
+int virDomainControllerInsert(virDomainDefPtr def,
+                              virDomainControllerDefPtr controller);
+void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
+                                         virDomainControllerDefPtr controller);
+
 int virDomainSaveXML(virConnectPtr conn,
                      const char *configDir,
                      virDomainDefPtr def,
@@ -855,6 +885,7 @@ VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
+VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChrTarget)
