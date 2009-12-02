@@ -229,6 +229,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
             else
                 virReportSystemError(NULL, errno,
                                      "%s", _("cannot acquire job mutex"));
+            qemuDriverLock(driver);
             return -1;
         }
     }
@@ -3471,9 +3472,9 @@ static int qemudDomainSave(virDomainPtr dom,
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
         qemuDomainObjPrivatePtr priv = vm->privateData;
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
         qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -3482,9 +3483,9 @@ static int qemudDomainSave(virDomainPtr dom,
             "-c",
             NULL
         };
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
     if (rc < 0)

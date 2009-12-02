@@ -5317,7 +5317,6 @@ virDomainObjIsDuplicate(virDomainObjListPtr doms,
         }
 
         dupVM = 1;
-        virDomainObjUnlock(vm);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
         vm = virDomainFindByName(doms, def->name);
