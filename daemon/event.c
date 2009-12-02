@@ -413,7 +413,12 @@ static int virEventDispatchTimeouts(void) {
         if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)
             continue;
 
-        if (eventLoop.timeouts[i].expiresAt <= now) {
+        /* Add 20ms fuzz so we don't pointlessly spin doing
+         * <10ms sleeps, particularly on kernels with low HZ
+         * it is fine that a timer expires 20ms earlier than
+         * requested
+         */
+        if (eventLoop.timeouts[i].expiresAt <= (now+20)) {
             virEventTimeoutCallback cb = eventLoop.timeouts[i].cb;
             int timer = eventLoop.timeouts[i].timer;
             void *opaque = eventLoop.timeouts[i].opaque;
