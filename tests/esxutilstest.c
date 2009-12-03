@@ -9,8 +9,8 @@
 #include "internal.h"
 #include "memory.h"
 #include "testutils.h"
+#include "util.h"
 #include "esx/esx_util.h"
-#include "esx/esx_vmx.h"
 
 static char *progname;
 
@@ -47,7 +47,7 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
     for (i = 0; i < ARRAY_CARDINALITY(names); ++i) {
         VIR_FREE(name);
 
-        name = esxVMX_IndexToDiskName(NULL, i, "sd");
+        name = virIndexToDiskName(i, "sd");
 
         if (STRNEQ(names[i], name)) {
             virtTestDifference(stderr, names[i], name);
@@ -55,8 +55,31 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
 
             return -1;
         }
+    }
 
-        if (virDiskNameToIndex(name) != i) {
+    VIR_FREE(name);
+
+    return 0;
+}
+
+static int
+testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
+{
+    int i, k;
+    char *name = NULL;
+
+    for (i = 0; i < 100000; ++i) {
+        VIR_FREE(name);
+
+        name = virIndexToDiskName(i, "sd");
+        k = virDiskNameToIndex(name);
+
+        if (k != i) {
+            if (virtTestGetDebug() > 0) {
+                fprintf(stderr, "\nExpect [%d]\n", i);
+                fprintf(stderr, "Actual [%d]\n", k);
+            }
+
             VIR_FREE(name);
 
             return -1;
@@ -170,6 +193,7 @@ mymain(int argc, char **argv)
         } while (0)
 
     DO_TEST(IndexToDiskName);
+    DO_TEST(DiskNameToIndex);
     DO_TEST(ParseDatastoreRelatedPath);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

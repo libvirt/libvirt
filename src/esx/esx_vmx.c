@@ -1211,31 +1211,6 @@ esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf, int controller,
 
 
 
-char *
-esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix)
-{
-    char *name = NULL;
-
-    if (idx < 0) {
-        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Disk index %d is negative", idx);
-    } else if (idx < 26) {
-        if (virAsprintf(&name, "%s%c", prefix, 'a' + idx) < 0)
-            virReportOOMError(conn);
-    } else if (idx < 702) {
-        if (virAsprintf(&name, "%s%c%c", prefix, 'a' + idx / 26 - 1,
-                        'a' + (idx % 26)) < 0)
-            virReportOOMError(conn);
-    } else {
-        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Disk index %d is too large", idx);
-    }
-
-    return name;
-}
-
-
-
 /*
 struct _virDomainDiskDef {
     int type;               // partly done
@@ -1337,8 +1312,8 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
             }
 
             (*def)->dst =
-               esxVMX_IndexToDiskName
-                 (conn, controller * 15 + (id < 7 ? id : id - 1), "sd");
+               virIndexToDiskName
+                 (controller * 15 + (id < 7 ? id : id - 1), "sd");
 
             if ((*def)->dst == NULL) {
                 goto failure;
@@ -1371,8 +1346,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
                 goto failure;
             }
 
-            (*def)->dst = esxVMX_IndexToDiskName(conn, controller * 2 + id,
-                                                 "hd");
+            (*def)->dst = virIndexToDiskName(controller * 2 + id, "hd");
 
             if ((*def)->dst == NULL) {
                 goto failure;
@@ -1398,7 +1372,7 @@ esxVMX_ParseDisk(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
                 goto failure;
             }
 
-            (*def)->dst = esxVMX_IndexToDiskName(conn, controller, "fd");
+            (*def)->dst = virIndexToDiskName(controller, "fd");
 
             if ((*def)->dst == NULL) {
                 goto failure;

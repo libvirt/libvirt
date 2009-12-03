@@ -28,9 +28,6 @@
 #include "domain_conf.h"
 #include "esx_vi.h"
 
-char *
-esxVMX_IndexToDiskName(virConnectPtr conn, int idx, const char *prefix);
-
 int
 esxVMX_SCSIDiskNameToControllerAndID(virConnectPtr conn, const char *name,
                                      int *controller, int *id);
@@ -51,6 +48,7 @@ char *
 esxVMX_AbsolutePathToDatastoreRelatedPath(virConnectPtr conn,
                                           esxVI_Context *ctx,
                                           const char *absolutePath);
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
