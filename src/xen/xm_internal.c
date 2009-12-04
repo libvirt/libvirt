@@ -1020,6 +1020,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         while (list) {
             char script[PATH_MAX];
             char model[10];
+            char type[10];
             char ip[16];
             char mac[18];
             char bridge[50];
@@ -1031,6 +1032,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             script[0] = '\0';
             ip[0] = '\0';
             model[0] = '\0';
+            type[0] = '\0';
             vifname[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
@@ -1074,6 +1076,13 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     if (virStrncpy(model, data, len, sizeof(model)) == NULL) {
                         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("Model %s too big for destination"), data);
+                        goto skipnic;
+                    }
+                } else if (STRPREFIX(key, "type=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
+                    if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+                        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("Type %s too big for destination"), data);
                         goto skipnic;
                     }
                 } else if (STRPREFIX(key, "vifname=")) {
@@ -1145,8 +1154,14 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     !(net->data.ethernet.ipaddr = strdup(ip)))
                     goto no_memory;
             }
+
             if (model[0] &&
                 !(net->model = strdup(model)))
+                goto no_memory;
+
+            if (!model[0] && type[0] &&
+                STREQ(type, "netfront") &&
+                !(net->model = strdup("netfront")))
                 goto no_memory;
 
             if (vifname[0] &&
@@ -2092,12 +2107,25 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (hvm && priv->xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
+    if (!hvm) {
+        if (net->model != NULL)
+            virBufferVSprintf(&buf, ",model=%s", net->model);
+    }
+    else if (net->model == NULL) {
+        /*
+         * apparently type ioemu breaks paravirt drivers on HVM so skip this
+         * from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
+         */
+        if (priv->xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
+            virBufferAddLit(&buf, ",type=ioemu");
+    }
+    else if (STREQ(net->model, "netfront")) {
+        virBufferAddLit(&buf, ",type=netfront");
+    }
+    else {
+        virBufferVSprintf(&buf, ",model=%s", net->model);
         virBufferAddLit(&buf, ",type=ioemu");
-
-    if (net->model)
-        virBufferVSprintf(&buf, ",model=%s",
-                          net->model);
+    }
 
     if (net->ifname)
         virBufferVSprintf(&buf, ",vifname=%s",

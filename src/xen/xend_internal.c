@@ -1770,11 +1770,12 @@ xenDaemonParseSxprNets(virConnectPtr conn,
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
         node = cur->u.s.car;
         if (sexpr_lookup(node, "device/vif")) {
-            const char *tmp2, *model;
+            const char *tmp2, *model, *type;
             char buf[50];
             tmp2 = sexpr_node(node, "device/vif/script");
             tmp = sexpr_node(node, "device/vif/bridge");
             model = sexpr_node(node, "device/vif/model");
+            type = sexpr_node(node, "device/vif/type");
 
             if (VIR_ALLOC(net) < 0)
                 goto no_memory;
@@ -1839,6 +1840,11 @@ xenDaemonParseSxprNets(virConnectPtr conn,
 
             if (model &&
                 !(net->model = strdup(model)))
+                goto no_memory;
+
+            if (!model && type &&
+                STREQ(type, "netfront") &&
+                !(net->model = strdup("netfront")))
                 goto no_memory;
 
             if (VIR_REALLOC_N(def->nets, def->nnets + 1) < 0)
@@ -5500,15 +5506,25 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         !STRPREFIX(def->ifname, "vif"))
         virBufferVSprintf(buf, "(vifname '%s')", def->ifname);
 
-    if (def->model != NULL)
+    if (!hvm) {
+        if (def->model != NULL)
+            virBufferVSprintf(buf, "(model '%s')", def->model);
+    }
+    else if (def->model == NULL) {
+        /*
+         * apparently (type ioemu) breaks paravirt drivers on HVM so skip
+         * this from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
+         */
+        if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
+            virBufferAddLit(buf, "(type ioemu)");
+    }
+    else if (STREQ(def->model, "netfront")) {
+        virBufferAddLit(buf, "(type netfront)");
+    }
+    else {
         virBufferVSprintf(buf, "(model '%s')", def->model);
-
-    /*
-     * apparently (type ioemu) breaks paravirt drivers on HVM so skip this
-     * from Xen 3.1.0
-     */
-    if (hvm && xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
         virBufferAddLit(buf, "(type ioemu)");
+    }
 
     if (!isAttach)
         virBufferAddLit(buf, ")");
