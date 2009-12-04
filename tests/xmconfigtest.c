@@ -230,6 +230,9 @@ mymain(int argc, char **argv)
 
     DO_TEST("fullvirt-sound", 2);
 
+    DO_TEST("fullvirt-net-ioemu", 2);
+    DO_TEST("fullvirt-net-netfront", 2);
+
     DO_TEST("escape-paths", 2);
     DO_TEST("no-source-cdrom", 2);
     DO_TEST("pci-devs", 2);
