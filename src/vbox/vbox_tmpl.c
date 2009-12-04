@@ -412,9 +412,6 @@ static void vboxUtf8toIID(virConnectPtr conn, char *uuidstr, vboxIID **iid) {
  * function to generate the name for medium,
  * for e.g: hda, sda, etc
  *
- * Limitation: 1) max (26+(26*26)+(26*26*26)) i.e
- *                18,278 names for now
- *
  * @returns     null terminated string with device name or NULL
  *              for failures
  * @param       conn            Input Connection Pointer
@@ -426,15 +423,14 @@ static void vboxUtf8toIID(virConnectPtr conn, char *uuidstr, vboxIID **iid) {
  * @param       aMaxSlotPerPort Input array of max slot per device port
  *
  */
-static char *vboxGenerateMediumName(virConnectPtr conn,
-                                    PRUint32  storageBus,
+static char *vboxGenerateMediumName(PRUint32  storageBus,
                                     PRInt32   deviceInst,
                                     PRInt32   devicePort,
                                     PRInt32   deviceSlot,
                                     PRUint32 *aMaxPortPerInst,
                                     PRUint32 *aMaxSlotPerPort) {
+    const char *prefix = NULL;
     char *name  = NULL;
-    int   len   = 0;
     int   total = 0;
     PRUint32 maxPortPerInst = 0;
     PRUint32 maxSlotPerPort = 0;
@@ -453,48 +449,20 @@ static char *vboxGenerateMediumName(virConnectPtr conn,
             + (devicePort * maxSlotPerPort)
             + deviceSlot;
 
-    if ((total >= 0) && (total < 26))
-        len = 4;
-    else if ((total >= 26) && (total < 26*26 + 26))
-        len = 5;
-    else if ((total >= 26*26 + 26) && (total < 26*26*26 + 26*26 + 26))
-        len = 6;
-    else
-        return NULL;
-
-    if (VIR_ALLOC_N(name, len) < 0) {
-        virReportOOMError(conn);
-        return NULL;
-    }
-
-    /* TODO: use virIndexToDiskName() here when available */
     if (storageBus == StorageBus_IDE) {
-        name[0] = 'h';
-        name[1] = 'd';
+        prefix = "hd";
     } else if (   (storageBus == StorageBus_SATA)
                || (storageBus == StorageBus_SCSI)) {
-        name[0] = 's';
-        name[1] = 'd';
+        prefix = "sd";
     } else if (storageBus == StorageBus_Floppy) {
-        name[0] = 'f';
-        name[1] = 'd';
+        prefix = "fd";
     }
 
-    if (len == 4) {
-        name[2] = (char)(97 + total);
-    } else if (len == 5) {
-        name[2] = (char)(96 + (total / 26));
-        name[3] = (char)(97 + (total % 26));
-    } else if (len == 6) {
-        name[2] = (char)(96 + (total / 26*26));
-        name[3] = (char)(96 + ((total % (26*26)) / 26));
-        name[4] = (char)(97 + ((total % (26*26)) % 26));
-    }
+    name = virIndexToDiskName(total, prefix);
 
-    name[len - 1] = '\0';
-    DEBUG("name=%s, len=%d, total=%d, storageBus=%u, deviceInst=%d, "
+    DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
           "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
-          name, len, total, storageBus, deviceInst, devicePort,
+          NULLSTR(name), total, storageBus, deviceInst, devicePort,
           deviceSlot, maxPortPerInst, maxSlotPerPort);
     return name;
 }
@@ -504,9 +472,6 @@ static char *vboxGenerateMediumName(virConnectPtr conn,
  * and Device number for the given devicename
  * e.g: hda has StorageBus = IDE, port = 0,
  *      device = 0
- *
- * Limitation: only name till 4 chars supported
- *             i.e from hda till hdzz
  *
  * @returns     true on Success, false on failure.
  * @param       deviceName      Input device name
@@ -2496,8 +2461,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
                 imediumattach->vtbl->GetPort(imediumattach, &devicePort);
                 imediumattach->vtbl->GetDevice(imediumattach, &deviceSlot);
-                def->disks[diskCount]->dst = vboxGenerateMediumName(dom->conn,
-                                                                    storageBus,
+                def->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
                                                                     deviceInst,
                                                                     devicePort,
                                                                     deviceSlot,
