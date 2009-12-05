@@ -280,13 +280,13 @@ static int oneDomainUndefine(virDomainPtr dom)
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 _("no domain with matching uuid"));
+                 "%s", _("no domain with matching uuid"));
         goto return_point;
     }
 
     if (!vm->persistent) {
         oneError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 _("cannot undefine transient domain"));
+                 "%s", _("cannot undefine transient domain"));
         goto return_point;
     }
     virDomainRemoveInactive(&driver->domains, vm);
@@ -499,7 +499,7 @@ static int oneDomainShutdown(virDomainPtr dom)
 
     if (c_oneShutdown(vm->pid)) {
         oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                 _("Wrong state to perform action"));
+                 "%s", _("Wrong state to perform action"));
         goto return_point;
     }
     vm->state=VIR_DOMAIN_SHUTDOWN;
@@ -535,7 +535,7 @@ static int oneDomainDestroy(virDomainPtr dom)
         /* VM not running, delete the instance at ONE DB */
         if(c_oneFinalize(vm->pid)){
             oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     _("Wrong state to perform action"));
+                     "%s", _("Wrong state to perform action"));
             goto return_point;
         }
     }
@@ -570,11 +570,11 @@ static int oneDomainSuspend(virDomainPtr dom)
                 goto return_point;
             }
             oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     _("Wrong state to perform action"));
+                     "%s", _("Wrong state to perform action"));
             goto return_point;
         }
         oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
-                 _("domain is not running"));
+                 "%s", _("domain is not running"));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
                  _("no domain with matching id %d"), dom->id);
@@ -603,11 +603,11 @@ static int oneDomainResume(virDomainPtr dom)
                 goto return_point;
             }
             oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     _("Wrong state to perform action"));
+                     "%s", _("Wrong state to perform action"));
             goto return_point;
         }
         oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
-                 _("domain is not paused "));
+                 "%s", _("domain is not paused"));
     } else {
         oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
                  _("no domain with matching id %d"), dom->id);

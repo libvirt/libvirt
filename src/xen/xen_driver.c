@@ -1316,14 +1316,14 @@ xenUnifiedDomainMigrateFinish (virConnectPtr dconn,
         domain_xml = xenDaemonDomainDumpXML (dom, 0, NULL);
         if (! domain_xml) {
             xenUnifiedError(dconn, VIR_ERR_MIGRATE_PERSIST_FAILED,
-                            _("failed to get XML representation of migrated domain"));
+                            "%s", _("failed to get XML representation of migrated domain"));
             goto failure;
         }
 
         dom_new = xenDaemonDomainDefineXML (dconn, domain_xml);
         if (! dom_new) {
-            xenUnifiedError (dconn, VIR_ERR_MIGRATE_PERSIST_FAILED,
-                             _("failed to define domain on destination host"));
+            xenUnifiedError(dconn, VIR_ERR_MIGRATE_PERSIST_FAILED,
+                            "%s", _("failed to define domain on destination host"));
             goto failure;
         }
 

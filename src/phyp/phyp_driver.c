@@ -91,19 +91,19 @@ phypOpen(virConnectPtr conn,
 
     if (conn->uri->server == NULL) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Missing server name in phyp:// URI"));
+                   "%s", _("Missing server name in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
 
     if (conn->uri->path == NULL) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Missing managed system name in phyp:// URI"));
+                   "%s", _("Missing managed system name in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
 
     if (conn->uri->user == NULL) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Missing username in phyp:// URI"));
+                   "%s", _("Missing username in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -150,13 +150,13 @@ phypOpen(virConnectPtr conn,
 
     if (escape_specialcharacters(conn->uri->path, string, len) == -1) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Error parsing 'path'. Invalid characters."));
+                   "%s", _("Error parsing 'path'. Invalid characters."));
         goto failure;
     }
 
     if ((session = openSSHSession(conn, auth, &internal_socket)) == NULL) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Error while opening SSH session."));
+                   "%s", _("Error while opening SSH session."));
         goto failure;
     }
     //conn->uri->path = string;
@@ -314,7 +314,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
            LIBSSH2_ERROR_EAGAIN) ;
     if (rc) {
         PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   _("Failure establishing SSH session."));
+                   "%s", _("Failure establishing SSH session."));
         goto disconnect;
     }
 
@@ -344,7 +344,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
         if (!auth || !auth->cb) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       _("No authentication callback provided."));
+                       "%s", _("No authentication callback provided."));
             goto disconnect;
         }
 
@@ -355,7 +355,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
         if (!hasPassphrase) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       _("Required credentials are not supported."));
+                       "%s", _("Required credentials are not supported."));
             goto disconnect;
         }
 
@@ -364,7 +364,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
         if (res < 0) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       _("Unable to fetch credentials."));
+                       "%s", _("Unable to fetch credentials."));
             goto disconnect;
         }
 
@@ -372,7 +372,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
             password = creds[0].result;
         } else {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       _("Unable to get password certificates"));
+                       "%s", _("Unable to get password certificates"));
             goto disconnect;
         }
 
@@ -383,7 +383,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
         if (rc) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       _("Authentication failed"));
+                       "%s", _("Authentication failed"));
             goto disconnect;
         } else
             goto exit;
