@@ -2673,19 +2673,25 @@ esxDomainUndefine(virDomainPtr domain)
 {
     int result = 0;
     esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxVI_Context *ctx = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
 
-    if (esxVI_EnsureSession(domain->conn, priv->host) < 0) {
+    if (priv->vCenter != NULL) {
+        ctx = priv->vCenter;
+    } else {
+        ctx = priv->host;
+    }
+
+    if (esxVI_EnsureSession(domain->conn, ctx) < 0) {
         goto failure;
     }
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupVirtualMachineByUuid(domain->conn, priv->host,
-                                         domain->uuid, propertyNameList,
-                                         &virtualMachine,
+        esxVI_LookupVirtualMachineByUuid(domain->conn, ctx, domain->uuid,
+                                         propertyNameList, &virtualMachine,
                                          esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
@@ -2699,7 +2705,7 @@ esxDomainUndefine(virDomainPtr domain)
         goto failure;
     }
 
-    if (esxVI_UnregisterVM(domain->conn, priv->host, virtualMachine->obj) < 0) {
+    if (esxVI_UnregisterVM(domain->conn, ctx, virtualMachine->obj) < 0) {
         goto failure;
     }
 
