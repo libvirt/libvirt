@@ -4,7 +4,7 @@ SUBDIRS= . tests
 
 INCLUDES = \
         $(WARN_CFLAGS) \
-        -I$(PYTHON_INCLUDES) \
+        $(PYTHON_INCLUDES) \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/$(subdir)
