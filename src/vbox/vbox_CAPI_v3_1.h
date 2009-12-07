@@ -1263,17 +1263,18 @@ enum ProcessorFeature
 
 
 /* Start of enum FirmwareType Declaration */
-#define FIRMWARETYPE_IID_STR "7ceea938-8b49-41e2-bb47-667219c0d586"
+#define FIRMWARETYPE_IID_STR "b903f264-c230-483e-ac74-2b37ce60d371"
 #define FIRMWARETYPE_IID { \
-    0x7ceea938, 0x8b49, 0x41e2, \
-    { 0xbb, 0x47, 0x66, 0x72, 0x19, 0xc0, 0xd5, 0x86 } \
+    0xb903f264, 0xc230, 0x483e, \
+    { 0xac, 0x74, 0x2b, 0x37, 0xce, 0x60, 0xd3, 0x71 } \
 }
 enum FirmwareType
 {
     FirmwareType_BIOS = 1,
     FirmwareType_EFI = 2,
-    FirmwareType_EFI64 = 3,
-    FirmwareType_EFIDUAL = 4
+    FirmwareType_EFI32 = 3,
+    FirmwareType_EFI64 = 4,
+    FirmwareType_EFIDUAL = 5
 };
 /* End of enum FirmwareType Declaration */
 
@@ -1915,10 +1916,10 @@ struct IDHCPServer
 
 
 /* Start of struct IVirtualBox Declaration */
-#define IVIRTUALBOX_IID_STR "cdc78bfb-f4f6-4ab6-aadf-0407ae12fe85"
+#define IVIRTUALBOX_IID_STR "2158464a-f706-414b-a8c4-fb589dfc6b62"
 #define IVIRTUALBOX_IID { \
-    0xcdc78bfb, 0xf4f6, 0x4ab6, \
-    { 0xaa, 0xdf, 0x04, 0x07, 0xae, 0x12, 0xfe, 0x85 } \
+    0x2158464a, 0xf706, 0x414b, \
+    { 0xa8, 0xc4, 0xfb, 0x58, 0x9d, 0xfc, 0x6b, 0x62 } \
 }
 struct IVirtualBox_vtbl
 {
@@ -2173,6 +2174,7 @@ struct IVirtualBox_vtbl
         PRUint32 firmwareType,
         PRUnichar * version,
         PRUnichar * * url,
+        PRUnichar * * file,
         PRBool * result
     );
 
@@ -3163,10 +3165,10 @@ struct IRemoteDisplayInfo
 
 
 /* Start of struct IConsole Declaration */
-#define ICONSOLE_IID_STR "55dd56a5-1d1d-4d81-b742-b082b9571be6"
+#define ICONSOLE_IID_STR "6375231a-c17c-464b-92cb-ae9e128d71c3"
 #define ICONSOLE_IID { \
-    0x55dd56a5, 0x1d1d, 0x4d81, \
-    { 0xb7, 0x42, 0xb0, 0x82, 0xb9, 0x57, 0x1b, 0xe6 } \
+    0x6375231a, 0xc17c, 0x464b, \
+    { 0x92, 0xcb, 0xae, 0x9e, 0x12, 0x8d, 0x71, 0xc3 } \
 }
 struct IConsole_vtbl
 {
@@ -3309,6 +3311,7 @@ struct IConsole_vtbl
         PRUnichar * hostname,
         PRUint32 tcpport,
         PRUnichar * password,
+        PRUint32 maxDowntime,
         IProgress * * progress
     );
 
@@ -3724,10 +3727,10 @@ struct IGuest
 
 
 /* Start of struct IProgress Declaration */
-#define IPROGRESS_IID_STR "62827ef1-c098-40eb-be96-36d0508489a6"
+#define IPROGRESS_IID_STR "856aa038-853f-42e2-acf7-6e7b02dbe294"
 #define IPROGRESS_IID { \
-    0x62827ef1, 0xc098, 0x40eb, \
-    { 0xbe, 0x96, 0x36, 0xd0, 0x50, 0x84, 0x89, 0xa6 } \
+    0x856aa038, 0x853f, 0x42e2, \
+    { 0xac, 0xf7, 0x6e, 0x7b, 0x02, 0xdb, 0xe2, 0x94 } \
 }
 struct IProgress_vtbl
 {
@@ -3760,6 +3763,9 @@ struct IProgress_vtbl
     nsresult (*GetOperationDescription)(IProgress *pThis, PRUnichar * *operationDescription);
 
     nsresult (*GetOperationPercent)(IProgress *pThis, PRUint32 *operationPercent);
+
+    nsresult (*GetTimeout)(IProgress *pThis, PRUint32 *timeout);
+    nsresult (*SetTimeout)(IProgress *pThis, PRUint32 timeout);
 
     nsresult (*SetCurrentOperationProgress)(
         IProgress *pThis,
