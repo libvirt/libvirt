@@ -947,8 +947,14 @@ static int udevProcessStorage(struct udev_device *device,
 {
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = -1;
+    const char* devnode;
 
-    data->storage.block = strdup(udev_device_get_devnode(device));
+    devnode = udev_device_get_devnode(device);
+    if(!devnode) {
+        VIR_DEBUG("No devnode for '%s'\n", udev_device_get_devpath(device));
+        goto out;
+    }
+    data->storage.block = strdup(devnode);
     if (udevGetStringProperty(device,
                               "DEVNAME",
                               &data->storage.block) == PROPERTY_ERROR) {
