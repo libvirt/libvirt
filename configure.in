@@ -664,7 +664,7 @@ if test "x$with_yajl" != "xno"; then
   CPPFLAGS="$CPPFLAGS $YAJL_CFLAGS"
   LDFLAGS="$LDFLAGS $YAJL_LIBS"
   AC_CHECK_HEADER([yajl/yajl_common.h],[],[
-    if test "x$with_yajl" != "xcheck" ; then
+    if test "x$with_yajl" = "xcheck" ; then
         with_yajl=no
     else
         fail=1
