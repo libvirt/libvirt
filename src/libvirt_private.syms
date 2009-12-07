@@ -183,6 +183,8 @@ virDomainDeviceAddressIsValid;
 virDomainDevicePCIAddressIsValid;
 virDomainDeviceInfoIsSet;
 virDomainDeviceAddressClear;
+virDomainControllerTypeToString;
+virDomainControllerDefFree;
 
 
 # domain_event.h

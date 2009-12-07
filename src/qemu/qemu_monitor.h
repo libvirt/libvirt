@@ -265,4 +265,8 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
                            virHashTablePtr paths);
 
+int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
+                                       const char *bus,
+                                       virDomainDevicePCIAddress *guestAddr);
+
 #endif /* QEMU_MONITOR_H */

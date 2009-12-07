@@ -1250,3 +1250,19 @@ int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
 
     return qemuMonitorTextGetPtyPaths(mon, paths);
 }
+
+
+int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
+                                       const char *bus,
+                                       virDomainDevicePCIAddress *guestAddr)
+{
+    DEBUG("mon=%p, fd=%d type=%s", mon, mon->fd, bus);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONAttachPCIDiskController(mon, bus, guestAddr);
+    else
+        ret = qemuMonitorTextAttachPCIDiskController(mon, bus, guestAddr);
+
+    return ret;
+}

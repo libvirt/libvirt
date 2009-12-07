@@ -5132,6 +5132,45 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     return ret;
 }
 
+static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
+                                                struct qemud_driver *driver,
+                                                virDomainObjPtr vm,
+                                                virDomainControllerDefPtr def)
+{
+    int i, ret;
+    const char* type = virDomainControllerTypeToString(def->type);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+        if ((vm->def->controllers[i]->type == def->type) &&
+            (vm->def->controllers[i]->idx == def->idx)) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("target %s:%d already exists"),
+                             type, def->idx);
+            return -1;
+        }
+    }
+
+    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorAttachPCIDiskController(priv->mon,
+                                             type,
+                                             &def->info.addr.pci);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (ret == 0) {
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        virDomainControllerInsertPreAlloced(vm->def, def);
+    }
+
+    return ret;
+}
+
+
 static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                                  struct qemud_driver *driver,
                                                  virDomainObjPtr vm,
@@ -5517,6 +5556,15 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             virCgroupDenyDevicePath(cgroup,
                                     dev->data.disk->src);
         }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
+        if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            ret = qemudDomainAttachPciControllerDevice(dom->conn, driver, vm, dev->data.controller);
+        } else {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             _("disk controller bus '%s' cannot be hotplugged."),
+                             virDomainControllerTypeToString(dev->data.controller->type));
+            /* fallthrough */
+        }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainAttachNetDevice(dom->conn, driver, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
@@ -5601,6 +5649,67 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         vm->def->ndisks = 0;
     }
     virDomainDiskDefFree(detach);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+static int qemudDomainDetachPciControllerDevice(virConnectPtr conn,
+                                                struct qemud_driver *driver,
+                                                virDomainObjPtr vm,
+                                                virDomainDeviceDefPtr dev)
+{
+    int i, ret = -1;
+    virDomainControllerDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+        if ((vm->def->controllers[i]->type == dev->data.controller->type) &&
+            (vm->def->controllers[i]->idx == dev->data.controller->idx)) {
+            detach = vm->def->controllers[i];
+            break;
+        }
+    }
+
+    if (!detach) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("disk controller %s:%d not found"),
+                         virDomainControllerTypeToString(dev->data.controller->type),
+                         dev->data.controller->idx);
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceAddressIsValid(&detach->info,
+                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED, "%s",
+                         _("device cannot be detached without a PCI address"));
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuMonitorRemovePCIDevice(priv->mon,
+                                   &detach->info.addr.pci) < 0) {
+        qemuDomainObjExitMonitor(vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (vm->def->ncontrollers > 1) {
+        memmove(vm->def->controllers + i,
+                vm->def->controllers + i + 1,
+                sizeof(*vm->def->controllers) *
+                (vm->def->ncontrollers - (i + 1)));
+        vm->def->ncontrollers--;
+        if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(vm->def->controllers);
+        vm->def->ncontrollers = 0;
+    }
+    virDomainControllerDefFree(detach);
 
     ret = 0;
 
@@ -5859,6 +5968,15 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             VIR_WARN0("Fail to restore disk device ownership");
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainDetachNetDevice(dom->conn, driver, vm, dev);
+    } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
+        if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            ret = qemudDomainDetachPciControllerDevice(dom->conn, driver, vm, dev);
+        } else {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                             _("disk controller bus '%s' cannot be hotunplugged."),
+                             virDomainControllerTypeToString(dev->data.controller->type));
+            /* fallthrough */
+        }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemudDomainDetachHostDevice(dom->conn, driver, vm, dev);
     } else

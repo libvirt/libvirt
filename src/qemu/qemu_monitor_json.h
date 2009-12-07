@@ -141,4 +141,8 @@ int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
                                      int vlan,
                                      const char *netname);
 
+int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
+                                           const char *bus,
+                                           virDomainDevicePCIAddress *guestAddr);
+
 #endif /* QEMU_MONITOR_JSON_H */

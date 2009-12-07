@@ -1481,3 +1481,43 @@ int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
+                                           const char *bus,
+                                           virDomainDevicePCIAddress *guestAddr)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    char *dev;
+
+    memset(guestAddr, 0, sizeof(*guestAddr));
+
+    if (virAsprintf(&dev, "if=%s", bus) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    cmd = qemuMonitorJSONMakeCommand("pci_add",
+                                     "s:pci_addr", "auto",
+                                     "s:type", "storage",
+                                     "s:opts", dev,
+                                     NULL);
+    VIR_FREE(dev);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret == 0 &&
+        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
+        ret = -1;
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
