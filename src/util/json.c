@@ -1031,13 +1031,13 @@ cleanup:
 #else
 virJSONValuePtr virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 {
-    ReprotError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+    ReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                 _("No JSON parser implementation is available"));
     return NULL;
 }
-char *virJSONValueToString(virJSONValuePtr object)
+char *virJSONValueToString(virJSONValuePtr object ATTRIBUTE_UNUSED)
 {
-    ReprotError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+    ReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                 _("No JSON parser implementation is available"));
     return NULL;
 }
