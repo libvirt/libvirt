@@ -112,32 +112,20 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
-                                    unsigned hostDomain,
-                                    unsigned hostBus,
-                                    unsigned hostSlot,
-                                    unsigned hostFunction,
-                                    unsigned *guestDomain,
-                                    unsigned *guestBus,
-                                    unsigned *guestSlot);
+                                    virDomainDevicePCIAddress *hostAddr,
+                                    virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              unsigned *guestDomain,
-                              unsigned *guestBus,
-                              unsigned *guestSlot);
+                              virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 unsigned *guestDomain,
-                                 unsigned *guestBus,
-                                 unsigned *guestSlot);
+                                 virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
-                                   unsigned guestDomain,
-                                   unsigned guestBus,
-                                   unsigned guestSlot);
-
+                                   virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,

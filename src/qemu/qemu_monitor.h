@@ -222,13 +222,8 @@ int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                unsigned hostDomain,
-                                unsigned hostBus,
-                                unsigned hostSlot,
-                                unsigned hostFunction,
-                                unsigned *guestDomain,
-                                unsigned *guestBus,
-                                unsigned *guestSlot);
+                                virDomainDevicePCIAddress *hostAddr,
+                                virDomainDevicePCIAddress *guestAddr);
 
 /* XXX disk driver type eg,  qcow/etc.
  * XXX cache mode
@@ -236,23 +231,17 @@ int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
 int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
                           const char *path,
                           const char *bus,
-                          unsigned *guestDomain,
-                          unsigned *guestBus,
-                          unsigned *guestSlot);
+                          virDomainDevicePCIAddress *guestAddr);
 
 /* XXX do we really want to hardcode 'nicstr' as the
  * sendable item here
  */
 int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
                              const char *nicstr,
-                             unsigned *guestDomain,
-                             unsigned *guestBus,
-                             unsigned *guestSlot);
+                             virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               unsigned guestDomain,
-                               unsigned guestBus,
-                               unsigned guestSlot);
+                               virDomainDevicePCIAddress *guestAddr);
 
 
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,

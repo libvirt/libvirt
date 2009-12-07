@@ -1281,9 +1281,7 @@ int qemuMonitorTextAddUSBDeviceMatch(qemuMonitorPtr mon,
 static int
 qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                 const char *reply,
-                                unsigned *domain,
-                                unsigned *bus,
-                                unsigned *slot)
+                                virDomainDevicePCIAddress *addr)
 {
     char *s, *e;
 
@@ -1300,7 +1298,7 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (STRPREFIX(s, "domain ")) {
         s += strlen("domain ");
 
-        if (virStrToLong_ui(s, &e, 10, domain) == -1) {
+        if (virStrToLong_ui(s, &e, 10, &addr->domain) == -1) {
             VIR_WARN(_("Unable to parse domain number '%s'\n"), s);
             return -1;
         }
@@ -1318,7 +1316,7 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
     s += strlen("bus ");
 
-    if (virStrToLong_ui(s, &e, 10, bus) == -1) {
+    if (virStrToLong_ui(s, &e, 10, &addr->bus) == -1) {
         VIR_WARN(_("Unable to parse bus number '%s'\n"), s);
         return -1;
     }
@@ -1335,7 +1333,7 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
     s += strlen("slot ");
 
-    if (virStrToLong_ui(s, &e, 10, slot) == -1) {
+    if (virStrToLong_ui(s, &e, 10, &addr->slot) == -1) {
         VIR_WARN(_("Unable to parse slot number '%s'\n"), s);
         return -1;
     }
@@ -1345,23 +1343,18 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
-                                    unsigned hostDomain ATTRIBUTE_UNUSED,
-                                    unsigned hostBus,
-                                    unsigned hostSlot,
-                                    unsigned hostFunction,
-                                    unsigned *guestDomain,
-                                    unsigned *guestBus,
-                                    unsigned *guestSlot)
+                                    virDomainDevicePCIAddress *hostAddr,
+                                    virDomainDevicePCIAddress *guestAddr)
 {
     char *cmd;
     char *reply = NULL;
     int ret = -1;
 
-    *guestDomain = *guestBus = *guestSlot = 0;
+    memset(guestAddr, 0, sizeof(*guestAddr));
 
-    /* XXX hostDomain */
+    /* XXX hostAddr->domain */
     if (virAsprintf(&cmd, "pci_add pci_addr=auto host host=%.2x:%.2x.%.1x",
-                    hostBus, hostSlot, hostFunction) < 0) {
+                    hostAddr->bus, hostAddr->slot, hostAddr->function) < 0) {
         virReportOOMError(NULL);
         goto cleanup;
     }
@@ -1378,10 +1371,7 @@ int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorTextParsePciAddReply(mon, reply,
-                                        guestDomain,
-                                        guestBus,
-                                        guestSlot) < 0) {
+    if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("parsing pci_add reply failed: %s"), reply);
         goto cleanup;
@@ -1399,9 +1389,8 @@ cleanup:
 int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              unsigned *guestDomain,
-                              unsigned *guestBus,
-                              unsigned *guestSlot) {
+                              virDomainDevicePCIAddress *guestAddr)
+{
     char *cmd = NULL;
     char *reply = NULL;
     char *safe_path = NULL;
@@ -1427,8 +1416,7 @@ try_command:
         goto cleanup;
     }
 
-    if (qemuMonitorTextParsePciAddReply(mon, reply,
-                                        guestDomain, guestBus, guestSlot) < 0) {
+    if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
             VIR_FREE(cmd);
@@ -1453,9 +1441,7 @@ cleanup:
 
 int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 unsigned *guestDomain,
-                                 unsigned *guestBus,
-                                 unsigned *guestSlot)
+                                 virDomainDevicePCIAddress *guestAddr)
 {
     char *cmd;
     char *reply = NULL;
@@ -1472,8 +1458,7 @@ int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (qemuMonitorTextParsePciAddReply(mon, reply,
-                                        guestDomain, guestBus, guestSlot) < 0) {
+    if (qemuMonitorTextParsePciAddReply(mon, reply, guestAddr) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          _("parsing pci_add reply failed: %s"), reply);
         goto cleanup;
@@ -1489,9 +1474,7 @@ cleanup:
 
 
 int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
-                                   unsigned guestDomain,
-                                   unsigned guestBus,
-                                   unsigned guestSlot)
+                                   virDomainDevicePCIAddress *guestAddr)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -1500,13 +1483,14 @@ int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
 
 try_command:
     if (tryOldSyntax) {
-        if (virAsprintf(&cmd, "pci_del 0 %.2x", guestSlot) < 0) {
+        if (virAsprintf(&cmd, "pci_del 0 %.2x", guestAddr->slot) < 0) {
             virReportOOMError(NULL);
             goto cleanup;
         }
     } else {
+        /* XXX function ? */
         if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
-                        guestDomain, guestBus, guestSlot) < 0) {
+                        guestAddr->domain, guestAddr->bus, guestAddr->slot) < 0) {
             virReportOOMError(NULL);
             goto cleanup;
         }
@@ -1534,7 +1518,7 @@ try_command:
         strstr(reply, "Invalid pci address")) {
         qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           _("failed to detach PCI device, invalid address %.4x:%.2x:%.2x: %s"),
-                          guestDomain, guestBus, guestSlot, reply);
+                          guestAddr->domain, guestAddr->bus, guestAddr->slot, reply);
         goto cleanup;
     }
 

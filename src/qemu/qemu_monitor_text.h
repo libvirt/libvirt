@@ -116,32 +116,20 @@ int qemuMonitorTextAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
-                                    unsigned hostDomain,
-                                    unsigned hostBus,
-                                    unsigned hostSlot,
-                                    unsigned hostFunction,
-                                    unsigned *guestDomain,
-                                    unsigned *guestBus,
-                                    unsigned *guestSlot);
+                                    virDomainDevicePCIAddress *hostAddr,
+                                    virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              unsigned *guestDomain,
-                              unsigned *guestBus,
-                              unsigned *guestSlot);
+                              virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 unsigned *guestDomain,
-                                 unsigned *guestBus,
-                                 unsigned *guestSlot);
+                                 virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
-                                   unsigned guestDomain,
-                                   unsigned guestBus,
-                                   unsigned guestSlot);
-
+                                   virDomainDevicePCIAddress *guestAddr);
 
 int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,

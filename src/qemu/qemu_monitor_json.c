@@ -1206,9 +1206,7 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
 /* XXX qemu also returns a 'function' number now */
 static int
 qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
-                               unsigned *guestDomain,
-                               unsigned *guestBus,
-                               unsigned *guestSlot)
+                               virDomainDevicePCIAddress *guestAddr)
 {
     virJSONValuePtr addr;
 
@@ -1219,21 +1217,27 @@ qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
         return -1;
     }
 
-    if (virJSONValueObjectGetNumberUint(addr, "domain", guestDomain) < 0) {
+    if (virJSONValueObjectGetNumberUint(addr, "domain", &guestAddr->domain) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device domain number"));
         return -1;
     }
 
-    if (virJSONValueObjectGetNumberUint(addr, "bus", guestBus) < 0) {
+    if (virJSONValueObjectGetNumberUint(addr, "bus", &guestAddr->bus) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device bus number"));
         return -1;
     }
 
-    if (virJSONValueObjectGetNumberUint(addr, "slot", guestSlot) < 0) {
+    if (virJSONValueObjectGetNumberUint(addr, "slot", &guestAddr->slot) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device slot number"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUint(addr, "function", &guestAddr->function) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("pci_add reply was missing device function number"));
         return -1;
     }
 
@@ -1242,24 +1246,19 @@ qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
 
 
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
-                                    unsigned hostDomain ATTRIBUTE_UNUSED,
-                                    unsigned hostBus,
-                                    unsigned hostSlot,
-                                    unsigned hostFunction,
-                                    unsigned *guestDomain,
-                                    unsigned *guestBus,
-                                    unsigned *guestSlot)
+                                    virDomainDevicePCIAddress *hostAddr,
+                                    virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     char *dev;
 
-    *guestDomain = *guestBus = *guestSlot = 0;
+    memset(guestAddr, 0, sizeof(*guestAddr));
 
     /* XXX hostDomain */
     if (virAsprintf(&dev, "host=%.2x:%.2x.%.1x",
-                    hostBus, hostSlot, hostFunction) < 0) {
+                    hostAddr->bus, hostAddr->slot, hostAddr->function) < 0) {
         virReportOOMError(NULL);
         return -1;
     }
@@ -1279,7 +1278,7 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestDomain, guestBus, guestSlot) < 0)
+        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1291,15 +1290,14 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
 int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              unsigned *guestDomain,
-                              unsigned *guestBus,
-                              unsigned *guestSlot) {
+                              virDomainDevicePCIAddress *guestAddr)
+{
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     char *dev;
 
-    *guestDomain = *guestBus = *guestSlot = 0;
+    memset(guestAddr, 0, sizeof(*guestAddr));
 
     if (virAsprintf(&dev, "file=%s,if=%s", path, bus) < 0) {
         virReportOOMError(NULL);
@@ -1321,7 +1319,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestDomain, guestBus, guestSlot) < 0)
+        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1332,9 +1330,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
 
 int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 unsigned *guestDomain,
-                                 unsigned *guestBus,
-                                 unsigned *guestSlot)
+                                 virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("pci_add",
@@ -1344,7 +1340,7 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
                                                      NULL);
     virJSONValuePtr reply = NULL;
 
-    *guestDomain = *guestBus = *guestSlot = 0;
+    memset(guestAddr, 0, sizeof(*guestAddr));
 
     if (!cmd)
         return -1;
@@ -1355,7 +1351,7 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestDomain, guestBus, guestSlot) < 0)
+        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1365,17 +1361,16 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
-                                   unsigned guestDomain,
-                                   unsigned guestBus,
-                                   unsigned guestSlot)
+                                   virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     char *addr;
 
+    /* XXX what about function ? */
     if (virAsprintf(&addr, "%.4x:%.2x:%.2x",
-                    guestDomain, guestBus, guestSlot) < 0) {
+                    guestAddr->domain, guestAddr->bus, guestAddr->slot) < 0) {
         virReportOOMError(NULL);
         return -1;
     }

@@ -1117,33 +1117,18 @@ int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                unsigned hostDomain,
-                                unsigned hostBus,
-                                unsigned hostSlot,
-                                unsigned hostFunction,
-                                unsigned *guestDomain,
-                                unsigned *guestBus,
-                                unsigned *guestSlot)
+                                virDomainDevicePCIAddress *hostAddr,
+                                virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     DEBUG("mon=%p, fd=%d domain=%d bus=%d slot=%d function=%d",
           mon, mon->fd,
-          hostDomain, hostBus, hostSlot, hostFunction);
+          hostAddr->domain, hostAddr->bus, hostAddr->slot, hostAddr->function);
 
     if (mon->json)
-        ret = qemuMonitorJSONAddPCIHostDevice(mon, hostDomain,
-                                              hostBus, hostSlot,
-                                              hostFunction,
-                                              guestDomain,
-                                              guestBus,
-                                              guestSlot);
+        ret = qemuMonitorJSONAddPCIHostDevice(mon, hostAddr, guestAddr);
     else
-        ret = qemuMonitorTextAddPCIHostDevice(mon, hostDomain,
-                                              hostBus, hostSlot,
-                                              hostFunction,
-                                              guestDomain,
-                                              guestBus,
-                                              guestSlot);
+        ret = qemuMonitorTextAddPCIHostDevice(mon, hostAddr, guestAddr);
     return ret;
 }
 
@@ -1151,58 +1136,47 @@ int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
 int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
                           const char *path,
                           const char *bus,
-                          unsigned *guestDomain,
-                          unsigned *guestBus,
-                          unsigned *guestSlot)
+                          virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     DEBUG("mon=%p, fd=%d path=%s bus=%s",
           mon, mon->fd, path, bus);
 
     if (mon->json)
-        ret = qemuMonitorJSONAddPCIDisk(mon, path, bus,
-                                        guestDomain, guestBus, guestSlot);
+        ret = qemuMonitorJSONAddPCIDisk(mon, path, bus, guestAddr);
     else
-        ret = qemuMonitorTextAddPCIDisk(mon, path, bus,
-                                        guestDomain, guestBus, guestSlot);
+        ret = qemuMonitorTextAddPCIDisk(mon, path, bus, guestAddr);
     return ret;
 }
 
 
 int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
                              const char *nicstr,
-                             unsigned *guestDomain,
-                             unsigned *guestBus,
-                             unsigned *guestSlot)
+                             virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
     DEBUG("mon=%p, fd=%d nicstr=%s", mon, mon->fd, nicstr);
 
     if (mon->json)
-        ret = qemuMonitorJSONAddPCINetwork(mon, nicstr, guestDomain,
-                                           guestBus, guestSlot);
+        ret = qemuMonitorJSONAddPCINetwork(mon, nicstr, guestAddr);
     else
-        ret = qemuMonitorTextAddPCINetwork(mon, nicstr, guestDomain,
-                                           guestBus, guestSlot);
+        ret = qemuMonitorTextAddPCINetwork(mon, nicstr, guestAddr);
     return ret;
 }
 
 
 int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               unsigned guestDomain,
-                               unsigned guestBus,
-                               unsigned guestSlot)
+                               virDomainDevicePCIAddress *guestAddr)
 {
     int ret;
-    DEBUG("mon=%p, fd=%d domain=%d bus=%d slot=%d",
-          mon, mon->fd, guestDomain, guestBus, guestSlot);
+    DEBUG("mon=%p, fd=%d domain=%d bus=%d slot=%d function=%d",
+          mon, mon->fd, guestAddr->domain, guestAddr->bus,
+          guestAddr->slot, guestAddr->function);
 
     if (mon->json)
-        ret = qemuMonitorJSONRemovePCIDevice(mon, guestDomain,
-                                             guestBus, guestSlot);
+        ret = qemuMonitorJSONRemovePCIDevice(mon, guestAddr);
     else
-        ret = qemuMonitorTextRemovePCIDevice(mon, guestDomain,
-                                             guestBus, guestSlot);
+        ret = qemuMonitorTextRemovePCIDevice(mon, guestAddr);
     return ret;
 }
 
