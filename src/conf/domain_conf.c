@@ -231,7 +231,7 @@ static void virDomainObjListDeallocator(void *payload, const char *name ATTRIBUT
 {
     virDomainObjPtr obj = payload;
     virDomainObjLock(obj);
-    if (!virDomainObjUnref(obj))
+    if (virDomainObjUnref(obj) > 0)
         virDomainObjUnlock(obj);
 }
 
@@ -637,9 +637,9 @@ int virDomainObjUnref(virDomainObjPtr dom)
     if (dom->refs == 0) {
         virDomainObjUnlock(dom);
         virDomainObjFree(dom);
-        return 1;
+        return 0;
     }
-    return 0;
+    return dom->refs;
 }
 
 static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
