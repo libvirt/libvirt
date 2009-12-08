@@ -94,46 +94,78 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     /* Look for a non-zero reply followed by prompt */
     if (msg && !msg->finished) {
-        const char *end;
+        char *start = NULL;
+        char *end = NULL;
+        char *skip;
 
-        /* We might get a prompt for a password */
-        end = strstr(data + used, PASSWORD_PROMPT);
-        if (end) {
-            VIR_DEBUG("Woooo passwowrd [%s]", data + used);
-            if (msg->passwordHandler) {
-                size_t consumed;
-                /* Try and handle the prompt */
-                if (msg->passwordHandler(mon, msg,
-                                         data + used,
-                                         len - used,
-                                         msg->passwordOpaque) < 0)
-                    return -1;
-
-                /* Skip over prompt now */
-                consumed = (end + strlen(PASSWORD_PROMPT))
-                    - (data + used);
-                used += consumed;
-            } else {
-                errno = EACCES;
-                return -1;
+        /* If we're here, we've already sent the command. We now
+         * strip the trailing '\r' because it makes the matching
+         * code that follows a little easier ie we can just strstr()
+         * for the original command
+         */
+        if (msg->txLength > 0) {
+            char *tmp;
+            if ((tmp = strchr(msg->txBuffer, '\r'))) {
+                *tmp = '\0';
             }
         }
 
-        /* We use the arrival of BASIC_PROMPT to detect when we've got a
-         * complete reply available from a command */
-        end = strstr(data + used, BASIC_PROMPT);
-        if (end) {
-            /* QEMU echos the command back to us, full of control
-             * character junk that we don't want. Fortunately this
-             * is all terminated by LINE_ENDING, so we can easily
-             * skip over the control character junk */
-            const char *start = strstr(data + used, LINE_ENDING);
-            if (!start)
-                start = data + used;
-            else
-                start += strlen(LINE_ENDING);
-            int want = end - start;
+        /* QEMU echos the command back to us, full of control
+         * character junk that we don't want. We have to skip
+         * over this junk by looking for the first complete
+         * repetition of our command. Then we can look for
+         * the prompt that is supposed to follow
+         *
+         * NB, we can't optimize by immediately looking for
+         * LINE_ENDING, because QEMU 0.10 has bad problems
+         * when initially connecting where it might write a
+         * prompt in the wrong place. So we must not look
+         * for LINE_ENDING, or BASIC_PROMPT until we've
+         * seen our original command echod.
+         */
+        skip = strstr(data + used, msg->txBuffer);
 
+        /* After the junk we should have a line ending... */
+        if (skip) {
+            start = strstr(skip + strlen(msg->txBuffer), LINE_ENDING);
+        }
+
+        /* ... then our command reply data, following by a (qemu) prompt */
+        if (start) {
+            char *passwd;
+            start += strlen(LINE_ENDING);
+
+            /* We might get a prompt for a password before the (qemu) prompt */
+            passwd = strstr(start, PASSWORD_PROMPT);
+            if (passwd) {
+                VIR_DEBUG("Seen a passwowrd prompt [%s]", data + used);
+                if (msg->passwordHandler) {
+                    int i;
+                    /* Try and handle the prompt */
+                    if (msg->passwordHandler(mon, msg,
+                                             start,
+                                             passwd - start + strlen(PASSWORD_PROMPT),
+                                             msg->passwordOpaque) < 0)
+                        return -1;
+
+                    /* Blank out the password prompt so we don't re-trigger
+                     * if we have to go back to sleep for more I/O */
+                    for (i = 0 ; i < strlen(PASSWORD_PROMPT) ; i++)
+                        start[i] = ' ';
+
+                    /* Handled, so skip forward over password prompt */
+                    start = passwd;
+                } else {
+                    errno = EACCES;
+                    return -1;
+                }
+            }
+
+            end = strstr(start, BASIC_PROMPT);
+        }
+
+        if (start && end) {
+            int want = end - start;
             /* Annoyingly some commands may not have any reply data
              * at all upon success, but since we've detected the
              * BASIC_PROMPT we can reasonably reliably cope */

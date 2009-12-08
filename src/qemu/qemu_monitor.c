@@ -39,6 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+#define QEMU_DEBUG_RAW_IO 0
+
 struct _qemuMonitor {
     virMutex lock;
     virCond notify;
@@ -163,6 +165,24 @@ char *qemuMonitorEscapeShell(const char *in)
 }
 
 
+#if QEMU_DEBUG_RAW_IO
+#include <c-ctype.h>
+static char * qemuMonitorEscapeNonPrintable(const char *text)
+{
+    int i;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    for (i = 0 ; text[i] != '\0' ; i++) {
+        if (c_isprint(text[i]) ||
+            text[i] == '\n' ||
+            (text[i] == '\r' && text[i+1] == '\n'))
+            virBufferVSprintf(&buf,"%c", text[i]);
+        else
+            virBufferVSprintf(&buf, "0x%02x", text[i]);
+    }
+    return virBufferContentAndReset(&buf);
+}
+#endif
+
 void qemuMonitorLock(qemuMonitorPtr mon)
 {
     virMutexLock(&mon->lock);
@@ -282,7 +302,15 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
     if (mon->msg && mon->msg->txOffset == mon->msg->txLength)
         msg = mon->msg;
 
+#if QEMU_DEBUG_RAW_IO
+    char *str1 = qemuMonitorEscapeNonPrintable(msg ? msg->txBuffer : "");
+    char *str2 = qemuMonitorEscapeNonPrintable(mon->buffer);
+    VIR_ERROR("Process %d %p %p [[[[%s]]][[[%s]]]", (int)mon->bufferOffset, mon->msg, msg, str1, str2);
+    VIR_FREE(str1);
+    VIR_FREE(str2);
+#else
     VIR_DEBUG("Process %d", (int)mon->bufferOffset);
+#endif
     if (mon->json)
         len = qemuMonitorJSONIOProcess(mon,
                                        mon->buffer, mon->bufferOffset,
