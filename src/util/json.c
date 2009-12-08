@@ -29,8 +29,10 @@
 #include "logging.h"
 #include "util.h"
 
+#if HAVE_YAJL
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
+#endif
 
 /* XXX fixme */
 #define VIR_FROM_THIS VIR_FROM_NONE
