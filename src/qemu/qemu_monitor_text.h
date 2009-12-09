@@ -157,5 +157,7 @@ int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
                                virDomainDevicePCIAddress *controllerAddr,
                                virDomainDeviceDriveAddress *driveAddr);
 
+int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
+                                      qemuMonitorPCIAddress **addrs);
 
 #endif /* QEMU_MONITOR_TEXT_H */

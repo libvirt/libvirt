@@ -274,4 +274,15 @@ int qemuMonitorAttachDrive(qemuMonitorPtr mon,
                            virDomainDevicePCIAddress *controllerAddr,
                            virDomainDeviceDriveAddress *driveAddr);
 
+
+typedef struct _qemuMonitorPCIAddress qemuMonitorPCIAddress;
+struct _qemuMonitorPCIAddress {
+    unsigned int vendor;
+    unsigned int product;
+    virDomainDevicePCIAddress addr;
+};
+
+int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
+                                  qemuMonitorPCIAddress **addrs);
+
 #endif /* QEMU_MONITOR_H */

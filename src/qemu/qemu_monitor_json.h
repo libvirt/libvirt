@@ -150,4 +150,7 @@ int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
                                virDomainDevicePCIAddress *controllerAddr,
                                virDomainDeviceDriveAddress *driveAddr);
 
+int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
+                                      qemuMonitorPCIAddress **addrs);
+
 #endif /* QEMU_MONITOR_JSON_H */

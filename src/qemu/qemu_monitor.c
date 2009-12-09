@@ -1286,3 +1286,16 @@ int qemuMonitorAttachDrive(qemuMonitorPtr mon,
 
     return ret;
 }
+
+int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
+                                  qemuMonitorPCIAddress **addrs)
+{
+    DEBUG("mon=%p, fd=%d addrs=%p", mon, mon->fd, addrs);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONGetAllPCIAddresses(mon, addrs);
+    else
+        ret = qemuMonitorTextGetAllPCIAddresses(mon, addrs);
+    return ret;
+}

@@ -1691,6 +1691,364 @@ qemuInitPasswords(struct qemud_driver *driver,
 }
 
 
+#define QEMU_PCI_VENDOR_INTEL     0x8086
+#define QEMU_PCI_VENDOR_LSI_LOGIC 0x1000
+#define QEMU_PCI_VENDOR_REDHAT    0x1af4
+#define QEMU_PCI_VENDOR_CIRRUS    0x1013
+#define QEMU_PCI_VENDOR_REALTEK   0x10ec
+#define QEMU_PCI_VENDOR_AMD       0x1022
+#define QEMU_PCI_VENDOR_ENSONIQ   0x1274
+#define QEMU_PCI_VENDOR_VMWARE    0x15ad
+#define QEMU_PCI_VENDOR_QEMU      0x1234
+
+#define QEMU_PCI_PRODUCT_DISK_VIRTIO 0x1001
+
+#define QEMU_PCI_PRODUCT_NIC_NE2K     0x8029
+#define QEMU_PCI_PRODUCT_NIC_PCNET    0x2000
+#define QEMU_PCI_PRODUCT_NIC_RTL8139  0x8139
+#define QEMU_PCI_PRODUCT_NIC_E1000    0x100E
+#define QEMU_PCI_PRODUCT_NIC_VIRTIO   0x1000
+
+#define QEMU_PCI_PRODUCT_VGA_CIRRUS 0x00b8
+#define QEMU_PCI_PRODUCT_VGA_VMWARE 0x0405
+#define QEMU_PCI_PRODUCT_VGA_STDVGA 0x1111
+
+#define QEMU_PCI_PRODUCT_AUDIO_AC97    0x2415
+#define QEMU_PCI_PRODUCT_AUDIO_ES1370  0x5000
+
+#define QEMU_PCI_PRODUCT_CONTROLLER_PIIX 0x7010
+#define QEMU_PCI_PRODUCT_CONTROLLER_LSI  0x0012
+
+#define QEMU_PCI_PRODUCT_WATCHDOG_I63000ESB 0x25ab
+
+static int
+qemuAssignNextPCIAddress(virDomainDeviceInfo *info,
+                         int vendor,
+                         int product,
+                         qemuMonitorPCIAddress *addrs,
+                         int naddrs)
+{
+    int found = 0;
+    int i;
+
+    VIR_DEBUG("Look for %x:%x out of %d", vendor, product, naddrs);
+
+    for (i = 0 ; (i < naddrs) && !found; i++) {
+        VIR_DEBUG("Maybe %x:%x", addrs[i].vendor, addrs[i].product);
+        if (addrs[i].vendor == vendor &&
+            addrs[i].product == product) {
+            VIR_DEBUG("Match %d", i);
+            found = 1;
+            break;
+        }
+    }
+    if (!found) {
+        return -1;
+    }
+
+    /* Blank it out so this device isn't matched again */
+    addrs[i].vendor = 0;
+    addrs[i].product = 0;
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        info->addr.pci.domain = addrs[i].addr.domain;
+        info->addr.pci.bus = addrs[i].addr.bus;
+        info->addr.pci.slot = addrs[i].addr.slot;
+        info->addr.pci.function = addrs[i].addr.function;
+    }
+
+    return 0;
+}
+
+static int
+qemuGetPCIDiskVendorProduct(virDomainDiskDefPtr def,
+                            unsigned *vendor,
+                            unsigned *product)
+{
+    switch (def->bus) {
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        *vendor = QEMU_PCI_VENDOR_REDHAT;
+        *product = QEMU_PCI_PRODUCT_DISK_VIRTIO;
+        break;
+
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuGetPCINetVendorProduct(virDomainNetDefPtr def,
+                            unsigned *vendor,
+                            unsigned *product)
+{
+    if (!def->model)
+        return -1;
+
+    if (STREQ(def->model, "ne2k_pci")) {
+        *vendor = QEMU_PCI_VENDOR_REALTEK;
+        *product = QEMU_PCI_PRODUCT_NIC_NE2K;
+    } else if (STREQ(def->model, "pcnet")) {
+        *vendor = QEMU_PCI_VENDOR_AMD;
+        *product = QEMU_PCI_PRODUCT_NIC_PCNET;
+    } else if (STREQ(def->model, "rtl8139")) {
+        *vendor = QEMU_PCI_VENDOR_REALTEK;
+        *product = QEMU_PCI_PRODUCT_NIC_RTL8139;
+    } else if (STREQ(def->model, "e1000")) {
+        *vendor = QEMU_PCI_VENDOR_INTEL;
+        *product = QEMU_PCI_PRODUCT_NIC_E1000;
+    } else if (STREQ(def->model, "virtio")) {
+        *vendor = QEMU_PCI_VENDOR_REDHAT;
+        *product = QEMU_PCI_PRODUCT_NIC_VIRTIO;
+    } else {
+        VIR_INFO("Unexpected NIC model %s, cannot get PCI address",
+                 def->model);
+        return -1;
+    }
+    return 0;
+}
+
+static int
+qemuGetPCIControllerVendorProduct(virDomainControllerDefPtr def,
+                                  unsigned *vendor,
+                                  unsigned *product)
+{
+    switch (def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+        *vendor = QEMU_PCI_VENDOR_LSI_LOGIC;
+        *product = QEMU_PCI_PRODUCT_CONTROLLER_LSI;
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+        /* XXX we could put in the ISA bridge address, but
+           that's not technically the FDC's address */
+        return -1;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+        *vendor = QEMU_PCI_VENDOR_INTEL;
+        *product = QEMU_PCI_PRODUCT_CONTROLLER_PIIX;
+        break;
+
+    default:
+        VIR_INFO("Unexpected controller type %s, cannot get PCI address",
+                 virDomainControllerTypeToString(def->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuGetPCIVideoVendorProduct(virDomainVideoDefPtr def,
+                             unsigned *vendor,
+                             unsigned *product)
+{
+    switch (def->type) {
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+        *vendor = QEMU_PCI_VENDOR_CIRRUS;
+        *product = QEMU_PCI_PRODUCT_VGA_CIRRUS;
+        break;
+
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        *vendor = QEMU_PCI_VENDOR_QEMU;
+        *product = QEMU_PCI_PRODUCT_VGA_STDVGA;
+        break;
+
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        *vendor = QEMU_PCI_VENDOR_VMWARE;
+        *product = QEMU_PCI_PRODUCT_VGA_VMWARE;
+        break;
+
+    default:
+        return -1;
+    }
+    return 0;
+}
+
+static int
+qemuGetPCISoundVendorProduct(virDomainSoundDefPtr def,
+                             unsigned *vendor,
+                             unsigned *product)
+{
+    switch (def->model) {
+    case VIR_DOMAIN_SOUND_MODEL_ES1370:
+        *vendor = QEMU_PCI_VENDOR_ENSONIQ;
+        *product = QEMU_PCI_PRODUCT_AUDIO_ES1370;
+        break;
+
+    case VIR_DOMAIN_SOUND_MODEL_AC97:
+        *vendor = QEMU_PCI_VENDOR_INTEL;
+        *product = QEMU_PCI_PRODUCT_AUDIO_AC97;
+        break;
+
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuGetPCIWatchdogVendorProduct(virDomainWatchdogDefPtr def,
+                                unsigned *vendor,
+                                unsigned *product)
+{
+    switch (def->model) {
+    case VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB:
+        *vendor = QEMU_PCI_VENDOR_INTEL;
+        *product = QEMU_PCI_PRODUCT_WATCHDOG_I63000ESB;
+        break;
+
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/*
+ * This entire method assumes that PCI devices in 'info pci'
+ * match ordering of devices specified on the command line
+ * wrt to devices of matching vendor+product
+ *
+ * XXXX this might not be a valid assumption if we assign
+ * some static addrs on CLI. Have to check that...
+ */
+static int
+qemuAssignPCIAddresses(virDomainObjPtr vm,
+                       qemuMonitorPCIAddress *addrs,
+                       int naddrs)
+{
+    unsigned int vendor = 0, product = 0;
+    int i;
+
+    /* XXX should all these vendor/product IDs be kept in the
+     * actual device data structure instead ?
+     */
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (qemuGetPCIDiskVendorProduct(vm->def->disks[i], &vendor, &product) < 0)
+            continue;
+
+        if (qemuAssignNextPCIAddress(&(vm->def->disks[i]->info),
+                                     vendor, product,
+                                     addrs, naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for VirtIO disk %s"),
+                             vm->def->disks[i]->dst);
+            return -1;
+        }
+    }
+
+    for (i = 0 ; i < vm->def->nnets ; i++) {
+        if (qemuGetPCINetVendorProduct(vm->def->nets[i], &vendor, &product) < 0)
+            continue;
+
+        if (qemuAssignNextPCIAddress(&(vm->def->nets[i]->info),
+                                     vendor, product,
+                                     addrs,  naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for %s NIC"),
+                             vm->def->nets[i]->model);
+            return -1;
+        }
+    }
+
+    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+        if (qemuGetPCIControllerVendorProduct(vm->def->controllers[i], &vendor, &product) < 0)
+            continue;
+
+        if (qemuAssignNextPCIAddress(&(vm->def->controllers[i]->info),
+                                     vendor, product,
+                                     addrs,  naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for controller %s"),
+                             virDomainControllerTypeToString(vm->def->controllers[i]->type));
+            return -1;
+        }
+    }
+
+    for (i = 0 ; i < vm->def->nvideos ; i++) {
+        if (qemuGetPCIVideoVendorProduct(vm->def->videos[i], &vendor, &product) < 0)
+            continue;
+
+        if (qemuAssignNextPCIAddress(&(vm->def->videos[i]->info),
+                                     vendor, product,
+                                     addrs,  naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for video adapter %s"),
+                             virDomainVideoTypeToString(vm->def->videos[i]->type));
+            return -1;
+        }
+    }
+
+    for (i = 0 ; i < vm->def->nsounds ; i++) {
+        if (qemuGetPCISoundVendorProduct(vm->def->sounds[i], &vendor, &product) < 0)
+            continue;
+
+        if (qemuAssignNextPCIAddress(&(vm->def->sounds[i]->info),
+                                     vendor, product,
+                                     addrs,  naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for sound adapter %s"),
+                             virDomainSoundModelTypeToString(vm->def->sounds[i]->model));
+            return -1;
+        }
+    }
+
+
+    if (vm->def->watchdog &&
+        qemuGetPCIWatchdogVendorProduct(vm->def->watchdog, &vendor, &product) == 0) {
+        if (qemuAssignNextPCIAddress(&(vm->def->watchdog->info),
+                                     vendor, product,
+                                     addrs,  naddrs) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot find PCI address for watchdog %s"),
+                             virDomainWatchdogModelTypeToString(vm->def->watchdog->model));
+            return -1;
+        }
+    }
+
+    /* XXX console (virtio) */
+
+
+    /* ... and now things we don't have in our xml */
+
+    /* XXX USB controller ? */
+
+    /* XXXX virtio balloon ? */
+
+    /* XXX what about other PCI devices (ie bridges) */
+
+    return 0;
+}
+
+static int
+qemuInitPCIAddresses(struct qemud_driver *driver,
+                     virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int naddrs;
+    int ret;
+    qemuMonitorPCIAddress *addrs = NULL;
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    naddrs = qemuMonitorGetAllPCIAddresses(priv->mon,
+                                           &addrs);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    ret = qemuAssignPCIAddresses(vm, addrs, naddrs);
+
+    VIR_FREE(addrs);
+
+    return ret;
+}
+
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
@@ -2564,6 +2922,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto abort;
 
     if (qemuInitPasswords(driver, vm) < 0)
+        goto abort;
+
+    if (qemuInitPCIAddresses(driver, vm) < 0)
         goto abort;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);

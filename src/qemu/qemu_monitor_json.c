@@ -1589,3 +1589,10 @@ int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                      qemuMonitorPCIAddress **addrs ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
