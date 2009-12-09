@@ -2124,7 +2124,6 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *vmx = NULL;
 
     memset(zero, 0, VIR_UUID_BUFLEN);
 
@@ -2347,16 +2346,10 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
         goto failure;
     }
 
-    vmx = virBufferContentAndReset(&buffer);
-
-    return vmx;
+    return virBufferContentAndReset(&buffer);
 
   failure:
-    if (vmx == NULL) {
-        vmx = virBufferContentAndReset(&buffer);
-    }
-
-    VIR_FREE(vmx);
+    virBufferFreeAndReset(&buffer);
 
     return NULL;
 }

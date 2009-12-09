@@ -3723,6 +3723,7 @@ virDomainCpuSetFormat(virConnectPtr conn, char *cpuset, int maxcpu)
     }
 
     if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
         virReportOOMError(conn);
         return NULL;
     }
@@ -4531,7 +4532,7 @@ char *virDomainDefFormat(virConnectPtr conn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    const char *type = NULL, *tmp;
+    const char *type = NULL;
     int n, allones = 1;
 
     if (!(type = virDomainVirtTypeToString(def->virtType))) {
@@ -4787,8 +4788,7 @@ char *virDomainDefFormat(virConnectPtr conn,
  no_memory:
     virReportOOMError(conn);
  cleanup:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4797,7 +4797,7 @@ char *virDomainObjFormat(virConnectPtr conn,
                          virDomainObjPtr obj,
                          int flags)
 {
-    char *config_xml = NULL, *xml = NULL;
+    char *config_xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferVSprintf(&buf, "<domstatus state='%s' pid='%d'>\n",
@@ -4825,8 +4825,7 @@ char *virDomainObjFormat(virConnectPtr conn,
 no_memory:
     virReportOOMError(conn);
 error:
-    xml = virBufferContentAndReset(&buf);
-    VIR_FREE(xml);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

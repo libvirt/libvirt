@@ -792,8 +792,7 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     return 0;
 
 exit:
-    param = virBufferContentAndReset(&buf);
-    VIR_FREE(param);
+    virBufferFreeAndReset(&buf);
     return -1;
 }
 

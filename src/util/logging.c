@@ -867,8 +867,10 @@ char *virLogGetFilters(void) {
     }
     virLogUnlock();
 
-    if (virBufferError(&filterbuf))
+    if (virBufferError(&filterbuf)) {
+        virBufferFreeAndReset(&filterbuf);
         return NULL;
+    }
 
     return virBufferContentAndReset(&filterbuf);
 }
@@ -905,8 +907,10 @@ char *virLogGetOutputs(void) {
     }
     virLogUnlock();
 
-    if (virBufferError(&outputbuf))
+    if (virBufferError(&outputbuf)) {
+        virBufferFreeAndReset(&outputbuf);
         return NULL;
+    }
 
     return virBufferContentAndReset(&outputbuf);
 }

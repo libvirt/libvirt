@@ -26,6 +26,7 @@
 #include "one_client.h"
 #include "datatypes.h"
 #include "util.h"
+#include "memory.h"
 
 oneClient one_client;
 
@@ -54,12 +55,12 @@ int c_oneReturnCode(xmlrpc_value *resultP)
     if( return_code )
     {
         xmlrpc_DECREF(resultP);
-        free(return_string);
+        VIR_FREE(return_string);
         return 0;
     }
     else
     {
-        free(one_client.error);
+        VIR_FREE(one_client.error);
 
         one_client.error=return_string;
         return -1;
@@ -125,7 +126,7 @@ int c_oneAllocateTemplate(char* vm_template)
         xmlrpc_DECREF(valueP);
         xmlrpc_DECREF(resultP);
 
-        free(one_client.error);
+        VIR_FREE(one_client.error);
 
         one_client.error=return_string;
         return -1;
@@ -194,7 +195,7 @@ int c_oneVmInfo(int vmid, char* ret_info, int length)
     }
 
     xmlrpc_DECREF(resultP);
-    free(return_string);
+    VIR_FREE(return_string);
 
     return retval;
 }

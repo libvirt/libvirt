@@ -246,7 +246,6 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDefPtr caps;
-    char *tmp;
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
@@ -464,8 +463,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 
  no_memory:
     virReportOOMError(conn);
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

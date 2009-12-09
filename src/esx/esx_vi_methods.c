@@ -158,9 +158,7 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -214,9 +212,7 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -283,9 +279,7 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -352,9 +346,7 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -451,9 +443,7 @@ esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -509,9 +499,7 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -579,9 +567,7 @@ esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -630,9 +616,7 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -702,9 +686,7 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -758,9 +740,7 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -824,9 +804,7 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -928,9 +906,7 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -1003,9 +979,7 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -1089,9 +1063,7 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -1165,9 +1137,7 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -1232,9 +1202,7 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -1299,9 +1267,7 @@ esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 

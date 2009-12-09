@@ -278,7 +278,6 @@ char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def)
 
 no_memory:
     virReportOOMError(conn);
-    char* tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 };

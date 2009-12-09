@@ -434,7 +434,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (tmp != NULL) {
         if (tmp[0] == '1')
             info->state = VIR_DOMAIN_RUNNING;
-        free(tmp);
+        VIR_FREE(tmp);
     } else {
         info->state = VIR_DOMAIN_NOSTATE;
     }
@@ -442,7 +442,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (tmp != NULL) {
         info->memory = atol(tmp);
         info->maxMem = atol(tmp);
-        free(tmp);
+        VIR_FREE(tmp);
     } else {
         info->memory = 0;
         info->maxMem = 0;
@@ -452,7 +452,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "cpu_time");
     if (tmp != NULL) {
         info->cpuTime = atol(tmp);
-        free(tmp);
+        VIR_FREE(tmp);
     } else {
         info->cpuTime = 0;
     }
@@ -462,7 +462,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
     if (tmp2 != NULL) {
         info->nrVirtCpu = nb_vcpus;
-        free(tmp2);
+        VIR_FREE(tmp2);
     }
     return (0);
 }
@@ -698,7 +698,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
         tmp = xs_read(priv->xshandle, 0, prop, &len);
         if (tmp != NULL) {
             found = STREQ (name, tmp);
-            free(tmp);
+            VIR_FREE(tmp);
             if (found)
                 break;
         }
@@ -713,8 +713,8 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
     ret->id = id;
 
 done:
-        free(xenddomain);
-        free(idlist);
+    VIR_FREE(xenddomain);
+    VIR_FREE(idlist);
 
     return(ret);
 }
@@ -843,7 +843,7 @@ int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid) {
         ret = strtol(tmp, &end, 10);
         if (ret == 0 && end == tmp)
             ret = -1;
-        free(tmp);
+        VIR_FREE(tmp);
     }
     return(ret);
 }
@@ -903,7 +903,7 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
     if (vm) {
         snprintf(query, 199, "%s/image/ostype", vm);
         str = xs_read(priv->xshandle, 0, &query[0], &len);
-        free(vm);
+        VIR_FREE(vm);
     }
     if (str == NULL)
         str = strdup("linux");

@@ -936,7 +936,7 @@ saferead_lim (int fd, size_t max_len, size_t *length)
         }
     }
 
-    free (buf);
+    VIR_FREE(buf);
     errno = save_errno;
     return NULL;
 }

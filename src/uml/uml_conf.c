@@ -163,7 +163,6 @@ umlBuildCommandLineNet(virConnectPtr conn,
                        virDomainNetDefPtr def,
                        int idx)
 {
-    char *ret;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     /* General format:  ethNN=type,options */
@@ -265,8 +264,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
 error:
-    ret = virBufferContentAndReset(&buf);
-    VIR_FREE(ret);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

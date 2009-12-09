@@ -167,6 +167,19 @@ virBufferContentAndReset(const virBufferPtr buf)
 }
 
 /**
+ * virBufferFreeAndReset:
+ * @buf: the buffer to free and reset
+ *
+ * Frees the buffer content and resets the buffer structure.
+ */
+void virBufferFreeAndReset(const virBufferPtr buf)
+{
+    char *str = virBufferContentAndReset(buf);
+
+    VIR_FREE(str);
+}
+
+/**
  * virBufferError:
  * @buf: the buffer
  *

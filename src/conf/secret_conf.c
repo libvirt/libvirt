@@ -303,7 +303,6 @@ virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *tmp;
 
     virBufferVSprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
                       def->ephemeral ? "yes" : "no",
@@ -328,7 +327,6 @@ virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
  no_memory:
     virReportOOMError(conn);
  error:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }

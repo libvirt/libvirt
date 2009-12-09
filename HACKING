@@ -293,10 +293,11 @@ eg typical usage is as follows:
      ...
      virBufferAddLit(&buf, "</domain>\n");
 
-     ....
+     ...
 
      if (virBufferError(&buf)) {
-         __virRaiseError(...);
+         virBufferFreeAndReset(&buf);
+         virReportOOMError(...);
          return NULL;
      }
 

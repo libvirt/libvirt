@@ -525,6 +525,7 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
     }
 
     if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
         virReportOOMError(NULL);
         return -1;
     }
@@ -5293,8 +5294,10 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
         break;
     }
 
-    if (virBufferError(buf))
+    if (virBufferError(buf)) {
+        virReportOOMError(conn);
         return -1;
+    }
 
     return 0;
 }
@@ -5634,8 +5637,10 @@ xenDaemonFormatSxprSound(virConnectPtr conn,
         virBufferVSprintf(buf, "%s%s", i ? "," : "", str);
     }
 
-    if (virBufferError(buf))
+    if (virBufferError(buf)) {
+        virReportOOMError(conn);
         return -1;
+    }
 
     return 0;
 }
@@ -5910,14 +5915,13 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
     if (virBufferError(&buf)) {
         virReportOOMError(conn);
-        return NULL;
+        goto error;
     }
 
     return virBufferContentAndReset(&buf);
 
 error:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -5964,7 +5968,7 @@ virDomainXMLDevID(virDomainPtr domain,
             return -1;
 
         tmp = virStrcpy(ref, xref, ref_len);
-        free(xref);
+        VIR_FREE(xref);
         if (tmp == NULL)
             return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
@@ -5984,7 +5988,7 @@ virDomainXMLDevID(virDomainPtr domain,
             return -1;
 
         tmp = virStrcpy(ref, xref, ref_len);
-        free(xref);
+        VIR_FREE(xref);
         if (tmp == NULL)
             return -1;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&

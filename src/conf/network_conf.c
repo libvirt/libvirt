@@ -642,7 +642,6 @@ char *virNetworkDefFormat(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
-    char *tmp;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(&buf, "<network>\n");
@@ -731,8 +730,7 @@ char *virNetworkDefFormat(virConnectPtr conn,
 
  no_memory:
     virReportOOMError(conn);
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

@@ -12,6 +12,7 @@ virBufferAddChar;
 virBufferContentAndReset;
 virBufferError;
 virBufferURIEncodeString;
+virBufferFreeAndReset;
 
 
 # caps.h

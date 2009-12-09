@@ -1424,10 +1424,10 @@ retry:
 
 
     /* Free hostname copy */
-    free (priv->hostname);
+    VIR_FREE(priv->hostname);
 
     /* See comment for remoteType. */
-    free (priv->type);
+    VIR_FREE(priv->type);
 
     /* Free callback list */
     virDomainEventCallbackListFree(priv->callbackList);
@@ -3411,7 +3411,7 @@ remoteDomainBlockPeek (virDomainPtr domain,
     rv = 0;
 
 cleanup:
-    free (ret.buffer.buffer_val);
+    VIR_FREE(ret.buffer.buffer_val);
 
 done:
     remoteDriverUnlock(priv);
@@ -3462,7 +3462,7 @@ remoteDomainMemoryPeek (virDomainPtr domain,
     rv = 0;
 
 cleanup:
-    free (ret.buffer.buffer_val);
+    VIR_FREE(ret.buffer.buffer_val);
 
 done:
     remoteDriverUnlock(priv);

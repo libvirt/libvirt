@@ -4491,8 +4491,11 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         tmp++;
     }
 
-    if (virBufferError(&buf))
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError(conn);
         goto cleanup;
+    }
 
     ret = virBufferContentAndReset(&buf);
 

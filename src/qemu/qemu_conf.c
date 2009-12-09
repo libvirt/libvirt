@@ -1379,6 +1379,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
                 type_sep = ','; /* dead-store, but leave it, in case... */
             }
             if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
                 virReportOOMError(conn);
                 return -1;
             }
@@ -1866,8 +1867,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBufferAddLit(&buf, "control,");
 
         qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
-        if (virBufferError(&buf))
-            goto error;
+        if (virBufferError(&buf)) {
+            virBufferFreeAndReset(&buf);
+            goto no_memory;
+        }
 
         ADD_ARG_LIT("-monitor");
         ADD_ARG(virBufferContentAndReset(&buf));
@@ -2054,8 +2057,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
 
             if (virBufferError(&opt)) {
-                virReportOOMError(conn);
-                goto error;
+                virBufferFreeAndReset(&opt);
+                goto no_memory;
             }
 
             optstr = virBufferContentAndReset(&opt);
@@ -2197,8 +2200,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainChrDefPtr serial = def->serials[i];
 
             qemudBuildCommandLineChrDevStr(serial, &buf);
-            if (virBufferError(&buf))
-                goto error;
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
+                goto no_memory;
+            }
 
             ADD_ARG_LIT("-serial");
             ADD_ARG(virBufferContentAndReset(&buf));
@@ -2214,8 +2219,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainChrDefPtr parallel = def->parallels[i];
 
             qemudBuildCommandLineChrDevStr(parallel, &buf);
-            if (virBufferError(&buf))
-                goto error;
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
+                goto no_memory;
+            }
 
             ADD_ARG_LIT("-parallel");
             ADD_ARG(virBufferContentAndReset(&buf));
@@ -2240,8 +2247,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
 
             qemudBuildCommandLineChrDevChardevStr(channel, id, &buf);
-            if (virBufferError(&buf))
-                goto error;
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
+                goto no_memory;
+            }
 
             ADD_ARG_LIT("-chardev");
             ADD_ARG(virBufferContentAndReset(&buf));
@@ -2254,8 +2263,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             VIR_FREE(addr);
 
-            if (virBufferError(&buf))
-                goto error;
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
+                goto no_memory;
+            }
 
             ADD_ARG_LIT("-net");
             ADD_ARG(virBufferContentAndReset(&buf));
@@ -2313,8 +2324,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBufferVSprintf(&opt, "%d",
                               def->graphics[0]->data.vnc.port - 5900);
         }
-        if (virBufferError(&opt))
+        if (virBufferError(&opt)) {
+            virBufferFreeAndReset(&opt);
             goto no_memory;
+        }
 
         optstr = virBufferContentAndReset(&opt);
 

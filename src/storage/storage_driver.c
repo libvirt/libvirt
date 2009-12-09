@@ -422,8 +422,7 @@ storageListDefinedPools(virConnectPtr conn,
  cleanup:
     storageDriverUnlock(driver);
     for (i = 0 ; i < got ; i++) {
-        free(names[i]);
-        names[i] = NULL;
+        VIR_FREE(names[i]);
     }
     memset(names, 0, nnames * sizeof(*names));
     return -1;

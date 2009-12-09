@@ -486,13 +486,12 @@ phypExec(LIBSSH2_SESSION * session, char *cmd, int *exit_status,
 
   err:
     (*exit_status) = SSH_CMD_ERR;
-    char *cleanup_buf = virBufferContentAndReset(&tex_ret);
-
-    VIR_FREE(cleanup_buf);
+    virBufferFreeAndReset(&tex_ret);
     return NULL;
 
   exit:
     if (virBufferError(&tex_ret)) {
+        virBufferFreeAndReset(&tex_ret);
         virReportOOMError(conn);
         return NULL;
     }

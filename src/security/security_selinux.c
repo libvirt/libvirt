@@ -77,8 +77,8 @@ mcsRemove(const char *mcs)
             else {
                 mcsList = ptr->next;
             }
-            free(ptr->mcs);
-            free(ptr);
+            VIR_FREE(ptr->mcs);
+            VIR_FREE(ptr);
             return 0;
         }
         prevptr = ptr;
@@ -293,7 +293,7 @@ SELinuxGetSecurityLabel(virConnectPtr conn,
     }
 
     strcpy(sec->label, (char *) ctx);
-    free(ctx);
+    VIR_FREE(ctx);
 
     sec->enforcing = security_getenforce();
     if (sec->enforcing == -1) {

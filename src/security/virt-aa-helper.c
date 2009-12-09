@@ -64,10 +64,10 @@ vahDeinit(vahControl * ctl)
     VIR_FREE(ctl->def);
     if (ctl->caps)
         virCapabilitiesFree(ctl->caps);
-    free(ctl->files);
-    free(ctl->hvm);
-    free(ctl->arch);
-    free(ctl->newdisk);
+    VIR_FREE(ctl->files);
+    VIR_FREE(ctl->hvm);
+    VIR_FREE(ctl->arch);
+    VIR_FREE(ctl->newdisk);
 
     return 0;
 }
@@ -761,7 +761,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
     }
 
   clean:
-    free(tmp);
+    VIR_FREE(tmp);
 
     return rc;
 }
@@ -883,8 +883,9 @@ get_files(vahControl * ctl)
             goto clean;
 
     if (virBufferError(&buf)) {
-         vah_error(NULL, 0, "failed to allocate file buffer");
-         goto clean;
+        virBufferFreeAndReset(&buf);
+        vah_error(NULL, 0, "failed to allocate file buffer");
+        goto clean;
     }
 
     rc = 0;
@@ -1048,8 +1049,10 @@ main(int argc, char **argv)
         if (ctl->files)
             virBufferVSprintf(&buf, "%s", ctl->files);
 
-        if (virBufferError(&buf))
+        if (virBufferError(&buf)) {
+            virBufferFreeAndReset(&buf);
             vah_error(ctl, 1, "failed to allocate buffer");
+        }
 
         included_files = virBufferContentAndReset(&buf);
 

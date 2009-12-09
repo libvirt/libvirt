@@ -1208,7 +1208,7 @@ char *virInterfaceDefFormat(virConnectPtr conn,
                           const virInterfaceDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *type = NULL, *tmp;
+    const char *type = NULL;
 
     if ((def == NULL) ||
         ((def->name == NULL) && (def->type != VIR_INTERFACE_TYPE_VLAN))) {
@@ -1271,8 +1271,7 @@ char *virInterfaceDefFormat(virConnectPtr conn,
 no_memory:
     virReportOOMError(conn);
 cleanup:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

@@ -156,12 +156,12 @@ check_bd_connected (xenUnifiedPrivatePtr priv, int device, int domid)
          * string instead of an error.  Assume it's not connected
          * in this case.
          */
-        free (rs);
+        VIR_FREE(rs);
         return 0;
     }
 
     r = STREQ (rs, "4");
-    free (rs);
+    VIR_FREE(rs);
     return r;
 }
 

@@ -532,7 +532,7 @@ esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
     return 0;
 
   failure:
-    free(virBufferContentAndReset(&buffer));
+    virBufferFreeAndReset(&buffer);
 
     return -1;
 }
@@ -708,7 +708,7 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
     return 0;
 
   failure:
-    free(virBufferContentAndReset(&buffer));
+    virBufferFreeAndReset(&buffer);
     esxVI_Response_Free(response);
     esxVI_Fault_Free(&fault);
 
@@ -2065,7 +2065,7 @@ esxVI_StartSimpleVirtualMachineTask
     return result;
 
   failure:
-    free(virBufferContentAndReset(&buffer));
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 
@@ -2124,9 +2124,7 @@ esxVI_SimpleVirtualMachineMethod(virConnectPtr conn, esxVI_Context *ctx,
     return result;
 
   failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 

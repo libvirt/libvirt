@@ -769,8 +769,10 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     virBufferAddLit(&xml, "</capabilities>\n");
 
-    if (virBufferError(&xml))
+    if (virBufferError(&xml)) {
+        virBufferFreeAndReset(&xml);
         return NULL;
+    }
 
     return virBufferContentAndReset(&xml);
 }

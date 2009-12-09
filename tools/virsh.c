@@ -3800,7 +3800,7 @@ static int buildPoolXML(const vshCmd *cmd, char **retname, char **xml) {
     return TRUE;
 
 cleanup:
-    free(virBufferContentAndReset(&buf));
+    virBufferFreeAndReset(&buf);
     return FALSE;
 }
 
@@ -4663,7 +4663,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    free(virBufferContentAndReset(&buf));
+    virBufferFreeAndReset(&buf);
     virStoragePoolFree(pool);
     return FALSE;
 }

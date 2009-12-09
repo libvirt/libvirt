@@ -35,6 +35,7 @@ struct _virBuffer {
 #endif
 
 char *virBufferContentAndReset(const virBufferPtr buf);
+void virBufferFreeAndReset(const virBufferPtr buf);
 int virBufferError(const virBufferPtr buf);
 unsigned int virBufferUse(const virBufferPtr buf);
 void virBufferAdd(const virBufferPtr buf, const char *str, int len);

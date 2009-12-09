@@ -2293,6 +2293,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     return xml;
 
   failure:
+    virBufferFreeAndReset(&buffer);
     VIR_FREE(xml);
 
     goto cleanup;
@@ -2723,6 +2724,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     return domain;
 
   failure:
+    virBufferFreeAndReset(&buffer);
+
     domain = NULL;
 
     goto cleanup;

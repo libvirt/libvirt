@@ -154,6 +154,7 @@ qparam_get_query (const struct qparam_set *ps)
     }
 
     if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
         virReportOOMError(NULL);
         return NULL;
     }

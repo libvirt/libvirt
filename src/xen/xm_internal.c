@@ -1750,6 +1750,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
             }
 
     if (virBufferError(&mapbuf)) {
+        virBufferFreeAndReset(&mapbuf);
         virReportOOMError(domain->conn);
         goto cleanup;
     }
@@ -1980,7 +1981,6 @@ static int xenXMDomainConfigFormatDisk(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
-    char *str;
 
     if(disk->src) {
         if (disk->driverName) {
@@ -2021,7 +2021,7 @@ static int xenXMDomainConfigFormatDisk(virConnectPtr conn,
 
     if (virBufferError(&buf)) {
         virReportOOMError(conn);
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_ALLOC(val) < 0) {
@@ -2042,8 +2042,7 @@ static int xenXMDomainConfigFormatDisk(virConnectPtr conn,
     return 0;
 
 cleanup:
-    str = virBufferContentAndReset(&buf);
-    VIR_FREE(str);
+    virBufferFreeAndReset(&buf);
     return -1;
 }
 
@@ -2054,7 +2053,6 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
-    char *str;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     virBufferVSprintf(&buf, "mac=%02x:%02x:%02x:%02x:%02x:%02x",
@@ -2131,8 +2129,10 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
         virBufferVSprintf(&buf, ",vifname=%s",
                           net->ifname);
 
-    if (virBufferError(&buf))
+    if (virBufferError(&buf)) {
+        virReportOOMError(conn);
         goto cleanup;
+    }
 
     if (VIR_ALLOC(val) < 0) {
         virReportOOMError(conn);
@@ -2152,8 +2152,7 @@ static int xenXMDomainConfigFormatNet(virConnectPtr conn,
     return 0;
 
 cleanup:
-    str = virBufferContentAndReset(&buf);
-    VIR_FREE(str);
+    virBufferFreeAndReset(&buf);
     return -1;
 }
 
@@ -2482,8 +2481,10 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                     virBufferVSprintf(&buf, ",keymap=%s",
                                       def->graphics[0]->data.vnc.keymap);
             }
-            if (virBufferError(&buf))
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
                 goto no_memory;
+            }
 
             vfbstr = virBufferContentAndReset(&buf);
 

@@ -345,10 +345,12 @@ openvz_replace(const char* str,
         str_start = offset + from_len;
     }
 
-     virBufferAdd(&buf, str_start, strlen(str_start));
+    virBufferAdd(&buf, str_start, -1);
 
-    if(virBufferError(&buf))
-      return NULL;
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        return NULL;
+    }
 
     return virBufferContentAndReset(&buf);
 }

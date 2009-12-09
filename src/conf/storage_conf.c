@@ -954,7 +954,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
  no_memory:
     virReportOOMError(conn);
  cleanup:
-    free(virBufferContentAndReset(&buf));
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -1292,7 +1292,6 @@ virStorageVolDefFormat(virConnectPtr conn,
                        virStorageVolDefPtr def) {
     virStorageVolOptionsPtr options;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *tmp;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1351,8 +1350,7 @@ virStorageVolDefFormat(virConnectPtr conn,
  no_memory:
     virReportOOMError(conn);
  cleanup:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -1742,7 +1740,7 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
  no_memory:
     virReportOOMError(conn);
  cleanup:
-    free(virBufferContentAndReset(&buf));
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 

@@ -323,6 +323,7 @@ static int udevGenerateDeviceName(struct udev_device *device,
     }
 
     if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
         VIR_ERROR("Buffer error when generating device name for device "
                   "with sysname '%s'\n", udev_device_get_sysname(device));
         ret = -1;

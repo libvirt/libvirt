@@ -306,14 +306,15 @@
      ...
 
      virBufferAddLit(&amp;buf, "&lt;domain&gt;\n");
-     virBufferVSprint(&amp;buf, "  &lt;memory>%d&lt;/memory&gt;\n", memory);
+     virBufferVSprint(&amp;buf, "  &lt;memory&gt;%d&lt;/memory&gt;\n", memory);
      ...
      virBufferAddLit(&amp;buf, "&lt;/domain&gt;\n");
 
-     ....
+     ...
 
      if (virBufferError(&amp;buf)) {
-         __virRaiseError(...);
+         virBufferFreeAndReset(&amp;buf);
+         virReportOOMError(...);
          return NULL;
      }
 
