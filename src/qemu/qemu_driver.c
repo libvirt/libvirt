@@ -221,8 +221,11 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
 
-    if (virXPathBoolean(NULL, "int(./monitor[1]/@json)", ctxt))
+    if (virXPathBoolean(NULL, "count(./monitor[@json = '1']) > 0", ctxt)) {
         priv->monJSON = 1;
+    } else {
+        priv->monJSON = 0;
+    }
 
     switch (priv->monConfig->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -2440,7 +2443,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 #if HAVE_YAJL
     if (qemuCmdFlags & QEMUD_CMD_FLAG_MONITOR_JSON)
         priv->monJSON = 1;
+    else
 #endif
+        priv->monJSON = 0;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(conn, ret,
