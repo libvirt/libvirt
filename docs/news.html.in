@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
   <body>
     <h1 >Releases</h1>
     <p>Here is the list of official releases, however since it is early on in the
