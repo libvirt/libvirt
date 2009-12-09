@@ -15,7 +15,7 @@ higher level kind of languages:</p>
       <li><strong>OCaml</strong>: Richard Jones supplies <a href="http://libvirt.org/ocaml/">bindings for OCaml</a>.</li>
       <li><strong>Ruby</strong>: David Lutterkort provides <a href="http://libvirt.org/ruby/">bindings for Ruby</a>.</li>
       <li><strong>Java</strong>: Daniel Veillard maintains <a href="java.html">Java bindings</a>.</li>
-      <li><strong>C#</strong>: Richard Jones wrote about <a href="https://www.redhat.com/archives/libvir-list/2008-September/msg00283.html">calling libvirt from C# on the mailing list</a>.</li>
+      <li><strong>C#</strong>: Jarom&iacute;r &#x010C;ervenka maintains <a href="http://svn.i-tux.cz/listing.php?repname=SharpLibVirt">C# bindings here</a>.</li>
     </ul>
     <p>For information on using libvirt on <strong>Windows</strong>
       <a href="windows.html">please see the Windows
