@@ -2366,6 +2366,9 @@ xenDaemonParseSxpr(virConnectPtr conn,
     }
     virUUIDParse(tmp, def->uuid);
 
+    if (sexpr_node_copy(root, "domain/description", &def->description) < 0)
+        goto no_memory;
+
     hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
     if (!hvm) {
         if (sexpr_node_copy(root, "domain/bootloader",
@@ -5698,6 +5701,9 @@ xenDaemonFormatSxpr(virConnectPtr conn,
 
     virUUIDFormat(def->uuid, uuidstr);
     virBufferVSprintf(&buf, "(uuid '%s')", uuidstr);
+
+    if (def->description)
+        virBufferVSprintf(&buf, "(description '%s')", def->description);
 
     if (def->os.bootloader) {
         if (def->os.bootloader[0])
