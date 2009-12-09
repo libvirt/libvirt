@@ -145,4 +145,9 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
                                            virDomainDevicePCIAddress *guestAddr);
 
+int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
+                               const char *drivestr,
+                               virDomainDevicePCIAddress *controllerAddr,
+                               virDomainDeviceDriveAddress *driveAddr);
+
 #endif /* QEMU_MONITOR_JSON_H */

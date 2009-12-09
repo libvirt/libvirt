@@ -1204,8 +1204,8 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
 
 
 static int
-qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
-                               virDomainDevicePCIAddress *guestAddr)
+qemuMonitorJSONGetGuestPCIAddress(virJSONValuePtr reply,
+                                  virDomainDevicePCIAddress *guestAddr)
 {
     virJSONValuePtr addr;
 
@@ -1277,7 +1277,7 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
+        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1318,7 +1318,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
+        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1350,7 +1350,7 @@ int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
+        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);
@@ -1514,7 +1514,75 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret == 0 &&
-        qemuMonitorJSONGetGuestAddress(reply, guestAddr) < 0)
+        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
+        ret = -1;
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+static int
+qemuMonitorJSONGetGuestDriveAddress(virJSONValuePtr reply,
+                                    virDomainDeviceDriveAddress *driveAddr)
+{
+    virJSONValuePtr addr;
+
+    addr = virJSONValueObjectGet(reply, "return");
+    if (!addr || addr->type != VIR_JSON_TYPE_OBJECT) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("drive_add reply was missing device address"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUint(addr, "bus", &driveAddr->bus) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("drive_add reply was missing device bus number"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberUint(addr, "unit", &driveAddr->unit) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("drive_add reply was missing device unit number"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
+                               const char *drivestr,
+                               virDomainDevicePCIAddress* controllerAddr,
+                               virDomainDeviceDriveAddress* driveAddr)
+{
+    int ret;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    char *dev;
+
+    if (virAsprintf(&dev, "%.2x:%.2x.%.1x",
+                    controllerAddr->bus, controllerAddr->slot, controllerAddr->function) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    cmd = qemuMonitorJSONMakeCommand("drive_add",
+                                     "s:pci_addr", dev,
+                                     "s:opts", drivestr,
+                                     NULL);
+    VIR_FREE(dev);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret == 0 &&
+        qemuMonitorJSONGetGuestDriveAddress(reply, driveAddr) < 0)
         ret = -1;
 
     virJSONValueFree(cmd);

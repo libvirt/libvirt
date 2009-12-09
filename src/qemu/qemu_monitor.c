@@ -1266,3 +1266,23 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
 
     return ret;
 }
+
+
+int qemuMonitorAttachDrive(qemuMonitorPtr mon,
+                           const char *drivestr,
+                           virDomainDevicePCIAddress *controllerAddr,
+                           virDomainDeviceDriveAddress *driveAddr)
+{
+    DEBUG("mon=%p, fd=%d drivestr=%s domain=%d bus=%d slot=%d function=%d",
+          mon, mon->fd, drivestr,
+          controllerAddr->domain, controllerAddr->bus,
+          controllerAddr->slot, controllerAddr->function);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONAttachDrive(mon, drivestr, controllerAddr, driveAddr);
+    else
+        ret = qemuMonitorTextAttachDrive(mon, drivestr, controllerAddr, driveAddr);
+
+    return ret;
+}

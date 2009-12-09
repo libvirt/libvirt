@@ -5170,6 +5170,116 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
     return ret;
 }
 
+static virDomainControllerDefPtr
+qemuDomainFindOrCreateSCSIDiskController(virConnectPtr conn,
+                                         struct qemud_driver *driver,
+                                         virDomainObjPtr vm,
+                                         int controller)
+{
+    int i;
+    virDomainControllerDefPtr cont;
+    for (i = 0 ; i < vm->def->ncontrollers ; i++) {
+        cont = vm->def->controllers[i];
+
+        if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            continue;
+
+        if (cont->idx == controller)
+            return cont;
+    }
+
+    /* No SCSI controller present, for back compatability we
+     * now hotplug a controller */
+    if (VIR_ALLOC(cont) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+    cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
+    cont->idx = 0;
+
+    VIR_INFO0("No SCSI controller present, hotplugging one");
+    if (qemudDomainAttachPciControllerDevice(conn, driver,
+                                             vm, cont) < 0) {
+        VIR_FREE(cont);
+        return NULL;
+    }
+    return cont;
+}
+
+static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
+                                     struct qemud_driver *driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDiskDefPtr dev,
+                                     int qemuCmdFlags)
+{
+    int i;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDriveAddress driveAddr;
+    virDomainControllerDefPtr cont;
+    char *drivestr = NULL;
+    int ret = -1;
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (STREQ(vm->def->disks[i]->dst, dev->dst)) {
+            qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                           _("target %s already exists"), dev->dst);
+            goto cleanup;
+        }
+    }
+
+    /* This func allocates the bus/unit IDs so must be before
+     * we search for controller
+     */
+    if (!(drivestr = qemuBuildDriveStr(dev, 0, qemuCmdFlags)))
+        goto cleanup;
+
+
+    /* We should have an adddress now, so make sure */
+    if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unexpected disk address type %s"),
+                         virDomainDeviceAddressTypeToString(dev->info.type));
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < dev->info.addr.drive.controller ; i++) {
+        cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i);
+        if (!cont)
+            goto cleanup;
+    }
+
+    if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("SCSI controller %d was missing its PCI address"), cont->idx);
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
+        virReportOOMError(conn);
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorAttachDrive(priv->mon,
+                                 drivestr,
+                                 &cont->info.addr.pci,
+                                 &driveAddr);
+
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (ret == 0) {
+        /* XXX we should probably validate that the addr matches
+         * our existing defined addr instead of overwriting */
+        dev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        memcpy(&dev->info.addr.drive, &driveAddr, sizeof(driveAddr));
+        virDomainDiskInsertPreAlloced(vm->def, dev);
+    }
+
+cleanup:
+    VIR_FREE(drivestr);
+    return ret;
+}
+
 
 static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                                  struct qemud_driver *driver,
@@ -5535,9 +5645,10 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, driver, vm, dev);
-            } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
-                       dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
+            } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
                 ret = qemudDomainAttachPciDiskDevice(dom->conn, driver, vm, dev);
+            } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+                ret = qemudDomainAttachSCSIDisk(dom->conn, driver, vm, dev->data.disk, qemuCmdFlags);
             } else {
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                                  _("disk bus '%s' cannot be hotplugged."),
@@ -5959,8 +6070,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-        (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
-         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)) {
+        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, driver, vm, dev);
         if (driver->securityDriver)
             driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev->data.disk);
@@ -5979,9 +6089,10 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemudDomainDetachHostDevice(dom->conn, driver, vm, dev);
-    } else
+    } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
-                         "%s", _("only SCSI or virtio disk device can be detached dynamically"));
+                         "%s", _("This type of device cannot be hot unplugged"));
+    }
 
     if (!ret && virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
         ret = -1;

@@ -185,6 +185,7 @@ virDomainDeviceInfoIsSet;
 virDomainDeviceAddressClear;
 virDomainControllerTypeToString;
 virDomainControllerDefFree;
+virDomainDeviceAddressTypeToString;
 
 
 # domain_event.h

@@ -1795,3 +1795,105 @@ cleanup:
     VIR_FREE(reply);
     return ret;
 }
+
+
+static int
+qemudParseDriveAddReply(const char *reply,
+                        virDomainDeviceDriveAddressPtr addr)
+{
+    char *s, *e;
+
+    /* If the command succeeds qemu prints:
+     * OK bus X, unit Y
+     */
+
+    if (!(s = strstr(reply, "OK ")))
+        return -1;
+
+    s += 3;
+
+    if (STRPREFIX(s, "bus ")) {
+        s += strlen("bus ");
+
+        if (virStrToLong_ui(s, &e, 10, &addr->bus) == -1) {
+            VIR_WARN(_("Unable to parse bus '%s'\n"), s);
+            return -1;
+        }
+
+        if (!STRPREFIX(e, ", ")) {
+            VIR_WARN(_("Expected ', ' parsing drive_add reply '%s'\n"), s);
+            return -1;
+        }
+        s = e + 2;
+    }
+
+    if (!STRPREFIX(s, "unit ")) {
+        VIR_WARN(_("Expected 'unit ' parsing drive_add reply '%s'\n"), s);
+        return -1;
+    }
+    s += strlen("bus ");
+
+    if (virStrToLong_ui(s, &e, 10, &addr->unit) == -1) {
+        VIR_WARN(_("Unable to parse unit number '%s'\n"), s);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
+                               const char *drivestr,
+                               virDomainDevicePCIAddress *controllerAddr,
+                               virDomainDeviceDriveAddress *driveAddr)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret = -1;
+    char *safe_str;
+    int tryOldSyntax = 0;
+
+    safe_str = qemuMonitorEscapeArg(drivestr);
+    if (!safe_str) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+try_command:
+    ret = virAsprintf(&cmd, "drive_add %s%.2x:%.2x:%.2x %s",
+                      (tryOldSyntax ? "" : "pci_addr="),
+                      controllerAddr->domain, controllerAddr->bus,
+                      controllerAddr->slot, safe_str);
+    if (ret == -1) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to close fd in qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    if (qemudParseDriveAddReply(reply, driveAddr) < 0) {
+        if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
+            VIR_FREE(reply);
+            tryOldSyntax = 1;
+            goto try_command;
+        }
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("adding %s disk failed: %s"), drivestr, reply);
+        VIR_FREE(reply);
+        return -1;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    VIR_FREE(safe_str);
+    return ret;
+}
+
+

@@ -152,5 +152,10 @@ int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
                                            virDomainDevicePCIAddress *guestAddr);
 
+int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
+                               const char *drivestr,
+                               virDomainDevicePCIAddress *controllerAddr,
+                               virDomainDeviceDriveAddress *driveAddr);
+
 
 #endif /* QEMU_MONITOR_TEXT_H */
