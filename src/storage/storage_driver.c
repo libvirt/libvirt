@@ -465,17 +465,17 @@ cleanup:
 }
 
 
-static int storagePoolIsActive(virStoragePoolPtr net)
+static int storagePoolIsActive(virStoragePoolPtr pool)
 {
-    virStorageDriverStatePtr driver = net->conn->privateData;
+    virStorageDriverStatePtr driver = pool->conn->storagePrivateData;
     virStoragePoolObjPtr obj;
     int ret = -1;
 
     storageDriverLock(driver);
-    obj = virStoragePoolObjFindByUUID(&driver->pools, net->uuid);
+    obj = virStoragePoolObjFindByUUID(&driver->pools, pool->uuid);
     storageDriverUnlock(driver);
     if (!obj) {
-        virStorageReportError(net->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        virStorageReportError(pool->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
         goto cleanup;
     }
     ret = virStoragePoolObjIsActive(obj);
@@ -486,17 +486,17 @@ cleanup:
     return ret;
 }
 
-static int storagePoolIsPersistent(virStoragePoolPtr net)
+static int storagePoolIsPersistent(virStoragePoolPtr pool)
 {
-    virStorageDriverStatePtr driver = net->conn->privateData;
+    virStorageDriverStatePtr driver = pool->conn->storagePrivateData;
     virStoragePoolObjPtr obj;
     int ret = -1;
 
     storageDriverLock(driver);
-    obj = virStoragePoolObjFindByUUID(&driver->pools, net->uuid);
+    obj = virStoragePoolObjFindByUUID(&driver->pools, pool->uuid);
     storageDriverUnlock(driver);
     if (!obj) {
-        virStorageReportError(net->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
+        virStorageReportError(pool->conn, VIR_ERR_NO_STORAGE_POOL, NULL);
         goto cleanup;
     }
     ret = obj->configFile ? 1 : 0;
