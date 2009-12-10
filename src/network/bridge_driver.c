@@ -259,6 +259,7 @@ networkStartup(int privileged) {
         goto error;
 
     networkFindActiveConfigs(driverState);
+    networkReloadIptablesRules(driverState);
     networkAutostartConfigs(driverState);
 
     networkDriverUnlock(driverState);
