@@ -1,1 +1,1 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot a -drive file=fat:floppy:/var/somefiles,if=floppy,index=0 -net none -serial none -parallel none -usb
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot a -drive file=fat:floppy:/var/somefiles,if=floppy,unit=0 -net none -serial none -parallel none -usb

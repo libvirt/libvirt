@@ -1549,11 +1549,80 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     int idx = virDiskNameToIndex(disk->dst);
+    int busid = -1, unitid = -1;
 
     if (idx < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unsupported disk type '%s'"), disk->dst);
         goto error;
+    }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("unexpected address type for scsi disk"));
+            goto error;
+        }
+
+        /* Setting bus= attr for SCSI drives, causes a controller
+         * to be created. Yes this is slightly odd. It is not possible
+         * to have > 1 bus on a SCSI controller (yet). */
+        if (disk->info.addr.drive.bus != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("SCSI controller only supports 1 bus"));
+            goto error;
+        }
+        busid = disk->info.addr.drive.controller;
+        unitid = disk->info.addr.drive.unit;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("unexpected address type for ide disk"));
+            goto error;
+        }
+        /* We can only have 1 IDE controller (currently) */
+        if (disk->info.addr.drive.controller != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Only 1 %s controller is supported"), bus);
+            goto error;
+        }
+        busid = disk->info.addr.drive.bus;
+        unitid = disk->info.addr.drive.unit;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("unexpected address type for fdc disk"));
+            goto error;
+        }
+        /* We can only have 1 FDC controller (currently) */
+        if (disk->info.addr.drive.controller != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Only 1 %s controller is supported"), bus);
+            goto error;
+        }
+        /* We can only have 1 FDC bus (currently) */
+        if (disk->info.addr.drive.bus != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Only 1 %s bus is supported"), bus);
+            goto error;
+        }
+        unitid = disk->info.addr.drive.unit;
+
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        /* Each virtio drive is a separate PCI device, no unit/busid or index */
+        idx = -1;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_XEN:
+        /* Xen has no address type currently, so assign based on index */
+        break;
     }
 
     if (disk->src) {
@@ -1582,7 +1651,15 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     virBufferVSprintf(&opt, "if=%s", bus);
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAddLit(&opt, ",media=cdrom");
-    virBufferVSprintf(&opt, ",index=%d", idx);
+    if (busid == -1 && unitid == -1) {
+        if (idx != -1)
+            virBufferVSprintf(&opt, ",index=%d", idx);
+    } else {
+        if (busid != -1)
+            virBufferVSprintf(&opt, ",bus=%d", busid);
+        if (unitid != -1)
+            virBufferVSprintf(&opt, ",unit=%d", unitid);
+    }
     if (bootable &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
         virBufferAddLit(&opt, ",boot=on");
@@ -3163,7 +3240,8 @@ error:
  */
 static virDomainDiskDefPtr
 qemuParseCommandLineDisk(virConnectPtr conn,
-                         const char *val)
+                         const char *val,
+                         int nvirtiodisk)
 {
     virDomainDiskDefPtr def = NULL;
     char **keywords;
@@ -3171,6 +3249,8 @@ qemuParseCommandLineDisk(virConnectPtr conn,
     int nkeywords;
     int i;
     int idx = -1;
+    int busid = -1;
+    int unitid = -1;
 
     if ((nkeywords = qemuParseCommandLineKeywords(conn, val,
                                                   &keywords,
@@ -3240,6 +3320,22 @@ qemuParseCommandLineDisk(virConnectPtr conn,
                                  _("cannot parse drive index '%s'"), val);
                 goto cleanup;
             }
+        } else if (STREQ(keywords[i], "bus")) {
+            if (virStrToLong_i(values[i], NULL, 10, &busid) < 0) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse drive bus '%s'"), val);
+                goto cleanup;
+            }
+        } else if (STREQ(keywords[i], "unit")) {
+            if (virStrToLong_i(values[i], NULL, 10, &unitid) < 0) {
+                virDomainDiskDefFree(def);
+                def = NULL;
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse drive unit '%s'"), val);
+                goto cleanup;
+            }
         }
     }
 
@@ -3251,12 +3347,36 @@ qemuParseCommandLineDisk(virConnectPtr conn,
         def = NULL;
         goto cleanup;
     }
-    if (idx == -1) {
+    if (idx == -1 &&
+        def->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
+        idx = nvirtiodisk;
+
+    if (idx == -1 &&
+        unitid == -1 &&
+        busid == -1) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("missing index parameter in drive '%s'"), val);
+                         _("missing index/unit/bus parameter in drive '%s'"), val);
         virDomainDiskDefFree(def);
         def = NULL;
         goto cleanup;
+    }
+
+    if (idx == -1) {
+        if (unitid == -1)
+            unitid = 0;
+        if (busid == -1)
+            busid = 0;
+        switch (def->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            idx = (busid * 2) + unitid;
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            idx = (busid * 7) + unitid;
+            break;
+        default:
+            idx = unitid;
+            break;
+        }
     }
 
     if (def->bus == VIR_DOMAIN_DISK_BUS_IDE) {
@@ -3832,6 +3952,7 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
     int nnics = 0;
     const char **nics = NULL;
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+    int nvirtiodisk = 0;
 
     if (!progargv[0]) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -4160,13 +4281,16 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
         } else if (STREQ(arg, "-drive")) {
             virDomainDiskDefPtr disk;
             WANT_VALUE();
-            if (!(disk = qemuParseCommandLineDisk(conn, val)))
+            if (!(disk = qemuParseCommandLineDisk(conn, val, nvirtiodisk)))
                 goto error;
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);
                 goto no_memory;
             }
             def->disks[def->ndisks++] = disk;
+
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
+                nvirtiodisk++;
         } else if (STREQ(arg, "-pcidevice")) {
             virDomainHostdevDefPtr hostdev;
             WANT_VALUE();

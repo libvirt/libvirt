@@ -31,7 +31,7 @@
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/logs.img'/>
-      <target dev='vdg' bus='virtio'/>
+      <target dev='vdb' bus='virtio'/>
     </disk>
   </devices>
 </domain>
