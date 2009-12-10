@@ -193,6 +193,11 @@ int         qemuBuildNicStr             (virConnectPtr conn,
                                          int vlan,
                                          char **str);
 
+
+char *      qemuBuildDriveStr           (virDomainDiskDefPtr disk,
+                                         int bootable,
+                                         int qemuCmdFlags);
+
 int         qemudNetworkIfaceConnect    (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainNetDefPtr net,

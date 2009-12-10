@@ -1523,6 +1523,104 @@ qemuAssignNetNames(virDomainDefPtr def,
     return 0;
 }
 
+#define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+
+static int
+qemuSafeSerialParamValue(virConnectPtr conn,
+                         const char *value)
+{
+    if (strspn(value, QEMU_SERIAL_PARAM_ACCEPTED_CHARS) != strlen (value)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("driver serial '%s' contains unsafe characters"),
+                         value);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+char *
+qemuBuildDriveStr(virDomainDiskDefPtr disk,
+                  int bootable,
+                  int qemuCmdFlags)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
+    int idx = virDiskNameToIndex(disk->dst);
+
+    if (idx < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unsupported disk type '%s'"), disk->dst);
+        goto error;
+    }
+
+    if (disk->src) {
+        if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+            /* QEMU only supports magic FAT format for now */
+            if (disk->driverType &&
+                STRNEQ(disk->driverType, "fat")) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("unsupported disk driver type for '%s'"),
+                                 disk->driverType);
+                goto error;
+            }
+            if (!disk->readonly) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("cannot create virtual FAT disks in read-write mode"));
+                goto error;
+            }
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                virBufferVSprintf(&opt, "file=fat:floppy:%s,", disk->src);
+            else
+                virBufferVSprintf(&opt, "file=fat:%s,", disk->src);
+        } else {
+            virBufferVSprintf(&opt, "file=%s,", disk->src);
+        }
+    }
+    virBufferVSprintf(&opt, "if=%s", bus);
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+        virBufferAddLit(&opt, ",media=cdrom");
+    virBufferVSprintf(&opt, ",index=%d", idx);
+    if (bootable &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+        virBufferAddLit(&opt, ",boot=on");
+    if (disk->driverType &&
+        disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
+        qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
+        virBufferVSprintf(&opt, ",format=%s", disk->driverType);
+    if (disk->serial &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_SERIAL)) {
+        if (qemuSafeSerialParamValue(NULL, disk->serial) < 0)
+            goto error;
+        virBufferVSprintf(&opt, ",serial=%s", disk->serial);
+    }
+
+    if (disk->cachemode) {
+        const char *mode =
+            (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_CACHE_V2) ?
+            qemuDiskCacheV2TypeToString(disk->cachemode) :
+            qemuDiskCacheV1TypeToString(disk->cachemode);
+
+        virBufferVSprintf(&opt, ",cache=%s", mode);
+    } else if (disk->shared && !disk->readonly) {
+        virBufferAddLit(&opt, ",cache=off");
+    }
+
+    if (virBufferError(&opt)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&opt);
+
+error:
+    virBufferFreeAndReset(&opt);
+    return NULL;
+}
+
+
 int
 qemuBuildNicStr(virConnectPtr conn,
                 virDomainNetDefPtr net,
@@ -1865,23 +1963,6 @@ no_memory:
     goto cleanup;
 }
 
-
-#define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
-
-static int
-qemuSafeSerialParamValue(virConnectPtr conn,
-                         const char *value)
-{
-    if (strspn(value, QEMU_SERIAL_PARAM_ACCEPTED_CHARS) != strlen (value)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("driver serial '%s' contains unsafe characters"),
-                         value);
-        return -1;
-    }
-
-    return 0;
-}
 
 /*
  * Constructs a argv suitable for launching qemu with config defined
@@ -2274,12 +2355,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
 
         for (i = 0 ; i < def->ndisks ; i++) {
-            virBuffer opt = VIR_BUFFER_INITIALIZER;
             char *optstr;
             int bootable = 0;
             virDomainDiskDefPtr disk = def->disks[i];
-            int idx = virDiskNameToIndex(disk->dst);
-            const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -2290,14 +2368,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
                 }
                 continue;
-            }
-
-            ADD_ARG_SPACE;
-
-            if (idx < 0) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("unsupported disk type '%s'"), disk->dst);
-                goto error;
             }
 
             switch (disk->device) {
@@ -2315,69 +2385,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
             }
 
-            if (disk->src) {
-                if (disk->type == VIR_DOMAIN_DISK_TYPE_DIR) {
-                    /* QEMU only supports magic FAT format for now */
-                    if (disk->driverType &&
-                        STRNEQ(disk->driverType, "fat")) {
-                        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                         _("unsupported disk driver type for '%s'"),
-                                         disk->driverType);
-                        goto error;
-                    }
-                    if (!disk->readonly) {
-                        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                                         _("cannot create virtual FAT disks in read-write mode"));
-                        goto error;
-                    }
-                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                        virBufferVSprintf(&opt, "file=fat:floppy:%s,", disk->src);
-                    else
-                        virBufferVSprintf(&opt, "file=fat:%s,", disk->src);
-                } else {
-                    virBufferVSprintf(&opt, "file=%s,", disk->src);
-                }
-            }
-            virBufferVSprintf(&opt, "if=%s", bus);
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                virBufferAddLit(&opt, ",media=cdrom");
-            virBufferVSprintf(&opt, ",index=%d", idx);
-            if (bootable &&
-                disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-                virBufferAddLit(&opt, ",boot=on");
-            if (disk->driverType &&
-                disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
-                qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
-                virBufferVSprintf(&opt, ",format=%s", disk->driverType);
-            if (disk->serial &&
-                (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_SERIAL)) {
-                if (qemuSafeSerialParamValue(conn, disk->serial) < 0)
-                    goto error;
-                virBufferVSprintf(&opt, ",serial=%s", disk->serial);
-            }
+            ADD_ARG_LIT("-drive");
 
-            if (disk->cachemode) {
-                const char *mode =
-                    (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_CACHE_V2) ?
-                    qemuDiskCacheV2TypeToString(disk->cachemode) :
-                    qemuDiskCacheV1TypeToString(disk->cachemode);
-
-                virBufferVSprintf(&opt, ",cache=%s", mode);
-            } else if (disk->shared && !disk->readonly) {
-                virBufferAddLit(&opt, ",cache=off");
-            }
-
-            if (virBufferError(&opt)) {
-                virBufferFreeAndReset(&opt);
-                goto no_memory;
-            }
-
-            optstr = virBufferContentAndReset(&opt);
-
-            if ((qargv[qargc++] = strdup("-drive")) == NULL) {
-                VIR_FREE(optstr);
-                goto no_memory;
-            }
+            if (!(optstr = qemuBuildDriveStr(disk, bootable, qemuCmdFlags)))
+                goto error;
             ADD_ARG(optstr);
         }
     } else {
