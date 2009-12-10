@@ -465,6 +465,8 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     if (!def)
         return;
 
+    virDomainDeviceInfoClear(&def->info);
+
     VIR_FREE(def);
 }
 
@@ -473,6 +475,8 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
     if (!def)
         return;
 
+    virDomainDeviceInfoClear(&def->info);
+
     VIR_FREE(def);
 }
 
@@ -480,6 +484,8 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
 {
     if (!def)
         return;
+
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->accel);
     VIR_FREE(def);
@@ -2259,8 +2265,8 @@ error:
 static virDomainSoundDefPtr
 virDomainSoundDefParseXML(virConnectPtr conn,
                           const xmlNodePtr node,
-                          int flags ATTRIBUTE_UNUSED) {
-
+                          int flags)
+{
     char *model;
     virDomainSoundDefPtr def;
 
@@ -2275,6 +2281,9 @@ virDomainSoundDefParseXML(virConnectPtr conn,
                              _("unknown sound model '%s'"), model);
         goto error;
     }
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(model);
@@ -2291,7 +2300,8 @@ error:
 static virDomainWatchdogDefPtr
 virDomainWatchdogDefParseXML(virConnectPtr conn,
                              const xmlNodePtr node,
-                             int flags ATTRIBUTE_UNUSED) {
+                             int flags)
+{
 
     char *model = NULL;
     char *action = NULL;
@@ -2326,6 +2336,9 @@ virDomainWatchdogDefParseXML(virConnectPtr conn,
             goto error;
         }
     }
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE (action);
@@ -2439,7 +2452,7 @@ static virDomainVideoDefPtr
 virDomainVideoDefParseXML(virConnectPtr conn,
                           const xmlNodePtr node,
                           virDomainDefPtr dom,
-                          int flags ATTRIBUTE_UNUSED) {
+                          int flags) {
     virDomainVideoDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -2498,6 +2511,9 @@ virDomainVideoDefParseXML(virConnectPtr conn,
     } else {
         def->heads = 1;
     }
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
 
     VIR_FREE(type);
     VIR_FREE(vram);
@@ -2927,8 +2943,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "watchdog")) {
         dev->type = VIR_DOMAIN_DEVICE_WATCHDOG;
-        if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(conn, node,
-                                                                flags)))
+        if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(conn, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "video")) {
         dev->type = VIR_DOMAIN_DEVICE_VIDEO;
@@ -3637,7 +3652,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     if (n > 0) {
         virDomainWatchdogDefPtr watchdog =
-            virDomainWatchdogDefParseXML (conn, nodes[0], flags);
+            virDomainWatchdogDefParseXML(conn, nodes[0], flags);
         if (!watchdog)
             goto error;
 
@@ -4550,8 +4565,17 @@ virDomainSoundDefFormat(virConnectPtr conn,
         return -1;
     }
 
-    virBufferVSprintf(buf, "    <sound model='%s'/>\n",
+    virBufferVSprintf(buf, "    <sound model='%s'",
                       model);
+
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </sound>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     return 0;
 }
@@ -4577,8 +4601,17 @@ virDomainWatchdogDefFormat(virConnectPtr conn,
         return -1;
     }
 
-    virBufferVSprintf(buf, "    <watchdog model='%s' action='%s'/>\n",
+    virBufferVSprintf(buf, "    <watchdog model='%s' action='%s'",
                       model, action);
+
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </watchdog>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     return 0;
 }
@@ -4623,6 +4656,9 @@ virDomainVideoDefFormat(virConnectPtr conn,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        return -1;
 
     virBufferAddLit(buf, "    </video>\n");
 

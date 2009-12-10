@@ -335,6 +335,7 @@ typedef struct _virDomainSoundDef virDomainSoundDef;
 typedef virDomainSoundDef *virDomainSoundDefPtr;
 struct _virDomainSoundDef {
     int model;
+    virDomainDeviceInfo info;
 };
 
 enum virDomainWatchdogModel {
@@ -359,6 +360,7 @@ typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
 struct _virDomainWatchdogDef {
     int model;
     int action;
+    virDomainDeviceInfo info;
 };
 
 
@@ -388,6 +390,7 @@ struct _virDomainVideoDef {
     unsigned int vram;
     unsigned int heads;
     virDomainVideoAccelDefPtr accel;
+    virDomainDeviceInfo info;
 };
 
 /* 3 possible graphics console modes */

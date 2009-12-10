@@ -907,6 +907,9 @@
           </optional>
         </element>
       </optional>
+      <optional>
+        <ref name="address"/>
+      </optional>
     </element>
   </define>
   <!--
@@ -1043,6 +1046,9 @@
           <value>ac97</value>
         </choice>
       </attribute>
+      <optional>
+        <ref name="address"/>
+      </optional>
     </element>
   </define>
   <define name="watchdog">
@@ -1063,6 +1069,9 @@
             <value>none</value>
           </choice>
         </attribute>
+      </optional>
+      <optional>
+        <ref name="address"/>
       </optional>
     </element>
   </define>
