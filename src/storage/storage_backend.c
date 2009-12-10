@@ -198,6 +198,8 @@ cleanup:
     if (inputfd != -1)
         close(inputfd);
 
+    VIR_FREE(buf);
+
     return ret;
 }
 
