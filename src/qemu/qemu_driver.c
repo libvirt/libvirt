@@ -2651,6 +2651,15 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
             return VIR_DRV_OPEN_ERROR;
         }
 
+        if (conn->uri->path == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("no QEMU URI path given, try %s"),
+                             qemu_driver->privileged
+                               ? "qemu:///system"
+                               : "qemu:///session");
+                return VIR_DRV_OPEN_ERROR;
+        }
+
         if (qemu_driver->privileged) {
             if (STRNEQ (conn->uri->path, "/system") &&
                 STRNEQ (conn->uri->path, "/session")) {
