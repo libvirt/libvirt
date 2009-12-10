@@ -66,14 +66,6 @@ typedef struct
 
     int      nrules;
     iptRule *rules;
-
-#ifdef ENABLE_IPTABLES_LOKKIT
-
-    char   dir[PATH_MAX];
-    char   path[PATH_MAX];
-
-#endif /* ENABLE_IPTABLES_LOKKIT */
-
 } iptRules;
 
 struct _iptablesContext
@@ -82,186 +74,6 @@ struct _iptablesContext
     iptRules *forward_filter;
     iptRules *nat_postrouting;
 };
-
-#ifdef ENABLE_IPTABLES_LOKKIT
-static void
-notifyRulesUpdated(const char *table,
-                   const char *path)
-{
-    char arg[PATH_MAX];
-    const char *argv[4];
-
-    snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
-
-    argv[0] = (char *) LOKKIT_PATH;
-    argv[1] = (char *) "--nostart";
-    argv[2] = arg;
-    argv[3] = NULL;
-
-    char ebuf[1024];
-    if (virRun(NULL, argv, NULL) < 0)
-        VIR_WARN(_("Failed to run '%s %s': %s"),
-                 LOKKIT_PATH, arg, virStrerror(errno, ebuf, sizeof ebuf));
-}
-
-static int
-stripLine(char *str, int len, const char *line)
-{
-    char *s, *p;
-    int changed;
-
-    changed = 0;
-    s = str;
-
-    while ((p = strchr(s, '\n'))) {
-        if (p == s || STRNEQLEN(s, line, p - s)) {
-            s = ++p;
-            continue;
-        }
-
-        ++p;
-        memmove(s, p, len - (p - str) + 1);
-        len -= p - s;
-        changed = 1;
-    }
-
-    if (STREQ(s, line)) {
-        *s = '\0';
-        changed = 1;
-    }
-
-    return changed;
-}
-
-static void
-notifyRulesRemoved(const char *table,
-                   const char *path)
-{
-/* 10 MB limit on config file size as a sanity check */
-#define MAX_FILE_LEN (1024*1024*10)
-
-    char arg[PATH_MAX];
-    char *content;
-    int len;
-    FILE *f = NULL;
-
-    len = virFileReadAll(SYSCONF_DIR "/sysconfig/system-config-firewall",
-                         MAX_FILE_LEN, &content);
-    if (len < 0) {
-        VIR_WARN("%s", _("Failed to read " SYSCONF_DIR
-                         "/sysconfig/system-config-firewall"));
-        return;
-    }
-
-    snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
-
-    if (!stripLine(content, len, arg)) {
-        VIR_FREE(content);
-        return;
-    }
-
-    if (!(f = fopen(SYSCONF_DIR "/sysconfig/system-config-firewall", "w")))
-        goto write_error;
-
-    if (fputs(content, f) == EOF)
-        goto write_error;
-
-    if (fclose(f) == EOF) {
-        f = NULL;
-        goto write_error;
-    }
-
-    VIR_FREE(content);
-
-    return;
-
- write_error:;
-    char ebuf[1024];
-    VIR_WARN(_("Failed to write to " SYSCONF_DIR
-               "/sysconfig/system-config-firewall : %s"),
-             virStrerror(errno, ebuf, sizeof ebuf));
-    if (f)
-        fclose(f);
-    VIR_FREE(content);
-
-#undef MAX_FILE_LEN
-}
-
-static int
-writeRules(const char *path,
-           const iptRule *rules,
-           int nrules)
-{
-    char tmp[PATH_MAX];
-    FILE *f;
-    int istmp;
-    int i;
-
-    if (nrules == 0 && unlink(path) == 0)
-        return 0;
-
-    if (snprintf(tmp, PATH_MAX, "%s.new", path) >= PATH_MAX)
-        return EINVAL;
-
-    istmp = 1;
-
-    if (!(f = fopen(tmp, "w"))) {
-        istmp = 0;
-        if (!(f = fopen(path, "w")))
-            return errno;
-    }
-
-    for (i = 0; i < nrules; i++) {
-        if (fputs(rules[i].rule, f) == EOF ||
-            fputc('\n', f) == EOF) {
-            fclose(f);
-            if (istmp)
-                unlink(tmp);
-            return errno;
-        }
-    }
-
-    fclose(f);
-
-    if (istmp && rename(tmp, path) < 0) {
-        unlink(tmp);
-        return errno;
-    }
-
-    if (istmp)
-        unlink(tmp);
-
-    return 0;
-}
-#endif /* ENABLE_IPTABLES_LOKKIT */
-
-static void
-iptRulesSave(iptRules *rules)
-{
-#ifdef ENABLE_IPTABLES_LOKKIT
-    int err;
-
-    char ebuf[1024];
-    if ((err = virFileMakePath(rules->dir))) {
-        VIR_WARN(_("Failed to create directory %s : %s"),
-                 rules->dir, virStrerror(err, ebuf, sizeof ebuf));
-        return;
-    }
-
-    if ((err = writeRules(rules->path, rules->rules, rules->nrules))) {
-        VIR_WARN(_("Failed to saves iptables rules to %s : %s"),
-                 rules->path, virStrerror(err, ebuf, sizeof ebuf));
-        return;
-    }
-
-    if (rules->nrules > 0)
-        notifyRulesUpdated(rules->table, rules->path);
-    else
-        notifyRulesRemoved(rules->table, rules->path);
-#else
-    (void) rules;
-#endif /* ENABLE_IPTABLES_LOKKIT */
-}
 
 static void
 iptRuleFree(iptRule *rule)
@@ -340,11 +152,6 @@ iptRulesFree(iptRules *rules)
         rules->nrules = 0;
     }
 
-#ifdef ENABLE_IPTABLES_LOKKIT
-    rules->dir[0] = '\0';
-    rules->path[0] = '\0';
-#endif /* ENABLE_IPTABLES_LOKKIT */
-
     VIR_FREE(rules);
 }
 
@@ -365,15 +172,6 @@ iptRulesNew(const char *table,
 
     rules->rules = NULL;
     rules->nrules = 0;
-
-#ifdef ENABLE_IPTABLES_LOKKIT
-    if (virFileBuildPath(LOCAL_STATE_DIR "/lib/libvirt/iptables", table, NULL,
-                         rules->dir, sizeof(rules->dir)) < 0)
-        goto error;
-
-    if (virFileBuildPath(rules->dir, chain, ".chain", rules->path, sizeof(rules->path)) < 0)
-        goto error;
-#endif /* ENABLE_IPTABLES_LOKKIT */
 
     return rules;
 
@@ -518,22 +316,6 @@ iptablesContextFree(iptablesContext *ctx)
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
     VIR_FREE(ctx);
-}
-
-/**
- * iptablesSaveRules:
- * @ctx: pointer to the IP table context
- *
- * Saves all the IP table rules associated with a context
- * to disk so that if iptables is restarted, the rules
- * will automatically be reload.
- */
-void
-iptablesSaveRules(iptablesContext *ctx)
-{
-    iptRulesSave(ctx->input_filter);
-    iptRulesSave(ctx->forward_filter);
-    iptRulesSave(ctx->nat_postrouting);
 }
 
 static void

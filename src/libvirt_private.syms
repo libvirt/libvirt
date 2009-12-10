@@ -247,7 +247,6 @@ iptablesRemoveForwardRejectIn;
 iptablesRemoveForwardRejectOut;
 iptablesRemoveTcpInput;
 iptablesRemoveUdpInput;
-iptablesSaveRules;
 
 
 # libvirt_internal.h

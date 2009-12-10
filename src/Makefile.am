@@ -883,8 +883,6 @@ if WITH_UML
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
 endif
 if WITH_NETWORK
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/filter"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/nat"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart"
@@ -921,8 +919,6 @@ if WITH_NETWORK
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	rmdir "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart" || :
 	rmdir "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks" || :
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/filter" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/iptables/nat" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
 endif

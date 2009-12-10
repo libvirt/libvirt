@@ -710,9 +710,6 @@ fi
 %if %{with_network}
 %dir %{_localstatedir}/run/libvirt/network/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/network/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/filter/
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/iptables/nat/
 %endif
 
 %if %{with_qemu}

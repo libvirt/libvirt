@@ -752,8 +752,6 @@ networkAddIptablesRules(virConnectPtr conn,
              !networkAddRoutingIptablesRules(conn, driver, network))
         goto err8;
 
-    iptablesSaveRules(driver->iptables);
-
     return 1;
 
  err8:
@@ -807,7 +805,6 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 67);
-    iptablesSaveRules(driver->iptables);
 }
 
 static void
