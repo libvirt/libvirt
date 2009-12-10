@@ -237,7 +237,6 @@ iptablesAddTcpInput;
 iptablesAddUdpInput;
 iptablesContextFree;
 iptablesContextNew;
-iptablesReloadRules;
 iptablesRemoveForwardAllowCross;
 iptablesRemoveForwardAllowIn;
 iptablesRemoveForwardAllowOut;

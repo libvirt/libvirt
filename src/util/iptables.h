@@ -27,8 +27,6 @@ typedef struct _iptablesContext iptablesContext;
 iptablesContext *iptablesContextNew              (void);
 void             iptablesContextFree             (iptablesContext *ctx);
 
-void             iptablesReloadRules             (iptablesContext *ctx);
-
 int              iptablesAddTcpInput             (iptablesContext *ctx,
                                                   const char *iface,
                                                   int port);

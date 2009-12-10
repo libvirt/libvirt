@@ -54,18 +54,8 @@ enum {
 
 typedef struct
 {
-    char  *rule;
-    const char **argv;
-    int    command_idx;
-} iptRule;
-
-typedef struct
-{
     char  *table;
     char  *chain;
-
-    int      nrules;
-    iptRule *rules;
 } iptRules;
 
 struct _iptablesContext
@@ -76,82 +66,10 @@ struct _iptablesContext
 };
 
 static void
-iptRuleFree(iptRule *rule)
-{
-    VIR_FREE(rule->rule);
-
-    if (rule->argv) {
-        int i = 0;
-        while (rule->argv[i])
-            VIR_FREE(rule->argv[i++]);
-        VIR_FREE(rule->argv);
-    }
-}
-
-static int
-iptRulesAppend(iptRules *rules,
-               char *rule,
-               const char **argv,
-               int command_idx)
-{
-    if (VIR_REALLOC_N(rules->rules, rules->nrules+1) < 0) {
-        int i = 0;
-        while (argv[i])
-            VIR_FREE(argv[i++]);
-        VIR_FREE(argv);
-        return ENOMEM;
-    }
-
-    rules->rules[rules->nrules].rule        = rule;
-    rules->rules[rules->nrules].argv        = argv;
-    rules->rules[rules->nrules].command_idx = command_idx;
-
-    rules->nrules++;
-
-    return 0;
-}
-
-static int
-iptRulesRemove(iptRules *rules,
-               char *rule)
-{
-    int i;
-
-    for (i = 0; i < rules->nrules; i++)
-        if (STREQ(rules->rules[i].rule, rule))
-            break;
-
-    if (i >= rules->nrules)
-        return EINVAL;
-
-    iptRuleFree(&rules->rules[i]);
-
-    memmove(&rules->rules[i],
-            &rules->rules[i+1],
-            (rules->nrules - i - 1) * sizeof (iptRule));
-
-    rules->nrules--;
-
-    return 0;
-}
-
-static void
 iptRulesFree(iptRules *rules)
 {
-    int i;
-
     VIR_FREE(rules->table);
     VIR_FREE(rules->chain);
-
-    if (rules->rules) {
-        for (i = 0; i < rules->nrules; i++)
-            iptRuleFree(&rules->rules[i]);
-
-        VIR_FREE(rules->rules);
-
-        rules->nrules = 0;
-    }
-
     VIR_FREE(rules);
 }
 
@@ -170,9 +88,6 @@ iptRulesNew(const char *table,
     if (!(rules->chain = strdup(chain)))
         goto error;
 
-    rules->rules = NULL;
-    rules->nrules = 0;
-
     return rules;
 
  error:
@@ -186,9 +101,8 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     va_list args;
     int retval = ENOMEM;
     const char **argv;
-    char *rule = NULL;
     const char *s;
-    int n, command_idx;
+    int n;
 
     n = 1 + /* /sbin/iptables  */
         2 + /*   --table foo   */
@@ -215,9 +129,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     if (!(argv[n++] = strdup(rules->table)))
         goto error;
 
-    command_idx = n;
-
-    if (!(argv[n++] = strdup("--insert")))
+    if (!(argv[n++] = strdup(action == ADD ? "--insert" : "--delete")))
         goto error;
 
     if (!(argv[n++] = strdup(rules->chain)))
@@ -234,31 +146,14 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(rule = virArgvToString(&argv[command_idx])))
-        goto error;
-
-    if (action == REMOVE) {
-        VIR_FREE(argv[command_idx]);
-        if (!(argv[command_idx] = strdup("--delete")))
-            goto error;
-    }
-
     if (virRun(NULL, argv, NULL) < 0) {
         retval = errno;
         goto error;
     }
 
-    if (action == ADD) {
-        retval = iptRulesAppend(rules, rule, argv, command_idx);
-        rule = NULL;
-        argv = NULL;
-    } else {
-        retval = iptRulesRemove(rules, rule);
-    }
+    retval = 0;
 
  error:
-    VIR_FREE(rule);
-
     if (argv) {
         n = 0;
         while (argv[n])
@@ -316,50 +211,6 @@ iptablesContextFree(iptablesContext *ctx)
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
     VIR_FREE(ctx);
-}
-
-static void
-iptRulesReload(iptRules *rules)
-{
-    int i;
-    char ebuf[1024];
-
-    for (i = 0; i < rules->nrules; i++) {
-        iptRule *rule = &rules->rules[i];
-        const char *orig;
-
-        orig = rule->argv[rule->command_idx];
-        rule->argv[rule->command_idx] = (char *) "--delete";
-
-        if (virRun(NULL, rule->argv, NULL) < 0)
-            VIR_WARN(_("Failed to remove iptables rule '%s'"
-                       " from chain '%s' in table '%s': %s"),
-                     rule->rule, rules->chain, rules->table,
-                     virStrerror(errno, ebuf, sizeof ebuf));
-
-        rule->argv[rule->command_idx] = orig;
-    }
-
-    for (i = 0; i < rules->nrules; i++)
-        if (virRun(NULL, rules->rules[i].argv, NULL) < 0)
-            VIR_WARN(_("Failed to add iptables rule '%s'"
-                       " to chain '%s' in table '%s': %s"),
-                     rules->rules[i].rule, rules->chain, rules->table,
-                     virStrerror(errno, ebuf, sizeof ebuf));
-}
-
-/**
- * iptablesReloadRules:
- * @ctx: pointer to the IP table context
- *
- * Reloads all the IP table rules associated to a context
- */
-void
-iptablesReloadRules(iptablesContext *ctx)
-{
-    iptRulesReload(ctx->input_filter);
-    iptRulesReload(ctx->forward_filter);
-    iptRulesReload(ctx->nat_postrouting);
 }
 
 static int
