@@ -4118,12 +4118,15 @@ remoteDispatchStorageVolCreateXmlFrom (struct qemud_server *server ATTRIBUTE_UNU
 
     clonevol = get_nonnull_storage_vol (conn, args->clonevol);
     if (clonevol == NULL) {
+        virStoragePoolFree(pool);
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
     newvol = virStorageVolCreateXMLFrom (pool, args->xml, clonevol,
                                          args->flags);
+    virStorageVolFree(clonevol);
+    virStoragePoolFree(pool);
     if (newvol == NULL) {
         remoteDispatchConnError(rerr, conn);
         return -1;
