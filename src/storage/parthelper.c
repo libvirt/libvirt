@@ -34,6 +34,7 @@
 
 #include <parted/parted.h>
 #include <stdio.h>
+#include <string.h>
 
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a,b) (strcmp((a),(b)) == 0)
