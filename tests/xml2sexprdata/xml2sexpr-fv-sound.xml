@@ -32,9 +32,6 @@
     </disk>
     <graphics type='vnc' port='5917' keymap='ja'/>
     <sound model='sb16'/>
-    <sound model='sb16'/>
-    <sound model='es1370'/>
-    <sound model='sb16'/>
     <sound model='es1370'/>
   </devices>
 </domain>

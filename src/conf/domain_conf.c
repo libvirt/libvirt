@@ -3764,22 +3764,11 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        int collision = 0, j;
         virDomainSoundDefPtr sound = virDomainSoundDefParseXML(conn,
                                                                nodes[i],
                                                                flags);
         if (!sound)
             goto error;
-
-        /* Verify there's no duplicated sound card */
-        for (j = 0 ; j < def->nsounds ; j++) {
-            if (def->sounds[j]->model == sound->model)
-                collision = 1;
-        }
-        if (collision) {
-            virDomainSoundDefFree(sound);
-            continue;
-        }
 
         def->sounds[def->nsounds++] = sound;
     }
