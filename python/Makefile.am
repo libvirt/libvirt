@@ -32,7 +32,7 @@ mylibs = $(top_builddir)/src/libvirt.la
 
 all-local: libvirt.py
 
-python_LTLIBRARIES = libvirtmod.la
+pyexec_LTLIBRARIES = libvirtmod.la
 
 libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c libvirt.c libvirt.h
 # Python <= 2.4 header files contain a redundant decl, hence we
@@ -60,14 +60,14 @@ $(GENERATED): generated.stamp
 $(libvirtmod_la_OBJECTS): $(GENERATED)
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(pythondir)
-	@INSTALL@ -m 0644 libvirt.py $(DESTDIR)$(pythondir)
+	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
+	@INSTALL@ -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
 	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
 uninstall-local:
-	rm -f $(DESTDIR)$(pythondir)/libvirt.py
+	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py
 
 CLEANFILES= $(GENERATED) generated.stamp
 
