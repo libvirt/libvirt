@@ -980,27 +980,25 @@
     </attribute>
   </define>
   <define name="qemucdevSrcDef">
-    <optional>
-      <oneOrMore>
-        <element name="source">
-          <optional>
-            <attribute name="mode"/>
-          </optional>
-          <optional>
-            <attribute name="path"/>
-          </optional>
-          <optional>
-            <attribute name="host"/>
-          </optional>
-          <optional>
-            <attribute name="service"/>
-          </optional>
-          <optional>
-            <attribute name="wiremode"/>
-          </optional>
-        </element>
-      </oneOrMore>
-    </optional>
+    <zeroOrMore>
+      <element name="source">
+        <optional>
+          <attribute name="mode"/>
+        </optional>
+        <optional>
+          <attribute name="path"/>
+        </optional>
+        <optional>
+          <attribute name="host"/>
+        </optional>
+        <optional>
+          <attribute name="service"/>
+        </optional>
+        <optional>
+          <attribute name="wiremode"/>
+        </optional>
+      </element>
+    </zeroOrMore>
     <optional>
       <element name="protocol">
         <optional>
