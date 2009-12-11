@@ -4444,6 +4444,15 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     if (flags & VIR_MIGRATE_PERSIST_DEST)
         flags &= ~VIR_MIGRATE_PERSIST_DEST;
 
+    /* This is buggy in Xend, but could be supported in principle.  Give
+     * a nice error message.
+     */
+    if (flags & VIR_MIGRATE_PAUSED) {
+        virXendError (conn, VIR_ERR_NO_SUPPORT,
+                      "%s", _("xenDaemonDomainMigrate: xend cannot migrate paused domains"));
+        return -1;
+    }
+
     /* XXX we could easily do tunnelled & peer2peer migration too
        if we want to. support these... */
     if (flags != 0) {

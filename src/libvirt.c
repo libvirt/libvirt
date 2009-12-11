@@ -2963,7 +2963,13 @@ virDomainMigrateVersion1 (virDomainPtr domain,
     virDomainPtr ddomain = NULL;
     char *uri_out = NULL;
     char *cookie = NULL;
-    int cookielen = 0;
+    int cookielen = 0, ret;
+    virDomainInfo info;
+
+    ret = virDomainGetInfo (domain, &info);
+    if (ret == 0 && info.state == VIR_DOMAIN_PAUSED) {
+        flags |= VIR_MIGRATE_PAUSED;
+    }
 
     /* Prepare the migration.
      *
@@ -3028,6 +3034,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     char *cookie = NULL;
     char *dom_xml = NULL;
     int cookielen = 0, ret;
+    virDomainInfo info;
 
     /* Prepare the migration.
      *
@@ -3053,6 +3060,11 @@ virDomainMigrateVersion2 (virDomainPtr domain,
                                                    VIR_DOMAIN_XML_SECURE);
     if (!dom_xml)
         return NULL;
+
+    ret = virDomainGetInfo (domain, &info);
+    if (ret == 0 && info.state == VIR_DOMAIN_PAUSED) {
+        flags |= VIR_MIGRATE_PAUSED;
+    }
 
     ret = dconn->driver->domainMigratePrepare2
         (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname,
