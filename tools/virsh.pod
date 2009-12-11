@@ -302,10 +302,11 @@ except that it does some error checking.
 The editor used can be supplied by the C<$EDITOR> environment
 variable, or if that is not defined defaults to C<vi>.
 
-=item B<migrate> optional I<--live> I<domain-id> I<desturi> I<migrateuri>
+=item B<migrate> optional I<--live> I<--suspend> I<domain-id> I<desturi> I<migrateuri>
 
-Migrate domain to another host.  Add --live for live migration. The I<desturi>
-is the connection URI of the destination host, and I<migrateuri> is the
+Migrate domain to another host.  Add --live for live migration; --suspend
+leaves the domain paused on the destination host. The I<desturi> is the
+connection URI of the destination host, and I<migrateuri> is the
 migration URI, which usually can be omitted.
 
 =item B<reboot> I<domain-id>

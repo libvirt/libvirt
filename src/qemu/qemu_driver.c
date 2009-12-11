@@ -7540,24 +7540,33 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         qemuDomainObjPrivatePtr priv = vm->privateData;
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
-        /* run 'cont' on the destination, which allows migration on qemu
-         * >= 0.10.6 to work properly.  This isn't strictly necessary on
-         * older qemu's, but it also doesn't hurt anything there
-         */
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorStartCPUs(priv->mon, dconn) < 0) {
-            if (virGetLastError() == NULL)
-                qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("resume operation failed"));
+        if (!(flags & VIR_MIGRATE_PAUSED)) {
+            /* run 'cont' on the destination, which allows migration on qemu
+             * >= 0.10.6 to work properly.  This isn't strictly necessary on
+             * older qemu's, but it also doesn't hurt anything there
+             */
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            if (qemuMonitorStartCPUs(priv->mon, dconn) < 0) {
+                if (virGetLastError() == NULL)
+                    qemudReportError(dconn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     "%s", _("resume operation failed"));
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                goto endjob;
+            }
             qemuDomainObjExitMonitorWithDriver(driver, vm);
-            goto endjob;
-        }
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-        vm->state = VIR_DOMAIN_RUNNING;
+            vm->state = VIR_DOMAIN_RUNNING;
+        }
+
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        if (vm->state == VIR_DOMAIN_PAUSED) {
+            qemuDomainEventQueue(driver, event);
+            event = virDomainEventNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_SUSPENDED,
+                                             VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+        }
         virDomainSaveStatus(dconn, driver->caps, driver->stateDir, vm);
     } else {
         qemudShutdownVMDaemon (dconn, driver, vm);

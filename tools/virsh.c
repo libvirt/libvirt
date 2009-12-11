@@ -2478,6 +2478,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {"tunnelled", VSH_OT_BOOL, 0, gettext_noop("tunnelled migration")},
     {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist VM on destination")},
     {"undefinesource", VSH_OT_BOOL, 0, gettext_noop("undefine VM on source")},
+    {"suspend", VSH_OT_BOOL, 0, gettext_noop("do not restart the domain on the destination host")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
     {"migrateuri", VSH_OT_DATA, 0, gettext_noop("migration URI, usually can be omitted")},
@@ -2519,9 +2520,11 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool (cmd, "persistent"))
         flags |= VIR_MIGRATE_PERSIST_DEST;
-
     if (vshCommandOptBool (cmd, "undefinesource"))
         flags |= VIR_MIGRATE_UNDEFINE_SOURCE;
+
+    if (vshCommandOptBool (cmd, "suspend"))
+        flags |= VIR_MIGRATE_PAUSED;
 
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool (cmd, "direct")) {
