@@ -50,7 +50,6 @@ src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/bridge.c
 src/util/conf.c
-src/util/iptables.c
 src/util/json.c
 src/util/logging.c
 src/util/pci.c
