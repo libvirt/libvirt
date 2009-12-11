@@ -7401,7 +7401,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(flags & VIR_MIGRATE_LIVE)) {
+    if (!(flags & VIR_MIGRATE_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         /* Pause domain for non-live migration */
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -7412,6 +7412,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         paused = 1;
 
+        vm->state = VIR_DOMAIN_PAUSED;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
@@ -7459,6 +7460,7 @@ endjob:
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+        vm->state = VIR_DOMAIN_RUNNING;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
