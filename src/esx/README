@@ -3,10 +3,12 @@ Some links to relevant documentation
 ====================================
 
 
-VI API reference: http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
+VI/vSphere API:   http://www.vmware.com/support/developer/vc-sdk/visdk25pubs/ReferenceGuide/
+                  http://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/
 VMX config:       http://www.sanbarrow.com/vmx.html
 CPUID:            http://www.sandpile.org/ia32/cpuid.htm
 Memory model:     http://www.vmware.com/pdf/esx3_memory.pdf
+                  http://www.vmware.com/pdf/usenix_resource_mgmt.pdf
 
 
 
