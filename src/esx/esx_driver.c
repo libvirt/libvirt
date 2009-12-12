@@ -1499,21 +1499,28 @@ esxDomainDestroy(virDomainPtr domain)
 {
     int result = 0;
     esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxVI_Context *ctx = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
 
-    if (esxVI_EnsureSession(domain->conn, priv->host) < 0) {
+    if (priv->vCenter != NULL) {
+        ctx = priv->vCenter;
+    } else {
+        ctx = priv->host;
+    }
+
+    if (esxVI_EnsureSession(domain->conn, ctx) < 0) {
         goto failure;
     }
 
     if (esxVI_String_AppendValueToList(domain->conn, &propertyNameList,
                                        "runtime.powerState") < 0 ||
         esxVI_LookupVirtualMachineByUuidAndPrepareForTask
-          (domain->conn, priv->host, domain->uuid, propertyNameList,
-           &virtualMachine, priv->autoAnswer) < 0 ||
+          (domain->conn, ctx, domain->uuid, propertyNameList, &virtualMachine,
+           priv->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(domain->conn, virtualMachine,
                                           &powerState) < 0) {
         goto failure;
@@ -1525,11 +1532,10 @@ esxDomainDestroy(virDomainPtr domain)
         goto failure;
     }
 
-    if (esxVI_PowerOffVM_Task(domain->conn, priv->host, virtualMachine->obj,
+    if (esxVI_PowerOffVM_Task(domain->conn, ctx, virtualMachine->obj,
                               &task) < 0 ||
-        esxVI_WaitForTaskCompletion(domain->conn, priv->host, task,
-                                    domain->uuid, priv->autoAnswer,
-                                    &taskInfoState) < 0) {
+        esxVI_WaitForTaskCompletion(domain->conn, ctx, task, domain->uuid,
+                                    priv->autoAnswer, &taskInfoState) < 0) {
         goto failure;
     }
 
