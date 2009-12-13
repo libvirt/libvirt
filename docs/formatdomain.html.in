@@ -774,20 +774,34 @@ qemu-kvm -net nic,model=? /dev/null
 
     <pre>
       ...
-      &lt;video type='vga' nvram='8192' heads='1'&gt;
-        &lt;acceleration accel3d='yes' accel3d='yes' /&gt;
+      &lt;video&gt;
+        &lt;model type='vga' vram='8192' heads='1'&gt;
+          &lt;acceleration accel3d='yes' accel3d='yes'/&gt;
+        &lt;/model&gt;
       &lt;/video&gt;
       ...</pre>
 
     <dl>
       <dt><code>video</code></dt>
-      <dd>The <code>video</code> element has a mandatory <code>type</code>
-  attribute which takes the value "vga", "cirrus", "vmvga", "xen" or "vbox".
-  You can also provide the amount of video memory using <code>nvram</code>,
-  the number of screen with <code>heads</code>, and whether acceleration
-  should be enabled (if supported) using the <code>accel3d</code> and
-  <code>accel2d</code> attributes in the <code>acceleration</code> element.
+      <dd>
+        The <code>video</code> element is the a container for describing
+        video devices.
+      </dd>
 
+      <dt><code>model</code></dt>
+      <dd>
+        The <code>model</code> element has a mandatory <code>type</code>
+        attribute which takes the value "vga", "cirrus", "vmvga", "xen" or "vbox".
+        You can also provide the amount of video memory in kilobytes using
+        <code>vram</code> and the number of screen with <code>heads</code>.
+      </dd>
+
+      <dt><code>acceleration</code></dt>
+      <dd>
+        If acceleration should be enabled (if supported) using the
+        <code>accel3d</code> and <code>accel2d</code> attributes in the
+        <code>acceleration</code> element.
+      </dd>
     </dl>
 
     <h4><a name="elementsConsole">Consoles, serial, parallel &amp; channel devices</a></h4>
