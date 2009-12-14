@@ -1893,7 +1893,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
 
         ADD_ARG_LIT("-monitor");
-        ADD_ARG_LIT(virBufferContentAndReset(&buf));
+        ADD_ARG(virBufferContentAndReset(&buf));
     }
 
     if (def->localtime)
