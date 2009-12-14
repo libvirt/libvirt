@@ -3802,6 +3802,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     virDomainObjPtr vm;
     int resume = 0, paused = 0;
     int ret = -1, fd = -1;
+    virDomainEventPtr event = NULL;
     const char *args[] = {
         "cat",
         NULL,
@@ -3892,10 +3893,17 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         goto endjob;
 
 endjob:
+    if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
+        qemudShutdownVMDaemon(dom->conn, driver, vm);
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+    }
+
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
        the migration is complete.  */
-    if (resume && paused) {
+    else if (resume && paused) {
         qemuDomainObjEnterMonitor(vm);
         if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
@@ -3907,12 +3915,19 @@ endjob:
 
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
+    if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
+        virDomainRemoveInactive(&driver->domains,
+                                vm);
+        vm = NULL;
+    }
 
 cleanup:
     if (ret != 0)
         unlink(path);
     if (vm)
         virDomainObjUnlock(vm);
+    if (event)
+        qemuDomainEventQueue(driver, event);
     return ret;
 }
 

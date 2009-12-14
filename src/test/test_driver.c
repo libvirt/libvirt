@@ -1911,15 +1911,16 @@ static int testDomainCoreDump(virDomainPtr domain,
         goto cleanup;
     }
 
-    testDomainShutdownState(domain, privdom);
-    event = virDomainEventNewFromObj(privdom,
-                                     VIR_DOMAIN_EVENT_STOPPED,
-                                     VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-
-    if (!privdom->persistent) {
-        virDomainRemoveInactive(&privconn->domains,
-                                privdom);
-        privdom = NULL;
+    if (flags & VIR_DUMP_CRASH) {
+        testDomainShutdownState(domain, privdom);
+        event = virDomainEventNewFromObj(privdom,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+        if (!privdom->persistent) {
+            virDomainRemoveInactive(&privconn->domains,
+                                    privdom);
+            privdom = NULL;
+        }
     }
 
     ret = 0;

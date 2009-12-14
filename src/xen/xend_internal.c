@@ -3253,8 +3253,10 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
         return(-1);
     }
 
-    return xend_op(domain->conn, domain->name, "op", "dump", "file", filename,
-                   "live", "0", "crash", "0", NULL);
+    return xend_op(domain->conn, domain->name,
+                   "op", "dump", "file", filename, "live", "0",
+                   "crash", (flags & VIR_DUMP_CRASH ? "1" : "0"),
+                   NULL);
 }
 
 /**

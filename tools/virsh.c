@@ -1431,6 +1431,7 @@ static const vshCmdInfo info_dump[] = {
 };
 
 static const vshCmdOptDef opts_dump[] = {
+    {"crash", VSH_OT_BOOL, 0, gettext_noop("crash the domain after core dump")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to dump the core")},
     {NULL, 0, 0, NULL}
@@ -1443,6 +1444,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     char *name;
     char *to;
     int ret = TRUE;
+    int flags = 0;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1453,7 +1455,10 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
-    if (virDomainCoreDump(dom, to, 0) == 0) {
+    if (vshCommandOptBool (cmd, "crash"))
+        flags |= VIR_DUMP_CRASH;
+
+    if (virDomainCoreDump(dom, to, flags) == 0) {
         vshPrint(ctl, _("Domain %s dumped to %s\n"), name, to);
     } else {
         vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
