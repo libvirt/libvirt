@@ -207,6 +207,11 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     }
 
+    if (!(priv->monConfig->info.alias = strdup("monitor"))) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
     if (!(monitorpath =
           virXPathString(NULL, "string(./monitor[1]/@path)", ctxt))) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -269,6 +274,8 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     return 0;
 
 error:
+    virDomainChrDefFree(priv->monConfig);
+    priv->monConfig = NULL;
     VIR_FREE(nodes);
     return -1;
 }

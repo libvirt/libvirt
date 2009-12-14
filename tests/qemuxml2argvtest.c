@@ -48,9 +48,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
     else
         vmdef->id = -1;
 
+    memset(&monitor_chr, 0, sizeof(monitor_chr));
     monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
     monitor_chr.data.nix.listen = 1;
+    if (!(monitor_chr.info.alias = strdup("monitor")))
+        goto fail;
 
     flags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT |
@@ -273,19 +276,19 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
 
-    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV);
-    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
 
-    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
 
     DO_TEST("sound", 0);
 
