@@ -135,7 +135,10 @@ endif
 
 if WITH_SECDRIVER_APPARMOR
 test_scripts += virt-aa-helper-test
+else
+EXTRA_DIST += virt-aa-helper-test
 endif
+
 EXTRA_DIST += $(test_scripts)
 
 TESTS = virshtest \

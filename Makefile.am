@@ -5,7 +5,7 @@ GENHTML = genhtml
 
 SUBDIRS = gnulib/lib include src daemon tools proxy docs gnulib/tests \
   python tests po examples/domain-events/events-c examples/hellolibvirt \
-  examples/dominfo examples/domsuspend examples/python
+  examples/dominfo examples/domsuspend examples/python examples/apparmor
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
