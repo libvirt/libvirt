@@ -37,7 +37,7 @@
 #include "uuid.h"
 #include "util.h"
 #include "buf.h"
-#include "daemon/event.h"
+#include "event.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -1531,10 +1531,10 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
      * enumeration.  The alternative is to register the callback after
      * we enumerate, in which case we will fail to create any devices
      * that appear while the enumeration is taking place.  */
-    if (virEventAddHandleImpl(udev_monitor_get_fd(udev_monitor),
-                              VIR_EVENT_HANDLE_READABLE,
-                              udevEventHandleCallback,
-                              NULL, NULL) == -1) {
+    if (virEventAddHandle(udev_monitor_get_fd(udev_monitor),
+                          VIR_EVENT_HANDLE_READABLE,
+                          udevEventHandleCallback,
+                          NULL, NULL) == -1) {
         ret = -1;
         goto out;
     }
