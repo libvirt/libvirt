@@ -1852,17 +1852,26 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             virBufferVSprintf(&opt, "file=%s,", disk->src);
         }
     }
-    virBufferVSprintf(&opt, "if=%s", bus);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        virBufferAddLit(&opt, "if=none");
+    else
+        virBufferVSprintf(&opt, "if=%s", bus);
+
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAddLit(&opt, ",media=cdrom");
-    if (busid == -1 && unitid == -1) {
-        if (idx != -1)
-            virBufferVSprintf(&opt, ",index=%d", idx);
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        virBufferVSprintf(&opt, ",id=drive-%s", disk->info.alias);
     } else {
-        if (busid != -1)
-            virBufferVSprintf(&opt, ",bus=%d", busid);
-        if (unitid != -1)
-            virBufferVSprintf(&opt, ",unit=%d", unitid);
+        if (busid == -1 && unitid == -1) {
+            if (idx != -1)
+                virBufferVSprintf(&opt, ",index=%d", idx);
+        } else {
+            if (busid != -1)
+                virBufferVSprintf(&opt, ",bus=%d", busid);
+            if (unitid != -1)
+                virBufferVSprintf(&opt, ",unit=%d", unitid);
+        }
     }
     if (bootable &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
@@ -1898,6 +1907,91 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
 error:
     virBufferFreeAndReset(&opt);
+    return NULL;
+}
+
+static int
+qemuBuildDriveDevStr(virConnectPtr conn,
+                     virDomainDiskDefPtr disk,
+                     char **str)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
+    int idx = virDiskNameToIndex(disk->dst);
+
+    if (idx < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unsupported disk type '%s'"), disk->dst);
+        goto error;
+    }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        virBufferAddLit(&opt, "ide-drive");
+        virBufferVSprintf(&opt, ",bus=ide.%d,unit=%d",
+                          disk->info.addr.drive.bus,
+                          disk->info.addr.drive.unit);
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        virBufferAddLit(&opt, "scsi-disk");
+        virBufferVSprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
+                          disk->info.addr.drive.controller,
+                          disk->info.addr.drive.bus,
+                          disk->info.addr.drive.unit);
+        break;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        virBufferAddLit(&opt, "virtio-blk-pci");
+        qemuBuildDeviceAddressStr(&opt, &disk->info);
+        break;
+
+    default:
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unsupported disk bus '%s' with device setup"), bus);
+        goto error;
+    }
+    virBufferVSprintf(&opt, ",drive=drive-%s", disk->info.alias);
+    virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
+
+    *str = virBufferContentAndReset(&opt);
+    return 0;
+
+error:
+    virBufferFreeAndReset(&opt);
+    *str = NULL;
+    return -1;
+}
+
+
+static char *
+qemuBuildControllerDevStr(virDomainControllerDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    switch (def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+        virBufferAddLit(&buf, "lsi");
+        virBufferVSprintf(&buf, ",id=scsi%d", def->idx);
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+        virBufferAddLit(&buf, "piix4-ide");
+        virBufferVSprintf(&buf, ",id=ide%d", def->idx);
+        break;
+
+    default:
+        goto error;
+    }
+
+    if (qemuBuildDeviceAddressStr(&buf, &def->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf))
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -2693,6 +2787,21 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        for (i = 0 ; i < def->ncontrollers ; i++) {
+            char *scsi;
+            if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+                continue;
+
+            ADD_ARG_LIT("-device");
+
+            if (!(scsi = qemuBuildControllerDevStr(def->controllers[i])))
+                goto no_memory;
+
+            ADD_ARG(scsi);
+        }
+    }
+
     /* If QEMU supports -drive param instead of old -hda, -hdb, -cdrom .. */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         int bootCD = 0, bootFloppy = 0, bootDisk = 0;
@@ -2718,6 +2827,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             char *optstr;
             int bootable = 0;
             virDomainDiskDefPtr disk = def->disks[i];
+            int withDeviceArg = 0;
 
             if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -2747,9 +2857,38 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_LIT("-drive");
 
-            if (!(optstr = qemuBuildDriveStr(disk, bootable, qemuCmdFlags)))
+            /* Unfortunately it is nt possible to use
+               -device for floppys, or Xen paravirt
+               devices. Fortunately, those don't need
+               static PCI addresses, so we don't really
+               care that we can't use -device */
+            if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+                (disk->bus != VIR_DOMAIN_DISK_BUS_XEN))
+                withDeviceArg = 1;
+            if (!(optstr = qemuBuildDriveStr(disk, bootable,
+                                             (withDeviceArg ? qemuCmdFlags :
+                                              (qemuCmdFlags & ~QEMUD_CMD_FLAG_DEVICE)))))
                 goto error;
             ADD_ARG(optstr);
+
+            if (withDeviceArg) {
+                if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+                    char *fdc;
+                    ADD_ARG_LIT("-global");
+
+                    if (virAsprintf(&fdc, "isa-fdc,drive%c=drive-%s",
+                                    disk->info.addr.drive.unit ? 'B' : 'A',
+                                    disk->info.alias) < 0)
+                        goto no_memory;
+                    ADD_ARG(fdc);
+                } else {
+                    ADD_ARG_LIT("-device");
+
+                    if (qemuBuildDriveDevStr(conn, disk, &optstr) < 0)
+                        goto error;
+                    ADD_ARG(optstr);
+                }
+            }
         }
     } else {
         for (i = 0 ; i < def->ndisks ; i++) {
