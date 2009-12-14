@@ -3511,22 +3511,36 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            if(hostdev->source.subsys.u.usb.vendor) {
-                    ret = virAsprintf(&usbdev, "host:%.4x:%.4x",
-                               hostdev->source.subsys.u.usb.vendor,
-                               hostdev->source.subsys.u.usb.product);
 
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+                ADD_ARG_LIT("-device");
+                if (hostdev->source.subsys.u.usb.vendor) {
+                    ret = virAsprintf(&usbdev, "usb-host,vendor=%.4x,product=%.4x,id=%s",
+                                      hostdev->source.subsys.u.usb.vendor,
+                                      hostdev->source.subsys.u.usb.product,
+                                      hostdev->info.alias);
+                } else {
+                    ret = virAsprintf(&usbdev, "usb-host,hostbus=%.3d,hostaddr=%.3d,id=%s",
+                                      hostdev->source.subsys.u.usb.bus,
+                                      hostdev->source.subsys.u.usb.device,
+                                      hostdev->info.alias);
+                }
             } else {
+                ADD_ARG_LIT("-usbdevice");
+                if (hostdev->source.subsys.u.usb.vendor) {
+                    ret = virAsprintf(&usbdev, "host:%.4x:%.4x",
+                                      hostdev->source.subsys.u.usb.vendor,
+                                      hostdev->source.subsys.u.usb.product);
+                } else {
                     ret = virAsprintf(&usbdev, "host:%.3d.%.3d",
-                               hostdev->source.subsys.u.usb.bus,
-                               hostdev->source.subsys.u.usb.device);
+                                      hostdev->source.subsys.u.usb.bus,
+                                      hostdev->source.subsys.u.usb.device);
+                }
             }
             if (ret < 0)
                 goto error;
 
-            ADD_ARG_LIT("-usbdevice");
-            ADD_ARG_LIT(usbdev);
-            VIR_FREE(usbdev);
+            ADD_ARG(usbdev);
         }
 
         /* PCI */
