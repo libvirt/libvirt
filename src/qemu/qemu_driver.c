@@ -3801,7 +3801,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int resume = 0, paused = 0;
-    int ret = -1;
+    int ret = -1, fd = -1;
     const char *args[] = {
         "cat",
         NULL,
@@ -3828,6 +3828,33 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         goto endjob;
     }
 
+    /* Create an empty file with appropriate ownership.  */
+    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to create '%s'"), path);
+        goto endjob;
+    }
+
+    if (close(fd) < 0) {
+        virReportSystemError(dom->conn, errno,
+                             _("unable to save file %s"),
+                             path);
+        goto endjob;
+    }
+
+    if (driver->privileged &&
+        chown(path, driver->user, driver->group) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("unable to set ownership of '%s' to user %d:%d"),
+                             path, driver->user, driver->group);
+        goto endjob;
+    }
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSavedStateLabel &&
+        driver->securityDriver->domainSetSavedStateLabel(dom->conn, vm, path) == -1)
+        goto endjob;
+
     /* Migrate will always stop the VM, so once we support live dumping
        the resume condition will stay the same, independent of whether
        the stop command is issued.  */
@@ -3849,8 +3876,22 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
     qemuDomainObjExitMonitor(vm);
-    paused = 1;
+    paused |= (ret == 0);
 
+    if (driver->privileged &&
+        chown(path, 0, 0) < 0) {
+        virReportSystemError(NULL, errno,
+                             _("unable to set ownership of '%s' to user %d:%d"),
+                             path, 0, 0);
+        goto endjob;
+    }
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSavedStateLabel &&
+        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, path) == -1)
+        goto endjob;
+
+endjob:
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
        the migration is complete.  */
@@ -3864,11 +3905,12 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         qemuDomainObjExitMonitor(vm);
     }
 
-endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
 
 cleanup:
+    if (ret != 0)
+        unlink(path);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
