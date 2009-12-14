@@ -301,6 +301,7 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-usb-address", 0);
     DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);
+    DO_TEST("hostdev-pci-address-device", QEMUD_CMD_FLAG_PCIDEVICE|QEMUD_CMD_FLAG_DEVICE);
 
     DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio");
     DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio");

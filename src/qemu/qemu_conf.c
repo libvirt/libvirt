@@ -2326,6 +2326,32 @@ error:
 }
 
 
+static char *
+qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "pci-assign");
+    virBufferVSprintf(&buf, ",host=%.2x:%.2x.%.1x",
+                      dev->source.subsys.u.pci.bus,
+                      dev->source.subsys.u.pci.slot,
+                      dev->source.subsys.u.pci.function);
+    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
@@ -3576,22 +3602,23 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* PCI */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_PCIDEVICE)) {
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+                ADD_ARG_LIT("-device");
+                if (!(pcidev = qemuBuildPCIHostdevDevStr(hostdev)))
+                    goto error;
+            } else if (qemuCmdFlags & QEMUD_CMD_FLAG_PCIDEVICE) {
+                ADD_ARG_LIT("-pcidevice");
+                if (virAsprintf(&pcidev, "host=%.2x:%.2x.%.1x",
+                                hostdev->source.subsys.u.pci.bus,
+                                hostdev->source.subsys.u.pci.slot,
+                                hostdev->source.subsys.u.pci.function) < 0)
+                    goto no_memory;
+            } else {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
                                  _("PCI device assignment is not supported by this version of qemu"));
                 goto error;
             }
-            ret = virAsprintf(&pcidev, "host=%.2x:%.2x.%.1x",
-                           hostdev->source.subsys.u.pci.bus,
-                           hostdev->source.subsys.u.pci.slot,
-                           hostdev->source.subsys.u.pci.function);
-            if (ret < 0) {
-                pcidev = NULL;
-                goto no_memory;
-            }
-            ADD_ARG_LIT("-pcidevice");
-            ADD_ARG_LIT(pcidev);
-            VIR_FREE(pcidev);
+            ADD_ARG(pcidev);
         }
     }
 
