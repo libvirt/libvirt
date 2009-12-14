@@ -1945,7 +1945,9 @@ qemuBuildDriveDevStr(virConnectPtr conn,
         virBufferAddLit(&opt, "virtio-blk-pci");
         qemuBuildDeviceAddressStr(&opt, &disk->info);
         break;
-
+    case VIR_DOMAIN_DISK_BUS_USB:
+        virBufferAddLit(&opt, "usb-storage");
+        break;
     default:
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unsupported disk bus '%s' with device setup"), bus);
@@ -2948,7 +2950,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainDiskDefPtr disk = def->disks[i];
             int withDeviceArg = 0;
 
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+            /* Unless we have -device, then USB disks need special
+               handling */
+            if ((disk->bus == VIR_DOMAIN_DISK_BUS_USB) &&
+                !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                     ADD_USBDISK(disk->src);
                 } else {

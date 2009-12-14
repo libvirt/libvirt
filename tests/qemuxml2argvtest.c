@@ -235,6 +235,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-usb", 0);
+    DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("graphics-vnc", 0);
 
     driver.vncSASL = 1;
