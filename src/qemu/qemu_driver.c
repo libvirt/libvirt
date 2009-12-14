@@ -7668,6 +7668,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                                              VIR_DOMAIN_EVENT_DEFINED_UPDATED);
             if (event)
                 qemuDomainEventQueue(driver, event);
+            event = NULL;
 
         }
         qemuDomainObjPrivatePtr priv = vm->privateData;
