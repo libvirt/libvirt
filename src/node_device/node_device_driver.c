@@ -78,10 +78,9 @@ static int update_driver_name(virConnectPtr conn,
                               virNodeDeviceObjPtr dev)
 {
     char *driver_link = NULL;
-    char devpath[PATH_MAX];
+    char *devpath;
     char *p;
     int ret = -1;
-    int n;
 
     VIR_FREE(dev->def->driver);
 
@@ -97,12 +96,11 @@ static int update_driver_name(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((n = readlink(driver_link, devpath, sizeof devpath)) < 0) {
+    if (virFileResolveLink(driver_link, &devpath) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot resolve driver link %s"), driver_link);
         goto cleanup;
     }
-    devpath[n] = '\0';
 
     p = strrchr(devpath, '/');
     if (p) {
@@ -116,6 +114,7 @@ static int update_driver_name(virConnectPtr conn,
 
 cleanup:
     VIR_FREE(driver_link);
+    free(devpath);
     return ret;
 }
 #else
