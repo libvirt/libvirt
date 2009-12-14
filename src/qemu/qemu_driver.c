@@ -3914,7 +3914,7 @@ endjob:
 
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
-    if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
+    else if ((ret == 0) && (flags & VIR_DUMP_CRASH) && !vm->persistent) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
         vm = NULL;
