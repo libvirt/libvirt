@@ -5286,12 +5286,14 @@ static int
 cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
+    char *name = NULL;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
-                                   VSH_BYUUID)))
+
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
         return FALSE;
+    }
 
     vshPrint(ctl, "%s\n", virStorageVolGetPath(vol));
     virStorageVolFree(vol);
