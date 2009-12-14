@@ -349,6 +349,7 @@
             &lt;encryption type='...'&gt;
               ...
             &lt;/encryption&gt;
+            &lt;shareable/&gt;
           &lt;/disk&gt;
           ...</pre>
 
@@ -388,6 +389,11 @@
       <dd>If present, specifies how the volume is encrypted.  See
         the <a href="formatstorageencryption.html">Storage Encryption</a> page
         for more information.
+      </dd>
+      <dt><code>shareable</code></dt>
+      <dd>If present, this indicates the device is expected to be shared
+          between domains (assuming the hypervisor and OS support this),
+          which means that caching should be deactivated for that device.
       </dd>
     </dl>
 
