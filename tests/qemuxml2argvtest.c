@@ -293,6 +293,7 @@ mymain(int argc, char **argv)
     DO_TEST("watchdog", 0);
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("sound", 0);
+    DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE);
 
     DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);

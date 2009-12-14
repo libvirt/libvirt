@@ -2052,7 +2052,44 @@ error:
     return NULL;
 }
 
-/* this function outputs a -chardev command line option which describes only the
+
+static char *
+qemuBuildSoundDevStr(virDomainSoundDefPtr sound)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *model = virDomainSoundModelTypeToString(sound->model);
+
+    if (!model) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("invalid sound model"));
+        goto error;
+    }
+
+    /* Hack for 2 wierdly unusal devices name in QEMU */
+    if (STREQ(model, "es1370"))
+        model = "ES1370";
+    else if (STREQ(model, "ac97"))
+        model = "AC97";
+
+    virBufferVSprintf(&buf, "%s", model);
+    virBufferVSprintf(&buf, ",id=%s", sound->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, &sound->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+/* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
                                                   virBufferPtr buf)
@@ -3122,27 +3159,49 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     /* Add sound hardware */
     if (def->nsounds) {
-        int size = 100;
-        char *modstr;
-        if (VIR_ALLOC_N(modstr, size+1) < 0)
-            goto no_memory;
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+            for (i = 0 ; i < def->nsounds ; i++) {
+                virDomainSoundDefPtr sound = def->sounds[i];
+                char *str = NULL;
 
-        for (i = 0 ; i < def->nsounds && size > 0 ; i++) {
-            virDomainSoundDefPtr sound = def->sounds[i];
-            const char *model = virDomainSoundModelTypeToString(sound->model);
-            if (!model) {
-                VIR_FREE(modstr);
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("invalid sound model"));
-                goto error;
+                /* Sadly pcspk device doesn't use -device syntax. Fortunately
+                 * we don't need to set any PCI address on it, so we don't
+                 * mind too much */
+                if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
+                    ADD_ARG_LIT("-soundhw");
+                    ADD_ARG_LIT("pcspk");
+                } else {
+                    ADD_ARG_LIT("-device");
+
+                    if (!(str = qemuBuildSoundDevStr(sound)))
+                        goto error;
+
+                    ADD_ARG(str);
+                }
             }
-            strncat(modstr, model, size);
-            size -= strlen(model);
-            if (i < (def->nsounds - 1))
-               strncat(modstr, ",", size--);
+        } else {
+            int size = 100;
+            char *modstr;
+            if (VIR_ALLOC_N(modstr, size+1) < 0)
+                goto no_memory;
+
+            for (i = 0 ; i < def->nsounds && size > 0 ; i++) {
+                virDomainSoundDefPtr sound = def->sounds[i];
+                const char *model = virDomainSoundModelTypeToString(sound->model);
+                if (!model) {
+                    VIR_FREE(modstr);
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     "%s", _("invalid sound model"));
+                    goto error;
+                }
+                strncat(modstr, model, size);
+                size -= strlen(model);
+                if (i < (def->nsounds - 1))
+                    strncat(modstr, ",", size--);
+            }
+            ADD_ARG_LIT("-soundhw");
+            ADD_ARG(modstr);
         }
-        ADD_ARG_LIT("-soundhw");
-        ADD_ARG(modstr);
     }
 
     /* Add watchdog hardware */
