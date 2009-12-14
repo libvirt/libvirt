@@ -119,8 +119,8 @@
         &lt;target&gt;
           &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
           &lt;permissions&gt;
-            &lt;owner&gt;0744&lt;/owner&gt;
-            &lt;group&gt;0744&lt;/group&gt;
+            &lt;owner&gt;107&lt;/owner&gt;
+            &lt;group&gt;107&lt;/group&gt;
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
@@ -244,8 +244,8 @@
           &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
           &lt;format type='qcow2'/&gt;
           &lt;permissions&gt;
-            &lt;owner&gt;0744&lt;/owner&gt;
-            &lt;group&gt;0744&lt;/group&gt;
+            &lt;owner&gt;107&lt;/owner&gt;
+            &lt;group&gt;107&lt;/group&gt;
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
@@ -294,8 +294,8 @@
           &lt;path&gt;/var/lib/virt/images/master.img&lt;/path&gt;
           &lt;format&gt;raw&lt;/format&gt;
           &lt;permissions&gt;
-            &lt;owner&gt;0744&lt;/owner&gt;
-            &lt;group&gt;0744&lt;/group&gt;
+            &lt;owner&gt;107&lt;/owner&gt;
+            &lt;group&gt;107&lt;/group&gt;
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
@@ -368,8 +368,8 @@
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
           &lt;permissions&gt;
-            &lt;owner&gt;0744&lt;/owner&gt;
-            &lt;group&gt;0744&lt;/group&gt;
+            &lt;owner&gt;107&lt;/owner&gt;
+            &lt;group&gt;107&lt;/group&gt;
             &lt;mode&gt;0744&lt;/mode&gt;
             &lt;label&gt;virt_image_t&lt;/label&gt;
           &lt;/permissions&gt;
