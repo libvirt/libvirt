@@ -3284,9 +3284,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         switch(channel->targetType) {
         case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
-            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV)) {
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) ||
+                !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                     "%s", _("guestfwd requires QEMU to support -chardev"));
+                     "%s", _("guestfwd requires QEMU to support -chardev & -device"));
                 goto error;
             }
 
@@ -3302,8 +3303,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
             const char *addr = virSocketFormatAddr(channel->target.addr);
             int port = virSocketGetPort(channel->target.addr);
 
-            virBufferVSprintf(&buf, "user,guestfwd=tcp:%s:%i-chardev:%s",
-                              addr, port, channel->info.alias);
+            ADD_ARG_LIT("-netdev");
+            virBufferVSprintf(&buf, "user,guestfwd=tcp:%s:%i,chardev=%s,id=user-%s",
+                              addr, port, channel->info.alias, channel->info.alias);
 
             VIR_FREE(addr);
 
@@ -3312,7 +3314,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto no_memory;
             }
 
-            ADD_ARG_LIT("-net");
             ADD_ARG(virBufferContentAndReset(&buf));
         }
     }
