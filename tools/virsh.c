@@ -8049,6 +8049,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
                 free(tkdata);
+                tkdata = NULL;
             } else if (tk == VSH_TK_OPTION) {
                 if (!(opt = vshCmddefGetOption(cmd, tkdata))) {
                     vshError(ctl,
