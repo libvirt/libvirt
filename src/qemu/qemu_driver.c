@@ -1924,7 +1924,8 @@ cleanup:
 
 static int qemuRemoveCgroup(virConnectPtr conn,
                             struct qemud_driver *driver,
-                            virDomainObjPtr vm)
+                            virDomainObjPtr vm,
+                            int quiet)
 {
     virCgroupPtr cgroup;
     int rc;
@@ -1934,9 +1935,10 @@ static int qemuRemoveCgroup(virConnectPtr conn,
 
     rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0);
     if (rc != 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to find cgroup for %s\n"),
-                         vm->def->name);
+        if (!quiet)
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Unable to find cgroup for %s\n"),
+                             vm->def->name);
         return rc;
     }
 
@@ -2303,7 +2305,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
 
     /* Ensure no historical cgroup for this VM is lieing around bogus settings */
-    qemuRemoveCgroup(conn, driver, vm);
+    qemuRemoveCgroup(conn, driver, vm, 1);
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
@@ -2505,7 +2507,7 @@ cleanup:
         VIR_FREE(vm->def->seclabel.label);
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
-    qemuRemoveCgroup(conn, driver, vm);
+    qemuRemoveCgroup(conn, driver, vm, 0);
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         vm->def->graphics[0]->data.vnc.autoport)
@@ -2595,7 +2597,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     qemuDomainReAttachHostDevices(conn, driver, vm->def);
 
 retry:
-    if ((ret = qemuRemoveCgroup(conn, driver, vm)) < 0) {
+    if ((ret = qemuRemoveCgroup(conn, driver, vm, 0)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
             usleep(200*1000);
             goto retry;
