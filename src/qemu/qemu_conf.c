@@ -1863,17 +1863,37 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (monitor_chr) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-        if (monitor_json)
-            virBufferAddLit(&buf, "control,");
+        /* Use -chardev if it's available */
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
+            qemudBuildCommandLineChrDevChardevStr(monitor_chr, "monitor", &buf);
+            if (virBufferError(&buf)) {
+                virBufferFreeAndReset(&buf);
+                goto no_memory;
+            }
 
-        qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
+            ADD_ARG_LIT("-chardev");
+            ADD_ARG(virBufferContentAndReset(&buf));
+
+            if (monitor_json)
+                virBufferAddLit(&buf, "control,");
+
+            virBufferAddLit(&buf, "chardev:monitor");
+        }
+
+        else {
+            if (monitor_json)
+                virBufferAddLit(&buf, "control,");
+
+            qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
+        }
+
         if (virBufferError(&buf)) {
             virBufferFreeAndReset(&buf);
             goto no_memory;
         }
 
         ADD_ARG_LIT("-monitor");
-        ADD_ARG(virBufferContentAndReset(&buf));
+        ADD_ARG_LIT(virBufferContentAndReset(&buf));
     }
 
     if (def->localtime)
@@ -2199,14 +2219,42 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr serial = def->serials[i];
 
-            qemudBuildCommandLineChrDevStr(serial, &buf);
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
+            /* Use -chardev if it's available */
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
+                char id[16];
+
+                if (snprintf(id, sizeof(id), "serial%i", i) > sizeof(id))
+                    goto error;
+
+                qemudBuildCommandLineChrDevChardevStr(serial, id, &buf);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-chardev");
+                ADD_ARG(virBufferContentAndReset(&buf));
+
+                virBufferVSprintf(&buf, "chardev:%s", id);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-serial");
+                ADD_ARG(virBufferContentAndReset(&buf));
             }
 
-            ADD_ARG_LIT("-serial");
-            ADD_ARG(virBufferContentAndReset(&buf));
+            else {
+                qemudBuildCommandLineChrDevStr(serial, &buf);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-serial");
+                ADD_ARG(virBufferContentAndReset(&buf));
+            }
         }
     }
 
@@ -2218,14 +2266,42 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr parallel = def->parallels[i];
 
-            qemudBuildCommandLineChrDevStr(parallel, &buf);
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
+            /* Use -chardev if it's available */
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
+                char id[16];
+
+                if (snprintf(id, sizeof(id), "parallel%i", i) > sizeof(id))
+                    goto error;
+
+                qemudBuildCommandLineChrDevChardevStr(parallel, id, &buf);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-chardev");
+                ADD_ARG(virBufferContentAndReset(&buf));
+
+                virBufferVSprintf(&buf, "chardev:%s", id);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-parallel");
+                ADD_ARG(virBufferContentAndReset(&buf));
             }
 
-            ADD_ARG_LIT("-parallel");
-            ADD_ARG(virBufferContentAndReset(&buf));
+            else {
+                qemudBuildCommandLineChrDevStr(parallel, &buf);
+                if (virBufferError(&buf)) {
+                    virBufferFreeAndReset(&buf);
+                    goto no_memory;
+                }
+
+                ADD_ARG_LIT("-parallel");
+                ADD_ARG(virBufferContentAndReset(&buf));
+            }
         }
     }
 

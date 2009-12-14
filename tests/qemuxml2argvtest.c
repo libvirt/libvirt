@@ -273,6 +273,18 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
 
+    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV);
+    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV);
+
     DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV);
 
     DO_TEST("sound", 0);

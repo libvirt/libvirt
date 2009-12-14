@@ -1,0 +1,1 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -chardev socket,id=monitor,path=/tmp/test-monitor,server,nowait -monitor chardev:monitor -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -chardev socket,id=serial0,host=127.0.0.1,port=9999,telnet,server,nowait -serial chardev:serial0 -parallel none -usb
