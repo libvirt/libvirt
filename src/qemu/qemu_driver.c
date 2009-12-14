@@ -1439,6 +1439,16 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
         }
     }
 
+    /* then the channel devices */
+    for (i = 0 ; i < vm->def->nchannels ; i++) {
+        virDomainChrDefPtr chr = vm->def->channels[i];
+        if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
+            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+                                           &chr->data.file.path)) != 0)
+                return ret;
+        }
+    }
+
     return 0;
 }
 
