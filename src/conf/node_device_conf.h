@@ -76,6 +76,18 @@ enum virNodeDevScsiHostCapFlags {
     VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS			= (1 << 1),
 };
 
+enum virNodeDevPCICapFlags {
+    VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION		= (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION		= (1 << 1),
+};
+
+struct pci_config_address {
+    unsigned domain;
+    unsigned bus;
+    unsigned slot;
+    unsigned function;
+};
+
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
 typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
 struct _virNodeDevCapsDef {
@@ -105,6 +117,10 @@ struct _virNodeDevCapsDef {
             unsigned class;
             char *product_name;
             char *vendor_name;
+            struct pci_config_address *physical_function;
+            struct pci_config_address **virtual_functions;
+            unsigned num_virtual_functions;
+            unsigned flags;
         } pci_dev;
         struct {
             unsigned bus;

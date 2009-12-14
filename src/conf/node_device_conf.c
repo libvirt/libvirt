@@ -246,6 +246,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDefPtr caps;
+    unsigned int i = 0;
 
     virBufferAddLit(&buf, "<device>\n");
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
@@ -317,6 +318,30 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                                       data->pci_dev.vendor_name);
             else
                 virBufferAddLit(&buf, " />\n");
+            if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION) {
+                virBufferAddLit(&buf, "    <capability type='phys_function'>\n");
+                virBufferVSprintf(&buf,
+                                  "      <address domain='0x%.4x' bus='0x%.2x' "
+                                  "slot='0x%.2x' function='0x%.1x'/>\n",
+                                  data->pci_dev.physical_function->domain,
+                                  data->pci_dev.physical_function->bus,
+                                  data->pci_dev.physical_function->slot,
+                                  data->pci_dev.physical_function->function);
+                virBufferAddLit(&buf, "    </capability>\n");
+            }
+            if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION) {
+                virBufferAddLit(&buf, "    <capability type='virt_functions'>\n");
+                for (i = 0 ; i < data->pci_dev.num_virtual_functions ; i++) {
+                    virBufferVSprintf(&buf,
+                                      "      <address domain='0x%.4x' bus='0x%.2x' "
+                                      "slot='0x%.2x' function='0x%.1x'/>\n",
+                                      data->pci_dev.virtual_functions[i]->domain,
+                                      data->pci_dev.virtual_functions[i]->bus,
+                                      data->pci_dev.virtual_functions[i]->slot,
+                                      data->pci_dev.virtual_functions[i]->function);
+                }
+                virBufferAddLit(&buf, "    </capability>\n");
+            }
             break;
         case VIR_NODE_DEV_CAP_USB_DEV:
             virBufferVSprintf(&buf, "    <bus>%d</bus>\n", data->usb_dev.bus);
@@ -1385,6 +1410,7 @@ out:
 
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {
+    int i = 0;
     union _virNodeDevCapData *data = &caps->data;
 
     switch (caps->type) {
@@ -1400,6 +1426,10 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_PCI_DEV:
         VIR_FREE(data->pci_dev.product_name);
         VIR_FREE(data->pci_dev.vendor_name);
+        VIR_FREE(data->pci_dev.physical_function);
+        for (i = 0 ; i < data->pci_dev.num_virtual_functions ; i++) {
+            VIR_FREE(data->pci_dev.virtual_functions[i]);
+        }
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         VIR_FREE(data->usb_dev.product_name);

@@ -37,6 +37,10 @@
 #define LINUX_SYSFS_VPORT_CREATE_POSTFIX "/vport_create"
 #define LINUX_SYSFS_VPORT_DELETE_POSTFIX "/vport_delete"
 
+#define SRIOV_FOUND 0
+#define SRIOV_NOT_FOUND 1
+#define SRIOV_ERROR -1
+
 #define LINUX_NEW_DEVICE_WAIT_TIME 60
 
 #ifdef HAVE_HAL
@@ -61,6 +65,14 @@ int check_fc_host_linux(union _virNodeDevCapData *d);
 #define check_vport_capable(d) check_vport_capable_linux(d)
 int check_vport_capable_linux(union _virNodeDevCapData *d);
 
+#define get_physical_function(s,d) get_physical_function_linux(s,d)
+int get_physical_function_linux(const char *sysfs_path,
+                                union _virNodeDevCapData *d);
+
+#define get_virtual_functions(s,d) get_virtual_functions_linux(s,d)
+int get_virtual_functions_linux(const char *sysfs_path,
+                                union _virNodeDevCapData *d);
+
 #define read_wwn(host, file, wwn) read_wwn_linux(host, file, wwn)
 int read_wwn_linux(int host, const char *file, char **wwn);
 
@@ -68,6 +80,8 @@ int read_wwn_linux(int host, const char *file, char **wwn);
 
 #define check_fc_host(d)
 #define check_vport_capable(d)
+#define get_physical_function(sysfs_path, d)
+#define get_virtual_functions(sysfs_path, d)
 #define read_wwn(host, file, wwn)
 
 #endif /* __linux__ */

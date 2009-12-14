@@ -29,6 +29,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include <dirent.h>
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -70,7 +71,7 @@ int read_wwn_linux(int host, const char *file, char **wwn)
     char buf[64];
 
     if (open_wwn_file(LINUX_SYSFS_FC_HOST_PREFIX, host, file, &fd) < 0) {
-            goto out;
+        goto out;
     }
 
     memset(buf, 0, sizeof(buf));
@@ -182,6 +183,196 @@ int check_vport_capable_linux(union _virNodeDevCapData *d)
 out:
     VIR_FREE(sysfs_path);
     return retval;
+}
+
+
+static int logStrToLong_ui(char const *s,
+                           char **end_ptr,
+                           int base,
+                           unsigned int *result)
+{
+    int ret = 0;
+
+    ret = virStrToLong_ui(s, end_ptr, base, result);
+    if (ret != 0) {
+        VIR_ERROR("Failed to convert '%s' to unsigned int", s);
+    } else {
+        VIR_DEBUG("Converted '%s' to unsigned int %u", s, *result);
+    }
+
+    return ret;
+}
+
+
+static int parse_pci_config_address(char *address, struct pci_config_address *bdf)
+{
+    char *p = NULL;
+    int ret = -1;
+
+    if ((address == NULL) || (logStrToLong_ui(address, &p, 16,
+                                              &bdf->domain) == -1)) {
+        goto out;
+    }
+
+    if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
+                                        &bdf->bus) == -1)) {
+        goto out;
+    }
+
+    if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
+                                        &bdf->slot) == -1)) {
+        goto out;
+    }
+
+    if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
+                                        &bdf->function) == -1)) {
+        goto out;
+    }
+
+    ret = 0;
+
+out:
+    return ret;
+}
+
+
+
+
+static int get_sriov_function(const char *device_link,
+                              struct pci_config_address **bdf)
+{
+    char *device_path = NULL, *config_address = NULL;
+    char errbuf[64];
+    int ret = SRIOV_ERROR;
+
+    VIR_DEBUG("Attempting to resolve device path from device link '%s'\n",
+              device_link);
+
+    if (!virFileExists(device_link)) {
+
+        VIR_DEBUG("SR IOV function link '%s' does not exist\n", device_link);
+        /* Not an SR IOV device, not an error, either. */
+        ret = SRIOV_NOT_FOUND;
+
+        goto out;
+
+    }
+
+    device_path = realpath(device_link, device_path);
+    if (device_path == NULL) {
+        memset(errbuf, '\0', sizeof(errbuf));
+        VIR_ERROR("Failed to resolve device link '%s': '%s'\n", device_link,
+                  virStrerror(errno, errbuf, sizeof(errbuf)));
+        goto out;
+    }
+
+    VIR_DEBUG("SR IOV device path is '%s'\n", device_path);
+    config_address = basename(device_path);
+    if (VIR_ALLOC(*bdf) != 0) {
+        VIR_ERROR0("Failed to allocate memory for PCI device name\n");
+        goto out;
+    }
+
+    if (parse_pci_config_address(config_address, *bdf) != 0) {
+        VIR_ERROR("Failed to parse PCI config address '%s'\n", config_address);
+        goto out;
+    }
+
+    VIR_DEBUG("SR IOV function %.4x:%.2x:%.2x.%.1x/>\n",
+              (*bdf)->domain,
+              (*bdf)->bus,
+              (*bdf)->slot,
+              (*bdf)->function);
+
+    ret = SRIOV_FOUND;
+
+out:
+    VIR_FREE(device_path);
+    return ret;
+}
+
+
+int get_physical_function_linux(const char *sysfs_path,
+                                union _virNodeDevCapData *d ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    char *device_link = NULL;
+
+    VIR_DEBUG("Attempting to get SR IOV physical function for device "
+              "with sysfs path '%s'\n", sysfs_path);
+
+    if (virBuildPath(&device_link, sysfs_path, "physfn") == -1) {
+        virReportOOMError(NULL);
+    } else {
+        ret = get_sriov_function(device_link, &d->pci_dev.physical_function);
+        if (ret == SRIOV_FOUND) {
+            d->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+        }
+    }
+
+    VIR_FREE(device_link);
+    return ret;
+}
+
+
+int get_virtual_functions_linux(const char *sysfs_path,
+                                union _virNodeDevCapData *d)
+{
+    int ret = -1;
+    DIR *dir = NULL;
+    struct dirent *entry = NULL;
+    char *device_link = NULL;
+
+    VIR_DEBUG("Attempting to get SR IOV virtual functions for device"
+              "with sysfs path '%s'\n", sysfs_path);
+
+    dir = opendir(sysfs_path);
+    if (dir == NULL) {
+        goto out;
+    }
+
+    while ((entry = readdir(dir))) {
+        if (STRPREFIX(entry->d_name, "virtfn")) {
+            /* This local is just to avoid lines of code much > 80 col. */
+            unsigned int *num_funcs = &d->pci_dev.num_virtual_functions;
+
+            if (virBuildPath(&device_link, sysfs_path, entry->d_name) == -1) {
+                virReportOOMError(NULL);
+                goto out;
+            }
+
+            VIR_DEBUG("Number of virtual functions: %d\n", *num_funcs);
+            if (VIR_REALLOC_N(d->pci_dev.virtual_functions,
+                              (*num_funcs) + 1) != 0) {
+                virReportOOMError(NULL);
+                goto out;
+            }
+
+            if (get_sriov_function(device_link,
+                                   &d->pci_dev.virtual_functions[*num_funcs])
+                                   != SRIOV_FOUND) {
+
+                /* We should not get back SRIOV_NOT_FOUND in this
+                 * case, so if we do, it's an error. */
+                VIR_ERROR("Failed to get SR IOV function from device link '%s'",
+                          device_link);
+                goto out;
+            } else {
+                (*num_funcs)++;
+                d->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+            }
+
+            VIR_FREE(device_link);
+        }
+    }
+
+    closedir(dir);
+
+    ret = 0;
+
+out:
+    VIR_FREE(device_link);
+    return 0;
 }
 
 #endif /* __linux__ */

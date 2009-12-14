@@ -145,14 +145,20 @@ static int gather_pci_cap(LibHalContext *ctx, const char *udi,
             (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.slot);
             (void)virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function);
         }
+
+        get_physical_function(sysfs_path, d);
+        get_virtual_functions(sysfs_path, d);
+
         VIR_FREE(sysfs_path);
     }
+
     (void)get_int_prop(ctx, udi, "pci.vendor_id", (int *)&d->pci_dev.vendor);
     if (get_str_prop(ctx, udi, "pci.vendor", &d->pci_dev.vendor_name) != 0)
         (void)get_str_prop(ctx, udi, "info.vendor", &d->pci_dev.vendor_name);
     (void)get_int_prop(ctx, udi, "pci.product_id", (int *)&d->pci_dev.product);
     if (get_str_prop(ctx, udi, "pci.product", &d->pci_dev.product_name) != 0)
         (void)get_str_prop(ctx, udi, "info.product", &d->pci_dev.product_name);
+
     return 0;
 }
 
