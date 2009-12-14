@@ -167,13 +167,11 @@
       </optional>
       <optional>
         <attribute name="machine">
-          <choice>
-            <value>xenfv</value>
-            <value>pc</value>
-            <value>isapc</value>
-          </choice>
+          <data type="string">
+            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
+          </data>
         </attribute>
-        </optional>
+      </optional>
     </group>
   </define>
   <define name="hvmmips">
