@@ -1422,7 +1422,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if (client &&
         client->tlssession) gnutls_deinit (client->tlssession);
     close (fd);
-    VIR_FREE(client->rx);
+    if (client)
+        VIR_FREE(client->rx);
     VIR_FREE(client);
     return -1;
 }
