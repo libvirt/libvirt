@@ -260,6 +260,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_UUID);
     DO_TEST("net-user", 0);
     DO_TEST("net-virtio", 0);
+    DO_TEST("net-virtio-device", QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("net-eth", 0);
     DO_TEST("net-eth-ifname", 0);
     DO_TEST("net-eth-names", QEMUD_CMD_FLAG_NET_NAME);
