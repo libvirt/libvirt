@@ -4753,6 +4753,7 @@ error:
  *      virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
  *	underlying virtualization system (Xen...).
+ *	Must be zero when cpumaps is NULL and positive when it is non-NULL.
  *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer isn't NULL.
@@ -4776,7 +4777,11 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
-    if (cpumaps != NULL && maplen < 1) {
+
+    /* Ensure that domainGetVcpus (aka remoteDomainGetVcpus) does not
+       try to memcpy anything into a NULL pointer.  */
+    if ((cpumaps == NULL && maplen != 0)
+        || (cpumaps && maplen <= 0)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto error;
     }
