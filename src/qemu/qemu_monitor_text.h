@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include "qemu_monitor.h"
+#include "hash.h"
 
 int qemuMonitorTextIOProcess(qemuMonitorPtr mon,
                              const char *data,
@@ -152,5 +153,8 @@ int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
 int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
                                      int vlan,
                                      const char *netname);
+
+int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
+                               virHashTablePtr paths);
 
 #endif /* QEMU_MONITOR_TEXT_H */

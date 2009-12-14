@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include "domain_conf.h"
+#include "hash.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -272,5 +273,7 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
                                  int vlan,
                                  const char *netname);
 
+int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
+                           virHashTablePtr paths);
 
 #endif /* QEMU_MONITOR_H */

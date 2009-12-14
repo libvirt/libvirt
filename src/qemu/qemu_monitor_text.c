@@ -1594,3 +1594,74 @@ cleanup:
     VIR_FREE(reply);
     return ret;
 }
+
+
+/* Parse the output of "info chardev" and return a hash of pty paths.
+ *
+ * Output is:
+ * foo: filename=pty:/dev/pts/7
+ * monitor: filename=stdio
+ * serial0: filename=vc
+ * parallel0: filename=vc
+ *
+ * Non-pty lines are ignored. In the above example, key is 'foo', value is
+ * '/dev/pty/7'. The hash will contain only a single value.
+ */
+
+int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
+                               virHashTablePtr paths)
+{
+    const char *cmd = "info chardev";
+    char *reply = NULL;
+    int ret = -1;
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to retrieve chardev info in qemu with '%s'"),
+                         cmd);
+        goto cleanup;
+    }
+
+    char *pos = reply;                  /* The current start of searching */
+    char *end = pos + strlen(reply);    /* The end of the reply string */
+    char *eol;                   /* The character which ends the current line */
+
+    while (pos < end) {
+        /* Split the output into lines */
+        eol = memchr(pos, '\n', end - pos);
+        if (eol == NULL)
+            eol = end;
+
+        /* Look for 'filename=pty:' */
+#define NEEDLE "filename=pty:"
+        char *needle = memmem(pos, eol - pos, NEEDLE, strlen(NEEDLE));
+
+        /* If it's not there we can ignore this line */
+        if (!needle)
+            goto next;
+
+        /* id is everthing from the beginning of the line to the ':'
+         * find ':' and turn it into a terminator */
+        char *colon = memchr(pos, ':', needle - pos);
+        if (colon == NULL)
+            goto next;
+        *colon = '\0';
+        char *id = pos;
+
+        /* Path is everything after needle to the end of the line */
+        *eol = '\0';
+        char *path = needle + strlen(NEEDLE);
+
+        virHashAddEntry(paths, id, strdup(path));
+#undef NEEDLE
+
+    next:
+        pos = eol + 1;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(reply);
+    return ret;
+}

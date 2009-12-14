@@ -1407,6 +1407,40 @@ qemudExtractTTYPath(virConnectPtr conn,
 }
 
 static int
+qemudFindCharDevicePTYsMonitor(virConnectPtr conn,
+                               virDomainObjPtr vm,
+                               virHashTablePtr paths)
+{
+    int i;
+
+#define LOOKUP_PTYS(array, arraylen, idprefix)                            \
+    for (i = 0 ; i < (arraylen) ; i++) {                                  \
+        virDomainChrDefPtr chr = (array)[i];                              \
+        if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {                       \
+            char id[16];                                                  \
+                                                                          \
+            if (snprintf(id, sizeof(id), idprefix "%i", i) >= sizeof(id)) \
+                return -1;                                                \
+                                                                          \
+            const char *path = (const char *) virHashLookup(paths, id);   \
+            if (path == NULL) {                                           \
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,\
+                                 _("no assigned pty for device %s"), id); \
+                return -1;                                                \
+            }                                                             \
+                                                                          \
+            chr->data.file.path = strdup(path);                           \
+        }                                                                 \
+    }
+
+    LOOKUP_PTYS(vm->def->serials,   vm->def->nserials,   "serial");
+    LOOKUP_PTYS(vm->def->parallels, vm->def->nparallels, "parallel");
+    LOOKUP_PTYS(vm->def->channels,  vm->def->nchannels,  "channel");
+
+    return 0;
+}
+
+static int
 qemudFindCharDevicePTYs(virConnectPtr conn,
                         virDomainObjPtr vm,
                         const char *output,
@@ -1452,6 +1486,11 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     return 0;
 }
 
+static void qemudFreePtyPath(void *payload, const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_FREE(payload);
+}
+
 static int
 qemudWaitForMonitor(virConnectPtr conn,
                     struct qemud_driver* driver,
@@ -1459,7 +1498,7 @@ qemudWaitForMonitor(virConnectPtr conn,
 {
     char buf[4096]; /* Plenty of space to get startup greeting */
     int logfd;
-    int ret;
+    int ret = -1;
 
     if ((logfd = qemudLogReadFD(conn, driver->logDir, vm->def->name, pos))
         < 0)
@@ -1485,7 +1524,32 @@ qemudWaitForMonitor(virConnectPtr conn,
     if (qemuConnectMonitor(vm) < 0)
         return -1;
 
-    return 0;
+    /* Try to get the pty path mappings again via the monitor. This is much more
+     * reliable if it's available.
+     * Note that the monitor itself can be on a pty, so we still need to try the
+     * log output method. */
+    virHashTablePtr paths = virHashCreate(0);
+    if (paths == NULL) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    ret = qemuMonitorGetPtyPaths(priv->mon, paths);
+    qemuDomainObjExitMonitor(vm);
+
+    VIR_DEBUG("qemuMonitorGetPtyPaths returned %i", ret);
+    if (ret == 0) {
+        ret = qemudFindCharDevicePTYsMonitor(conn, vm, paths);
+    }
+
+cleanup:
+    if (paths) {
+        virHashFree(paths, qemudFreePtyPath);
+    }
+
+    return ret;
 }
 
 static int

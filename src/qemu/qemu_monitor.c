@@ -1267,3 +1267,12 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
         ret = qemuMonitorTextRemoveHostNetwork(mon, vlan, netname);
     return ret;
 }
+
+int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
+                           virHashTablePtr paths)
+{
+    DEBUG("mon=%p, fd=%d",
+          mon, mon->fd);
+
+    return qemuMonitorTextGetPtyPaths(mon, paths);
+}
