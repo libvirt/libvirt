@@ -7782,7 +7782,7 @@ remoteIOReadMessage(virConnectPtr conn, struct private_data *priv,
         priv->saslDecodedOffset += wantData;
         priv->bufferOffset += wantData;
         if (priv->saslDecodedOffset == priv->saslDecodedLength) {
-            priv->saslDecodedLength = priv->saslDecodedLength = 0;
+            priv->saslDecodedOffset = priv->saslDecodedLength = 0;
             priv->saslDecoded = NULL;
         }
 
