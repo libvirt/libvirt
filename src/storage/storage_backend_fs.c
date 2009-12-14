@@ -693,9 +693,9 @@ virStorageBackendFileSystemDelete(virConnectPtr conn,
 {
     /* XXX delete all vols first ? */
 
-    if (unlink(pool->def->target.path) < 0) {
+    if (rmdir(pool->def->target.path) < 0) {
         virReportSystemError(conn, errno,
-                             _("cannot unlink path '%s'"),
+                             _("failed to remove pool '%s'"),
                              pool->def->target.path);
         return -1;
     }
