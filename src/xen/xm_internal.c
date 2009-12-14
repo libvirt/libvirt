@@ -152,9 +152,6 @@ static int xenXMConfigGetBool(virConnectPtr conn,
     if (val->type == VIR_CONF_LONG) {
         *value = val->l ? 1 : 0;
     } else if (val->type == VIR_CONF_STRING) {
-        if (!val->str) {
-            *value = def;
-        }
         *value = STREQ(val->str, "1") ? 1 : 0;
     } else {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -183,9 +180,6 @@ static int xenXMConfigGetULong(virConnectPtr conn,
         *value = val->l;
     } else if (val->type == VIR_CONF_STRING) {
         char *ret;
-        if (!val->str) {
-            *value = def;
-        }
         *value = strtol(val->str, &ret, 10);
         if (ret == val->str) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
