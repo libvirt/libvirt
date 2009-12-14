@@ -6903,7 +6903,8 @@ endjob:
 
 cleanup:
     virDomainDefFree(def);
-    unlink(unixfile);
+    if (unixfile)
+        unlink(unixfile);
     VIR_FREE(unixfile);
     if (vm)
         virDomainObjUnlock(vm);
