@@ -3856,15 +3856,14 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         driver->securityDriver->domainSetSavedStateLabel(dom->conn, vm, path) == -1)
         goto endjob;
 
-    /* Migrate will always stop the VM, so once we support live dumping
-       the resume condition will stay the same, independent of whether
-       the stop command is issued.  */
+    /* Migrate will always stop the VM, so the resume condition is
+       independent of whether the stop command is issued.  */
     resume = (vm->state == VIR_DOMAIN_RUNNING);
 
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     /* Pause domain for non-live dump */
-    if (vm->state == VIR_DOMAIN_RUNNING) {
+    if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
         qemuDomainObjEnterMonitor(vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
             qemuDomainObjExitMonitor(vm);

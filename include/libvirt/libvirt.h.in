@@ -337,6 +337,7 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 /* Domain core dump flags. */
 typedef enum {
     VIR_DUMP_CRASH   = (1 << 0), /* crash after dump */
+    VIR_DUMP_LIVE    = (1 << 1), /* live dump */
 } virDomainCoreDumpFlags;
 
 /* Domain migration flags. */

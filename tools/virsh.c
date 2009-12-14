@@ -1431,6 +1431,7 @@ static const vshCmdInfo info_dump[] = {
 };
 
 static const vshCmdOptDef opts_dump[] = {
+    {"live", VSH_OT_BOOL, 0, gettext_noop("perform a live core dump if supported")},
     {"crash", VSH_OT_BOOL, 0, gettext_noop("crash the domain after core dump")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to dump the core")},
@@ -1455,6 +1456,8 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
         return FALSE;
 
+    if (vshCommandOptBool (cmd, "live"))
+        flags |= VIR_DUMP_LIVE;
     if (vshCommandOptBool (cmd, "crash"))
         flags |= VIR_DUMP_CRASH;
 
