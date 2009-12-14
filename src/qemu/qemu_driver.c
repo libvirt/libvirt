@@ -7430,6 +7430,7 @@ static int doNonTunnelMigrate(virDomainPtr dom,
     if (uri_out == NULL) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("domainMigratePrepare2 did not set uri"));
+        goto cleanup;
     }
 
     if (doNativeMigrate(dom, driver, vm, uri_out, flags, dname, resource) < 0)
