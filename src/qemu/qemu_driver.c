@@ -1534,10 +1534,10 @@ qemudWaitForMonitor(virConnectPtr conn,
         goto cleanup;
     }
 
-    qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     ret = qemuMonitorGetPtyPaths(priv->mon, paths);
-    qemuDomainObjExitMonitor(vm);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     VIR_DEBUG("qemuMonitorGetPtyPaths returned %i", ret);
     if (ret == 0) {

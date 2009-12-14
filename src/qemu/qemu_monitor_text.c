@@ -1650,9 +1650,19 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
 
         /* Path is everything after needle to the end of the line */
         *eol = '\0';
-        char *path = needle + strlen(NEEDLE);
+        char *path = strdup(needle + strlen(NEEDLE));
+        if (path == NULL) {
+            virReportOOMError(NULL);
+            goto cleanup;
+        }
 
-        virHashAddEntry(paths, id, strdup(path));
+        if (virHashAddEntry(paths, id, path) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             _("failed to save chardev path '%s'"),
+                             path);
+            VIR_FREE(path);
+            goto cleanup;
+        }
 #undef NEEDLE
 
     next:
