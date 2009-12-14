@@ -868,6 +868,11 @@ static int udevProcessCDROM(struct udev_device *device,
         def->caps->data.storage.flags |=
             VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
 
+        if (udevGetStringProperty(device, "ID_FS_LABEL",
+                                  &data->storage.media_label) == PROPERTY_ERROR) {
+            goto out;
+        }
+
         if (udevGetUint64SysfsAttr(device,
                                    "size",
                                    &data->storage.num_blocks) == PROPERTY_ERROR) {

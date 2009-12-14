@@ -170,6 +170,7 @@ struct _virNodeDevCapsDef {
             char *model;
             char *vendor;
             char *serial;
+            char *media_label;
             unsigned flags;	/* virNodeDevStorageCapFlags bits */
         } storage;
     } data;

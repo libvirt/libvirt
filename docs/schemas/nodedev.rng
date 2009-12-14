@@ -314,6 +314,11 @@
       <element name='media_size'>
 	<ref name='uint'/>
       </element>
+      <optional>
+        <element name='media_label'>
+          <text/>
+        </element>
+      </optional>
     </element>
   </define>
 

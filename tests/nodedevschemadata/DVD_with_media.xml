@@ -1,0 +1,16 @@
+<device>
+  <name>DVD_GCC_4247N</name>
+  <parent>pci_8086_27df_scsi_host_scsi_device_lun0</parent>
+  <capability type='storage'>
+    <block>/dev/sr0</block>
+    <bus>scsi</bus>
+    <drive_type>cdrom</drive_type>
+    <model>RW/DVD GCC-4247N</model>
+    <vendor>HL-DT-ST</vendor>
+    <capability type='removable'>
+      <media_available>1</media_available>
+      <media_size>12345678</media_size>
+      <media_label>Windows_XP_Label</media_label>
+    </capability>
+  </capability>
+</device>

@@ -80,6 +80,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("computer");
     DO_TEST("DVD_GCC_4247N");
+    DO_TEST("DVD_with_media");
     DO_TEST("net_00_13_02_b9_f9_d3");
     DO_TEST("net_00_15_58_2f_e9_55");
     DO_TEST("pci_1002_71c4");

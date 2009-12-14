@@ -446,6 +446,11 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
                                   "</media_available>\n", avl ? 1 : 0);
                 virBufferVSprintf(&buf, "      <media_size>%llu</media_size>\n",
                                   data->storage.removable_media_size);
+                if (data->storage.media_label)
+                    virBufferEscapeString(&buf,
+                                      "      <media_label>%s</media_label>\n",
+                                      data->storage.media_label);
+
                 if (data->storage.logical_block_size > 0)
                     virBufferVSprintf(&buf, "      <logical_block_size>%llu"
                                       "</logical_block_size>\n",
@@ -597,6 +602,8 @@ virNodeDevCapStorageParseXML(virConnectPtr conn,
 
             if (virXPathBoolean(conn, "count(./media_available[. = '1']) > 0", ctxt))
                 data->storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
+
+            data->storage.media_label = virXPathString(conn, "string(./media_label[1])", ctxt);
 
             val = 0;
             if (virNodeDevCapsDefParseULongLong(conn, "number(./media_size[1])", ctxt, &val, def,
@@ -1459,6 +1466,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->storage.model);
         VIR_FREE(data->storage.vendor);
         VIR_FREE(data->storage.serial);
+        VIR_FREE(data->storage.media_label);
         break;
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
