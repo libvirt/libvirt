@@ -1629,6 +1629,38 @@ qemuAssignDiskAliases(virDomainDefPtr def, int qemuCmdFlags)
     return 0;
 }
 
+static int
+qemuBuildDeviceAddressStr(virBufferPtr buf,
+                          virDomainDeviceInfoPtr info)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        if (info->addr.pci.domain != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Only PCI device addresses with domain=0 are supported"));
+            return -1;
+        }
+        if (info->addr.pci.bus != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Only PCI device addresses with bus=0 are supported"));
+            return -1;
+        }
+        if (info->addr.pci.function != 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Only PCI device addresses with function=0 are supported"));
+            return -1;
+        }
+
+        /* XXX
+         * When QEMU grows support for > 1 PCI bus, then pci.0 changes
+         * to pci.1, pci.2, etc
+         * When QEMU grows support for > 1 PCI domain, then pci.0 change
+         * to pciNN.0  where NN is the domain number
+         */
+        virBufferVSprintf(buf, ",bus=pci.0,addr=0x%x", info->addr.pci.slot);
+    }
+    return 0;
+}
+
 
 static const char *
 qemuNetTypeToHostNet(int type)
@@ -1991,7 +2023,36 @@ qemuBuildHostNetStr(virConnectPtr conn,
     return 0;
 }
 
-/* This function outputs a -chardev command line option which describes only the
+
+static char *qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    const char *model = virDomainWatchdogModelTypeToString(dev->model);
+    if (!model) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing watchdog model"));
+        goto error;
+    }
+
+    virBufferVSprintf(&buf, "%s", model);
+    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+/* this function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
                                                   virBufferPtr buf)
@@ -3087,14 +3148,28 @@ int qemudBuildCommandLine(virConnectPtr conn,
     /* Add watchdog hardware */
     if (def->watchdog) {
         virDomainWatchdogDefPtr watchdog = def->watchdog;
-        const char *model = virDomainWatchdogModelTypeToString(watchdog->model);
-        if (!model) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("invalid watchdog model"));
-            goto error;
+        char *optstr;
+
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+            ADD_ARG_LIT("-device");
+
+            optstr = qemuBuildWatchdogDevStr(watchdog);
+            if (!optstr)
+                goto error;
+        } else {
+            ADD_ARG_LIT("-watchdog");
+
+            const char *model = virDomainWatchdogModelTypeToString(watchdog->model);
+            if (!model) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("missing watchdog model"));
+                goto error;
+            }
+
+            if (!(optstr = strdup(model)))
+                goto no_memory;
         }
-        ADD_ARG_LIT("-watchdog");
-        ADD_ARG_LIT(model);
+        ADD_ARG(optstr);
 
         const char *action = virDomainWatchdogActionTypeToString(watchdog->action);
         if (!action) {
