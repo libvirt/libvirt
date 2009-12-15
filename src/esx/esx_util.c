@@ -277,7 +277,7 @@ esxUtil_ParseDatastoreRelatedPath(virConnectPtr conn,
         directoryName == NULL || *directoryName != NULL ||
         fileName == NULL || *fileName != NULL) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        goto failure;
+        return -1;
     }
 
     /*
