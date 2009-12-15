@@ -64,6 +64,7 @@
 #include <mntent.h>
 #endif
 
+#include "areadlink.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "event.h"
@@ -1059,10 +1060,7 @@ int virFileLinkPointsTo(const char *checkLink,
 int virFileResolveLink(const char *linkpath,
                        char **resultpath)
 {
-#ifdef HAVE_READLINK
     struct stat st;
-    char *buf;
-    int n;
 
     *resultpath = NULL;
 
@@ -1075,28 +1073,9 @@ int virFileResolveLink(const char *linkpath,
         return 0;
     }
 
-    /* Posix says that 'st_size' field from
-     * result of an lstat() call is filled with
-     * number of bytes in the destination
-     * filename.
-     */
-    if (VIR_ALLOC_N(buf, st.st_size + 1) < 0)
-        return -ENOMEM;
+    *resultpath = areadlink (linkpath);
 
-    if ((n = readlink(linkpath, buf, st.st_size)) < 0) {
-        VIR_FREE(buf);
-        return -errno;
-    }
-
-    buf[n] = '\0';
-
-    *resultpath = buf;
-    return 0;
-#else
-    if (!(*resultpath = strdup(linkpath)))
-        return -ENOMEM;
-    return 0;
-#endif
+    return *resultpath == NULL ? -1 : 0;
 }
 
 /*
