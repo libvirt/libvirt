@@ -535,7 +535,8 @@ int openvzLoadDomains(struct openvz_driver *driver) {
 
  cleanup:
     fclose(fp);
-    virDomainObjUnref(dom);
+    if (dom)
+        virDomainObjUnref(dom);
     return -1;
 }
 
