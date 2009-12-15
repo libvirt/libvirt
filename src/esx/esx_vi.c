@@ -935,7 +935,7 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
     if (list == NULL || *list != NULL ||
         castFromAnyTypeFunc == NULL || freeFunc == NULL) {
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        goto failure;
+        return -1;
     }
 
     if (anyType == NULL) {
@@ -946,7 +946,7 @@ esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
         ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                      "Expecting type to begin with 'ArrayOf' but found '%s'",
                      anyType->other);
-        goto failure;
+        return -1;
     }
 
     for (childNode = anyType->_node->xmlChildrenNode; childNode != NULL;
