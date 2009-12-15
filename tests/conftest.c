@@ -15,23 +15,23 @@ int main(int argc, char **argv) {
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s conf_file\n", argv[0]);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     conf = virConfReadFile(argv[1], 0);
     if (conf == NULL) {
         fprintf(stderr, "Failed to process %s\n", argv[1]);
-        exit(2);
+        exit(EXIT_FAILURE);
     }
     ret = virConfWriteMem(&buffer[0], &len, conf);
     if (ret < 0) {
         fprintf(stderr, "Failed to serialize %s back\n", argv[1]);
-        exit(3);
+        exit(EXIT_FAILURE);
     }
     virConfFree(conf);
     if (fwrite(buffer, 1, len, stdout) != len) {
         fprintf(stderr, "Write failed: %s\n", strerror (errno));
-        exit(1);
+        exit(EXIT_FAILURE);
     }
-    exit(0);
+    exit(EXIT_SUCCESS);
 }

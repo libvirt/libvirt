@@ -146,6 +146,6 @@ VIRT_TEST_MAIN(mymain)
 
 #else
 
-int main (void) { exit (77); /* means 'test skipped' to automake */ }
+int main (void) { exit (EXIT_AM_SKIP); }
 
 #endif /* WITH_QEMU */

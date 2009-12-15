@@ -3036,7 +3036,7 @@ int main(int argc, char **argv) {
         default:
             fprintf (stderr, "libvirtd: internal error: unknown flag: %c\n",
                      c);
-            exit (1);
+            exit (EXIT_FAILURE);
         }
     }
 

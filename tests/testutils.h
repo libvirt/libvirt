@@ -1,7 +1,7 @@
 /*
  * utils.c: test utils
  *
- * Copyright (C) 2005, 2008 Red Hat, Inc.
+ * Copyright (C) 2005, 2008-2009 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -12,6 +12,8 @@
 #define __VIT_TEST_UTILS_H__
 
 #include <stdio.h>
+
+#define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 
 double virtTestCountAverage(double *items,
                             int nitems);

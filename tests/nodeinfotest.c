@@ -15,7 +15,7 @@
 static int
 mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 {
-    exit (77); /* means 'test skipped' for automake */
+    exit (EXIT_AM_SKIP);
 }
 
 #else

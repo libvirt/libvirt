@@ -231,7 +231,7 @@ mymain(int argc, char **argv)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
 #ifdef WIN32
-    exit (77); /* means 'test skipped' for automake */
+    exit (EXIT_AM_SKIP);
 #endif
 
     snprintf(buffer, PATH_MAX-1, "test://%s/../examples/xml/test/testnode.xml", abs_srcdir);

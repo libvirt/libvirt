@@ -24,12 +24,12 @@ int main(void) {
     }
     if (conn == NULL) {
         fprintf(stderr, "First virConnectOpen() failed\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     dom = virDomainLookupByID(conn, id);
     if (dom == NULL) {
         fprintf(stderr, "First lookup for domain %d failed\n", id);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     virDomainFree(dom);
     virConnectClose(conn);
@@ -39,16 +39,16 @@ int main(void) {
         conn = virConnectOpen(NULL);
     if (conn == NULL) {
         fprintf(stderr, "Second virConnectOpen() failed\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     dom = virDomainLookupByID(conn, id);
     if (dom == NULL) {
         fprintf(stderr, "Second lookup for domain %d failed\n", id);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     virDomainFree(dom);
     virConnectClose(conn);
     printf("OK\n");
-    exit(0);
+    exit(EXIT_SUCCESS);
 
 }
