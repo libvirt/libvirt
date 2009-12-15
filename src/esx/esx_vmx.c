@@ -1165,14 +1165,14 @@ esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf, int controller,
 
     if (virtualDev == NULL || *virtualDev != NULL) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        goto failure;
+        return -1;
     }
 
     if (controller < 0 || controller > 3) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "SCSI controller index %d out of [0..3] range",
                   controller);
-        goto failure;
+        return -1;
     }
 
     snprintf(present_name, sizeof(present_name), "scsi%d.present", controller);
@@ -1642,7 +1642,7 @@ esxVMX_ParseEthernet(virConnectPtr conn, virConfPtr conf, int controller,
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Ethernet controller index %d out of [0..3] range",
                   controller);
-        goto failure;
+        return -1;
     }
 
     if (VIR_ALLOC(*def) < 0) {
@@ -1840,7 +1840,7 @@ esxVMX_ParseSerial(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
     if (port < 0 || port > 3) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Serial port index %d out of [0..3] range", port);
-        goto failure;
+        return -1;
     }
 
     if (VIR_ALLOC(*def) < 0) {
@@ -1964,7 +1964,7 @@ esxVMX_ParseParallel(virConnectPtr conn, esxVI_Context *ctx, virConfPtr conf,
     if (port < 0 || port > 2) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Parallel port index %d out of [0..2] range", port);
-        goto failure;
+        return -1;
     }
 
     if (VIR_ALLOC(*def) < 0) {
