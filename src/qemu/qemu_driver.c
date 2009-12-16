@@ -5491,7 +5491,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                              virDomainDiskDeviceTypeToString(dev->data.disk->device));
             /* Fallthrough */
         }
-        if (ret != 0) {
+        if (ret != 0 && cgroup) {
             virCgroupDenyDevicePath(cgroup,
                                     dev->data.disk->src);
         }
