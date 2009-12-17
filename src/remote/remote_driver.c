@@ -632,7 +632,7 @@ doRemoteOpen (virConnectPtr conn,
                 if (!priv->session) {
                     close (priv->sock);
                     priv->sock = -1;
-                    continue;
+                    goto failed;
                 }
             }
             goto tcp_connected;
