@@ -7465,6 +7465,33 @@ done:
     return rv;
 }
 
+
+static int
+remoteCPUCompare(virConnectPtr conn, const char *xmlDesc,
+                 unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct private_data *priv = conn->privateData;
+    remote_cpu_compare_args args;
+    remote_cpu_compare_ret ret;
+    int rv = VIR_CPU_COMPARE_ERROR;
+
+    remoteDriverLock(priv);
+
+    args.xml = (char *) xmlDesc;
+
+    memset(&ret, 0, sizeof (ret));
+    if (call(conn, priv, 0, REMOTE_PROC_CPU_COMPARE,
+             (xdrproc_t) xdr_remote_cpu_compare_args, (char *) &args,
+             (xdrproc_t) xdr_remote_cpu_compare_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.result;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 
@@ -8830,7 +8857,7 @@ static virDriver remote_driver = {
     remoteIsSecure, /* isSecure */
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
-    NULL, /* cpuCompare */
+    remoteCPUCompare, /* cpuCompare */
 };
 
 static virNetworkDriver network_driver = {
