@@ -25,6 +25,9 @@
 	<optional>
 	  <ref name='cpufeatures'/>
 	</optional>
+	<optional>
+	  <ref name='cpuspec'/>
+	</optional>
       </element>
       <optional>
 	<ref name='migration'/>
@@ -65,6 +68,31 @@
 	<element name='svm'><empty/></element>
       </optional>
     </element>
+  </define>
+
+  <define name='cpuspec'>
+    <element name='model'>
+      <text/>
+    </element>
+    <element name='topology'>
+      <attribute name='sockets'>
+        <ref name='positiveInteger'/>
+      </attribute>
+      <attribute name='cores'>
+        <ref name='positiveInteger'/>
+      </attribute>
+      <attribute name='threads'>
+        <ref name='positiveInteger'/>
+      </attribute>
+    </element>
+    <zeroOrMore>
+      <element name='feature'>
+        <attribute name='name'>
+          <ref name='featureName'/>
+        </attribute>
+        <empty/>
+      </element>
+    </zeroOrMore>
   </define>
 
   <define name='migration'>
@@ -259,6 +287,11 @@
 	  <empty/>
 	</element>
       </optional>
+      <optional>
+        <element name='cpuselection'>
+          <empty/>
+        </element>
+      </optional>
     </element>
   </define>
 
@@ -293,8 +326,14 @@
   </define>
 
 
+  <define name='positiveInteger'>
+    <data type='positiveInteger'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+
   <define name='uint'>
-    <data type='string'>
+    <data type='unsignedInt'>
       <param name="pattern">[0-9]+</param>
     </data>
   </define>
@@ -305,4 +344,9 @@
     </data>
   </define>
 
+  <define name='featureName'>
+    <data type='string'>
+      <param name='pattern'>[a-zA-Z0-9\-_]+</param>
+    </data>
+  </define>
 </grammar>
