@@ -1723,9 +1723,6 @@ if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
     fi
   ])
   if test "x$with_hal" = "xyes" ; then
-    AC_DEFINE_UNQUOTED([HAVE_HAL], 1,
-      [use HAL for host device enumeration])
-
     old_CFLAGS=$CFLAGS
     old_LDFLAGS=$LDFLAGS
     CFLAGS="$CFLAGS $HAL_CFLAGS"
@@ -1734,6 +1731,10 @@ if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
     AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
     CFLAGS="$old_CFLAGS"
     LDFLAGS="$old_LDFLAGS"
+  fi
+  if test "x$with_hal" = "xyes" ; then
+    AC_DEFINE_UNQUOTED([HAVE_HAL], 1,
+      [use HAL for host device enumeration])
   fi
 fi
 AM_CONDITIONAL([HAVE_HAL], [test "x$with_hal" = "xyes"])
