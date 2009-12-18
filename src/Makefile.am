@@ -16,6 +16,7 @@ INCLUDES =							\
 		-DSBINDIR=\""$(sbindir)"\"			\
 		-DSYSCONF_DIR="\"$(sysconfdir)\""		\
 		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
+		-DDATADIR=\""$(datadir)/libvirt"\"		\
 		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		$(WARN_CFLAGS)					\
@@ -280,6 +281,11 @@ NODE_DEVICE_DRIVER_UDEV_SOURCES =				\
 		node_device/node_device_udev.c			\
 		node_device/node_device_udev.h
 
+CPU_SOURCES =							\
+		cpu/cpu.h cpu/cpu.c				\
+		cpu/cpu_generic.h cpu/cpu_generic.c		\
+		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
+		cpu/cpu_map.h cpu/cpu_map.c
 
 #########################
 #
@@ -300,6 +306,12 @@ libvirt_la_LIBADD += libvirt_conf.la
 libvirt_conf_la_SOURCES = $(CONF_SOURCES)
 libvirt_conf_la_CFLAGS =
 libvirt_conf_la_LDFLAGS =
+
+noinst_LTLIBRARIES += libvirt_cpu.la
+libvirt_la_LIBADD += libvirt_cpu.la
+libvirt_cpu_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
+libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
 
 
 noinst_LTLIBRARIES += libvirt_driver.la

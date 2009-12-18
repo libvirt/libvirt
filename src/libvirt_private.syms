@@ -71,6 +71,16 @@ virCgroupGetFreezerState;
 virCgroupSetFreezerState;
 
 
+# cpu.h
+cpuCompare;
+cpuCompareXML;
+cpuDataFree;
+cpuDecode;
+cpuEncode;
+cpuGuestData;
+cpuNodeData;
+
+
 # cpu_conf.h
 virCPUDefFree;
 virCPUDefParseXML;
