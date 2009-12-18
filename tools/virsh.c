@@ -6836,6 +6836,70 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "cpu-compare" command
+ */
+static const vshCmdInfo info_cpu_compare[] = {
+    {"help", gettext_noop("compare host CPU with a CPU described by an XML file")},
+    {"desc", gettext_noop("compare CPU with host CPU")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_cpu_compare[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML CPU description")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
+{
+    char *from;
+    int found;
+    int ret = TRUE;
+    char *buffer;
+    int result;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
+
+    result = virConnectCompareCPU(ctl->conn, buffer, 0);
+    free (buffer);
+
+    switch (result) {
+    case VIR_CPU_COMPARE_INCOMPATIBLE:
+        vshPrint(ctl, _("CPU described in %s is incompatible with host CPU\n"),
+                 from);
+        ret = FALSE;
+        break;
+
+    case VIR_CPU_COMPARE_IDENTICAL:
+        vshPrint(ctl, _("CPU described in %s is identical to host CPU\n"),
+                 from);
+        ret = TRUE;
+        break;
+
+    case VIR_CPU_COMPARE_SUPERSET:
+        vshPrint(ctl, _("Host CPU is a superset of CPU described in %s\n"),
+                 from);
+        ret = TRUE;
+        break;
+
+    case VIR_CPU_COMPARE_ERROR:
+    default:
+        vshError(ctl, _("Failed to compare host CPU with %s"), from);
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
 /* Common code for the edit / net-edit / pool-edit functions which follow. */
 static char *
 editWriteToTempFile (vshControl *ctl, const char *doc)
@@ -7207,6 +7271,7 @@ static const vshCmdDef commands[] = {
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console},
 #endif
+    {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare},
     {"create", cmdCreate, opts_create, info_create},
     {"start", cmdStart, opts_start, info_start},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
