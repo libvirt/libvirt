@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include "c-ctype.h"
 #include "virterror_internal.h"
 #include "memory.h"
 #include "util.h"
