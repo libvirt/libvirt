@@ -343,4 +343,9 @@ LIBVIRT_0.7.3 {
 	virInterfaceIsActive;
 } LIBVIRT_0.7.2;
 
+LIBVIRT_0.7.5 {
+    global:
+        virConnectCompareCPU;
+} LIBVIRT_0.7.3;
+
 # .... define new API here using predicted next version number ....

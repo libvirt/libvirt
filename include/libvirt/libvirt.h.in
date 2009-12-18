@@ -1676,6 +1676,31 @@ int virInterfaceIsActive(virInterfacePtr iface);
 int virConnectIsEncrypted(virConnectPtr conn);
 int virConnectIsSecure(virConnectPtr conn);
 
+/*
+ * CPU specification API
+ */
+
+typedef enum {
+    VIR_CPU_COMPARE_ERROR           = -1,
+    VIR_CPU_COMPARE_INCOMPATIBLE    = 0,
+    VIR_CPU_COMPARE_IDENTICAL       = 1,
+    VIR_CPU_COMPARE_SUPERSET        = 2
+} virCPUCompareResult;
+
+/**
+ * virConnectCompareCPU:
+ *
+ * @conn: virConnect connection
+ * @xmlDesc: XML description of either guest or host cpu with <cpu> root tag
+ * @flags: comparison flags
+ *
+ * Compares given CPU with host cpu.
+ *
+ * Returns virCPUCompareResult.
+ */
+int virConnectCompareCPU(virConnectPtr conn,
+                         const char *xmlDesc,
+                         unsigned int flags);
 
 
 #ifdef __cplusplus
