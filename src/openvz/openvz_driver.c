@@ -1533,6 +1533,7 @@ static virDriver openvzDriver = {
     openvzIsSecure,
     openvzDomainIsActive,
     openvzDomainIsPersistent,
+    NULL, /* cpuCompare */
 };
 
 int openvzRegister(void) {

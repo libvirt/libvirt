@@ -1649,6 +1649,7 @@ virDriver phypDriver = {
     phypIsSecure,
     NULL,                       /* domainIsActive */
     NULL,                       /* domainIsPersistent */
+    NULL,                       /* cpuCompare */
 };
 
 int

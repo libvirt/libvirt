@@ -1860,6 +1860,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedIsSecure,
     xenUnifiedDomainIsActive,
     xenUnifiedDomainisPersistent,
+    NULL, /* cpuCompare */
 };
 
 /**

@@ -7049,6 +7049,7 @@ virDriver NAME(Driver) = {
     vboxIsSecure,
     vboxDomainIsActive,
     vboxDomainIsPersistent,
+    NULL, /* cpuCompare */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

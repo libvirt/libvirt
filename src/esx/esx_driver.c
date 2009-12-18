@@ -3428,6 +3428,7 @@ static virDriver esxDriver = {
     esxIsSecure,                     /* isSecure */
     esxDomainIsActive,               /* domainIsActive */
     esxDomainIsPersistent,           /* domainIsPersistent */
+    NULL,                            /* cpuCompare */
 };
 
 

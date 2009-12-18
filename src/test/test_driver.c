@@ -5236,6 +5236,7 @@ static virDriver testDriver = {
     testIsSecure, /* isEncrypted */
     testDomainIsActive, /* domainIsActive */
     testDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* cpuCompare */
 };
 
 static virNetworkDriver testNetworkDriver = {

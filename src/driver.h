@@ -349,6 +349,11 @@ typedef int
 typedef int
     (*virDrvDomainIsPersistent)(virDomainPtr dom);
 
+typedef int
+    (*virDrvCPUCompare)(virConnectPtr conn,
+                        const char *cpu,
+                        unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -435,6 +440,7 @@ struct _virDriver {
     virDrvConnectIsSecure      isSecure;
     virDrvDomainIsActive       domainIsActive;
     virDrvDomainIsPersistent   domainIsPersistent;
+    virDrvCPUCompare            cpuCompare;
 };
 
 typedef int

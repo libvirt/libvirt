@@ -1922,6 +1922,7 @@ static virDriver umlDriver = {
     umlIsSecure,
     umlDomainIsActive,
     umlDomainIsPersistent,
+    NULL, /* cpuCompare */
 };
 
 

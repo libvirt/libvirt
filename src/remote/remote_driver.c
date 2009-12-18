@@ -8830,6 +8830,7 @@ static virDriver remote_driver = {
     remoteIsSecure, /* isSecure */
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
+    NULL, /* cpuCompare */
 };
 
 static virNetworkDriver network_driver = {
