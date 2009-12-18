@@ -287,6 +287,8 @@ CPU_SOURCES =							\
 		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
 		cpu/cpu_map.h cpu/cpu_map.c
 
+EXTRA_DIST += 	cpu/cpu_map.xml
+
 #########################
 #
 # Build up list of libvirt.la source files based on configure conditions
