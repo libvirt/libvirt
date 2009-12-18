@@ -1433,6 +1433,16 @@ struct remote_interface_is_active_ret {
 };
 
 
+struct remote_cpu_compare_args {
+    remote_nonnull_string xml;
+    unsigned flags;
+};
+
+struct remote_cpu_compare_ret {
+    int result;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1611,7 +1621,8 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_POOL_IS_ACTIVE = 154,
     REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
     REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
-    REMOTE_PROC_GET_LIB_VERSION = 157
+    REMOTE_PROC_GET_LIB_VERSION = 157,
+    REMOTE_PROC_CPU_COMPARE = 158
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

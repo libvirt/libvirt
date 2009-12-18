@@ -115,3 +115,4 @@
     remote_storage_pool_is_persistent_ret val_remote_storage_pool_is_persistent_ret;
     remote_interface_is_active_ret val_remote_interface_is_active_ret;
     remote_get_lib_version_ret val_remote_get_lib_version_ret;
+    remote_cpu_compare_ret val_remote_cpu_compare_ret;

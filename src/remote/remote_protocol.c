@@ -4,7 +4,7 @@
  * It was generated using rpcgen.
  */
 
-#include "remote_protocol.h"
+#include "./remote/remote_protocol.h"
 #include "internal.h"
 #include <arpa/inet.h>
 
@@ -2852,6 +2852,26 @@ xdr_remote_interface_is_active_ret (XDR *xdrs, remote_interface_is_active_ret *o
 {
 
          if (!xdr_int (xdrs, &objp->active))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_cpu_compare_args (XDR *xdrs, remote_cpu_compare_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_cpu_compare_ret (XDR *xdrs, remote_cpu_compare_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->result))
                  return FALSE;
         return TRUE;
 }

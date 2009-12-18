@@ -5226,6 +5226,28 @@ static int remoteDispatchIsSecure(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchCpuCompare(struct qemud_server *server ATTRIBUTE_UNUSED,
+                         struct qemud_client *client ATTRIBUTE_UNUSED,
+                         virConnectPtr conn,
+                         remote_message_header *hdr ATTRIBUTE_UNUSED,
+                         remote_error *err,
+                         remote_cpu_compare_args *args,
+                         remote_cpu_compare_ret *ret)
+{
+    int result;
+
+    result = virConnectCompareCPU(conn, args->xml, args->flags);
+    if (result == VIR_CPU_COMPARE_ERROR) {
+        remoteDispatchConnError(err, conn);
+        return -1;
+    }
+
+    ret->result = result;
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

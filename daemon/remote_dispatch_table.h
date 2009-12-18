@@ -792,3 +792,8 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_get_lib_version_ret,
 },
+{   /* CpuCompare => 158 */
+    .fn = (dispatch_fn) remoteDispatchCpuCompare,
+    .args_filter = (xdrproc_t) xdr_remote_cpu_compare_args,
+    .ret_filter = (xdrproc_t) xdr_remote_cpu_compare_ret,
+},
