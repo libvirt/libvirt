@@ -541,14 +541,14 @@ AC_SUBST([LIBXML_LIBS])
 
 dnl xmlURI structure has query_raw?
 old_cflags="$CFLAGS"
-old_ldflags="$LDFLAGS"
+old_libs="$LIBS"
 CFLAGS="$CFLAGS $LIBXML_CFLAGS"
-LDFLAGS="$LDFLAGS $LIBXML_LIBS"
+LIBS="$LIBS $LIBXML_LIBS"
 AC_CHECK_MEMBER([struct _xmlURI.query_raw],
 		[AC_DEFINE([HAVE_XMLURI_QUERY_RAW], [], [Have query_raw field in libxml2 xmlURI structure])],,
 		[#include <libxml/uri.h>])
 CFLAGS="$old_cflags"
-LDFLAGS="$old_ldflags"
+LIBS="$old_libs"
 
 dnl GnuTLS library
 GNUTLS_CFLAGS=
@@ -580,15 +580,15 @@ dnl Old versions of GnuTLS uses types like 'gnutls_session' instead
 dnl of 'gnutls_session_t'.  Try to detect this type if defined so
 dnl that we can offer backwards compatibility.
 old_cflags="$CFLAGS"
-old_ldflags="$LDFLAGS"
+old_libs="$LIBS"
 CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
-LDFLAGS="$LDFLAGS $GNUTLS_LIBS"
+LIBS="$LIBS $GNUTLS_LIBS"
 AC_CHECK_TYPE([gnutls_session],
 	AC_DEFINE([GNUTLS_1_0_COMPAT],[],
 		[enable GnuTLS 1.0 compatibility macros]),,
 	[#include <gnutls/gnutls.h>])
 CFLAGS="$old_cflags"
-LDFLAGS="$old_ldflags"
+LIBS="$old_libs"
 
 
 dnl Cyrus SASL
@@ -661,9 +661,9 @@ if test "x$with_yajl" != "xno"; then
   fi
   fail=0
   old_cppflags="$CPPFLAGS"
-  old_ldflags="$LDFLAGS"
+  old_libs="$LIBS"
   CPPFLAGS="$CPPFLAGS $YAJL_CFLAGS"
-  LDFLAGS="$LDFLAGS $YAJL_LIBS"
+  LIBS="$LIBS $YAJL_LIBS"
   AC_CHECK_HEADER([yajl/yajl_common.h],[],[
     if test "x$with_yajl" = "xcheck" ; then
         with_yajl=no
@@ -685,7 +685,7 @@ if test "x$with_yajl" != "xno"; then
   test $fail = 1 &&
     AC_MSG_ERROR([You must install the YAJL development package in order to compile libvirt])
   CPPFLAGS="$old_cppflags"
-  LDFLAGS="$old_ldflags"
+  LIBS="$old_libs"
   if test "x$with_yajl" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_YAJL], 1,
       [whether YAJL is available for JSON parsing/formatting])
@@ -736,12 +736,12 @@ if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
         [use PolicyKit for UNIX socket access checks])
 
       old_CFLAGS=$CFLAGS
-      old_LDFLAGS=$LDFLAGS
+      old_LIBS=$LIBS
       CFLAGS="$CFLAGS $POLKIT_CFLAGS"
-      LDFLAGS="$LDFLAGS $POLKIT_LIBS"
+      LIBS="$LIBS $POLKIT_LIBS"
       AC_CHECK_FUNCS([polkit_context_is_caller_authorized])
       CFLAGS="$old_CFLAGS"
-      LDFLAGS="$old_LDFLAGS"
+      LIBS="$old_LIBS"
 
       AC_PATH_PROG([POLKIT_AUTH], [polkit-auth])
       if test "x$POLKIT_AUTH" != "x"; then
@@ -1724,13 +1724,13 @@ if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
   ])
   if test "x$with_hal" = "xyes" ; then
     old_CFLAGS=$CFLAGS
-    old_LDFLAGS=$LDFLAGS
+    old_LIBS=$LIBS
     CFLAGS="$CFLAGS $HAL_CFLAGS"
-    LDFLAGS="$LDFLAGS $HAL_LIBS"
+    LIBS="$LIBS $HAL_LIBS"
     AC_CHECK_FUNCS([libhal_get_all_devices],,[with_hal=no])
     AC_CHECK_FUNCS([dbus_watch_get_unix_fd])
     CFLAGS="$old_CFLAGS"
-    LDFLAGS="$old_LDFLAGS"
+    LIBS="$old_LIBS"
   fi
   if test "x$with_hal" = "xyes" ; then
     AC_DEFINE_UNQUOTED([HAVE_HAL], 1,
