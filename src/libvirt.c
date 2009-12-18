@@ -10759,3 +10759,46 @@ error:
     virSetConnError(conn);
     return -1;
 }
+
+
+/**
+ * virConnectCompareCPU:
+ * @conn: virConnect connection
+ * @xml: XML describing the CPU to compare with host CPU
+ *
+ * Returns comparison result according to enum virCPUCompareResult
+ */
+int
+virConnectCompareCPU(virConnectPtr conn,
+                     const char *xmlDesc,
+                     unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s", conn, xmlDesc);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return VIR_CPU_COMPARE_ERROR;
+    }
+    if (xmlDesc == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->cpuCompare) {
+        int ret;
+
+        ret = conn->driver->cpuCompare(conn, xmlDesc, flags);
+        if (ret == VIR_CPU_COMPARE_ERROR)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatibility */
+    virSetConnError(conn);
+    return VIR_CPU_COMPARE_ERROR;
+}
