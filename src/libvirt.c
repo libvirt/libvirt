@@ -291,7 +291,12 @@ static int virTLSMutexUnlock(void **priv)
 }
 
 static struct gcry_thread_cbs virTLSThreadImpl = {
+    /* GCRY_THREAD_OPTION_VERSION was added in gcrypt 1.4.2 */
+#ifdef GCRY_THREAD_OPTION_VERSION
     (GCRY_THREAD_OPTION_PTHREAD | (GCRY_THREAD_OPTION_VERSION << 8)),
+#else
+    GCRY_THREAD_OPTION_PTHREAD,
+#endif
     NULL,
     virTLSMutexInit,
     virTLSMutexDestroy,
