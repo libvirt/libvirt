@@ -1,0 +1,368 @@
+/*
+ * cpu_conf.h: CPU XML handling
+ *
+ * Copyright (C) 2009 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ * Authors:
+ *      Jiri Denemark <jdenemar@redhat.com>
+ */
+
+#include <config.h>
+
+#include "c-ctype.h"
+#include "virterror_internal.h"
+#include "memory.h"
+#include "util.h"
+#include "buf.h"
+#include "cpu_conf.h"
+
+#define VIR_FROM_THIS VIR_FROM_CPU
+
+#define virCPUReportError(conn, code, fmt...)                           \
+        virReportErrorHelper(conn, VIR_FROM_CPU, code, __FILE__,        \
+                               __FUNCTION__, __LINE__, fmt)
+
+VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
+              "minimum",
+              "exact",
+              "strict")
+
+VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
+              "force",
+              "require",
+              "optional",
+              "disable",
+              "forbid")
+
+
+void
+virCPUDefFree(virCPUDefPtr def)
+{
+    unsigned int i;
+
+    if (!def)
+        return;
+
+    VIR_FREE(def->model);
+    VIR_FREE(def->arch);
+
+    for (i = 0 ; i < def->nfeatures ; i++)
+        VIR_FREE(def->features[i].name);
+    VIR_FREE(def->features);
+
+    VIR_FREE(def);
+}
+
+
+#ifndef PROXY
+virCPUDefPtr
+virCPUDefParseXML(virConnectPtr conn,
+                  const xmlNodePtr node,
+                  xmlXPathContextPtr ctxt,
+                  enum virCPUType mode)
+{
+    virCPUDefPtr def;
+    xmlNodePtr *nodes = NULL;
+    char *match;
+    int n;
+    unsigned int i;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    match = virXMLPropString(node, "match");
+
+    if (mode == VIR_CPU_TYPE_AUTO)
+        def->type = (match == NULL) ? VIR_CPU_TYPE_HOST : VIR_CPU_TYPE_GUEST;
+    else
+        def->type = mode;
+
+    if (def->type == VIR_CPU_TYPE_GUEST) {
+        if ((def->match = virCPUMatchTypeFromString(match)) < 0) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Invalid match attribute for CPU specification"));
+            goto error;
+        }
+    }
+
+    if (def->type == VIR_CPU_TYPE_HOST) {
+        def->arch = virXPathString(conn, "string(./arch[1])", ctxt);
+        if (!def->arch) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing CPU architecture"));
+            goto error;
+        }
+    }
+
+    if (!(def->model = virXPathString(conn, "string(./model[1])", ctxt))) {
+        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                "%s", _("Missing CPU model name"));
+        goto error;
+    }
+
+    if (virXPathNode(conn, "./topology[1]", ctxt)) {
+        int ret;
+        unsigned long ul;
+
+        ret = virXPathULong(conn, "string(./topology[1]/@sockets)",
+                            ctxt, &ul);
+        if (ret < 0) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing 'sockets' attribute in CPU topology"));
+            goto error;
+        }
+        def->sockets = (unsigned int) ul;
+
+        ret = virXPathULong(conn, "string(./topology[1]/@cores)",
+                            ctxt, &ul);
+        if (ret < 0) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing 'cores' attribute in CPU topology"));
+            goto error;
+        }
+        def->cores = (unsigned int) ul;
+
+        ret = virXPathULong(conn, "string(./topology[1]/@threads)",
+                            ctxt, &ul);
+        if (ret < 0) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing 'threads' attribute in CPU topology"));
+            goto error;
+        }
+        def->threads = (unsigned int) ul;
+
+        if (!def->sockets || !def->cores || !def->threads) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Invalid CPU topology"));
+            goto error;
+        }
+    }
+
+    n = virXPathNodeSet(conn, "./feature", ctxt, &nodes);
+    if (n < 0)
+        goto error;
+
+    if (n > 0) {
+        if (VIR_ALLOC_N(def->features, n) < 0)
+            goto no_memory;
+        def->nfeatures = n;
+    }
+
+    for (i = 0 ; i < n ; i++) {
+        char *name;
+        int policy; /* enum virDomainCPUFeaturePolicy */
+        unsigned int j;
+
+        if (def->type == VIR_CPU_TYPE_GUEST) {
+            char *strpolicy;
+
+            strpolicy = virXMLPropString(nodes[i], "policy");
+            policy = virCPUFeaturePolicyTypeFromString(strpolicy);
+            VIR_FREE(strpolicy);
+
+            if (policy < 0) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Invalid CPU feature policy"));
+                goto error;
+            }
+        }
+        else
+            policy = -1;
+
+        if (!(name = virXMLPropString(nodes[i], "name")) || *name == 0) {
+            VIR_FREE(name);
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Invalid CPU feature name"));
+            goto error;
+        }
+
+        for (j = 0 ; j < i ; j++) {
+            if (STREQ(name, def->features[j].name)) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("CPU feature `%s' specified more than once"),
+                        name);
+                VIR_FREE(name);
+                goto error;
+            }
+        }
+
+        def->features[i].name = name;
+        def->features[i].policy = policy;
+    }
+
+cleanup:
+    VIR_FREE(match);
+    VIR_FREE(nodes);
+
+    return def;
+
+no_memory:
+    virReportOOMError(conn);
+
+error:
+    virCPUDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+#endif
+
+
+char *
+virCPUDefFormat(virConnectPtr conn,
+                virCPUDefPtr def,
+                const char *indent,
+                int flags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *tmp;
+
+    if (virCPUDefFormatBuf(conn, &buf, def, indent, flags) < 0)
+        goto cleanup;
+
+    if (virBufferError(&buf))
+        goto no_memory;
+
+    return virBufferContentAndReset(&buf);
+
+no_memory:
+    virReportOOMError(conn);
+cleanup:
+    tmp = virBufferContentAndReset(&buf);
+    VIR_FREE(tmp);
+    return NULL;
+}
+
+
+int
+virCPUDefFormatBuf(virConnectPtr conn,
+                   virBufferPtr buf,
+                   virCPUDefPtr def,
+                   const char *indent,
+                   int flags)
+{
+    unsigned int i;
+
+    if (!def)
+        return 0;
+
+    if (indent == NULL)
+        indent = "";
+
+    if (!def->model) {
+        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                "%s", _("Missing CPU model"));
+        return -1;
+    }
+
+    if (!(flags & VIR_CPU_FORMAT_EMBEDED)) {
+        if (def->type == VIR_CPU_TYPE_GUEST) {
+            const char *match;
+            if (!(match = virCPUMatchTypeToString(def->match))) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Unexpected CPU match policy %d"), def->match);
+                return -1;
+            }
+
+            virBufferVSprintf(buf, "%s<cpu match='%s'>\n", indent, match);
+        }
+        else
+            virBufferVSprintf(buf, "%s<cpu>\n", indent);
+
+        if (def->arch)
+            virBufferVSprintf(buf, "%s  <arch>%s</arch>\n", indent, def->arch);
+    }
+
+    virBufferVSprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
+
+    if (def->sockets && def->cores && def->threads) {
+        virBufferVSprintf(buf, "%s  <topology", indent);
+        virBufferVSprintf(buf, " sockets='%u'", def->sockets);
+        virBufferVSprintf(buf, " cores='%u'", def->cores);
+        virBufferVSprintf(buf, " threads='%u'", def->threads);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    for (i = 0 ; i < def->nfeatures ; i++) {
+        virCPUFeatureDefPtr feature = def->features + i;
+
+        if (!feature->name) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Missing CPU feature name"));
+            return -1;
+        }
+
+        if (def->type == VIR_CPU_TYPE_GUEST) {
+            const char *policy;
+
+            policy = virCPUFeaturePolicyTypeToString(feature->policy);
+            if (!policy) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        _("Unexpected CPU feature policy %d"), feature->policy);
+                return -1;
+            }
+            virBufferVSprintf(buf, "%s  <feature policy='%s' name='%s'/>\n",
+                    indent, policy, feature->name);
+        }
+        else {
+            virBufferVSprintf(buf, "%s  <feature name='%s'/>\n",
+                    indent, feature->name);
+        }
+    }
+
+    if (!(flags & VIR_CPU_FORMAT_EMBEDED))
+        virBufferVSprintf(buf, "%s</cpu>\n", indent);
+
+    return 0;
+}
+
+
+int
+virCPUDefAddFeature(virConnectPtr conn,
+                    virCPUDefPtr def,
+                    const char *name,
+                    int policy)
+{
+    int i;
+
+    for (i = 0 ; i < def->nfeatures ; i++) {
+        if (STREQ(name, def->features[i].name)) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    _("CPU feature `%s' specified more than once"), name);
+            return -1;
+        }
+    }
+
+    if (VIR_REALLOC_N(def->features, def->nfeatures + 1) < 0)
+        goto no_memory;
+
+    if (def->type == VIR_CPU_TYPE_HOST)
+        policy = -1;
+
+    if (!(def->features[def->nfeatures].name = strdup(name)))
+        goto no_memory;
+
+    def->features[def->nfeatures].policy = policy;
+    def->nfeatures++;
+
+    return 0;
+
+no_memory:
+    virReportOOMError(conn);
+    return -1;
+}

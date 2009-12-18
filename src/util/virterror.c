@@ -172,6 +172,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_SECRET:
             dom = "Secret Storage ";
             break;
+        case VIR_FROM_CPU:
+            dom = "CPU ";
+            break;
     }
     return(dom);
 }

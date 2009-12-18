@@ -25,6 +25,7 @@ libvirt_proxy_SOURCES = libvirt_proxy.c \
             @top_srcdir@/src/conf/capabilities.c \
             @top_srcdir@/src/conf/storage_encryption_conf.c \
             @top_srcdir@/src/conf/domain_conf.c \
+            @top_srcdir@/src/conf/cpu_conf.c \
             @top_srcdir@/src/xen/xend_internal.c \
 	    @top_srcdir@/src/xen/xen_hypervisor.c \
 	    @top_srcdir@/src/xen/sexpr.c  \

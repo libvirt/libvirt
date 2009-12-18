@@ -27,6 +27,7 @@
 #include "internal.h"
 #include "util.h"
 #include "buf.h"
+#include "cpu_conf.h"
 
 #include <libxml/xpath.h>
 
@@ -108,6 +109,7 @@ struct _virCapsHost {
     int nnumaCell;
     virCapsHostNUMACellPtr *numaCell;
     virCapsHostSecModel secModel;
+    virCPUDefPtr cpu;
 };
 
 typedef struct _virCaps virCaps;
@@ -165,6 +167,10 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int ncpus,
                                const int *cpus);
 
+
+extern int
+virCapabilitiesSetHostCPU(virCapsPtr caps,
+                          virCPUDefPtr cpu);
 
 
 extern virCapsGuestMachinePtr *

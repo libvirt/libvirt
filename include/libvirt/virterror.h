@@ -68,6 +68,7 @@ typedef enum {
     VIR_FROM_ESX,       /* Error from ESX driver */
     VIR_FROM_PHYP,      /* Error from IBM power hypervisor */
     VIR_FROM_SECRET,    /* Error from secret storage */
+    VIR_FROM_CPU,       /* Error from CPU driver */
 } virErrorDomain;
 
 

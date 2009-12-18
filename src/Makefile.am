@@ -114,6 +114,9 @@ NODE_DEVICE_CONF_SOURCES =                                     \
 ENCRYPTION_CONF_SOURCES =					\
 		conf/storage_encryption_conf.c conf/storage_encryption_conf.h
 
+CPU_CONF_SOURCES =						\
+		conf/cpu_conf.c conf/cpu_conf.h
+
 CONF_SOURCES =							\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(DOMAIN_EVENT_SOURCES)				\
@@ -122,7 +125,8 @@ CONF_SOURCES =							\
 		$(STORAGE_CONF_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
 		$(INTERFACE_CONF_SOURCES)			\
-		$(SECRET_CONF_SOURCES)
+		$(SECRET_CONF_SOURCES)				\
+		$(CPU_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_SOURCES =						\
@@ -831,7 +835,8 @@ libvirt_lxc_SOURCES =						\
 		$(UTIL_SOURCES)					\
 		$(NODE_INFO_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
-		$(DOMAIN_CONF_SOURCES)
+		$(DOMAIN_CONF_SOURCES)				\
+		$(CPU_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS) $(YAJL_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\

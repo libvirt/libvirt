@@ -27,6 +27,7 @@
 #include "buf.h"
 #include "memory.h"
 #include "util.h"
+#include "cpu_conf.h"
 
 /**
  * virCapabilitiesNew:
@@ -171,6 +172,8 @@ virCapabilitiesFree(virCapsPtr caps) {
     VIR_FREE(caps->host.arch);
     VIR_FREE(caps->host.secModel.model);
     VIR_FREE(caps->host.secModel.doi);
+    virCPUDefFree(caps->host.cpu);
+
     VIR_FREE(caps);
 }
 
@@ -262,6 +265,27 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
 
     return 0;
 }
+
+
+/**
+ * virCapabilitiesSetHostCPU:
+ * @caps: capabilities to extend
+ * @cpu: CPU definition
+ *
+ * Sets host CPU specification
+ */
+int
+virCapabilitiesSetHostCPU(virCapsPtr caps,
+                          virCPUDefPtr cpu)
+{
+    if (cpu == NULL)
+        return -1;
+
+    caps->host.cpu = cpu;
+
+    return 0;
+}
+
 
 /**
  * virCapabilitiesAllocMachines:
@@ -653,6 +677,10 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         }
         virBufferAddLit(&xml, "      </features>\n");
     }
+
+    virCPUDefFormatBuf(NULL, &xml, caps->host.cpu, "    ",
+                       VIR_CPU_FORMAT_EMBEDED);
+
     virBufferAddLit(&xml, "    </cpu>\n");
 
     if (caps->host.offlineMigrate) {
@@ -750,7 +778,8 @@ virCapabilitiesFormatXML(virCapsPtr caps)
             for (j = 0 ; j < caps->guests[i]->nfeatures ; j++) {
                 if (STREQ(caps->guests[i]->features[j]->name, "pae") ||
                     STREQ(caps->guests[i]->features[j]->name, "nonpae") ||
-                    STREQ(caps->guests[i]->features[j]->name, "ia64_be")) {
+                    STREQ(caps->guests[i]->features[j]->name, "ia64_be") ||
+                    STREQ(caps->guests[i]->features[j]->name, "cpuselection")) {
                     virBufferVSprintf(&xml, "      <%s/>\n",
                                       caps->guests[i]->features[j]->name);
                 } else {

@@ -601,6 +601,8 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virSecurityLabelDefFree(def);
 
+    virCPUDefFree(def->cpu);
+
     VIR_FREE(def);
 }
 
@@ -3360,6 +3362,16 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (virSecurityLabelDefParseXML(conn, def, ctxt, flags) == -1)
         goto error;
 
+    if ((node = virXPathNode(conn, "./cpu[1]", ctxt)) != NULL) {
+        xmlNodePtr oldnode = ctxt->node;
+        ctxt->node = node;
+        def->cpu = virCPUDefParseXML(conn, node, ctxt, VIR_CPU_TYPE_GUEST);
+        ctxt->node = oldnode;
+
+        if (def->cpu == NULL)
+            goto error;
+    }
+
     return def;
 
 no_memory:
@@ -4659,6 +4671,9 @@ char *virDomainDefFormat(virConnectPtr conn,
         }
         virBufferAddLit(&buf, "  </features>\n");
     }
+
+    if (virCPUDefFormatBuf(conn, &buf, def->cpu, "  ", 0) < 0)
+        goto cleanup;
 
     virBufferVSprintf(&buf, "  <clock offset='%s'/>\n",
                       def->localtime ? "localtime" : "utc");

@@ -31,6 +31,7 @@
 #include "internal.h"
 #include "capabilities.h"
 #include "storage_encryption_conf.h"
+#include "cpu_conf.h"
 #include "util.h"
 #include "threads.h"
 #include "hash.h"
@@ -635,6 +636,7 @@ struct _virDomainDef {
     virDomainChrDefPtr console;
     virSecurityLabelDef seclabel;
     virDomainWatchdogDefPtr watchdog;
+    virCPUDefPtr cpu;
 };
 
 /* Guest VM runtime state */

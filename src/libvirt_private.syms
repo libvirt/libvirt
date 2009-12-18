@@ -35,6 +35,7 @@ virCapabilitiesSetEmulatorRequired;
 virCapabilitiesIsEmulatorRequired;
 virCapabilitiesAllocMachines;
 virCapabilitiesFreeMachines;
+virCapabilitiesSetHostCPU;
 
 
 # conf.h
@@ -68,6 +69,14 @@ virCgroupControllerTypeFromString;
 virCgroupGetCpuacctUsage;
 virCgroupGetFreezerState;
 virCgroupSetFreezerState;
+
+
+# cpu_conf.h
+virCPUDefFree;
+virCPUDefParseXML;
+virCPUDefFormat;
+virCPUDefFormatBuf;
+virCPUDefAddFeature;
 
 
 # datatypes.h
