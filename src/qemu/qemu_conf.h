@@ -37,6 +37,8 @@
 #include "security/security_driver.h"
 #include "cgroup.h"
 #include "pci.h"
+#include "cpu_conf.h"
+#include "driver.h"
 
 #define qemudDebug(fmt, ...) do {} while(0)
 
@@ -202,6 +204,11 @@ int         qemuAssignNetNames          (virDomainDefPtr def,
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,
                                          int *nmachines);
+
+int         qemudProbeCPUModels         (const char *qemu,
+                                         const char *arch,
+                                         unsigned int *count,
+                                         const char ***cpus);
 
 int         qemudCanonicalizeMachine    (struct qemud_driver *driver,
                                          virDomainDefPtr def);

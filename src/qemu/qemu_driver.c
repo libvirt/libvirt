@@ -73,6 +73,7 @@
 #include "cgroup.h"
 #include "libvirt_internal.h"
 #include "xml.h"
+#include "cpu/cpu.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -2844,24 +2845,19 @@ static int qemudGetMaxVCPUs(virConnectPtr conn, const char *type) {
 
 static char *qemudGetCapabilities(virConnectPtr conn) {
     struct qemud_driver *driver = conn->privateData;
-    virCapsPtr caps;
+    virCapsPtr caps = NULL;
     char *xml = NULL;
 
     qemuDriverLock(driver);
-    if ((caps = qemudCapsInit(qemu_driver->caps)) == NULL) {
-        virReportOOMError(conn);
-        goto cleanup;
-    }
+    if ((caps = qemudCapsInit(qemu_driver->caps)) == NULL)
+        goto no_memory;
 
     caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
     caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
 
     if (qemu_driver->securityDriver &&
-        qemudSecurityCapsInit(qemu_driver->securityDriver, caps) < 0) {
-        virCapabilitiesFree(caps);
-        virReportOOMError(conn);
-        goto cleanup;
-    }
+        qemudSecurityCapsInit(qemu_driver->securityDriver, caps) < 0)
+        goto no_memory;
 
     virCapabilitiesFree(qemu_driver->caps);
     qemu_driver->caps = caps;
@@ -2873,6 +2869,11 @@ cleanup:
     qemuDriverUnlock(driver);
 
     return xml;
+
+no_memory:
+    virCapabilitiesFree(caps);
+    virReportOOMError(conn);
+    goto cleanup;
 }
 
 
@@ -7849,6 +7850,28 @@ out:
     return ret;
 }
 
+static int
+qemuCPUCompare(virConnectPtr conn,
+               const char *xmlDesc,
+               unsigned int flags ATTRIBUTE_UNUSED)
+{
+    struct qemud_driver *driver = conn->privateData;
+    int ret = VIR_CPU_COMPARE_ERROR;
+
+    qemuDriverLock(driver);
+
+    if (!driver->caps || !driver->caps->host.cpu) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("cannot get host CPU capabilities"));
+    }
+    else
+        ret = cpuCompareXML(conn, driver->caps->host.cpu, xmlDesc);
+
+    qemuDriverUnlock(driver);
+
+    return ret;
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -7923,7 +7946,7 @@ static virDriver qemuDriver = {
     qemuIsSecure,
     qemuDomainIsActive,
     qemuDomainIsPersistent,
-    NULL, /* cpuCompare */
+    qemuCPUCompare, /* cpuCompare */
 };
 
 
