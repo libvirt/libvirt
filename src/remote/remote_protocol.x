@@ -115,6 +115,9 @@ const REMOTE_AUTH_SASL_DATA_MAX = 65536;
 /* Maximum number of auth types */
 const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 
+/* Upper limit on list of memory stats */
+const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
+
 /* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
  * requests for large amounts of data.
@@ -403,6 +406,21 @@ struct remote_domain_interface_stats_ret {
     hyper tx_packets;
     hyper tx_errs;
     hyper tx_drop;
+};
+
+struct remote_domain_memory_stats_args {
+        remote_nonnull_domain dom;
+        u_int maxStats;
+        u_int flags;
+};
+
+struct remote_domain_memory_stat {
+    int tag;
+    unsigned hyper val;
+};
+
+struct remote_domain_memory_stats_ret {
+    remote_domain_memory_stat stats<REMOTE_DOMAIN_MEMORY_STATS_MAX>;
 };
 
 struct remote_domain_block_peek_args {
@@ -1622,7 +1640,8 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_POOL_IS_PERSISTENT = 155,
     REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
     REMOTE_PROC_GET_LIB_VERSION = 157,
-    REMOTE_PROC_CPU_COMPARE = 158
+    REMOTE_PROC_CPU_COMPARE = 158,
+    REMOTE_PROC_DOMAIN_MEMORY_STATS = 159
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -597,6 +597,41 @@ xdr_remote_domain_interface_stats_ret (XDR *xdrs, remote_domain_interface_stats_
 }
 
 bool_t
+xdr_remote_domain_memory_stats_args (XDR *xdrs, remote_domain_memory_stats_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->maxStats))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_memory_stat (XDR *xdrs, remote_domain_memory_stat *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->tag))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->val))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_memory_stats_ret (XDR *xdrs, remote_domain_memory_stats_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->stats.stats_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->stats.stats_len, REMOTE_DOMAIN_MEMORY_STATS_MAX,
+                sizeof (remote_domain_memory_stat), (xdrproc_t) xdr_remote_domain_memory_stat))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_block_peek_args (XDR *xdrs, remote_domain_block_peek_args *objp)
 {
 

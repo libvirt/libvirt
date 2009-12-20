@@ -708,6 +708,62 @@ remoteDispatchDomainInterfaceStats (struct qemud_server *server ATTRIBUTE_UNUSED
 }
 
 static int
+remoteDispatchDomainMemoryStats (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                 remote_error *rerr,
+                                 remote_domain_memory_stats_args *args,
+                                 remote_domain_memory_stats_ret *ret)
+{
+    virDomainPtr dom;
+    struct _virDomainMemoryStat *stats;
+    unsigned int nr_stats, i;
+
+    if (args->maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX) {
+        remoteDispatchFormatError (rerr, "%s",
+                               _("maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"));
+        return -1;
+    }
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* Allocate stats array for making dispatch call */
+    if (VIR_ALLOC_N(stats, args->maxStats) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+     }
+
+    nr_stats = virDomainMemoryStats (dom, stats, args->maxStats, 0);
+    virDomainFree (dom);
+    if (nr_stats == -1) {
+        VIR_FREE(stats);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* Allocate return buffer */
+    if (VIR_ALLOC_N(ret->stats.stats_val, args->maxStats) < 0) {
+        VIR_FREE(stats);
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    /* Copy the stats into the xdr return structure */
+    for (i = 0; i < nr_stats; i++) {
+        ret->stats.stats_val[i].tag = stats[i].tag;
+        ret->stats.stats_val[i].val = stats[i].val;
+    }
+    ret->stats.stats_len = nr_stats;
+    VIR_FREE(stats);
+    return 0;
+}
+
+static int
 remoteDispatchDomainBlockPeek (struct qemud_server *server ATTRIBUTE_UNUSED,
                                struct qemud_client *client ATTRIBUTE_UNUSED,
                                virConnectPtr conn,

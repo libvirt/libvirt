@@ -3366,6 +3366,49 @@ done:
 }
 
 static int
+remoteDomainMemoryStats (virDomainPtr domain,
+                         struct _virDomainMemoryStat *stats,
+                         unsigned int nr_stats)
+{
+    int rv = -1;
+    remote_domain_memory_stats_args args;
+    remote_domain_memory_stats_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+    unsigned int i;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    if (nr_stats > REMOTE_DOMAIN_MEMORY_STATS_MAX) {
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("too many memory stats requested: %d > %d"), nr_stats,
+                REMOTE_DOMAIN_MEMORY_STATS_MAX);
+        goto done;
+    }
+    args.maxStats = nr_stats;
+    args.flags = 0;
+    memset (&ret, 0, sizeof ret);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MEMORY_STATS,
+              (xdrproc_t) xdr_remote_domain_memory_stats_args,
+                (char *) &args,
+              (xdrproc_t) xdr_remote_domain_memory_stats_ret,
+                (char *) &ret) == -1)
+        goto done;
+
+    for (i = 0; i < ret.stats.stats_len; i++) {
+        stats[i].tag = ret.stats.stats_val[i].tag;
+        stats[i].val = ret.stats.stats_val[i].val;
+    }
+    rv = ret.stats.stats_len;
+    xdr_free((xdrproc_t) xdr_remote_domain_memory_stats_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainBlockPeek (virDomainPtr domain,
                        const char *path,
                        unsigned long long offset,
@@ -8841,7 +8884,7 @@ static virDriver remote_driver = {
     remoteDomainMigrateFinish, /* domainMigrateFinish */
     remoteDomainBlockStats, /* domainBlockStats */
     remoteDomainInterfaceStats, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
+    remoteDomainMemoryStats, /* domainMemoryStats */
     remoteDomainBlockPeek, /* domainBlockPeek */
     remoteDomainMemoryPeek, /* domainMemoryPeek */
     remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */

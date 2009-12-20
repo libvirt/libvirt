@@ -134,3 +134,4 @@
     remote_storage_pool_is_persistent_args val_remote_storage_pool_is_persistent_args;
     remote_interface_is_active_args val_remote_interface_is_active_args;
     remote_cpu_compare_args val_remote_cpu_compare_args;
+    remote_domain_memory_stats_args val_remote_domain_memory_stats_args;

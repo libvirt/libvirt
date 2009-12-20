@@ -797,3 +797,8 @@
     .args_filter = (xdrproc_t) xdr_remote_cpu_compare_args,
     .ret_filter = (xdrproc_t) xdr_remote_cpu_compare_ret,
 },
+{   /* DomainMemoryStats => 159 */
+    .fn = (dispatch_fn) remoteDispatchDomainMemoryStats,
+    .args_filter = (xdrproc_t) xdr_remote_domain_memory_stats_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_memory_stats_ret,
+},
