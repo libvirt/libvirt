@@ -346,6 +346,7 @@ LIBVIRT_0.7.3 {
 LIBVIRT_0.7.5 {
     global:
         virConnectCompareCPU;
+        virDomainMemoryStats;
 } LIBVIRT_0.7.3;
 
 # .... define new API here using predicted next version number ....

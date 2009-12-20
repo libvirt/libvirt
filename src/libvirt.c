@@ -4167,6 +4167,77 @@ error:
 }
 
 /**
+ * virDomainMemoryStats:
+ * @dom: pointer to the domain object
+ * @stats: nr_stats-sized array of stat structures (returned)
+ * @nr_stats: number of memory statistics requested
+ * @flags: unused, always pass 0
+ *
+ * This function provides memory statistics for the domain.
+ *
+ * Up to 'nr_stats' elements of 'stats' will be populated with memory statistics
+ * from the domain.  Only statistics supported by the domain, the driver, and
+ * this version of libvirt will be returned.
+ *
+ * Memory Statistics:
+ *
+ * VIR_DOMAIN_MEMORY_STAT_SWAP_IN:
+ *     The total amount of data read from swap space (in kb).
+ * VIR_DOMAIN_MEMORY_STAT_SWAP_OUT:
+ *     The total amount of memory written out to swap space (in kb).
+ * VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT:
+ *     The number of page faults that required disk IO to service.
+ * VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT:
+ *     The number of page faults serviced without disk IO.
+ * VIR_DOMAIN_MEMORY_STAT_UNUSED:
+ *     The amount of memory which is not being used for any purpose (in kb).
+ * VIR_DOMAIN_MEMORY_STAT_AVAILABLE:
+ *     The total amount of memory available to the domain's OS (in kb).
+ *
+ * Returns: The number of stats provided or -1 in case of failure.
+ */
+int virDomainMemoryStats (virDomainPtr dom, virDomainMemoryStatPtr stats,
+                          unsigned int nr_stats, unsigned int flags)
+{
+    virConnectPtr conn;
+    unsigned long nr_stats_ret = 0;
+    DEBUG("domain=%p, stats=%p, nr_stats=%u", dom, stats, nr_stats);
+
+    if (flags != 0) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG,
+                           _("flags must be zero"));
+        goto error;
+    }
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError (NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    if (!stats || nr_stats == 0)
+        return 0;
+
+    if (nr_stats > VIR_DOMAIN_MEMORY_STAT_NR)
+        nr_stats = VIR_DOMAIN_MEMORY_STAT_NR;
+
+    conn = dom->conn;
+    if (conn->driver->domainMemoryStats) {
+        nr_stats_ret = conn->driver->domainMemoryStats (dom, stats, nr_stats);
+        if (nr_stats_ret == -1)
+            goto error;
+        return nr_stats_ret;
+    }
+
+    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    /* Copy to connection error object for back compatability */
+    virSetConnError(dom->conn);
+    return -1;
+}
+
+/**
  * virDomainBlockPeek:
  * @dom: pointer to the domain object
  * @path: path to the block device
