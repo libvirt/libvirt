@@ -5220,6 +5220,7 @@ static virDriver testDriver = {
     NULL, /* domainMigrateFinish */
     testDomainBlockStats, /* domainBlockStats */
     testDomainInterfaceStats, /* domainInterfaceStats */
+    NULL, /* domainMemoryStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
     testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */

@@ -3437,6 +3437,7 @@ static virDriver esxDriver = {
     esxDomainMigrateFinish,          /* domainMigrateFinish */
     NULL,                            /* domainBlockStats */
     NULL,                            /* domainInterfaceStats */
+    NULL,                            /* domainMemoryStats */
     NULL,                            /* domainBlockPeek */
     NULL,                            /* domainMemoryPeek */
     NULL,                            /* nodeGetCellsFreeMemory */

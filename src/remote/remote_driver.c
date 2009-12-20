@@ -8841,6 +8841,7 @@ static virDriver remote_driver = {
     remoteDomainMigrateFinish, /* domainMigrateFinish */
     remoteDomainBlockStats, /* domainBlockStats */
     remoteDomainInterfaceStats, /* domainInterfaceStats */
+    NULL, /* domainMemoryStats */
     remoteDomainBlockPeek, /* domainBlockPeek */
     remoteDomainMemoryPeek, /* domainMemoryPeek */
     remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */

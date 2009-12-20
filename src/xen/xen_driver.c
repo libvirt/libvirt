@@ -1844,6 +1844,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainMigrateFinish, /* domainMigrateFinish */
     xenUnifiedDomainBlockStats, /* domainBlockStats */
     xenUnifiedDomainInterfaceStats, /* domainInterfaceStats */
+    NULL, /* domainMemoryStats */
     xenUnifiedDomainBlockPeek, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
     xenUnifiedNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */

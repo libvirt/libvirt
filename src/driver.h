@@ -229,6 +229,12 @@ typedef int
                      struct _virDomainInterfaceStats *stats);
 
 typedef int
+    (*virDrvDomainMemoryStats)
+                    (virDomainPtr domain,
+                     struct _virDomainMemoryStat *stats,
+                     unsigned int nr_stats);
+
+typedef int
     (*virDrvDomainBlockPeek)
                     (virDomainPtr domain,
                      const char *path,
@@ -424,6 +430,7 @@ struct _virDriver {
     virDrvDomainMigrateFinish	domainMigrateFinish;
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainInterfaceStats  domainInterfaceStats;
+    virDrvDomainMemoryStats     domainMemoryStats;
     virDrvDomainBlockPeek	domainBlockPeek;
     virDrvDomainMemoryPeek      domainMemoryPeek;
     virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
