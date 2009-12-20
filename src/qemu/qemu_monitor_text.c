@@ -454,6 +454,65 @@ error:
     return 0;
 }
 
+static int parseMemoryStat(char **text, unsigned int tag,
+                           const char *search, virDomainMemoryStatPtr stat)
+{
+    char *dummy;
+    unsigned long long value;
+
+    if (STRPREFIX (*text, search)) {
+        *text += strlen(search);
+        if (virStrToLong_ull (*text, &dummy, 10, &value)) {
+            DEBUG ("error reading %s: %s", search, *text);
+            return 0;
+        }
+
+        /* Convert bytes to kilobytes for libvirt */
+        switch (tag) {
+            case VIR_DOMAIN_MEMORY_STAT_SWAP_IN:
+            case VIR_DOMAIN_MEMORY_STAT_SWAP_OUT:
+            case VIR_DOMAIN_MEMORY_STAT_UNUSED:
+            case VIR_DOMAIN_MEMORY_STAT_AVAILABLE:
+                value = value >> 10;
+        }
+        stat->tag = tag;
+        stat->val = value;
+        return 1;
+    }
+    return 0;
+}
+
+/* The reply from the 'info balloon' command may contain additional memory
+ * statistics in the form: '[,<tag>=<val>]*'
+ */
+static int qemuMonitorParseExtraBalloonInfo(char *text,
+                                            virDomainMemoryStatPtr stats,
+                                            unsigned int nr_stats)
+{
+    char *p = text;
+    unsigned int nr_stats_found = 0;
+
+    while (*p && nr_stats_found < nr_stats) {
+        if (parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_SWAP_IN,
+                            ",mem_swapped_in=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_SWAP_OUT,
+                            ",mem_swapped_out=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT,
+                            ",major_page_faults=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT,
+                            ",minor_page_faults=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_UNUSED,
+                            ",free_mem=", &stats[nr_stats_found]) ||
+            parseMemoryStat(&p, VIR_DOMAIN_MEMORY_STAT_AVAILABLE,
+                            ",total_mem=", &stats[nr_stats_found]))
+            nr_stats_found++;
+
+        /* Skip to the next label */
+        p = strchr (p, ',');
+        if (!p) break;
+    }
+    return nr_stats_found;
+}
 
 
 /* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
@@ -495,6 +554,30 @@ int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
     }
 
 cleanup:
+    VIR_FREE(reply);
+    return ret;
+}
+
+int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
+                                  virDomainMemoryStatPtr stats,
+                                  unsigned int nr_stats)
+{
+    char *reply = NULL;
+    int ret = 0;
+    char *offset;
+
+    if (qemuMonitorCommand(mon, "info balloon", &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("could not query memory balloon statistics"));
+        return -1;
+    }
+
+    if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
+        if ((offset = strchr(reply, ',')) != NULL) {
+            ret = qemuMonitorParseExtraBalloonInfo(offset, stats, nr_stats);
+        }
+    }
+
     VIR_FREE(reply);
     return ret;
 }

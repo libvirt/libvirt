@@ -6236,6 +6236,43 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 #endif
 
 static int
+qemudDomainMemoryStats (virDomainPtr dom,
+                        struct _virDomainMemoryStat *stats,
+                        unsigned int nr_stats)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    unsigned int ret = -1;
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_DOMAIN,
+                         _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        qemuDomainObjEnterMonitor(vm);
+        ret = qemuMonitorTextGetMemoryStats(priv->mon, stats, nr_stats);
+        qemuDomainObjExitMonitor(vm);
+    } else {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int
 qemudDomainBlockPeek (virDomainPtr dom,
                       const char *path,
                       unsigned long long offset, size_t size,
@@ -7930,7 +7967,7 @@ static virDriver qemuDriver = {
     NULL, /* domainMigrateFinish */
     qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
-    NULL, /* domainMemoryStats */
+    qemudDomainMemoryStats, /* domainMemoryStats */
     qemudDomainBlockPeek, /* domainBlockPeek */
     qemudDomainMemoryPeek, /* domainMemoryPeek */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */

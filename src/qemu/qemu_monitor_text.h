@@ -45,6 +45,9 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);
 int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long *currmem);
+int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
+                                  virDomainMemoryStatPtr stats,
+                                  unsigned int nr_stats);
 int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *devname,
                                      long long *rd_req,
