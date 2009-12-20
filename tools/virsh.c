@@ -885,6 +885,60 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "dommemstats" command
+ */
+static const vshCmdInfo info_dommemstats[] = {
+    {"help", gettext_noop("get memory statistics for a domain")},
+    {"desc", gettext_noop("Get memory statistics for a runnng domain.")},
+    {NULL,NULL}
+};
+
+static const vshCmdOptDef opts_dommemstats[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomMemStats(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    struct _virDomainMemoryStat stats[VIR_DOMAIN_MEMORY_STAT_NR];
+    unsigned int nr_stats, i;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return FALSE;
+
+    nr_stats = virDomainMemoryStats (dom, stats, VIR_DOMAIN_MEMORY_STAT_NR, 0);
+    if (nr_stats == -1) {
+        vshError(ctl, _("Failed to get memory statistics for domain %s"), name);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    for (i = 0; i < nr_stats; i++) {
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
+            vshPrint (ctl, "swap_in %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_OUT)
+            vshPrint (ctl, "swap_out %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT)
+            vshPrint (ctl, "major_fault %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT)
+            vshPrint (ctl, "minor_fault %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_UNUSED)
+            vshPrint (ctl, "unused %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
+            vshPrint (ctl, "available %llu\n", stats[i].val);
+    }
+
+    virDomainFree(dom);
+    return TRUE;
+}
+
+/*
  * "suspend" command
  */
 static const vshCmdInfo info_suspend[] = {
@@ -7286,6 +7340,7 @@ static const vshCmdDef commands[] = {
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
+    {"dommemstats", cmdDomMemStats, opts_dommemstats, info_dommemstats},
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
     {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
