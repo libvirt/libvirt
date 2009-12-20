@@ -105,6 +105,11 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='path' type='char *' info='the path for the interface device'/>
     </function>
+    <function name='virDomainMemoryStats' file='python'>
+      <info>Extracts memory statistics for a domain</info>
+      <return type='virDomainMemoryStats' info='a dictionary of statistics'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
     <function name="virNodeGetCellsFreeMemory" file='python'>
       <info>Returns the available memory for a list of cells</info>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>

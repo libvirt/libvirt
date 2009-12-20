@@ -120,6 +120,49 @@ libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     return(info);
 }
 
+static PyObject *
+libvirt_virDomainMemoryStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    unsigned int nr_stats, i;
+    virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
+    PyObject *info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainMemoryStats", &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    nr_stats = virDomainMemoryStats(domain, stats,
+                                    VIR_DOMAIN_MEMORY_STAT_NR, 0);
+    if (nr_stats == -1)
+        return VIR_PY_NONE;
+
+    /* convert to a Python dictionary */
+    if ((info = PyDict_New()) == NULL)
+        return VIR_PY_NONE;
+
+    for (i = 0; i < nr_stats; i++) {
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_IN)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("swap_in"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_SWAP_OUT)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("swap_out"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("major_fault"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("minor_fault"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_UNUSED)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("unused"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+        else if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_AVAILABLE)
+            PyDict_SetItem(info, libvirt_constcharPtrWrap("available"),
+                           PyLong_FromUnsignedLongLong(stats[i].val));
+    }
+    return info;
+}
 
 static PyObject *
 libvirt_virDomainGetSchedulerType(PyObject *self ATTRIBUTE_UNUSED,
@@ -2635,6 +2678,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
     {(char *) "virDomainBlockStats", libvirt_virDomainBlockStats, METH_VARARGS, NULL},
     {(char *) "virDomainInterfaceStats", libvirt_virDomainInterfaceStats, METH_VARARGS, NULL},
+    {(char *) "virDomainMemoryStats", libvirt_virDomainMemoryStats, METH_VARARGS, NULL},
     {(char *) "virNodeGetCellsFreeMemory", libvirt_virNodeGetCellsFreeMemory, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerType", libvirt_virDomainGetSchedulerType, METH_VARARGS, NULL},
     {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},

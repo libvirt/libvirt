@@ -161,7 +161,6 @@ def enum(type, name, value):
 functions_failed = []
 functions_skipped = [
     "virConnectListDomains",
-    "virDomainMemoryStats"
 ]
 
 skipped_modules = {
@@ -171,7 +170,6 @@ skipped_types = {
 #    'int *': "usually a return type",
      'virConnectDomainEventCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
-     'virDomainMemoryStatPtr': "Not implemented yet",
 }
 
 #######################################################################
@@ -283,6 +281,7 @@ skip_impl = (
     'virNetworkGetAutostart',
     'virDomainBlockStats',
     'virDomainInterfaceStats',
+    'virDomainMemoryStats',
     'virNodeGetCellsFreeMemory',
     'virDomainGetSchedulerType',
     'virDomainGetSchedulerParameters',
