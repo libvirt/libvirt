@@ -79,6 +79,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_MONITOR_JSON  = (1 << 24), /* JSON mode for monitor */
     QEMUD_CMD_FLAG_BALLOON       = (1 << 25), /* -balloon available */
     QEMUD_CMD_FLAG_DEVICE        = (1 << 26), /* Is the new -device arg available */
+    QEMUD_CMD_FLAG_SDL           = (1 << 27), /* Is the new -sdl arg available */
 };
 
 /* Main driver state */

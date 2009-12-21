@@ -140,7 +140,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_SERIAL |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
-            QEMUD_CMD_FLAG_ENABLE_KVM,
+            QEMUD_CMD_FLAG_ENABLE_KVM |
+            QEMUD_CMD_FLAG_SDL,
             10005, 0,  0);
     DO_TEST("qemu-kvm-0.10.5",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -159,7 +160,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
             QEMUD_CMD_FLAG_PCIDEVICE |
-            QEMUD_CMD_FLAG_MEM_PATH,
+            QEMUD_CMD_FLAG_MEM_PATH |
+            QEMUD_CMD_FLAG_SDL,
             10005, 1,  0);
     DO_TEST("kvm-86",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -177,7 +179,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_SERIAL |
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
-            QEMUD_CMD_FLAG_PCIDEVICE,
+            QEMUD_CMD_FLAG_PCIDEVICE |
+            QEMUD_CMD_FLAG_SDL,
             10050, 1,  0);
     DO_TEST("qemu-kvm-0.11.0-rc2",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -198,7 +201,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_PCIDEVICE |
             QEMUD_CMD_FLAG_MEM_PATH |
             QEMUD_CMD_FLAG_ENABLE_KVM |
-            QEMUD_CMD_FLAG_BALLOON,
+            QEMUD_CMD_FLAG_BALLOON |
+            QEMUD_CMD_FLAG_SDL,
             10092, 1,  0);
     DO_TEST("qemu-0.12.1",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -214,6 +218,7 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_VGA |
             QEMUD_CMD_FLAG_0_10 |
             QEMUD_CMD_FLAG_ENABLE_KVM |
+            QEMUD_CMD_FLAG_SDL |
             QEMUD_CMD_FLAG_XEN_DOMID |
             QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX |
             QEMUD_CMD_FLAG_CHARDEV |

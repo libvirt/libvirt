@@ -1117,6 +1117,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_BALLOON;
     if (strstr(help, "-device"))
         flags |= QEMUD_CMD_FLAG_DEVICE;
+    if (strstr(help, "-sdl"))
+        flags |= QEMUD_CMD_FLAG_SDL;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
@@ -3426,6 +3428,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
          */
         ADD_ENV_COPY("QEMU_AUDIO_DRV");
         ADD_ENV_COPY("SDL_AUDIODRIVER");
+
+        /* New QEMU has this flag to let us explicitly ask for
+         * SDL graphics. This is better than relying on the
+         * default, since the default changes :-( */
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_SDL)
+            ADD_ARG_LIT("-sdl");
     }
 
     if (def->nvideos) {
