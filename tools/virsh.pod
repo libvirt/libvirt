@@ -257,6 +257,10 @@ Get device block stats for a running domain.
 
 Get network interface stats for a running domain.
 
+=item B<dommemstat> I<domain>
+
+Get memory stats for a running domain.
+
 =item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.
