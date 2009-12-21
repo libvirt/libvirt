@@ -613,7 +613,7 @@ if test "x$with_sasl" != "xno"; then
   CFLAGS="$CFLAGS $SASL_CFLAGS"
   LIBS="$LIBS $SASL_LIBS"
   AC_CHECK_HEADER([sasl/sasl.h],[],[
-    if test "x$with_sasl" != "xcheck" ; then
+    if test "x$with_sasl" = "xcheck" ; then
         with_sasl=no
     else
         fail=1
