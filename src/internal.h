@@ -100,6 +100,8 @@
 #ifndef ATTRIBUTE_SENTINEL
 #if __GNUC_PREREQ (4, 0)
 #define ATTRIBUTE_SENTINEL __attribute__((__sentinel__))
+#else
+#define ATTRIBUTE_SENTINEL
 #endif
 #endif
 
