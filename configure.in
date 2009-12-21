@@ -555,7 +555,7 @@ dnl GnuTLS library
 GNUTLS_CFLAGS=
 GNUTLS_LIBS=
 GNUTLS_FOUND=no
-if test -z "$PKG_CONFIG" ; then
+if test -x "$PKG_CONFIG" ; then
   PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED,
      [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
 fi
@@ -572,6 +572,8 @@ if test "$GNUTLS_FOUND" = "no"; then
   dnl it explicitly for the calls to gcry_control/check_version
   GNUTLS_LIBS="$LIBS -lgcrypt"
   LIBS="$old_libs"
+else
+  GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
 fi
 
 AC_SUBST([GNUTLS_CFLAGS])
