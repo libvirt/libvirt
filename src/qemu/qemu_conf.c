@@ -1146,8 +1146,12 @@ static unsigned int qemudComputeCmdFlags(const char *help,
     if (version >= 10000)
         flags |= QEMUD_CMD_FLAG_0_10;
 
-    if (version >= 12000)
-        flags |= QEMUD_CMD_FLAG_0_12;
+    /* Keep disabled till we're actually ready to turn on JSON mode
+     * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
+#if 0
+    if (version >= 13000)
+        flags |= QEMUD_CMD_FLAG_MONITOR_JSON;
+#endif
 
     return flags;
 }
