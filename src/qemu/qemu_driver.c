@@ -5290,7 +5290,7 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
                        hostdev->source.subsys.u.pci.bus,
                        hostdev->source.subsys.u.pci.slot,
                        hostdev->source.subsys.u.pci.function);
-    if (!dev)
+    if (!pci)
         return -1;
 
     if ((hostdev->managed && pciDettachDevice(conn, pci) < 0) ||
