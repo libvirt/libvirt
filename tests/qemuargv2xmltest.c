@@ -185,6 +185,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("graphics-sdl", 0);
     DO_TEST("graphics-sdl-fullscreen", 0);
+    DO_TEST("nographics-vga", QEMUD_CMD_FLAG_VGA);
     DO_TEST("input-usbmouse", 0);
     DO_TEST("input-usbtablet", 0);
     /* Can't rountrip xenner arch */

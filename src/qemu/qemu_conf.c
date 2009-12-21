@@ -89,8 +89,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "std",
               "cirrus",
               "vmware",
-              NULL, /* no arg needed for xen */
-              NULL /* don't support vbox */);
+              "", /* no arg needed for xen */
+              "" /* don't support vbox */);
 
 #define PROC_MOUNT_BUF_LEN 255
 
@@ -3448,7 +3448,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 /* nothing - vga has no effect on Xen pvfb */
             } else {
                 const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
-                if (!vgastr) {
+                if (!vgastr || STREQ(vgastr, "")) {
                     qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                      _("video type %s is not supported with QEMU"),
                                      virDomainVideoTypeToString(def->videos[0]->type));
@@ -3480,6 +3480,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
                                  virDomainVideoTypeToString(def->videos[0]->type));
                 goto error;
             }
+        }
+    } else {
+        /* If we have -device, then we set -nodefault already */
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+            (qemuCmdFlags & QEMUD_CMD_FLAG_VGA)) {
+            ADD_ARG_LIT("-vga");
+            ADD_ARG_LIT("none");
         }
     }
 
@@ -5018,11 +5025,13 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             video = VIR_DOMAIN_VIDEO_TYPE_VGA;
         } else if (STREQ(arg, "-vga")) {
             WANT_VALUE();
-            video = qemuVideoTypeFromString(val);
-            if (video < 0) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("unknown video adapter type '%s'"), val);
-                goto error;
+            if (STRNEQ(val, "none")) {
+                video = qemuVideoTypeFromString(val);
+                if (video < 0) {
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown video adapter type '%s'"), val);
+                    goto error;
+                }
             }
         } else if (STREQ(arg, "-cpu")) {
             WANT_VALUE();
