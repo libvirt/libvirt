@@ -887,19 +887,19 @@ cmdDomIfstat (vshControl *ctl, const vshCmd *cmd)
 /*
  * "dommemstats" command
  */
-static const vshCmdInfo info_dommemstats[] = {
+static const vshCmdInfo info_dommemstat[] = {
     {"help", gettext_noop("get memory statistics for a domain")},
     {"desc", gettext_noop("Get memory statistics for a runnng domain.")},
     {NULL,NULL}
 };
 
-static const vshCmdOptDef opts_dommemstats[] = {
+static const vshCmdOptDef opts_dommemstat[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdDomMemStats(vshControl *ctl, const vshCmd *cmd)
+cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     char *name;
@@ -7340,7 +7340,7 @@ static const vshCmdDef commands[] = {
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
-    {"dommemstats", cmdDomMemStats, opts_dommemstats, info_dommemstats},
+    {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat},
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
     {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
