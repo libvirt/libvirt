@@ -1115,6 +1115,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_CHARDEV;
     if (strstr(help, "-balloon"))
         flags |= QEMUD_CMD_FLAG_BALLOON;
+    if (strstr(help, "-device"))
+        flags |= QEMUD_CMD_FLAG_DEVICE;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
@@ -2309,6 +2311,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!def->graphics)
         ADD_ARG_LIT("-nographic");
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        ADD_ARG_LIT("-nodefaults");
+
     if (monitor_chr) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2531,8 +2536,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (!def->nnets) {
-        ADD_ARG_LIT("-net");
-        ADD_ARG_LIT("none");
+        /* If we have -device, then we set -nodefault already */
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+            ADD_ARG_LIT("-net");
+            ADD_ARG_LIT("none");
+        }
     } else {
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr net = def->nets[i];
@@ -2591,8 +2599,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (!def->nserials) {
-        ADD_ARG_LIT("-serial");
-        ADD_ARG_LIT("none");
+        /* If we have -device, then we set -nodefault already */
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+            ADD_ARG_LIT("-serial");
+            ADD_ARG_LIT("none");
+        }
     } else {
         for (i = 0 ; i < def->nserials ; i++) {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2638,8 +2649,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (!def->nparallels) {
-        ADD_ARG_LIT("-parallel");
-        ADD_ARG_LIT("none");
+        /* If we have -device, then we set -nodefault already */
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+            ADD_ARG_LIT("-parallel");
+            ADD_ARG_LIT("none");
+        }
     } else {
         for (i = 0 ; i < def->nparallels ; i++) {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
