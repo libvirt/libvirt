@@ -116,7 +116,8 @@ dnl If portablexdr is installed, prefer that.
 dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW), -lnsl (Solaris)
 dnl or none (most Unix)
 AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
-	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl])
+	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl],[],
+		[AC_MSG_ERROR([Cannot find a XDR library])])
 	])
 
 AC_CHECK_LIB([intl],[gettext],[])
