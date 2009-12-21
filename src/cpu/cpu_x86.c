@@ -274,6 +274,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 {
     struct x86_map *map = data;
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr ctxt_node = ctxt->node;
     struct x86_feature *feature = NULL;
     int ret = 0;
     int i;
@@ -340,6 +341,9 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     }
 
 out:
+    ctxt->node = ctxt_node;
+    VIR_FREE(nodes);
+
     return ret;
 
 no_memory:
@@ -664,6 +668,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
     }
 
 out:
+    VIR_FREE(nodes);
     return ret;
 
 no_memory:
