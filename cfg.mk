@@ -94,6 +94,11 @@ sc_prohibit_strncpy:
 	msg='use virStrncpy, not strncpy'				\
 	  $(_prohibit_regexp)
 
+sc_prohibit_readlink:
+	@re='readlink *\('						\
+	msg='use virFileResolveLink, not readlink'			\
+	  $(_prohibit_regexp)
+
 sc_prohibit_gethostname:
 	@re='gethostname *\('						\
 	msg='use virGetHostname, not gethostname'			\
