@@ -79,7 +79,7 @@ int cpuMapLoad(const char *arch,
 
     if (arch == NULL) {
         virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
-                _("undefined hardware architecture"));
+                          "%s", _("undefined hardware architecture"));
         return -1;
     }
 

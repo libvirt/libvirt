@@ -48,7 +48,7 @@ cpuGetSubDriver(virConnectPtr conn,
 
     if (arch == NULL) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("undefined hardware architecture"));
+                          "%s", _("undefined hardware architecture"));
         return NULL;
     }
 
@@ -130,7 +130,7 @@ cpuDecode(virConnectPtr conn,
 
     if (cpu == NULL) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("invalid CPU definition"));
+                          "%s", _("invalid CPU definition"));
         return -1;
     }
 

@@ -645,7 +645,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
 
     devices = virJSONValueObjectGet(reply, "return");
     if (!devices || devices->type != VIR_JSON_TYPE_ARRAY) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("blockstats reply was missing device list"));
         goto cleanup;
     }
@@ -655,13 +655,13 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
         virJSONValuePtr stats;
         const char *thisdev;
         if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                              _("blockstats device entry was not in expected format"));
             goto cleanup;
         }
 
         if ((thisdev = virJSONValueObjectGetString(dev, "device")) == NULL) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                              _("blockstats device entry was not in expected format"));
             goto cleanup;
         }
@@ -672,7 +672,7 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
         found = 1;
         if ((stats = virJSONValueObjectGet(dev, "stats")) == NULL ||
             stats->type != VIR_JSON_TYPE_OBJECT) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                              _("blockstats stats entry was not in expected format"));
             goto cleanup;
         }
@@ -919,13 +919,13 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
     char *statusstr;
 
     if (!(ret = virJSONValueObjectGet(reply, "return"))) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("info migration reply was missing return data"));
         return -1;
     }
 
     if (!(statusstr = virJSONValueObjectGetString(ret, "status"))) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("info migration reply was missing return status"));
         return -1;
     }
@@ -1214,25 +1214,25 @@ qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
 
     addr = virJSONValueObjectGet(reply, "return");
     if (!addr || addr->type != VIR_JSON_TYPE_OBJECT) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device address"));
         return -1;
     }
 
     if (virJSONValueObjectGetNumberUint(addr, "domain", guestDomain) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device domain number"));
         return -1;
     }
 
     if (virJSONValueObjectGetNumberUint(addr, "bus", guestBus) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device bus number"));
         return -1;
     }
 
     if (virJSONValueObjectGetNumberUint(addr, "slot", guestSlot) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                          _("pci_add reply was missing device slot number"));
         return -1;
     }
