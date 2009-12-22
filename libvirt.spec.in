@@ -687,6 +687,8 @@ fi
 %{_datadir}/libvirt/networks/default.xml
 %endif
 
+%{_datadir}/libvirt/cpu_map.xml
+
 %dir %{_localstatedir}/run/libvirt/
 
 %dir %{_localstatedir}/lib/libvirt/
