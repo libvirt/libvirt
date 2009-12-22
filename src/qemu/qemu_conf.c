@@ -1778,17 +1778,18 @@ qemudBuildCommandLineCPU(virConnectPtr conn,
 {
     const virCPUDefPtr host = driver->caps->host.cpu;
     virCPUDefPtr guest = NULL;
-    unsigned int ncpus;
+    unsigned int ncpus = 0;
     const char **cpus = NULL;
     union cpuData *data = NULL;
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
 
-    if (qemudProbeCPUModels(emulator, ut->machine, &ncpus, &cpus) < 0)
+    if (def->cpu && def->cpu->model
+        && qemudProbeCPUModels(emulator, ut->machine, &ncpus, &cpus) < 0)
         goto cleanup;
 
-    if (ncpus > 0 && host && def->cpu && def->cpu->model) {
+    if (ncpus > 0 && host) {
         virCPUCompareResult cmp;
 
         cmp = cpuGuestData(conn, host, def->cpu, &data);
