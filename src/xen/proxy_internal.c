@@ -1032,6 +1032,9 @@ xenProxyDomainGetOSType(virDomainPtr domain)
         return(NULL);
     }
     if ((ans.len == sizeof(virProxyPacket)) && (ans.data.arg < 0)) {
+        virRaiseError (domain->conn, NULL, NULL, VIR_FROM_REMOTE,
+                       VIR_ERR_OPERATION_FAILED, VIR_ERR_ERROR, NULL, NULL,
+                       NULL, 0, 0, "%s", _("Cannot get domain details"));
         return(NULL);
     }
 

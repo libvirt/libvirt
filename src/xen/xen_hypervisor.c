@@ -2770,21 +2770,33 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
     char *ostype = NULL;
 
     priv = (xenUnifiedPrivatePtr) dom->conn->privateData;
-    if (priv->handle < 0)
+    if (priv->handle < 0) {
+        virXenErrorFunc(dom->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("domain shut off or invalid"), 0);
         return (NULL);
+    }
 
     /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
     if (hypervisor_version < 2 ||
-        dom_interface_version < 4)
+        dom_interface_version < 4) {
+        virXenErrorFunc(dom->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("unsupported in dom interface < 4"), 0);
         return (NULL);
+    }
 
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
-    if (virXen_getdomaininfo(priv->handle, dom->id, &dominfo) < 0)
+    if (virXen_getdomaininfo(priv->handle, dom->id, &dominfo) < 0) {
+        virXenErrorFunc(dom->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("cannot get domain details"), 0);
         return (NULL);
+    }
 
-    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id)
+    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id) {
+        virXenErrorFunc(dom->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("cannot get domain details"), 0);
         return (NULL);
+    }
 
     if (XEN_GETDOMAININFO_FLAGS(dominfo) & DOMFLAGS_HVM)
         ostype = strdup("hvm");
@@ -3407,24 +3419,35 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain == NULL || domain->conn == NULL) {
+        virXenErrorFunc (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid argument", 0);
         return -1;
+    }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0 || (domain->id < 0) ||
         (info == NULL) || (maxinfo < 1) ||
-        (sizeof(cpumap_t) & 7))
+        (sizeof(cpumap_t) & 7)) {
+        virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("domain shut off or invalid"), 0);
         return (-1);
-    if ((cpumaps != NULL) && (maplen < 1))
+    }
+    if ((cpumaps != NULL) && (maplen < 1)) {
+        virXenErrorFunc (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid argument", 0);
         return -1;
-
+    }
     /* first get the number of virtual CPUs in this domain */
     XEN_GETDOMAININFO_CLEAR(dominfo);
     ret = virXen_getdomaininfo(priv->handle, domain->id,
                                &dominfo);
 
-    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id))
+    if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id)) {
+        virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        _("cannot get domain details"), 0);
         return (-1);
+    }
     nbinfo = XEN_GETDOMAININFO_CPUCOUNT(dominfo) + 1;
     if (nbinfo > maxinfo) nbinfo = maxinfo;
 
@@ -3437,13 +3460,19 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                                       ipt,
                                       (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, i),
                                       maplen);
-            if (ret < 0)
+            if (ret < 0) {
+                virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                                _("cannot get VCPUs info"), 0);
                 return(-1);
+            }
         } else {
             ret = virXen_getvcpusinfo(priv->handle, domain->id, i,
                                       ipt, NULL, 0);
-            if (ret < 0)
+            if (ret < 0) {
+                virXenErrorFunc(domain->conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                                _("cannot get VCPUs info"), 0);
                 return(-1);
+            }
         }
     }
     return nbinfo;
