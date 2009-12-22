@@ -93,7 +93,9 @@
 #ifdef WITH_NODE_DEVICES
 #include "node_device/node_device_driver.h"
 #endif
+#ifdef WITH_SECRETS
 #include "secret/secret_driver.h"
+#endif
 #endif
 
 
@@ -880,7 +882,9 @@ static struct qemud_server *qemudInitialize(void) {
 #if defined(WITH_NODE_DEVICES)
     nodedevRegister();
 #endif
+#ifdef WITH_SECRETS
     secretRegister();
+#endif
 #ifdef WITH_QEMU
     qemuRegister();
 #endif

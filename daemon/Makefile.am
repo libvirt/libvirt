@@ -110,6 +110,10 @@ endif
 if WITH_NODE_DEVICES
     libvirtd_LDADD += ../src/libvirt_driver_nodedev.la
 endif
+
+if WITH_SECRETS
+    libvirtd_LDADD += ../src/libvirt_driver_secret.la
+endif
 endif
 
 libvirtd_LDADD += ../src/libvirt.la

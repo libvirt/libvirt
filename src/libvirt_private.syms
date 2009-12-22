@@ -453,8 +453,6 @@ virSecretDefParseString;
 virSecretDefParseFile;
 virSecretDefFormat;
 
-# secret_driver.h
-secretRegister;
 
 # security.h
 virSecurityDriverVerify;

@@ -598,7 +598,8 @@ if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_secret.la
 else
 noinst_LTLIBRARIES += libvirt_driver_secret.la
-libvirt_la_LIBADD += libvirt_driver_secret.la
+# Stateful, so linked to daemon instead
+#libvirt_la_LIBADD += libvirt_driver_secret.la
 endif
 libvirt_driver_secret_la_CFLAGS = \
 		-I@top_srcdir@/src/conf
