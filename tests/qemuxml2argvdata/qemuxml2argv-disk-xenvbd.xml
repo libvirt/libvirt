@@ -17,11 +17,13 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
+      <address type='drive' controller='0' bus='1' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/data.img'/>

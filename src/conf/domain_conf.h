@@ -773,6 +773,7 @@ int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
+void virDomainDiskDefAssignAddress(virDomainDiskDefPtr def);
 
 int virDomainSaveXML(virConnectPtr conn,
                      const char *configDir,

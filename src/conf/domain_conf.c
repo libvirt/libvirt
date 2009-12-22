@@ -1025,7 +1025,7 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        if (virDomainDeviceDriveAddressParseXML(conn, node, &info->addr.drive) < 0)
+        if (virDomainDeviceDriveAddressParseXML(conn, address, &info->addr.drive) < 0)
             goto cleanup;
         break;
 
@@ -1043,6 +1043,45 @@ cleanup:
     return ret;
 }
 
+
+void
+virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
+{
+    int idx = virDiskNameToIndex(def->dst);
+
+    switch (def->bus) {
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        /* For SCSI we define the default mapping to be 7 units
+         * per bus, 1 bus per controller, many controllers */
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        def->info.addr.drive.controller = idx / 7;
+        def->info.addr.drive.bus = 0;
+        def->info.addr.drive.unit = idx % 7;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        /* For IDE we define the default mapping to be 2 units
+         * per bus, 2 bus per controller, many controllers */
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        def->info.addr.drive.controller = idx / 4;
+        def->info.addr.drive.bus = (idx % 4) / 2;
+        def->info.addr.drive.unit = (idx % 2);
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        /* For FDC we define the default mapping to be 2 units
+         * per bus, 1 bus per controller, many controllers */
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        def->info.addr.drive.controller = idx / 2;
+        def->info.addr.drive.bus = 0;
+        def->info.addr.drive.unit = idx % 2;
+        break;
+
+    default:
+        /* Other disk bus's aren't controller based */
+        break;
+    }
+}
 
 /* Parse the XML definition for a disk
  * @param node XML nodeset to parse for disk definition
@@ -1270,6 +1309,9 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     encryption = NULL;
     def->serial = serial;
     serial = NULL;
+
+    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        virDomainDiskDefAssignAddress(def);
 
 cleanup:
     VIR_FREE(bus);

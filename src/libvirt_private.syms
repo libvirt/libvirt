@@ -129,6 +129,7 @@ virDomainDiskDefFree;
 virDomainDiskDeviceTypeToString;
 virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;
+virDomainDiskDefAssignAddress;
 virDomainFindByID;
 virDomainFindByName;
 virDomainFindByUUID;

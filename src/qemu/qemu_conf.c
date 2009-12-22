@@ -3271,6 +3271,8 @@ qemuParseCommandLineDisk(virConnectPtr conn,
     else
         def->dst[2] = 'a' + idx;
 
+    virDomainDiskDefAssignAddress(def);
+
 cleanup:
     for (i = 0 ; i < nkeywords ; i++) {
         VIR_FREE(keywords[i]);
@@ -3999,6 +4001,8 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
                 virDomainDiskDefFree(disk);
                 goto no_memory;
             }
+
+            virDomainDiskDefAssignAddress(disk);
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);

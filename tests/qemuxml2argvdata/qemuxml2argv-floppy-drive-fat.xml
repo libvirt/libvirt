@@ -19,6 +19,7 @@
       <source dir='/var/somefiles'/>
       <target dev='fda' bus='fdc'/>
       <readonly/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
   </devices>
 </domain>

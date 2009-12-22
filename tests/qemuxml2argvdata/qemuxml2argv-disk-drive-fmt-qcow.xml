@@ -18,12 +18,14 @@
       <driver name='qemu' type='qcow2'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
+      <address type='drive' controller='0' bus='1' unit='0'/>
     </disk>
   </devices>
 </domain>

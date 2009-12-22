@@ -17,10 +17,12 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='floppy'>
       <source file='/tmp/firmware.img'/>
       <target dev='fda' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
   </devices>
 </domain>
