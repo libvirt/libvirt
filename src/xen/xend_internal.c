@@ -88,7 +88,8 @@ xenDaemonFormatSxprNet(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 xenDaemonFormatSxprOnePCI(virConnectPtr conn,
                           virDomainHostdevDefPtr def,
-                          virBufferPtr buf);
+                          virBufferPtr buf,
+                          int detach);
 
 static int
 virDomainXMLDevID(virDomainPtr domain,
@@ -4165,7 +4166,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
             dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             if (xenDaemonFormatSxprOnePCI(domain->conn,
                                           dev->data.hostdev,
-                                          &buf) < 0)
+                                          &buf, 0) < 0)
                 goto cleanup;
         } else {
             virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
@@ -4217,6 +4218,8 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
     virDomainDeviceDefPtr dev = NULL;
     virDomainDefPtr def = NULL;
     int ret = -1;
+    char *xendev = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -4247,8 +4250,28 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
     if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref)))
         goto cleanup;
 
-    ret = xend_op(domain->conn, domain->name, "op", "device_destroy",
-                  "type", class, "dev", ref, "force", "0", "rm_cfg", "1", NULL);
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            if (xenDaemonFormatSxprOnePCI(domain->conn,
+                                          dev->data.hostdev,
+                                          &buf, 1) < 0)
+                goto cleanup;
+        } else {
+            virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
+                         _("unsupported device type"));
+            goto cleanup;
+        }
+        xendev = virBufferContentAndReset(&buf);
+        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+                      "config", xendev, "dev", ref, NULL);
+        VIR_FREE(xendev);
+    }
+    else {
+        ret = xend_op(domain->conn, domain->name, "op", "device_destroy",
+                      "type", class, "dev", ref, "force", "0", "rm_cfg", "1",
+                      NULL);
+    }
 
 cleanup:
     virDomainDefFree(def);
@@ -5567,7 +5590,8 @@ xenDaemonFormatSxprPCI(virDomainHostdevDefPtr def,
 static int
 xenDaemonFormatSxprOnePCI(virConnectPtr conn,
                           virDomainHostdevDefPtr def,
-                          virBufferPtr buf)
+                          virBufferPtr buf,
+                          int detach)
 {
     if (def->managed) {
         virXendError(conn, VIR_ERR_NO_SUPPORT, "%s",
@@ -5577,6 +5601,10 @@ xenDaemonFormatSxprOnePCI(virConnectPtr conn,
 
     virBufferAddLit(buf, "(pci ");
     xenDaemonFormatSxprPCI(def, buf);
+    if (detach)
+        virBufferAddLit(buf, "(state 'Closing')");
+    else
+        virBufferAddLit(buf, "(state 'Initialising')");
     virBufferAddLit(buf, ")");
 
     return 0;
@@ -5608,9 +5636,8 @@ xenDaemonFormatSxprAllPCI(virConnectPtr conn,
      *    )
      * )
      *
-     * Normally there is one (device ...) block per device, but in
-     * wierd world of Xen PCI, once (device ...) covers multiple
-     * devices.
+     * Normally there is one (device ...) block per device, but in the
+     * weird world of Xen PCI, one (device ...) covers multiple devices.
      */
 
     virBufferAddLit(buf, "(device (pci ");
@@ -5949,6 +5976,8 @@ error:
  *  - if disk, copy in ref the target name from description
  *  - if network, get MAC address from description, scan XenStore and
  *    copy in ref the corresponding vif number.
+ *  - if pci, get BDF from description, scan XenStore and
+ *    copy in ref the corresponding dev number.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -6006,6 +6035,31 @@ virDomainXMLDevID(virDomainPtr domain,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
                dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
                dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+        char *bdf;
+        virDomainHostdevDefPtr def = dev->data.hostdev;
+
+        if (virAsprintf(&bdf, "%04x:%02x:%02x.%0x",
+                        def->source.subsys.u.pci.domain,
+                        def->source.subsys.u.pci.bus,
+                        def->source.subsys.u.pci.slot,
+                        def->source.subsys.u.pci.function) < 0) {
+            virReportOOMError(NULL);
+            return -1;
+        }
+
+        strcpy(class, "pci");
+
+        xenUnifiedLock(priv);
+        xref = xenStoreDomainGetPCIID(domain->conn, domain->id, bdf);
+        xenUnifiedUnlock(priv);
+        VIR_FREE(bdf);
+        if (xref == NULL)
+            return -1;
+
+        tmp = virStrcpy(ref, xref, ref_len);
+        VIR_FREE(xref);
+        if (tmp == NULL)
+            return -1;
     } else {
         virXendError(NULL, VIR_ERR_NO_SUPPORT,
                      "%s", _("hotplug of device type not supported"));

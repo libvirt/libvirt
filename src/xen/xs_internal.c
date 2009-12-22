@@ -1056,6 +1056,61 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
 }
 
 /*
+ * xenStoreDomainGetPCIID:
+ * @conn: pointer to the connection.
+ * @id: the domain id
+ * @bdf: the PCI BDF
+ *
+ * Get the reference (i.e. the string number) for the device on that domain
+ * which uses the given PCI address
+ *
+ * The caller must hold the lock on the privateData
+ * associated with the 'conn' parameter.
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+char *
+xenStoreDomainGetPCIID(virConnectPtr conn, int id, const char *bdf)
+{
+    char dir[80], path[128], **list = NULL, *val = NULL;
+    unsigned int len, i, num;
+    char *ret = NULL;
+    xenUnifiedPrivatePtr priv;
+
+    if (id < 0)
+        return(NULL);
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->xshandle == NULL)
+        return (NULL);
+    if (bdf == NULL)
+        return (NULL);
+
+    snprintf(dir, sizeof(dir), "/local/domain/0/backend/pci/%d", id);
+    list = xs_directory(priv->xshandle, 0, dir, &num);
+    if (list == NULL)
+        return(NULL);
+    for (i = 0; i < num; i++) {
+        snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "dev-0");
+        if ((val = xs_read(priv->xshandle, 0, path, &len)) == NULL)
+            break;
+
+        bool match = STREQ(val, bdf);
+
+        VIR_FREE(val);
+
+        if (match) {
+            ret = strdup(list[i]);
+            break;
+        }
+    }
+
+    VIR_FREE(list);
+    return(ret);
+}
+
+/*
  * The caller must hold the lock on the privateData
  * associated with the 'conn' parameter.
  */

@@ -50,6 +50,9 @@ char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
 char *		xenStoreDomainGetDiskID(virConnectPtr conn,
                                          int id,
                                          const char *dev);
+char *		xenStoreDomainGetPCIID(virConnectPtr conn,
+                                   int domid,
+                                   const char *bdf);
 char *          xenStoreDomainGetName(virConnectPtr conn,
                                       int id);
 int             xenStoreDomainGetUUID(virConnectPtr conn,
