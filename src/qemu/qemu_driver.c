@@ -2192,6 +2192,9 @@ qemuPrepareHostDevices(virConnectPtr conn,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        if (!pciDeviceIsAssignable(conn, dev, !driver->relaxedACS))
+            goto cleanup;
+
         if (pciDeviceGetManaged(dev) &&
             pciDettachDevice(conn, dev) < 0)
             goto cleanup;
@@ -5792,7 +5795,8 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
     if (!pci)
         return -1;
 
-    if ((hostdev->managed && pciDettachDevice(conn, pci) < 0) ||
+    if (!pciDeviceIsAssignable(conn, pci, !driver->relaxedACS) ||
+        (hostdev->managed && pciDettachDevice(conn, pci) < 0) ||
         pciResetDevice(conn, pci, driver->activePciHostdevs) < 0) {
         pciFreeDevice(conn, pci);
         return -1;

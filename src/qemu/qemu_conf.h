@@ -125,6 +125,8 @@ struct qemud_driver {
     unsigned int macFilter : 1;
     ebtablesContext *ebtables;
 
+    unsigned int relaxedACS : 1;
+
     virCapsPtr caps;
 
     /* An array of callbacks */

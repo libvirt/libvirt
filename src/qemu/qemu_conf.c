@@ -340,6 +340,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         }
     }
 
+    p = virConfGetValue (conf, "relaxed_acs_check");
+    CHECK_TYPE ("relaxed_acs_check", VIR_CONF_LONG);
+    if (p) driver->relaxedACS = p->l;
+
     virConfFree (conf);
     return 0;
 }

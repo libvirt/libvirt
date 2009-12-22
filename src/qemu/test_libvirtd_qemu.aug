@@ -93,6 +93,8 @@ cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
 save_image_format = \"gzip\"
 
 hugetlbfs_mount = \"/dev/hugepages\"
+
+relaxed_acs_check = 1
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -196,3 +198,5 @@ hugetlbfs_mount = \"/dev/hugepages\"
 { "save_image_format" = "gzip" }
 { "#empty" }
 { "hugetlbfs_mount" = "/dev/hugepages" }
+{ "#empty" }
+{ "relaxed_acs_check" = "1" }
