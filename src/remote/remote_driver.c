@@ -8530,6 +8530,27 @@ cleanup:
             thiscall->err.message &&
             STRPREFIX(*thiscall->err.message, "unknown procedure")) {
             rv = -2;
+        } else if (thiscall->err.domain == VIR_FROM_REMOTE &&
+                   thiscall->err.code == VIR_ERR_RPC &&
+                   thiscall->err.level == VIR_ERR_ERROR &&
+                   thiscall->err.message &&
+                   STRPREFIX(*thiscall->err.message, "unknown procedure")) {
+            /*
+             * convert missing remote entry points into the unsupported
+             * feature error
+             */
+            virRaiseErrorFull(flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
+                              __FILE__, __FUNCTION__, __LINE__,
+                              thiscall->err.domain,
+                              VIR_ERR_NO_SUPPORT,
+                              thiscall->err.level,
+                              thiscall->err.str1 ? *thiscall->err.str1 : NULL,
+                              thiscall->err.str2 ? *thiscall->err.str2 : NULL,
+                              thiscall->err.str3 ? *thiscall->err.str3 : NULL,
+                              thiscall->err.int1,
+                              thiscall->err.int2,
+                              "%s", *thiscall->err.message);
+            rv = -1;
         } else {
             virRaiseErrorFull(flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                               __FILE__, __FUNCTION__, __LINE__,
@@ -8541,7 +8562,7 @@ cleanup:
                               thiscall->err.str3 ? *thiscall->err.str3 : NULL,
                               thiscall->err.int1,
                               thiscall->err.int2,
-                              "%s", thiscall->err.message ? *thiscall->err.message : NULL);
+                              "%s", thiscall->err.message ? *thiscall->err.message : "unknown");
             rv = -1;
         }
         xdr_free((xdrproc_t)xdr_remote_error,  (char *)&thiscall->err);
