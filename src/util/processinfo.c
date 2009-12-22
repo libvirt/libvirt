@@ -164,7 +164,7 @@ realloc:
 #else /* HAVE_SCHED_GETAFFINITY */
 
 int virProcessInfoSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
-                              unsigned char *map ATTRIBUTE_UNUSED,
+                              const unsigned char *map ATTRIBUTE_UNUSED,
                               size_t maplen ATTRIBUTE_UNUSED,
                               int maxcpu ATTRIBUTE_UNUSED)
 {
