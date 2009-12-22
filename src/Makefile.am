@@ -16,7 +16,7 @@ INCLUDES =							\
 		-DSBINDIR=\""$(sbindir)"\"			\
 		-DSYSCONF_DIR="\"$(sysconfdir)\""		\
 		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
-		-DDATADIR=\""$(datadir)/libvirt"\"		\
+		-DDATADIR=\""$(pkgdatadir)"\"			\
 		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		$(WARN_CFLAGS)					\
@@ -287,7 +287,9 @@ CPU_SOURCES =							\
 		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
 		cpu/cpu_map.h cpu/cpu_map.c
 
-EXTRA_DIST += 	cpu/cpu_map.xml
+pkgdata_DATA =	cpu/cpu_map.xml
+
+EXTRA_DIST += 	$(pkgdata_DATA)
 
 #########################
 #
