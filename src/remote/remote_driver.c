@@ -23,10 +23,6 @@
 
 #include <config.h>
 
-/* Windows socket compatibility functions. */
-#include <errno.h>
-#include <sys/socket.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -37,7 +33,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#ifndef HAVE_WINSOCK2_H		/* Unix & Cygwin. */
+/* Windows socket compatibility functions. */
+#include <errno.h>
+#include <sys/socket.h>
+
+#ifndef HAVE_WINSOCK2_H /* Unix & Cygwin. */
 # include <sys/un.h>
 # include <net/if.h>
 # include <netinet/in.h>
