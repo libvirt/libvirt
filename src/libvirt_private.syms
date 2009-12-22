@@ -450,6 +450,7 @@ pciDeviceFileIterate;
 pciDeviceListCount;
 pciDeviceListGet;
 pciDeviceListSteal;
+pciDeviceIsAssignable;
 
 
 # processinfo.h

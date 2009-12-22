@@ -140,6 +140,28 @@ struct _pciDeviceList {
 #define PCI_AF_CAP              0x3     /* Advanced features capabilities */
 #define  PCI_AF_CAP_FLR         0x2     /* Function Level Reset */
 
+#define PCI_EXP_FLAGS           0x2
+#define PCI_EXP_FLAGS_TYPE      0x00f0
+#define PCI_EXP_TYPE_DOWNSTREAM 0x6
+
+#define PCI_EXT_CAP_BASE          0x100
+#define PCI_EXT_CAP_LIMIT         0x1000
+#define PCI_EXT_CAP_ID_MASK       0x0000ffff
+#define PCI_EXT_CAP_OFFSET_SHIFT  20
+#define PCI_EXT_CAP_OFFSET_MASK   0x00000ffc
+
+#define PCI_EXT_CAP_ID_ACS      0x000d
+#define PCI_EXT_ACS_CTRL        0x06
+
+#define PCI_EXT_CAP_ACS_SV      0x01
+#define PCI_EXT_CAP_ACS_RR      0x04
+#define PCI_EXT_CAP_ACS_CR      0x08
+#define PCI_EXT_CAP_ACS_UF      0x10
+#define PCI_EXT_CAP_ACS_ENABLED (PCI_EXT_CAP_ACS_SV | \
+                                 PCI_EXT_CAP_ACS_RR | \
+                                 PCI_EXT_CAP_ACS_CR | \
+                                 PCI_EXT_CAP_ACS_UF)
+
 static int
 pciOpenConfig(pciDevice *dev)
 {
@@ -322,6 +344,30 @@ pciFindCapabilityOffset(pciDevice *dev, unsigned capability)
     }
 
     VIR_DEBUG("%s %s: failed to find cap 0x%.2x", dev->id, dev->name, capability);
+
+    return 0;
+}
+
+static unsigned int
+pciFindExtendedCapabilityOffset(pciDevice *dev, unsigned capability)
+{
+    int ttl;
+    unsigned int pos;
+    uint32_t header;
+
+    /* minimum 8 bytes per capability */
+    ttl = (PCI_EXT_CAP_LIMIT - PCI_EXT_CAP_BASE) / 8;
+    pos = PCI_EXT_CAP_BASE;
+
+    while (ttl > 0 && pos >= PCI_EXT_CAP_BASE) {
+        header = pciRead32(dev, pos);
+
+        if ((header & PCI_EXT_CAP_ID_MASK) == capability)
+            return pos;
+
+        pos = (header >> PCI_EXT_CAP_OFFSET_SHIFT) & PCI_EXT_CAP_OFFSET_MASK;
+        ttl--;
+    }
 
     return 0;
 }
@@ -1109,4 +1155,109 @@ cleanup:
     VIR_FREE(file);
     VIR_FREE(pcidir);
     return ret;
+}
+
+static int
+pciDeviceDownstreamLacksACS(virConnectPtr conn,
+                            pciDevice *dev)
+{
+    uint16_t flags;
+    uint16_t ctrl;
+    unsigned int pos;
+
+    if (!dev->initted && pciInitDevice(conn, dev) < 0)
+        return -1;
+
+    pos = dev->pcie_cap_pos;
+    if (!pos || !pciRead16(dev, PCI_CLASS_DEVICE) == PCI_CLASS_BRIDGE_PCI)
+        return 0;
+
+    flags = pciRead16(dev, pos + PCI_EXP_FLAGS);
+    if (((flags & PCI_EXP_FLAGS_TYPE) >> 4) != PCI_EXP_TYPE_DOWNSTREAM)
+        return 0;
+
+    pos = pciFindExtendedCapabilityOffset(dev, PCI_EXT_CAP_ID_ACS);
+    if (!pos) {
+        VIR_DEBUG("%s %s: downstream port lacks ACS", dev->id, dev->name);
+        return 1;
+    }
+
+    ctrl = pciRead16(dev, pos + PCI_EXT_ACS_CTRL);
+    if ((ctrl & PCI_EXT_CAP_ACS_ENABLED) != PCI_EXT_CAP_ACS_ENABLED) {
+        VIR_DEBUG("%s %s: downstream port has ACS disabled",
+                  dev->id, dev->name);
+        return 1;
+    }
+
+    return 0;
+}
+
+static int
+pciDeviceIsBehindSwitchLackingACS(virConnectPtr conn,
+                                  pciDevice *dev)
+{
+    pciDevice *parent;
+
+    if (!(parent = pciGetParentDevice(conn, dev))) {
+        pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                       _("Failed to find parent device for %s"),
+                       dev->name);
+        return -1;
+    }
+
+    /* XXX we should rather fail when we can't find device's parent and
+     * stop the loop when we get to root instead of just stopping when no
+     * parent can be found
+     */
+    do {
+        pciDevice *tmp;
+        int acs;
+
+        acs = pciDeviceDownstreamLacksACS(conn, parent);
+
+        if (acs) {
+            pciFreeDevice(conn, parent);
+            if (acs < 0)
+                return -1;
+            else
+                return 1;
+        }
+
+        tmp = parent;
+        parent = pciGetParentDevice(conn, parent);
+        pciFreeDevice(conn, tmp);
+    } while (parent);
+
+    return 0;
+}
+
+int pciDeviceIsAssignable(virConnectPtr conn,
+                          pciDevice *dev,
+                          int strict_acs_check)
+{
+    int ret;
+
+    /* XXX This could be a great place to actually check that a non-managed
+     * device isn't in use, e.g. by checking that device is either un-bound
+     * or bound to a stub driver.
+     */
+
+    ret = pciDeviceIsBehindSwitchLackingACS(conn, dev);
+    if (ret < 0)
+        return 0;
+
+    if (ret) {
+        if (!strict_acs_check) {
+            VIR_DEBUG("%s %s: strict ACS check disabled; device assignment allowed",
+                      dev->id, dev->name);
+        } else {
+            pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                           _("Device %s is behind a switch lacking ACS and "
+                             "cannot be assigned"),
+                           dev->name);
+            return 0;
+        }
+    }
+
+    return 1;
 }
