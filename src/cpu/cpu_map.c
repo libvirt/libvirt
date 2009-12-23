@@ -30,7 +30,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-#define CPUMAPFILE DATADIR "/cpu_map.xml"
+#define CPUMAPFILE PKGDATADIR "/cpu_map.xml"
 
 
 static int load(xmlXPathContextPtr ctxt,

@@ -16,7 +16,7 @@ INCLUDES =							\
 		-DSBINDIR=\""$(sbindir)"\"			\
 		-DSYSCONF_DIR="\"$(sysconfdir)\""		\
 		-DLOCALEBASEDIR=\""$(datadir)/locale"\"		\
-		-DDATADIR=\""$(pkgdatadir)"\"			\
+		-DPKGDATADIR=\""$(pkgdatadir)"\"		\
 		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		$(WARN_CFLAGS)					\
