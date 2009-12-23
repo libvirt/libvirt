@@ -69,6 +69,8 @@ EXTRA_DIST =		\
 	storagevolxml2xmlin \
 	nodedevschematest \
 	nodedevschemadata \
+	vmx2xmldata \
+	xml2vmxdata \
 	$(patsubst %,qemuhelpdata/%,$(qemuhelpdata))
 
 noinst_PROGRAMS = virshtest conftest \
