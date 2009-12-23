@@ -40,10 +40,6 @@ int virSocketSetPort(virSocketAddrPtr addr, int port);
 
 int virSocketGetPort(virSocketAddrPtr addr);
 
-int virSocketAddrInNetwork(virSocketAddrPtr addr1,
-                           virSocketAddrPtr addr2,
-                           virSocketAddrPtr netmask);
-
 int virSocketGetRange     (virSocketAddrPtr start,
                            virSocketAddrPtr end);
 

@@ -362,7 +362,6 @@ virFree;
 
 
 # network.h
-virSocketAddrInNetwork;
 virSocketAddrIsNetmask;
 virSocketCheckNetmask;
 virSocketFormatAddr;
@@ -435,8 +434,6 @@ pciDeviceListDel;
 pciDeviceFileIterate;
 pciDeviceListCount;
 pciDeviceListGet;
-pciDeviceListLock;
-pciDeviceListUnlock;
 pciDeviceListSteal;
 
 
@@ -505,7 +502,6 @@ virStoragePoolObjUnlock;
 
 # storage_encryption_conf.h
 virStorageEncryptionFree;
-virStorageEncryptionDropSecrets;
 virStorageEncryptionParseNode;
 virStorageEncryptionFormat;
 virStorageGenerateQcowPassphrase;
