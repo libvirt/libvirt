@@ -780,9 +780,9 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
         break;
 
       case esxVI_APIVersion_40:
-        if (virtualHW_version != 7) {
+        if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                      "Expecting VMX entry 'virtualHW.version' to be 7 for "
+                      "Expecting VMX entry 'virtualHW.version' to be 4 or 7 for "
                       "VI API version 4.0 but found %lld", virtualHW_version);
             goto failure;
         }
