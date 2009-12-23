@@ -815,6 +815,13 @@ fi
 %endif
 
 %changelog
+* Wed Dec 23 2009 Daniel Veillard <veillard@redhat.com> - 0.7.5-1
+- Add new API virDomainMemoryStats
+- Public API and domain extension for CPU flags
+- vbox: Add support for version 3.1
+- Support QEMU's virtual FAT block device driver
+- a lot of fixes
+
 * Fri Nov 20 2009 Daniel Veillard <veillard@redhat.com> - 0.7.3-1
 - udev node device backend
 - API to check object properties
