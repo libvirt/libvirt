@@ -138,7 +138,7 @@ struct _esxVI_Enumeration {
 
 int esxVI_Enumeration_CastFromAnyType(virConnectPtr conn,
                                       const esxVI_Enumeration *enumeration,
-                                      esxVI_AnyType *anyType, int *boolean);
+                                      esxVI_AnyType *anyType, int *value);
 int esxVI_Enumeration_Serialize(virConnectPtr conn,
                                 const esxVI_Enumeration *enumeration,
                                 int value, const char *element,

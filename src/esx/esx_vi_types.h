@@ -131,11 +131,11 @@ enum _esxVI_Boolean {
     esxVI_Boolean_False,
 };
 
-int esxVI_Boolean_Serialize(virConnectPtr conn, esxVI_Boolean boolean,
+int esxVI_Boolean_Serialize(virConnectPtr conn, esxVI_Boolean boolean_,
                             const char *element, virBufferPtr output,
                             esxVI_Boolean required);
 int esxVI_Boolean_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                              esxVI_Boolean *boolean);
+                              esxVI_Boolean *boolean_);
 
 
 

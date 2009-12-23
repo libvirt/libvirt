@@ -201,7 +201,7 @@ virJSONValuePtr virJSONValueNewNumberDouble(double data)
 }
 
 
-virJSONValuePtr virJSONValueNewBoolean(int boolean)
+virJSONValuePtr virJSONValueNewBoolean(int boolean_)
 {
     virJSONValuePtr val;
 
@@ -209,7 +209,7 @@ virJSONValuePtr virJSONValueNewBoolean(int boolean)
         return NULL;
 
     val->type = VIR_JSON_TYPE_BOOLEAN;
-    val->data.boolean = boolean;
+    val->data.boolean = boolean_;
 
     return val;
 }
@@ -350,9 +350,9 @@ int virJSONValueObjectAppendNumberDouble(virJSONValuePtr object, const char *key
     return 0;
 }
 
-int virJSONValueObjectAppendBoolean(virJSONValuePtr object, const char *key, int boolean)
+int virJSONValueObjectAppendBoolean(virJSONValuePtr object, const char *key, int boolean_)
 {
-    virJSONValuePtr jvalue = virJSONValueNewBoolean(boolean);
+    virJSONValuePtr jvalue = virJSONValueNewBoolean(boolean_);
     if (!jvalue)
         return -1;
     if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
@@ -688,12 +688,12 @@ static int virJSONParserHandleNull(void * ctx)
     return 1;
 }
 
-static int virJSONParserHandleBoolean(void * ctx, int boolean)
+static int virJSONParserHandleBoolean(void * ctx, int boolean_)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewBoolean(boolean);
+    virJSONValuePtr value = virJSONValueNewBoolean(boolean_);
 
-    VIR_DEBUG("parser=%p boolean=%d", parser, boolean);
+    VIR_DEBUG("parser=%p boolean=%d", parser, boolean_);
 
     if (!value)
         return 0;
