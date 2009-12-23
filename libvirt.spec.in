@@ -687,8 +687,6 @@ fi
 %{_datadir}/libvirt/networks/default.xml
 %endif
 
-%{_datadir}/libvirt/cpu_map.xml
-
 %dir %{_localstatedir}/run/libvirt/
 
 %dir %{_localstatedir}/lib/libvirt/
@@ -775,6 +773,8 @@ fi
 %{_datadir}/libvirt/schemas/interface.rng
 %{_datadir}/libvirt/schemas/secret.rng
 %{_datadir}/libvirt/schemas/storageencryption.rng
+
+%{_datadir}/libvirt/cpu_map.xml
 
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
