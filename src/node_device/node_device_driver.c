@@ -78,7 +78,7 @@ static int update_driver_name(virConnectPtr conn,
                               virNodeDeviceObjPtr dev)
 {
     char *driver_link = NULL;
-    char *devpath;
+    char *devpath = NULL;
     char *p;
     int ret = -1;
 
@@ -114,7 +114,7 @@ static int update_driver_name(virConnectPtr conn,
 
 cleanup:
     VIR_FREE(driver_link);
-    free(devpath);
+    VIR_FREE(devpath);
     return ret;
 }
 #else
