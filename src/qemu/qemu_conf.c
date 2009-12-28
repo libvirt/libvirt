@@ -2879,6 +2879,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         qenv[qenvc++] = envval;                                         \
     } while (0)
 
+    /* Make sure to unset or set all envvars in qemuxml2argvtest.c that
+     * are copied here using this macro, otherwise the test may fail */
 #define ADD_ENV_COPY(envname)                                           \
     do {                                                                \
         char *val = getenv(envname);                                    \

@@ -184,6 +184,9 @@ mymain(int argc, char **argv)
 #define DO_TEST(name, extraFlags)                       \
         DO_TEST_FULL(name, extraFlags, NULL)
 
+    /* Unset or set all envvars here that are copied in qemudBuildCommandLine
+     * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
+     * values for these envvars */
     setenv("PATH", "/bin", 1);
     setenv("USER", "test", 1);
     setenv("LOGNAME", "test", 1);
@@ -191,6 +194,8 @@ mymain(int argc, char **argv)
     unsetenv("TMPDIR");
     unsetenv("LD_PRELOAD");
     unsetenv("LD_LIBRARY_PATH");
+    unsetenv("QEMU_AUDIO_DRV");
+    unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", QEMUD_CMD_FLAG_NAME);
     DO_TEST("machine-aliases1", 0);
