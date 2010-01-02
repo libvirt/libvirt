@@ -293,7 +293,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    if (conn->uri->path != NULL && STRNEQ(conn->uri->path, "/")) {
+    if (conn->uri->path != NULL && STRNEQ(conn->uri->path, "") &&
+        STRNEQ(conn->uri->path, "/")) {
         VIR_WARN("Ignoring unexpected path '%s' in URI", conn->uri->path);
     }
 
