@@ -1,0 +1,8 @@
+config.version = "8"
+virtualHW.version = "4"
+ethernet0.present = "true"
+ethernet0.networkName = "VM Network"
+ethernet0.connectionType = "bridged"
+ethernet0.checkMACAddress = "false"
+ethernet0.addressType = "static"
+ethernet0.address = "00:12:34:56:78:90"

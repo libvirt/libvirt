@@ -139,6 +139,11 @@ mymain(int argc, char **argv)
     DO_TEST("ethernet-custom", "ethernet-custom", esxVI_APIVersion_25);
     DO_TEST("ethernet-bridged", "ethernet-bridged", esxVI_APIVersion_25);
 
+    DO_TEST("ethernet-generated", "ethernet-generated", esxVI_APIVersion_25);
+    DO_TEST("ethernet-static", "ethernet-static", esxVI_APIVersion_25);
+    DO_TEST("ethernet-vpx", "ethernet-vpx", esxVI_APIVersion_25);
+    DO_TEST("ethernet-other", "ethernet-other", esxVI_APIVersion_25);
+
     DO_TEST("serial-file", "serial-file", esxVI_APIVersion_25);
     DO_TEST("serial-device", "serial-device", esxVI_APIVersion_25);
     DO_TEST("serial-pipe-client-app", "serial-pipe", esxVI_APIVersion_25);

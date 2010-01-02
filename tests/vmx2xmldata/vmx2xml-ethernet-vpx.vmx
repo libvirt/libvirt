@@ -1,0 +1,7 @@
+config.version = "8"
+virtualHW.version = "4"
+ethernet0.present = "true"
+ethernet0.networkName = "VM Network"
+ethernet0.connectionType = "bridged"
+ethernet0.addressType = "vpx"
+ethernet0.generatedAddress = "00:50:56:87:65:43"
