@@ -557,28 +557,30 @@ virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
 
     bridge = ctxt->node;
     nbItf = virXPathNodeSet(conn, "./interface", ctxt, &interfaces);
-    if (nbItf <= 0) {
+    if (nbItf < 0) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                                "%s", _("bridge has no interfaces"));
+                                "%s", _("bridge interfaces"));
         ret = -1;
         goto error;
     }
-    if (VIR_ALLOC_N(def->data.bridge.itf, nbItf) < 0) {
-        virReportOOMError(conn);
-        ret = -1;
-        goto error;
-    }
-    def->data.bridge.nbItf = nbItf;
-
-    for (i = 0; i < nbItf;i++) {
-        ctxt->node = interfaces[i];
-        itf = virInterfaceDefParseBareInterface(conn, ctxt, 0);
-        if (itf == NULL) {
+    if (nbItf > 0) {
+        if (VIR_ALLOC_N(def->data.bridge.itf, nbItf) < 0) {
+            virReportOOMError(conn);
             ret = -1;
-            def->data.bridge.nbItf = i;
             goto error;
         }
-        def->data.bridge.itf[i] = itf;
+        def->data.bridge.nbItf = nbItf;
+
+        for (i = 0; i < nbItf;i++) {
+            ctxt->node = interfaces[i];
+            itf = virInterfaceDefParseBareInterface(conn, ctxt, 0);
+            if (itf == NULL) {
+                ret = -1;
+                def->data.bridge.nbItf = i;
+                goto error;
+            }
+            def->data.bridge.itf[i] = itf;
+        }
     }
 
 error:
