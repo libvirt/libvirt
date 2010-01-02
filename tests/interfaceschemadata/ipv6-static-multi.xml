@@ -1,0 +1,8 @@
+<interface type='ethernet' name='eth0'>
+  <start mode='onboot'/>
+  <protocol family='ipv6'>
+    <ip address='3ffe:ffff:0:5::1' prefix='128'/>
+    <ip address='3ffe:ffff:0:5::3' prefix='128'/>
+    <ip address='3ffe:ffff:0:5::5' prefix='128'/>
+  </protocol>
+</interface>

@@ -1,0 +1,6 @@
+<interface type='bridge' name='br0'>
+  <start mode='onboot'/>
+  <mtu size='1500'/>
+  <bridge stp='off'>
+  </bridge>
+</interface>

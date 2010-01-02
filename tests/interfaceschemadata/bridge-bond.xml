@@ -1,0 +1,17 @@
+<interface type='bridge' name='br0'>
+  <start mode='onboot'/>
+  <mtu size='1500'/>
+  <bridge stp='off'>
+    <interface type='ethernet' name='eth2'>
+    </interface>
+    <interface type='bond' name='bond0'>
+      <bond mode='active-backup'>
+        <miimon freq='100' updelay='10' carrier='ioctl'/>
+        <interface type='ethernet' name='eth1'>
+        </interface>
+        <interface type='ethernet' name='eth0'>
+        </interface>
+      </bond>
+    </interface>
+  </bridge>
+</interface>

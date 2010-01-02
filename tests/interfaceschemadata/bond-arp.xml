@@ -6,7 +6,9 @@
   </protocol>
   <bond mode='active-backup'>
     <arpmon interval='100' target='192.168.50.1' validate='active'/>
-    <interface type='ethernet' name='eth1'/>
-    <interface type='ethernet' name='eth0'/>
+    <interface type='ethernet' name='eth1'>
+    </interface>
+    <interface type='ethernet' name='eth0'>
+    </interface>
   </bond>
 </interface>

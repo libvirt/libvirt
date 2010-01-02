@@ -1,0 +1,7 @@
+<interface type='ethernet' name='eth0'>
+  <start mode='onboot'/>
+  <protocol family='ipv6'>
+    <ip address='3ffe:ffff:0:5::1' prefix='128'/>
+    <route gateway='3ffe:ffff:1234:5678::1'/>
+  </protocol>
+</interface>

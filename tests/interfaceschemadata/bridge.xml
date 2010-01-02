@@ -4,10 +4,11 @@
   <protocol family='ipv4'>
     <dhcp/>
   </protocol>
-  <bridge stp='off'>
+  <bridge stp='off' delay='0.01'>
     <interface type='ethernet' name='eth0'>
       <mac address='ab:bb:cc:dd:ee:ff'/>
     </interface>
-    <interface type='ethernet' name='eth1'/>
+    <interface type='ethernet' name='eth1'>
+    </interface>
   </bridge>
 </interface>

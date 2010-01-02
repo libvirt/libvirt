@@ -83,11 +83,20 @@ mymain(int argc, char **argv)
     DO_TEST("ethernet-static-no-prefix");
     DO_TEST("bridge");
     DO_TEST("bridge42");
+    DO_TEST("bridge-bond");
+    DO_TEST("bridge-empty");
+    DO_TEST("bridge-no-address");
     DO_TEST("bridge-vlan");
     DO_TEST("bridge-no-address");
     DO_TEST("vlan");
     DO_TEST("bond");
     DO_TEST("bond-arp");
+    DO_TEST("ipv6-autoconf-dhcp");
+    DO_TEST("ipv6-autoconf");
+    DO_TEST("ipv6-dhcp");
+    DO_TEST("ipv6-local");
+    DO_TEST("ipv6-static-multi");
+    DO_TEST("ipv6-static");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

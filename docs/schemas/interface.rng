@@ -1,7 +1,13 @@
 <!-- A Relax NG schema for network interfaces -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:v="http://netcf.org/xml/version/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <start>
+  <!-- Versions for this schema are simple integers that are incremented
+       everytime a changed (but backwards compatible) version
+       is released. The current version is indicated with the v:serial
+       attribute on the start element.
+  -->
+  <start v:serial="4">
     <choice>
       <ref name="ethernet-interface"/>
       <ref name="bridge-interface"/>
@@ -109,12 +115,17 @@
             <ref name="on-or-off"/>
           </attribute>
         </optional>
-        <oneOrMore>
+        <!-- Bridge forward delay (see 'brctl setfd') -->
+        <optional v:since="2">
+          <attribute name="delay"><ref name="timeval"/></attribute>
+        </optional>
+        <zeroOrMore>
           <choice>
             <ref name="bare-ethernet-interface"/>
             <ref name="bare-vlan-interface"/>
+            <ref v:since="2" name="bare-bond-interface"/>
           </choice>
-        </oneOrMore>
+        </zeroOrMore>
       </element>
     </element>
   </define>
@@ -125,90 +136,105 @@
   <!--
       Bonds
   -->
+  <define name="bond-interface-common">
+    <attribute name="type">
+      <value>bond</value>
+    </attribute>
+    <ref name="name-attr"/>
+  </define>
+
+  <define name="bond-element">
+    <element name="bond">
+      <optional>
+        <attribute name="mode">
+          <choice>
+            <value>balance-rr</value>
+            <!-- The primary interface is the first interface child
+                 of the bond element -->
+            <value>active-backup</value>
+            <value>balance-xor</value>
+            <value>broadcast</value>
+            <value>802.3ad</value>
+            <value>balance-tlb</value>
+            <value>balance-alb</value>
+          </choice>
+        </attribute>
+      </optional>
+
+      <!-- FIXME: add more attributes
+
+           mode == 802.3ad
+             ad_select
+             lacp_rate
+             xmit_hash_policy
+
+           mode == active-backup
+             fail_over_mac
+             num_grat_arp when mode == active-backup (since 3.3.0)
+             num_unsol_na when mode == active-backup (ipv6, since 3.4.0)
+
+           mode == balance-xor
+             xmit_hash_policy       (since 2.6.3/3.2.2)
+      -->
+
+      <choice>
+        <element name="miimon">
+          <!-- miimon frequency in ms -->
+          <attribute name="freq"><ref name="uint"/></attribute>
+          <optional>
+            <attribute name="downdelay"><ref name="uint"/></attribute>
+          </optional>
+          <optional>
+            <attribute name="updelay"><ref name="uint"/></attribute>
+          </optional>
+          <optional>
+            <!-- use_carrier -->
+            <attribute name="carrier">
+              <choice>
+                <!-- use MII/ETHTOOL ioctl -->
+                <value>ioctl</value>
+                <!-- use netif_carrier_ok() -->
+                <value>netif</value>
+              </choice>
+            </attribute>
+          </optional>
+        </element>
+        <element name="arpmon">
+          <attribute name="interval"><ref name="uint"/></attribute>
+          <attribute name="target"><ref name="ipv4-addr"/></attribute>
+          <optional>
+            <attribute name="validate">
+              <choice>
+                <value>none</value>
+                <value>active</value>
+                <value>backup</value>
+                <value>all</value>
+              </choice>
+            </attribute>
+          </optional>
+        </element>
+      </choice>
+      <oneOrMore>
+        <!-- The slave interfaces -->
+        <ref name="bare-ethernet-interface"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="bare-bond-interface">
+    <element name="interface">
+      <ref name="bond-interface-common"/>
+      <ref name="bond-element"/>
+    </element>
+  </define>
+
   <define name="bond-interface">
     <element name="interface">
-      <attribute name="type">
-        <value>bond</value>
-      </attribute>
-      <ref name="name-attr"/>
+      <ref name="bond-interface-common"/>
       <ref name="startmode"/>
       <ref name="mtu"/>
       <ref name="interface-addressing"/>
-      <element name="bond">
-        <optional>
-          <attribute name="mode">
-            <choice>
-              <value>balance-rr</value>
-              <!-- The primary interface is the first interface child
-                   of the bond element -->
-              <value>active-backup</value>
-              <value>balance-xor</value>
-              <value>broadcast</value>
-              <value>802.3ad</value>
-              <value>balance-tlb</value>
-              <value>balance-alb</value>
-            </choice>
-          </attribute>
-        </optional>
-
-        <!-- FIXME: add more attributes
-
-             mode == 802.3ad
-               ad_select
-               lacp_rate
-               xmit_hash_policy
-
-             mode == active-backup
-               fail_over_mac
-               num_grat_arp when mode == active-backup (since 3.3.0)
-               num_unsol_na when mode == active-backup (ipv6, since 3.4.0)
-
-             mode == balance-xor
-               xmit_hash_policy       (since 2.6.3/3.2.2)
-        -->
-
-        <choice>
-          <element name="miimon">
-            <!-- miimon frequency in ms -->
-            <attribute name="freq"><ref name="uint"/></attribute>
-            <optional>
-              <attribute name="downdelay"><ref name="uint"/></attribute>
-            </optional>
-            <optional>
-              <attribute name="updelay"><ref name="uint"/></attribute>
-            </optional>
-            <optional>
-              <!-- use_carrier -->
-              <attribute name="carrier">
-                <choice>
-                  <!-- use MII/ETHTOOL ioctl -->
-                  <value>ioctl</value>
-                  <!-- use netif_carrier_ok() -->
-                  <value>netif</value>
-                </choice>
-              </attribute>
-            </optional>
-          </element>
-          <element name="arpmon">
-            <attribute name="interval"><ref name="uint"/></attribute>
-            <attribute name="target"><ref name="ipv4-addr"/></attribute>
-            <optional>
-              <attribute name="validate">
-                <choice>
-                  <value>none</value>
-                  <value>active</value>
-                  <value>backup</value>
-                  <value>all</value>
-                </choice>
-              </attribute>
-            </optional>
-          </element>
-        </choice>
-        <oneOrMore>
-          <!-- The slave interfaces -->
-          <ref name="bare-ethernet-interface"/>
-        </oneOrMore>
-      </element>
+      <ref name="bond-element"/>
     </element>
   </define>
 
@@ -245,47 +271,87 @@
        different protocols
   -->
   <define name="interface-addressing">
-    <optional>
-      <element name="protocol">
-        <ref name="protocol-ipv4"/>
-      </element>
-    </optional>
-  </define>
-
-  <define name="protocol-ipv4">
-    <attribute name="family">
-      <value>ipv4</value>
-    </attribute>
     <choice>
-      <element name="dhcp">
-        <optional>
-          <attribute name="peerdns">
-            <ref name="yes-or-no"/>
-          </attribute>
-        </optional>
-      </element>
-      <!-- FIXME: This format should be good enough for IPv4 and IPv6, i.e.
-
-           ipaddr="192.168.0.5/24"
-           ipaddr="2001:DB8:ABCD::1/64"
-
-           but will cause some backend pain
-      -->
       <group>
-        <element name="ip">
-          <attribute name="address"><ref name="ipv4-addr"/></attribute>
-          <optional>
-            <attribute name="prefix"><ref name="ipv4-prefix"/></attribute>
-          </optional>
-        </element>
         <optional>
-          <element name="route">
-            <attribute name="gateway"><ref name="ipv4-addr"/></attribute>
-          </element>
+          <ref name="protocol-ipv4"/>
+        </optional>
+        <optional v:since="3">
+          <ref name="protocol-ipv6"/>
+        </optional>
+      </group>
+      <group>
+        <optional v:since="3">
+          <ref name="protocol-ipv6"/>
+        </optional>
+        <optional>
+          <ref name="protocol-ipv4"/>
         </optional>
       </group>
     </choice>
   </define>
+
+  <define name="protocol-ipv4">
+    <element name="protocol">
+      <attribute name="family">
+        <value>ipv4</value>
+      </attribute>
+      <choice>
+        <ref name="dhcp-element"/>
+        <group>
+          <element name="ip">
+            <attribute name="address"><ref name="ipv4-addr"/></attribute>
+            <optional>
+              <attribute name="prefix"><ref name="ipv4-prefix"/></attribute>
+            </optional>
+          </element>
+          <optional>
+            <element name="route">
+              <attribute name="gateway"><ref name="ipv4-addr"/></attribute>
+            </element>
+          </optional>
+        </group>
+      </choice>
+    </element>
+  </define>
+
+  <define name="protocol-ipv6">
+    <element name="protocol">
+      <attribute name="family">
+        <value>ipv6</value>
+      </attribute>
+      <optional>
+        <element name="autoconf"><empty/></element>
+      </optional>
+      <optional>
+        <ref name="dhcp-element"/>
+      </optional>
+      <zeroOrMore>
+        <element name="ip">
+          <attribute name="address"><ref name="ipv6-addr"/></attribute>
+          <optional>
+            <attribute name="prefix"><ref name="ipv6-prefix"/></attribute>
+          </optional>
+        </element>
+      </zeroOrMore>
+      <optional>
+        <element name="route">
+          <attribute name="gateway"><ref name="ipv6-addr"/></attribute>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="dhcp-element">
+    <element name="dhcp">
+      <optional>
+        <attribute name="peerdns">
+          <ref name="yes-or-no"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <!-- Jim Fehlig (<jfehlig@novell.com>) suggest the
        following additions to DHCP:
 
@@ -342,6 +408,12 @@
     </data>
   </define>
 
+  <define name="timeval">
+    <data type="double">
+      <param name="minInclusive">0</param>
+    </data>
+  </define>
+
   <define name='device-name'>
     <data type='string'>
       <param name="pattern">[a-zA-Z0-9_\.\-:/]+</param>
@@ -367,13 +439,27 @@
 
   <define name='ipv4-addr'>
     <data type='string'>
-      <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
+      <param name="pattern">(((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2}))\.){3}((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2}))</param>
     </data>
   </define>
 
   <define name='ipv4-prefix'>
+    <data type='unsignedInt'>
+      <param name="maxInclusive">32</param>
+    </data>
+  </define>
+
+  <!-- Based on http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
+  <define name='ipv6-addr'>
     <data type='string'>
-      <param name="pattern">[1-9]|[12][0-9]|3[0-2]</param>
+      <!-- To understand this better, take apart the toplevel '|'s -->
+      <param name="pattern">(([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2})))\.){3}(((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2}))))|(([0-9A-Fa-f]{1,4}:){0,5}:((((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2})))\.){3}(((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2}))))|(::([0-9A-Fa-f]{1,4}:){0,5}((((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2})))\.){3}(((25[0-5])|(1[0-9]{2})|(2[0-4][0-9])|([0-9]{1,2}))))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:)</param>
+    </data>
+  </define>
+
+  <define name='ipv6-prefix'>
+    <data type='unsignedInt'>
+      <param name="maxInclusive">128</param>
     </data>
   </define>
 
