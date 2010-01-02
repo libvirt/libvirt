@@ -801,6 +801,7 @@ virInterfaceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt) {
                 }
                 VIR_FREE(tmp);
             }
+            def->data.bridge.delay = virXMLPropString(bridge, "delay");
             ctxt->node = bridge;
             virInterfaceDefParseBridge(conn, def, ctxt);
             break;
@@ -1038,12 +1039,14 @@ virInterfaceBridgeDefFormat(virConnectPtr conn, virBufferPtr buf,
     int i;
     int ret = 0;
 
+    virBufferAddLit(buf, "  <bridge");
     if (def->data.bridge.stp == 1)
-        virBufferAddLit(buf, "  <bridge stp='on'>\n");
+        virBufferAddLit(buf, " stp='on'");
     else if (def->data.bridge.stp == 0)
-        virBufferAddLit(buf, "  <bridge stp='off'>\n");
-    else
-        virBufferAddLit(buf, "  <bridge>\n");
+        virBufferAddLit(buf, " stp='off'");
+    if (def->data.bridge.delay != NULL)
+        virBufferVSprintf(buf, " delay='%s'", def->data.bridge.delay);
+    virBufferAddLit(buf, ">\n");
 
     for (i = 0;i < def->data.bridge.nbItf;i++) {
         if (virInterfaceBareDevDefFormat(conn, buf, def->data.bridge.itf[i])

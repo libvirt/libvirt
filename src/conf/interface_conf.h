@@ -97,6 +97,7 @@ typedef struct _virInterfaceBridgeDef virInterfaceBridgeDef;
 typedef virInterfaceBridgeDef *virInterfaceBridgeDefPtr;
 struct _virInterfaceBridgeDef {
     int stp;         /* 0, 1 or -1 if undefined */
+    char *delay;
     int nbItf;       /* number of defined interfaces */
     virInterfaceBareDefPtr *itf;/* interfaces */
 };
