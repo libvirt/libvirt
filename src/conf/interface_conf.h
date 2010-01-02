@@ -84,14 +84,7 @@ enum virInterfaceBondArpValid {
     VIR_INTERFACE_BOND_ARP_ALL,    /* validate all */
 };
 
-typedef struct _virInterfaceBareDef virInterfaceBareDef;
-typedef virInterfaceBareDef *virInterfaceBareDefPtr;
-struct _virInterfaceBareDef {
-    int type;                /* should be only ethernet or vlan */
-    char *name;              /* the interface name */
-    char *mac_or_tag;        /* MAC address for ethernet, TAG for vlan */
-    char *devname;           /* device name for vlan */
-};
+struct _virInterfaceDef; /* forward declaration required for bridge/bond */
 
 typedef struct _virInterfaceBridgeDef virInterfaceBridgeDef;
 typedef virInterfaceBridgeDef *virInterfaceBridgeDefPtr;
@@ -99,7 +92,7 @@ struct _virInterfaceBridgeDef {
     int stp;         /* 0, 1 or -1 if undefined */
     char *delay;
     int nbItf;       /* number of defined interfaces */
-    virInterfaceBareDefPtr *itf;/* interfaces */
+    struct _virInterfaceDef **itf;/* interfaces */
 };
 
 typedef struct _virInterfaceBondDef virInterfaceBondDef;
@@ -115,7 +108,7 @@ struct _virInterfaceBondDef {
     char *target;                /* arp monitoring target */
     int validate;                /* virInterfaceBondArpmValid */
     int nbItf;                   /* number of defined interfaces */
-    virInterfaceBareDefPtr *itf; /* interfaces ethernet only */
+    struct _virInterfaceDef **itf; /* interfaces ethernet only */
 };
 
 typedef struct _virInterfaceVlanDef virInterfaceVlanDef;
