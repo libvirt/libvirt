@@ -601,7 +601,7 @@ esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "UnregisterVM", request, &response,
+    if (esxVI_Context_Execute(conn, ctx, "CancelTask", request, &response,
                               esxVI_Occurrence_None) < 0) {
         goto failure;
     }
@@ -652,7 +652,7 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "AnswerVM", request, &response,
+    if (esxVI_Context_Execute(conn, ctx, "UnregisterVM", request, &response,
                               esxVI_Occurrence_None) < 0) {
         goto failure;
     }
