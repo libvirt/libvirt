@@ -181,33 +181,58 @@ static int
 esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
                  char *info, size_t size, void *data ATTRIBUTE_UNUSED)
 {
+    char *buffer = NULL;
+
+    /*
+     * The libcurl documentation says:
+     *
+     *    The data pointed to by the char * passed to this function WILL NOT
+     *    be zero terminated, but will be exactly of the size as told by the
+     *    size_t argument.
+     *
+     * To handle this properly in order to pass the info string to VIR_DEBUG
+     * a zero terminated copy of the info string has to be allocated.
+     */
+    if (VIR_ALLOC_N(buffer, size + 1) < 0) {
+        return 0;
+    }
+
+    if (virStrncpy(buffer, info, size, size + 1) == NULL) {
+        VIR_FREE(buffer);
+        return 0;
+    }
+
     switch (type) {
       case CURLINFO_TEXT:
-        VIR_DEBUG0("CURLINFO_TEXT");
-        fwrite(info, 1, size, stderr);
-        printf("\n\n");
+        if (size > 0 && buffer[size - 1] == '\n') {
+            buffer[size - 1] = '\0';
+        }
+
+        VIR_DEBUG("CURLINFO_TEXT [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_HEADER_IN:
-        VIR_DEBUG0("CURLINFO_HEADER_IN");
+        VIR_DEBUG("CURLINFO_HEADER_IN [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_HEADER_OUT:
-        VIR_DEBUG0("CURLINFO_HEADER_OUT");
+        VIR_DEBUG("CURLINFO_HEADER_OUT [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_DATA_IN:
-        VIR_DEBUG0("CURLINFO_DATA_IN");
+        VIR_DEBUG("CURLINFO_DATA_IN [[[[%s]]]]", buffer);
         break;
 
       case CURLINFO_DATA_OUT:
-        VIR_DEBUG0("CURLINFO_DATA_OUT");
+        VIR_DEBUG("CURLINFO_DATA_OUT [[[[%s]]]]", buffer);
         break;
 
       default:
         VIR_DEBUG0("unknown");
         break;
     }
+
+    VIR_FREE(buffer);
 
     return 0;
 }
@@ -338,8 +363,8 @@ esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION,
                      esxVI_CURL_WriteBuffer);
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION,
-                     esxVI_CURL_Debug);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 1);
 #endif
 
     if (virMutexInit(&ctx->curl_lock) < 0) {
