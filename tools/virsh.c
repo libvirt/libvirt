@@ -46,6 +46,7 @@
 #include "buf.h"
 #include "console.h"
 #include "util.h"
+#include "memory.h"
 
 static char *progname;
 
@@ -481,7 +482,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
         ctl->conn = NULL;
     }
 
-    free(ctl->name);
+    VIR_FREE(ctl->name);
     ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
 
     if (!ro) {
@@ -560,7 +561,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOWARNING);
-    free(doc);
+    VIR_FREE(doc);
     if (!xml)
         goto cleanup;
     ctxt = xmlXPathNewContext(xml);
@@ -583,8 +584,8 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
     xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
-    free(thisHost);
-    free(thatHost);
+    VIR_FREE(thisHost);
+    VIR_FREE(thatHost);
 
     return ret;
 }
@@ -651,7 +652,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active domains"));
-                free(ids);
+                VIR_FREE(ids);
                 return FALSE;
             }
 
@@ -662,7 +663,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         maxname = virConnectNumOfDefinedDomains(ctl->conn);
         if (maxname < 0) {
             vshError(ctl, "%s", _("Failed to list inactive domains"));
-            free(ids);
+            VIR_FREE(ids);
             return FALSE;
         }
         if (maxname) {
@@ -670,8 +671,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
                 vshError(ctl, "%s", _("Failed to list inactive domains"));
-                free(ids);
-                free(names);
+                VIR_FREE(ids);
+                VIR_FREE(names);
                 return FALSE;
             }
 
@@ -708,7 +709,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with domains is not atomic operation */
         if (!dom) {
-            free(names[i]);
+            VIR_FREE(names[i]);
             continue;
         }
 
@@ -720,10 +721,10 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         vshPrint(ctl, "%3s %-20s %s\n", "-", names[i], state);
 
         virDomainFree(dom);
-        free(names[i]);
+        VIR_FREE(names[i]);
     }
-    free(ids);
-    free(names);
+    VIR_FREE(ids);
+    VIR_FREE(names);
     return TRUE;
 }
 
@@ -1019,7 +1020,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     dom = virDomainCreateXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
@@ -1070,7 +1071,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     dom = virDomainDefineXML(ctl->conn, buffer);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s defined from %s\n"),
@@ -1371,7 +1372,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     if (schedulertype!= NULL){
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"),
              schedulertype);
-        free(schedulertype);
+        VIR_FREE(schedulertype);
     } else {
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), _("Unknown"));
         goto cleanup;
@@ -1436,7 +1437,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    free(params);
+    VIR_FREE(params);
     virDomainFree(dom);
     return ret_val;
 }
@@ -1724,7 +1725,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 
     if ((str = virDomainGetOSType(dom))) {
         vshPrint(ctl, "%-15s %s\n", _("OS Type:"), str);
-        free(str);
+        VIR_FREE(str);
     }
 
     if (virDomainGetInfo(dom, &info) == 0) {
@@ -1912,8 +1913,8 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         ret = FALSE;
     }
 
-    free(cpumap);
-    free(cpuinfo);
+    VIR_FREE(cpumap);
+    VIR_FREE(cpuinfo);
     virDomainFree(dom);
     return ret;
 }
@@ -2037,7 +2038,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
             VIR_USE_CPU(cpumap, cpu);
         } else {
             vshError(ctl, _("Physical CPU %d doesn't exist."), cpu);
-            free(cpumap);
+            VIR_FREE(cpumap);
             virDomainFree(dom);
             return FALSE;
         }
@@ -2050,7 +2051,7 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
         ret = FALSE;
     }
 
-    free(cpumap);
+    VIR_FREE(cpumap);
     virDomainFree(dom);
     return ret;
 }
@@ -2281,7 +2282,7 @@ cmdCapabilities (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return FALSE;
     }
     vshPrint (ctl, "%s\n", caps);
-    free (caps);
+    VIR_FREE(caps);
 
     return TRUE;
 }
@@ -2326,7 +2327,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virDomainGetXMLDesc(dom, flags);
     if (dump != NULL) {
         printf("%s", dump);
-        free(dump);
+        VIR_FREE(dump);
     } else {
         ret = FALSE;
     }
@@ -2373,7 +2374,7 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
     xmlData = virConnectDomainXMLFromNative(ctl->conn, format, configData, flags);
     if (xmlData != NULL) {
         printf("%s", xmlData);
-        free(xmlData);
+        VIR_FREE(xmlData);
     } else {
         ret = FALSE;
     }
@@ -2419,7 +2420,7 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
     configData = virConnectDomainXMLToNative(ctl->conn, format, xmlData, flags);
     if (configData != NULL) {
         printf("%s", configData);
-        free(configData);
+        VIR_FREE(configData);
     } else {
         ret = FALSE;
     }
@@ -2707,7 +2708,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     network = virNetworkCreateXML(ctl->conn, buffer);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (network != NULL) {
         vshPrint(ctl, _("Network %s created from %s\n"),
@@ -2755,7 +2756,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     network = virNetworkDefineXML(ctl->conn, buffer);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (network != NULL) {
         vshPrint(ctl, _("Network %s defined from %s\n"),
@@ -2838,7 +2839,7 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virNetworkGetXMLDesc(network, 0);
     if (dump != NULL) {
         printf("%s", dump);
-        free(dump);
+        VIR_FREE(dump);
     } else {
         ret = FALSE;
     }
@@ -2936,13 +2937,13 @@ cleanup:
     if (iface)
         virInterfaceFree (iface);
 
-    free (doc);
-    free (doc_edited);
-    free (doc_reread);
+    VIR_FREE(doc);
+    VIR_FREE(doc_edited);
+    VIR_FREE(doc_reread);
 
     if (tmp) {
         unlink (tmp);
-        free (tmp);
+        VIR_FREE(tmp);
     }
 
     return ret;
@@ -2988,7 +2989,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if ((maxactive = virConnectListNetworks(ctl->conn, activeNames,
                                                     maxactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active networks"));
-                free(activeNames);
+                VIR_FREE(activeNames);
                 return FALSE;
             }
 
@@ -2999,7 +3000,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
         if (maxinactive < 0) {
             vshError(ctl, "%s", _("Failed to list inactive networks"));
-            free(activeNames);
+            VIR_FREE(activeNames);
             return FALSE;
         }
         if (maxinactive) {
@@ -3009,8 +3010,8 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                      virConnectListDefinedNetworks(ctl->conn, inactiveNames,
                                                    maxinactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list inactive networks"));
-                free(activeNames);
-                free(inactiveNames);
+                VIR_FREE(activeNames);
+                VIR_FREE(inactiveNames);
                 return FALSE;
             }
 
@@ -3029,7 +3030,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with networks is not atomic operation */
         if (!network) {
-            free(activeNames[i]);
+            VIR_FREE(activeNames[i]);
             continue;
         }
 
@@ -3043,7 +3044,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  _("active"),
                  autostartStr);
         virNetworkFree(network);
-        free(activeNames[i]);
+        VIR_FREE(activeNames[i]);
     }
     for (i = 0; i < maxinactive; i++) {
         virNetworkPtr network = virNetworkLookupByName(ctl->conn, inactiveNames[i]);
@@ -3052,7 +3053,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with networks is not atomic operation */
         if (!network) {
-            free(inactiveNames[i]);
+            VIR_FREE(inactiveNames[i]);
             continue;
         }
 
@@ -3067,10 +3068,10 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  autostartStr);
 
         virNetworkFree(network);
-        free(inactiveNames[i]);
+        VIR_FREE(inactiveNames[i]);
     }
-    free(activeNames);
-    free(inactiveNames);
+    VIR_FREE(activeNames);
+    VIR_FREE(inactiveNames);
     return TRUE;
 }
 
@@ -3261,7 +3262,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if ((maxactive = virConnectListInterfaces(ctl->conn, activeNames,
                                                     maxactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active interfaces"));
-                free(activeNames);
+                VIR_FREE(activeNames);
                 return FALSE;
             }
 
@@ -3272,7 +3273,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         maxinactive = virConnectNumOfDefinedInterfaces(ctl->conn);
         if (maxinactive < 0) {
             vshError(ctl, "%s", _("Failed to list inactive interfaces"));
-            free(activeNames);
+            VIR_FREE(activeNames);
             return FALSE;
         }
         if (maxinactive) {
@@ -3282,8 +3283,8 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                      virConnectListDefinedInterfaces(ctl->conn, inactiveNames,
                                                      maxinactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list inactive interfaces"));
-                free(activeNames);
-                free(inactiveNames);
+                VIR_FREE(activeNames);
+                VIR_FREE(inactiveNames);
                 return FALSE;
             }
 
@@ -3300,7 +3301,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with interfaces is not atomic */
         if (!iface) {
-            free(activeNames[i]);
+            VIR_FREE(activeNames[i]);
             continue;
         }
 
@@ -3309,7 +3310,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  _("active"),
                  virInterfaceGetMACString(iface));
         virInterfaceFree(iface);
-        free(activeNames[i]);
+        VIR_FREE(activeNames[i]);
     }
     for (i = 0; i < maxinactive; i++) {
         virInterfacePtr iface =
@@ -3317,7 +3318,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with interfaces is not atomic */
         if (!iface) {
-            free(inactiveNames[i]);
+            VIR_FREE(inactiveNames[i]);
             continue;
         }
 
@@ -3326,10 +3327,10 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  _("inactive"),
                  virInterfaceGetMACString(iface));
         virInterfaceFree(iface);
-        free(inactiveNames[i]);
+        VIR_FREE(inactiveNames[i]);
     }
-    free(activeNames);
-    free(inactiveNames);
+    VIR_FREE(activeNames);
+    VIR_FREE(inactiveNames);
     return TRUE;
 
 }
@@ -3430,7 +3431,7 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virInterfaceGetXMLDesc(iface, flags);
     if (dump != NULL) {
         printf("%s", dump);
-        free(dump);
+        VIR_FREE(dump);
     } else {
         ret = FALSE;
     }
@@ -3473,7 +3474,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     iface = virInterfaceDefineXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (iface != NULL) {
         vshPrint(ctl, _("Interface %s defined from %s\n"),
@@ -3685,7 +3686,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     pool = virStoragePoolCreateXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s created from %s\n"),
@@ -3739,7 +3740,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
     dev = virNodeDeviceCreateXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (dev != NULL) {
         vshPrint(ctl, _("Node device %s created from %s\n"),
@@ -3896,10 +3897,10 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         printf("%s", xml);
-        free (xml);
+        VIR_FREE(xml);
     } else {
         pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
-        free (xml);
+        VIR_FREE(xml);
 
         if (pool != NULL) {
             vshPrint(ctl, _("Pool %s created\n"), name);
@@ -3947,7 +3948,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     pool = virStoragePoolDefineXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (pool != NULL) {
         vshPrint(ctl, _("Pool %s defined from %s\n"),
@@ -3985,10 +3986,10 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         printf("%s", xml);
-        free (xml);
+        VIR_FREE(xml);
     } else {
         pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
-        free (xml);
+        VIR_FREE(xml);
 
         if (pool != NULL) {
             vshPrint(ctl, _("Pool %s defined\n"), name);
@@ -4188,7 +4189,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virStoragePoolGetXMLDesc(pool, 0);
     if (dump != NULL) {
         printf("%s", dump);
-        free(dump);
+        VIR_FREE(dump);
     } else {
         ret = FALSE;
     }
@@ -4238,7 +4239,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if ((maxactive = virConnectListStoragePools(ctl->conn, activeNames,
                                                         maxactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list active pools"));
-                free(activeNames);
+                VIR_FREE(activeNames);
                 return FALSE;
             }
 
@@ -4249,7 +4250,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         maxinactive = virConnectNumOfDefinedStoragePools(ctl->conn);
         if (maxinactive < 0) {
             vshError(ctl, "%s", _("Failed to list inactive pools"));
-            free(activeNames);
+            VIR_FREE(activeNames);
             return FALSE;
         }
         if (maxinactive) {
@@ -4257,8 +4258,8 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
             if ((maxinactive = virConnectListDefinedStoragePools(ctl->conn, inactiveNames, maxinactive)) < 0) {
                 vshError(ctl, "%s", _("Failed to list inactive pools"));
-                free(activeNames);
-                free(inactiveNames);
+                VIR_FREE(activeNames);
+                VIR_FREE(inactiveNames);
                 return FALSE;
             }
 
@@ -4275,7 +4276,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with pools is not atomic operation */
         if (!pool) {
-            free(activeNames[i]);
+            VIR_FREE(activeNames[i]);
             continue;
         }
 
@@ -4289,7 +4290,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  _("active"),
                  autostartStr);
         virStoragePoolFree(pool);
-        free(activeNames[i]);
+        VIR_FREE(activeNames[i]);
     }
     for (i = 0; i < maxinactive; i++) {
         virStoragePoolPtr pool = virStoragePoolLookupByName(ctl->conn, inactiveNames[i]);
@@ -4298,7 +4299,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with pools is not atomic operation */
         if (!pool) {
-            free(inactiveNames[i]);
+            VIR_FREE(inactiveNames[i]);
             continue;
         }
 
@@ -4313,10 +4314,10 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  autostartStr);
 
         virStoragePoolFree(pool);
-        free(inactiveNames[i]);
+        VIR_FREE(inactiveNames[i]);
     }
-    free(activeNames);
-    free(inactiveNames);
+    VIR_FREE(activeNames);
+    VIR_FREE(inactiveNames);
     return TRUE;
 }
 
@@ -4388,13 +4389,13 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     }
 
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
-    free(srcSpec);
+    VIR_FREE(srcSpec);
     if (srcList == NULL) {
         vshError(ctl, _("Failed to find any %s pool sources"), type);
         return FALSE;
     }
     vshPrint(ctl, "%s", srcList);
-    free(srcList);
+    VIR_FREE(srcList);
 
     return TRUE;
 }
@@ -4439,13 +4440,13 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
-    free(srcSpec);
+    VIR_FREE(srcSpec);
     if (srcList == NULL) {
         vshError(ctl, _("Failed to find any %s pool sources"), type);
         return FALSE;
     }
     vshPrint(ctl, "%s", srcList);
-    free(srcList);
+    VIR_FREE(srcList);
 
     return TRUE;
 }
@@ -4718,7 +4719,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
     xml = virBufferContentAndReset(&buf);
     vol = virStorageVolCreateXML(pool, xml, 0);
-    free (xml);
+    VIR_FREE(xml);
     virStoragePoolFree(pool);
 
     if (vol != NULL) {
@@ -4857,7 +4858,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
     vol = virStorageVolCreateXML(pool, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
     virStoragePoolFree(pool);
 
     if (vol != NULL) {
@@ -4928,7 +4929,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 
     ret = TRUE;
 cleanup:
-    free (buffer);
+    VIR_FREE(buffer);
     if (pool)
         virStoragePoolFree(pool);
     if (inputvol)
@@ -5036,7 +5037,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     ret = TRUE;
 
 cleanup:
-    free(origxml);
+    VIR_FREE(origxml);
     xmlFree(newxml);
     if (origvol)
         virStorageVolFree(origvol);
@@ -5170,7 +5171,7 @@ cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virStorageVolGetXMLDesc(vol, 0);
     if (dump != NULL) {
         printf("%s", dump);
-        free(dump);
+        VIR_FREE(dump);
     } else {
         ret = FALSE;
     }
@@ -5219,7 +5220,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if ((maxactive = virStoragePoolListVolumes(pool, activeNames,
                                                    maxactive)) < 0) {
             vshError(ctl, "%s", _("Failed to list active vols"));
-            free(activeNames);
+            VIR_FREE(activeNames);
             virStoragePoolFree(pool);
             return FALSE;
         }
@@ -5235,7 +5236,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* this kind of work with vols is not atomic operation */
         if (!vol) {
-            free(activeNames[i]);
+            VIR_FREE(activeNames[i]);
             continue;
         }
 
@@ -5248,11 +5249,11 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         vshPrint(ctl, "%-20s %-40s\n",
                  virStorageVolGetName(vol),
                  path);
-        free(path);
+        VIR_FREE(path);
         virStorageVolFree(vol);
-        free(activeNames[i]);
+        VIR_FREE(activeNames[i]);
     }
-    free(activeNames);
+    VIR_FREE(activeNames);
     virStoragePoolFree(pool);
     return TRUE;
 }
@@ -5390,7 +5391,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     res = virSecretDefineXML(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (res == NULL) {
         vshError(ctl, _("Failed to set attributes from %s"), from);
@@ -5438,7 +5439,7 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (xml == NULL)
         goto cleanup;
     printf("%s", xml);
-    free(xml);
+    VIR_FREE(xml);
     ret = TRUE;
 
 cleanup:
@@ -5491,7 +5492,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
     res = virSecretSetValue(secret, (unsigned char *)value, value_size, 0);
     memset(value, 0, value_size);
-    free (value);
+    VIR_FREE(value);
 
     if (res != 0) {
         vshError(ctl, "%s", _("Failed to set secret value"));
@@ -5541,7 +5542,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 
     base64_encode_alloc((char *)value, value_size, &base64);
     memset(value, 0, value_size);
-    free(value);
+    VIR_FREE(value);
 
     if (base64 == NULL) {
         vshError(ctl, "%s", _("Failed to allocate memory"));
@@ -5549,7 +5550,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     }
     printf("%s", base64);
     memset(base64, 0, strlen(base64));
-    free(base64);
+    VIR_FREE(base64);
     ret = TRUE;
 
 cleanup:
@@ -5625,7 +5626,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     maxuuids = virConnectListSecrets(ctl->conn, uuids, maxuuids);
     if (maxuuids < 0) {
         vshError(ctl, "%s", _("Failed to list secrets"));
-        free(uuids);
+        VIR_FREE(uuids);
         return FALSE;
     }
 
@@ -5639,7 +5640,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         const char *usageType = NULL;
 
         if (!sec) {
-            free(uuids[i]);
+            VIR_FREE(uuids[i]);
             continue;
         }
 
@@ -5658,9 +5659,9 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                      uuids[i], _("Unused"));
         }
         virSecretFree(sec);
-        free(uuids[i]);
+        VIR_FREE(uuids[i]);
     }
-    free(uuids);
+    VIR_FREE(uuids);
     return TRUE;
 }
 
@@ -5867,7 +5868,7 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         virNodeListDevices(ctl->conn, cap, devices, num_devices, 0);
     if (num_devices < 0) {
         vshError(ctl, "%s", _("Failed to list node devices"));
-        free(devices);
+        VIR_FREE(devices);
         return FALSE;
     }
     qsort(&devices[0], num_devices, sizeof(char*), namesorter);
@@ -5898,17 +5899,17 @@ cmdNodeListDevices (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                                         indentBuf);
         }
         for (i = 0 ; i < num_devices ; i++) {
-            free(devices[i]);
-            free(parents[i]);
+            VIR_FREE(devices[i]);
+            VIR_FREE(parents[i]);
         }
-        free(parents);
+        VIR_FREE(parents);
     } else {
         for (i = 0; i < num_devices; i++) {
             vshPrint(ctl, "%s\n", devices[i]);
-            free(devices[i]);
+            VIR_FREE(devices[i]);
         }
     }
-    free(devices);
+    VIR_FREE(devices);
     return TRUE;
 }
 
@@ -5950,7 +5951,7 @@ cmdNodeDeviceDumpXML (vshControl *ctl, const vshCmd *cmd)
     }
 
     vshPrint(ctl, "%s\n", xml);
-    free(xml);
+    VIR_FREE(xml);
     virNodeDeviceFree(device);
     return TRUE;
 }
@@ -6102,7 +6103,7 @@ cmdHostname (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     vshPrint (ctl, "%s\n", hostname);
-    free (hostname);
+    VIR_FREE(hostname);
 
     return TRUE;
 }
@@ -6131,7 +6132,7 @@ cmdURI (vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
 
     vshPrint (ctl, "%s\n", uri);
-    free (uri);
+    VIR_FREE(uri);
 
     return TRUE;
 }
@@ -6174,7 +6175,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOWARNING);
-    free(doc);
+    VIR_FREE(doc);
     if (!xml)
         goto cleanup;
     ctxt = xmlXPathNewContext(xml);
@@ -6248,7 +6249,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOWARNING);
-    free(doc);
+    VIR_FREE(doc);
     if (!xml)
         goto cleanup;
     ctxt = xmlXPathNewContext(xml);
@@ -6315,7 +6316,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     ret = virDomainAttachDevice(dom, buffer);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (ret < 0) {
         vshError(ctl, _("Failed to attach device from %s"), from);
@@ -6373,7 +6374,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     ret = virDomainDetachDevice(dom, buffer);
-    free (buffer);
+    VIR_FREE(buffer);
 
     if (ret < 0) {
         vshError(ctl, _("Failed to detach device from %s"), from);
@@ -6499,8 +6500,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    free(buf);
-    free(tmp);
+    VIR_FREE(buf);
+    VIR_FREE(tmp);
     return ret;
 }
 
@@ -6552,7 +6553,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOWARNING);
-    free(doc);
+    VIR_FREE(doc);
     if (!xml) {
         vshError(ctl, "%s", _("Failed to get interface information"));
         goto cleanup;
@@ -6776,8 +6777,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    free(buf);
-    free(tmp);
+    VIR_FREE(buf);
+    VIR_FREE(tmp);
     return ret;
 }
 
@@ -6825,7 +6826,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOWARNING);
-    free(doc);
+    VIR_FREE(doc);
     if (!xml) {
         vshError(ctl, "%s", _("Failed to get disk information"));
         goto cleanup;
@@ -6927,7 +6928,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     result = virConnectCompareCPU(ctl->conn, buffer, 0);
-    free (buffer);
+    VIR_FREE(buffer);
 
     switch (result) {
     case VIR_CPU_COMPARE_INCOMPATIBLE:
@@ -6979,7 +6980,7 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     if (fd == -1) {
         vshError(ctl, _("mkstemp: failed to create temporary file: %s"),
                  strerror(errno));
-        free (ret);
+        VIR_FREE(ret);
         return NULL;
     }
 
@@ -6988,14 +6989,14 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
                  ret, strerror(errno));
         close (fd);
         unlink (ret);
-        free (ret);
+        VIR_FREE(ret);
         return NULL;
     }
     if (close (fd) == -1) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
                  ret, strerror(errno));
         unlink (ret);
-        free (ret);
+        VIR_FREE(ret);
         return NULL;
     }
 
@@ -7047,16 +7048,16 @@ editFile (vshControl *ctl, const char *filename)
     if (command_ret == -1) {
         vshError(ctl,
                  _("%s: edit command failed: %s"), command, strerror(errno));
-        free (command);
+        VIR_FREE(command);
         return -1;
     }
     if (command_ret != WEXITSTATUS (0)) {
         vshError(ctl,
                  _("%s: command exited with non-zero status"), command);
-        free (command);
+        VIR_FREE(command);
         return -1;
     }
-    free (command);
+    VIR_FREE(command);
     return 0;
 }
 
@@ -7153,7 +7154,7 @@ cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     else
         vshPrint (ctl, _("%s\n"), cwd);
 
-    free (cwd);
+    VIR_FREE(cwd);
     return !err;
 }
 #endif
@@ -7249,13 +7250,13 @@ cmdEdit (vshControl *ctl, const vshCmd *cmd)
     if (dom)
         virDomainFree (dom);
 
-    free (doc);
-    free (doc_edited);
-    free (doc_reread);
+    VIR_FREE(doc);
+    VIR_FREE(doc_edited);
+    VIR_FREE(doc_reread);
 
     if (tmp) {
         unlink (tmp);
-        free (tmp);
+        VIR_FREE(tmp);
     }
 
     return ret;
@@ -7620,8 +7621,8 @@ vshCommandOptFree(vshCmdOpt * arg)
 
         a = a->next;
 
-        free(tmp->data);
-        free(tmp);
+        VIR_FREE(tmp->data);
+        VIR_FREE(tmp);
     }
 }
 
@@ -7637,7 +7638,7 @@ vshCommandFree(vshCmd *cmd)
 
         if (tmp->opts)
             vshCommandOptFree(tmp->opts);
-        free(tmp);
+        VIR_FREE(tmp);
     }
 }
 
@@ -7705,7 +7706,7 @@ vshCommandOptStringList(const vshCmd *cmd, const char *name, char ***data)
         if (arg->def && STREQ(arg->def->name, name)) {
             char **tmp = realloc(val, sizeof(*tmp) * (nval+1));
             if (!tmp) {
-                free(val);
+                VIR_FREE(val);
                 return -1;
             }
             val = tmp;
@@ -8171,8 +8172,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                     vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
-                free(tkdata);
-                tkdata = NULL;
+                VIR_FREE(tkdata);
             } else if (tk == VSH_TK_OPTION) {
                 if (!(opt = vshCmddefGetOption(cmd, tkdata))) {
                     vshError(ctl,
@@ -8180,8 +8180,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
                              cmd->name, tkdata);
                     goto syntaxError;
                 }
-                free(tkdata);   /* option name */
-                tkdata = NULL;
+                VIR_FREE(tkdata);   /* option name */
 
                 if (opt->type != VSH_OT_BOOL) {
                     /* option data */
@@ -8238,7 +8237,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
             c->next = NULL;
 
             if (!vshCommandCheckOpts(ctl, c)) {
-                free(c);
+                VIR_FREE(c);
                 goto syntaxError;
             }
 
@@ -8257,7 +8256,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
         vshCommandFree(ctl->cmd);
     if (first)
         vshCommandOptFree(first);
-    free(tkdata);
+    VIR_FREE(tkdata);
     return FALSE;
 }
 
@@ -8398,7 +8397,7 @@ _vshRealloc(vshControl *ctl, void *ptr, size_t size, const char *filename, int l
 
     if ((x = realloc(ptr, size)))
         return x;
-    free(ptr);
+    VIR_FREE(ptr);
     vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) size);
     exit(EXIT_FAILURE);
@@ -8578,7 +8577,7 @@ vshCloseLogFile(vshControl *ctl)
     }
 
     if (ctl->logfile) {
-        free(ctl->logfile);
+        VIR_FREE(ctl->logfile);
         ctl->logfile = NULL;
     }
 }
@@ -8644,7 +8643,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
         cmd = vshCmddefSearch(cmdname);
         list_index = 0;
         len = strlen(text);
-        free(cmdname);
+        VIR_FREE(cmdname);
     }
 
     if (!cmd)
@@ -8714,17 +8713,17 @@ vshReadlineInit(vshControl *ctl)
 
     if (virAsprintf(&ctl->historydir, "%s/.virsh", userdir) < 0) {
         vshError(ctl, "%s", _("Out of memory"));
-        free(userdir);
+        VIR_FREE(userdir);
         return -1;
     }
 
     if (virAsprintf(&ctl->historyfile, "%s/history", ctl->historydir) < 0) {
         vshError(ctl, "%s", _("Out of memory"));
-        free(userdir);
+        VIR_FREE(userdir);
         return -1;
     }
 
-    free(userdir);
+    VIR_FREE(userdir);
 
     read_history(ctl->historyfile);
 
@@ -8743,11 +8742,8 @@ vshReadlineDeinit (vshControl *ctl)
             write_history(ctl->historyfile);
     }
 
-    free(ctl->historydir);
-    free(ctl->historyfile);
-
-    ctl->historydir = NULL;
-    ctl->historyfile = NULL;
+    VIR_FREE(ctl->historydir);
+    VIR_FREE(ctl->historyfile);
 }
 
 static char *
@@ -8800,7 +8796,7 @@ vshDeinit(vshControl *ctl)
 {
     vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
-    free(ctl->name);
+    VIR_FREE(ctl->name);
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             vshError(ctl, "%s", _("failed to disconnect from the hypervisor"));
@@ -8964,7 +8960,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         vshDebug(ctl, 2, "command: \"%s\"\n", cmdstr);
         ret = vshCommandParse(ctl, cmdstr);
 
-        free(cmdstr);
+        VIR_FREE(cmdstr);
         return ret;
     }
     return TRUE;
@@ -9044,8 +9040,7 @@ main(int argc, char **argv)
                 if (vshCommandParse(ctl, ctl->cmdstr))
                     vshCommandRun(ctl, ctl->cmd);
             }
-            free(ctl->cmdstr);
-            ctl->cmdstr = NULL;
+            VIR_FREE(ctl->cmdstr);
         } while (ctl->imode);
 
         if (ctl->cmdstr == NULL)
