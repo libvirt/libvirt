@@ -41,6 +41,7 @@
 #endif
 
 #include "internal.h"
+#include "virterror_internal.h"
 #include "base64.h"
 #include "buf.h"
 #include "console.h"
@@ -197,6 +198,8 @@ typedef struct __vshControl {
                                  */
     char *logfile;              /* log file name */
     int log_fd;                 /* log file descriptor */
+    char *historydir;           /* readline history directory name */
+    char *historyfile;          /* readline history file name */
 } __vshControl;
 
 
@@ -8689,9 +8692,11 @@ vshReadlineCompletion(const char *text, int start,
 }
 
 
-static void
-vshReadlineInit(void)
+static int
+vshReadlineInit(vshControl *ctl)
 {
+    char *userdir = NULL;
+
     /* Allow conditional parsing of the ~/.inputrc file. */
     rl_readline_name = "virsh";
 
@@ -8700,6 +8705,49 @@ vshReadlineInit(void)
 
     /* Limit the total size of the history buffer */
     stifle_history(500);
+
+    /* Prepare to read/write history from/to the ~/.virsh/history file */
+    userdir = virGetUserDirectory(NULL, getuid());
+
+    if (userdir == NULL)
+        return -1;
+
+    if (virAsprintf(&ctl->historydir, "%s/.virsh", userdir) < 0) {
+        vshError(ctl, "%s", _("Out of memory"));
+        free(userdir);
+        return -1;
+    }
+
+    if (virAsprintf(&ctl->historyfile, "%s/history", ctl->historydir) < 0) {
+        vshError(ctl, "%s", _("Out of memory"));
+        free(userdir);
+        return -1;
+    }
+
+    free(userdir);
+
+    read_history(ctl->historyfile);
+
+    return 0;
+}
+
+static void
+vshReadlineDeinit (vshControl *ctl)
+{
+    if (ctl->historyfile != NULL) {
+        if (mkdir(ctl->historydir, 0755) < 0 && errno != EEXIST) {
+            char ebuf[1024];
+            vshError(ctl, _("Failed to create '%s': %s"),
+                     ctl->historydir, virStrerror(errno, ebuf, sizeof ebuf));
+        } else
+            write_history(ctl->historyfile);
+    }
+
+    free(ctl->historydir);
+    free(ctl->historyfile);
+
+    ctl->historydir = NULL;
+    ctl->historyfile = NULL;
 }
 
 static char *
@@ -8710,8 +8758,15 @@ vshReadline (vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
 
 #else /* !USE_READLINE */
 
+static int
+vshReadlineInit (vshControl *ctl ATTRIBUTE_UNUSED)
+{
+    /* empty */
+    return 0;
+}
+
 static void
-vshReadlineInit (void)
+vshReadlineDeinit (vshControl *ctl ATTRIBUTE_UNUSED)
 {
     /* empty */
 }
@@ -8743,6 +8798,7 @@ vshReadline (vshControl *ctl, const char *prompt)
 static int
 vshDeinit(vshControl *ctl)
 {
+    vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
     free(ctl->name);
     if (ctl->conn) {
@@ -8969,7 +9025,12 @@ main(int argc, char **argv)
                      _("Type:  'help' for help with commands\n"
                        "       'quit' to quit\n\n"));
         }
-        vshReadlineInit();
+
+        if (vshReadlineInit(ctl) < 0) {
+            vshDeinit(ctl);
+            exit(EXIT_FAILURE);
+        }
+
         do {
             const char *prompt = ctl->readonly ? VSH_PROMPT_RO : VSH_PROMPT_RW;
             ctl->cmdstr =
