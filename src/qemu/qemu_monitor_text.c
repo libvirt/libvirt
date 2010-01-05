@@ -1678,14 +1678,12 @@ cleanup:
 int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
                                virHashTablePtr paths)
 {
-    const char *cmd = "info chardev";
     char *reply = NULL;
     int ret = -1;
 
-    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to retrieve chardev info in qemu with '%s'"),
-                         cmd);
+    if (qemuMonitorCommand(mon, "info chardev", &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED, "%s",
+                         _("failed to retrieve chardev info in qemu with 'info chardev'"));
         goto cleanup;
     }
 
@@ -1747,7 +1745,6 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
     ret = 0;
 
 cleanup:
-    VIR_FREE(cmd);
     VIR_FREE(reply);
     return ret;
 }
