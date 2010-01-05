@@ -401,6 +401,32 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
     }
 
+    /* Query the host for maintenance mode and vCenter IP address */
+    if (esxVI_String_AppendValueListToList(conn, &propertyNameList,
+                                           "runtime.inMaintenanceMode\0"
+                                           "summary.managementServerIp\0") < 0 ||
+        esxVI_LookupHostSystemByIp(conn, priv->host, hostIpAddress,
+                                   propertyNameList, &hostSystem) < 0) {
+        goto failure;
+    }
+
+    /* Warn if host is in maintenance mode */
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "runtime.inMaintenanceMode")) {
+            if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
+                                         esxVI_Type_Boolean) < 0) {
+                goto failure;
+            }
+
+            if (dynamicProperty->val->boolean == esxVI_Boolean_True) {
+                VIR_WARN0("The server is in maintenance mode");
+            }
+
+            break;
+        }
+    }
+
     /* Login to vCenter */
     if (vCenter != NULL) {
         VIR_FREE(url);
@@ -415,17 +441,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         /* Lookup the vCenter from the ESX host */
-        if (esxVI_String_AppendValueToList
-              (conn, &propertyNameList, "summary.managementServerIp") < 0 ||
-            esxVI_LookupHostSystemByIp(conn, priv->host, hostIpAddress,
-                                       propertyNameList, &hostSystem) < 0) {
-            goto failure;
-        }
-
         for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
              dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name,
-                      "summary.managementServerIp")) {
+            if (STREQ(dynamicProperty->name, "summary.managementServerIp")) {
                 if (esxVI_AnyType_ExpectType(conn, dynamicProperty->val,
                                              esxVI_Type_String) < 0) {
                     goto failure;
@@ -461,8 +479,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                 }
 
                 break;
-            } else {
-                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
             }
         }
 
