@@ -692,6 +692,12 @@ esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
                          "HTTP response code %d for call to '%s'. "
                          "Fault: %s - %s", (*response)->responseCode,
                          methodName, fault->faultcode, fault->faultstring);
+
+            /* FIXME: Dump raw response until detail part gets deserialized */
+            VIR_DEBUG("HTTP response code %d for call to '%s' [[[[%s]]]]",
+                      (*response)->responseCode, methodName,
+                      (*response)->content);
+
             goto failure;
         } else {
             if (virAsprintf(&xpathExpression,
