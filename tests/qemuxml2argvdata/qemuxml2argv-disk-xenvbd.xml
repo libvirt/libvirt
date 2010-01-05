@@ -33,5 +33,6 @@
       <source file='/tmp/logs.img'/>
       <target dev='xvdg' bus='xen'/>
     </disk>
+    <controller type='ide' index='0'/>
   </devices>
 </domain>

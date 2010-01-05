@@ -34,5 +34,6 @@
       <target dev='hdd' bus='ide'/>
       <address type='drive' controller='0' bus='1' unit='1'/>
     </disk>
+    <controller type='ide' index='0'/>
   </devices>
 </domain>

@@ -4450,6 +4450,9 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             goto no_memory;
     }
 
+    if (virDomainDefAddDiskControllers(def) < 0)
+        goto error;
+
     return def;
 
 no_memory:

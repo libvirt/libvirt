@@ -186,6 +186,7 @@ virDomainDeviceAddressClear;
 virDomainControllerTypeToString;
 virDomainControllerDefFree;
 virDomainDeviceAddressTypeToString;
+virDomainDefAddDiskControllers;
 
 
 # domain_event.h

@@ -3547,6 +3547,12 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     VIR_FREE(nodes);
 
+    /* Auto-add any further disk controllers implied by declared <disk>
+     * elements, but not present as <controller> elements
+     */
+    if (virDomainDefAddDiskControllers(def) < 0)
+        goto error;
+
     /* analysis of the filesystems */
     if ((n = virXPathNodeSet(conn, "./devices/filesystem", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -4146,6 +4152,96 @@ cleanup:
     xmlXPathFreeContext(ctxt);
     return obj;
 }
+
+static int virDomainDefMaybeAddDiskController(virDomainDefPtr def,
+                                              int type,
+                                              int idx)
+{
+    int found = 0;
+    int i;
+    virDomainControllerDefPtr cont;
+
+    for (i = 0 ; (i < def->ncontrollers) && !found; i++) {
+        if (def->controllers[i]->type == type &&
+            def->controllers[i]->idx == idx)
+            found = 1;
+    }
+
+    if (found)
+        return 0;
+
+    if (VIR_ALLOC(cont) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    cont->type = type;
+    cont->idx = idx;
+
+    if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
+        VIR_FREE(cont);
+        virReportOOMError(NULL);
+        return -1;
+    }
+    def->controllers[def->ncontrollers] = cont;
+    def->ncontrollers++;
+
+    return 0;
+}
+
+static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
+                                                 int controllerType,
+                                                 int diskBus)
+{
+    int i;
+    int maxController = -1;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (def->disks[i]->bus != diskBus)
+            continue;
+
+        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+            continue;
+
+        if ((int)def->disks[i]->info.addr.drive.controller > maxController)
+            maxController = def->disks[i]->info.addr.drive.controller;
+    }
+
+    for (i = 0 ; i <= maxController ; i++) {
+        if (virDomainDefMaybeAddDiskController(def, controllerType, i) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/*
+ * Based on the declared <address type=drive> info for any disks,
+ * add neccessary drive controllers which are not already present
+ * in the XML. This is for compat with existing apps which will
+ * not know/care about <controller> info in the XML
+ */
+int virDomainDefAddDiskControllers(virDomainDefPtr def)
+{
+    if (virDomainDefAddDiskControllersForType(def,
+                                              VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                              VIR_DOMAIN_DISK_BUS_SCSI) < 0)
+        return -1;
+
+    if (virDomainDefAddDiskControllersForType(def,
+                                              VIR_DOMAIN_CONTROLLER_TYPE_FDC,
+                                              VIR_DOMAIN_DISK_BUS_FDC) < 0)
+        return -1;
+
+    if (virDomainDefAddDiskControllersForType(def,
+                                              VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                              VIR_DOMAIN_DISK_BUS_IDE) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 #endif /* ! PROXY */
 

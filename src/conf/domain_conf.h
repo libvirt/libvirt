@@ -776,6 +776,8 @@ virDomainObjPtr virDomainObjParseNode(virConnectPtr conn,
                                       xmlDocPtr xml,
                                       xmlNodePtr root);
 
+int virDomainDefAddDiskControllers(virDomainDefPtr def);
+
 #endif
 char *virDomainDefFormat(virConnectPtr conn,
                          virDomainDefPtr def,

@@ -23,5 +23,6 @@
       <source file='/tmp/usbdisk.img'/>
       <target dev='sda' bus='usb'/>
     </disk>
+    <controller type='ide' index='0'/>
   </devices>
 </domain>
