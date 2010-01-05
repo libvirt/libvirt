@@ -1004,6 +1004,7 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (vboxDomainCreate(dom) < 0) {
         vboxDomainUndefine(dom);
+        virUnrefDomain(dom);
         return NULL;
     }
 
