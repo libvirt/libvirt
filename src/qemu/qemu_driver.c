@@ -1,7 +1,7 @@
 /*
  * driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -6961,7 +6961,7 @@ cleanup:
  *
  * This starts an empty VM listening on a TCP port.
  */
-static int
+static int ATTRIBUTE_NONNULL (5)
 qemudDomainMigratePrepare2 (virConnectPtr dconn,
                             char **cookie ATTRIBUTE_UNUSED,
                             int *cookielen ATTRIBUTE_UNUSED,
@@ -7068,7 +7068,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         }
     }
 
-    if (uri_out && *uri_out)
+    if (*uri_out)
         VIR_DEBUG("Generated uri_out=%s", *uri_out);
 
     /* Parse the domain XML. */
