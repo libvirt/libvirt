@@ -1,7 +1,7 @@
 /*
  * driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -513,7 +513,7 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
     return 0;
 
  no_memory:
-    if (argv) {
+    if (*argv) {
         for (i = 0; (*argv)[i]; i++)
             VIR_FREE((*argv)[i]);
         VIR_FREE(*argv);
