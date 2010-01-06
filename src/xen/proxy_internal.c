@@ -1,7 +1,7 @@
 /*
  * proxy_client.c: client side of the communication with the libvirt proxy.
  *
- * Copyright (C) 2006, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2008, 2009, 2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -444,7 +444,7 @@ retry:
     /*
      * do more checks on the incoming packet.
      */
-    if ((res == NULL) || (res->version != PROXY_PROTO_VERSION) ||
+    if ((res->version != PROXY_PROTO_VERSION) ||
         (res->len < sizeof(virProxyPacket))) {
         virProxyError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                       _("Communication error with proxy: malformed packet\n"));
