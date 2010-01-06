@@ -2268,6 +2268,28 @@ error:
 }
 
 
+static char *qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferVSprintf(&buf, "%s",
+                      dev->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ?
+                      "usb-mouse" : "usb-tablet");
+    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
 static char *
 qemuBuildSoundDevStr(virDomainSoundDefPtr sound)
 {
@@ -3274,8 +3296,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
         virDomainInputDefPtr input = def->inputs[i];
 
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-            ADD_ARG_LIT("-usbdevice");
-            ADD_ARG_LIT(input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+                char *optstr;
+                ADD_ARG_LIT("-device");
+                if (!(optstr = qemuBuildUSBInputDevStr(input)))
+                    goto error;
+                ADD_ARG(optstr);
+            } else {
+                ADD_ARG_LIT("-usbdevice");
+                ADD_ARG_LIT(input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ? "mouse" : "tablet");
+            }
         }
     }
 
