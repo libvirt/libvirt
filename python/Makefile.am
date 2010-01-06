@@ -39,7 +39,7 @@ libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c libvirt.c libvirt.h
 # need extra flags here
 libvirtmod_la_CFLAGS = @WARN_PYTHON_CFLAGS@
 
-libvirtmod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/src/.libs \
+libvirtmod_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.libs \
 	@CYGWIN_EXTRA_LDFLAGS@
 libvirtmod_la_LIBADD = $(mylibs) \
 	@CYGWIN_EXTRA_LIBADD@ @CYGWIN_EXTRA_PYTHON_LIBADD@
