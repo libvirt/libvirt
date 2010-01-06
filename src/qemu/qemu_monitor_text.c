@@ -1705,15 +1705,26 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    char *pos = reply;                  /* The current start of searching */
-    char *end = pos + strlen(reply);    /* The end of the reply string */
+    char *pos;                          /* The current start of searching */
+    char *next = reply;                 /* The start of the next line */
     char *eol;                   /* The character which ends the current line */
+    char *end = reply + strlen(reply);  /* The end of the reply string */
 
-    while (pos < end) {
+    while (next) {
+        pos = next;
+
         /* Split the output into lines */
         eol = memchr(pos, '\n', end - pos);
-        if (eol == NULL)
+        if (eol == NULL) {
             eol = end;
+            next = NULL;
+        } else {
+            next = eol + 1;
+        }
+
+        /* Ignore all whitespace immediately before eol */
+        while (eol > pos && c_isspace(*(eol-1)))
+            eol -= 1;
 
         /* Look for 'filename=pty:' */
 #define NEEDLE "filename=pty:"
@@ -1721,13 +1732,13 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
 
         /* If it's not there we can ignore this line */
         if (!needle)
-            goto next;
+            continue;
 
         /* id is everthing from the beginning of the line to the ':'
          * find ':' and turn it into a terminator */
         char *colon = memchr(pos, ':', needle - pos);
         if (colon == NULL)
-            goto next;
+            continue;
         *colon = '\0';
         char *id = pos;
 
@@ -1747,9 +1758,6 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
             goto cleanup;
         }
 #undef NEEDLE
-
-    next:
-        pos = eol + 1;
     }
 
     ret = 0;
