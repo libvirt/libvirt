@@ -822,14 +822,6 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         return -1;
     }
 
-    /* Refresh allocation / permissions info, but not capacity */
-    if (virStorageBackendUpdateVolTargetInfoFD(conn, &vol->target, fd,
-                                               &vol->allocation,
-                                               NULL) < 0) {
-        close(fd);
-        return -1;
-    }
-
     if (close(fd) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot close file '%s'"),
