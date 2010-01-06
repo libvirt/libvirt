@@ -748,11 +748,12 @@ int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path)
 {
     struct sockaddr_un *addr;
-    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
+    xenUnifiedPrivatePtr priv;
 
     if ((conn == NULL) || (path == NULL))
         return (-1);
 
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
     memset(&priv->addr, 0, sizeof(priv->addr));
     priv->addrfamily = AF_UNIX;
     /*
