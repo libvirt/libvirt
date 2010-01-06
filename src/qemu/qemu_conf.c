@@ -1113,6 +1113,8 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_MEM_PATH;
     if (strstr(help, "-chardev"))
         flags |= QEMUD_CMD_FLAG_CHARDEV;
+    if (strstr(help, "-balloon"))
+        flags |= QEMUD_CMD_FLAG_BALLOON;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
@@ -2886,6 +2888,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (migrateFrom) {
         ADD_ARG_LIT("-incoming");
         ADD_ARG_LIT(migrateFrom);
+    }
+
+    /* QEMU changed its default behavior to not include the virtio balloon
+     * device.  Explicitly request it to ensure it will be present.
+     */
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
+        ADD_ARG_LIT("-balloon");
+        ADD_ARG_LIT("virtio");
     }
 
     ADD_ARG(NULL);
