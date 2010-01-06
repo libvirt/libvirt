@@ -5326,63 +5326,13 @@ cleanup:
     return ret;
 }
 
-/* Return the disks name for use in monitor commands */
-static char *qemudDiskDeviceName(const virConnectPtr conn,
-                                 const virDomainDiskDefPtr disk) {
-
-    int busid, devid;
-    int ret;
-    char *devname;
-
-    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot convert disk '%s' to bus/device index"),
-                         disk->dst);
-        return NULL;
-    }
-
-    switch (disk->bus) {
-        case VIR_DOMAIN_DISK_BUS_IDE:
-            if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
-                ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
-            else
-                ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
-            break;
-        case VIR_DOMAIN_DISK_BUS_SCSI:
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-                ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
-            else
-                ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
-            break;
-        case VIR_DOMAIN_DISK_BUS_FDC:
-            ret = virAsprintf(&devname, "floppy%d", devid);
-            break;
-        case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            ret = virAsprintf(&devname, "virtio%d", devid);
-            break;
-        default:
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                             _("Unsupported disk name mapping for bus '%s'"),
-                             virDomainDiskBusTypeToString(disk->bus));
-            return NULL;
-    }
-
-    if (ret == -1) {
-        virReportOOMError(conn);
-        return NULL;
-    }
-
-    return devname;
-}
 
 static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
                                            struct qemud_driver *driver,
                                            virDomainObjPtr vm,
-                                           virDomainDeviceDefPtr dev,
-                                           unsigned int qemuCmdFlags)
+                                           virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr origdisk = NULL, newdisk;
-    char *devname = NULL;
     int i;
     int ret;
 
@@ -5404,29 +5354,18 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
-        if (!(devname = qemudDiskDeviceName(conn, newdisk)))
-            return -1;
-    } else {
-        /* Back compat for no -drive option */
-        if (newdisk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            devname = strdup(newdisk->dst);
-        else if (newdisk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-                 STREQ(newdisk->dst, "hdc"))
-            devname = strdup("cdrom");
-        else {
-            qemudReportError(conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Emulator version does not support removable "
-                               "media for device '%s' and target '%s'"),
-                               virDomainDiskDeviceTypeToString(newdisk->device),
-                               newdisk->dst);
-            return -1;
-        }
+    if (!origdisk->info.alias) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("missing disk device alias name for %s"), origdisk->dst);
+        return -1;
+    }
 
-        if (!devname) {
-            virReportOOMError(conn);
-            return -1;
-        }
+    if (origdisk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        origdisk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        qemudReportError(conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Removable media not supported for %s device"),
+                         virDomainDiskDeviceTypeToString(newdisk->device));
+        return -1;
     }
 
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -5439,9 +5378,11 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
             else if (origdisk->driverType)
                 format = origdisk->driverType;
         }
-        ret = qemuMonitorChangeMedia(priv->mon, devname, newdisk->src, format);
+        ret = qemuMonitorChangeMedia(priv->mon,
+                                     origdisk->info.alias,
+                                     newdisk->src, format);
     } else {
-        ret = qemuMonitorEjectMedia(priv->mon, devname);
+        ret = qemuMonitorEjectMedia(priv->mon, origdisk->info.alias);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -5451,7 +5392,6 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         newdisk->src = NULL;
         origdisk->type = newdisk->type;
     }
-    VIR_FREE(devname);
 
     return ret;
 }
@@ -5997,7 +5937,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
                 goto endjob;
 
-            ret = qemudDomainChangeEjectableMedia(dom->conn, driver, vm, dev, qemuCmdFlags);
+            ret = qemudDomainChangeEjectableMedia(dom->conn, driver, vm, dev);
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
@@ -6733,7 +6673,6 @@ qemudDomainBlockStats (virDomainPtr dom,
                        struct _virDomainBlockStats *stats)
 {
     struct qemud_driver *driver = dom->conn->privateData;
-    const char *qemu_dev_name = NULL;
     int i, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -6771,14 +6710,16 @@ qemudDomainBlockStats (virDomainPtr dom,
         goto endjob;
     }
 
-    qemu_dev_name = qemudDiskDeviceName(dom->conn, disk);
-    if (!qemu_dev_name)
+    if (!disk->info.alias) {
+        qemudReportError(dom->conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("missing disk device alias name for %s"), disk->dst);
         goto endjob;
+    }
 
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       qemu_dev_name,
+                                       disk->info.alias,
                                        &stats->rd_req,
                                        &stats->rd_bytes,
                                        &stats->wr_req,
@@ -6791,7 +6732,6 @@ endjob:
         vm = NULL;
 
 cleanup:
-    VIR_FREE(qemu_dev_name);
     if (vm)
         virDomainObjUnlock(vm);
     return ret;

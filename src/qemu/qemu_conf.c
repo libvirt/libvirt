@@ -1460,6 +1460,176 @@ cleanup:
     return tapfd;
 }
 
+
+static int
+qemuAssignDeviceAliases(virDomainDefPtr def)
+{
+    int i;
+
+    for (i = 0; i < def->ndisks ; i++) {
+        const char *prefix = virDomainDiskBusTypeToString(def->disks[i]->bus);
+        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            if (virAsprintf(&def->disks[i]->info.alias, "%s%d-%d-%d", prefix,
+                            def->disks[i]->info.addr.drive.controller,
+                            def->disks[i]->info.addr.drive.bus,
+                            def->disks[i]->info.addr.drive.unit) < 0)
+                goto no_memory;
+        } else {
+            int idx = virDiskNameToIndex(def->disks[i]->dst);
+            if (virAsprintf(&def->disks[i]->info.alias, "%s-disk%d", prefix, idx) < 0)
+                goto no_memory;
+        }
+    }
+    for (i = 0; i < def->nnets ; i++) {
+        if (def->nets[i]->model) {
+            if (virAsprintf(&def->nets[i]->info.alias, "%s-nic%d", def->nets[i]->model, i) < 0)
+                goto no_memory;
+        } else {
+            if (virAsprintf(&def->nets[i]->info.alias, "nic%d", i) < 0)
+                goto no_memory;
+        }
+    }
+
+    for (i = 0; i < def->nsounds ; i++) {
+        if (virAsprintf(&def->sounds[i]->info.alias, "sound%d", i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+            const char *prefix = virDomainHostdevSubsysTypeToString
+                (def->hostdevs[i]->source.subsys.type);
+            if (virAsprintf(&def->hostdevs[i]->info.alias, "host%s%d", prefix, i) < 0)
+                goto no_memory;
+        } else {
+            if (virAsprintf(&def->hostdevs[i]->info.alias, "host%d",i) < 0)
+                goto no_memory;
+        }
+    }
+    for (i = 0; i < def->nvideos ; i++) {
+        if (virAsprintf(&def->videos[i]->info.alias, "video%d", i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->ncontrollers ; i++) {
+        const char *prefix = virDomainControllerTypeToString(def->controllers[i]->type);
+        if (virAsprintf(&def->controllers[i]->info.alias, "%s%d", prefix, i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->ninputs ; i++) {
+        if (virAsprintf(&def->inputs[i]->info.alias, "input%d", i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->nparallels ; i++) {
+        if (virAsprintf(&def->parallels[i]->info.alias, "parallel%d", i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->nserials ; i++) {
+        if (virAsprintf(&def->serials[i]->info.alias, "serial%d", i) < 0)
+            goto no_memory;
+    }
+    for (i = 0; i < def->nchannels ; i++) {
+        if (virAsprintf(&def->channels[i]->info.alias, "channel%d", i) < 0)
+            goto no_memory;
+    }
+    if (def->watchdog) {
+        if (virAsprintf(&def->watchdog->info.alias, "watchdog%d", 0) < 0)
+            goto no_memory;
+    }
+
+    return 0;
+
+    no_memory:
+    virReportOOMError(NULL);
+    return -1;
+}
+
+
+static char *qemuDiskLegacyName(const virDomainDiskDefPtr disk)
+{
+    char *devname;
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        STREQ(disk->dst, "hdc"))
+        devname = strdup("cdrom");
+    else
+        devname = strdup(disk->dst);
+
+    if (!devname)
+        virReportOOMError(NULL);
+
+    return NULL;
+}
+
+/* Return the -drive QEMU disk name for use in monitor commands */
+static char *qemuDiskDriveName(const virDomainDiskDefPtr disk)
+{
+    int busid, devid;
+    int ret;
+    char *devname;
+
+    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot convert disk '%s' to bus/device index"),
+                         disk->dst);
+        return NULL;
+    }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
+            ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
+        else
+            ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+            ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
+        else
+            ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        ret = virAsprintf(&devname, "floppy%d", devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        ret = virAsprintf(&devname, "virtio%d", devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_XEN:
+        ret = virAsprintf(&devname, "xenblk%d", devid);
+        break;
+    default:
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         _("Unsupported disk name mapping for bus '%s'"),
+                         virDomainDiskBusTypeToString(disk->bus));
+        return NULL;
+    }
+
+    if (ret == -1) {
+        virReportOOMError(NULL);
+        return NULL;
+    }
+
+    return devname;
+}
+
+static int
+qemuAssignDiskAliases(virDomainDefPtr def, int qemuCmdFlags)
+{
+    int i;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE)
+            def->disks[i]->info.alias =
+                qemuDiskDriveName(def->disks[i]);
+        else
+            def->disks[i]->info.alias =
+                qemuDiskLegacyName(def->disks[i]);
+
+        if (!def->disks[i]->info.alias)
+            return -1;
+    }
+    return 0;
+}
+
+
 static const char *
 qemuNetTypeToHostNet(int type)
 {
@@ -2077,6 +2247,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     uname_normalize(&ut);
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        qemuAssignDeviceAliases(def);
+    else
+        qemuAssignDiskAliases(def, qemuCmdFlags);
+
     virUUIDFormat(def->uuid, uuid);
 
     /* Migration is very annoying due to wildly varying syntax & capabilities
@@ -2551,6 +2726,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_SPACE;
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
+                !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
                 qemuAssignNetNames(def, net) < 0)
                 goto no_memory;
 
