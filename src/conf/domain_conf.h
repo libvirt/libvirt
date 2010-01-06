@@ -736,6 +736,8 @@ int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
 int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr);
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
+void virDomainDefClearPCIAddresses(virDomainDefPtr def);
+
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjRef(virDomainObjPtr vm);
 /* Returns 1 if the object was freed, 0 if more refs exist */

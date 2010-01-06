@@ -817,6 +817,42 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 }
 
 
+static void virDomainDeviceInfoClearField(virDomainDeviceInfoPtr info)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        memset(&info->addr, 0, sizeof(info->addr));
+        info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+    }
+}
+
+
+static void virDomainDefClearDeviceInfo(virDomainDefPtr def)
+{
+    int i;
+
+    for (i = 0; i < def->ndisks ; i++)
+        virDomainDeviceInfoClearField(&def->disks[i]->info);
+    for (i = 0; i < def->nnets ; i++)
+        virDomainDeviceInfoClearField(&def->nets[i]->info);
+    for (i = 0; i < def->nsounds ; i++)
+        virDomainDeviceInfoClearField(&def->sounds[i]->info);
+    for (i = 0; i < def->nhostdevs ; i++)
+        virDomainDeviceInfoClearField(&def->hostdevs[i]->info);
+    for (i = 0; i < def->nvideos ; i++)
+            virDomainDeviceInfoClearField(&def->videos[i]->info);
+    for (i = 0; i < def->ncontrollers ; i++)
+            virDomainDeviceInfoClearField(&def->controllers[i]->info);
+    if (def->watchdog)
+        virDomainDeviceInfoClearField(&def->watchdog->info);
+}
+
+
+void virDomainDefClearPCIAddresses(virDomainDefPtr def)
+{
+    virDomainDefClearDeviceInfo(def);
+}
+
+
 /* Generate a string representation of a device address
  * @param address Device address to stringify
  */

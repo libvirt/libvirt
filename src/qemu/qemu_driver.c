@@ -3048,6 +3048,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
 
+    virDomainDefClearPCIAddresses(vm->def);
+
     if (qemuDomainSetAllDeviceOwnership(conn, driver, vm->def, 1) < 0)
         VIR_WARN("Failed to restore all device ownership for %s",
                  vm->def->name);
