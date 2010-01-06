@@ -355,6 +355,7 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
     if (!def)
         return;
 
+    virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
 }
 
@@ -391,6 +392,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
 
     VIR_FREE(def->src);
     VIR_FREE(def->dst);
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
 }
@@ -473,6 +475,8 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         VIR_FREE(def->data.nix.path);
         break;
     }
+
+    virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
 }
@@ -845,11 +849,23 @@ static void virDomainDefClearDeviceInfo(virDomainDefPtr def, int alias, int pcia
     for (i = 0; i < def->nhostdevs ; i++)
         virDomainDeviceInfoClearField(&def->hostdevs[i]->info, alias, pciaddr);
     for (i = 0; i < def->nvideos ; i++)
-            virDomainDeviceInfoClearField(&def->videos[i]->info, alias, pciaddr);
+        virDomainDeviceInfoClearField(&def->videos[i]->info, alias, pciaddr);
     for (i = 0; i < def->ncontrollers ; i++)
-            virDomainDeviceInfoClearField(&def->controllers[i]->info, alias, pciaddr);
+        virDomainDeviceInfoClearField(&def->controllers[i]->info, alias, pciaddr);
+    for (i = 0; i < def->nserials ; i++)
+        virDomainDeviceInfoClearField(&def->serials[i]->info, alias, pciaddr);
+    for (i = 0; i < def->nparallels ; i++)
+        virDomainDeviceInfoClearField(&def->parallels[i]->info, alias, pciaddr);
+    for (i = 0; i < def->nchannels ; i++)
+        virDomainDeviceInfoClearField(&def->channels[i]->info, alias, pciaddr);
+    for (i = 0; i < def->ninputs ; i++)
+        virDomainDeviceInfoClearField(&def->inputs[i]->info, alias, pciaddr);
+    for (i = 0; i < def->nfss ; i++)
+        virDomainDeviceInfoClearField(&def->fss[i]->info, alias, pciaddr);
     if (def->watchdog)
         virDomainDeviceInfoClearField(&def->watchdog->info, alias, pciaddr);
+    if (def->console)
+        virDomainDeviceInfoClearField(&def->console->info, alias, pciaddr);
 }
 
 
@@ -1488,7 +1504,7 @@ cleanup:
 static virDomainFSDefPtr
 virDomainFSDefParseXML(virConnectPtr conn,
                        xmlNodePtr node,
-                       int flags ATTRIBUTE_UNUSED) {
+                       int flags) {
     virDomainFSDefPtr def;
     xmlNodePtr cur;
     char *type = NULL;
@@ -1551,6 +1567,9 @@ virDomainFSDefParseXML(virConnectPtr conn,
     source = NULL;
     def->dst = target;
     target = NULL;
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(type);
@@ -1893,7 +1912,7 @@ error:
 static virDomainChrDefPtr
 virDomainChrDefParseXML(virConnectPtr conn,
                         xmlNodePtr node,
-                        int flags ATTRIBUTE_UNUSED) {
+                        int flags) {
     xmlNodePtr cur;
     char *type = NULL;
     char *bindHost = NULL;
@@ -2187,6 +2206,9 @@ virDomainChrDefParseXML(virConnectPtr conn,
         break;
     }
 
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
+
 cleanup:
     VIR_FREE(mode);
     VIR_FREE(protocol);
@@ -2213,7 +2235,7 @@ static virDomainInputDefPtr
 virDomainInputDefParseXML(virConnectPtr conn,
                           const char *ostype,
                           xmlNodePtr node,
-                          int flags ATTRIBUTE_UNUSED) {
+                          int flags) {
     virDomainInputDefPtr def;
     char *type = NULL;
     char *bus = NULL;
@@ -2282,6 +2304,9 @@ virDomainInputDefParseXML(virConnectPtr conn,
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         }
     }
+
+    if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(type);
@@ -4650,7 +4675,8 @@ virDomainControllerDefFormat(virConnectPtr conn,
 static int
 virDomainFSDefFormat(virConnectPtr conn,
                      virBufferPtr buf,
-                     virDomainFSDefPtr def)
+                     virDomainFSDefPtr def,
+                     int flags)
 {
     const char *type = virDomainFSTypeToString(def->type);
 
@@ -4692,6 +4718,9 @@ virDomainFSDefFormat(virConnectPtr conn,
 
     if (def->readonly)
         virBufferAddLit(buf, "      <readonly/>\n");
+
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
 
     virBufferAddLit(buf, "    </filesystem>\n");
 
@@ -4934,6 +4963,9 @@ virDomainChrDefFormat(virConnectPtr conn,
         return -1;
     }
 
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
+
     virBufferVSprintf(buf, "    </%s>\n",
                       elementName);
 
@@ -5062,7 +5094,8 @@ virDomainVideoDefFormat(virConnectPtr conn,
 static int
 virDomainInputDefFormat(virConnectPtr conn,
                         virBufferPtr buf,
-                        virDomainInputDefPtr def)
+                        virDomainInputDefPtr def,
+                        int flags)
 {
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
@@ -5078,8 +5111,17 @@ virDomainInputDefFormat(virConnectPtr conn,
         return -1;
     }
 
-    virBufferVSprintf(buf, "    <input type='%s' bus='%s'/>\n",
+    virBufferVSprintf(buf, "    <input type='%s' bus='%s'",
                       type, bus);
+
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </input>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     return 0;
 }
@@ -5403,7 +5445,7 @@ char *virDomainDefFormat(virConnectPtr conn,
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)
-        if (virDomainFSDefFormat(conn, &buf, def->fss[n]) < 0)
+        if (virDomainFSDefFormat(conn, &buf, def->fss[n], flags) < 0)
             goto cleanup;
 
 
@@ -5439,7 +5481,7 @@ char *virDomainDefFormat(virConnectPtr conn,
 
     for (n = 0 ; n < def->ninputs ; n++)
         if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
-            virDomainInputDefFormat(conn, &buf, def->inputs[n]) < 0)
+            virDomainInputDefFormat(conn, &buf, def->inputs[n], flags) < 0)
             goto cleanup;
 
     if (def->ngraphics > 0) {
@@ -5447,10 +5489,11 @@ char *virDomainDefFormat(virConnectPtr conn,
         virDomainInputDef autoInput = {
             VIR_DOMAIN_INPUT_TYPE_MOUSE,
             STREQ(def->os.type, "hvm") ?
-            VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN
+            VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN,
+            { .alias = NULL },
         };
 
-        if (virDomainInputDefFormat(conn, &buf, &autoInput) < 0)
+        if (virDomainInputDefFormat(conn, &buf, &autoInput, flags) < 0)
             goto cleanup;
 
         for (n = 0 ; n < def->ngraphics ; n++)

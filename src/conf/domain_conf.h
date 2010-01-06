@@ -197,6 +197,7 @@ struct _virDomainFSDef {
     char *src;
     char *dst;
     unsigned int readonly : 1;
+    virDomainDeviceInfo info;
 };
 
 
@@ -316,6 +317,8 @@ struct _virDomainChrDef {
             int listen;
         } nix;
     } data;
+
+    virDomainDeviceInfo info;
 };
 
 enum virDomainInputType {
@@ -338,6 +341,7 @@ typedef virDomainInputDef *virDomainInputDefPtr;
 struct _virDomainInputDef {
     int type;
     int bus;
+    virDomainDeviceInfo info;
 };
 
 enum virDomainSoundModel {
