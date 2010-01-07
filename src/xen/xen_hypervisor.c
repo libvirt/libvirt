@@ -215,10 +215,26 @@ struct xen_v2d5_getdomaininfo {
 };
 typedef struct xen_v2d5_getdomaininfo xen_v2d5_getdomaininfo;
 
+struct xen_v2d6_getdomaininfo {
+    domid_t  domain;	/* the domain number */
+    uint32_t flags;	/* flags, see before */
+    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
+    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    uint64_t shr_pages ALIGN_64;    /* number of shared pages */
+    uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
+    uint64_t cpu_time ALIGN_64;  /* CPU time used */
+    uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
+    uint32_t max_vcpu_id; /* Maximum VCPUID in use by this domain. */
+    uint32_t ssidref;
+    xen_domain_handle_t handle;
+};
+typedef struct xen_v2d6_getdomaininfo xen_v2d6_getdomaininfo;
+
 union xen_getdomaininfo {
     struct xen_v0_getdomaininfo v0;
     struct xen_v2_getdomaininfo v2;
     struct xen_v2d5_getdomaininfo v2d5;
+    struct xen_v2d6_getdomaininfo v2d6;
 };
 typedef union xen_getdomaininfo xen_getdomaininfo;
 
@@ -226,6 +242,7 @@ union xen_getdomaininfolist {
     struct xen_v0_getdomaininfo *v0;
     struct xen_v2_getdomaininfo *v2;
     struct xen_v2d5_getdomaininfo *v2d5;
+    struct xen_v2d6_getdomaininfo *v2d6;
 };
 typedef union xen_getdomaininfolist xen_getdomaininfolist;
 
@@ -263,114 +280,147 @@ typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hypervisor_version < 2 ?                                           \
      (VIR_ALLOC_N(domlist.v0, (size)) == 0) :                           \
-     (dom_interface_version < 5 ?                                       \
-      (VIR_ALLOC_N(domlist.v2, (size)) == 0) :                          \
-      (VIR_ALLOC_N(domlist.v2d5, (size)) == 0)))
+     (dom_interface_version >= 6 ?                                      \
+      (VIR_ALLOC_N(domlist.v2d6, (size)) == 0) :                        \
+     (dom_interface_version == 5 ?                                      \
+      (VIR_ALLOC_N(domlist.v2d5, (size)) == 0) :                        \
+      (VIR_ALLOC_N(domlist.v2, (size)) == 0))))
 
 #define XEN_GETDOMAININFOLIST_FREE(domlist)            \
     (hypervisor_version < 2 ?                          \
      VIR_FREE(domlist.v0) :                            \
-     (dom_interface_version < 5 ?                      \
-      VIR_FREE(domlist.v2) :                           \
-      VIR_FREE(domlist.v2d5)))
+     (dom_interface_version >= 6 ?                     \
+      VIR_FREE(domlist.v2d6) :                         \
+     (dom_interface_version == 5 ?                     \
+      VIR_FREE(domlist.v2d5) :                         \
+      VIR_FREE(domlist.v2))))
 
 #define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)            \
     (hypervisor_version < 2 ?                                 \
      memset(domlist.v0, 0, sizeof(*domlist.v0) * size) :      \
-     (dom_interface_version < 5 ?                             \
-      memset(domlist.v2, 0, sizeof(*domlist.v2) * size) :     \
-      memset(domlist.v2d5, 0, sizeof(*domlist.v2d5) * size)))
+     (dom_interface_version >= 6 ?                            \
+      memset(domlist.v2d6, 0, sizeof(*domlist.v2d6) * size) : \
+     (dom_interface_version == 5 ?                            \
+      memset(domlist.v2d5, 0, sizeof(*domlist.v2d5) * size) : \
+      memset(domlist.v2, 0, sizeof(*domlist.v2) * size))))
 
 #define XEN_GETDOMAININFOLIST_DOMAIN(domlist, n)    \
     (hypervisor_version < 2 ?                       \
      domlist.v0[n].domain :                         \
-     (dom_interface_version < 5 ?                   \
-      domlist.v2[n].domain :                        \
-      domlist.v2d5[n].domain))
+     (dom_interface_version >= 6 ?                  \
+      domlist.v2d6[n].domain :                      \
+     (dom_interface_version == 5 ?                  \
+      domlist.v2d5[n].domain :                      \
+      domlist.v2[n].domain)))
 
 #define XEN_GETDOMAININFOLIST_UUID(domlist, n)      \
     (hypervisor_version < 2 ?                       \
      domlist.v0[n].handle :                         \
-     (dom_interface_version < 5 ?                   \
-      domlist.v2[n].handle :                        \
-      domlist.v2d5[n].handle))
+     (dom_interface_version >= 6 ?                  \
+      domlist.v2d6[n].handle :                      \
+     (dom_interface_version == 5 ?                  \
+      domlist.v2d5[n].handle :                      \
+      domlist.v2[n].handle)))
 
 #define XEN_GETDOMAININFOLIST_DATA(domlist)        \
     (hypervisor_version < 2 ?                      \
      (void*)(domlist->v0) :                        \
-     (dom_interface_version < 5 ?                  \
-      (void*)(domlist->v2) :                       \
-      (void*)(domlist->v2d5)))
+     (dom_interface_version >= 6 ?                 \
+      (void*)(domlist->v2d6) :                     \
+     (dom_interface_version == 5 ?                 \
+      (void*)(domlist->v2d5) :                     \
+      (void*)(domlist->v2))))
 
 #define XEN_GETDOMAININFO_SIZE                     \
     (hypervisor_version < 2 ?                      \
      sizeof(xen_v0_getdomaininfo) :                \
-     (dom_interface_version < 5 ?                  \
-      sizeof(xen_v2_getdomaininfo) :               \
-      sizeof(xen_v2d5_getdomaininfo)))
+     (dom_interface_version >= 6 ?                 \
+      sizeof(xen_v2d6_getdomaininfo) :             \
+     (dom_interface_version == 5 ?                 \
+      sizeof(xen_v2d5_getdomaininfo) :             \
+      sizeof(xen_v2_getdomaininfo))))
 
 #define XEN_GETDOMAININFO_CLEAR(dominfo)                           \
     (hypervisor_version < 2 ?                                      \
      memset(&(dominfo.v0), 0, sizeof(xen_v0_getdomaininfo)) :      \
-     (dom_interface_version < 5 ?                                  \
-      memset(&(dominfo.v2), 0, sizeof(xen_v2_getdomaininfo)) :     \
-      memset(&(dominfo.v2d5), 0, sizeof(xen_v2d5_getdomaininfo))))
+     (dom_interface_version >= 6 ?                                 \
+      memset(&(dominfo.v2d6), 0, sizeof(xen_v2d6_getdomaininfo)) : \
+     (dom_interface_version == 5 ?                                 \
+      memset(&(dominfo.v2d5), 0, sizeof(xen_v2d5_getdomaininfo)) : \
+      memset(&(dominfo.v2), 0, sizeof(xen_v2_getdomaininfo)))))
 
 #define XEN_GETDOMAININFO_DOMAIN(dominfo)       \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.domain :                        \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.domain :                       \
-      dominfo.v2d5.domain))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.domain :                     \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.domain :                     \
+      dominfo.v2.domain)))
 
 #define XEN_GETDOMAININFO_CPUTIME(dominfo)      \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.cpu_time :                      \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.cpu_time :                     \
-      dominfo.v2d5.cpu_time))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.cpu_time :                   \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.cpu_time :                   \
+      dominfo.v2.cpu_time)))
+
 
 #define XEN_GETDOMAININFO_CPUCOUNT(dominfo)     \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.nr_online_vcpus :               \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.nr_online_vcpus :              \
-      dominfo.v2d5.nr_online_vcpus))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.nr_online_vcpus :            \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.nr_online_vcpus :            \
+      dominfo.v2.nr_online_vcpus)))
 
 #define XEN_GETDOMAININFO_MAXCPUID(dominfo)  \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.max_vcpu_id :                   \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.max_vcpu_id :                  \
-      dominfo.v2d5.max_vcpu_id))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.max_vcpu_id :                \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.max_vcpu_id :                \
+      dominfo.v2.max_vcpu_id)))
 
 #define XEN_GETDOMAININFO_FLAGS(dominfo)        \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.flags :                         \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.flags :                        \
-      dominfo.v2d5.flags))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.flags :                      \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.flags :                      \
+      dominfo.v2.flags)))
 
 #define XEN_GETDOMAININFO_TOT_PAGES(dominfo)    \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.tot_pages :                     \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.tot_pages :                    \
-      dominfo.v2d5.tot_pages))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.tot_pages :                  \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.tot_pages :                  \
+      dominfo.v2.tot_pages)))
 
 #define XEN_GETDOMAININFO_MAX_PAGES(dominfo)    \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.max_pages :                     \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.max_pages :                    \
-      dominfo.v2d5.max_pages))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.max_pages :                  \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.max_pages :                  \
+      dominfo.v2.max_pages)))
 
 #define XEN_GETDOMAININFO_UUID(dominfo)         \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.handle :                        \
-     (dom_interface_version < 5 ?               \
-      dominfo.v2.handle :                       \
-      dominfo.v2d5.handle))
+     (dom_interface_version >= 6 ?              \
+      dominfo.v2d6.handle :                     \
+     (dom_interface_version == 5 ?              \
+      dominfo.v2d5.handle :                     \
+      dominfo.v2.handle)))
 
 
 static int
@@ -2048,6 +2098,12 @@ xenHypervisorInit(void)
         dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
             DEBUG0("Using hypervisor call v2, sys ver6 dom ver5\n");
+            goto done;
+        }
+        /* Xen 4.0 */
+        dom_interface_version = 6; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+            DEBUG0("Using hypervisor call v2, sys ver6 dom ver6\n");
             goto done;
         }
     }
