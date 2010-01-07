@@ -1547,6 +1547,108 @@ qemuAssignDeviceAliases(virDomainDefPtr def)
 }
 
 
+static void
+qemuAssignDevicePCISlot(virDomainDeviceInfoPtr info,
+                        int slot)
+{
+    info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    info->addr.pci.domain = 0;
+    info->addr.pci.bus = 0;
+    info->addr.pci.slot = slot;
+    info->addr.pci.function = 0;
+}
+
+static void
+qemuAssignDevicePCISlots(virDomainDefPtr def)
+{
+    int i;
+    /*
+     * slot = 0 -> Host bridge
+     * slot = 1 -> PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
+     * slot = 2 -> VGA
+     * slot = 3 -> VirtIO Balloon
+     */
+    int nextslot = 4;
+
+    for (i = 0; i < def->ndisks ; i++) {
+        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        /* Only VirtIO disks use PCI addrs */
+        if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
+            continue;
+
+        qemuAssignDevicePCISlot(&def->disks[i]->info, nextslot++);
+    }
+
+    for (i = 0; i < def->nnets ; i++) {
+        if (def->nets[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        qemuAssignDevicePCISlot(&def->nets[i]->info, nextslot++);
+    }
+
+    for (i = 0; i < def->nsounds ; i++) {
+        if (def->sounds[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        /* Skip ISA sound card, and PCSPK */
+        if (def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_SB16 ||
+            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_PCSPK)
+            continue;
+
+        qemuAssignDevicePCISlot(&def->sounds[i]->info, nextslot++);
+    }
+
+    for (i = 0; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        qemuAssignDevicePCISlot(&def->hostdevs[i]->info, nextslot++);
+    }
+    for (i = 0; i < def->nvideos ; i++) {
+        /* First VGA is hardcoded slot=2 */
+        if (i == 0)
+            qemuAssignDevicePCISlot(&def->videos[i]->info, 2);
+        else
+            qemuAssignDevicePCISlot(&def->videos[i]->info, nextslot++);
+    }
+    for (i = 0; i < def->ncontrollers ; i++) {
+        if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        /* FDC lives behind the ISA bridge */
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
+            continue;
+
+        /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
+            def->controllers[i]->idx == 0) {
+            qemuAssignDevicePCISlot(&def->controllers[i]->info, 1);
+            def->controllers[i]->info.addr.pci.function = 1;
+        } else {
+            qemuAssignDevicePCISlot(&def->controllers[i]->info, nextslot++);
+        }
+    }
+    for (i = 0; i < def->ninputs ; i++) {
+        /* Nada - none are PCI based (yet) */
+    }
+    for (i = 0; i < def->nparallels ; i++) {
+        /* Nada - none are PCI based (yet) */
+    }
+    for (i = 0; i < def->nserials ; i++) {
+        /* Nada - none are PCI based (yet) */
+    }
+    for (i = 0; i < def->nchannels ; i++) {
+        /* Nada - none are PCI based (yet) */
+        /* XXX virtio-serial will need one */
+    }
+    if (def->watchdog) {
+        qemuAssignDevicePCISlot(&def->watchdog->info, nextslot++);
+    }
+}
+
+
 static char *qemuDiskLegacyName(const virDomainDiskDefPtr disk)
 {
     char *devname;
@@ -2609,10 +2711,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     uname_normalize(&ut);
 
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         qemuAssignDeviceAliases(def);
-    else
+        qemuAssignDevicePCISlots(def);
+    } else {
         qemuAssignDiskAliases(def, qemuCmdFlags);
+    }
 
     virUUIDFormat(def->uuid, uuid);
 

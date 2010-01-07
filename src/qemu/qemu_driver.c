@@ -2708,6 +2708,11 @@ qemuPrepareMonitorChr(virConnectPtr conn,
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = 1;
 
+    if (!(monConfig->info.alias = strdup("monitor"))) {
+        virReportOOMError(conn);
+        return -1;
+    }
+
     if (virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
                     driver->libDir, vm) < 0) {
         virReportOOMError(conn);
@@ -2931,8 +2936,12 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuInitPasswords(driver, vm) < 0)
         goto abort;
 
-    if (qemuInitPCIAddresses(driver, vm) < 0)
-        goto abort;
+    /* If we have -device, then addresses are assigned explicitly.
+     * If not, then we have to detect dynamic ones here */
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (qemuInitPCIAddresses(driver, vm) < 0)
+            goto abort;
+    }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, vm->def->memory) < 0) {
