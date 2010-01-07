@@ -2108,6 +2108,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                              def->emulator);
             goto error;
         }
+        ADD_ARG_LIT("-mem-prealloc");
         ADD_ARG_LIT("-mem-path");
         ADD_ARG_LIT(driver->hugepage_path);
     }
