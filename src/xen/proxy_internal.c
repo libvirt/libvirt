@@ -340,7 +340,7 @@ xenProxyClose(virConnectPtr conn)
     return 0;
 }
 
-static int
+static int ATTRIBUTE_NONNULL(2)
 xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
                 virProxyFullPacketPtr answer, int quiet) {
     static int serial = 0;
