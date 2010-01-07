@@ -1407,7 +1407,12 @@ static int udevSetupSystemDev(void)
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
     if (device == NULL) {
         VIR_ERROR("Failed to get udev device for syspath '%s'\n", DMI_DEVPATH);
-        goto out;
+
+        device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
+        if (device == NULL) {
+            VIR_ERROR("Failed to get udev device for syspath '%s'\n", DMI_DEVPATH_FALLBACK);
+            goto out;
+        }
     }
 
     data = &def->caps->data;

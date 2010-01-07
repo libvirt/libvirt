@@ -26,6 +26,7 @@
 #define SYSFS_DATA_SIZE 4096
 #define DRV_STATE_UDEV_MONITOR(ds) ((struct udev_monitor *)((ds)->privateData))
 #define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
+#define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
 #define PROPERTY_FOUND 0
 #define PROPERTY_MISSING 1
 #define PROPERTY_ERROR -1
