@@ -1466,6 +1466,12 @@ dnl
 AC_ARG_WITH([python],
 [  --with-python              Build python bindings (on)],[],[with_python=yes])
 
+if test "$enable_shared:$with_python" = no:yes; then
+  AC_MSG_WARN([Disabling shared libraries is incompatible with building Python extensions.])
+  AC_MSG_WARN([Ignoring --with-python.])
+  with_python=no
+fi
+
 PYTHON_VERSION=
 PYTHON_INCLUDES=
 if test "$with_python" != "no" ; then
@@ -1812,7 +1818,6 @@ AC_ARG_WITH([qemu-group],
   [QEMU_GROUP=root])
 AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
 AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
-
 
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.
