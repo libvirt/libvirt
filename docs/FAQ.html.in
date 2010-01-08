@@ -119,7 +119,7 @@
     packages as well as the public headers to compile against libxenstore.</p>
       </li>
       <li>
-        <em>I use the CVS version and there is no configure script</em>
+        <em>I use the GIT version and there is no configure script</em>
         <p>The configure script (and other Makefiles) are generated. Use the
     autogen.sh script to regenerate the configure script and Makefiles,
     like:</p>

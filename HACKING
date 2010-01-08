@@ -15,14 +15,14 @@ should work:
 
 or:
 
-  cvs diff -up > libvirt-myfeature.patch
+  git diff > libvirt-myfeature.patch
 
 (3) Split large changes into a series of smaller patches, self-contained
 if possible, with an explanation of each patch and an explanation of how
 the sequence of patches fits together.
 
-(4) Make sure your patches apply against libvirt CVS.  Developers
-only follow CVS and don't care much about released versions.
+(4) Make sure your patches apply against libvirt GIT.  Developers
+only follow GIT and don't care much about released versions.
 
 (5) Run the automated tests on your code before submitting any changes.
 In particular, configure with compile warnings set to -Werror:

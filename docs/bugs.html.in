@@ -16,7 +16,7 @@
     <p>
       If you are using official libvirt binaries from a Linux distribution
       check below for distribution specific bug reporting policies first.
-      For general libvirt bug reports, from self-built releases, CVS snapshots
+      For general libvirt bug reports, from self-built releases, GIT snapshots
       and any other non-distribution supported builds, enter tickets under
       the <code>Virtualization Tools</code> product and the <code>libvirt</code>
       component.
@@ -64,8 +64,8 @@
     </p>
 
     <ul>
-      <li>The version number of the libvirt build, or date of the CVS
-        checkout</li>
+      <li>The version number of the libvirt build, or SHA1 of the GIT
+        commit</li>
       <li>The hardware architecture being used</li>
       <li>The name of the hypervisor (Xen, QEMU, KVM)</li>
       <li>The XML config of the guest domain if relevant</li>

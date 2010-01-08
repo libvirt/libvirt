@@ -25,10 +25,10 @@
       # make install
     </pre>
 
-    <h2>Built from CVS / GIT</h2>
+    <h2>Built from GIT</h2>
 
     <p>
-      When building from CVS it is necessary to generate the autotools
+      When building from GIT it is necessary to generate the autotools
       support files. This requires having <code>autoconf</code>,
       <code>automake</code>, <code>libtool</code> and <code>intltool</code>
       installed. The process can be automated with the <code>autogen.sh</code>

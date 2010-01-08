@@ -12,8 +12,8 @@
       <a href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
       page and follow the instructions. Patches with explanations and provided as
       attachments are really appreciated and will be discussed on the mailing list.
-      If possible generate the patches by using <code>cvs diff -up</code> in a CVS
-      checkout.
+      If possible generate the patches by using <code>git diff</code> in a GIT
+      clone.
     </p>
 
     <h2>IRC discussion</h2>

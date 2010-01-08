@@ -367,7 +367,7 @@ if HAVE_RPCGEN
 # Maintainer-only target for re-generating the derived .c/.h source
 # files, which are actually derived from the .x file.
 #
-# For committing protocol changes to CVS, the GLIBC rpcgen *must*
+# For committing protocol changes to GIT, the GLIBC rpcgen *must*
 # be used.
 #
 # Support for non-GLIB rpcgen is here as a convenience for
