@@ -334,6 +334,7 @@ __virExec(virConnectPtr conn,
     int pipeerr[2] = {-1,-1};
     int childout = -1;
     int childerr = -1;
+    int logprio;
     sigset_t oldmask, newmask;
     struct sigaction sig_action;
 
@@ -451,6 +452,13 @@ __virExec(virConnectPtr conn,
        get sent to stderr where they stand a fighting chance
        of being seen / logged */
     virSetErrorFunc(NULL, NULL);
+
+    /* Make sure any hook logging is sent to stderr, since virExec will
+     * close any unknown FDs (including logging handlers) before launching
+     * the new process */
+    logprio = virLogGetDefaultPriority();
+    virLogReset();
+    virLogSetDefaultPriority(logprio);
 
     /* Clear out all signal handlers from parent so nothing
        unexpected can happen in our child once we unblock
