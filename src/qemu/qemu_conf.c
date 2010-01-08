@@ -3749,8 +3749,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     /* QEMU changed its default behavior to not include the virtio balloon
      * device.  Explicitly request it to ensure it will be present.
+     *
+     * NB: Earlier we declared that VirtIO balloon will always be in
+     * slot 0x3 on bus 0x0
      */
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ADD_ARG_LIT("-device");
+        ADD_ARG_LIT("virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3");
+    } else if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
         ADD_ARG_LIT("-balloon");
         ADD_ARG_LIT("virtio");
     }
