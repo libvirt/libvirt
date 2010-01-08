@@ -92,6 +92,7 @@ struct _virDomainDeviceDriveAddress {
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
+    char *alias;
     int type;
     union {
         virDomainDevicePCIAddress pci;
@@ -245,8 +246,6 @@ struct _virDomainNetDef {
     } data;
     char *ifname;
     virDomainDeviceInfo info;
-    /* XXX figure out how to remove this */
-    char *nic_name;
     /* XXX figure out how to remove this */
     char *hostnet_name;
     /* XXX figure out how to remove this */
@@ -737,6 +736,7 @@ int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr);
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
+void virDomainDefClearDeviceAliases(virDomainDefPtr def);
 
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjRef(virDomainObjPtr vm);

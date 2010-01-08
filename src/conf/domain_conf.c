@@ -806,50 +806,61 @@ int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info)
 {
     if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
         return 1;
+    if (info->alias)
+        return 1;
     return 0;
 }
 
 
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
+    VIR_FREE(info->alias);
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
 }
 
 
-static void virDomainDeviceInfoClearField(virDomainDeviceInfoPtr info)
+static void virDomainDeviceInfoClearField(virDomainDeviceInfoPtr info, int alias, int pciaddr)
 {
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+    if (alias)
+        VIR_FREE(info->alias);
+    if (pciaddr &&
+        info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         memset(&info->addr, 0, sizeof(info->addr));
         info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     }
 }
 
 
-static void virDomainDefClearDeviceInfo(virDomainDefPtr def)
+static void virDomainDefClearDeviceInfo(virDomainDefPtr def, int alias, int pciaddr)
 {
     int i;
 
     for (i = 0; i < def->ndisks ; i++)
-        virDomainDeviceInfoClearField(&def->disks[i]->info);
+        virDomainDeviceInfoClearField(&def->disks[i]->info, alias, pciaddr);
     for (i = 0; i < def->nnets ; i++)
-        virDomainDeviceInfoClearField(&def->nets[i]->info);
+        virDomainDeviceInfoClearField(&def->nets[i]->info, alias, pciaddr);
     for (i = 0; i < def->nsounds ; i++)
-        virDomainDeviceInfoClearField(&def->sounds[i]->info);
+        virDomainDeviceInfoClearField(&def->sounds[i]->info, alias, pciaddr);
     for (i = 0; i < def->nhostdevs ; i++)
-        virDomainDeviceInfoClearField(&def->hostdevs[i]->info);
+        virDomainDeviceInfoClearField(&def->hostdevs[i]->info, alias, pciaddr);
     for (i = 0; i < def->nvideos ; i++)
-            virDomainDeviceInfoClearField(&def->videos[i]->info);
+            virDomainDeviceInfoClearField(&def->videos[i]->info, alias, pciaddr);
     for (i = 0; i < def->ncontrollers ; i++)
-            virDomainDeviceInfoClearField(&def->controllers[i]->info);
+            virDomainDeviceInfoClearField(&def->controllers[i]->info, alias, pciaddr);
     if (def->watchdog)
-        virDomainDeviceInfoClearField(&def->watchdog->info);
+        virDomainDeviceInfoClearField(&def->watchdog->info, alias, pciaddr);
 }
 
 
 void virDomainDefClearPCIAddresses(virDomainDefPtr def)
 {
-    virDomainDefClearDeviceInfo(def);
+    virDomainDefClearDeviceInfo(def, 0, 1);
+}
+
+void virDomainDefClearDeviceAliases(virDomainDefPtr def)
+{
+    virDomainDefClearDeviceInfo(def, 1, 0);
 }
 
 
@@ -857,12 +868,18 @@ void virDomainDefClearPCIAddresses(virDomainDefPtr def)
  * @param address Device address to stringify
  */
 static int virDomainDeviceInfoFormat(virBufferPtr buf,
-                                     virDomainDeviceInfoPtr info)
+                                     virDomainDeviceInfoPtr info,
+                                     int flags)
 {
     if (!info) {
         virDomainReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                              _("missing device information"));
         return -1;
+    }
+
+    if (info->alias &&
+        !(flags & VIR_DOMAIN_XML_INACTIVE)) {
+        virBufferVSprintf(buf, "      <alias name='%s'/>\n", info->alias);
     }
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -1044,10 +1061,11 @@ static int
 virDomainDeviceInfoParseXML(virConnectPtr conn,
                             xmlNodePtr node,
                             virDomainDeviceInfoPtr info,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            int flags)
 {
     xmlNodePtr cur;
     xmlNodePtr address = NULL;
+    xmlNodePtr alias = NULL;
     char *type = NULL;
     int ret = -1;
 
@@ -1056,13 +1074,20 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (address == NULL &&
-                xmlStrEqual(cur->name, BAD_CAST "address")) {
+            if (alias == NULL &&
+                !(flags & VIR_DOMAIN_XML_INACTIVE) &&
+                xmlStrEqual(cur->name, BAD_CAST "alias")) {
+                alias = cur;
+            } else if (address == NULL &&
+                       xmlStrEqual(cur->name, BAD_CAST "address")) {
                 address = cur;
             }
         }
         cur = cur->next;
     }
+
+    if (alias)
+        info->alias = virXMLPropString(alias, "name");
 
     if (!address)
         return 0;
@@ -1102,6 +1127,8 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
     ret = 0;
 
 cleanup:
+    if (ret == -1)
+        VIR_FREE(info->alias);
     VIR_FREE(type);
     return ret;
 }
@@ -1666,6 +1693,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
             goto error;
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        def->info.alias = nic_name;
+        nic_name = NULL;
     } else {
         if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
             goto error;
@@ -1680,9 +1709,8 @@ virDomainNetDefParseXML(virConnectPtr conn,
         goto error;
     }
 
-    def->nic_name = nic_name;
     def->hostnet_name = hostnet_name;
-    nic_name = hostnet_name = NULL;
+    hostnet_name = NULL;
 
     def->vlan = -1;
     if (vlan && virStrToLong_i(vlan, NULL, 10, &def->vlan) < 0) {
@@ -2930,6 +2958,10 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
                         if (virDomainHostdevSubsysPciDefParseXML(conn, cur, def, flags) < 0)
                             goto error;
                 }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+            } else {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("unknown node %s"), cur->name);
             }
         }
         cur = cur->next;
@@ -4499,7 +4531,8 @@ virDomainLifecycleDefFormat(virConnectPtr conn,
 static int
 virDomainDiskDefFormat(virConnectPtr conn,
                        virBufferPtr buf,
-                       virDomainDiskDefPtr def)
+                       virDomainDiskDefPtr def,
+                       int flags)
 {
     const char *type = virDomainDiskTypeToString(def->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
@@ -4576,7 +4609,7 @@ virDomainDiskDefFormat(virConnectPtr conn,
         virStorageEncryptionFormat(conn, buf, def->encryption) < 0)
         return -1;
 
-    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </disk>\n");
@@ -4587,7 +4620,8 @@ virDomainDiskDefFormat(virConnectPtr conn,
 static int
 virDomainControllerDefFormat(virConnectPtr conn,
                              virBufferPtr buf,
-                             virDomainControllerDefPtr def)
+                             virDomainControllerDefPtr def,
+                             int flags)
 {
     const char *type = virDomainControllerTypeToString(def->type);
 
@@ -4603,7 +4637,7 @@ virDomainControllerDefFormat(virConnectPtr conn,
 
     if (virDomainDeviceInfoIsSet(&def->info)) {
         virBufferAddLit(buf, ">\n");
-        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
         virBufferAddLit(buf, "    </controller>\n");
     } else {
@@ -4749,7 +4783,7 @@ virDomainNetDefFormat(virConnectPtr conn,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </interface>\n");
@@ -4912,7 +4946,8 @@ cleanup:
 static int
 virDomainSoundDefFormat(virConnectPtr conn,
                         virBufferPtr buf,
-                        virDomainSoundDefPtr def)
+                        virDomainSoundDefPtr def,
+                        int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
 
@@ -4927,7 +4962,7 @@ virDomainSoundDefFormat(virConnectPtr conn,
 
     if (virDomainDeviceInfoIsSet(&def->info)) {
         virBufferAddLit(buf, ">\n");
-        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
         virBufferAddLit(buf, "    </sound>\n");
     } else {
@@ -4941,7 +4976,8 @@ virDomainSoundDefFormat(virConnectPtr conn,
 static int
 virDomainWatchdogDefFormat(virConnectPtr conn,
                            virBufferPtr buf,
-                           virDomainWatchdogDefPtr def)
+                           virDomainWatchdogDefPtr def,
+                           int flags)
 {
     const char *model = virDomainWatchdogModelTypeToString (def->model);
     const char *action = virDomainWatchdogActionTypeToString (def->action);
@@ -4963,7 +4999,7 @@ virDomainWatchdogDefFormat(virConnectPtr conn,
 
     if (virDomainDeviceInfoIsSet(&def->info)) {
         virBufferAddLit(buf, ">\n");
-        if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
         virBufferAddLit(buf, "    </watchdog>\n");
     } else {
@@ -4989,7 +5025,8 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
 static int
 virDomainVideoDefFormat(virConnectPtr conn,
                         virBufferPtr buf,
-                        virDomainVideoDefPtr def)
+                        virDomainVideoDefPtr def,
+                        int flags)
 {
     const char *model = virDomainVideoTypeToString(def->type);
 
@@ -5014,7 +5051,7 @@ virDomainVideoDefFormat(virConnectPtr conn,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </video>\n");
@@ -5146,7 +5183,8 @@ virDomainGraphicsDefFormat(virConnectPtr conn,
 static int
 virDomainHostdevDefFormat(virConnectPtr conn,
                           virBufferPtr buf,
-                          virDomainHostdevDefPtr def)
+                          virDomainHostdevDefPtr def,
+                          int flags)
 {
     const char *mode = virDomainHostdevModeTypeToString(def->mode);
     const char *type;
@@ -5190,7 +5228,7 @@ virDomainHostdevDefFormat(virConnectPtr conn,
 
     virBufferAddLit(buf, "      </source>\n");
 
-    if (virDomainDeviceInfoFormat(buf, &def->info) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
     virBufferAddLit(buf, "    </hostdev>\n");
@@ -5357,11 +5395,11 @@ char *virDomainDefFormat(virConnectPtr conn,
                               def->emulator);
 
     for (n = 0 ; n < def->ndisks ; n++)
-        if (virDomainDiskDefFormat(conn, &buf, def->disks[n]) < 0)
+        if (virDomainDiskDefFormat(conn, &buf, def->disks[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->ncontrollers ; n++)
-        if (virDomainControllerDefFormat(conn, &buf, def->controllers[n]) < 0)
+        if (virDomainControllerDefFormat(conn, &buf, def->controllers[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nfss ; n++)
@@ -5421,19 +5459,19 @@ char *virDomainDefFormat(virConnectPtr conn,
     }
 
     for (n = 0 ; n < def->nsounds ; n++)
-        if (virDomainSoundDefFormat(conn, &buf, def->sounds[n]) < 0)
+        if (virDomainSoundDefFormat(conn, &buf, def->sounds[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nvideos ; n++)
-        if (virDomainVideoDefFormat(conn, &buf, def->videos[n]) < 0)
+        if (virDomainVideoDefFormat(conn, &buf, def->videos[n], flags) < 0)
             goto cleanup;
 
     for (n = 0 ; n < def->nhostdevs ; n++)
-        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n]) < 0)
+        if (virDomainHostdevDefFormat(conn, &buf, def->hostdevs[n], flags) < 0)
             goto cleanup;
 
     if (def->watchdog)
-        virDomainWatchdogDefFormat (conn, &buf, def->watchdog);
+        virDomainWatchdogDefFormat (conn, &buf, def->watchdog, flags);
 
     virBufferAddLit(&buf, "  </devices>\n");
 

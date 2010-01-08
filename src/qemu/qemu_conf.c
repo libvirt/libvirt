@@ -1489,7 +1489,7 @@ qemuAssignNetNames(virDomainDefPtr def,
         if (def->nets[i] == net)
             continue;
 
-        if (!def->nets[i]->nic_name || !def->nets[i]->hostnet_name)
+        if (!def->nets[i]->info.alias || !def->nets[i]->hostnet_name)
             continue;
 
         if ((def->nets[i]->model == NULL && net->model == NULL) ||
@@ -1517,7 +1517,7 @@ qemuAssignNetNames(virDomainDefPtr def,
         return -1;
     }
 
-    net->nic_name = nic_name;
+    net->info.alias = nic_name;
     net->hostnet_name = hostnet_name;
 
     return 0;
@@ -1714,8 +1714,8 @@ qemuBuildNicStr(virConnectPtr conn,
                     vlan,
                     (net->model ? ",model=" : ""),
                     (net->model ? net->model : ""),
-                    (net->nic_name ? ",name=" : ""),
-                    (net->nic_name ? net->nic_name : "")) < 0) {
+                    (net->info.alias ? ",name=" : ""),
+                    (net->info.alias ? net->info.alias : "")) < 0) {
         virReportOOMError(conn);
         return -1;
     }
