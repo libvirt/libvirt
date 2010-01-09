@@ -159,4 +159,5 @@ uninstall-local:
 	for h in $(apihtml); do rm $(DESTDIR)$(HTML_DIR)/$$h; done
 	for p in $(apipng); do rm $(DESTDIR)$(HTML_DIR)/$$p; done
 	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
-		rm $(DESTDIR)$(DEVHELP_DIR)$$f ; done
+	  rm $(DESTDIR)$(DEVHELP_DIR)/$$(basename $$f); \
+	done
