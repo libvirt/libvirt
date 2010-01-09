@@ -3135,6 +3135,7 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     char *dom_xml = NULL;
     int cookielen = 0, ret;
     virDomainInfo info;
+    virErrorPtr orig_err = NULL;
 
     /* Prepare the migration.
      *
@@ -3190,6 +3191,10 @@ virDomainMigrateVersion2 (virDomainPtr domain,
     ret = domain->conn->driver->domainMigratePerform
         (domain, cookie, cookielen, uri, flags, dname, bandwidth);
 
+    /* Perform failed. Make sure Finish doesn't overwrite the error */
+    if (ret < 0)
+        orig_err = virSaveLastError();
+
     /* In version 2 of the migration protocol, we pass the
      * status code from the sender to the destination host,
      * so it can do any cleanup if the migration failed.
@@ -3199,6 +3204,10 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         (dconn, dname, cookie, cookielen, uri, flags, ret);
 
  done:
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
     VIR_FREE (uri_out);
     VIR_FREE (cookie);
     return ddomain;
