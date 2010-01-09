@@ -1433,7 +1433,13 @@ qemudFindCharDevicePTYsMonitor(virConnectPtr conn,
                 return -1;                                                \
             }                                                             \
                                                                           \
+            VIR_FREE(chr->data.file.path);                                \
             chr->data.file.path = strdup(path);                           \
+                                                                          \
+            if (chr->data.file.path == NULL) {                            \
+                virReportOOMError(conn);                                  \
+                return -1;                                                \
+            }                                                             \
         }                                                                 \
     }
 
