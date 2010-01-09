@@ -2622,11 +2622,16 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     int ret;
     int retries = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
 
     if (!virDomainObjIsActive(vm))
         return;
 
     VIR_DEBUG("Shutting down VM '%s'", vm->def->name);
+
+    /* This method is routinely used in clean up paths. Disable error
+     * reporting so we don't squash a legit error. */
+    orig_err = virSaveLastError();
 
     if (driver->macFilter) {
         int i;
@@ -2706,6 +2711,11 @@ retry:
         vm->def = vm->newDef;
         vm->def->id = -1;
         vm->newDef = NULL;
+    }
+
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
     }
 }
 
