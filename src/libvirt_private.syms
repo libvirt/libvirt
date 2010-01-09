@@ -593,6 +593,7 @@ virRaiseErrorFull;
 virReportSystemErrorFull;
 virReportOOMErrorFull;
 virStrerror;
+virSetError;
 
 
 # xml.h

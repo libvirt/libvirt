@@ -290,6 +290,28 @@ virGetLastError(void)
 }
 
 /**
+ * virSetError:
+ *
+ * Set the current error from a previously saved error object
+ *
+ * Can be used to re-set an old error, which may have been squashed by
+ * other functions (like cleanup routines).
+ *
+ * Returns 0 on success, 1 on failure
+ */
+int
+virSetError(virErrorPtr newerr)
+{
+    virErrorPtr err;
+    err = virGetLastError();
+    if (!err)
+        return -1;
+
+    virResetError(err);
+    return virCopyError(newerr, err);
+}
+
+/**
  * virCopyLastError:
  * @to: target to receive the copy
  *
