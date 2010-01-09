@@ -1,6 +1,7 @@
 #!/bin/sh
 
-. ./schematestutils.sh
+: ${srcdir=.}
+. $srcdir/schematestutils.sh
 
 DIRS="interfaceschemadata"
 SCHEMA="interface.rng"

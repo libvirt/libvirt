@@ -1,6 +1,7 @@
 #!/bin/sh
 
-. ./schematestutils.sh
+: ${srcdir=.}
+. $srcdir/schematestutils.sh
 
 DIRS="storagevolxml2xmlin storagevolxml2xmlout"
 SCHEMA="storagevol.rng"
