@@ -7676,7 +7676,11 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
+    virErrorPtr orig_err;
     int newVM = 1;
+
+    /* Migration failed. Save the current error so nothing squashes it */
+    orig_err = virSaveLastError();
 
     qemuDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dname);
@@ -7771,6 +7775,10 @@ endjob:
         vm = NULL;
 
 cleanup:
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
