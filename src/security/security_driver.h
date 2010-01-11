@@ -52,15 +52,19 @@ typedef int (*virSecurityDomainRestoreSavedStateLabel) (virConnectPtr conn,
 typedef int (*virSecurityDomainGenLabel) (virConnectPtr conn,
                                           virDomainObjPtr sec);
 typedef int (*virSecurityDomainReserveLabel) (virConnectPtr conn,
-                                           virDomainObjPtr sec);
-typedef int (*virSecurityDomainGetLabel) (virConnectPtr conn,
-                                          virDomainObjPtr vm,
-                                          virSecurityLabelPtr sec);
-typedef int (*virSecurityDomainRestoreLabel) (virConnectPtr conn,
-                                              virDomainObjPtr vm);
-typedef int (*virSecurityDomainSetLabel) (virConnectPtr conn,
-                                          virSecurityDriverPtr drv,
-                                          virDomainObjPtr vm);
+                                              virDomainObjPtr sec);
+typedef int (*virSecurityDomainReleaseLabel) (virConnectPtr conn,
+                                              virDomainObjPtr sec);
+typedef int (*virSecurityDomainSetAllLabel) (virConnectPtr conn,
+                                             virDomainObjPtr sec);
+typedef int (*virSecurityDomainRestoreAllLabel) (virConnectPtr conn,
+                                                 virDomainObjPtr vm);
+typedef int (*virSecurityDomainGetProcessLabel) (virConnectPtr conn,
+                                                 virDomainObjPtr vm,
+                                                 virSecurityLabelPtr sec);
+typedef int (*virSecurityDomainSetProcessLabel) (virConnectPtr conn,
+                                                 virSecurityDriverPtr drv,
+                                                 virDomainObjPtr vm);
 typedef int (*virSecurityDomainSecurityVerify) (virConnectPtr conn,
                                                 virDomainDefPtr def);
 
@@ -73,9 +77,11 @@ struct _virSecurityDriver {
     virSecurityDomainSetImageLabel domainSetSecurityImageLabel;
     virSecurityDomainGenLabel domainGenSecurityLabel;
     virSecurityDomainReserveLabel domainReserveSecurityLabel;
-    virSecurityDomainGetLabel domainGetSecurityLabel;
-    virSecurityDomainSetLabel domainSetSecurityLabel;
-    virSecurityDomainRestoreLabel domainRestoreSecurityLabel;
+    virSecurityDomainReleaseLabel domainReleaseSecurityLabel;
+    virSecurityDomainGetProcessLabel domainGetSecurityProcessLabel;
+    virSecurityDomainSetProcessLabel domainSetSecurityProcessLabel;
+    virSecurityDomainSetAllLabel domainSetSecurityAllLabel;
+    virSecurityDomainRestoreAllLabel domainRestoreSecurityAllLabel;
     virSecurityDomainRestoreHostdevLabel domainRestoreSecurityHostdevLabel;
     virSecurityDomainSetHostdevLabel domainSetSecurityHostdevLabel;
     virSecurityDomainSetSavedStateLabel domainSetSavedStateLabel;

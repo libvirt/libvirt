@@ -277,9 +277,9 @@ SELinuxSecurityDriverOpen(virConnectPtr conn, virSecurityDriverPtr drv)
 }
 
 static int
-SELinuxGetSecurityLabel(virConnectPtr conn,
-                        virDomainObjPtr vm,
-                        virSecurityLabelPtr sec)
+SELinuxGetSecurityProcessLabel(virConnectPtr conn,
+                               virDomainObjPtr vm,
+                               virSecurityLabelPtr sec)
 {
     security_context_t ctx;
 
@@ -615,8 +615,8 @@ done:
 }
 
 static int
-SELinuxRestoreSecurityLabel(virConnectPtr conn,
-                            virDomainObjPtr vm)
+SELinuxRestoreSecurityAllLabel(virConnectPtr conn,
+                               virDomainObjPtr vm)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
@@ -636,6 +636,19 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
                                              vm->def->disks[i]) < 0)
             rc = -1;
     }
+
+    return rc;
+}
+
+static int
+SELinuxReleaseSecurityLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virDomainObjPtr vm)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     context_t con = context_new(secdef->label);
     if (con) {
         mcsRemove(context_range_get(con));
@@ -646,7 +659,7 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
     VIR_FREE(secdef->label);
     VIR_FREE(secdef->imagelabel);
 
-    return rc;
+    return 0;
 }
 
 
@@ -693,13 +706,12 @@ SELinuxSecurityVerify(virConnectPtr conn, virDomainDefPtr def)
 }
 
 static int
-SELinuxSetSecurityLabel(virConnectPtr conn,
-                        virSecurityDriverPtr drv,
-                        virDomainObjPtr vm)
+SELinuxSetSecurityProcessLabel(virConnectPtr conn,
+                               virSecurityDriverPtr drv,
+                               virDomainObjPtr vm)
 {
     /* TODO: verify DOI */
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
-    int i;
 
     if (vm->def->seclabel.label == NULL)
         return 0;
@@ -722,18 +734,32 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
             return -1;
     }
 
-    if (secdef->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
-            /* XXX fixme - we need to recursively label the entriy tree :-( */
-            if (vm->def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
-                continue;
-            if (SELinuxSetSecurityImageLabel(conn, vm, vm->def->disks[i]) < 0)
-                return -1;
+    return 0;
+}
+
+static int
+SELinuxSetSecurityAllLabel(virConnectPtr conn,
+                           virDomainObjPtr vm)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    int i;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        /* XXX fixme - we need to recursively label the entire tree :-( */
+        if (vm->def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR) {
+            VIR_WARN("Unable to relabel directory tree %s for disk %s",
+                     vm->def->disks[i]->src, vm->def->disks[i]->dst);
+            continue;
         }
-        for (i = 0 ; i < vm->def->nhostdevs ; i++) {
-            if (SELinuxSetSecurityHostdevLabel(conn, vm, vm->def->hostdevs[i]) < 0)
-                return -1;
-        }
+        if (SELinuxSetSecurityImageLabel(conn, vm, vm->def->disks[i]) < 0)
+            return -1;
+    }
+    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+        if (SELinuxSetSecurityHostdevLabel(conn, vm, vm->def->hostdevs[i]) < 0)
+            return -1;
     }
 
     return 0;
@@ -748,9 +774,11 @@ virSecurityDriver virSELinuxSecurityDriver = {
     .domainRestoreSecurityImageLabel = SELinuxRestoreSecurityImageLabel,
     .domainGenSecurityLabel     = SELinuxGenSecurityLabel,
     .domainReserveSecurityLabel     = SELinuxReserveSecurityLabel,
-    .domainGetSecurityLabel     = SELinuxGetSecurityLabel,
-    .domainRestoreSecurityLabel = SELinuxRestoreSecurityLabel,
-    .domainSetSecurityLabel     = SELinuxSetSecurityLabel,
+    .domainReleaseSecurityLabel     = SELinuxReleaseSecurityLabel,
+    .domainGetSecurityProcessLabel     = SELinuxGetSecurityProcessLabel,
+    .domainSetSecurityProcessLabel     = SELinuxSetSecurityProcessLabel,
+    .domainRestoreSecurityAllLabel = SELinuxRestoreSecurityAllLabel,
+    .domainSetSecurityAllLabel     = SELinuxSetSecurityAllLabel,
     .domainSetSecurityHostdevLabel = SELinuxSetSecurityHostdevLabel,
     .domainRestoreSecurityHostdevLabel = SELinuxRestoreSecurityHostdevLabel,
     .domainSetSavedStateLabel = SELinuxSetSavedStateLabel,

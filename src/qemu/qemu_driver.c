@@ -2450,8 +2450,14 @@ static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *
     int rc = 0;
 
     if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityLabel &&
-        driver->securityDriver->domainSetSecurityLabel(conn, driver->securityDriver, vm) < 0)
+        driver->securityDriver->domainSetSecurityAllLabel &&
+        driver->securityDriver->domainSetSecurityAllLabel(conn, vm) < 0)
+        rc = -1;
+
+    if (rc == 0 &&
+        driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityProcessLabel &&
+        driver->securityDriver->domainSetSecurityProcessLabel(conn, driver->securityDriver, vm) < 0)
         rc = -1;
 
     return rc;
@@ -3063,8 +3069,11 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 
     /* Reset Security Labels */
     if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityLabel)
-        driver->securityDriver->domainRestoreSecurityLabel(conn, vm);
+        driver->securityDriver->domainRestoreSecurityAllLabel)
+        driver->securityDriver->domainRestoreSecurityAllLabel(conn, vm);
+    if (driver->securityDriver &&
+        driver->securityDriver->domainReleaseSecurityLabel)
+        driver->securityDriver->domainReleaseSecurityLabel(conn, vm);
 
     /* Clear out dynamically assigned labels */
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
@@ -4632,8 +4641,8 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
      *   QEMU monitor hasn't seen SIGHUP/ERR on poll().
      */
     if (virDomainObjIsActive(vm)) {
-        if (driver->securityDriver && driver->securityDriver->domainGetSecurityLabel) {
-            if (driver->securityDriver->domainGetSecurityLabel(dom->conn, vm, seclabel) == -1) {
+        if (driver->securityDriver && driver->securityDriver->domainGetSecurityProcessLabel) {
+            if (driver->securityDriver->domainGetSecurityProcessLabel(dom->conn, vm, seclabel) == -1) {
                 qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("Failed to get security label"));
                 goto cleanup;
