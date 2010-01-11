@@ -343,7 +343,7 @@
     <pre>
           ...
           &lt;disk type='file'&gt;
-            &lt;driver name="tap" type="aio"&gt;
+            &lt;driver name="tap" type="aio" cache="default"&gt;
             &lt;source file='/var/lib/xen/images/fv0'/&gt;
             &lt;target dev='hda' bus='ide'/&gt;
             &lt;encryption type='...'&gt;
@@ -383,7 +383,9 @@
       <dd>If the hypervisor supports multiple backend drivers, then the optional
         <code>driver</code> element allows them to be selected. The <code>name</code>
         attribute is the primary backend driver name, while the optional <code>type</code>
-        attribute provides the sub-type. <span class="since">Since 0.1.8</span>
+        attribute provides the sub-type. The optional <code>cache</code> attribute
+        controls the cache mechanism, possible values are "default", "none",
+        "writethrough" and "writeback". <span class="since">Since 0.1.8</span>
       </dd>
       <dt><code>encryption</code></dt>
       <dd>If present, specifies how the volume is encrypted.  See
