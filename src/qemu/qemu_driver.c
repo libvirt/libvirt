@@ -2105,14 +2105,11 @@ static int qemuDomainSetHostdevUSBOwnership(virConnectPtr conn,
     struct qemuFileOwner owner = { uid, gid };
     int ret = -1;
 
-    /* XXX what todo for USB devs assigned based on product/vendor ? Doom :-( */
-    if (!def->source.subsys.u.usb.bus ||
-        !def->source.subsys.u.usb.device)
-        return 0;
-
     usbDevice *dev = usbGetDevice(conn,
                                   def->source.subsys.u.usb.bus,
-                                  def->source.subsys.u.usb.device);
+                                  def->source.subsys.u.usb.device,
+                                  def->source.subsys.u.usb.vendor,
+                                  def->source.subsys.u.usb.product);
 
     if (!dev)
         goto cleanup;

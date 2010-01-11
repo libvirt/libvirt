@@ -836,24 +836,22 @@ get_files(vahControl * ctl)
             virDomainHostdevDefPtr dev = ctl->def->hostdevs[i];
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                if (dev->source.subsys.u.usb.bus &&
-                    dev->source.subsys.u.usb.device) {
-                    usbDevice *usb = usbGetDevice(NULL,
-                               dev->source.subsys.u.usb.bus,
-                               dev->source.subsys.u.usb.device);
-                    if (usb == NULL)
-                        continue;
-                    rc = usbDeviceFileIterate(NULL, usb,
-                                              file_iterate_cb, &buf);
-                    usbFreeDevice(NULL, usb);
-                    if (rc != 0)
-                        goto clean;
-                    else {
-                        /* TODO: deal with product/vendor better */
-                        rc = 0;
-                    }
-                }
+                usbDevice *usb = usbGetDevice(NULL,
+                                          dev->source.subsys.u.usb.bus,
+                                          dev->source.subsys.u.usb.device,
+                                          dev->source.subsys.u.usb.vendor,
+                                          dev->source.subsys.u.usb.product);
+
+                if (usb == NULL)
+                    continue;
+
+                rc = usbDeviceFileIterate(NULL, usb,
+                                          file_iterate_cb, &buf);
+                usbFreeDevice(NULL, usb);
+                if (rc != 0)
+                    goto clean;
                 break;
+                }
             }
 /* TODO: update so files in /sys are readonly
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {

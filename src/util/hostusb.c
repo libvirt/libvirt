@@ -37,9 +37,10 @@
 #include "util.h"
 #include "virterror_internal.h"
 
+#define USB_SYSFS "/sys/bus/usb"
 #define USB_DEVFS "/dev/bus/usb/"
-#define USB_ID_LEN 10 /* "XXXX XXXX" */
-#define USB_ADDR_LEN 8 /* "XXX:XXX" */
+#define USB_ID_LEN 10 /* "1234 5678" */
+#define USB_ADDR_LEN 8 /* "123:456" */
 
 struct _usbDevice {
     unsigned      bus;
@@ -57,17 +58,120 @@ struct _usbDevice {
     virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,  \
                          __FUNCTION__, __LINE__, fmt)
 
+static int usbSysReadFile(virConnectPtr conn,
+                          const char *f_name, const char *d_name,
+                          int base, unsigned *value)
+{
+    int ret = -1, tmp;
+    char *buf = NULL;
+    char *filename = NULL;
+    char *ignore = NULL;
+
+    tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
+    if (tmp < 0) {
+        virReportOOMError(conn);
+        goto error;
+    }
+
+    if (virFileReadAll(filename, 1024, &buf) < 0)
+        goto error;
+
+    if (virStrToLong_ui(buf, &ignore, base, value) < 0) {
+        usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse usb file %s"), filename);
+        goto error;
+    }
+
+    ret = 0;
+error:
+    VIR_FREE(filename);
+    VIR_FREE(buf);
+    return ret;
+}
+
+static int usbFindBusByVendor(virConnectPtr conn,
+                              unsigned vendor, unsigned product,
+                              unsigned *bus, unsigned *devno)
+{
+    DIR *dir = NULL;
+    int ret = -1, found = 0;
+    char *ignore = NULL;
+    struct dirent *de;
+
+    dir = opendir(USB_SYSFS "/devices");
+    if (!dir) {
+        virReportSystemError(conn, errno,
+                             _("Could not open directory %s"),
+                             USB_SYSFS "/devices");
+        goto error;
+    }
+
+    while ((de = readdir(dir))) {
+        unsigned found_prod, found_vend;
+        if (de->d_name[0] == '.' || strchr(de->d_name, ':'))
+            continue;
+
+        if (usbSysReadFile(conn, "idVendor", de->d_name,
+                           16, &found_vend) < 0)
+            goto error;
+        if (usbSysReadFile(conn, "idProduct", de->d_name,
+                           16, &found_prod) < 0)
+            goto error;
+
+        if (found_prod == product && found_vend == vendor) {
+            /* Lookup bus.addr info */
+            char *tmpstr = de->d_name;
+            unsigned found_bus, found_addr;
+
+            if (STREQ(de->d_name, "usb"))
+                tmpstr += 3;
+
+            if (virStrToLong_ui(tmpstr, &ignore, 10, &found_bus) < 0) {
+                usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to parse dir name '%s'"),
+                               de->d_name);
+                goto error;
+            }
+
+            if (usbSysReadFile(conn, "devnum", de->d_name,
+                               10, &found_addr) < 0)
+                goto error;
+
+            *bus = found_bus;
+            *devno = found_addr;
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("Did not find USB device %x:%x"), vendor, product);
+    else
+        ret = 0;
+
+error:
+    return ret;
+}
 
 usbDevice *
 usbGetDevice(virConnectPtr conn,
              unsigned bus,
-             unsigned devno)
+             unsigned devno,
+             unsigned vendor,
+             unsigned product)
 {
     usbDevice *dev;
 
     if (VIR_ALLOC(dev) < 0) {
         virReportOOMError(conn);
         return NULL;
+    }
+
+    if (vendor) {
+        /* Look up bus.dev by vendor:product */
+        if (usbFindBusByVendor(conn, vendor, product, &bus, &devno) < 0)
+            return NULL;
     }
 
     dev->bus     = bus;

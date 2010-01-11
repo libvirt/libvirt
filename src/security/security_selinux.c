@@ -481,20 +481,17 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        if (dev->source.subsys.u.usb.bus && dev->source.subsys.u.usb.device) {
-            usbDevice *usb = usbGetDevice(conn,
-                                          dev->source.subsys.u.usb.bus,
-                                          dev->source.subsys.u.usb.device);
+        usbDevice *usb = usbGetDevice(conn,
+                                      dev->source.subsys.u.usb.bus,
+                                      dev->source.subsys.u.usb.device,
+                                      dev->source.subsys.u.usb.vendor,
+                                      dev->source.subsys.u.usb.product);
 
-            if (!usb)
-                goto done;
+        if (!usb)
+            goto done;
 
-            ret = usbDeviceFileIterate(conn, usb, SELinuxSetSecurityUSBLabel, vm);
-            usbFreeDevice(conn, usb);
-        } else {
-            /* XXX deal with product/vendor better */
-            ret = 0;
-        }
+        ret = usbDeviceFileIterate(conn, usb, SELinuxSetSecurityUSBLabel, vm);
+        usbFreeDevice(conn, usb);
         break;
     }
 
@@ -556,7 +553,9 @@ SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         usbDevice *usb = usbGetDevice(conn,
                                       dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device);
+                                      dev->source.subsys.u.usb.device,
+                                      dev->source.subsys.u.usb.vendor,
+                                      dev->source.subsys.u.usb.product);
 
         if (!usb)
             goto done;

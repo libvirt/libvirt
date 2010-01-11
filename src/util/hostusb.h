@@ -28,7 +28,9 @@ typedef struct _usbDevice usbDevice;
 
 usbDevice *usbGetDevice      (virConnectPtr  conn,
                               unsigned       bus,
-                              unsigned       devno);
+                              unsigned       devno,
+                              unsigned       vendor,
+                              unsigned       product);
 void       usbFreeDevice     (virConnectPtr  conn,
                               usbDevice     *dev);
 
