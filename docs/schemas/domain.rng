@@ -1307,17 +1307,21 @@
       -->
   <define name="cpu">
     <element name="cpu">
-      <attribute name="match">
-        <choice>
-          <value>minimum</value>
-          <value>exact</value>
-          <value>strict</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="match">
+          <choice>
+            <value>minimum</value>
+            <value>exact</value>
+            <value>strict</value>
+          </choice>
+        </attribute>
+      </optional>
       <interleave>
-        <element name="model">
-          <text/>
-        </element>
+        <optional>
+          <element name="model">
+            <text/>
+          </element>
+        </optional>
         <optional>
           <element name="topology">
             <attribute name="sockets">

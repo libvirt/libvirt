@@ -1,7 +1,7 @@
 /*
  * cpu_conf.h: CPU XML handling
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,7 +76,6 @@ virCPUDefParseXML(virConnectPtr conn,
 {
     virCPUDefPtr def;
     xmlNodePtr *nodes = NULL;
-    char *match;
     int n;
     unsigned int i;
 
@@ -85,18 +84,33 @@ virCPUDefParseXML(virConnectPtr conn,
         return NULL;
     }
 
-    match = virXMLPropString(node, "match");
-
-    if (mode == VIR_CPU_TYPE_AUTO)
-        def->type = (match == NULL) ? VIR_CPU_TYPE_HOST : VIR_CPU_TYPE_GUEST;
-    else
+    if (mode == VIR_CPU_TYPE_AUTO) {
+        if (virXPathBoolean(conn, "boolean(./arch)", ctxt))
+            def->type = VIR_CPU_TYPE_HOST;
+        else
+            def->type = VIR_CPU_TYPE_GUEST;
+    } else
         def->type = mode;
 
     if (def->type == VIR_CPU_TYPE_GUEST) {
-        if ((def->match = virCPUMatchTypeFromString(match)) < 0) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Invalid match attribute for CPU specification"));
-            goto error;
+        char *match = virXMLPropString(node, "match");
+
+        if (!match) {
+            if (virXPathBoolean(conn, "boolean(./model)", ctxt)) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Missing match attribute for CPU specification"));
+                goto error;
+            }
+            def->match = -1;
+        } else {
+            def->match = virCPUMatchTypeFromString(match);
+            VIR_FREE(match);
+
+            if (def->match < 0) {
+                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Invalid match attribute for CPU specification"));
+                goto error;
+            }
         }
     }
 
@@ -109,7 +123,8 @@ virCPUDefParseXML(virConnectPtr conn,
         }
     }
 
-    if (!(def->model = virXPathString(conn, "string(./model[1])", ctxt))) {
+    if (!(def->model = virXPathString(conn, "string(./model[1])", ctxt)) &&
+        def->type == VIR_CPU_TYPE_HOST) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto error;
@@ -158,6 +173,12 @@ virCPUDefParseXML(virConnectPtr conn,
         goto error;
 
     if (n > 0) {
+        if (!def->model) {
+            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Non-empty feature list specified without CPU model"));
+            goto error;
+        }
+
         if (VIR_ALLOC_N(def->features, n) < 0)
             goto no_memory;
         def->nfeatures = n;
@@ -206,7 +227,6 @@ virCPUDefParseXML(virConnectPtr conn,
     }
 
 cleanup:
-    VIR_FREE(match);
     VIR_FREE(nodes);
 
     return def;
@@ -263,14 +283,14 @@ virCPUDefFormatBuf(virConnectPtr conn,
     if (indent == NULL)
         indent = "";
 
-    if (!def->model) {
+    if (!def->model && def->nfeatures) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                "%s", _("Missing CPU model"));
+                "%s", _("Non-empty feature list specified without CPU model"));
         return -1;
     }
 
     if (!(flags & VIR_CPU_FORMAT_EMBEDED)) {
-        if (def->type == VIR_CPU_TYPE_GUEST) {
+        if (def->type == VIR_CPU_TYPE_GUEST && def->model) {
             const char *match;
             if (!(match = virCPUMatchTypeToString(def->match))) {
                 virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -287,7 +307,8 @@ virCPUDefFormatBuf(virConnectPtr conn,
             virBufferVSprintf(buf, "%s  <arch>%s</arch>\n", indent, def->arch);
     }
 
-    virBufferVSprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
+    if (def->model)
+        virBufferVSprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
 
     if (def->sockets && def->cores && def->threads) {
         virBufferVSprintf(buf, "%s  <topology", indent);
