@@ -4553,15 +4553,21 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
 
     DEBUG("hostname = %s, port = %s", hostname, port);
 
-    /* Make the call. */
+    /* Make the call.
+     * NB:  xend will fail the operation if any parameters are
+     * missing but happily accept unknown parameters.  This works
+     * to our advantage since all parameters supported and required
+     * by current xend can be included without breaking older xend.
+     */
     ret = xend_op (domain->conn, domain->name,
                    "op", "migrate",
                    "destination", hostname,
                    "live", live,
                    "port", port,
-                   "node", "-1",
-                   "ssl", "0",
-                   "resource", "0", /* required, xend ignores it */
+                   "node", "-1", /* xen-unstable c/s 17753 */
+                   "ssl", "0", /* xen-unstable c/s 17709 */
+                   "change_home_server", "0", /* xen-unstable c/s 20326 */
+                   "resource", "0", /* removed by xen-unstable c/s 17553 */
                    NULL);
     VIR_FREE (hostname);
 
