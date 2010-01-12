@@ -1248,6 +1248,7 @@ static const vshCmdInfo info_schedinfo[] = {
 static const vshCmdOptDef opts_schedinfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"set", VSH_OT_STRING, VSH_OFLAG_NONE, gettext_noop("parameter=value")},
+    {"parameter", VSH_OT_DATA, VSH_OFLAG_NONE, gettext_noop("cpu_shares parameter")},
     {"weight", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("weight for XEN_CREDIT")},
     {"cap", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("cap for XEN_CREDIT")},
     {NULL, 0, 0, NULL}
