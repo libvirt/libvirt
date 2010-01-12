@@ -829,11 +829,14 @@ x86Compute(virCPUDefPtr host,
     if (!(cpu_forbid = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORBID)))
         goto error;
 
+    x86ModelSubtract(cpu_require, cpu_disable);
+
     if ((diff = x86ModelCopy(host_model)) == NULL)
         goto no_memory;
 
     x86ModelSubtract(diff, cpu_require);
     x86ModelSubtract(diff, cpu_optional);
+    x86ModelSubtract(diff, cpu_force);
 
     for (i = 0; i < cpu_forbid->ncpuid; i++) {
         const struct cpuX86cpuid *cpuid1;
