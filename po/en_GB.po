@@ -9610,9 +9610,6 @@ msgstr "Show/Set scheduler parameters."
 msgid "parameter=value"
 msgstr ""
 
-msgid "cpu_shares parameter"
-msgstr "cpu_shares: 0-262144"
-
 #: tools/virsh.c:1247
 msgid "weight for XEN_CREDIT"
 msgstr "weight for XEN_CREDIT"
