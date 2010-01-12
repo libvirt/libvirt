@@ -997,11 +997,7 @@ static int udevProcessStorage(struct udev_device *device,
         goto out;
     }
     data->storage.block = strdup(devnode);
-    if (udevGetStringProperty(device,
-                              "DEVNAME",
-                              &data->storage.block) == PROPERTY_ERROR) {
-        goto out;
-    }
+
     if (udevGetStringProperty(device,
                               "ID_BUS",
                               &data->storage.bus) == PROPERTY_ERROR) {
