@@ -1,3 +1,7 @@
 *
 /link-warning.h
 /mktempd
+/arg-nonnull.h
+/gitlog-to-changelog
+/useless-if-before-free
+/vc-list-files
