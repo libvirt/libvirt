@@ -457,14 +457,14 @@ static int udevProcessPCI(struct udev_device *device,
     if (udevGetUintSysfsAttr(device,
                              "vendor",
                              &data->pci_dev.vendor,
-                             0) == PROPERTY_ERROR) {
+                             16) == PROPERTY_ERROR) {
         goto out;
     }
 
     if (udevGetUintSysfsAttr(device,
                              "device",
                              &data->pci_dev.product,
-                             0) == PROPERTY_ERROR) {
+                             16) == PROPERTY_ERROR) {
         goto out;
     }
 
@@ -522,7 +522,7 @@ static int udevProcessUSBDevice(struct udev_device *device,
     if (udevGetUintProperty(device,
                             "ID_MODEL_ID",
                             &data->usb_dev.product,
-                            0) == PROPERTY_ERROR) {
+                            16) == PROPERTY_ERROR) {
         goto out;
     }
 
