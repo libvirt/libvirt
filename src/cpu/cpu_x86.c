@@ -804,8 +804,10 @@ x86Compute(virCPUDefPtr host,
             }
         }
 
-        if (!found)
+        if (!found) {
+            VIR_DEBUG("CPU arch %s does not match host arch", cpu->arch);
             return VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
     }
 
     if ((map = x86LoadMap()) == NULL)
@@ -848,6 +850,8 @@ x86Compute(virCPUDefPtr host,
                               cpuid1->function);
 
         if (cpuid2 != NULL && x86cpuidMatchAny(cpuid2, cpuid1)) {
+            VIR_DEBUG("Host CPU provides forbidden features in CPUID function 0x%x",
+                      cpuid1->function);
             ret = VIR_CPU_COMPARE_INCOMPATIBLE;
             goto out;
         }
@@ -855,6 +859,7 @@ x86Compute(virCPUDefPtr host,
 
     result = x86ModelCompare(host_model, cpu_require);
     if (result == SUBSET || result == UNRELATED) {
+        VIR_DEBUG0("Host CPU does not provide all required features");
         ret = VIR_CPU_COMPARE_INCOMPATIBLE;
         goto out;
     }
@@ -871,6 +876,7 @@ x86Compute(virCPUDefPtr host,
     if (ret == VIR_CPU_COMPARE_SUPERSET
         && cpu->type == VIR_CPU_TYPE_GUEST
         && cpu->match == VIR_CPU_MATCH_STRICT) {
+        VIR_DEBUG0("Host CPU does not strictly match guest CPU");
         ret = VIR_CPU_COMPARE_INCOMPATIBLE;
         goto out;
     }
