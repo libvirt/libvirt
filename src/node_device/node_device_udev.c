@@ -840,30 +840,19 @@ out:
 }
 
 
-static int udevProcessCDROM(struct udev_device *device,
-                            virNodeDeviceDefPtr def)
+static int udevProcessRemoveableMedia(struct udev_device *device,
+                                      virNodeDeviceDefPtr def,
+                                      int has_media)
 {
     union _virNodeDevCapData *data = &def->caps->data;
     int tmp_int = 0, ret = 0;
-
-    /* NB: the drive_type string provided by udev is different from
-     * that provided by HAL; now it's "cd" instead of "cdrom" We
-     * change it to cdrom to preserve compatibility with earlier
-     * versions of libvirt.  */
-    VIR_FREE(def->caps->data.storage.drive_type);
-    def->caps->data.storage.drive_type = strdup("cdrom");
-    if (def->caps->data.storage.drive_type == NULL) {
-        virReportOOMError(NULL);
-        goto out;
-    }
 
     if ((udevGetIntSysfsAttr(device, "removable", &tmp_int, 0) == PROPERTY_FOUND) &&
         (tmp_int == 1)) {
         def->caps->data.storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;
     }
 
-    if ((udevGetIntProperty(device, "ID_CDROM_MEDIA", &tmp_int, 0)
-         == PROPERTY_FOUND) && (tmp_int == 1)) {
+    if (has_media) {
 
         def->caps->data.storage.flags |=
             VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
@@ -898,6 +887,53 @@ out:
     return ret;
 }
 
+static int udevProcessCDROM(struct udev_device *device,
+                            virNodeDeviceDefPtr def)
+{
+    int ret = -1;
+    int tmp_int = 0;
+    int has_media = 0;
+
+    /* NB: the drive_type string provided by udev is different from
+     * that provided by HAL; now it's "cd" instead of "cdrom" We
+     * change it to cdrom to preserve compatibility with earlier
+     * versions of libvirt.  */
+    VIR_FREE(def->caps->data.storage.drive_type);
+    def->caps->data.storage.drive_type = strdup("cdrom");
+    if (def->caps->data.storage.drive_type == NULL) {
+        virReportOOMError(NULL);
+        goto out;
+    }
+
+    if ((udevGetIntProperty(device, "ID_CDROM_MEDIA",
+                            &tmp_int, 0) == PROPERTY_FOUND))
+        has_media = tmp_int;
+
+    ret = udevProcessRemoveableMedia(device, def, has_media);
+out:
+    return ret;
+}
+
+static int udevProcessFloppy(struct udev_device *device,
+                             virNodeDeviceDefPtr def)
+{
+    int tmp_int = 0;
+    int has_media = 0;
+    char *tmp_str = NULL;
+
+    if ((udevGetIntProperty(device, "DKD_MEDIA_AVAILABLE",
+                            &tmp_int, 0) == PROPERTY_FOUND))
+        /* USB floppy */
+        has_media = tmp_int;
+    else if (udevGetStringProperty(device, "ID_FS_LABEL",
+                                   &tmp_str) == PROPERTY_FOUND) {
+        /* Legacy floppy */
+        has_media = 1;
+        VIR_FREE(tmp_str);
+    }
+
+    return udevProcessRemoveableMedia(device, def, has_media);
+}
 
 /* This function exists to deal with the case in which a driver does
  * not provide a device type in the usual place, but udev told us it's
@@ -996,9 +1032,23 @@ static int udevProcessStorage(struct udev_device *device,
     if (udevGetStringProperty(device,
                               "ID_TYPE",
                               &data->storage.drive_type) != PROPERTY_FOUND) {
-        /* If udev doesn't have it, perhaps we can guess it. */
-        if (udevKludgeStorageType(def) != 0) {
-            goto out;
+        int tmp_int = 0;
+
+        /* All floppy drives have the ID_DRIVE_FLOPPY prop. This is
+         * needed since legacy floppies don't have a drive_type */
+        if ((udevGetIntProperty(device, "ID_DRIVE_FLOPPY",
+                                &tmp_int, 0) == PROPERTY_FOUND) &&
+            (tmp_int == 1)) {
+
+            data->storage.drive_type = strdup("floppy");
+            if (!data->storage.drive_type)
+                goto out;
+        } else {
+
+            /* If udev doesn't have it, perhaps we can guess it. */
+            if (udevKludgeStorageType(def) != 0) {
+                goto out;
+            }
         }
     }
 
@@ -1006,6 +1056,8 @@ static int udevProcessStorage(struct udev_device *device,
         ret = udevProcessCDROM(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "disk")) {
         ret = udevProcessDisk(device, def);
+    } else if (STREQ(def->caps->data.storage.drive_type, "floppy")) {
+        ret = udevProcessFloppy(device, def);
     } else {
         VIR_INFO("Unsupported storage type '%s'\n",
                  def->caps->data.storage.drive_type);
