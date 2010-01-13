@@ -26,6 +26,13 @@
 #include "logging.h"
 #include "datatypes.h"
 #include "memory.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+
+#define eventReportError(conn, code, fmt...)                        \
+    virReportErrorHelper(conn, VIR_FROM_THIS, code, __FILE__,       \
+                         __FUNCTION__, __LINE__, fmt)
 
 
 /**
@@ -87,6 +94,9 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
             return 0;
         }
     }
+
+    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("could not find event callback for removal"));
     return -1;
 }
 
@@ -140,6 +150,9 @@ int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
             return 0;
         }
     }
+
+    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("could not find event callback for deletion"));
     return -1;
 }
 
@@ -199,13 +212,14 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     for (n=0; n < cbList->count; n++) {
         if(cbList->callbacks[n]->cb == callback &&
            conn == cbList->callbacks[n]->conn) {
-            DEBUG0("WARNING: Callback already tracked");
+            eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("event callback already tracked"));
             return -1;
         }
     }
     /* Allocate new event */
     if (VIR_ALLOC(event) < 0) {
-        DEBUG0("Error allocating event");
+        virReportOOMError(conn);
         return -1;
     }
     event->conn = conn;
@@ -216,7 +230,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     /* Make space on list */
     n = cbList->count;
     if (VIR_REALLOC_N(cbList->callbacks, n + 1) < 0) {
-        DEBUG0("Error reallocating list");
+        virReportOOMError(conn);
         VIR_FREE(event);
         return -1;
     }
@@ -242,8 +256,10 @@ virDomainEventQueuePtr virDomainEventQueueNew(void)
 {
     virDomainEventQueuePtr ret;
 
-    if (VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(ret) < 0) {
+        virReportOOMError(NULL);
         return NULL;
+    }
 
     return ret;
 }
@@ -254,12 +270,15 @@ virDomainEventPtr virDomainEventNew(int id, const char *name,
 {
     virDomainEventPtr event;
 
-    if (VIR_ALLOC(event) < 0)
+    if (VIR_ALLOC(event) < 0) {
+        virReportOOMError(NULL);
         return NULL;
+    }
 
     event->type = type;
     event->detail = detail;
     if (!(event->name = strdup(name))) {
+        virReportOOMError(NULL);
         VIR_FREE(event);
         return NULL;
     }
@@ -318,8 +337,11 @@ virDomainEventQueuePop(virDomainEventQueuePtr evtQueue)
 {
     virDomainEventPtr ret;
 
-    if(!evtQueue || evtQueue->count == 0 )
+    if (!evtQueue || evtQueue->count == 0 ) {
+        eventReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("event queue is empty, nothing to pop"));
         return NULL;
+    }
 
     ret = evtQueue->events[0];
 
@@ -357,7 +379,7 @@ virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
     /* Make space on queue */
     if (VIR_REALLOC_N(evtQueue->events,
                       evtQueue->count + 1) < 0) {
-        DEBUG0("Error reallocating queue");
+        virReportOOMError(NULL);
         return -1;
     }
 

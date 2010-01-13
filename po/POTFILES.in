@@ -4,6 +4,7 @@ daemon/remote.c
 daemon/stream.c
 src/conf/cpu_conf.c
 src/conf/domain_conf.c
+src/conf/domain_event.c
 src/conf/interface_conf.c
 src/conf/network_conf.c
 src/conf/node_device_conf.c
