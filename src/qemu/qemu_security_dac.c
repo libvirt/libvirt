@@ -435,7 +435,7 @@ qemuSecurityDACSetProcessLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 
-virSecurityDriver virqemuSecurityDACSecurityDriver = {
+virSecurityDriver qemuDACSecurityDriver = {
     .name                       = "qemuDAC",
 
     .domainSetSecurityProcessLabel = qemuSecurityDACSetProcessLabel,
