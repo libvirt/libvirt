@@ -4775,6 +4775,8 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
 
     if (ret)
         ret->cb_registered = 1;
+
+    client->domain_events_registered = 1;
     return 0;
 }
 
@@ -4796,6 +4798,8 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 
     if (ret)
         ret->cb_registered = 0;
+
+    client->domain_events_registered = 0;
     return 0;
 }
 

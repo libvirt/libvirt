@@ -1447,7 +1447,7 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
     }
 
     /* Deregister event delivery callback */
-    if(client->conn) {
+    if (client->conn && client->domain_events_registered) {
         DEBUG0("Deregistering to relay remote events");
         virConnectDomainEventDeregister(client->conn, remoteRelayDomainEvent);
     }

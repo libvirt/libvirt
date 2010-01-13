@@ -177,6 +177,7 @@ struct qemud_client {
     int watch;
     int readonly:1;
     int closing:1;
+    int domain_events_registered:1;
 
     struct sockaddr_storage addr;
     socklen_t addrlen;
