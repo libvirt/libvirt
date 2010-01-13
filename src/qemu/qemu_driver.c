@@ -5125,6 +5125,11 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
         return -1;
     }
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityImageLabel &&
+        driver->securityDriver->domainSetSecurityImageLabel(conn, vm, newdisk) < 0)
+        return -1;
+
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (newdisk->src) {
@@ -5143,14 +5148,27 @@ static int qemudDomainChangeEjectableMedia(virConnectPtr conn,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0) {
-        VIR_FREE(origdisk->src);
-        origdisk->src = newdisk->src;
-        newdisk->src = NULL;
-        origdisk->type = newdisk->type;
-    }
+    if (ret < 0)
+        goto error;
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, origdisk) < 0)
+        VIR_WARN("Unable to restore security label on ejected image %s", origdisk->src);
+
+    VIR_FREE(origdisk->src);
+    origdisk->src = newdisk->src;
+    newdisk->src = NULL;
+    origdisk->type = newdisk->type;
 
     return ret;
+
+error:
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, newdisk) < 0)
+        VIR_WARN("Unable to restore security label on new media %s", newdisk->src);
+    return -1;
 }
 
 
@@ -5172,9 +5190,14 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         }
     }
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityImageLabel &&
+        driver->securityDriver->domainSetSecurityImageLabel(conn, vm, dev->data.disk) < 0)
+        return -1;
+
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         virReportOOMError(conn);
-        return -1;
+        goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5184,13 +5207,22 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                                 &guestAddr);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0) {
-        dev->data.disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        memcpy(&dev->data.disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
-        virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
-    }
+    if (ret < 0)
+        goto error;
 
-    return ret;
+    dev->data.disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    memcpy(&dev->data.disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
+    virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
+
+    return 0;
+
+error:
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, dev->data.disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
+
+    return -1;
 }
 
 static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
@@ -5284,15 +5316,21 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
         if (STREQ(vm->def->disks[i]->dst, dev->dst)) {
             qemudReportError(conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                            _("target %s already exists"), dev->dst);
-            goto cleanup;
+            return -1;
         }
     }
+
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityImageLabel &&
+        driver->securityDriver->domainSetSecurityImageLabel(conn, vm, dev) < 0)
+        return -1;
 
     /* This func allocates the bus/unit IDs so must be before
      * we search for controller
      */
     if (!(drivestr = qemuBuildDriveStr(dev, 0, qemuCmdFlags)))
-        goto cleanup;
+        goto error;
 
 
     /* We should have an adddress now, so make sure */
@@ -5300,24 +5338,24 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unexpected disk address type %s"),
                          virDomainDeviceAddressTypeToString(dev->info.type));
-        goto cleanup;
+        goto error;
     }
 
     for (i = 0 ; i < dev->info.addr.drive.controller ; i++) {
         cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i);
         if (!cont)
-            goto cleanup;
+            goto error;
     }
 
     if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("SCSI controller %d was missing its PCI address"), cont->idx);
-        goto cleanup;
+        goto error;
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         virReportOOMError(conn);
-        goto cleanup;
+        goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5325,20 +5363,28 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
                                  drivestr,
                                  &cont->info.addr.pci,
                                  &driveAddr);
-
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0) {
-        /* XXX we should probably validate that the addr matches
-         * our existing defined addr instead of overwriting */
-        dev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-        memcpy(&dev->info.addr.drive, &driveAddr, sizeof(driveAddr));
-        virDomainDiskInsertPreAlloced(vm->def, dev);
-    }
+    if (ret < 0)
+        goto error;
 
-cleanup:
+    /* XXX we should probably validate that the addr matches
+     * our existing defined addr instead of overwriting */
+    dev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+    memcpy(&dev->info.addr.drive, &driveAddr, sizeof(driveAddr));
+    virDomainDiskInsertPreAlloced(vm->def, dev);
     VIR_FREE(drivestr);
-    return ret;
+
+    return 0;
+
+error:
+    VIR_FREE(drivestr);
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, dev) < 0)
+        VIR_WARN("Unable to restore security label on %s", dev->src);
+
+    return -1;
 }
 
 
@@ -5358,26 +5404,42 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         }
     }
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityImageLabel &&
+        driver->securityDriver->domainSetSecurityImageLabel(conn, vm, dev->data.disk) < 0)
+        return -1;
+
     if (!dev->data.disk->src) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("disk source path is missing"));
-        return -1;
+        goto error;
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         virReportOOMError(conn);
-        return -1;
+        goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorAddUSBDisk(priv->mon, dev->data.disk->src);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (ret == 0)
-        virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
+    if (ret < 0)
+        goto error;
 
-    return ret;
+    virDomainDiskInsertPreAlloced(vm->def, dev->data.disk);
+
+    return 0;
+
+error:
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, dev->data.disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
+
+    return -1;
 }
+
 
 static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                       struct qemud_driver *driver,
@@ -5617,15 +5679,31 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        return qemudDomainAttachHostPciDevice(conn, driver, vm, dev);
+        if (qemudDomainAttachHostPciDevice(conn, driver, vm, dev) < 0)
+            goto error;
+        break;
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        return qemudDomainAttachHostUsbDevice(conn, driver, vm, dev);
+        if (qemudDomainAttachHostUsbDevice(conn, driver, vm, dev) < 0)
+            goto error;
+        break;
+
     default:
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          _("hostdev subsys type '%s' not supported"),
                          virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
-        return -1;
+        goto error;
     }
+
+    return 0;
+
+error:
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityHostdevLabel &&
+        driver->securityDriver->domainRestoreSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
+        VIR_WARN0("Unable to restore host device labelling on hotplug fail");
+
+    return -1;
 }
 
 static int qemudDomainAttachDevice(virDomainPtr dom,
@@ -5688,18 +5766,10 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            if (driver->securityDriver &&
-                driver->securityDriver->domainSetSecurityImageLabel)
-                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
-
             ret = qemudDomainChangeEjectableMedia(dom->conn, driver, vm, dev);
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
-            if (driver->securityDriver &&
-                driver->securityDriver->domainSetSecurityImageLabel)
-                driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
-
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
                 ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, driver, vm, dev);
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
@@ -5814,6 +5884,11 @@ static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
         vm->def->ndisks = 0;
     }
     virDomainDiskDefFree(detach);
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, dev->data.disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     ret = 0;
 
@@ -6081,9 +6156,9 @@ static int qemudDomainDetachHostDevice(virConnectPtr conn,
     }
 
     if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityHostdevLabel &&
-        driver->securityDriver->domainSetSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
-        VIR_WARN0("Failed to restore device labelling");
+        driver->securityDriver->domainRestoreSecurityHostdevLabel &&
+        driver->securityDriver->domainRestoreSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
+        VIR_WARN0("Failed to restore host device labelling");
 
     return ret;
 }
@@ -6124,9 +6199,6 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, driver, vm, dev);
-        if (driver->securityDriver &&
-            driver->securityDriver->domainRestoreSecurityImageLabel)
-            driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev->data.disk);
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainDetachNetDevice(dom->conn, driver, vm, dev);
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
@@ -6140,9 +6212,6 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemudDomainDetachHostDevice(dom->conn, driver, vm, dev);
-        if (driver->securityDriver &&
-            driver->securityDriver->domainRestoreSecurityHostdevLabel)
-            driver->securityDriver->domainRestoreSecurityHostdevLabel(dom->conn, vm, dev->data.hostdev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("This type of device cannot be hot unplugged"));
