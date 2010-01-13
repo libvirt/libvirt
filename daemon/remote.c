@@ -231,7 +231,7 @@ remoteDispatchGetType (struct qemud_server *server ATTRIBUTE_UNUSED,
      */
     ret->type = strdup (type);
     if (!ret->type) {
-        remoteDispatchFormatError (rerr, "%s", _("out of memory in strdup"));
+        remoteDispatchOOMError(rerr);
         return -1;
     }
 
@@ -4489,7 +4489,7 @@ remoteDispatchNodeDeviceDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4520,7 +4520,7 @@ remoteDispatchNodeDeviceGetParent (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4562,7 +4562,7 @@ remoteDispatchNodeDeviceNumOfCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4591,7 +4591,7 @@ remoteDispatchNodeDeviceListCaps (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4634,7 +4634,7 @@ remoteDispatchNodeDeviceDettach (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4661,7 +4661,7 @@ remoteDispatchNodeDeviceReAttach (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4688,7 +4688,7 @@ remoteDispatchNodeDeviceReset (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4738,7 +4738,7 @@ remoteDispatchNodeDeviceDestroy(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     dev = virNodeDeviceLookupByName(conn, args->name);
     if (dev == NULL) {
-        remoteDispatchFormatError(rerr, "%s", _("node_device not found"));
+        remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
@@ -4766,11 +4766,14 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
 {
     CHECK_CONN(client);
 
-    /* Register event delivery callback */
-    REMOTE_DEBUG("%s","Registering to relay remote events");
-    virConnectDomainEventRegister(conn, remoteRelayDomainEvent, client, NULL);
+    if (virConnectDomainEventRegister(conn,
+                                      remoteRelayDomainEvent,
+                                      client, NULL) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
 
-    if(ret)
+    if (ret)
         ret->cb_registered = 1;
     return 0;
 }
@@ -4786,11 +4789,12 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 {
     CHECK_CONN(client);
 
-    /* Deregister event delivery callback */
-    REMOTE_DEBUG("%s","Deregistering to relay remote events");
-    virConnectDomainEventDeregister(conn, remoteRelayDomainEvent);
+    if (virConnectDomainEventDeregister(conn, remoteRelayDomainEvent) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
 
-    if(ret)
+    if (ret)
         ret->cb_registered = 0;
     return 0;
 }
