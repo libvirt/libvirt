@@ -86,6 +86,8 @@ user = \"root\"
 
 group = \"root\"
 
+dynamic_ownership = 1
+
 cgroup_controllers = [ \"cpu\", \"devices\" ]
 
 cgroup_device_acl = [ \"/dev/null\", \"/dev/full\", \"/dev/zero\" ]
@@ -183,6 +185,8 @@ relaxed_acs_check = 1
 { "user" = "root" }
 { "#empty" }
 { "group" = "root" }
+{ "#empty" }
+{ "dynamic_ownership" = "1" }
 { "#empty" }
 { "cgroup_controllers"
     { "1" = "cpu" }

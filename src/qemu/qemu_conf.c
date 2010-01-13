@@ -102,7 +102,9 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     char *group;
     int i;
 
-    /* Setup 2 critical defaults */
+    /* Setup critical defaults */
+    driver->dynamicOwnership = 1;
+
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
         virReportOOMError(NULL);
         return -1;
@@ -224,6 +226,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     }
     VIR_FREE(user);
 
+
     p = virConfGetValue (conf, "group");
     CHECK_TYPE ("group", VIR_CONF_STRING);
     if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP))) {
@@ -231,14 +234,18 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virConfFree(conf);
         return -1;
     }
-
-
     if (virGetGroupID(NULL, group, &driver->group) < 0) {
         VIR_FREE(group);
         virConfFree(conf);
         return -1;
     }
     VIR_FREE(group);
+
+
+    p = virConfGetValue (conf, "dynamic_ownership");
+    CHECK_TYPE ("dynamic_ownership", VIR_CONF_LONG);
+    if (p) driver->dynamicOwnership = p->l;
+
 
     p = virConfGetValue (conf, "cgroup_controllers");
     CHECK_TYPE ("cgroup_controllers", VIR_CONF_LIST);
