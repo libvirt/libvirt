@@ -557,8 +557,11 @@ __virExec(virConnectPtr conn,
     }
 
     if (hook)
-        if ((hook)(data) != 0)
+        if ((hook)(data) != 0) {
+            VIR_DEBUG0("Hook function failed.");
+            virDispatchError(NULL);
             _exit(1);
+        }
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */
