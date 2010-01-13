@@ -2450,12 +2450,6 @@ static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *
     int rc = 0;
 
     if (driver->securityDriver &&
-        driver->securityDriver->domainSetSecurityAllLabel &&
-        driver->securityDriver->domainSetSecurityAllLabel(conn, vm) < 0)
-        rc = -1;
-
-    if (rc == 0 &&
-        driver->securityDriver &&
         driver->securityDriver->domainSetSecurityProcessLabel &&
         driver->securityDriver->domainSetSecurityProcessLabel(conn, driver->securityDriver, vm) < 0)
         rc = -1;
@@ -2778,6 +2772,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
         return -1;
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityAllLabel &&
+        driver->securityDriver->domainSetSecurityAllLabel(conn, vm) < 0)
+        goto cleanup;
+
     /* Ensure no historical cgroup for this VM is lieing around bogus settings */
     qemuRemoveCgroup(conn, driver, vm, 1);
 
@@ -2985,6 +2984,9 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityAllLabel)
+        driver->securityDriver->domainRestoreSecurityAllLabel(conn, vm);
     if (driver->securityDriver &&
         driver->securityDriver->domainReleaseSecurityLabel)
         driver->securityDriver->domainReleaseSecurityLabel(conn, vm);
