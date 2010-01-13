@@ -3928,47 +3928,58 @@ static const char *qemuFindEnv(const char **progenv,
 /*
  * Takes a string containing a set of key=value,key=value,key...
  * parameters and splits them up, returning two arrays with
- * the individual keys and values
+ * the individual keys and values. If allowEmptyValue is nonzero,
+ * the "=value" part is optional and if a key with no value is found,
+ * NULL is be placed into corresponding place in retvalues.
  */
 static int
 qemuParseCommandLineKeywords(virConnectPtr conn,
                              const char *str,
                              char ***retkeywords,
-                             char ***retvalues)
+                             char ***retvalues,
+                             int allowEmptyValue)
 {
     int keywordCount = 0;
     int keywordAlloc = 0;
     char **keywords = NULL;
     char **values = NULL;
     const char *start = str;
+    const char *end;
     int i;
 
     *retkeywords = NULL;
     *retvalues = NULL;
+    end = start + strlen(str);
 
     while (start) {
         const char *separator;
         const char *endmark;
         char *keyword;
-        char *value;
+        char *value = NULL;
 
-        if (!(separator = strchr(start, '='))) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("malformed keyword arguments in '%s'"), str);
-            goto error;
+        if (!(endmark = strchr(start, ',')))
+            endmark = end;
+        if (!(separator = strchr(start, '=')))
+            separator = end;
+
+        if (separator >= endmark) {
+            if (!allowEmptyValue) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("malformed keyword arguments in '%s'"), str);
+                goto error;
+            }
+            separator = endmark;
         }
+
         if (!(keyword = strndup(start, separator - start)))
             goto no_memory;
 
-        separator++;
-        endmark = strchr(separator, ',');
-
-        value = endmark ?
-            strndup(separator, endmark - separator) :
-            strdup(separator);
-        if (!value) {
-            VIR_FREE(keyword);
-            goto no_memory;
+        if (separator < endmark) {
+            separator++;
+            if (!(value = strndup(separator, endmark - separator))) {
+                VIR_FREE(keyword);
+                goto no_memory;
+            }
         }
 
         if (keywordAlloc == keywordCount) {
@@ -3985,7 +3996,7 @@ qemuParseCommandLineKeywords(virConnectPtr conn,
         values[keywordCount] = value;
         keywordCount++;
 
-        start = endmark ? endmark + 1 : NULL;
+        start = endmark < end ? endmark + 1 : NULL;
     }
 
     *retkeywords = keywords;
@@ -4028,7 +4039,7 @@ qemuParseCommandLineDisk(virConnectPtr conn,
 
     if ((nkeywords = qemuParseCommandLineKeywords(conn, val,
                                                   &keywords,
-                                                  &values)) < 0)
+                                                  &values, 0)) < 0)
         return NULL;
 
     if (VIR_ALLOC(def) < 0) {
@@ -4254,7 +4265,7 @@ qemuParseCommandLineNet(virConnectPtr conn,
         if ((nkeywords = qemuParseCommandLineKeywords(conn,
                                                       tmp+1,
                                                       &keywords,
-                                                      &values)) < 0)
+                                                      &values, 0)) < 0)
             return NULL;
     } else {
         nkeywords = 0;
@@ -4327,7 +4338,7 @@ qemuParseCommandLineNet(virConnectPtr conn,
         if ((nkeywords = qemuParseCommandLineKeywords(conn,
                                                       nic + strlen("nic,"),
                                                       &keywords,
-                                                      &values)) < 0) {
+                                                      &values, 0)) < 0) {
             virDomainNetDefFree(def);
             def = NULL;
             goto cleanup;
