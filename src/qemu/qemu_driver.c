@@ -2749,6 +2749,8 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
+    qemuDomainReAttachHostDevices(conn, driver, vm->def);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityAllLabel)
         driver->securityDriver->domainRestoreSecurityAllLabel(conn, vm);
