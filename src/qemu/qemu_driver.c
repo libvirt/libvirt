@@ -855,8 +855,7 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
         goto error;
     }
 
-    if (obj->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-        driver->securityDriver &&
+    if (driver->securityDriver &&
         driver->securityDriver->domainReserveSecurityLabel &&
         driver->securityDriver->domainReserveSecurityLabel(NULL, obj) < 0)
         goto error;
@@ -2448,11 +2447,14 @@ cleanup:
 
 static int qemudDomainSetSecurityLabel(virConnectPtr conn, struct qemud_driver *driver, virDomainObjPtr vm)
 {
-    if (vm->def->seclabel.label != NULL)
-        if (driver->securityDriver && driver->securityDriver->domainSetSecurityLabel)
-            return driver->securityDriver->domainSetSecurityLabel(conn, driver->securityDriver,
-                                                                 vm);
-    return 0;
+    int rc = 0;
+
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityLabel &&
+        driver->securityDriver->domainSetSecurityLabel(conn, driver->securityDriver, vm) < 0)
+        rc = -1;
+
+    return rc;
 }
 
 
@@ -2765,8 +2767,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
-        driver->securityDriver &&
+    if (driver->securityDriver &&
         driver->securityDriver->domainGenSecurityLabel &&
         driver->securityDriver->domainGenSecurityLabel(conn, vm) < 0)
         return -1;
@@ -3061,7 +3062,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     virKillProcess(vm->pid, SIGKILL);
 
     /* Reset Security Labels */
-    if (driver->securityDriver)
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityLabel)
         driver->securityDriver->domainRestoreSecurityLabel(conn, vm);
 
     /* Clear out dynamically assigned labels */
@@ -4165,7 +4167,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, path) == -1)
+        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, vm, path) == -1)
         goto endjob;
 
     ret = 0;
@@ -4295,7 +4297,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSavedStateLabel &&
-        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, path) == -1)
+        driver->securityDriver->domainRestoreSavedStateLabel(dom->conn, vm, path) == -1)
         goto endjob;
 
 endjob:
@@ -5871,6 +5873,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
     if (qemuDomainSetDeviceOwnership(conn, driver, dev, 0) < 0)
         return -1;
     if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityHostdevLabel &&
         driver->securityDriver->domainSetSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
         return -1;
 
@@ -5947,7 +5950,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            if (driver->securityDriver)
+            if (driver->securityDriver &&
+                driver->securityDriver->domainSetSecurityImageLabel)
                 driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
 
             if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
@@ -5957,7 +5961,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             break;
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
-            if (driver->securityDriver)
+            if (driver->securityDriver &&
+                driver->securityDriver->domainSetSecurityImageLabel)
                 driver->securityDriver->domainSetSecurityImageLabel(dom->conn, vm, dev->data.disk);
 
             if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 0) < 0)
@@ -6347,6 +6352,7 @@ static int qemudDomainDetachHostDevice(virConnectPtr conn,
     }
 
     if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecurityHostdevLabel &&
         driver->securityDriver->domainSetSecurityHostdevLabel(conn, vm, dev->data.hostdev) < 0)
         VIR_WARN0("Failed to restore device labelling");
 
@@ -6392,7 +6398,8 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         ret = qemudDomainDetachPciDiskDevice(dom->conn, driver, vm, dev);
-        if (driver->securityDriver)
+        if (driver->securityDriver &&
+            driver->securityDriver->domainRestoreSecurityImageLabel)
             driver->securityDriver->domainRestoreSecurityImageLabel(dom->conn, vm, dev->data.disk);
         if (qemuDomainSetDeviceOwnership(dom->conn, driver, dev, 1) < 0)
             VIR_WARN0("Fail to restore disk device ownership");
@@ -6409,6 +6416,9 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemudDomainDetachHostDevice(dom->conn, driver, vm, dev);
+        if (driver->securityDriver &&
+            driver->securityDriver->domainRestoreSecurityHostdevLabel)
+            driver->securityDriver->domainRestoreSecurityHostdevLabel(dom->conn, vm, dev->data.hostdev);
     } else {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                          "%s", _("This type of device cannot be hot unplugged"));

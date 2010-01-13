@@ -327,6 +327,9 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
     int rc = -1;
     char *profile_name = NULL;
 
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     if ((vm->def->seclabel.label) ||
         (vm->def->seclabel.model) || (vm->def->seclabel.imagelabel)) {
         virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -425,7 +428,7 @@ AppArmorRestoreSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int rc = 0;
 
-    if (secdef->imagelabel) {
+    if (secdef->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         if ((rc = remove_profile(secdef->label)) != 0) {
             virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                    _("could not remove profile for \'%s\'"),
@@ -486,21 +489,23 @@ AppArmorRestoreSecurityImageLabel(virConnectPtr conn,
     int rc = -1;
     char *profile_name = NULL;
 
-    if (secdef->imagelabel) {
-        if ((profile_name = get_profile_name(conn, vm)) == NULL)
-            return rc;
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
-        /* Update the profile only if it is loaded */
-        if (profile_loaded(secdef->imagelabel) >= 0) {
-            if (load_profile(conn, secdef->imagelabel, vm, NULL) < 0) {
-                virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot update AppArmor profile "
-                                       "\'%s\'"),
-                                       secdef->imagelabel);
-                goto clean;
-            }
+    if ((profile_name = get_profile_name(conn, vm)) == NULL)
+        return rc;
+
+    /* Update the profile only if it is loaded */
+    if (profile_loaded(secdef->imagelabel) >= 0) {
+        if (load_profile(conn, secdef->imagelabel, vm, NULL) < 0) {
+            virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot update AppArmor profile "
+                                     "\'%s\'"),
+                                   secdef->imagelabel);
+            goto clean;
         }
     }
+
     rc = 0;
   clean:
     VIR_FREE(profile_name);
@@ -516,6 +521,9 @@ AppArmorSetSecurityImageLabel(virConnectPtr conn,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int rc = -1;
     char *profile_name;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
     if (!disk->src)
         return 0;
@@ -576,19 +584,29 @@ AppArmorReserveSecurityLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int
 AppArmorSetSecurityHostdevLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                virDomainObjPtr vm,
                                 virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
 
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     /* TODO: call load_profile with an update vm->def */
     return 0;
 }
 
 static int
 AppArmorRestoreSecurityHostdevLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainObjPtr vm,
                                     virDomainHostdevDefPtr dev ATTRIBUTE_UNUSED)
 
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     /* TODO: call load_profile (needs virDomainObjPtr vm) */
     return 0;
 }

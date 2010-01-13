@@ -38,6 +38,7 @@ typedef int (*virSecurityDomainSetImageLabel) (virConnectPtr conn,
                                                virDomainObjPtr vm,
                                                virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainRestoreHostdevLabel) (virConnectPtr conn,
+                                                     virDomainObjPtr vm,
                                                      virDomainHostdevDefPtr dev);
 typedef int (*virSecurityDomainSetHostdevLabel) (virConnectPtr conn,
                                                  virDomainObjPtr vm,
@@ -46,6 +47,7 @@ typedef int (*virSecurityDomainSetSavedStateLabel) (virConnectPtr conn,
                                                     virDomainObjPtr vm,
                                                     const char *savefile);
 typedef int (*virSecurityDomainRestoreSavedStateLabel) (virConnectPtr conn,
+                                                        virDomainObjPtr vm,
                                                         const char *savefile);
 typedef int (*virSecurityDomainGenLabel) (virConnectPtr conn,
                                           virDomainObjPtr sec);

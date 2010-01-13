@@ -165,6 +165,9 @@ SELinuxGenSecurityLabel(virConnectPtr conn,
     int c1 = 0;
     int c2 = 0;
 
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     if (vm->def->seclabel.label ||
         vm->def->seclabel.model ||
         vm->def->seclabel.imagelabel) {
@@ -224,6 +227,9 @@ SELinuxReserveSecurityLabel(virConnectPtr conn,
     security_context_t pctx;
     context_t ctx = NULL;
     const char *mcs;
+
+    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
     if (getpidcon(vm->pid, &pctx) == -1) {
         virReportSystemError(conn, errno,
@@ -376,9 +382,14 @@ err:
 
 static int
 SELinuxRestoreSecurityImageLabel(virConnectPtr conn,
-                                 virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                 virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk)
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     /* Don't restore labels on readoly/shared disks, because
      * other VMs may still be accessing these
      * Alternatively we could iterate over all running
@@ -404,6 +415,9 @@ SELinuxSetSecurityImageLabel(virConnectPtr conn,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     const char *path;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
     if (!disk->src)
         return 0;
@@ -474,7 +488,11 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
                                virDomainHostdevDefPtr dev)
 
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
@@ -541,10 +559,15 @@ SELinuxRestoreSecurityUSBLabel(virConnectPtr conn,
 
 static int
 SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
+                                   virDomainObjPtr vm,
                                    virDomainHostdevDefPtr dev)
 
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
 
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
@@ -601,25 +624,28 @@ SELinuxRestoreSecurityLabel(virConnectPtr conn,
 
     VIR_DEBUG("Restoring security label on %s", vm->def->name);
 
-    if (secdef->imagelabel) {
-        for (i = 0 ; i < vm->def->nhostdevs ; i++) {
-            if (SELinuxRestoreSecurityHostdevLabel(conn, vm->def->hostdevs[i]) < 0)
-                rc = -1;
-        }
-        for (i = 0 ; i < vm->def->ndisks ; i++) {
-            if (SELinuxRestoreSecurityImageLabel(conn, vm,
-                                                 vm->def->disks[i]) < 0)
-                rc = -1;
-        }
-        VIR_FREE(secdef->model);
-        VIR_FREE(secdef->label);
-        context_t con = context_new(secdef->imagelabel);
-        if (con) {
-            mcsRemove(context_range_get(con));
-            context_free(con);
-        }
-        VIR_FREE(secdef->imagelabel);
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+        if (SELinuxRestoreSecurityHostdevLabel(conn, vm, vm->def->hostdevs[i]) < 0)
+            rc = -1;
     }
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (SELinuxRestoreSecurityImageLabel(conn, vm,
+                                             vm->def->disks[i]) < 0)
+            rc = -1;
+    }
+    context_t con = context_new(secdef->label);
+    if (con) {
+        mcsRemove(context_range_get(con));
+        context_free(con);
+    }
+
+    VIR_FREE(secdef->model);
+    VIR_FREE(secdef->label);
+    VIR_FREE(secdef->imagelabel);
+
     return rc;
 }
 
@@ -631,14 +657,23 @@ SELinuxSetSavedStateLabel(virConnectPtr conn,
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     return SELinuxSetFilecon(conn, savefile, secdef->imagelabel);
 }
 
 
 static int
 SELinuxRestoreSavedStateLabel(virConnectPtr conn,
+                              virDomainObjPtr vm,
                               const char *savefile)
 {
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
     return SELinuxRestoreSecurityFileLabel(conn, savefile);
 }
 
@@ -666,6 +701,9 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
 
+    if (vm->def->seclabel.label == NULL)
+        return 0;
+
     if (!STREQ(drv->name, secdef->model)) {
         virSecurityReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("security label driver mismatch: "
@@ -684,7 +722,7 @@ SELinuxSetSecurityLabel(virConnectPtr conn,
             return -1;
     }
 
-    if (secdef->imagelabel) {
+    if (secdef->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         for (i = 0 ; i < vm->def->ndisks ; i++) {
             /* XXX fixme - we need to recursively label the entriy tree :-( */
             if (vm->def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
