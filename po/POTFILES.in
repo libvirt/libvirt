@@ -36,6 +36,7 @@ src/qemu/qemu_driver.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
+src/qemu/qemu_security_dac.c
 src/remote/remote_driver.c
 src/secret/secret_driver.c
 src/security/security_driver.c

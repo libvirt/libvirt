@@ -200,7 +200,9 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_bridge_filter.c 			\
 		qemu/qemu_bridge_filter.h			\
 		qemu/qemu_security_stacked.h			\
-		qemu/qemu_security_stacked.c
+		qemu/qemu_security_stacked.c			\
+		qemu/qemu_security_dac.h			\
+		qemu/qemu_security_dac.c
 
 UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\

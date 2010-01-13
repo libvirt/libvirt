@@ -91,6 +91,7 @@ struct qemud_driver {
 
     uid_t user;
     gid_t group;
+    int dynamicOwnership;
 
     unsigned int qemuVersion;
     int nextvmid;
