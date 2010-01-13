@@ -2985,11 +2985,9 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
-    if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        VIR_FREE(vm->def->seclabel.model);
-        VIR_FREE(vm->def->seclabel.label);
-        VIR_FREE(vm->def->seclabel.imagelabel);
-    }
+    if (driver->securityDriver &&
+        driver->securityDriver->domainReleaseSecurityLabel)
+        driver->securityDriver->domainReleaseSecurityLabel(conn, vm);
     qemuRemoveCgroup(conn, driver, vm, 0);
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
