@@ -3057,6 +3057,32 @@ done:
 }
 
 static int
+remoteDomainAttachDeviceFlags (virDomainPtr domain, const char *xml,
+                               unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_attach_device_flags_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.xml = (char *) xml;
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS,
+              (xdrproc_t) xdr_remote_domain_attach_device_flags_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainDetachDevice (virDomainPtr domain, const char *xml)
 {
     int rv = -1;
@@ -3070,6 +3096,32 @@ remoteDomainDetachDevice (virDomainPtr domain, const char *xml)
 
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_DETACH_DEVICE,
               (xdrproc_t) xdr_remote_domain_detach_device_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainDetachDeviceFlags (virDomainPtr domain, const char *xml,
+                               unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_detach_device_flags_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.xml = (char *) xml;
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS,
+              (xdrproc_t) xdr_remote_domain_detach_device_flags_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto done;
 
@@ -8894,7 +8946,9 @@ static virDriver remote_driver = {
     remoteDomainDefineXML, /* domainDefineXML */
     remoteDomainUndefine, /* domainUndefine */
     remoteDomainAttachDevice, /* domainAttachDevice */
+    remoteDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     remoteDomainDetachDevice, /* domainDetachDevice */
+    remoteDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
     remoteDomainGetAutostart, /* domainGetAutostart */
     remoteDomainSetAutostart, /* domainSetAutostart */
     remoteDomainGetSchedulerType, /* domainGetSchedulerType */
