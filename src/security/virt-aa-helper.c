@@ -851,7 +851,6 @@ get_files(vahControl * ctl)
                 if (rc != 0)
                     goto clean;
                 break;
-                }
             }
 /* TODO: update so files in /sys are readonly
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
