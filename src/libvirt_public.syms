@@ -349,4 +349,10 @@ LIBVIRT_0.7.5 {
         virDomainMemoryStats;
 } LIBVIRT_0.7.3;
 
+LIBVIRT_0.7.7 {
+    global:
+        virDomainAttachDeviceFlags;
+        virDomainDetachDeviceFlags;
+} LIBVIRT_0.7.5;
+
 # .... define new API here using predicted next version number ....

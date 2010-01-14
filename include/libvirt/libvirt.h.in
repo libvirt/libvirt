@@ -845,8 +845,21 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  */
 #define VIR_GET_CPUMAP(cpumaps,maplen,vcpu)     &(cpumaps[(vcpu)*(maplen)])
 
+
+typedef enum {
+
+   VIR_DOMAIN_DEVICE_MODIFY_CURRENT = 0, /* Modify device allocation based on current domain state */
+   VIR_DOMAIN_DEVICE_MODIFY_LIVE = (1 << 0), /* Modify live device allocation */
+   VIR_DOMAIN_DEVICE_MODIFY_CONFIG = (1 << 1), /* Modify persisted device allocation */
+} virDomainDeviceModifyFlags;
+
 int virDomainAttachDevice(virDomainPtr domain, const char *xml);
 int virDomainDetachDevice(virDomainPtr domain, const char *xml);
+
+int virDomainAttachDeviceFlags(virDomainPtr domain,
+                               const char *xml, unsigned int flags);
+int virDomainDetachDeviceFlags(virDomainPtr domain,
+                               const char *xml, unsigned int flags);
 
 /*
  * NUMA support
