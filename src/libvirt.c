@@ -5146,14 +5146,68 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
     conn = domain->conn;
 
     if (conn->driver->domainAttachDevice) {
+       int ret;
+       ret = conn->driver->domainAttachDevice (domain, xml);
+       if (ret < 0)
+          goto error;
+       return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainAttachDeviceFlags:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of one device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
+ *
+ * Attach a virtual device to a domain, using the flags parameter
+ * to control how the device is attached.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * specifies that the device allocation is made based on current domain
+ * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * allocated to the active domain instance only and is not added to the
+ * persisted domain configuration.  VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * specifies that the device shall be allocated to the persisted domain
+ * configuration only.  Note that the target hypervisor must return an
+ * error if unable to satisfy flags.  E.g. the hypervisor driver will
+ * return failure if LIVE is specified but it only supports modifying the
+ * persisted device allocation.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainAttachDeviceFlags(virDomainPtr domain,
+                           const char *xml, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainAttachDeviceFlags) {
         int ret;
-        ret = conn->driver->domainAttachDevice (domain, xml);
+        ret = conn->driver->domainAttachDeviceFlags(domain, xml, flags);
         if (ret < 0)
             goto error;
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
@@ -5192,12 +5246,66 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
     if (conn->driver->domainDetachDevice) {
         int ret;
         ret = conn->driver->domainDetachDevice (domain, xml);
+         if (ret < 0)
+             goto error;
+         return ret;
+     }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainDetachDeviceFlags:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of one device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
+ *
+ * Detach a virtual device from a domain, using the flags parameter
+ * to control how the device is detached.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * specifies that the device allocation is removed based on current domain
+ * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * deallocated from the active domain instance only and is not from the
+ * persisted domain configuration.  VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * specifies that the device shall be deallocated from the persisted domain
+ * configuration only.  Note that the target hypervisor must return an
+ * error if unable to satisfy flags.  E.g. the hypervisor driver will
+ * return failure if LIVE is specified but it only supports removing the
+ * persisted device allocation.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainDetachDeviceFlags(virDomainPtr domain,
+                           const char *xml, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainDetachDeviceFlags) {
+        int ret;
+        ret = conn->driver->domainDetachDeviceFlags(domain, xml, flags);
         if (ret < 0)
             goto error;
         return ret;
     }
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
 
 error:
     virDispatchError(domain->conn);
