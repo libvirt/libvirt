@@ -6285,6 +6285,7 @@ static const vshCmdInfo info_attach_device[] = {
 static const vshCmdOptDef opts_attach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist device attachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6296,6 +6297,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     int ret = TRUE;
     int found;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -6315,7 +6317,14 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    ret = virDomainAttachDevice(dom, buffer);
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainAttachDeviceFlags(dom, buffer, flags);
+    } else {
+        ret = virDomainAttachDevice(dom, buffer);
+    }
     VIR_FREE(buffer);
 
     if (ret < 0) {
@@ -6343,6 +6352,7 @@ static const vshCmdInfo info_detach_device[] = {
 static const vshCmdOptDef opts_detach_device[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist device detachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6354,6 +6364,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     char *buffer;
     int ret = TRUE;
     int found;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -6373,7 +6384,14 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    ret = virDomainDetachDevice(dom, buffer);
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainDetachDeviceFlags(dom, buffer, flags);
+    } else {
+        ret = virDomainDetachDevice(dom, buffer);
+    }
     VIR_FREE(buffer);
 
     if (ret < 0) {
@@ -6405,6 +6423,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {"target", VSH_OT_DATA, 0, gettext_noop("target network name")},
     {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC address")},
     {"script", VSH_OT_DATA, 0, gettext_noop("script used to bridge network interface")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist interface attachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6415,6 +6434,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     char *mac, *target, *script, *type, *source;
     int typ, ret = FALSE;
     char *buf = NULL, *tmp = NULL;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -6489,13 +6509,22 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!buf) goto cleanup;
     strcat(buf, "    </interface>\n");
 
-    if (virDomainAttachDevice(dom, buf)) {
-        goto cleanup;
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainAttachDeviceFlags(dom, buf, flags);
     } else {
-        vshPrint(ctl, "%s", _("Interface attached successfully\n"));
+        ret = virDomainAttachDevice(dom, buf);
     }
 
-    ret = TRUE;
+    if (ret != 0) {
+        vshError(ctl, _("Failed to attach interface"));
+        ret = FALSE;
+    } else {
+        vshPrint(ctl, "%s", _("Interface attached successfully\n"));
+        ret = TRUE;
+    }
 
  cleanup:
     if (dom)
@@ -6518,6 +6547,7 @@ static const vshCmdOptDef opts_detach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
     {"mac",    VSH_OT_STRING, 0, gettext_noop("MAC address")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist interface detachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6534,6 +6564,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     char *doc, *mac =NULL, *type;
     char buf[64];
     int i = 0, diff_mac, ret = FALSE;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -6605,10 +6636,21 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
-    if (ret != 0)
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainDetachDeviceFlags(dom,
+                                         (char *)xmlBufferContent(xml_buf),
+                                         flags);
+    } else {
+        ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
+    }
+
+    if (ret != 0) {
+        vshError(ctl, _("Failed to detach interface"));
         ret = FALSE;
-    else {
+    } else {
         vshPrint(ctl, "%s", _("Interface detached successfully\n"));
         ret = TRUE;
     }
@@ -6642,6 +6684,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     {"subdriver", VSH_OT_STRING, 0, gettext_noop("subdriver of disk device")},
     {"type",    VSH_OT_STRING, 0, gettext_noop("target device type")},
     {"mode",    VSH_OT_STRING, 0, gettext_noop("mode of device reading and writing")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist disk attachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6652,6 +6695,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     char *source, *target, *driver, *subdriver, *type, *mode;
     int isFile = 0, ret = FALSE;
     char *buf = NULL, *tmp = NULL;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -6767,12 +6811,22 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!buf) goto cleanup;
     strcat(buf, "    </disk>\n");
 
-    if (virDomainAttachDevice(dom, buf))
-        goto cleanup;
-    else
-        vshPrint(ctl, "%s", _("Disk attached successfully\n"));
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainAttachDeviceFlags(dom, buf, flags);
+    } else {
+        ret = virDomainAttachDevice(dom, buf);
+    }
 
-    ret = TRUE;
+    if (ret != 0) {
+        vshError(ctl, _("Failed to attach disk"));
+        ret = FALSE;
+    } else {
+        vshPrint(ctl, "%s", _("Disk attached successfully\n"));
+        ret = TRUE;
+    }
 
  cleanup:
     if (dom)
@@ -6794,6 +6848,7 @@ static const vshCmdInfo info_detach_disk[] = {
 static const vshCmdOptDef opts_detach_disk[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"target", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
+    {"persistent", VSH_OT_BOOL, 0, gettext_noop("persist disk detachment")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6809,6 +6864,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     char *doc, *target;
     int i = 0, diff_tgt, ret = FALSE;
+    unsigned int flags;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         goto cleanup;
@@ -6874,10 +6930,21 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
-    if (ret != 0)
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+        ret = virDomainDetachDeviceFlags(dom,
+                                         (char *)xmlBufferContent(xml_buf),
+                                         flags);
+    } else {
+        ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
+    }
+
+    if (ret != 0) {
+        vshError(ctl, _("Failed to detach disk"));
         ret = FALSE;
-    else {
+    } else {
         vshPrint(ctl, "%s", _("Disk detached successfully\n"));
         ret = TRUE;
     }
