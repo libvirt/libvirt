@@ -4096,9 +4096,10 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
 }
 
 /**
- * xenDaemonAttachDevice:
+ * xenDaemonAttachDeviceFlags:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Create a virtual device attachment to backend.
  * XML description is translated into S-expression.
@@ -4106,7 +4107,8 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
+xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
+                           unsigned int flags)
 {
     xenUnifiedPrivatePtr priv;
     char *sexpr = NULL;
@@ -4124,12 +4126,41 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    /*
-     * on older Xen without the inactive guests management
-     * avoid doing this on inactive guests
-     */
-    if ((domain->id < 0) && (priv->xendConfigVersion < 3))
-        return -1;
+    if (domain->id < 0) {
+        /* If xendConfigVersion < 3 only live config can be changed */
+        if (priv->xendConfigVersion < 3) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persisted config"));
+            return -1;
+        }
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
+    } else {
+        /* Only live config can be changed if xendConfigVersion < 3 */
+        if (priv->xendConfigVersion < 3 &&
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+             flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persisted config"));
+            return -1;
+        }
+        /* Xen only supports modifying both live and persisted config if
+         * xendConfigVersion >= 3
+         */
+        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend only supports modifying both live and "
+                           "persisted config"));
+            return -1;
+        }
+    }
 
     if (!(def = xenDaemonDomainFetch(domain->conn,
                                      domain->id,
@@ -4203,16 +4234,18 @@ cleanup:
 }
 
 /**
- * xenDaemonDetachDevice:
+ * xenDaemonDetachDeviceFlags:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Destroy a virtual device attachment to backend.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
+xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
+                           unsigned int flags)
 {
     xenUnifiedPrivatePtr priv;
     char class[8], ref[80];
@@ -4230,12 +4263,41 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    /*
-     * on older Xen without the inactive guests management
-     * avoid doing this on inactive guests
-     */
-    if ((domain->id < 0) && (priv->xendConfigVersion < 3))
-        return -1;
+    if (domain->id < 0) {
+        /* If xendConfigVersion < 3 only live config can be changed */
+        if (priv->xendConfigVersion < 3) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persisted config"));
+            return -1;
+        }
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
+    } else {
+        /* Only live config can be changed if xendConfigVersion < 3 */
+        if (priv->xendConfigVersion < 3 &&
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+             flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persisted config"));
+            return -1;
+        }
+        /* Xen only supports modifying both live and persisted config if
+         * xendConfigVersion >= 3
+         */
+        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend only supports modifying both live and "
+                           "persisted config"));
+            return -1;
+        }
+    }
 
     if (!(def = xenDaemonDomainFetch(domain->conn,
                                      domain->id,
@@ -5165,8 +5227,8 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainCreate,       /* domainCreate */
     xenDaemonDomainDefineXML,    /* domainDefineXML */
     xenDaemonDomainUndefine,     /* domainUndefine */
-    xenDaemonAttachDevice,       /* domainAttachDevice */
-    xenDaemonDetachDevice,       /* domainDetachDevice */
+    xenDaemonAttachDeviceFlags,       /* domainAttachDeviceFlags */
+    xenDaemonDetachDeviceFlags,       /* domainDetachDeviceFlags */
     xenDaemonDomainGetAutostart, /* domainGetAutostart */
     xenDaemonDomainSetAutostart, /* domainSetAutostart */
     xenDaemonGetSchedulerType,   /* domainGetSchedulerType */

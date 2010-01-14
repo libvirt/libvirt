@@ -3372,7 +3372,9 @@ static virDriver esxDriver = {
     esxDomainDefineXML,              /* domainDefineXML */
     esxDomainUndefine,               /* domainUndefine */
     NULL,                            /* domainAttachDevice */
+    NULL,                            /* domainAttachDeviceFlags */
     NULL,                            /* domainDetachDevice */
+    NULL,                            /* domainDetachDeviceFlags */
     NULL,                            /* domainGetAutostart */
     NULL,                            /* domainSetAutostart */
     esxDomainGetSchedulerType,       /* domainGetSchedulerType */

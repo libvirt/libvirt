@@ -754,7 +754,9 @@ static virDriver oneDriver = {
     oneDomainDefine, /* domainDefineXML */
     oneDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
+    NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
+    NULL, /* domainDetachDeviceFlags */
     oneGetAutostart, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

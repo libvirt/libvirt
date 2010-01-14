@@ -76,8 +76,8 @@ struct xenUnifiedDriver xenProxyDriver = {
     NULL, /* domainCreate */
     NULL, /* domainDefineXML */
     NULL, /* domainUndefine */
-    NULL, /* domainAttachDevice */
-    NULL, /* domainDetachDevice */
+    NULL, /* domainAttachDeviceFlags */
+    NULL, /* domainDetachDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

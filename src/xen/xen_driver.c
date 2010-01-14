@@ -1428,10 +1428,29 @@ xenUnifiedDomainAttachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;
+    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+
+    if (dom->id >= 0)
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainAttachDevice &&
-            drivers[i]->domainAttachDevice (dom, xml) == 0)
+        if (priv->opened[i] && drivers[i]->domainAttachDeviceFlags &&
+            drivers[i]->domainAttachDeviceFlags(dom, xml, flags) == 0)
+            return 0;
+
+    return -1;
+}
+
+static int
+xenUnifiedDomainAttachDeviceFlags (virDomainPtr dom, const char *xml,
+                                   unsigned int flags)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (priv->opened[i] && drivers[i]->domainAttachDeviceFlags &&
+            drivers[i]->domainAttachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1442,10 +1461,29 @@ xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;
+    unsigned int flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+
+    if (dom->id >= 0)
+        flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainDetachDevice &&
-            drivers[i]->domainDetachDevice (dom, xml) == 0)
+        if (priv->opened[i] && drivers[i]->domainDetachDeviceFlags &&
+            drivers[i]->domainDetachDeviceFlags(dom, xml, flags) == 0)
+            return 0;
+
+    return -1;
+}
+
+static int
+xenUnifiedDomainDetachDeviceFlags (virDomainPtr dom, const char *xml,
+                                   unsigned int flags)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (priv->opened[i] && drivers[i]->domainDetachDeviceFlags &&
+            drivers[i]->domainDetachDeviceFlags(dom, xml, flags) == 0)
             return 0;
 
     return -1;
@@ -1835,7 +1873,9 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainDefineXML, /* domainDefineXML */
     xenUnifiedDomainUndefine, /* domainUndefine */
     xenUnifiedDomainAttachDevice, /* domainAttachDevice */
+    xenUnifiedDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     xenUnifiedDomainDetachDevice, /* domainDetachDevice */
+    xenUnifiedDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
     xenUnifiedDomainGetAutostart, /* domainGetAutostart */
     xenUnifiedDomainSetAutostart, /* domainSetAutostart */
     xenUnifiedDomainGetSchedulerType, /* domainGetSchedulerType */

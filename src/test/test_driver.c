@@ -5209,7 +5209,9 @@ static virDriver testDriver = {
     testDomainDefineXML, /* domainDefineXML */
     testDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
+    NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
+    NULL, /* domainDetachDeviceFlags */
     testDomainGetAutostart, /* domainGetAutostart */
     testDomainSetAutostart, /* domainSetAutostart */
     testDomainGetSchedulerType, /* domainGetSchedulerType */

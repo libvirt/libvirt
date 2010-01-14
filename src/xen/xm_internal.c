@@ -65,8 +65,10 @@
 static int xenXMConfigSetString(virConfPtr conf, const char *setting,
                                 const char *str);
 char * xenXMAutoAssignMac(void);
-static int xenXMDomainAttachDevice(virDomainPtr domain, const char *xml);
-static int xenXMDomainDetachDevice(virDomainPtr domain, const char *xml);
+static int xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
+                                        unsigned int flags);
+static int xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
+                                        unsigned int flags);
 
 #define XM_REFRESH_INTERVAL 10
 
@@ -109,8 +111,8 @@ struct xenUnifiedDriver xenXMDriver = {
     xenXMDomainCreate, /* domainCreate */
     xenXMDomainDefineXML, /* domainDefineXML */
     xenXMDomainUndefine, /* domainUndefine */
-    xenXMDomainAttachDevice, /* domainAttachDevice */
-    xenXMDomainDetachDevice, /* domainDetachDevice */
+    xenXMDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
+    xenXMDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */
@@ -2914,17 +2916,21 @@ cleanup:
 
 
 /**
- * xenXMDomainAttachDevice:
+ * xenXMDomainAttachDeviceFlags:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Create a virtual device attachment to backend.
  * XML description is translated into config file.
+ * This driver only supports device allocation to
+ * persisted config.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
+xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
+                             unsigned int flags) {
     const char *filename = NULL;
     xenXMConfCachePtr entry = NULL;
     int ret = -1;
@@ -2940,7 +2946,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
-    if (domain->id != -1)
+    if (domain->id != -1 && !(flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG))
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3002,16 +3008,20 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
 
 
 /**
- * xenXMDomainDetachDevice:
+ * xenXMDomainDetachDeviceFlags:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
  *
  * Destroy a virtual device attachment to backend.
+ * This driver only supports device deallocation from
+ * persisted config.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
+xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
+                             unsigned int flags) {
     const char *filename = NULL;
     xenXMConfCachePtr entry = NULL;
     virDomainDeviceDefPtr dev = NULL;
@@ -3029,7 +3039,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
 
     if (domain->conn->flags & VIR_CONNECT_RO)
         return -1;
-    if (domain->id != -1)
+    if (domain->id != -1 && !(flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG))
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;

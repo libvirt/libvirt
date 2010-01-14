@@ -6057,6 +6057,18 @@ cleanup:
     return ret;
 }
 
+static int qemudDomainAttachDeviceFlags(virDomainPtr dom,
+                                        const char *xml,
+                                        unsigned int flags) {
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("cannot modify the persistent configuration of a domain"));
+        return -1;
+    }
+
+    return qemudDomainAttachDevice(dom, xml);
+}
+
 static int qemudDomainDetachPciDiskDevice(virConnectPtr conn,
                                           struct qemud_driver *driver,
                                           virDomainObjPtr vm,
@@ -6462,6 +6474,18 @@ cleanup:
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
+}
+
+static int qemudDomainDetachDeviceFlags(virDomainPtr dom,
+                                        const char *xml,
+                                        unsigned int flags) {
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_INVALID,
+                         "%s", _("cannot modify the persistent configuration of a domain"));
+        return -1;
+    }
+
+    return qemudDomainDetachDevice(dom, xml);
 }
 
 static int qemudDomainGetAutostart(virDomainPtr dom,
@@ -8577,7 +8601,9 @@ static virDriver qemuDriver = {
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
     qemudDomainAttachDevice, /* domainAttachDevice */
+    qemudDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     qemudDomainDetachDevice, /* domainDetachDevice */
+    qemudDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
     qemuGetSchedulerType, /* domainGetSchedulerType */
