@@ -5121,7 +5121,8 @@ error:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of one device
  *
- * Create a virtual device attachment to backend.
+ * Create a virtual device attachment to backend.  This function,
+ * having hotplug semantics, is only allowed on an active domain.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -5164,7 +5165,8 @@ error:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of one device
  *
- * Destroy a virtual device attachment to backend.
+ * Destroy a virtual device attachment to backend.  This function,
+ * having hot-unplug semantics, is only allowed on an active domain.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
