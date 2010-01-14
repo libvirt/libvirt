@@ -708,9 +708,21 @@ struct remote_domain_attach_device_args {
     remote_nonnull_string xml;
 };
 
+struct remote_domain_attach_device_flags_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
 struct remote_domain_detach_device_args {
     remote_nonnull_domain dom;
     remote_nonnull_string xml;
+};
+
+struct remote_domain_detach_device_flags_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string xml;
+    unsigned int flags;
 };
 
 struct remote_domain_get_autostart_args {
@@ -1641,7 +1653,10 @@ enum remote_procedure {
     REMOTE_PROC_INTERFACE_IS_ACTIVE = 156,
     REMOTE_PROC_GET_LIB_VERSION = 157,
     REMOTE_PROC_CPU_COMPARE = 158,
-    REMOTE_PROC_DOMAIN_MEMORY_STATS = 159
+    REMOTE_PROC_DOMAIN_MEMORY_STATS = 159,
+    REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS = 160,
+
+    REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
