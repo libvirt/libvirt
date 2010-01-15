@@ -1,7 +1,7 @@
 /*
  * utils.c: common, generic utility functions
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
