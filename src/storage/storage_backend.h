@@ -1,7 +1,7 @@
 /*
  * storage_backend.h: internal storage driver backend contract
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -24,6 +24,7 @@
 #ifndef __VIR_STORAGE_BACKEND_H__
 #define __VIR_STORAGE_BACKEND_H__
 
+#include <stdint.h>
 #include "internal.h"
 #include "storage_conf.h"
 
