@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include <stdint.h>
 #include <libxml/parser.h>
 #include <libxml/xpathInternals.h>
 
