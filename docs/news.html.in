@@ -26,7 +26,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       esx: Extend documentation about 'vcenter' and add some about 'auto_answer' (Matthias Bolte),
       Fix and improve domain xml video element description (Matthias Bolte),
       Fix owner and group in example volume XML (Matthew Booth),
-      add missing doc for device <shareable/> option (Daniel Veillard),
+      add missing doc for device &lt;shareable/&gt; option (Daniel Veillard),
       add AppArmor test and examples to dist (Jamie Strandboge),
       Update location of C# bindings. (Richard Jones),
       Fix typo in QEMU driver webpage (Daniel P. Berrange),
