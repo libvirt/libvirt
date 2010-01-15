@@ -28,6 +28,10 @@
 
 #include <config.h>
 
+#include <stdint.h>
+#include <unistd.h>
+#include <sys/types.h>
+
 #include "internal.h"
 
 #include "datatypes.h"
