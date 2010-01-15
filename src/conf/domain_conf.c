@@ -799,6 +799,7 @@ int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRI
     /*return addr->controller || addr->bus || addr->unit;*/
     return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
+#endif /* !PROXY */
 
 
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info)
@@ -862,6 +863,8 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
     return 0;
 }
 
+
+#ifndef PROXY
 
 int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
                                    virDomainDevicePCIAddressPtr b)
