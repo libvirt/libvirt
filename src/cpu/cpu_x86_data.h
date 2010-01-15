@@ -1,7 +1,7 @@
 /*
  * cpu_x86_data.h: x86 specific CPU data
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,8 @@
 
 #ifndef __VIR_CPU_X86_DATA_H__
 #define __VIR_CPU_X86_DATA_H__
+
+#include <stdint.h>
 
 struct cpuX86cpuid {
     uint32_t function;
