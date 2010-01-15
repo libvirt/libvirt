@@ -806,13 +806,13 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LIBADD += \
-		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
+		    $(CYGWIN_EXTRA_LIBADD) ../gnulib/lib/libgnu.la
 libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
-                     -version-info @LIBVIRT_VERSION_INFO@ \
+                     -version-info $(LIBVIRT_VERSION_INFO) \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) \
 		    $(DRIVER_MODULE_LIBS) \
-		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
+		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt.syms
 
@@ -824,8 +824,8 @@ noinst_LTLIBRARIES += libvirt_test.la
 # Remove version script from convenience library
 test_LDFLAGS =						\
   $$(echo '$(libvirt_la_LDFLAGS)'			\
-     |sed 's!@VERSION_SCRIPT_FLAGS@libvirt.syms!!'	\
-     |sed 's!-version-info @LIBVIRT_VERSION_INFO@!!')
+     |sed 's!$(VERSION_SCRIPT_FLAGS)libvirt.syms!!'	\
+     |sed 's!-version-info $(LIBVIRT_VERSION_INFO)!!')
 
 # Just like the above, but with a slightly different set of public symbols.
 libvirt_test_la_SOURCES = $(libvirt_la_SOURCES)

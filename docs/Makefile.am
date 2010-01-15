@@ -143,7 +143,7 @@ rebuild: api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
-	-@INSTALL@ -m 0644 $(srcdir)/FAQ.html \
+	-$(INSTALL) -m 0644 $(srcdir)/FAQ.html \
 	    $(srcdir)/Libxml2-Logo-90x34.gif $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
@@ -152,7 +152,7 @@ install-data-local:
 	  $(INSTALL) -m 0644 $(srcdir)/$$p $(DESTDIR)$(HTML_DIR)/html; done
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
-	    @INSTALL@ -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
+	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
 	done
 
 uninstall-local:

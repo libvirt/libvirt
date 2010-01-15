@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2003-2009 Free Software Foundation, Inc.
+# Copyright (C) 2003-2010 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -265,3 +265,6 @@ ifeq (0,$(MAKELEVEL))
     $(error gnulib update required; run ./autogen.sh first)
   endif
 endif
+
+# Exempt @...@ uses of these symbols.
+_makefile_at_at_check_exceptions = ' && !/(SCHEMA|SYSCONF)DIR/'

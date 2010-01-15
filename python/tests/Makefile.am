@@ -30,7 +30,7 @@ clean:
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(EXAMPLE_DIR)
 	-(for test in $(PYTESTS); \
-	  do @INSTALL@ -m 0644 $(srcdir)/$$test $(DESTDIR)$(EXAMPLE_DIR) ; done)
+	  do $(INSTALL) -m 0644 $(srcdir)/$$test $(DESTDIR)$(EXAMPLE_DIR) ; done)
 
 uninstall-local:
 	for test in $(PYTESTS); do rm -f $(DESTDIR)$(EXAMPLE_DIR)/$$test; done

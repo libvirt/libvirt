@@ -1,6 +1,6 @@
 
 INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I@srcdir@/include
-LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la 	$(COVERAGE_LDFLAGS)
+LDADDS = $(STATIC_BINARIES) $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la 	$(COVERAGE_LDFLAGS)
 
 noinst_PROGRAMS=info1
 

@@ -37,12 +37,12 @@ pyexec_LTLIBRARIES = libvirtmod.la
 libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c libvirt.c libvirt.h
 # Python <= 2.4 header files contain a redundant decl, hence we
 # need extra flags here
-libvirtmod_la_CFLAGS = @WARN_PYTHON_CFLAGS@
+libvirtmod_la_CFLAGS = $(WARN_PYTHON_CFLAGS)
 
 libvirtmod_la_LDFLAGS = -module -avoid-version -shared -L$(top_builddir)/src/.libs \
-	@CYGWIN_EXTRA_LDFLAGS@
+	$(CYGWIN_EXTRA_LDFLAGS)
 libvirtmod_la_LIBADD = $(mylibs) \
-	@CYGWIN_EXTRA_LIBADD@ @CYGWIN_EXTRA_PYTHON_LIBADD@
+	$(CYGWIN_EXTRA_LIBADD) $(CYGWIN_EXTRA_PYTHON_LIBADD)
 
 GENERATE = generator.py
 API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-override-api.xml
@@ -61,10 +61,10 @@ $(libvirtmod_la_OBJECTS): $(GENERATED)
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)
-	@INSTALL@ -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
+	$(INSTALL) -m 0644 libvirt.py $(DESTDIR)$(pyexecdir)
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
-	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
+	   do $(INSTALL) -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pyexecdir)/libvirt.py

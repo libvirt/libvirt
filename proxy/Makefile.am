@@ -7,7 +7,7 @@ INCLUDES = -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
            -I@top_srcdir@/src/util \
            -I@top_srcdir@/src/conf \
            -I@top_srcdir@/src/xen \
-           @LIBXML_CFLAGS@ \
+           $(LIBXML_CFLAGS) \
 	   -DPROXY  -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
            -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS) $(XEN_CFLAGS)
 

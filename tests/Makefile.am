@@ -27,7 +27,7 @@ INCLUDES += \
 endif
 
 LDADDS = \
-	@STATIC_BINARIES@ \
+	$(STATIC_BINARIES) \
 	$(LIBXML_LIBS) \
         $(GNUTLS_LIBS) \
         $(SASL_LIBS) \
