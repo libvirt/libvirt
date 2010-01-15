@@ -32,8 +32,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_VI_ERROR(conn, code, fmt...)                                      \
-    virReportErrorHelper(conn, VIR_FROM_ESX, code, __FILE__,  __FUNCTION__,   \
+#define ESX_VI_ERROR(code, fmt...)                                            \
+    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__,  __FUNCTION__,   \
                          __LINE__, fmt)
 
 #define ESX_VI__SOAP__REQUEST_HEADER                                          \
@@ -56,7 +56,7 @@
  */
 
 int
-esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_RetrieveServiceContent(esxVI_Context *ctx,
                              esxVI_ServiceContent **serviceContent)
 {
     int result = 0;
@@ -72,14 +72,13 @@ esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (serviceContent == NULL || *serviceContent != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
-    if (esxVI_Context_Execute(conn, ctx, "RetrieveServiceContent", request,
+    if (esxVI_Context_Execute(ctx, "RetrieveServiceContent", request,
                               &response, esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_ServiceContent_Deserialize(conn, response->node,
-                                         serviceContent) < 0) {
+        esxVI_ServiceContent_Deserialize(response->node, serviceContent) < 0) {
         goto failure;
     }
 
@@ -97,8 +96,7 @@ esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
-            const char *userName, const char *password,
+esxVI_Login(esxVI_Context *ctx, const char *userName, const char *password,
             esxVI_UserSession **userSession)
 {
     int result = 0;
@@ -107,25 +105,24 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (userSession == NULL || *userSession != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<Login xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->sessionManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, userName, "userName", &buffer,
+        esxVI_String_SerializeValue(userName, "userName", &buffer,
                                     esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, password, "password", &buffer,
+        esxVI_String_SerializeValue(password, "password", &buffer,
                                     esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -134,15 +131,15 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "Login", request, &response,
+    if (esxVI_Context_Execute(ctx, "Login", request, &response,
                               esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_UserSession_Deserialize(conn, response->node, userSession) < 0) {
+        esxVI_UserSession_Deserialize(response->node, userSession) < 0) {
         goto failure;
     }
 
@@ -163,7 +160,7 @@ esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
+esxVI_Logout(esxVI_Context *ctx)
 {
     int result = 0;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
@@ -171,15 +168,14 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<Logout xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->sessionManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
@@ -189,13 +185,13 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "Logout", request, &response,
+    if (esxVI_Context_Execute(ctx, "Logout", request, &response,
                               esxVI_Occurrence_None) < 0) {
         goto failure;
     }
@@ -217,9 +213,8 @@ esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx)
 
 
 int
-esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
-                      const char *sessionID, const char *userName,
-                      esxVI_Boolean *active)
+esxVI_SessionIsActive(esxVI_Context *ctx, const char *sessionID,
+                      const char *userName, esxVI_Boolean *active)
 {
     int result = 0;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
@@ -227,25 +222,24 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (active == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<SessionIsActive xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->sessionManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, sessionID, "sessionID", &buffer,
+        esxVI_String_SerializeValue(sessionID, "sessionID", &buffer,
                                     esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, userName, "userName", &buffer,
+        esxVI_String_SerializeValue(userName, "userName", &buffer,
                                     esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -254,15 +248,15 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "SessionIsActive", request,
-                              &response, esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_Boolean_Deserialize(conn, response->node, active) < 0) {
+    if (esxVI_Context_Execute(ctx, "SessionIsActive", request, &response,
+                              esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_Boolean_Deserialize(response->node, active) < 0) {
         goto failure;
     }
 
@@ -283,7 +277,7 @@ esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_RetrieveProperties(esxVI_Context *ctx,
                          esxVI_PropertyFilterSpec *propertyFilterSpecList,
                          esxVI_ObjectContent **objectContentList)
 {
@@ -293,23 +287,22 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (objectContentList == NULL || *objectContentList != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<RetrieveProperties xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->propertyCollector,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_PropertyFilterSpec_SerializeList(conn, propertyFilterSpecList,
+        esxVI_PropertyFilterSpec_SerializeList(propertyFilterSpecList,
                                                "specSet", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
@@ -319,15 +312,15 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "RetrieveProperties", request,
-                              &response, esxVI_Occurrence_List) < 0 ||
-        esxVI_ObjectContent_DeserializeList(conn, response->node,
+    if (esxVI_Context_Execute(ctx, "RetrieveProperties", request, &response,
+                              esxVI_Occurrence_List) < 0 ||
+        esxVI_ObjectContent_DeserializeList(response->node,
                                             objectContentList) < 0) {
         goto failure;
     }
@@ -349,40 +342,40 @@ esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_PowerOnVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_PowerOnVM_Task(esxVI_Context *ctx,
                      esxVI_ManagedObjectReference *virtualMachine,
                      esxVI_ManagedObjectReference **task)
 {
-    return esxVI_StartSimpleVirtualMachineTask(conn, ctx, "PowerOnVM",
+    return esxVI_StartSimpleVirtualMachineTask(ctx, "PowerOnVM",
                                                virtualMachine, task);
 }
 
 
 
 int
-esxVI_PowerOffVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_PowerOffVM_Task(esxVI_Context *ctx,
                       esxVI_ManagedObjectReference *virtualMachine,
                       esxVI_ManagedObjectReference **task)
 {
-    return esxVI_StartSimpleVirtualMachineTask(conn, ctx, "PowerOffVM",
+    return esxVI_StartSimpleVirtualMachineTask(ctx, "PowerOffVM",
                                                virtualMachine, task);
 }
 
 
 
 int
-esxVI_SuspendVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_SuspendVM_Task(esxVI_Context *ctx,
                      esxVI_ManagedObjectReference *virtualMachine,
                      esxVI_ManagedObjectReference **task)
 {
-    return esxVI_StartSimpleVirtualMachineTask(conn, ctx, "SuspendVM",
+    return esxVI_StartSimpleVirtualMachineTask(ctx, "SuspendVM",
                                                virtualMachine, task);
 }
 
 
 
 int
-esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_MigrateVM_Task(esxVI_Context *ctx,
                      esxVI_ManagedObjectReference *virtualMachine,
                      esxVI_ManagedObjectReference *resourcePool,
                      esxVI_ManagedObjectReference *hostSystem,
@@ -393,25 +386,22 @@ esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     char *request = NULL;
 
     if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<MigrateVM_Task xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
-                                               &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, resourcePool, "pool",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, hostSystem, "host",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
                                                esxVI_Boolean_True) < 0 ||
         esxVI_VirtualMachineMovePriority_Serialize
-          (conn, esxVI_VirtualMachineMovePriority_DefaultPriority,
-           "priority", &buffer, esxVI_Boolean_True) < 0) {
+          (esxVI_VirtualMachineMovePriority_DefaultPriority, "priority",
+           &buffer, esxVI_Boolean_True) < 0) {
         goto failure;
     }
 
@@ -419,14 +409,13 @@ esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_StartVirtualMachineTask(conn, ctx, "MigrateVM", request,
-                                      task) < 0) {
+    if (esxVI_StartVirtualMachineTask(ctx, "MigrateVM", request, task) < 0) {
         goto failure;
     }
 
@@ -446,7 +435,7 @@ esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_ReconfigVM_Task(esxVI_Context *ctx,
                       esxVI_ManagedObjectReference *virtualMachine,
                       esxVI_VirtualMachineConfigSpec *spec,
                       esxVI_ManagedObjectReference **task)
@@ -456,17 +445,16 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     char *request = NULL;
 
     if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<ReconfigVM_Task xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
-                                               &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_VirtualMachineConfigSpec_Serialize(conn, spec, "spec", &buffer,
+        esxVI_VirtualMachineConfigSpec_Serialize(spec, "spec", &buffer,
                                                  esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -475,14 +463,13 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_StartVirtualMachineTask(conn, ctx, "ReconfigVM", request,
-                                      task) < 0) {
+    if (esxVI_StartVirtualMachineTask(ctx, "ReconfigVM", request, task) < 0) {
         goto failure;
     }
 
@@ -502,7 +489,7 @@ esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_RegisterVM_Task(esxVI_Context *ctx,
                       esxVI_ManagedObjectReference *folder,
                       const char *path, const char *name,
                       esxVI_Boolean asTemplate,
@@ -515,26 +502,24 @@ esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     char *request = NULL;
 
     if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<RegisterVM_Task xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, folder, "_this", &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(folder, "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, path, "path", &buffer,
+        esxVI_String_SerializeValue(path, "path", &buffer,
                                     esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, name, "name", &buffer,
+        esxVI_String_SerializeValue(name, "name", &buffer,
                                     esxVI_Boolean_False) < 0 ||
-        esxVI_Boolean_Serialize(conn, asTemplate, "asTemplate", &buffer,
+        esxVI_Boolean_Serialize(asTemplate, "asTemplate", &buffer,
                                 esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, resourcePool, "pool",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
                                                esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, hostSystem, "host",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
                                                esxVI_Boolean_False) < 0) {
         goto failure;
     }
@@ -543,14 +528,13 @@ esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_StartVirtualMachineTask(conn, ctx, "RegisterVM", request,
-                                      task) < 0) {
+    if (esxVI_StartVirtualMachineTask(ctx, "RegisterVM", request, task) < 0) {
         goto failure;
     }
 
@@ -570,8 +554,7 @@ esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
-                 esxVI_ManagedObjectReference *task)
+esxVI_CancelTask(esxVI_Context *ctx, esxVI_ManagedObjectReference *task)
 {
     int result = 0;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
@@ -579,14 +562,14 @@ esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<CancelTask xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, task, "_this", &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(task, "_this", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -595,13 +578,13 @@ esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "CancelTask", request, &response,
+    if (esxVI_Context_Execute(ctx, "CancelTask", request, &response,
                               esxVI_Occurrence_None) < 0) {
         goto failure;
     }
@@ -625,7 +608,7 @@ esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_UnregisterVM(esxVI_Context *ctx,
                    esxVI_ManagedObjectReference *virtualMachine)
 {
     int result = 0;
@@ -636,8 +619,7 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<UnregisterVM xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
-                                               &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -646,13 +628,13 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "UnregisterVM", request, &response,
+    if (esxVI_Context_Execute(ctx, "UnregisterVM", request, &response,
                               esxVI_Occurrence_None) < 0) {
         goto failure;
     }
@@ -674,7 +656,7 @@ esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_AnswerVM(esxVI_Context *ctx,
                esxVI_ManagedObjectReference *virtualMachine,
                const char *questionId, const char *answerChoice)
 {
@@ -686,13 +668,12 @@ esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<AnswerVM xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, virtualMachine, "_this",
-                                               &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, questionId, "questionId",
-                                    &buffer, esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, answerChoice, "answerChoice",
-                                    &buffer, esxVI_Boolean_True) < 0) {
+        esxVI_String_SerializeValue(questionId, "questionId", &buffer,
+                                    esxVI_Boolean_True) < 0 ||
+        esxVI_String_SerializeValue(answerChoice, "answerChoice", &buffer,
+                                    esxVI_Boolean_True) < 0) {
         goto failure;
     }
 
@@ -700,13 +681,13 @@ esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, request, NULL, &response,
+    if (esxVI_Context_Execute(ctx, request, NULL, &response,
                               esxVI_Boolean_False) < 0) {
         goto failure;
     }
@@ -730,7 +711,7 @@ esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_CreateFilter(esxVI_Context *ctx,
                    esxVI_PropertyFilterSpec *propertyFilterSpec,
                    esxVI_Boolean partialUpdates,
                    esxVI_ManagedObjectReference **propertyFilter)
@@ -741,26 +722,25 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (propertyFilter == NULL || *propertyFilter != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<CreateFilter xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->propertyCollector,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_PropertyFilterSpec_Serialize(conn, propertyFilterSpec, "spec",
-                                           &buffer, esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(conn, partialUpdates, "partialUpdates",
-                                &buffer, esxVI_Boolean_True) < 0) {
+        esxVI_PropertyFilterSpec_Serialize(propertyFilterSpec, "spec", &buffer,
+                                           esxVI_Boolean_True) < 0 ||
+        esxVI_Boolean_Serialize(partialUpdates, "partialUpdates", &buffer,
+                                esxVI_Boolean_True) < 0) {
         goto failure;
     }
 
@@ -768,16 +748,15 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "CreateFilter", request, &response,
+    if (esxVI_Context_Execute(ctx, "CreateFilter", request, &response,
                               esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_ManagedObjectReference_Deserialize(conn, response->node,
-                                                 propertyFilter,
+        esxVI_ManagedObjectReference_Deserialize(response->node, propertyFilter,
                                                  "PropertyFilter") < 0) {
         goto failure;
     }
@@ -799,7 +778,7 @@ esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_DestroyPropertyFilter(esxVI_Context *ctx,
                             esxVI_ManagedObjectReference *propertyFilter)
 {
     int result = 0;
@@ -808,15 +787,14 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<DestroyPropertyFilter xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, propertyFilter, "_this",
-                                               &buffer,
+    if (esxVI_ManagedObjectReference_Serialize(propertyFilter, "_this", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -825,13 +803,13 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "DestroyPropertyFilter", request,
+    if (esxVI_Context_Execute(ctx, "DestroyPropertyFilter", request,
                               &response, esxVI_Occurrence_None) < 0) {
         goto failure;
     }
@@ -853,8 +831,8 @@ esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
-                     const char *version, esxVI_UpdateSet **updateSet)
+esxVI_WaitForUpdates(esxVI_Context *ctx, const char *version,
+                     esxVI_UpdateSet **updateSet)
 {
     int result = 0;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
@@ -862,23 +840,22 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (updateSet == NULL || *updateSet != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<WaitForUpdates xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn,
-                                               ctx->service->propertyCollector,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(conn, version, "version", &buffer,
+        esxVI_String_SerializeValue(version, "version", &buffer,
                                     esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -887,15 +864,15 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "WaitForUpdates", request,
+    if (esxVI_Context_Execute(ctx, "WaitForUpdates", request,
                               &response, esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_UpdateSet_Deserialize(conn, response->node, updateSet) < 0) {
+        esxVI_UpdateSet_Deserialize(response->node, updateSet) < 0) {
         goto failure;
     }
 
@@ -916,27 +893,26 @@ esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_RebootGuest(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_RebootGuest(esxVI_Context *ctx,
                   esxVI_ManagedObjectReference *virtualMachine)
 {
-    return esxVI_SimpleVirtualMachineMethod(conn, ctx, "RebootGuest",
-                                            virtualMachine);
+    return esxVI_SimpleVirtualMachineMethod(ctx, "RebootGuest", virtualMachine);
 }
 
 
 
 int
-esxVI_ShutdownGuest(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_ShutdownGuest(esxVI_Context *ctx,
                     esxVI_ManagedObjectReference *virtualMachine)
 {
-    return esxVI_SimpleVirtualMachineMethod(conn, ctx, "ShutdownGuest",
+    return esxVI_SimpleVirtualMachineMethod(ctx, "ShutdownGuest",
                                             virtualMachine);
 }
 
 
 
 int
-esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_ValidateMigration(esxVI_Context *ctx,
                         esxVI_ManagedObjectReference *virtualMachineList,
                         esxVI_VirtualMachinePowerState powerState,
                         esxVI_String *testTypeList,
@@ -950,12 +926,12 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (eventList == NULL || *eventList != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
@@ -967,19 +943,16 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
                                "ServiceInstance"
                              "</_this>");
 
-    if (esxVI_ManagedObjectReference_SerializeList(conn, virtualMachineList,
-                                                   "vm", &buffer,
+    if (esxVI_ManagedObjectReference_SerializeList(virtualMachineList, "vm",
+                                                   &buffer,
                                                    esxVI_Boolean_True) < 0 ||
-        esxVI_VirtualMachinePowerState_Serialize(conn, powerState, "state",
-                                                 &buffer,
+        esxVI_VirtualMachinePowerState_Serialize(powerState, "state", &buffer,
                                                  esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeList(conn, testTypeList, "testType", &buffer,
+        esxVI_String_SerializeList(testTypeList, "testType", &buffer,
                                    esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, resourcePool, "pool",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, hostSystem, "host",
-                                               &buffer,
+        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
                                                esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -988,15 +961,15 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "ValidateMigration", request,
-                              &response, esxVI_Occurrence_List) < 0 ||
-        esxVI_Event_DeserializeList(conn, response->node, eventList) < 0) {
+    if (esxVI_Context_Execute(ctx, "ValidateMigration", request, &response,
+                              esxVI_Occurrence_List) < 0 ||
+        esxVI_Event_DeserializeList(response->node, eventList) < 0) {
         goto failure;
     }
 
@@ -1017,7 +990,7 @@ esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_FindByIp(esxVI_Context *ctx,
                  esxVI_ManagedObjectReference *datacenter,
                  const char *ip, esxVI_Boolean vmSearch,
                  esxVI_ManagedObjectReference **managedObjectReference)
@@ -1028,27 +1001,27 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (managedObjectReference == NULL || *managedObjectReference != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<FindByIp xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, ctx->service->searchIndex,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->searchIndex,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, datacenter,
-                                               "datacenter", &buffer,
+        esxVI_ManagedObjectReference_Serialize(datacenter, "datacenter",
+                                               &buffer,
                                                esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeValue(conn, ip, "ip", &buffer,
+        esxVI_String_SerializeValue(ip, "ip", &buffer,
                                     esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(conn, vmSearch, "vmSearch", &buffer,
+        esxVI_Boolean_Serialize(vmSearch, "vmSearch", &buffer,
                                 esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -1057,16 +1030,16 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "FindByIp", request, &response,
+    if (esxVI_Context_Execute(ctx, "FindByIp", request, &response,
                               esxVI_Occurrence_OptionalItem) < 0 ||
         esxVI_ManagedObjectReference_Deserialize
-          (conn, response->node, managedObjectReference,
+          (response->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
         goto failure;
@@ -1089,7 +1062,7 @@ esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_FindByUuid(esxVI_Context *ctx,
                  esxVI_ManagedObjectReference *datacenter,
                  const unsigned char *uuid, esxVI_Boolean vmSearch,
                  esxVI_ManagedObjectReference **managedObjectReference)
@@ -1101,12 +1074,12 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (managedObjectReference == NULL || *managedObjectReference != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
@@ -1115,15 +1088,15 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<FindByUuid xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, ctx->service->searchIndex,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->searchIndex,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, datacenter,
-                                               "datacenter", &buffer,
+        esxVI_ManagedObjectReference_Serialize(datacenter, "datacenter",
+                                               &buffer,
                                                esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeValue(conn, uuid_string, "uuid", &buffer,
+        esxVI_String_SerializeValue(uuid_string, "uuid", &buffer,
                                     esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(conn, vmSearch, "vmSearch", &buffer,
+        esxVI_Boolean_Serialize(vmSearch, "vmSearch", &buffer,
                                 esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -1132,13 +1105,13 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "FindByUuid", request, &response,
+    if (esxVI_Context_Execute(ctx, "FindByUuid", request, &response,
                               esxVI_Occurrence_OptionalItem) < 0) {
         goto failure;
     }
@@ -1148,7 +1121,7 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
     }
 
     if (esxVI_ManagedObjectReference_Deserialize
-          (conn, response->node, managedObjectReference,
+          (response->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
         goto failure;
@@ -1171,7 +1144,7 @@ esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
+esxVI_QueryAvailablePerfMetric(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *entity,
                                esxVI_DateTime *beginTime,
                                esxVI_DateTime *endTime, esxVI_Int *intervalId,
@@ -1183,29 +1156,28 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (perfMetricIdList == NULL || *perfMetricIdList != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<QueryAvailablePerfMetric xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, ctx->service->perfManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(conn, entity,
-                                               "entity", &buffer,
+        esxVI_ManagedObjectReference_Serialize(entity, "entity", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_DateTime_Serialize(conn, beginTime, "beginTime", &buffer,
+        esxVI_DateTime_Serialize(beginTime, "beginTime", &buffer,
                                  esxVI_Boolean_False) < 0 ||
-        esxVI_DateTime_Serialize(conn, endTime, "endTime", &buffer,
+        esxVI_DateTime_Serialize(endTime, "endTime", &buffer,
                                  esxVI_Boolean_False) < 0 ||
-        esxVI_Int_Serialize(conn, intervalId, "intervalId", &buffer,
+        esxVI_Int_Serialize(intervalId, "intervalId", &buffer,
                             esxVI_Boolean_False) < 0) {
         goto failure;
     }
@@ -1214,15 +1186,15 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "QueryAvailablePerfMetric", request,
+    if (esxVI_Context_Execute(ctx, "QueryAvailablePerfMetric", request,
                               &response, esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfMetricId_DeserializeList(conn, response->node,
+        esxVI_PerfMetricId_DeserializeList(response->node,
                                            perfMetricIdList) < 0) {
         goto failure;
     }
@@ -1244,8 +1216,7 @@ esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
-                       esxVI_Int *counterIdList,
+esxVI_QueryPerfCounter(esxVI_Context *ctx, esxVI_Int *counterIdList,
                        esxVI_PerfCounterInfo **perfCounterInfoList)
 {
     int result = 0;
@@ -1254,22 +1225,22 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (perfCounterInfoList == NULL || *perfCounterInfoList != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<QueryPerfCounter xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, ctx->service->perfManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_Int_SerializeList(conn, counterIdList, "counterId", &buffer,
+        esxVI_Int_SerializeList(counterIdList, "counterId", &buffer,
                                 esxVI_Boolean_True) < 0) {
         goto failure;
     }
@@ -1278,15 +1249,15 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "QueryPerfCounter", request,
-                              &response, esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfCounterInfo_DeserializeList(conn, response->node,
+    if (esxVI_Context_Execute(ctx, "QueryPerfCounter", request, &response,
+                              esxVI_Occurrence_List) < 0 ||
+        esxVI_PerfCounterInfo_DeserializeList(response->node,
                                               perfCounterInfoList) < 0) {
         goto failure;
     }
@@ -1308,8 +1279,7 @@ esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
 
 
 int
-esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
-                esxVI_PerfQuerySpec *querySpecList,
+esxVI_QueryPerf(esxVI_Context *ctx, esxVI_PerfQuerySpec *querySpecList,
                 esxVI_PerfEntityMetric **perfEntityMetricList)
 {
     int result = 0;
@@ -1318,23 +1288,23 @@ esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (ctx->service == NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid call");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
         return -1;
     }
 
     if (perfEntityMetricList == NULL || *perfEntityMetricList != NULL) {
-        ESX_VI_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
 
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
     virBufferAddLit(&buffer, "<QueryPerf xmlns=\"urn:vim25\">");
 
-    if (esxVI_ManagedObjectReference_Serialize(conn, ctx->service->perfManager,
+    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
                                                "_this", &buffer,
                                                esxVI_Boolean_True) < 0 ||
-        esxVI_PerfQuerySpec_SerializeList(conn, querySpecList, "querySpec",
-                                          &buffer, esxVI_Boolean_True) < 0) {
+        esxVI_PerfQuerySpec_SerializeList(querySpecList, "querySpec", &buffer,
+                                          esxVI_Boolean_True) < 0) {
         goto failure;
     }
 
@@ -1342,15 +1312,15 @@ esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(conn);
+        virReportOOMError(NULL);
         goto failure;
     }
 
     request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(conn, ctx, "QueryPerf", request, &response,
+    if (esxVI_Context_Execute(ctx, "QueryPerf", request, &response,
                               esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfEntityMetric_DeserializeList(conn, response->node,
+        esxVI_PerfEntityMetric_DeserializeList(response->node,
                                                perfEntityMetricList) < 0) {
         goto failure;
     }

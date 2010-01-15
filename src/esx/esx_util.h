@@ -23,7 +23,7 @@
 #ifndef __ESX_UTIL_H__
 #define __ESX_UTIL_H__
 
-#include <libxml/tree.h>
+#include <libxml/uri.h>
 
 #include "internal.h"
 #include "conf.h"
@@ -35,30 +35,28 @@ char *esxUtil_RequestUsername(virConnectAuthPtr auth,
 char *esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
                               const char *hostname);
 
-int esxUtil_ParseQuery(virConnectPtr conn, char **transport, char **vCenter,
+int esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
                        int *noVerify, int *autoAnswer);
 
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 
-int esxUtil_ParseDatastoreRelatedPath(virConnectPtr conn,
-                                      const char *datastoreRelatedPath,
+int esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
                                       char **datastoreName,
                                       char **directoryName, char **fileName);
 
-int esxUtil_ResolveHostname(virConnectPtr conn, const char *hostname,
+int esxUtil_ResolveHostname(const char *hostname,
                             char *ipAddress, size_t ipAddress_length);
 
-int esxUtil_GetConfigString(virConnectPtr conn, virConfPtr conf,
-                            const char *name, char **string, int optional);
+int esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
+                            int optional);
 
-int esxUtil_GetConfigUUID(virConnectPtr conn, virConfPtr conf, const char *name,
+int esxUtil_GetConfigUUID(virConfPtr conf, const char *name,
                           unsigned char *uuid, int optional);
 
-int esxUtil_GetConfigLong(virConnectPtr conn, virConfPtr conf, const char *name,
-                          long long *number, long long default_, int optional);
+int esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
+                          long long default_, int optional);
 
-int esxUtil_GetConfigBoolean(virConnectPtr conn, virConfPtr conf,
-                             const char *name, int *boolean_, int default_,
-                             int optional);
+int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, int *boolean_,
+                             int default_, int optional);
 
 #endif /* __ESX_UTIL_H__ */

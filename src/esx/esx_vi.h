@@ -90,19 +90,18 @@ struct _esxVI_Context {
     esxVI_SelectionSpec *fullTraversalSpecList;
 };
 
-int esxVI_Context_Alloc(virConnectPtr conn, esxVI_Context **ctx);
+int esxVI_Context_Alloc(esxVI_Context **ctx);
 void esxVI_Context_Free(esxVI_Context **ctx);
-int esxVI_Context_Connect(virConnectPtr conn, esxVI_Context *ctx,
-                          const char *ipAddress, const char *url,
-                          const char *username, const char *password,
-                          int noVerify);
-int esxVI_Context_DownloadFile(virConnectPtr conn, esxVI_Context *ctx,
-                               const char *url, char **content);
-int esxVI_Context_UploadFile(virConnectPtr conn, esxVI_Context *ctx,
-                             const char *url, const char *content);
-int esxVI_Context_Execute(virConnectPtr conn, esxVI_Context *ctx,
-                          const char *methodName, const char *request,
-                          esxVI_Response **response, esxVI_Occurrence occurrence);
+int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
+                          const char *url, const char *username,
+                          const char *password, int noVerify);
+int esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url,
+                               char **content);
+int esxVI_Context_UploadFile(esxVI_Context *ctx, const char *url,
+                             const char *content);
+int esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
+                          const char *request, esxVI_Response **response,
+                          esxVI_Occurrence occurrence);
 
 
 
@@ -117,7 +116,7 @@ struct _esxVI_Response {
     xmlNodePtr node;                                  /* optional, list */
 };
 
-int esxVI_Response_Alloc(virConnectPtr conn, esxVI_Response **response);
+int esxVI_Response_Alloc(esxVI_Response **response);
 void esxVI_Response_Free(esxVI_Response **response);
 
 
@@ -136,15 +135,12 @@ struct _esxVI_Enumeration {
     esxVI_EnumerationValue values[10];
 };
 
-int esxVI_Enumeration_CastFromAnyType(virConnectPtr conn,
-                                      const esxVI_Enumeration *enumeration,
+int esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
                                       esxVI_AnyType *anyType, int *value);
-int esxVI_Enumeration_Serialize(virConnectPtr conn,
-                                const esxVI_Enumeration *enumeration,
+int esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
                                 int value, const char *element,
                                 virBufferPtr output, esxVI_Boolean required);
-int esxVI_Enumeration_Deserialize(virConnectPtr conn,
-                                  const esxVI_Enumeration *enumeration,
+int esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
                                   xmlNodePtr node, int *value);
 
 
@@ -158,33 +154,25 @@ struct _esxVI_List {
 };
 
 typedef int (*esxVI_List_FreeFunc) (esxVI_List **item);
-typedef int (*esxVI_List_DeepCopyFunc) (virConnectPtr conn, esxVI_List **dest,
-                                        esxVI_List *src);
-typedef int (*esxVI_List_CastFromAnyTypeFunc) (virConnectPtr conn,
-                                               esxVI_AnyType *anyType,
+typedef int (*esxVI_List_DeepCopyFunc) (esxVI_List **dest, esxVI_List *src);
+typedef int (*esxVI_List_CastFromAnyTypeFunc) (esxVI_AnyType *anyType,
                                                esxVI_List **item);
-typedef int (*esxVI_List_SerializeFunc) (virConnectPtr conn, esxVI_List *item,
-                                         const char *element,
+typedef int (*esxVI_List_SerializeFunc) (esxVI_List *item, const char *element,
                                          virBufferPtr output,
                                          esxVI_Boolean required);
-typedef int (*esxVI_List_DeserializeFunc) (virConnectPtr conn, xmlNodePtr node,
-                                           esxVI_List **item);
+typedef int (*esxVI_List_DeserializeFunc) (xmlNodePtr node, esxVI_List **item);
 
-int esxVI_List_Append(virConnectPtr conn, esxVI_List **list, esxVI_List *item);
-int esxVI_List_DeepCopy(virConnectPtr conn, esxVI_List **destList,
-                        esxVI_List *srcList,
+int esxVI_List_Append(esxVI_List **list, esxVI_List *item);
+int esxVI_List_DeepCopy(esxVI_List **destList, esxVI_List *srcList,
                         esxVI_List_DeepCopyFunc deepCopyFunc,
                         esxVI_List_FreeFunc freeFunc);
-int esxVI_List_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
-                               esxVI_List **list,
+int esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
                                esxVI_List_CastFromAnyTypeFunc castFromAnyTypeFunc,
                                esxVI_List_FreeFunc freeFunc);
-int esxVI_List_Serialize(virConnectPtr conn, esxVI_List *list,
-                         const char *element, virBufferPtr output,
-                         esxVI_Boolean required,
+int esxVI_List_Serialize(esxVI_List *list, const char *element,
+                         virBufferPtr output, esxVI_Boolean required,
                          esxVI_List_SerializeFunc serializeFunc);
-int esxVI_List_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                           esxVI_List **list,
+int esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
                            esxVI_List_DeserializeFunc deserializeFunc,
                            esxVI_List_FreeFunc freeFunc);
 
@@ -198,22 +186,21 @@ int esxVI_List_Deserialize(virConnectPtr conn, xmlNodePtr node,
  *  - 'get' functions get information from a local object
  */
 
-int esxVI_Alloc(virConnectPtr conn, void **ptrptr, size_t size);
+int esxVI_Alloc(void **ptrptr, size_t size);
 
-int esxVI_CheckSerializationNecessity(virConnectPtr conn, const char *element,
+int esxVI_CheckSerializationNecessity(const char *element,
                                       esxVI_Boolean required);
 
 int esxVI_BuildFullTraversalSpecItem
-      (virConnectPtr conn, esxVI_SelectionSpec **fullTraversalSpecList,
-       const char *name, const char *type, const char *path,
-       const char *selectSetNames);
+      (esxVI_SelectionSpec **fullTraversalSpecList, const char *name,
+       const char *type, const char *path, const char *selectSetNames);
 
 int esxVI_BuildFullTraversalSpecList
-      (virConnectPtr conn, esxVI_SelectionSpec **fullTraversalSpecList);
+      (esxVI_SelectionSpec **fullTraversalSpecList);
 
-int esxVI_EnsureSession(virConnectPtr conn, esxVI_Context *ctx);
+int esxVI_EnsureSession(esxVI_Context *ctx);
 
-int esxVI_LookupObjectContentByType(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                                     esxVI_ManagedObjectReference *root,
                                     const char *type,
                                     esxVI_String *propertyNameList,
@@ -221,86 +208,80 @@ int esxVI_LookupObjectContentByType(virConnectPtr conn, esxVI_Context *ctx,
                                     esxVI_ObjectContent **objectContentList);
 
 int esxVI_GetManagedEntityStatus
-      (virConnectPtr conn, esxVI_ObjectContent *objectContent,
-       const char *propertyName,
+      (esxVI_ObjectContent *objectContent, const char *propertyName,
        esxVI_ManagedEntityStatus *managedEntityStatus);
 
 int esxVI_GetVirtualMachinePowerState
-      (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
+      (esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachinePowerState *powerState);
 
 int esxVI_GetVirtualMachineQuestionInfo
-      (virConnectPtr conn, esxVI_ObjectContent *virtualMachine,
+      (esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachineQuestionInfo **questionInfo);
 
 int esxVI_LookupNumberOfDomainsByPowerState
-      (virConnectPtr conn, esxVI_Context *ctx,
-       esxVI_VirtualMachinePowerState powerState, esxVI_Boolean inverse);
+      (esxVI_Context *ctx, esxVI_VirtualMachinePowerState powerState,
+       esxVI_Boolean inverse);
 
-int esxVI_GetVirtualMachineIdentity(virConnectPtr conn,
-                                    esxVI_ObjectContent *virtualMachine,
+int esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                                     int *id, char **name, unsigned char *uuid);
 
 int esxVI_LookupResourcePoolByHostSystem
-      (virConnectPtr conn, esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
+      (esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
        esxVI_ManagedObjectReference **resourcePool);
 
-int esxVI_LookupHostSystemByIp(virConnectPtr conn, esxVI_Context *ctx,
-                               const char *ipAddress,
+int esxVI_LookupHostSystemByIp(esxVI_Context *ctx, const char *ipAddress,
                                esxVI_String *propertyNameList,
                                esxVI_ObjectContent **hostSystem);
 
-int esxVI_LookupVirtualMachineByUuid(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx,
                                      const unsigned char *uuid,
                                      esxVI_String *propertyNameList,
                                      esxVI_ObjectContent **virtualMachine,
                                      esxVI_Occurrence occurrence);
 
 int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
-      (virConnectPtr conn, esxVI_Context *ctx, const unsigned char *uuid,
+      (esxVI_Context *ctx, const unsigned char *uuid,
        esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
        esxVI_Boolean autoAnswer);
 
-int esxVI_LookupDatastoreByName(virConnectPtr conn, esxVI_Context *ctx,
-                                const char *name,
+int esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                                 esxVI_String *propertyNameList,
                                 esxVI_ObjectContent **datastore,
                                 esxVI_Occurrence occurrence);
 
-int esxVI_LookupTaskInfoByTask(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *task,
                                esxVI_TaskInfo **taskInfo);
 
 int esxVI_LookupPendingTaskInfoListByVirtualMachine
-      (virConnectPtr conn, esxVI_Context *ctx,
-       esxVI_ObjectContent *virtualMachine,
+      (esxVI_Context *ctx, esxVI_ObjectContent *virtualMachine,
        esxVI_TaskInfo **pendingTaskInfoList);
 
-int esxVI_LookupAndHandleVirtualMachineQuestion(virConnectPtr conn,
-                                                esxVI_Context *ctx,
+int esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                                 const unsigned char *uuid,
                                                 esxVI_Boolean autoAnswer);
 
-int esxVI_StartVirtualMachineTask(virConnectPtr conn, esxVI_Context *ctx,
-                                  const char *name, const char *request,
+int esxVI_StartVirtualMachineTask(esxVI_Context *ctx, const char *name,
+                                  const char *request,
                                   esxVI_ManagedObjectReference **task);
 
 int esxVI_StartSimpleVirtualMachineTask
-      (virConnectPtr conn, esxVI_Context *ctx, const char *name,
+      (esxVI_Context *ctx, const char *name,
        esxVI_ManagedObjectReference *virtualMachine,
        esxVI_ManagedObjectReference **task);
 
 int esxVI_SimpleVirtualMachineMethod
-      (virConnectPtr conn, esxVI_Context *ctx, const char *name,
+      (esxVI_Context *ctx, const char *name,
        esxVI_ManagedObjectReference *virtualMachine);
 
 int esxVI_HandleVirtualMachineQuestion
-      (virConnectPtr conn, esxVI_Context *ctx,
+      (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,
        esxVI_VirtualMachineQuestionInfo *questionInfo,
        esxVI_Boolean autoAnswer);
 
-int esxVI_WaitForTaskCompletion(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *task,
                                 const unsigned char *virtualMachineUuid,
                                 esxVI_Boolean autoAnswer,

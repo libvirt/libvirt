@@ -35,7 +35,7 @@ testCompareFiles(const char *vmx, const char *xml, esxVI_APIVersion apiVersion)
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(NULL, NULL, vmxData, "datastore", "directory",
+    def = esxVMX_ParseConfig(NULL, vmxData, "datastore", "directory",
                              apiVersion);
 
     if (def == NULL) {

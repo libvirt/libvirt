@@ -32,47 +32,45 @@
  * VI Methods
  */
 
-int esxVI_RetrieveServiceContent(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_RetrieveServiceContent(esxVI_Context *ctx,
                                  esxVI_ServiceContent **serviceContent);
 
-int esxVI_Login(virConnectPtr conn, esxVI_Context *ctx,
-                const char *userName, const char *password,
+int esxVI_Login(esxVI_Context *ctx, const char *userName, const char *password,
                 esxVI_UserSession **userSession);
 
-int esxVI_Logout(virConnectPtr conn, esxVI_Context *ctx);
+int esxVI_Logout(esxVI_Context *ctx);
 
-int esxVI_SessionIsActive(virConnectPtr conn, esxVI_Context *ctx,
-                          const char *sessionID, const char *userName,
-                          esxVI_Boolean *active);
+int esxVI_SessionIsActive(esxVI_Context *ctx, const char *sessionID,
+                          const char *userName, esxVI_Boolean *active);
 
-int esxVI_RetrieveProperties(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_RetrieveProperties(esxVI_Context *ctx,
                              esxVI_PropertyFilterSpec *propertyFilterSpecList,
                              esxVI_ObjectContent **objectContentList);
 
-int esxVI_PowerOnVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_PowerOnVM_Task(esxVI_Context *ctx,
                          esxVI_ManagedObjectReference *virtualMachine,
                          esxVI_ManagedObjectReference **task);
 
-int esxVI_PowerOffVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_PowerOffVM_Task(esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *virtualMachine,
                           esxVI_ManagedObjectReference **task);
 
-int esxVI_SuspendVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_SuspendVM_Task(esxVI_Context *ctx,
                          esxVI_ManagedObjectReference *virtualMachine,
                          esxVI_ManagedObjectReference **task);
 
-int esxVI_MigrateVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_MigrateVM_Task(esxVI_Context *ctx,
                          esxVI_ManagedObjectReference *virtualMachine,
                          esxVI_ManagedObjectReference *resourcePool,
                          esxVI_ManagedObjectReference *hostSystem,
                          esxVI_ManagedObjectReference **task);
 
-int esxVI_ReconfigVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_ReconfigVM_Task(esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *virtualMachine,
                           esxVI_VirtualMachineConfigSpec *spec,
                           esxVI_ManagedObjectReference **task);
 
-int esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_RegisterVM_Task(esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *folder,
                           const char *path, const char *name,
                           esxVI_Boolean asTemplate,
@@ -80,34 +78,33 @@ int esxVI_RegisterVM_Task(virConnectPtr conn, esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *hostSystem,
                           esxVI_ManagedObjectReference **task);
 
-int esxVI_CancelTask(virConnectPtr conn, esxVI_Context *ctx,
-                     esxVI_ManagedObjectReference *task);
+int esxVI_CancelTask(esxVI_Context *ctx, esxVI_ManagedObjectReference *task);
 
-int esxVI_UnregisterVM(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_UnregisterVM(esxVI_Context *ctx,
                        esxVI_ManagedObjectReference *virtualMachine);
 
-int esxVI_AnswerVM(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_AnswerVM(esxVI_Context *ctx,
                    esxVI_ManagedObjectReference *virtualMachine,
                    const char *questionId, const char *answerChoice);
 
-int esxVI_CreateFilter(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_CreateFilter(esxVI_Context *ctx,
                        esxVI_PropertyFilterSpec *propertyFilterSpec,
                        esxVI_Boolean partialUpdates,
                        esxVI_ManagedObjectReference **propertyFilter);
 
-int esxVI_DestroyPropertyFilter(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_DestroyPropertyFilter(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *propertyFilter);
 
-int esxVI_WaitForUpdates(virConnectPtr conn, esxVI_Context *ctx,
-                         const char *version, esxVI_UpdateSet **updateSet);
+int esxVI_WaitForUpdates(esxVI_Context *ctx, const char *version,
+                         esxVI_UpdateSet **updateSet);
 
-int esxVI_RebootGuest(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_RebootGuest(esxVI_Context *ctx,
                       esxVI_ManagedObjectReference *virtualMachine);
 
-int esxVI_ShutdownGuest(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_ShutdownGuest(esxVI_Context *ctx,
                         esxVI_ManagedObjectReference *virtualMachine);
 
-int esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_ValidateMigration(esxVI_Context *ctx,
                             esxVI_ManagedObjectReference *virtualMachineList,
                             esxVI_VirtualMachinePowerState powerState,
                             esxVI_String *testTypeList, // FIXME: see ValidateMigrationTestType
@@ -115,29 +112,26 @@ int esxVI_ValidateMigration(virConnectPtr conn, esxVI_Context *ctx,
                             esxVI_ManagedObjectReference *hostSystem,
                             esxVI_Event **eventList);
 
-int esxVI_FindByIp(virConnectPtr conn, esxVI_Context *ctx,
-                   esxVI_ManagedObjectReference *datacenter,
+int esxVI_FindByIp(esxVI_Context *ctx, esxVI_ManagedObjectReference *datacenter,
                    const char *ip, esxVI_Boolean vmSearch,
                    esxVI_ManagedObjectReference **managedObjectReference);
 
-int esxVI_FindByUuid(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_FindByUuid(esxVI_Context *ctx,
                      esxVI_ManagedObjectReference *datacenter,
                      const unsigned char *uuid, esxVI_Boolean vmSearch,
                      esxVI_ManagedObjectReference **managedObjectReference);
 
-int esxVI_QueryAvailablePerfMetric(virConnectPtr conn, esxVI_Context *ctx,
+int esxVI_QueryAvailablePerfMetric(esxVI_Context *ctx,
                                    esxVI_ManagedObjectReference *entity,
                                    esxVI_DateTime *beginTime,
                                    esxVI_DateTime *endTime,
                                    esxVI_Int *intervalId,
                                    esxVI_PerfMetricId **perfMetricIdList);
 
-int esxVI_QueryPerfCounter(virConnectPtr conn, esxVI_Context *ctx,
-                           esxVI_Int *counterIdList,
+int esxVI_QueryPerfCounter(esxVI_Context *ctx, esxVI_Int *counterIdList,
                            esxVI_PerfCounterInfo **perfCounterInfoList);
 
-int esxVI_QueryPerf(virConnectPtr conn, esxVI_Context *ctx,
-                    esxVI_PerfQuerySpec *querySpecList,
+int esxVI_QueryPerf(esxVI_Context *ctx, esxVI_PerfQuerySpec *querySpecList,
                     esxVI_PerfEntityMetric **perfEntityMetricList);
 
 #endif /* __ESX_VI_METHODS_H__ */

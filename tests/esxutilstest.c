@@ -122,8 +122,7 @@ testParseDatastoreRelatedPath(const void *data ATTRIBUTE_UNUSED)
         VIR_FREE(directoryName);
         VIR_FREE(fileName);
 
-        if (esxUtil_ParseDatastoreRelatedPath(NULL,
-                                              paths[i].datastoreRelatedPath,
+        if (esxUtil_ParseDatastoreRelatedPath(paths[i].datastoreRelatedPath,
                                               &datastoreName, &directoryName,
                                               &fileName) != paths[i].result) {
             goto failure;

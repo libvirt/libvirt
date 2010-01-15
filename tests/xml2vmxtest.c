@@ -89,7 +89,7 @@ testCompareFiles(const char *xml, const char *vmx, esxVI_APIVersion apiVersion)
         goto failure;
     }
 
-    formatted = esxVMX_FormatConfig(NULL, NULL, def, apiVersion);
+    formatted = esxVMX_FormatConfig(NULL, def, apiVersion);
 
     if (formatted == NULL) {
         goto failure;

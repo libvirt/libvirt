@@ -131,11 +131,9 @@ enum _esxVI_Boolean {
     esxVI_Boolean_False,
 };
 
-int esxVI_Boolean_Serialize(virConnectPtr conn, esxVI_Boolean boolean_,
-                            const char *element, virBufferPtr output,
-                            esxVI_Boolean required);
-int esxVI_Boolean_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                              esxVI_Boolean *boolean_);
+int esxVI_Boolean_Serialize(esxVI_Boolean boolean_, const char *element,
+                            virBufferPtr output, esxVI_Boolean required);
+int esxVI_Boolean_Deserialize(xmlNodePtr node, esxVI_Boolean *boolean_);
 
 
 
@@ -158,14 +156,11 @@ struct _esxVI_AnyType {
     };
 };
 
-int esxVI_AnyType_Alloc(virConnectPtr conn, esxVI_AnyType **anyType);
+int esxVI_AnyType_Alloc(esxVI_AnyType **anyType);
 void esxVI_AnyType_Free(esxVI_AnyType **anyType);
-int esxVI_AnyType_ExpectType(virConnectPtr conn, esxVI_AnyType *anyType,
-                             esxVI_Type type);
-int esxVI_AnyType_DeepCopy(virConnectPtr conn, esxVI_AnyType **dest,
-                           esxVI_AnyType *src);
-int esxVI_AnyType_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                              esxVI_AnyType **anyType);
+int esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type);
+int esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src);
+int esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType);
 
 
 
@@ -179,37 +174,25 @@ struct _esxVI_String {
     char *value;                                           /* required */
 };
 
-int esxVI_String_Alloc(virConnectPtr conn, esxVI_String **string);
+int esxVI_String_Alloc(esxVI_String **string);
 void esxVI_String_Free(esxVI_String **stringList);
-int esxVI_String_AppendToList(virConnectPtr conn, esxVI_String **stringList,
-                              esxVI_String *string);
-int esxVI_String_AppendValueToList(virConnectPtr conn,
-                                   esxVI_String **stringList,
+int esxVI_String_AppendToList(esxVI_String **stringList, esxVI_String *string);
+int esxVI_String_AppendValueToList(esxVI_String **stringList,
                                    const char *value);
-int esxVI_String_AppendValueListToList(virConnectPtr conn,
-                                       esxVI_String **stringList,
+int esxVI_String_AppendValueListToList(esxVI_String **stringList,
                                        const char *valueList);
-int esxVI_String_DeepCopy(virConnectPtr conn, esxVI_String **dest,
-                          esxVI_String *src);
-int esxVI_String_DeepCopyList(virConnectPtr conn, esxVI_String **destList,
-                              esxVI_String *srcList);
-int esxVI_String_DeepCopyValue(virConnectPtr conn, char **dest,
-                               const char *src);
-int esxVI_String_Serialize(virConnectPtr conn, esxVI_String *string,
-                           const char *element, virBufferPtr output,
-                           esxVI_Boolean required);
-int esxVI_String_SerializeList(virConnectPtr conn, esxVI_String *stringList,
-                               const char *element, virBufferPtr output,
-                               esxVI_Boolean required);
-int esxVI_String_SerializeValue(virConnectPtr conn, const char *value,
-                                const char *element, virBufferPtr output,
-                                esxVI_Boolean required);
-int esxVI_String_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                             esxVI_String **string);
-int esxVI_String_DeserializeList(virConnectPtr conn, xmlNodePtr node,
-                                 esxVI_String **stringList);
-int esxVI_String_DeserializeValue(virConnectPtr conn, xmlNodePtr node,
-                                  char **value);
+int esxVI_String_DeepCopy(esxVI_String **dest, esxVI_String *src);
+int esxVI_String_DeepCopyList(esxVI_String **destList, esxVI_String *srcList);
+int esxVI_String_DeepCopyValue(char **dest, const char *src);
+int esxVI_String_Serialize(esxVI_String *string, const char *element,
+                           virBufferPtr output, esxVI_Boolean required);
+int esxVI_String_SerializeList(esxVI_String *stringList, const char *element,
+                               virBufferPtr output, esxVI_Boolean required);
+int esxVI_String_SerializeValue(const char *value, const char *element,
+                                virBufferPtr output, esxVI_Boolean required);
+int esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string);
+int esxVI_String_DeserializeList(xmlNodePtr node, esxVI_String **stringList);
+int esxVI_String_DeserializeValue(xmlNodePtr node, char **value);
 
 
 
@@ -223,19 +206,15 @@ struct _esxVI_Int {
     int32_t value;                                         /* required */
 };
 
-int esxVI_Int_Alloc(virConnectPtr conn, esxVI_Int **number);
+int esxVI_Int_Alloc(esxVI_Int **number);
 void esxVI_Int_Free(esxVI_Int **numberList);
-int esxVI_Int_AppendToList(virConnectPtr conn, esxVI_Int **numberList,
-                           esxVI_Int *number);
-int esxVI_Int_DeepCopy(virConnectPtr conn, esxVI_Int **dest, esxVI_Int *src);
-int esxVI_Int_Serialize(virConnectPtr conn, esxVI_Int *number,
-                        const char *element, virBufferPtr output,
-                        esxVI_Boolean required);
-int esxVI_Int_SerializeList(virConnectPtr conn, esxVI_Int *numberList,
-                            const char *element, virBufferPtr output,
-                            esxVI_Boolean required);
-int esxVI_Int_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                          esxVI_Int **number);
+int esxVI_Int_AppendToList(esxVI_Int **numberList, esxVI_Int *number);
+int esxVI_Int_DeepCopy(esxVI_Int **dest, esxVI_Int *src);
+int esxVI_Int_Serialize(esxVI_Int *number, const char *element,
+                        virBufferPtr output, esxVI_Boolean required);
+int esxVI_Int_SerializeList(esxVI_Int *numberList, const char *element,
+                            virBufferPtr output, esxVI_Boolean required);
+int esxVI_Int_Deserialize(xmlNodePtr node, esxVI_Int **number);
 
 
 
@@ -249,18 +228,14 @@ struct _esxVI_Long {
     int64_t value;                                         /* required */
 };
 
-int esxVI_Long_Alloc(virConnectPtr conn, esxVI_Long **number);
+int esxVI_Long_Alloc(esxVI_Long **number);
 void esxVI_Long_Free(esxVI_Long **numberList);
-int esxVI_Long_AppendToList(virConnectPtr conn, esxVI_Long **numberList,
-                            esxVI_Long *number);
-int esxVI_Long_Serialize(virConnectPtr conn, esxVI_Long *number,
-                         const char *element, virBufferPtr output,
-                         esxVI_Boolean required);
-int esxVI_Long_SerializeList(virConnectPtr conn, esxVI_Long *numberList,
-                             const char *element, virBufferPtr output,
-                             esxVI_Boolean required);
-int esxVI_Long_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                           esxVI_Long **number);
+int esxVI_Long_AppendToList(esxVI_Long **numberList, esxVI_Long *number);
+int esxVI_Long_Serialize(esxVI_Long *number, const char *element,
+                         virBufferPtr output, esxVI_Boolean required);
+int esxVI_Long_SerializeList(esxVI_Long *numberList, const char *element,
+                             virBufferPtr output,esxVI_Boolean required);
+int esxVI_Long_Deserialize(xmlNodePtr node, esxVI_Long **number);
 
 
 
@@ -272,13 +247,11 @@ struct _esxVI_DateTime {
     char *value;                                           /* required */
 };
 
-int esxVI_DateTime_Alloc(virConnectPtr conn, esxVI_DateTime **dateTime);
+int esxVI_DateTime_Alloc(esxVI_DateTime **dateTime);
 void esxVI_DateTime_Free(esxVI_DateTime **dateTime);
-int esxVI_DateTime_Serialize(virConnectPtr conn, esxVI_DateTime *dateTime,
-                             const char *element, virBufferPtr output,
-                             esxVI_Boolean required);
-int esxVI_DateTime_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                               esxVI_DateTime **dateTime);
+int esxVI_DateTime_Serialize(esxVI_DateTime *dateTime, const char *element,
+                             virBufferPtr output, esxVI_Boolean required);
+int esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime);
 
 
 
@@ -295,8 +268,7 @@ enum _esxVI_ManagedEntityStatus {
 };
 
 int esxVI_ManagedEntityStatus_CastFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
-       esxVI_ManagedEntityStatus *managedEntityStatus);
+      (esxVI_AnyType *anyType, esxVI_ManagedEntityStatus *managedEntityStatus);
 
 
 
@@ -312,8 +284,7 @@ enum _esxVI_ObjectUpdateKind {
 };
 
 int esxVI_ObjectUpdateKind_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_ObjectUpdateKind *objectUpdateKind);
+      (xmlNodePtr node, esxVI_ObjectUpdateKind *objectUpdateKind);
 
 
 
@@ -331,7 +302,7 @@ enum _esxVI_PerfSummaryType {
     esxVI_PerfSummaryType_Summation,
 };
 
-int esxVI_PerfSummaryType_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfSummaryType_Deserialize(xmlNodePtr node,
                                       esxVI_PerfSummaryType *perfSummaryType);
 
 
@@ -347,7 +318,7 @@ enum _esxVI_PerfStatsType {
     esxVI_PerfStatsType_Rate,
 };
 
-int esxVI_PerfStatsType_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfStatsType_Deserialize(xmlNodePtr node,
                                     esxVI_PerfStatsType *perfStatsType);
 
 
@@ -365,8 +336,7 @@ enum _esxVI_PropertyChangeOp {
 };
 
 int esxVI_PropertyChangeOp_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PropertyChangeOp *propertyChangeOp);
+      (xmlNodePtr node, esxVI_PropertyChangeOp *propertyChangeOp);
 
 
 
@@ -382,11 +352,10 @@ enum _esxVI_SharesLevel {
     esxVI_SharesLevel_Normal,
 };
 
-int esxVI_SharesLevel_Serialize(virConnectPtr conn,
-                                esxVI_SharesLevel sharesLevel,
+int esxVI_SharesLevel_Serialize(esxVI_SharesLevel sharesLevel,
                                 const char *element, virBufferPtr output,
                                 esxVI_Boolean required);
-int esxVI_SharesLevel_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_SharesLevel_Deserialize(xmlNodePtr node,
                                   esxVI_SharesLevel *sharesLevel);
 
 
@@ -403,10 +372,9 @@ enum _esxVI_TaskInfoState {
     esxVI_TaskInfoState_Success,
 };
 
-int esxVI_TaskInfoState_CastFromAnyType(virConnectPtr conn,
-                                        esxVI_AnyType *anyType,
+int esxVI_TaskInfoState_CastFromAnyType(esxVI_AnyType *anyType,
                                         esxVI_TaskInfoState *taskInfoState);
-int esxVI_TaskInfoState_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_TaskInfoState_Deserialize(xmlNodePtr node,
                                     esxVI_TaskInfoState *taskInfoState);
 
 
@@ -423,8 +391,7 @@ enum _esxVI_VirtualMachineMovePriority {
 };
 
 int esxVI_VirtualMachineMovePriority_Serialize
-      (virConnectPtr conn,
-       esxVI_VirtualMachineMovePriority virtualMachineMovePriority,
+      (esxVI_VirtualMachineMovePriority virtualMachineMovePriority,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 
 
@@ -441,11 +408,10 @@ enum _esxVI_VirtualMachinePowerState {
 };
 
 int esxVI_VirtualMachinePowerState_CastFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
+      (esxVI_AnyType *anyType,
        esxVI_VirtualMachinePowerState *virtualMachinePowerState);
 int esxVI_VirtualMachinePowerState_Serialize
-      (virConnectPtr conn,
-       esxVI_VirtualMachinePowerState virtualMachinePowerState,
+      (esxVI_VirtualMachinePowerState virtualMachinePowerState,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 
 
@@ -459,10 +425,9 @@ struct _esxVI_Fault {
     char *faultstring;                                     /* required */
 };
 
-int esxVI_Fault_Alloc(virConnectPtr conn, esxVI_Fault **fault);
+int esxVI_Fault_Alloc(esxVI_Fault **fault);
 void esxVI_Fault_Free(esxVI_Fault **fault);
-int esxVI_Fault_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                            esxVI_Fault **fault);
+int esxVI_Fault_Deserialize(xmlNodePtr node, esxVI_Fault **fault);
 
 
 
@@ -478,37 +443,30 @@ struct _esxVI_ManagedObjectReference {
 };
 
 int esxVI_ManagedObjectReference_Alloc
-      (virConnectPtr conn,
-       esxVI_ManagedObjectReference **managedObjectReference);
+      (esxVI_ManagedObjectReference **managedObjectReference);
 void esxVI_ManagedObjectReference_Free
        (esxVI_ManagedObjectReference **managedObjectReferenceList);
-int esxVI_ManagedObjectReference_DeepCopy(virConnectPtr conn,
-                                          esxVI_ManagedObjectReference **dest,
+int esxVI_ManagedObjectReference_DeepCopy(esxVI_ManagedObjectReference **dest,
                                           esxVI_ManagedObjectReference *src);
 int esxVI_ManagedObjectReference_AppendToList
-      (virConnectPtr conn,
-       esxVI_ManagedObjectReference **managedObjectReferenceList,
+      (esxVI_ManagedObjectReference **managedObjectReferenceList,
        esxVI_ManagedObjectReference *managedObjectReference);
-int esxVI_ManagedObjectReference_CastFromAnyType(virConnectPtr conn,
-                                                 esxVI_AnyType *anyType,
+int esxVI_ManagedObjectReference_CastFromAnyType(esxVI_AnyType *anyType,
                                                  esxVI_ManagedObjectReference
                                                  **managedObjectReference,
                                                  const char *expectedType);
 int esxVI_ManagedObjectReference_CastListFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
+      (esxVI_AnyType *anyType,
        esxVI_ManagedObjectReference **managedObjectReferenceList,
        const char *expectedType);
 int esxVI_ManagedObjectReference_Serialize
-      (virConnectPtr conn,
-       esxVI_ManagedObjectReference *managedObjectReference,
+      (esxVI_ManagedObjectReference *managedObjectReference,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 int esxVI_ManagedObjectReference_SerializeList
-      (virConnectPtr conn,
-       esxVI_ManagedObjectReference *managedObjectReference,
+      (esxVI_ManagedObjectReference *managedObjectReference,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 int esxVI_ManagedObjectReference_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_ManagedObjectReference **managedObjectReference,
+      (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference,
        const char *expectedType);
 
 
@@ -524,24 +482,20 @@ struct _esxVI_DynamicProperty {
     esxVI_AnyType *val;                                    /* required */
 };
 
-int esxVI_DynamicProperty_Alloc(virConnectPtr conn,
-                                esxVI_DynamicProperty **dynamicProperty);
+int esxVI_DynamicProperty_Alloc(esxVI_DynamicProperty **dynamicProperty);
 void esxVI_DynamicProperty_Free
        (esxVI_DynamicProperty **dynamicPropertyList);
-int esxVI_DynamicProperty_DeepCopy(virConnectPtr conn,
-                                   esxVI_DynamicProperty **dest,
+int esxVI_DynamicProperty_DeepCopy(esxVI_DynamicProperty **dest,
                                    esxVI_DynamicProperty *src);
-int esxVI_DynamicProperty_DeepCopyList(virConnectPtr conn,
-                                       esxVI_DynamicProperty **destList,
+int esxVI_DynamicProperty_DeepCopyList(esxVI_DynamicProperty **destList,
                                        esxVI_DynamicProperty *srcList);
 int esxVI_DynamicProperty_AppendToList
-      (virConnectPtr conn, esxVI_DynamicProperty **dynamicPropertyList,
+      (esxVI_DynamicProperty **dynamicPropertyList,
        esxVI_DynamicProperty *dynamicProperty);
-int esxVI_DynamicProperty_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_DynamicProperty_Deserialize(xmlNodePtr node,
                                       esxVI_DynamicProperty **dynamicProperty);
 int esxVI_DynamicProperty_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_DynamicProperty **dynamicPropertyList);
+      (xmlNodePtr node, esxVI_DynamicProperty **dynamicPropertyList);
 
 
 
@@ -560,20 +514,16 @@ struct _esxVI_HostCpuIdInfo {
     char *edx;                                             /* optional */
 };
 
-int esxVI_HostCpuIdInfo_Alloc(virConnectPtr conn,
-                              esxVI_HostCpuIdInfo **hostCpuIdInfo);
+int esxVI_HostCpuIdInfo_Alloc(esxVI_HostCpuIdInfo **hostCpuIdInfo);
 void esxVI_HostCpuIdInfo_Free(esxVI_HostCpuIdInfo **hostCpuIdInfoList);
-int esxVI_HostCpuIdInfo_CastFromAnyType(virConnectPtr conn,
-                                        esxVI_AnyType *anyType,
+int esxVI_HostCpuIdInfo_CastFromAnyType(esxVI_AnyType *anyType,
                                         esxVI_HostCpuIdInfo **hostCpuIdInfo);
 int esxVI_HostCpuIdInfo_CastListFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
-       esxVI_HostCpuIdInfo **hostCpuIdInfoList);
-int esxVI_HostCpuIdInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+      (esxVI_AnyType *anyType, esxVI_HostCpuIdInfo **hostCpuIdInfoList);
+int esxVI_HostCpuIdInfo_Deserialize(xmlNodePtr node,
                                     esxVI_HostCpuIdInfo **hostCpuIdInfo);
 int esxVI_HostCpuIdInfo_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_HostCpuIdInfo **hostCpuIdInfoList);
+      (xmlNodePtr node, esxVI_HostCpuIdInfo **hostCpuIdInfoList);
 
 
 
@@ -588,18 +538,14 @@ struct _esxVI_SelectionSpec {
     char *name;                                            /* optional */
 };
 
-int esxVI_SelectionSpec_Alloc(virConnectPtr conn,
-                              esxVI_SelectionSpec **selectionSpec);
+int esxVI_SelectionSpec_Alloc(esxVI_SelectionSpec **selectionSpec);
 void esxVI_SelectionSpec_Free(esxVI_SelectionSpec **selectionSpecList);
-int esxVI_SelectionSpec_AppendToList(virConnectPtr conn,
-                                     esxVI_SelectionSpec **selectionSpecList,
+int esxVI_SelectionSpec_AppendToList(esxVI_SelectionSpec **selectionSpecList,
                                      esxVI_SelectionSpec *selectionSpec);
-int esxVI_SelectionSpec_Serialize(virConnectPtr conn,
-                                  esxVI_SelectionSpec *selectionSpec,
+int esxVI_SelectionSpec_Serialize(esxVI_SelectionSpec *selectionSpec,
                                   const char *element, virBufferPtr output,
                                   esxVI_Boolean required);
-int esxVI_SelectionSpec_SerializeList(virConnectPtr conn,
-                                      esxVI_SelectionSpec *selectionSpecList,
+int esxVI_SelectionSpec_SerializeList(esxVI_SelectionSpec *selectionSpecList,
                                       const char *element, virBufferPtr output,
                                       esxVI_Boolean required);
 
@@ -618,11 +564,9 @@ struct _esxVI_TraversalSpec {
     esxVI_SelectionSpec *selectSet;                        /* optional, list */
 };
 
-int esxVI_TraversalSpec_Alloc(virConnectPtr conn,
-                              esxVI_TraversalSpec **traversalSpec);
+int esxVI_TraversalSpec_Alloc(esxVI_TraversalSpec **traversalSpec);
 void esxVI_TraversalSpec_Free(esxVI_TraversalSpec **traversalSpec);
-int esxVI_TraversalSpec_Serialize(virConnectPtr conn,
-                                  esxVI_TraversalSpec *traversalSpec,
+int esxVI_TraversalSpec_Serialize(esxVI_TraversalSpec *traversalSpec,
                                   const char *element, virBufferPtr output,
                                   esxVI_Boolean required);
 
@@ -640,17 +584,14 @@ struct _esxVI_ObjectSpec {
     esxVI_SelectionSpec *selectSet;                        /* optional, list */
 };
 
-int esxVI_ObjectSpec_Alloc(virConnectPtr conn, esxVI_ObjectSpec **objectSpec);
+int esxVI_ObjectSpec_Alloc(esxVI_ObjectSpec **objectSpec);
 void esxVI_ObjectSpec_Free(esxVI_ObjectSpec **objectSpecList);
-int esxVI_ObjectSpec_AppendToList(virConnectPtr conn,
-                                  esxVI_ObjectSpec **objectSpecList,
+int esxVI_ObjectSpec_AppendToList(esxVI_ObjectSpec **objectSpecList,
                                   esxVI_ObjectSpec *objectSpec);
-int esxVI_ObjectSpec_Serialize(virConnectPtr conn,
-                               esxVI_ObjectSpec *objectSpec,
+int esxVI_ObjectSpec_Serialize(esxVI_ObjectSpec *objectSpec,
                                const char *element, virBufferPtr output,
                                esxVI_Boolean required);
-int esxVI_ObjectSpec_SerializeList(virConnectPtr conn,
-                                   esxVI_ObjectSpec *objectSpecList,
+int esxVI_ObjectSpec_SerializeList(esxVI_ObjectSpec *objectSpecList,
                                    const char *element, virBufferPtr output,
                                    esxVI_Boolean required);
 
@@ -668,17 +609,15 @@ struct _esxVI_PropertyChange {
     esxVI_AnyType *val;                                    /* optional */
 };
 
-int esxVI_PropertyChange_Alloc(virConnectPtr conn,
-                               esxVI_PropertyChange **propertyChange);
+int esxVI_PropertyChange_Alloc(esxVI_PropertyChange **propertyChange);
 void esxVI_PropertyChange_Free(esxVI_PropertyChange **propertyChangeList);
 int esxVI_PropertyChange_AppendToList
-      (virConnectPtr conn, esxVI_PropertyChange **propertyChangeList,
+      (esxVI_PropertyChange **propertyChangeList,
        esxVI_PropertyChange *propertyChange);
-int esxVI_PropertyChange_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PropertyChange_Deserialize(xmlNodePtr node,
                                      esxVI_PropertyChange **propertyChange);
 int esxVI_PropertyChange_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PropertyChange **propertyChangeList);
+      (xmlNodePtr node, esxVI_PropertyChange **propertyChangeList);
 
 
 
@@ -694,18 +633,14 @@ struct _esxVI_PropertySpec {
     esxVI_String *pathSet;                                 /* optional, list */
 };
 
-int esxVI_PropertySpec_Alloc(virConnectPtr conn,
-                             esxVI_PropertySpec **propertySpec);
+int esxVI_PropertySpec_Alloc(esxVI_PropertySpec **propertySpec);
 void esxVI_PropertySpec_Free(esxVI_PropertySpec **propertySpecList);
-int esxVI_PropertySpec_AppendToList(virConnectPtr conn,
-                                    esxVI_PropertySpec **propertySpecList,
+int esxVI_PropertySpec_AppendToList(esxVI_PropertySpec **propertySpecList,
                                     esxVI_PropertySpec *propertySpec);
-int esxVI_PropertySpec_Serialize(virConnectPtr conn,
-                                 esxVI_PropertySpec *propertySpec,
+int esxVI_PropertySpec_Serialize(esxVI_PropertySpec *propertySpec,
                                  const char *element, virBufferPtr output,
                                  esxVI_Boolean required);
-int esxVI_PropertySpec_SerializeList(virConnectPtr conn,
-                                     esxVI_PropertySpec *propertySpecList,
+int esxVI_PropertySpec_SerializeList(esxVI_PropertySpec *propertySpecList,
                                      const char *element, virBufferPtr output,
                                      esxVI_Boolean required);
 
@@ -723,18 +658,18 @@ struct _esxVI_PropertyFilterSpec {
 };
 
 int esxVI_PropertyFilterSpec_Alloc
-      (virConnectPtr conn, esxVI_PropertyFilterSpec **propertyFilterSpec);
+      (esxVI_PropertyFilterSpec **propertyFilterSpec);
 void esxVI_PropertyFilterSpec_Free
        (esxVI_PropertyFilterSpec **propertyFilterSpecList);
 int esxVI_PropertyFilterSpec_AppendToList
-      (virConnectPtr conn, esxVI_PropertyFilterSpec **propertyFilterSpecList,
+      (esxVI_PropertyFilterSpec **propertyFilterSpecList,
        esxVI_PropertyFilterSpec *propertyFilterSpec);
 int esxVI_PropertyFilterSpec_Serialize
-      (virConnectPtr conn, esxVI_PropertyFilterSpec *propertyFilterSpec,
-       const char *element, virBufferPtr output, esxVI_Boolean required);
+      (esxVI_PropertyFilterSpec *propertyFilterSpec, const char *element,
+       virBufferPtr output, esxVI_Boolean required);
 int esxVI_PropertyFilterSpec_SerializeList
-      (virConnectPtr conn, esxVI_PropertyFilterSpec *propertyFilterSpecList,
-       const char *element, virBufferPtr output, esxVI_Boolean required);
+      (esxVI_PropertyFilterSpec *propertyFilterSpecList, const char *element,
+       virBufferPtr output, esxVI_Boolean required);
 
 
 
@@ -750,20 +685,16 @@ struct _esxVI_ObjectContent {
     /*esxVI_MissingProperty *missingSet; *//* optional, list *//* FIXME */
 };
 
-int esxVI_ObjectContent_Alloc(virConnectPtr conn,
-                              esxVI_ObjectContent **objectContent);
+int esxVI_ObjectContent_Alloc(esxVI_ObjectContent **objectContent);
 void esxVI_ObjectContent_Free(esxVI_ObjectContent **objectContentList);
-int esxVI_ObjectContent_AppendToList(virConnectPtr conn,
-                                     esxVI_ObjectContent **objectContentList,
+int esxVI_ObjectContent_AppendToList(esxVI_ObjectContent **objectContentList,
                                      esxVI_ObjectContent *objectContent);
-int esxVI_ObjectContent_DeepCopy(virConnectPtr conn,
-                                 esxVI_ObjectContent **dest,
+int esxVI_ObjectContent_DeepCopy(esxVI_ObjectContent **dest,
                                  esxVI_ObjectContent *src);
-int esxVI_ObjectContent_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_ObjectContent_Deserialize(xmlNodePtr node,
                                     esxVI_ObjectContent **objectContent);
 int esxVI_ObjectContent_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_ObjectContent **objectContentList);
+      (xmlNodePtr node, esxVI_ObjectContent **objectContentList);
 
 
 
@@ -780,15 +711,13 @@ struct _esxVI_ObjectUpdate {
     /*esxVI_MissingProperty *missingSet; *//* optional, list *//* FIXME */
 };
 
-int esxVI_ObjectUpdate_Alloc(virConnectPtr conn,
-                             esxVI_ObjectUpdate **objectUpdate);
+int esxVI_ObjectUpdate_Alloc(esxVI_ObjectUpdate **objectUpdate);
 void esxVI_ObjectUpdate_Free(esxVI_ObjectUpdate **objectUpdateList);
-int esxVI_ObjectUpdate_AppendToList(virConnectPtr conn,
-                                    esxVI_ObjectUpdate **objectUpdateList,
+int esxVI_ObjectUpdate_AppendToList(esxVI_ObjectUpdate **objectUpdateList,
                                     esxVI_ObjectUpdate *objectUpdate);
-int esxVI_ObjectUpdate_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_ObjectUpdate_Deserialize(xmlNodePtr node,
                                    esxVI_ObjectUpdate **objectUpdate);
-int esxVI_ObjectUpdate_DeserializeList(virConnectPtr conn, xmlNodePtr node,
+int esxVI_ObjectUpdate_DeserializeList(xmlNodePtr node,
                                        esxVI_ObjectUpdate **objectUpdateList);
 
 
@@ -806,20 +735,16 @@ struct _esxVI_PropertyFilterUpdate {
 };
 
 int esxVI_PropertyFilterUpdate_Alloc
-      (virConnectPtr conn,
-       esxVI_PropertyFilterUpdate **propertyFilterUpdate);
+      (esxVI_PropertyFilterUpdate **propertyFilterUpdate);
 void esxVI_PropertyFilterUpdate_Free
        (esxVI_PropertyFilterUpdate **propertyFilterUpdateList);
 int esxVI_PropertyFilterUpdate_AppendToList
-      (virConnectPtr conn,
-       esxVI_PropertyFilterUpdate **propertyFilterUpdateList,
+      (esxVI_PropertyFilterUpdate **propertyFilterUpdateList,
        esxVI_PropertyFilterUpdate *propertyFilterUpdate);
 int esxVI_PropertyFilterUpdate_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PropertyFilterUpdate **propertyFilterUpdate);
+      (xmlNodePtr node, esxVI_PropertyFilterUpdate **propertyFilterUpdate);
 int esxVI_PropertyFilterUpdate_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PropertyFilterUpdate **propertyFilterUpdateList);
+      (xmlNodePtr node, esxVI_PropertyFilterUpdate **propertyFilterUpdateList);
 
 
 
@@ -841,10 +766,9 @@ struct _esxVI_AboutInfo {
     char *apiVersion;                                      /* required */
 };
 
-int esxVI_AboutInfo_Alloc(virConnectPtr conn, esxVI_AboutInfo **aboutInfo);
+int esxVI_AboutInfo_Alloc(esxVI_AboutInfo **aboutInfo);
 void esxVI_AboutInfo_Free(esxVI_AboutInfo **aboutInfo);
-int esxVI_AboutInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                                esxVI_AboutInfo **aboutInfo);
+int esxVI_AboutInfo_Deserialize(xmlNodePtr node, esxVI_AboutInfo **aboutInfo);
 
 
 
@@ -878,10 +802,9 @@ struct _esxVI_ServiceContent {
     esxVI_ManagedObjectReference *virtualizationManager;   /* optional */
 };
 
-int esxVI_ServiceContent_Alloc(virConnectPtr conn,
-                               esxVI_ServiceContent **serviceContent);
+int esxVI_ServiceContent_Alloc(esxVI_ServiceContent **serviceContent);
 void esxVI_ServiceContent_Free(esxVI_ServiceContent **serviceContent);
-int esxVI_ServiceContent_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_ServiceContent_Deserialize(xmlNodePtr node,
                                      esxVI_ServiceContent **serviceContent);
 
 
@@ -895,10 +818,9 @@ struct _esxVI_UpdateSet {
     esxVI_PropertyFilterUpdate *filterSet;                 /* optional, list */
 };
 
-int esxVI_UpdateSet_Alloc(virConnectPtr conn, esxVI_UpdateSet **updateSet);
+int esxVI_UpdateSet_Alloc(esxVI_UpdateSet **updateSet);
 void esxVI_UpdateSet_Free(esxVI_UpdateSet **updateSet);
-int esxVI_UpdateSet_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                                esxVI_UpdateSet **updateSet);
+int esxVI_UpdateSet_Deserialize(xmlNodePtr node, esxVI_UpdateSet **updateSet);
 
 
 
@@ -911,15 +833,13 @@ struct _esxVI_SharesInfo {
     esxVI_SharesLevel level;                               /* required */
 };
 
-int esxVI_SharesInfo_Alloc(virConnectPtr conn, esxVI_SharesInfo **sharesInfo);
+int esxVI_SharesInfo_Alloc(esxVI_SharesInfo **sharesInfo);
 void esxVI_SharesInfo_Free(esxVI_SharesInfo **sharesInfo);
-int esxVI_SharesInfo_CastFromAnyType(virConnectPtr conn,
-                                     esxVI_AnyType *anyType,
+int esxVI_SharesInfo_CastFromAnyType(esxVI_AnyType *anyType,
                                      esxVI_SharesInfo **sharesInfo);
-int esxVI_SharesInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_SharesInfo_Deserialize(xmlNodePtr node,
                                  esxVI_SharesInfo **sharesInfo);
-int esxVI_SharesInfo_Serialize(virConnectPtr conn,
-                               esxVI_SharesInfo *sharesInfo,
+int esxVI_SharesInfo_Serialize(esxVI_SharesInfo *sharesInfo,
                                const char *element, virBufferPtr output,
                                esxVI_Boolean required);
 
@@ -938,12 +858,11 @@ struct _esxVI_ResourceAllocationInfo {
 };
 
 int esxVI_ResourceAllocationInfo_Alloc
-      (virConnectPtr conn,
-       esxVI_ResourceAllocationInfo **resourceAllocationInfo);
+      (esxVI_ResourceAllocationInfo **resourceAllocationInfo);
 void esxVI_ResourceAllocationInfo_Free
        (esxVI_ResourceAllocationInfo **resourceAllocationInfo);
 int esxVI_ResourceAllocationInfo_Serialize
-      (virConnectPtr conn, esxVI_ResourceAllocationInfo *resourceAllocationInfo,
+      (esxVI_ResourceAllocationInfo *resourceAllocationInfo,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 
 
@@ -962,15 +881,14 @@ struct _esxVI_ResourcePoolResourceUsage {
 };
 
 int esxVI_ResourcePoolResourceUsage_Alloc
-      (virConnectPtr conn,
-       esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
+      (esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
 void esxVI_ResourcePoolResourceUsage_Free
        (esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
 int esxVI_ResourcePoolResourceUsage_CastFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
+      (esxVI_AnyType *anyType,
        esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
 int esxVI_ResourcePoolResourceUsage_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
+      (xmlNodePtr node,
        esxVI_ResourcePoolResourceUsage **resourcePoolResourceUsage);
 
 
@@ -1013,13 +931,11 @@ struct _esxVI_VirtualMachineConfigSpec {
 };
 
 int esxVI_VirtualMachineConfigSpec_Alloc
-      (virConnectPtr conn,
-       esxVI_VirtualMachineConfigSpec **virtualMachineConfigSpec);
+      (esxVI_VirtualMachineConfigSpec **virtualMachineConfigSpec);
 void esxVI_VirtualMachineConfigSpec_Free
        (esxVI_VirtualMachineConfigSpec **virtualMachineConfigSpec);
 int esxVI_VirtualMachineConfigSpec_Serialize
-      (virConnectPtr conn,
-       esxVI_VirtualMachineConfigSpec *virtualMachineConfigSpec,
+      (esxVI_VirtualMachineConfigSpec *virtualMachineConfigSpec,
        const char *element, virBufferPtr output, esxVI_Boolean required);
 
 
@@ -1043,12 +959,10 @@ struct _esxVI_Event {
     char *fullFormattedMessage;                            /* optional */
 };
 
-int esxVI_Event_Alloc(virConnectPtr conn, esxVI_Event **event);
+int esxVI_Event_Alloc(esxVI_Event **event);
 void esxVI_Event_Free(esxVI_Event **eventList);
-int esxVI_Event_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                            esxVI_Event **event);
-int esxVI_Event_DeserializeList(virConnectPtr conn, xmlNodePtr node,
-                                esxVI_Event **eventList);
+int esxVI_Event_Deserialize(xmlNodePtr node, esxVI_Event **event);
+int esxVI_Event_DeserializeList(xmlNodePtr node, esxVI_Event **eventList);
 
 
 
@@ -1066,13 +980,11 @@ struct _esxVI_UserSession {
     char *messageLocale;                                   /* required */
 };
 
-int esxVI_UserSession_Alloc(virConnectPtr conn,
-                            esxVI_UserSession **userSession);
+int esxVI_UserSession_Alloc(esxVI_UserSession **userSession);
 void esxVI_UserSession_Free(esxVI_UserSession **userSession);
-int esxVI_UserSession_CastFromAnyType(virConnectPtr conn,
-                                      esxVI_AnyType *anyType,
+int esxVI_UserSession_CastFromAnyType(esxVI_AnyType *anyType,
                                       esxVI_UserSession **userSession);
-int esxVI_UserSession_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_UserSession_Deserialize(xmlNodePtr node,
                                   esxVI_UserSession **userSession);
 
 
@@ -1090,15 +1002,14 @@ struct _esxVI_VirtualMachineQuestionInfo {
 };
 
 int esxVI_VirtualMachineQuestionInfo_Alloc
-      (virConnectPtr conn,
-       esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
+      (esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
 void esxVI_VirtualMachineQuestionInfo_Free
        (esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
 int esxVI_VirtualMachineQuestionInfo_CastFromAnyType
-      (virConnectPtr conn, esxVI_AnyType *anyType,
+      (esxVI_AnyType *anyType,
        esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
 int esxVI_VirtualMachineQuestionInfo_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
+      (xmlNodePtr node,
        esxVI_VirtualMachineQuestionInfo **virtualMachineQuestionInfo);
 
 
@@ -1123,15 +1034,14 @@ struct _esxVI_ElementDescription {
 };
 
 int esxVI_ElementDescription_Alloc
-      (virConnectPtr conn, esxVI_ElementDescription **elementDescription);
+      (esxVI_ElementDescription **elementDescription);
 void esxVI_ElementDescription_Free
        (esxVI_ElementDescription **elementDescription);
 int esxVI_ElementDescription_AppendToList
-      (virConnectPtr conn, esxVI_ElementDescription **elementDescriptionList,
+      (esxVI_ElementDescription **elementDescriptionList,
        esxVI_ElementDescription *elementDescription);
 int esxVI_ElementDescription_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_ElementDescription **elementDescription);
+      (xmlNodePtr node, esxVI_ElementDescription **elementDescription);
 
 
 
@@ -1152,10 +1062,9 @@ struct _esxVI_ChoiceOption {
     esxVI_Int *defaultIndex;                               /* optional */
 };
 
-int esxVI_ChoiceOption_Alloc(virConnectPtr conn,
-                             esxVI_ChoiceOption **choiceOption);
+int esxVI_ChoiceOption_Alloc(esxVI_ChoiceOption **choiceOption);
 void esxVI_ChoiceOption_Free(esxVI_ChoiceOption **choiceOption);
-int esxVI_ChoiceOption_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_ChoiceOption_Deserialize(xmlNodePtr node,
                                    esxVI_ChoiceOption **choiceOption);
 
 
@@ -1171,20 +1080,17 @@ struct _esxVI_PerfMetricId {
     char *instance;                                        /* required */
 };
 
-int esxVI_PerfMetricId_Alloc(virConnectPtr conn,
-                             esxVI_PerfMetricId **perfMetricId);
+int esxVI_PerfMetricId_Alloc(esxVI_PerfMetricId **perfMetricId);
 void esxVI_PerfMetricId_Free(esxVI_PerfMetricId **perfMetricId);
-int esxVI_PerfMetricId_Serialize(virConnectPtr conn,
-                                 esxVI_PerfMetricId *perfMetricId,
+int esxVI_PerfMetricId_Serialize(esxVI_PerfMetricId *perfMetricId,
                                  const char *element, virBufferPtr output,
                                  esxVI_Boolean required);
-int esxVI_PerfMetricId_SerializeList(virConnectPtr conn,
-                                     esxVI_PerfMetricId *perfMetricIdList,
+int esxVI_PerfMetricId_SerializeList(esxVI_PerfMetricId *perfMetricIdList,
                                      const char *element, virBufferPtr output,
                                      esxVI_Boolean required);
-int esxVI_PerfMetricId_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfMetricId_Deserialize(xmlNodePtr node,
                                    esxVI_PerfMetricId **perfMetricId);
-int esxVI_PerfMetricId_DeserializeList(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfMetricId_DeserializeList(xmlNodePtr node,
                                        esxVI_PerfMetricId **perfMetricIdList);
 
 
@@ -1206,14 +1112,12 @@ struct _esxVI_PerfCounterInfo {
     esxVI_Int *associatedCounterId;                        /* optional, list */
 };
 
-int esxVI_PerfCounterInfo_Alloc(virConnectPtr conn,
-                                esxVI_PerfCounterInfo **perfCounterInfo);
+int esxVI_PerfCounterInfo_Alloc(esxVI_PerfCounterInfo **perfCounterInfo);
 void esxVI_PerfCounterInfo_Free(esxVI_PerfCounterInfo **perfCounterInfo);
-int esxVI_PerfCounterInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfCounterInfo_Deserialize(xmlNodePtr node,
                                       esxVI_PerfCounterInfo **perfCounterInfo);
 int esxVI_PerfCounterInfo_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PerfCounterInfo **perfCounterInfoList);
+      (xmlNodePtr node, esxVI_PerfCounterInfo **perfCounterInfoList);
 
 
 
@@ -1233,15 +1137,12 @@ struct _esxVI_PerfQuerySpec {
     char *format;                                          /* optional */ // FIXME: see PerfFormat
 };
 
-int esxVI_PerfQuerySpec_Alloc(virConnectPtr conn,
-                              esxVI_PerfQuerySpec **perfQuerySpec);
+int esxVI_PerfQuerySpec_Alloc(esxVI_PerfQuerySpec **perfQuerySpec);
 void esxVI_PerfQuerySpec_Free(esxVI_PerfQuerySpec **perfQuerySpec);
-int esxVI_PerfQuerySpec_Serialize(virConnectPtr conn,
-                                  esxVI_PerfQuerySpec *perfQuerySpec,
+int esxVI_PerfQuerySpec_Serialize(esxVI_PerfQuerySpec *perfQuerySpec,
                                   const char *element, virBufferPtr output,
                                   esxVI_Boolean required);
-int esxVI_PerfQuerySpec_SerializeList(virConnectPtr conn,
-                                      esxVI_PerfQuerySpec *perfQuerySpecList,
+int esxVI_PerfQuerySpec_SerializeList(esxVI_PerfQuerySpec *perfQuerySpecList,
                                       const char *element, virBufferPtr output,
                                       esxVI_Boolean required);
 
@@ -1258,17 +1159,14 @@ struct _esxVI_PerfSampleInfo {
     esxVI_Int *interval;                                   /* required */
 };
 
-int esxVI_PerfSampleInfo_Alloc(virConnectPtr conn,
-                               esxVI_PerfSampleInfo **perfSampleInfo);
+int esxVI_PerfSampleInfo_Alloc(esxVI_PerfSampleInfo **perfSampleInfo);
 void esxVI_PerfSampleInfo_Free(esxVI_PerfSampleInfo **perfSampleInfo);
-int esxVI_PerfSampleInfo_AppendToList(virConnectPtr conn,
-                                      esxVI_PerfSampleInfo **perfSampleInfoList,
+int esxVI_PerfSampleInfo_AppendToList(esxVI_PerfSampleInfo **perfSampleInfoList,
                                       esxVI_PerfSampleInfo *perfSampleInfo);
-int esxVI_PerfSampleInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
+int esxVI_PerfSampleInfo_Deserialize(xmlNodePtr node,
                                      esxVI_PerfSampleInfo **perfSampleInfo);
 int esxVI_PerfSampleInfo_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PerfSampleInfo **perfSampleInfoList);
+      (xmlNodePtr node, esxVI_PerfSampleInfo **perfSampleInfoList);
 
 
 
@@ -1292,15 +1190,14 @@ struct _esxVI_PerfMetricIntSeries {
 };
 
 int esxVI_PerfMetricIntSeries_Alloc
-      (virConnectPtr conn, esxVI_PerfMetricIntSeries **perfMetricIntSeries);
+      (esxVI_PerfMetricIntSeries **perfMetricIntSeries);
 void esxVI_PerfMetricIntSeries_Free
        (esxVI_PerfMetricIntSeries **perfMetricIntSeries);
 int esxVI_PerfMetricIntSeries_AppendToList
-      (virConnectPtr conn, esxVI_PerfMetricIntSeries **perfMetricIntSeriesList,
+      (esxVI_PerfMetricIntSeries **perfMetricIntSeriesList,
        esxVI_PerfMetricIntSeries *perfMetricIntSeries);
 int esxVI_PerfMetricIntSeries_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PerfMetricIntSeries **perfMetricIntSeries);
+      (xmlNodePtr node, esxVI_PerfMetricIntSeries **perfMetricIntSeries);
 
 
 
@@ -1328,16 +1225,13 @@ struct _esxVI_PerfEntityMetric {
     esxVI_PerfMetricIntSeries *value;                      /* optional, list */
 };
 
-int esxVI_PerfEntityMetric_Alloc(virConnectPtr conn,
-                                 esxVI_PerfEntityMetric **perfEntityMetric);
+int esxVI_PerfEntityMetric_Alloc(esxVI_PerfEntityMetric **perfEntityMetric);
 void esxVI_PerfEntityMetric_Free
        (esxVI_PerfEntityMetric **perfEntityMetric);
 int esxVI_PerfEntityMetric_Deserialize
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PerfEntityMetric **perfEntityMetric);
+      (xmlNodePtr node, esxVI_PerfEntityMetric **perfEntityMetric);
 int esxVI_PerfEntityMetric_DeserializeList
-      (virConnectPtr conn, xmlNodePtr node,
-       esxVI_PerfEntityMetric **perfEntityMetricList);
+      (xmlNodePtr node, esxVI_PerfEntityMetric **perfEntityMetricList);
 
 
 
@@ -1368,14 +1262,12 @@ struct _esxVI_TaskInfo {
     esxVI_Int *eventChainId;                               /* required */
 };
 
-int esxVI_TaskInfo_Alloc(virConnectPtr conn, esxVI_TaskInfo **taskInfo);
+int esxVI_TaskInfo_Alloc(esxVI_TaskInfo **taskInfo);
 void esxVI_TaskInfo_Free(esxVI_TaskInfo **taskInfoList);
-int esxVI_TaskInfo_CastFromAnyType(virConnectPtr conn, esxVI_AnyType *anyType,
+int esxVI_TaskInfo_CastFromAnyType(esxVI_AnyType *anyType,
                                    esxVI_TaskInfo **taskInfo);
-int esxVI_TaskInfo_AppendToList(virConnectPtr conn,
-                                esxVI_TaskInfo **taskInfoList,
+int esxVI_TaskInfo_AppendToList(esxVI_TaskInfo **taskInfoList,
                                 esxVI_TaskInfo *taskInfo);
-int esxVI_TaskInfo_Deserialize(virConnectPtr conn, xmlNodePtr node,
-                               esxVI_TaskInfo **taskInfo);
+int esxVI_TaskInfo_Deserialize(xmlNodePtr node, esxVI_TaskInfo **taskInfo);
 
 #endif /* __ESX_VI_TYPES_H__ */
