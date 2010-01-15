@@ -198,7 +198,7 @@ wr_sync(virConnectPtr xend, int fd, void *buffer, size_t size, int do_read)
                              "%s", _("failed to read from Xen Daemon"));
             else
                 virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("failed to read from Xen Daemon"));
+                             "%s", _("failed to write to Xen Daemon"));
 
             return (-1);
         }
