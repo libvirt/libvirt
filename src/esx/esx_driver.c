@@ -2,7 +2,7 @@
 /*
  * esx_driver.c: core driver methods for managing VMware ESX hosts
  *
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,12 @@
 #include "logging.h"
 #include "uuid.h"
 #include "esx_driver.h"
+#include "esx_interface_driver.h"
+#include "esx_network_driver.h"
+#include "esx_storage_driver.h"
+#include "esx_device_monitor.h"
+#include "esx_secret_driver.h"
+#include "esx_private.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
@@ -45,18 +51,6 @@
                          __LINE__, fmt)
 
 static int esxDomainGetMaxVcpus(virDomainPtr domain);
-
-typedef struct _esxPrivate {
-    esxVI_Context *host;
-    esxVI_Context *vCenter;
-    virCapsPtr caps;
-    char *transport;
-    int32_t maxVcpus;
-    esxVI_Boolean supportsVMotion;
-    esxVI_Boolean supportsLongMode; /* aka x86_64 */
-    esxVI_Boolean autoAnswer;
-    int32_t usedCpuTimeCounterId;
-} esxPrivate;
 
 
 
@@ -3479,7 +3473,14 @@ static virDriver esxDriver = {
 int
 esxRegister(void)
 {
-    virRegisterDriver(&esxDriver);
+    if (virRegisterDriver(&esxDriver) < 0 ||
+        esxInterfaceRegister() < 0 ||
+        esxNetworkRegister() < 0 ||
+        esxStorageRegister() < 0 ||
+        esxDeviceRegister() < 0 ||
+        esxSecretRegister() < 0) {
+        return -1;
+    }
 
     return 0;
 }

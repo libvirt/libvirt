@@ -1,9 +1,8 @@
 
 /*
- * esx_driver.h: core driver methods for managing VMware ESX hosts
+ * esx_private.h: private driver struct for the VMware ESX driver
  *
  * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
- * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +20,23 @@
  *
  */
 
-#ifndef __ESX_DRIVER_H__
-#define __ESX_DRIVER_H__
+#ifndef __ESX_PRIVATE_H__
+#define __ESX_PRIVATE_H__
 
-int esxRegister(void);
+#include "internal.h"
+#include "capabilities.h"
+#include "esx_vi.h"
 
-#endif /* __ESX_DRIVER_H__ */
+typedef struct _esxPrivate {
+    esxVI_Context *host;
+    esxVI_Context *vCenter;
+    virCapsPtr caps;
+    char *transport;
+    int32_t maxVcpus;
+    esxVI_Boolean supportsVMotion;
+    esxVI_Boolean supportsLongMode; /* aka x86_64 */
+    esxVI_Boolean autoAnswer;
+    int32_t usedCpuTimeCounterId;
+} esxPrivate;
+
+#endif /* __ESX_PRIVATE_H__ */

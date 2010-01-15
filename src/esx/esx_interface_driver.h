@@ -1,9 +1,9 @@
 
 /*
- * esx_driver.h: core driver methods for managing VMware ESX hosts
+ * esx_interface_driver.h: interface driver methods for managing VMware ESX
+ *                         host interfaces
  *
- * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
- * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
+ * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,9 @@
  *
  */
 
-#ifndef __ESX_DRIVER_H__
-#define __ESX_DRIVER_H__
+#ifndef __ESX_INTERFACE_DRIVER_H__
+#define __ESX_INTERFACE_DRIVER_H__
 
-int esxRegister(void);
+int esxInterfaceRegister(void);
 
-#endif /* __ESX_DRIVER_H__ */
+#endif /* __ESX_INTERFACE_DRIVER_H__ */

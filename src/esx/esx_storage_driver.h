@@ -1,9 +1,9 @@
 
 /*
- * esx_driver.h: core driver methods for managing VMware ESX hosts
+ * esx_storage_driver.h: storage driver methods for managing VMware ESX
+ *                       host storage
  *
- * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
- * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
+ * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,9 @@
  *
  */
 
-#ifndef __ESX_DRIVER_H__
-#define __ESX_DRIVER_H__
+#ifndef __ESX_STORAGE_DRIVER_H__
+#define __ESX_STORAGE_DRIVER_H__
 
-int esxRegister(void);
+int esxStorageRegister(void);
 
-#endif /* __ESX_DRIVER_H__ */
+#endif /* __ESX_STORAGE_DRIVER_H__ */
