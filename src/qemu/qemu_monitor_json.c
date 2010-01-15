@@ -1203,7 +1203,6 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
 }
 
 
-/* XXX qemu also returns a 'function' number now */
 static int
 qemuMonitorJSONGetGuestAddress(virJSONValuePtr reply,
                                virDomainDevicePCIAddress *guestAddr)
