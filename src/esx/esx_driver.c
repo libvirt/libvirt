@@ -783,14 +783,17 @@ esxGetHostname(virConnectPtr conn)
     }
 
     if (domainName == NULL || strlen(domainName) < 1) {
-        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                  "Missing or empty 'domainName' property");
-        goto failure;
-    }
+        complete = strdup(hostName);
 
-    if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0) {
-        virReportOOMError(conn);
-        goto failure;
+        if (complete == NULL) {
+            virReportOOMError(conn);
+            goto failure;
+        }
+    } else {
+        if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0) {
+            virReportOOMError(conn);
+            goto failure;
+        }
     }
 
   cleanup:
