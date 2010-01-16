@@ -66,6 +66,9 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
                    esxVI_APIVersion apiVersion);
 
 int
+esxVMX_ParseVNC(virConnectPtr conn, virConfPtr conf, virDomainGraphicsDefPtr *def);
+
+int
 esxVMX_ParseSCSIController(virConnectPtr conn, virConfPtr conf,
                            int controller, int *present, char **virtualDev);
 
@@ -100,6 +103,9 @@ esxVMX_FormatFileName(virConnectPtr conn, esxVI_Context *ctx, const char *src);
 char *
 esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
                     virDomainDefPtr def, esxVI_APIVersion apiVersion);
+
+int
+esxVMX_FormatVNC(virConnectPtr conn, virDomainGraphicsDefPtr def, virBufferPtr buffer);
 
 int
 esxVMX_FormatHardDisk(virConnectPtr conn, esxVI_Context *ctx,

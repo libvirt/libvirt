@@ -1,0 +1,6 @@
+config.version = "8"
+virtualHW.version = "4"
+RemoteDisplay.vnc.enabled = "true"
+RemoteDisplay.vnc.port = "5903"
+RemoteDisplay.vnc.keymap = "de"
+RemoteDisplay.vnc.password = "password"

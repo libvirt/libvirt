@@ -173,6 +173,8 @@ mymain(int argc, char **argv)
     DO_TEST("minimal", "minimal", esxVI_APIVersion_25);
     DO_TEST("minimal-64bit", "minimal-64bit", esxVI_APIVersion_25);
 
+    DO_TEST("graphics-vnc", "graphics-vnc", esxVI_APIVersion_25);
+
     DO_TEST("scsi-buslogic", "scsi-buslogic", esxVI_APIVersion_25);
     DO_TEST("scsi-writethrough", "scsi-writethrough", esxVI_APIVersion_25);
 

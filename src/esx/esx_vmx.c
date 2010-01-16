@@ -736,7 +736,7 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
     char *guestOS = NULL;
     int controller;
     int port;
-    int present;
+    int present; // boolean
     char *scsi_virtualDev = NULL;
     int id;
 
@@ -974,7 +974,20 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
     def->localtime*/
 
     /* def:graphics */
-    /* FIXME */
+    if (VIR_ALLOC_N(def->graphics, 1) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    def->ngraphics = 0;
+
+    if (esxVMX_ParseVNC(conn, conf, &def->graphics[def->ngraphics]) < 0) {
+        goto failure;
+    }
+
+    if (def->graphics[def->ngraphics] != NULL) {
+        ++def->ngraphics;
+    }
 
     /* def:disks: 4 * 15 scsi + 2 * 2 ide + 2 floppy = 66 */
     if (VIR_ALLOC_N(def->disks, 66) < 0) {
@@ -1157,6 +1170,70 @@ esxVMX_ParseConfig(virConnectPtr conn, esxVI_Context *ctx, const char *vmx,
     def = NULL;
 
     goto cleanup;
+}
+
+
+
+int
+esxVMX_ParseVNC(virConnectPtr conn, virConfPtr conf, virDomainGraphicsDefPtr *def)
+{
+    int enabled = 0; // boolean
+    long long port = 0;
+
+    if (def == NULL || *def != NULL) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    if (esxUtil_GetConfigBoolean(conn, conf, "RemoteDisplay.vnc.enabled",
+                                 &enabled, 0, 1) < 0) {
+        return -1;
+    }
+
+    if (! enabled) {
+        return 0;
+    }
+
+    if (VIR_ALLOC(*def) < 0) {
+        virReportOOMError(conn);
+        goto failure;
+    }
+
+    (*def)->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
+
+    if (esxUtil_GetConfigLong(conn, conf, "RemoteDisplay.vnc.port",
+                              &port, -1, 1) < 0 ||
+        esxUtil_GetConfigString(conn, conf, "RemoteDisplay.vnc.ip",
+                                &(*def)->data.vnc.listenAddr, 1) < 0 ||
+        esxUtil_GetConfigString(conn, conf, "RemoteDisplay.vnc.keymap",
+                                &(*def)->data.vnc.keymap, 1) < 0 ||
+        esxUtil_GetConfigString(conn, conf, "RemoteDisplay.vnc.password",
+                                &(*def)->data.vnc.passwd, 1) < 0) {
+        goto failure;
+    }
+
+    if (port < 0) {
+        VIR_WARN0("VNC is enabled but VMX entry 'RemoteDisplay.vnc.port' "
+                  "is missing, the VNC port is unknown");
+
+        (*def)->data.vnc.port = 0;
+        (*def)->data.vnc.autoport = 1;
+    } else {
+        if (port < 5900 || port > 5964) {
+            VIR_WARN("VNC port %lld it out of [5900..5964] range", port);
+        }
+
+        (*def)->data.vnc.port = port;
+        (*def)->data.vnc.autoport = 0;
+    }
+
+    return 0;
+
+  failure:
+    virDomainGraphicsDefFree(*def);
+    *def = NULL;
+
+    return -1;
 }
 
 
@@ -2215,7 +2292,7 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
                           (int)(def->memory / 1024));
     }
 
-    /* vmx:numvcpus -> def:vcpus */
+    /* def:vcpus -> vmx:numvcpus */
     if (def->vcpus <= 0 || (def->vcpus % 2 != 0 && def->vcpus != 1)) {
         ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
                   "Expecting domain XML entry 'vcpu' to be an unsigned "
@@ -2259,6 +2336,24 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
         }
 
         virBufferAddLit(&buffer, "\"\n");
+    }
+
+    /* def:graphics */
+    for (i = 0; i < def->ngraphics; ++i) {
+        switch (def->graphics[i]->type) {
+          case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (esxVMX_FormatVNC(conn, def->graphics[i], &buffer) < 0) {
+                goto failure;
+            }
+
+            break;
+
+          default:
+            ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+                      "Unsupported graphics type '%s'",
+                      virDomainGraphicsTypeToString(def->graphics[i]->type));
+            goto failure;
+        }
     }
 
     /* def:disks */
@@ -2306,7 +2401,7 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
 
           default:
             ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                      "Unsuppotred disk device type '%s'",
+                      "Unsupported disk device type '%s'",
                       virDomainDiskDeviceTypeToString(def->disks[i]->device));
             goto failure;
         }
@@ -2357,6 +2452,49 @@ esxVMX_FormatConfig(virConnectPtr conn, esxVI_Context *ctx,
     virBufferFreeAndReset(&buffer);
 
     return NULL;
+}
+
+
+
+int
+esxVMX_FormatVNC(virConnectPtr conn, virDomainGraphicsDefPtr def, virBufferPtr buffer)
+{
+    if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        ESX_ERROR(conn, VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    virBufferVSprintf(buffer, "RemoteDisplay.vnc.enabled = \"true\"\n");
+
+    if (def->data.vnc.autoport) {
+        VIR_WARN0("VNC autoport is enabled, but the automatically assigned "
+                  "VNC port cannot be read back");
+    } else {
+        if (def->data.vnc.port < 5900 || def->data.vnc.port > 5964) {
+            VIR_WARN("VNC port %d it out of [5900..5964] range",
+                     def->data.vnc.port);
+        }
+
+        virBufferVSprintf(buffer, "RemoteDisplay.vnc.port = \"%d\"\n",
+                          def->data.vnc.port);
+    }
+
+    if (def->data.vnc.listenAddr != NULL) {
+        virBufferVSprintf(buffer, "RemoteDisplay.vnc.ip = \"%s\"\n",
+                          def->data.vnc.listenAddr);
+    }
+
+    if (def->data.vnc.keymap != NULL) {
+        virBufferVSprintf(buffer, "RemoteDisplay.vnc.keymap = \"%s\"\n",
+                          def->data.vnc.keymap);
+    }
+
+    if (def->data.vnc.passwd != NULL) {
+        virBufferVSprintf(buffer, "RemoteDisplay.vnc.password = \"%s\"\n",
+                          def->data.vnc.passwd);
+    }
+
+    return 0;
 }
 
 

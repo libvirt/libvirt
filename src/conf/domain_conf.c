@@ -2490,6 +2490,8 @@ virDomainVideoDefaultRAM(virDomainDefPtr def,
     case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
         if (def->virtType == VIR_DOMAIN_VIRT_VBOX)
             return 8 * 1024;
+        else if (def->virtType == VIR_DOMAIN_VIRT_VMWARE)
+            return 4 * 1024;
         else
             return 9 * 1024;
         break;
@@ -2522,6 +2524,9 @@ virDomainVideoDefaultType(virDomainDefPtr def)
 
     case VIR_DOMAIN_VIRT_VBOX:
         return VIR_DOMAIN_VIDEO_TYPE_VBOX;
+
+    case VIR_DOMAIN_VIRT_VMWARE:
+        return VIR_DOMAIN_VIDEO_TYPE_VMVGA;
 
     default:
         return -1;
