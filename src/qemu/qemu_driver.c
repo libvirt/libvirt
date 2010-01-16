@@ -1428,9 +1428,17 @@ qemudFindCharDevicePTYsMonitor(virConnectPtr conn,
                                                                           \
             const char *path = (const char *) virHashLookup(paths, id);   \
             if (path == NULL) {                                           \
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,\
-                                 _("no assigned pty for device %s"), id); \
-                return -1;                                                \
+                if (chr->data.file.path == NULL) {                        \
+                    /* neither the log output nor 'info chardev' had a */ \
+                    /* pty path for this chardev, report an error */      \
+                    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, \
+                                     _("no assigned pty for device %s"), id);  \
+                    return -1;                                                 \
+                } else {                                                  \
+                    /* 'info chardev' had no pty path for this chardev, */\
+                    /* but the log output had, so we're fine */           \
+                    continue;                                             \
+                }                                                         \
             }                                                             \
                                                                           \
             VIR_FREE(chr->data.file.path);                                \
