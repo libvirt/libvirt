@@ -114,6 +114,10 @@ allow to connect locally as root to the daemon supervising QEmu and KVM domains
 
 allow to connect locally as a normal user to his own set of QEmu and KVM domains
 
+=item lxc:///
+
+connect to a local linux container
+
 =back
 
 For remote access see the documentation page on how to make URIs.
@@ -342,7 +346,15 @@ severed upon restore, as TCP timeouts may have expired.
 
 =item B<schedinfo> optional I<--weight> B<number> optional I<--cap> B<number> I<domain-id>
 
-Allows to show (and set) the domain scheduler parameters.
+Allows you to show (and set) the domain scheduler parameters. The parameters available for each hypervisor are:
+
+LXC, QEMU/KVM (posix scheduler): cpu_shares
+
+Xen (credit scheduler): weight, cap
+
+ESX (allocation scheduler): reservation, limit, shares
+
+B<Note>: The cpu_shares parameter has a valid value range of 0-262144.
 
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
