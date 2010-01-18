@@ -1,7 +1,7 @@
 /*
  * qemu_conf.h: QEMU configuration management
  *
- * Copyright (C) 2006, 2007, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -80,6 +80,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_BALLOON       = (1 << 25), /* -balloon available */
     QEMUD_CMD_FLAG_DEVICE        = (1 << 26), /* Is the new -device arg available */
     QEMUD_CMD_FLAG_SDL           = (1 << 27), /* Is the new -sdl arg available */
+    QEMUD_CMD_FLAG_SMP_TOPOLOGY  = (1 << 28), /* Is sockets=s,cores=c,threads=t available for -smp? */
 };
 
 /* Main driver state */

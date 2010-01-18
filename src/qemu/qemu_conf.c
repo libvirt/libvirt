@@ -1,7 +1,7 @@
 /*
  * qemu_conf.c: QEMU configuration management
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1119,6 +1119,10 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_DEVICE;
     if (strstr(help, "-sdl"))
         flags |= QEMUD_CMD_FLAG_SDL;
+    if (strstr(help, "cores=") &&
+        strstr(help, "threads=") &&
+        strstr(help, "sockets="))
+        flags |= QEMUD_CMD_FLAG_SMP_TOPOLOGY;
 
     if (version >= 9000)
         flags |= QEMUD_CMD_FLAG_VNC_COLON;
@@ -2676,6 +2680,39 @@ no_memory:
     goto cleanup;
 }
 
+static char *
+qemudBuildCommandLineSmp(virConnectPtr conn,
+                         const virDomainDefPtr def,
+                         int qemuCmdFlags)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferVSprintf(&buf, "%lu", def->vcpus);
+
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_SMP_TOPOLOGY)) {
+        /* sockets, cores, and threads are either all zero
+         * or all non-zero, thus checking one of them is enough */
+        if (def->cpu && def->cpu->sockets) {
+            virBufferVSprintf(&buf, ",sockets=%u", def->cpu->sockets);
+            virBufferVSprintf(&buf, ",cores=%u", def->cpu->cores);
+            virBufferVSprintf(&buf, ",threads=%u", def->cpu->threads);
+        }
+        else {
+            virBufferVSprintf(&buf, ",sockets=%lu", def->vcpus);
+            virBufferVSprintf(&buf, ",cores=%u", 1);
+            virBufferVSprintf(&buf, ",threads=%u", 1);
+        }
+    }
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
 
 /*
  * Constructs a argv suitable for launching qemu with config defined
@@ -2694,7 +2731,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           const char *migrateFrom) {
     int i;
     char memory[50];
-    char vcpus[50];
     char boot[VIR_DOMAIN_BOOT_LAST];
     struct utsname ut;
     int disableKQEMU = 0;
@@ -2708,6 +2744,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char uuid[VIR_UUID_STRING_BUFLEN];
     char domid[50];
     char *cpu;
+    char *smp;
 
     uname_normalize(&ut);
 
@@ -2850,7 +2887,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * is not supported, then they're out of luck anyway
      */
     snprintf(memory, sizeof(memory), "%lu", def->maxmem/1024);
-    snprintf(vcpus, sizeof(vcpus), "%lu", def->vcpus);
     snprintf(domid, sizeof(domid), "%d", def->id);
 
     ADD_ENV_LIT("LC_ALL=C");
@@ -2913,8 +2949,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-mem-path");
         ADD_ARG_LIT(driver->hugepage_path);
     }
+
     ADD_ARG_LIT("-smp");
-    ADD_ARG_LIT(vcpus);
+    if (!(smp = qemudBuildCommandLineSmp(conn, def, qemuCmdFlags)))
+        goto error;
+    ADD_ARG(smp);
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_NAME) {
         ADD_ARG_LIT("-name");
@@ -4647,6 +4686,27 @@ error:
 }
 
 
+static virCPUDefPtr
+qemuInitGuestCPU(virConnectPtr conn,
+                 virDomainDefPtr dom)
+{
+    if (!dom->cpu) {
+        virCPUDefPtr cpu;
+
+        if (VIR_ALLOC(cpu) < 0) {
+            virReportOOMError(conn);
+            return NULL;
+        }
+
+        cpu->type = VIR_CPU_TYPE_GUEST;
+        cpu->match = VIR_CPU_MATCH_EXACT;
+        dom->cpu = cpu;
+    }
+
+    return dom->cpu;
+}
+
+
 static int
 qemuParseCommandLineCPU(virConnectPtr conn,
                         virDomainDefPtr dom,
@@ -4656,10 +4716,8 @@ qemuParseCommandLineCPU(virConnectPtr conn,
     const char *p = val;
     const char *next;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto no_memory;
-
-    cpu->type = VIR_CPU_TYPE_GUEST;
+    if (!(cpu = qemuInitGuestCPU(conn, dom)))
+        goto error;
 
     do {
         if (*p == '\0' || *p == ',')
@@ -4703,7 +4761,6 @@ qemuParseCommandLineCPU(virConnectPtr conn,
         }
     } while ((p = next));
 
-    dom->cpu = cpu;
     return 0;
 
 syntax:
@@ -4714,8 +4771,81 @@ syntax:
 no_memory:
     virReportOOMError(conn);
 error:
-    virCPUDefFree(cpu);
     return -1;
+}
+
+
+static int
+qemuParseCommandLineSmp(virConnectPtr conn,
+                        virDomainDefPtr dom,
+                        const char *val)
+{
+    unsigned int sockets = 0;
+    unsigned int cores = 0;
+    unsigned int threads = 0;
+    int i;
+    int nkws;
+    char **kws;
+    char **vals;
+    int n;
+    char *end;
+    int ret;
+
+    nkws = qemuParseCommandLineKeywords(conn, val, &kws, &vals, 1);
+    if (nkws < 0)
+        return -1;
+
+    for (i = 0; i < nkws; i++) {
+        if (vals[i] == NULL) {
+            if (i > 0 ||
+                virStrToLong_i(kws[i], &end, 10, &n) < 0 ||
+                !end || *end != '\0')
+                goto syntax;
+            dom->vcpus = n;
+        } else {
+            if (virStrToLong_i(vals[i], &end, 10, &n) < 0 ||
+                !end || *end != '\0')
+                goto syntax;
+            if (STREQ(kws[i], "sockets"))
+                sockets = n;
+            else if (STREQ(kws[i], "cores"))
+                cores = n;
+            else if (STREQ(kws[i], "threads"))
+                threads = n;
+            else
+                goto syntax;
+        }
+    }
+
+    if (sockets && cores && threads) {
+        virCPUDefPtr cpu;
+
+        if (!(cpu = qemuInitGuestCPU(conn, dom)))
+            goto error;
+        cpu->sockets = sockets;
+        cpu->cores = cores;
+        cpu->threads = threads;
+    } else if (sockets || cores || threads)
+        goto syntax;
+
+    ret = 0;
+
+cleanup:
+    for (i = 0; i < nkws; i++) {
+        VIR_FREE(kws[i]);
+        VIR_FREE(vals[i]);
+    }
+    VIR_FREE(kws);
+    VIR_FREE(vals);
+
+    return ret;
+
+syntax:
+    qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     _("cannot parse CPU topology '%s'"), val);
+error:
+    ret = -1;
+    goto cleanup;
 }
 
 
@@ -4867,14 +4997,9 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
             }
             def->memory = def->maxmem = mem * 1024;
         } else if (STREQ(arg, "-smp")) {
-            int vcpus;
             WANT_VALUE();
-            if (virStrToLong_i(val, NULL, 10, &vcpus) < 0) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, \
-                                 _("cannot parse CPU count '%s'"), val);
+            if (qemuParseCommandLineSmp(conn, def, val) < 0)
                 goto error;
-            }
-            def->vcpus = vcpus;
         } else if (STREQ(arg, "-uuid")) {
             WANT_VALUE();
             if (virUUIDParse(val, def->uuid) < 0) {
