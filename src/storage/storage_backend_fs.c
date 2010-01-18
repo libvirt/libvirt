@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -562,7 +562,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
                                                 &backingStore,
                                                 &vol->allocation,
                                                 &vol->capacity,
-                                                &vol->target.encryption) < 0)) {
+                                                &vol->target.encryption)) < 0) {
             if (ret == -1)
                 goto cleanup;
             else {
