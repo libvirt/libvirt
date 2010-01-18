@@ -892,34 +892,6 @@ qemuReconnectDomains(struct qemud_driver *driver)
 
 
 static int
-qemudSecurityCapsInit(virSecurityDriverPtr secdrv,
-                      virCapsPtr caps)
-{
-    const char *doi, *model;
-
-    doi = virSecurityDriverGetDOI(secdrv);
-    model = virSecurityDriverGetModel(secdrv);
-
-    caps->host.secModel.model = strdup(model);
-    if (!caps->host.secModel.model) {
-        virReportOOMError(NULL);
-        return -1;
-    }
-
-    caps->host.secModel.doi = strdup(doi);
-    if (!caps->host.secModel.doi) {
-        virReportOOMError(NULL);
-        return -1;
-    }
-
-    VIR_DEBUG("Initialized caps for security driver \"%s\" with "
-              "DOI \"%s\"", model, doi);
-
-    return 0;
-}
-
-
-static int
 qemudSecurityInit(struct qemud_driver *qemud_drv)
 {
     int ret;
@@ -940,15 +912,52 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
     qemud_drv->securityDriver = security_drv;
 
     VIR_INFO("Initialized security driver %s", security_drv->name);
-
-    /*
-     * Add security policy host caps now that the security driver is
-     * initialized.
-     */
-    return qemudSecurityCapsInit(security_drv, qemud_drv->caps);
+    return 0;
 }
 
 
+static virCapsPtr
+qemuCreateCapabilities(virCapsPtr oldcaps,
+                       virSecurityDriverPtr secDriver)
+{
+    virCapsPtr caps;
+
+    /* Basic host arch / guest machine capabilities */
+    if (!(caps = qemudCapsInit(oldcaps))) {
+        virReportOOMError(NULL);
+        return NULL;
+    }
+
+    /* Domain XML parser hooks */
+    caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
+    caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
+    caps->privateDataXMLFormat = qemuDomainObjPrivateXMLFormat;
+    caps->privateDataXMLParse = qemuDomainObjPrivateXMLParse;
+
+
+    /* Security driver data */
+    if (secDriver) {
+        const char *doi, *model;
+
+        doi = virSecurityDriverGetDOI(secDriver);
+        model = virSecurityDriverGetModel(secDriver);
+
+        if (!(caps->host.secModel.model = strdup(model)))
+            goto no_memory;
+        if (!(caps->host.secModel.doi = strdup(doi)))
+            goto no_memory;
+
+        VIR_DEBUG("Initialized caps for security driver \"%s\" with "
+                  "DOI \"%s\"", model, doi);
+    }
+
+    return caps;
+
+no_memory:
+    virReportOOMError(NULL);
+    virCapabilitiesFree(caps);
+    return NULL;
+}
 
 /**
  * qemudStartup:
@@ -1074,13 +1083,12 @@ qemudStartup(int privileged) {
                  virStrerror(-rc, buf, sizeof(buf)));
     }
 
-    if ((qemu_driver->caps = qemudCapsInit(NULL)) == NULL)
-        goto out_of_memory;
+    if (qemudSecurityInit(qemu_driver) < 0)
+        goto error;
 
-    qemu_driver->caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
-    qemu_driver->caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
-    qemu_driver->caps->privateDataXMLFormat = qemuDomainObjPrivateXMLFormat;
-    qemu_driver->caps->privateDataXMLParse = qemuDomainObjPrivateXMLParse;
+    if ((qemu_driver->caps = qemuCreateCapabilities(NULL,
+                                                    qemu_driver->securityDriver)) == NULL)
+        goto error;
 
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew(NULL)) == NULL)
         goto error;
@@ -1102,10 +1110,6 @@ qemudStartup(int privileged) {
                                  qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group);
             goto error;
         }
-    }
-
-    if (qemudSecurityInit(qemu_driver) < 0) {
-        goto error;
     }
 
     /* If hugetlbfs is present, then we need to create a sub-directory within
@@ -3258,15 +3262,12 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     char *xml = NULL;
 
     qemuDriverLock(driver);
-    if ((caps = qemudCapsInit(qemu_driver->caps)) == NULL)
-        goto no_memory;
 
-    caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
-    caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
-
-    if (qemu_driver->securityDriver &&
-        qemudSecurityCapsInit(qemu_driver->securityDriver, caps) < 0)
-        goto no_memory;
+    if ((caps = qemuCreateCapabilities(qemu_driver->caps,
+                                       qemu_driver->securityDriver)) == NULL) {
+        virCapabilitiesFree(caps);
+        goto cleanup;
+    }
 
     virCapabilitiesFree(qemu_driver->caps);
     qemu_driver->caps = caps;
@@ -3278,11 +3279,6 @@ cleanup:
     qemuDriverUnlock(driver);
 
     return xml;
-
-no_memory:
-    virCapabilitiesFree(caps);
-    virReportOOMError(conn);
-    goto cleanup;
 }
 
 
