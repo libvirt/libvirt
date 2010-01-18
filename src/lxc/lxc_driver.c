@@ -834,7 +834,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             goto error_exit;
         }
 
-        if (def->nets[i]->mac) {
+        {
             char macaddr[VIR_MAC_STRING_BUFLEN];
             virFormatMacAddr(def->nets[i]->mac, macaddr);
             if (0 != (rc = setMacAddr(containerVeth, macaddr))) {
