@@ -76,6 +76,7 @@ getpass
 gettext
 gitlog-to-changelog
 gnumakefile
+ignore-value
 inet_pton
 ioctl
 maintainer-makefile

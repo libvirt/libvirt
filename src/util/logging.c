@@ -1,7 +1,7 @@
 /*
  * logging.c: internal logging and debugging
  *
- * Copyright (C) 2008 Red Hat, Inc.
+ * Copyright (C) 2008, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,7 @@
 #include <syslog.h>
 #endif
 
+#include "ignore-value.h"
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
@@ -579,7 +580,7 @@ void virLogMessage(const char *category, int priority, const char *funcname,
                                msg, len, virLogOutputs[i].data);
     }
     if ((virLogNbOutputs == 0) && (flags != 1))
-        safewrite(2, msg, len);
+        ignore_value (safewrite(STDERR_FILENO, msg, len));
     virLogUnlock();
 
     VIR_FREE(msg);
