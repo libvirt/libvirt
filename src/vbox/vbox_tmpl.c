@@ -4084,9 +4084,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 }
 
                 VBOX_UTF8_TO_UTF16(macaddrvbox, &MACAddress);
-                if (def->nets[i]->mac) {
-                    adapter->vtbl->SetMACAddress(adapter, MACAddress);
-                }
+                adapter->vtbl->SetMACAddress(adapter, MACAddress);
                 VBOX_UTF16_FREE(MACAddress);
             }
         }
@@ -6645,9 +6643,6 @@ static int vboxStorageVolDelete(virStorageVolPtr vol,
     int i = 0;
     int j = 0;
 
-    if (!vol->key)
-        return ret;
-
     vboxUtf8toIID(vol->conn, vol->key, &hddIID);
     if (!hddIID)
         return ret;
@@ -6774,8 +6769,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     vboxIID   *hddIID    = NULL;
     nsresult rc;
 
-    if (   !vol->key
-        || !info)
+    if (!info)
         return ret;
 
     vboxUtf8toIID(vol->conn, vol->key, &hddIID);
@@ -6823,9 +6817,6 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags A
     virStorageVolDef def;
     int defOk = 0;
     nsresult rc;
-
-    if (!vol->key)
-        return ret;
 
     memset(&pool, 0, sizeof(pool));
     memset(&def, 0, sizeof(def));
@@ -6918,9 +6909,6 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol) {
     IHardDisk *hardDisk  = NULL;
     vboxIID   *hddIID    = NULL;
     nsresult rc;
-
-    if (!vol->key)
-        return ret;
 
     vboxUtf8toIID(vol->conn, vol->key, &hddIID);
     if (!hddIID)
