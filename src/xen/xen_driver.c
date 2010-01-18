@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1199,6 +1199,8 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
 
 cleanup:
     virDomainDefFree(def);
+    if (conf)
+        virConfFree(conf);
     return ret;
 }
 
