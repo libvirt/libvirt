@@ -811,16 +811,6 @@ should just 'do the right thing(tm)'.
       <a name="Remote_limitations" id="Remote_limitations">Limitations</a>
     </h3>
     <ul>
-      <li> Remote storage: To be fully useful, particularly for
-creating new domains, it should be possible to enumerate
-and provision storage on the remote machine.  This is currently
-in the design phase. </li>
-      <li> Migration: We expect libvirt will support migration,
-and obviously remote support is what makes migration worthwhile.
-This is also in the design phase.  Issues <a href="https://www.redhat.com/mailman/listinfo/libvir-list" title="libvir-list mailing list">to discuss</a> include
-which path the migration data should follow (eg. client to
-client direct, or client to server to client) and security.
-</li>
       <li> Fine-grained authentication: libvirt in general,
 but in particular the remote case should support more
 fine-grained authentication for operations, rather than
