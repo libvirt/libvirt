@@ -65,7 +65,7 @@ struct _virNetworkDef {
     char *bridge;       /* Name of bridge device */
     char *domain;
     unsigned long delay;   /* Bridge forward delay (ms) */
-    int stp : 1; /* Spanning tree protocol */
+    unsigned int stp :1; /* Spanning tree protocol */
 
     int forwardType;    /* One of virNetworkForwardType constants */
     char *forwardDev;   /* Destination device for forwarding */

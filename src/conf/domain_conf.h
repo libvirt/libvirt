@@ -400,8 +400,8 @@ enum virDomainVideoType {
 typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
 typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 struct _virDomainVideoAccelDef {
-    int support3d : 1;
-    int support2d : 1;
+    unsigned int support3d :1;
+    unsigned int support2d :1;
 };
 
 
@@ -432,7 +432,7 @@ struct _virDomainGraphicsDef {
     union {
         struct {
             int port;
-            int autoport : 1;
+            unsigned int autoport :1;
             char *listenAddr;
             char *keymap;
             char *passwd;
@@ -445,13 +445,13 @@ struct _virDomainGraphicsDef {
         struct {
             int port;
             char *listenAddr;
-            int autoport : 1;
-            int replaceUser : 1;
-            int multiUser : 1;
+            unsigned int autoport :1;
+            unsigned int replaceUser :1;
+            unsigned int multiUser :1;
         } rdp;
         struct {
             char *display;
-            int fullscreen : 1;
+            unsigned int fullscreen :1;
         } desktop;
     } data;
 };

@@ -164,7 +164,7 @@ typedef virInterfaceObj *virInterfaceObjPtr;
 struct _virInterfaceObj {
     virMutex lock;
 
-    int active:1;           /* 1 if interface is active (up) */
+    unsigned int active:1;           /* 1 if interface is active (up) */
     virInterfaceDefPtr def; /* The interface definition */
 };
 

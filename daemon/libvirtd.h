@@ -175,9 +175,9 @@ struct qemud_client {
 
     int fd;
     int watch;
-    int readonly:1;
-    int closing:1;
-    int domain_events_registered:1;
+    unsigned int readonly :1;
+    unsigned int closing :1;
+    unsigned int domain_events_registered :1;
 
     struct sockaddr_storage addr;
     socklen_t addrlen;
@@ -185,7 +185,7 @@ struct qemud_client {
     int type; /* qemud_sock_type */
     gnutls_session_t tlssession;
     int auth;
-    int handshake : 1; /* If we're in progress for TLS handshake */
+    unsigned int handshake :1; /* If we're in progress for TLS handshake */
 #if HAVE_SASL
     sasl_conn_t *saslconn;
     int saslSSF;
@@ -244,9 +244,9 @@ struct qemud_socket {
 
 struct qemud_worker {
     pthread_t thread;
-    int hasThread :1;
-    int processingCall :1;
-    int quitRequest : 1;
+    unsigned int hasThread :1;
+    unsigned int processingCall :1;
+    unsigned int quitRequest :1;
 
     /* back-pointer to our server */
     struct qemud_server *server;
