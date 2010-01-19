@@ -1198,11 +1198,20 @@ pciDeviceIsBehindSwitchLackingACS(virConnectPtr conn,
 {
     pciDevice *parent;
 
-    if (!(parent = pciGetParentDevice(conn, dev))) {
-        pciReportError(conn, VIR_ERR_NO_SUPPORT,
-                       _("Failed to find parent device for %s"),
-                       dev->name);
-        return -1;
+    parent = pciGetParentDevice(conn, dev);
+    if (!parent) {
+        /* if we have no parent, and this is the root bus, ACS doesn't come
+         * into play since devices on the root bus can't P2P without going
+         * through the root IOMMU.
+         */
+        if (dev->bus == 0)
+            return 0;
+        else {
+            pciReportError(conn, VIR_ERR_NO_SUPPORT,
+                           _("Failed to find parent device for %s"),
+                           dev->name);
+            return -1;
+        }
     }
 
     /* XXX we should rather fail when we can't find device's parent and
