@@ -21,6 +21,11 @@ BIOS you will see</p>
       &lt;features&gt;
         &lt;vmx/&gt;
       &lt;/features&gt;
+      &lt;model&gt;core2duo&lt;/model&gt;
+      &lt;topology sockets="1" cores="2" threads="1"/&gt;
+      &lt;feature name="lahf_lm"/&gt;
+      &lt;feature name='xtpr'/&gt;
+      ...
     &lt;/cpu&gt;
   &lt;/host&gt;</span>
 
@@ -48,15 +53,17 @@ BIOS you will see</p>
       &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
     &lt;/arch&gt;
     &lt;features&gt;
+      &lt;cpuselection/&gt;
     &lt;/features&gt;
   &lt;/guest&gt;</span>
   ...
 &lt;/capabilities&gt;</pre>
         <p>The first block (in red) indicates the host hardware capabilities, currently
 it is limited to the CPU properties but other information may be available,
-it shows the CPU architecture, and the features of the chip (the feature
-block is similar to what you will find in a Xen fully virtualized domain
-description).</p>
+it shows the CPU architecture, topology, model name, and additional features
+which are not included in the model but the CPU provides them. Features of the
+chip are shown within the feature block (the block is similar to what you will
+find in a Xen fully virtualized domain description).</p>
         <p>The second block (in blue) indicates the paravirtualization support of the
 Xen support, you will see the os_type of xen to indicate a paravirtual
 kernel, then architecture information and potential features.</p>
