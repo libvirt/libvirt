@@ -3375,7 +3375,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authfail;
     }
     if (status != 0) {
-        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d\n"),
+        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %d"),
                   action, callerPid, callerUid, status);
         goto authfail;
     }
@@ -3442,7 +3442,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
 
     if (!(pkaction = polkit_action_new())) {
         char ebuf[1024];
-        VIR_ERROR(_("Failed to create polkit action %s\n"),
+        VIR_ERROR(_("Failed to create polkit action %s"),
                   virStrerror(errno, ebuf, sizeof ebuf));
         polkit_caller_unref(pkcaller);
         goto authfail;
@@ -3452,7 +3452,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     if (!(pkcontext = polkit_context_new()) ||
         !polkit_context_init(pkcontext, &pkerr)) {
         char ebuf[1024];
-        VIR_ERROR(_("Failed to create polkit context %s\n"),
+        VIR_ERROR(_("Failed to create polkit context %s"),
                   (pkerr ? polkit_error_get_error_message(pkerr)
                    : virStrerror(errno, ebuf, sizeof ebuf)));
         if (pkerr)
@@ -3484,7 +3484,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
     polkit_caller_unref(pkcaller);
     polkit_action_unref(pkaction);
     if (pkresult != POLKIT_RESULT_YES) {
-        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s\n"),
+        VIR_ERROR(_("Policy kit denied action %s from pid %d, uid %d, result: %s"),
                   action, callerPid, callerUid,
                   polkit_result_to_string_representation(pkresult));
         goto authfail;

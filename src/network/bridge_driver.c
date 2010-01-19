@@ -977,14 +977,14 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
  err_delbr1:
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         char ebuf[1024];
-        VIR_WARN(_("Failed to bring down bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to bring down bridge '%s' : %s"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         char ebuf[1024];
-        VIR_WARN(_("Failed to delete bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to delete bridge '%s' : %s"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
@@ -998,7 +998,7 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
     int err;
     char *stateFile;
 
-    VIR_INFO(_("Shutting down network '%s'\n"), network->def->name);
+    VIR_INFO(_("Shutting down network '%s'"), network->def->name);
 
     if (!virNetworkObjIsActive(network))
         return 0;
@@ -1017,12 +1017,12 @@ static int networkShutdownNetworkDaemon(virConnectPtr conn,
 
     char ebuf[1024];
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        VIR_WARN(_("Failed to bring down bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to bring down bridge '%s' : %s"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        VIR_WARN(_("Failed to delete bridge '%s' : %s\n"),
+        VIR_WARN(_("Failed to delete bridge '%s' : %s"),
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 

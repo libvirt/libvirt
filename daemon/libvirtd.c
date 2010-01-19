@@ -600,7 +600,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *node, const c
 
     int e = getaddrinfo (node, service, &hints, &ai);
     if (e != 0) {
-        VIR_ERROR(_("getaddrinfo: %s\n"), gai_strerror (e));
+        VIR_ERROR(_("getaddrinfo: %s"), gai_strerror (e));
         return -1;
     }
 
@@ -2511,7 +2511,7 @@ checkType (virConfValuePtr p, const char *filename,
             (var_name) = strdup (p->str);                               \
             if ((var_name) == NULL) {                                   \
                 char ebuf[1024];                                        \
-                VIR_ERROR(_("remoteReadConfigFile: %s\n"),		\
+                VIR_ERROR(_("remoteReadConfigFile: %s"),		\
                           virStrerror(errno, ebuf, sizeof ebuf));       \
                 goto free_and_fail;                                     \
             }                                                           \
@@ -2554,7 +2554,7 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
         *auth = REMOTE_AUTH_POLKIT;
 #endif
     } else {
-        VIR_ERROR(_("remoteReadConfigFile: %s: %s: unsupported auth %s\n"),
+        VIR_ERROR(_("remoteReadConfigFile: %s: %s: unsupported auth %s"),
                   filename, key, p->str);
         return -1;
     }
@@ -2839,13 +2839,13 @@ qemudSetupPrivs (void)
 
     if (__init_daemon_priv (PU_RESETGROUPS | PU_CLEARLIMITSET,
         SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
-        VIR_ERROR0(_("additional privileges are required\n"));
+        VIR_ERROR0(_("additional privileges are required"));
         return -1;
     }
 
     if (priv_set (PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
         PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
-        VIR_ERROR0(_("failed to set reduced privileges\n"));
+        VIR_ERROR0(_("failed to set reduced privileges"));
         return -1;
     }
 

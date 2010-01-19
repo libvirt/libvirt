@@ -245,12 +245,12 @@ static int get_sriov_function(const char *device_link,
     char errbuf[64];
     int ret = SRIOV_ERROR;
 
-    VIR_DEBUG("Attempting to resolve device path from device link '%s'\n",
+    VIR_DEBUG("Attempting to resolve device path from device link '%s'",
               device_link);
 
     if (!virFileExists(device_link)) {
 
-        VIR_DEBUG("SR IOV function link '%s' does not exist\n", device_link);
+        VIR_DEBUG("SR IOV function link '%s' does not exist", device_link);
         /* Not an SR IOV device, not an error, either. */
         ret = SRIOV_NOT_FOUND;
 
@@ -261,24 +261,24 @@ static int get_sriov_function(const char *device_link,
     device_path = realpath(device_link, device_path);
     if (device_path == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
-        VIR_ERROR("Failed to resolve device link '%s': '%s'\n", device_link,
+        VIR_ERROR("Failed to resolve device link '%s': '%s'", device_link,
                   virStrerror(errno, errbuf, sizeof(errbuf)));
         goto out;
     }
 
-    VIR_DEBUG("SR IOV device path is '%s'\n", device_path);
+    VIR_DEBUG("SR IOV device path is '%s'", device_path);
     config_address = basename(device_path);
     if (VIR_ALLOC(*bdf) != 0) {
-        VIR_ERROR0("Failed to allocate memory for PCI device name\n");
+        VIR_ERROR0("Failed to allocate memory for PCI device name");
         goto out;
     }
 
     if (parse_pci_config_address(config_address, *bdf) != 0) {
-        VIR_ERROR("Failed to parse PCI config address '%s'\n", config_address);
+        VIR_ERROR("Failed to parse PCI config address '%s'", config_address);
         goto out;
     }
 
-    VIR_DEBUG("SR IOV function %.4x:%.2x:%.2x.%.1x/>\n",
+    VIR_DEBUG("SR IOV function %.4x:%.2x:%.2x.%.1x",
               (*bdf)->domain,
               (*bdf)->bus,
               (*bdf)->slot,
@@ -341,7 +341,7 @@ int get_virtual_functions_linux(const char *sysfs_path,
                 goto out;
             }
 
-            VIR_DEBUG("Number of virtual functions: %d\n", *num_funcs);
+            VIR_DEBUG("Number of virtual functions: %d", *num_funcs);
             if (VIR_REALLOC_N(d->pci_dev.virtual_functions,
                               (*num_funcs) + 1) != 0) {
                 virReportOOMError(NULL);

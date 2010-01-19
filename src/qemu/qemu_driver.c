@@ -586,7 +586,7 @@ qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
         ret = qemudStartVMDaemon(data->conn, data->driver, vm, NULL, -1);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
+            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
                       err ? err->message : "");
         } else {
@@ -826,7 +826,7 @@ qemuConnectMonitor(virDomainObjPtr vm)
                                      priv->monConfig,
                                      priv->monJSON,
                                      &monitorCallbacks)) == NULL) {
-        VIR_ERROR(_("Failed to connect monitor for %s\n"), vm->def->name);
+        VIR_ERROR(_("Failed to connect monitor for %s"), vm->def->name);
         return -1;
     }
 
@@ -1035,19 +1035,19 @@ qemudStartup(int privileged) {
 
     if (virFileMakePath(qemu_driver->stateDir) < 0) {
         char ebuf[1024];
-        VIR_ERROR(_("Failed to create state dir '%s': %s\n"),
+        VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->libDir) < 0) {
         char ebuf[1024];
-        VIR_ERROR(_("Failed to create lib dir '%s': %s\n"),
+        VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
     if (virFileMakePath(qemu_driver->cacheDir) < 0) {
         char ebuf[1024];
-        VIR_ERROR(_("Failed to create cache dir '%s': %s\n"),
+        VIR_ERROR(_("Failed to create cache dir '%s': %s"),
                   qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
@@ -1535,7 +1535,7 @@ qemudWaitForMonitor(virConnectPtr conn,
                              "console", 3);
     if (close(logfd) < 0) {
         char ebuf[4096];
-        VIR_WARN(_("Unable to close logfile: %s\n"),
+        VIR_WARN(_("Unable to close logfile: %s"),
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
@@ -2241,7 +2241,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
 
     if (!(pcidevs = qemuGetPciHostDeviceList(conn, def))) {
         virErrorPtr err = virGetLastError();
-        VIR_ERROR(_("Failed to allocate pciDeviceList: %s\n"),
+        VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : "");
         virResetError(err);
         return;
@@ -2260,7 +2260,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
         if (pciResetDevice(conn, dev,
                            driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to reset PCI device: %s\n"),
+            VIR_ERROR(_("Failed to reset PCI device: %s"),
                       err ? err->message : "");
             virResetError(err);
         }
@@ -2271,7 +2271,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
         if (pciDeviceGetManaged(dev) &&
             pciReAttachDevice(NULL, dev) < 0) {
             virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to re-attach PCI device: %s\n"),
+            VIR_ERROR(_("Failed to re-attach PCI device: %s"),
                       err ? err->message : "");
             virResetError(err);
         }
@@ -2853,29 +2853,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write envv to logfile: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s\n"),
+            VIR_WARN(_("Unable to write argv to logfile: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(logfile, "\n", 1) < 0)
-        VIR_WARN(_("Unable to write argv to logfile: %s\n"),
+        VIR_WARN(_("Unable to write argv to logfile: %s"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
-        VIR_WARN(_("Unable to seek to end of logfile: %s\n"),
+        VIR_WARN(_("Unable to seek to end of logfile: %s"),
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; i < ntapfds ; i++)
@@ -5746,7 +5746,7 @@ cleanup:
 
 try_remove:
     if (!net->hostnet_name || net->vlan == 0)
-        VIR_WARN0(_("Unable to remove network backend\n"));
+        VIR_WARN0(_("Unable to remove network backend"));
     else {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorRemoveHostNetwork(priv->mon, net->vlan, net->hostnet_name) < 0)
@@ -5760,7 +5760,7 @@ try_tapfd_close:
     if (tapfd_name) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
-            VIR_WARN(_("Failed to close tapfd with '%s'\n"), tapfd_name);
+            VIR_WARN(_("Failed to close tapfd with '%s'"), tapfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
@@ -8210,7 +8210,7 @@ endjob:
              * overwrite the previous error, though, so we just throw something
              * to the logs and hope for the best
              */
-            VIR_ERROR(_("Failed to resume guest %s after failure\n"),
+            VIR_ERROR(_("Failed to resume guest %s after failure"),
                       vm->def->name);
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);

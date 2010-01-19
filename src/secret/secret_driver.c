@@ -498,7 +498,7 @@ loadSecrets(virConnectPtr conn, virSecretDriverStatePtr driver,
         if (secret == NULL) {
             virErrorPtr err = virGetLastError();
 
-            VIR_ERROR(_("Error reading secret: %s\n"),
+            VIR_ERROR(_("Error reading secret: %s"),
                       err != NULL ? err->message: "");
             virResetError(err);
             continue;

@@ -146,11 +146,11 @@ virProxyForkServer(void)
     const char *proxyarg[2];
 
     if (!proxyPath) {
-        VIR_WARN0("failed to find libvirt_proxy\n");
+        VIR_WARN0("failed to find libvirt_proxy");
         return(-1);
     }
 
-    VIR_DEBUG("Asking to launch %s\n", proxyPath);
+    VIR_DEBUG("Asking to launch %s", proxyPath);
 
     proxyarg[0] = proxyPath;
     proxyarg[1] = NULL;
@@ -158,7 +158,7 @@ virProxyForkServer(void)
     if (virExecDaemonize(NULL, proxyarg, NULL, NULL,
                          &pid, -1, NULL, NULL, 0,
                          NULL, NULL, NULL) < 0)
-        VIR_ERROR0("Failed to fork libvirt_proxy\n");
+        VIR_ERROR0("Failed to fork libvirt_proxy");
 
     return (0);
 }
@@ -239,9 +239,9 @@ virProxyCloseSocket(xenUnifiedPrivatePtr priv) {
 
     ret = close(priv->proxy);
     if (ret != 0)
-        VIR_WARN(_("Failed to close socket %d\n"), priv->proxy);
+        VIR_WARN(_("Failed to close socket %d"), priv->proxy);
     else
-        VIR_DEBUG("Closed socket %d\n", priv->proxy);
+        VIR_DEBUG("Closed socket %d", priv->proxy);
     priv->proxy = -1;
     return(ret);
 }
@@ -267,14 +267,14 @@ retry:
     ret = read(fd, buffer, len);
     if (ret < 0) {
         if (errno == EINTR) {
-            VIR_DEBUG("read socket %d interrupted\n", fd);
+            VIR_DEBUG("read socket %d interrupted", fd);
             goto retry;
         }
-        VIR_WARN("Failed to read socket %d\n", fd);
+        VIR_WARN("Failed to read socket %d", fd);
         return(-1);
     }
 
-    VIR_DEBUG("read %d bytes from socket %d\n",
+    VIR_DEBUG("read %d bytes from socket %d",
               ret, fd);
     return(ret);
 }
@@ -296,10 +296,10 @@ virProxyWriteClientSocket(int fd, const char *data, int len) {
 
     ret = safewrite(fd, data, len);
     if (ret < 0) {
-        VIR_WARN(_("Failed to write to socket %d\n"), fd);
+        VIR_WARN(_("Failed to write to socket %d"), fd);
         return(-1);
     }
-    VIR_DEBUG("wrote %d bytes to socket %d\n",
+    VIR_DEBUG("wrote %d bytes to socket %d",
               len, fd);
 
     return(0);
@@ -451,7 +451,7 @@ retry:
         goto error;
     }
     if (res->serial != serial) {
-        VIR_WARN(_("got asynchronous packet number %d\n"), res->serial);
+        VIR_WARN(_("got asynchronous packet number %d"), res->serial);
         goto retry;
     }
 

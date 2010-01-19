@@ -1603,7 +1603,7 @@ lxcAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaqu
         int ret = lxcVmStart(data->conn, data->driver, vm);
         if (ret < 0) {
             virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to autostart VM '%s': %s\n"),
+            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
                       err ? err->message : "");
         } else {

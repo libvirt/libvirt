@@ -486,7 +486,7 @@ pciIsParent(pciDevice *dev, pciDevice *check, void *data ATTRIBUTE_UNUSED)
     secondary   = pciRead8(check, PCI_SECONDARY_BUS);
     subordinate = pciRead8(check, PCI_SUBORDINATE_BUS);
 
-    VIR_DEBUG("%s %s: found parent device %s\n", dev->id, dev->name, check->name);
+    VIR_DEBUG("%s %s: found parent device %s", dev->id, dev->name, check->name);
 
     /* No, it's superman! */
     return (dev->bus >= secondary && dev->bus <= subordinate);
