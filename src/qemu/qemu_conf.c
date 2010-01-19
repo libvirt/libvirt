@@ -836,6 +836,8 @@ qemudCapsInitGuest(virCapsPtr caps,
             return -1;
         }
 
+        nmachines = 1;
+
         if (VIR_ALLOC_N(machines, nmachines) < 0) {
             virReportOOMError(NULL);
             VIR_FREE(machine->name);
@@ -844,7 +846,6 @@ qemudCapsInitGuest(virCapsPtr caps,
         }
 
         machines[0] = machine;
-        nmachines = 1;
     } else {
         int probe = 1;
         if (old_caps && binary_mtime)
