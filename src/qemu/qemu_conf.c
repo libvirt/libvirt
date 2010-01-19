@@ -384,20 +384,20 @@ static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
 
 /* The archicture tables for supported QEMU archs */
 static const struct qemu_arch_info const arch_info_hvm[] = {
-    {  "i686",   32, NULL, "/usr/bin/qemu",
-       "/usr/bin/qemu-system-x86_64", arch_info_i686_flags, 4 },
-    {  "x86_64", 64, NULL, "/usr/bin/qemu-system-x86_64",
+    {  "i686",   32, NULL, "qemu",
+       "qemu-system-x86_64", arch_info_i686_flags, 4 },
+    {  "x86_64", 64, NULL, "qemu-system-x86_64",
        NULL, arch_info_x86_64_flags, 2 },
-    {  "arm",    32, NULL, "/usr/bin/qemu-system-arm",    NULL, NULL, 0 },
-    {  "mips",   32, NULL, "/usr/bin/qemu-system-mips",   NULL, NULL, 0 },
-    {  "mipsel", 32, NULL, "/usr/bin/qemu-system-mipsel", NULL, NULL, 0 },
-    {  "sparc",  32, NULL, "/usr/bin/qemu-system-sparc",  NULL, NULL, 0 },
-    {  "ppc",    32, NULL, "/usr/bin/qemu-system-ppc",    NULL, NULL, 0 },
+    {  "arm",    32, NULL, "qemu-system-arm",    NULL, NULL, 0 },
+    {  "mips",   32, NULL, "qemu-system-mips",   NULL, NULL, 0 },
+    {  "mipsel", 32, NULL, "qemu-system-mipsel", NULL, NULL, 0 },
+    {  "sparc",  32, NULL, "qemu-system-sparc",  NULL, NULL, 0 },
+    {  "ppc",    32, NULL, "qemu-system-ppc",    NULL, NULL, 0 },
 };
 
 static const struct qemu_arch_info const arch_info_xen[] = {
-    {  "i686",   32, "xenner", "/usr/bin/xenner", NULL, arch_info_i686_flags, 4 },
-    {  "x86_64", 64, "xenner", "/usr/bin/xenner", NULL, arch_info_x86_64_flags, 2 },
+    {  "i686",   32, "xenner", "xenner", NULL, arch_info_i686_flags, 4 },
+    {  "x86_64", 64, "xenner", "xenner", NULL, arch_info_x86_64_flags, 2 },
 };
 
 
@@ -773,21 +773,27 @@ qemudCapsInitGuest(virCapsPtr caps,
     int i;
     int haskvm = 0;
     int haskqemu = 0;
-    const char *kvmbin = NULL;
-    const char *binary = NULL;
+    char *kvmbin = NULL;
+    char *binary = NULL;
     time_t binary_mtime;
     virCapsGuestMachinePtr *machines = NULL;
     int nmachines = 0;
     struct stat st;
     unsigned int ncpus;
+    int ret = -1;
 
     /* Check for existance of base emulator, or alternate base
      * which can be used with magic cpu choice
      */
-    if (access(info->binary, X_OK) == 0)
-        binary = info->binary;
-    else if (info->altbinary && access(info->altbinary, X_OK) == 0)
-        binary = info->altbinary;
+    binary = virFindFileInPath(info->binary);
+
+    if (binary == NULL || access(binary, X_OK) != 0) {
+        VIR_FREE(binary);
+        binary = virFindFileInPath(info->altbinary);
+
+        if (binary != NULL && access(binary, X_OK) != 0)
+            VIR_FREE(binary);
+    }
 
     /* Can use acceleration for KVM/KQEMU if
      *  - host & guest arches match
@@ -797,16 +803,22 @@ qemudCapsInitGuest(virCapsPtr caps,
      */
     if (STREQ(info->arch, hostmachine) ||
         (STREQ(hostmachine, "x86_64") && STREQ(info->arch, "i686"))) {
-        const char *const kvmbins[] = { "/usr/bin/qemu-kvm", /* Fedora */
-                                        "/usr/bin/kvm" }; /* Upstream .spec */
+        if (access("/dev/kvm", F_OK) == 0) {
+            const char *const kvmbins[] = { "qemu-kvm", /* Fedora */
+                                            "kvm" }; /* Upstream .spec */
 
-        for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
-            if (access(kvmbins[i], X_OK) == 0 &&
-                access("/dev/kvm", F_OK) == 0) {
+            for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
+                kvmbin = virFindFileInPath(kvmbins[i]);
+
+                if (kvmbin == NULL || access(kvmbin, X_OK) != 0) {
+                    VIR_FREE(kvmbin);
+                    continue;
+                }
+
                 haskvm = 1;
-                kvmbin = kvmbins[i];
                 if (!binary)
                     binary = kvmbin;
+
                 break;
             }
         }
@@ -831,23 +843,20 @@ qemudCapsInitGuest(virCapsPtr caps,
         virCapsGuestMachinePtr machine;
 
         if (VIR_ALLOC(machine) < 0) {
-            virReportOOMError(NULL);
-            return -1;
+            goto no_memory;
         }
 
         if (!(machine->name = strdup(info->machine))) {
-            virReportOOMError(NULL);
             VIR_FREE(machine);
-            return -1;
+            goto no_memory;
         }
 
         nmachines = 1;
 
         if (VIR_ALLOC_N(machines, nmachines) < 0) {
-            virReportOOMError(NULL);
             VIR_FREE(machine->name);
             VIR_FREE(machine);
-            return -1;
+            goto no_memory;
         }
 
         machines[0] = machine;
@@ -859,7 +868,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                          old_caps, &machines, &nmachines);
         if (probe &&
             qemudProbeMachineTypes(binary, &machines, &nmachines) < 0)
-            return -1;
+            goto error;
     }
 
     /* We register kvm as the base emulator too, since we can
@@ -871,21 +880,18 @@ qemudCapsInitGuest(virCapsPtr caps,
                                          binary,
                                          NULL,
                                          nmachines,
-                                         machines)) == NULL) {
-        for (i = 0; i < nmachines; i++) {
-            VIR_FREE(machines[i]->name);
-            VIR_FREE(machines[i]);
-        }
-        VIR_FREE(machines);
-        return -1;
-    }
+                                         machines)) == NULL)
+        goto error;
+
+    machines = NULL;
+    nmachines = 0;
 
     guest->arch.defaultInfo.emulator_mtime = binary_mtime;
 
     if (qemudProbeCPUModels(binary, info->arch, &ncpus, NULL) == 0
         && ncpus > 0
         && !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
-        return -1;
+        goto error;
 
     if (hvm) {
         if (virCapabilitiesAddGuestDomain(guest,
@@ -894,7 +900,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                           NULL,
                                           0,
                                           NULL) == NULL)
-            return -1;
+            goto error;
 
         if (haskqemu &&
             virCapabilitiesAddGuestDomain(guest,
@@ -903,7 +909,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                           NULL,
                                           0,
                                           NULL) == NULL)
-            return -1;
+            goto error;
 
         if (haskvm) {
             virCapsGuestDomainPtr dom;
@@ -917,9 +923,6 @@ qemudCapsInitGuest(virCapsPtr caps,
                 binary_mtime = 0;
             }
 
-            machines = NULL;
-            nmachines = 0;
-
             if (!STREQ(binary, kvmbin)) {
                 int probe = 1;
                 if (old_caps && binary_mtime)
@@ -928,7 +931,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                                  old_caps, &machines, &nmachines);
                 if (probe &&
                     qemudProbeMachineTypes(kvmbin, &machines, &nmachines) < 0)
-                    return -1;
+                    goto error;
             }
 
             if ((dom = virCapabilitiesAddGuestDomain(guest,
@@ -937,13 +940,11 @@ qemudCapsInitGuest(virCapsPtr caps,
                                                      NULL,
                                                      nmachines,
                                                      machines)) == NULL) {
-                for (i = 0; i < nmachines; i++) {
-                    VIR_FREE(machines[i]->name);
-                    VIR_FREE(machines[i]);
-                }
-                VIR_FREE(machines);
-                return -1;
+                goto error;
             }
+
+            machines = NULL;
+            nmachines = 0;
 
             dom->info.emulator_mtime = binary_mtime;
         }
@@ -954,7 +955,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                                           NULL,
                                           0,
                                           NULL) == NULL)
-            return -1;
+            goto error;
     }
 
     if (info->nflags) {
@@ -963,11 +964,30 @@ qemudCapsInitGuest(virCapsPtr caps,
                                                info->flags[i].name,
                                                info->flags[i].default_on,
                                                info->flags[i].toggle) == NULL)
-                return -1;
+                goto error;
         }
     }
 
-    return 0;
+    ret = 0;
+
+cleanup:
+    if (binary == kvmbin) {
+        /* don't double free */
+        VIR_FREE(binary);
+    } else {
+        VIR_FREE(binary);
+        VIR_FREE(kvmbin);
+    }
+
+    return ret;
+
+no_memory:
+    virReportOOMError(NULL);
+
+error:
+    virCapabilitiesFreeMachines(machines, nmachines);
+
+    goto cleanup;
 }
 
 
@@ -1017,6 +1037,7 @@ virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
     struct utsname utsname;
     virCapsPtr caps;
     int i;
+    char *xenner = NULL;
 
     /* Really, this never fails - look at the man-page. */
     uname (&utsname);
@@ -1057,7 +1078,9 @@ virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
             goto no_memory;
 
     /* Then possibly the Xen paravirt guests (ie Xenner */
-    if (access("/usr/bin/xenner", X_OK) == 0 &&
+    xenner = virFindFileInPath("xenner");
+
+    if (xenner != NULL && access(xenner, X_OK) == 0 &&
         access("/dev/kvm", F_OK) == 0) {
         for (i = 0 ; i < ARRAY_CARDINALITY(arch_info_xen) ; i++)
             /* Allow Xen 32-on-32, 32-on-64 and 64-on-64 */
@@ -1071,12 +1094,15 @@ virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
             }
     }
 
+    VIR_FREE(xenner);
+
     /* QEMU Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
 
     return caps;
 
  no_memory:
+    VIR_FREE(xenner);
     virCapabilitiesFree(caps);
     return NULL;
 }
