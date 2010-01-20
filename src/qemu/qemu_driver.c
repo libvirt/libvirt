@@ -5345,7 +5345,7 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
     }
 
-    for (i = 0 ; i < disk->info.addr.drive.controller ; i++) {
+    for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
         cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i);
         if (!cont)
             goto error;
