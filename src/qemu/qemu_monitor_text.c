@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_text.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -235,9 +235,11 @@ qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
         }
     }
 
-    if (ret < 0)
+    if (ret < 0) {
         virReportSystemError(NULL, msg.lastErrno,
                              _("cannot send monitor command '%s'"), cmd);
+        VIR_FREE(*reply);
+    }
 
     return ret;
 }
