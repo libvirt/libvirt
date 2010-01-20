@@ -111,6 +111,16 @@ char *virFindFileInPath(const char *file);
 
 int virFileExists(const char *path);
 
+enum {
+    VIR_FILE_CREATE_NONE        = 0,
+    VIR_FILE_CREATE_AS_UID      = (1 << 0),
+    VIR_FILE_CREATE_ALLOW_EXIST = (1 << 1),
+};
+
+int virFileCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
+                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
+int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
+                 unsigned int flags) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
 
 int virFileBuildPath(const char *dir,
