@@ -505,15 +505,50 @@ virStorageBackendFileSystemBuild(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags ATTRIBUTE_UNUSED)
 {
-    int err;
-    if ((err = virFileMakePath(pool->def->target.path)) < 0) {
-        virReportSystemError(conn, err,
-                             _("cannot create path '%s'"),
-                             pool->def->target.path);
-        return -1;
+    int err, ret = -1;
+    char *parent;
+    char *p;
+
+    if ((parent = strdup(pool->def->target.path)) == NULL) {
+        virReportOOMError(conn);
+        goto error;
+    }
+    if (!(p = strrchr(parent, '/'))) {
+        virStorageReportError(conn, VIR_ERR_INVALID_ARG,
+                              _("path '%s' is not absolute"),
+                              pool->def->target.path);
+        goto error;
     }
 
-    return 0;
+    if (p != parent) {
+        /* assure all directories in the path prior to the final dir
+         * exist, with default uid/gid/mode. */
+        *p = '\0';
+        if ((err = virFileMakePath(parent)) != 0) {
+            virReportSystemError(conn, err, _("cannot create path '%s'"),
+                                 parent);
+            goto error;
+        }
+    }
+
+    /* Now create the final dir in the path with the uid/gid/mode
+     * requested in the config. If the dir already exists, just set
+     * the perms. */
+    if ((err = virDirCreate(pool->def->target.path,
+                            pool->def->target.perms.mode,
+                            pool->def->target.perms.uid,
+                            pool->def->target.perms.gid,
+                            VIR_FILE_CREATE_ALLOW_EXIST |
+                            (pool->def->type == VIR_STORAGE_POOL_NETFS
+                             ? VIR_FILE_CREATE_AS_UID : 0)) != 0)) {
+        virReportSystemError(conn, err, _("cannot create path '%s'"),
+                             pool->def->target.path);
+        goto error;
+    }
+    ret = 0;
+error:
+    VIR_FREE(parent);
+    return ret;
 }
 
 
