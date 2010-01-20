@@ -213,6 +213,15 @@ crashed.
 Prints the available amount of memory on the machine or within a
 NUMA cell if I<cellno> is provided.
 
+=item B<cpu-compare> I<FILE>
+
+Compare CPU definition from XML <file> with host CPU. The XML <file> may
+contain either host or guest CPU definition. The host CPU definition is the
+<cpu> element and its contents as printed by B<capabilities> command. The
+guest CPU definition is the <cpu> element and its contents from domain XML
+definition. For more information on guest CPU definition see:
+L<http://libvirt.org/formatdomain.html#elementsCPU>
+
 =back
 
 =head1 DOMAIN COMMANDS
