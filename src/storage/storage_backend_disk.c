@@ -599,6 +599,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
 
 static int
 virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol,
                                   virStorageVolDefPtr inputvol,
                                   unsigned int flags)
@@ -609,7 +610,7 @@ virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
     if (!build_func)
         return -1;
 
-    return build_func(conn, vol, inputvol, flags);
+    return build_func(conn, pool, vol, inputvol, flags);
 }
 
 static int

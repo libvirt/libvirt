@@ -1331,7 +1331,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
         voldef->building = 1;
         virStoragePoolObjUnlock(pool);
 
-        buildret = backend->buildVol(obj->conn, buildvoldef);
+        buildret = backend->buildVol(obj->conn, pool, buildvoldef);
 
         storageDriverLock(driver);
         virStoragePoolObjLock(pool);
@@ -1484,7 +1484,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
         virStoragePoolObjUnlock(origpool);
     }
 
-    buildret = backend->buildVolFrom(obj->conn, newvol, origvol, flags);
+    buildret = backend->buildVolFrom(obj->conn, pool, newvol, origvol, flags);
 
     storageDriverLock(driver);
     virStoragePoolObjLock(pool);

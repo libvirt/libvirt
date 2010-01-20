@@ -205,6 +205,7 @@ cleanup:
 
 static int
 virStorageBackendCreateBlockFrom(virConnectPtr conn,
+                                 virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  virStorageVolDefPtr vol,
                                  virStorageVolDefPtr inputvol,
                                  unsigned int flags ATTRIBUTE_UNUSED)
@@ -212,6 +213,9 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
     int fd = -1;
     int ret = -1;
     unsigned long long remain;
+    struct stat st;
+    gid_t gid;
+    uid_t uid;
 
     if ((fd = open(vol->target.path, O_RDWR)) < 0) {
         virReportSystemError(conn, errno,
@@ -229,6 +233,28 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
             goto cleanup;
     }
 
+    if (fstat(fd, &st) == -1) {
+        ret = errno;
+        virReportSystemError(conn, errno, _("stat of '%s' failed"),
+                             vol->target.path);
+        goto cleanup;
+    }
+    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : -1;
+    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
+    if (((uid != -1) || (gid != -1))
+        && (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0)) {
+        virReportSystemError(conn, errno,
+                             _("cannot chown '%s' to (%u, %u)"),
+                             vol->target.path, vol->target.perms.uid,
+                             vol->target.perms.gid);
+        goto cleanup;
+    }
+    if (fchmod(fd, vol->target.perms.mode) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot set mode of '%s' to %04o"),
+                             vol->target.path, vol->target.perms.mode);
+        goto cleanup;
+    }
     if (close(fd) < 0) {
         virReportSystemError(conn, errno,
                              _("cannot close file '%s'"),
@@ -247,12 +273,14 @@ cleanup:
 
 int
 virStorageBackendCreateRaw(virConnectPtr conn,
+                           virStoragePoolObjPtr pool,
                            virStorageVolDefPtr vol,
                            virStorageVolDefPtr inputvol,
                            unsigned int flags ATTRIBUTE_UNUSED)
 {
     int fd = -1;
     int ret = -1;
+    int createstat;
     unsigned long long remain;
     char *buf = NULL;
 
@@ -263,10 +291,19 @@ virStorageBackendCreateRaw(virConnectPtr conn,
         return -1;
     }
 
-    if ((fd = open(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
-                   vol->target.perms.mode)) < 0) {
-        virReportSystemError(conn, errno,
+    if ((createstat = virFileCreate(vol->target.path, vol->target.perms.mode,
+                                    vol->target.perms.uid, vol->target.perms.gid,
+                                    (pool->def->type == VIR_STORAGE_POOL_NETFS
+                                     ? VIR_FILE_CREATE_AS_UID : 0))) < 0) {
+        virReportSystemError(conn, createstat,
                              _("cannot create path '%s'"),
+                             vol->target.path);
+        goto cleanup;
+    }
+
+    if ((fd = open(vol->target.path, O_RDWR | O_EXCL)) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot open new path '%s'"),
                              vol->target.path);
         goto cleanup;
     }
@@ -453,12 +490,87 @@ cleanup:
     return ret;
 }
 
+static int virStorageBuildSetUIDHook(void *data) {
+    virStorageVolDefPtr vol = data;
+
+    if ((vol->target.perms.gid != 0)
+        && (setgid(vol->target.perms.gid) != 0)) {
+        virReportSystemError(NULL, errno,
+                             _("Cannot set gid to %u before creating %s"),
+                             vol->target.perms.gid, vol->target.path);
+        return -1;
+    }
+    if ((vol->target.perms.uid != 0)
+        && (setuid(vol->target.perms.uid) != 0)) {
+        virReportSystemError(NULL, errno,
+                             _("Cannot set uid to %u before creating %s"),
+                             vol->target.perms.uid, vol->target.path);
+        return -1;
+    }
+    return 0;
+}
+
+static int virStorageBackendCreateExecCommand(virConnectPtr conn,
+                                              virStoragePoolObjPtr pool,
+                                              virStorageVolDefPtr vol,
+                                              const char **cmdargv) {
+    struct stat st;
+    gid_t gid;
+    uid_t uid;
+    int filecreated = 0;
+
+    if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
+        && (getuid() == 0)
+        && ((vol->target.perms.uid != 0) || (vol->target.perms.gid != 0))) {
+        if (virRunWithHook(conn, cmdargv,
+                           virStorageBuildSetUIDHook, vol, NULL) == 0) {
+            /* command was successfully run, check if the file was created */
+            if (stat(vol->target.path, &st) >=0)
+                filecreated = 1;
+        }
+    }
+    if (!filecreated) {
+        if (virRun(conn, cmdargv, NULL) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("Cannot run %s to create %s"),
+                                 cmdargv[0], vol->target.path);
+            return -1;
+        }
+        if (stat(vol->target.path, &st) < 0) {
+            virReportSystemError(conn, errno,
+                                 _("%s failed to create %s"),
+                                 cmdargv[0], vol->target.path);
+            return -1;
+        }
+    }
+
+    uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : -1;
+    gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
+    if (((uid != -1) || (gid != -1))
+        && (chown(vol->target.path, uid, gid) < 0)) {
+        virReportSystemError(conn, errno,
+                             _("cannot chown %s to (%u, %u)"),
+                             vol->target.path, vol->target.perms.uid,
+                             vol->target.perms.gid);
+        return -1;
+    }
+    if (chmod(vol->target.path, vol->target.perms.mode) < 0) {
+        virReportSystemError(conn, errno,
+                             _("cannot set mode of '%s' to %04o"),
+                             vol->target.path, vol->target.perms.mode);
+        return -1;
+    }
+    return 0;
+}
+
 static int
 virStorageBackendCreateQemuImg(virConnectPtr conn,
+                               virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol,
                                virStorageVolDefPtr inputvol,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
+    int ret;
     char size[100];
     char *create_tool;
     short use_kvmimg;
@@ -616,14 +728,10 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     /* Size in KB */
     snprintf(size, sizeof(size), "%lluK", vol->capacity/1024);
 
-    if (virRun(conn, imgargv, NULL) < 0) {
-        VIR_FREE(imgargv[0]);
-        return -1;
-    }
-
+    ret = virStorageBackendCreateExecCommand(conn, pool, vol, imgargv);
     VIR_FREE(imgargv[0]);
 
-    return 0;
+    return ret;
 }
 
 /*
@@ -632,10 +740,12 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
  */
 static int
 virStorageBackendCreateQcowCreate(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol,
                                   virStorageVolDefPtr inputvol,
                                   unsigned int flags ATTRIBUTE_UNUSED)
 {
+    int ret;
     char size[100];
     const char *imgargv[4];
 
@@ -672,14 +782,10 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
     imgargv[2] = vol->target.path;
     imgargv[3] = NULL;
 
-    if (virRun(conn, imgargv, NULL) < 0) {
-        VIR_FREE(imgargv[0]);
-        return -1;
-    }
-
+    ret = virStorageBackendCreateExecCommand(conn, pool, vol, imgargv);
     VIR_FREE(imgargv[0]);
 
-    return 0;
+    return ret;
 }
 
 virStorageBackendBuildVolFrom

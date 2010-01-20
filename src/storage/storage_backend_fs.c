@@ -737,9 +737,12 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
 }
 
 static int createFileDir(virConnectPtr conn,
+                         virStoragePoolObjPtr pool,
                          virStorageVolDefPtr vol,
                          virStorageVolDefPtr inputvol,
                          unsigned int flags ATTRIBUTE_UNUSED) {
+    int err;
+
     if (inputvol) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               "%s",
@@ -747,9 +750,11 @@ static int createFileDir(virConnectPtr conn,
         return -1;
     }
 
-    if (mkdir(vol->target.path, vol->target.perms.mode) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot create path '%s'"),
+    if ((err = virDirCreate(vol->target.path, vol->target.perms.mode,
+                            vol->target.perms.uid, vol->target.perms.gid,
+                            (pool->def->type == VIR_STORAGE_POOL_NETFS
+                             ? VIR_FILE_CREATE_AS_UID : 0))) != 0) {
+        virReportSystemError(conn, err, _("cannot create path '%s'"),
                              vol->target.path);
         return -1;
     }
@@ -759,10 +764,10 @@ static int createFileDir(virConnectPtr conn,
 
 static int
 _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
+                                     virStoragePoolObjPtr pool,
                                      virStorageVolDefPtr vol,
                                      virStorageVolDefPtr inputvol)
 {
-    int fd;
     virStorageBackendBuildVolFrom create_func;
     int tool_type;
 
@@ -794,41 +799,8 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         return -1;
     }
 
-    if (create_func(conn, vol, inputvol, 0) < 0)
+    if (create_func(conn, pool, vol, inputvol, 0) < 0)
         return -1;
-
-    if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot read path '%s'"),
-                             vol->target.path);
-        return -1;
-    }
-
-    /* We can only chown/grp if root */
-    if (getuid() == 0) {
-        if (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0) {
-            virReportSystemError(conn, errno,
-                                 _("cannot set file owner '%s'"),
-                                 vol->target.path);
-            close(fd);
-            return -1;
-        }
-    }
-    if (fchmod(fd, vol->target.perms.mode) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot set file mode '%s'"),
-                             vol->target.path);
-        close(fd);
-        return -1;
-    }
-
-    if (close(fd) < 0) {
-        virReportSystemError(conn, errno,
-                             _("cannot close file '%s'"),
-                             vol->target.path);
-        return -1;
-    }
-
     return 0;
 }
 
@@ -839,8 +811,9 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
  */
 static int
 virStorageBackendFileSystemVolBuild(virConnectPtr conn,
+                                    virStoragePoolObjPtr pool,
                                     virStorageVolDefPtr vol) {
-    return _virStorageBackendFileSystemVolBuild(conn, vol, NULL);
+    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL);
 }
 
 /*
@@ -848,10 +821,11 @@ virStorageBackendFileSystemVolBuild(virConnectPtr conn,
  */
 static int
 virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
+                                        virStoragePoolObjPtr pool,
                                         virStorageVolDefPtr vol,
                                         virStorageVolDefPtr inputvol,
                                         unsigned int flags ATTRIBUTE_UNUSED) {
-    return _virStorageBackendFileSystemVolBuild(conn, vol, inputvol);
+    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol);
 }
 
 /**
