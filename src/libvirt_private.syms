@@ -439,6 +439,7 @@ pciGetDevice;
 pciFreeDevice;
 pciDettachDevice;
 pciReAttachDevice;
+pciWaitForDeviceCleanup;
 pciResetDevice;
 pciDeviceSetManaged;
 pciDeviceGetManaged;

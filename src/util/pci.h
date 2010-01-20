@@ -81,5 +81,6 @@ int pciDeviceFileIterate(virConnectPtr conn,
 int pciDeviceIsAssignable(virConnectPtr conn,
                           pciDevice *dev,
                           int strict_acs_check);
+int pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher);
 
 #endif /* __VIR_PCI_H__ */

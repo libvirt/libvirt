@@ -883,6 +883,103 @@ pciReAttachDevice(virConnectPtr conn, pciDevice *dev)
     return pciUnBindDeviceFromStub(conn, dev, driver);
 }
 
+/* Certain hypervisors (like qemu/kvm) map the PCI bar(s) on
+ * the host when doing device passthrough.  This can lead to a race
+ * condition where the hypervisor is still cleaning up the device while
+ * libvirt is trying to re-attach it to the host device driver.  To avoid
+ * this situation, we look through /proc/iomem, and if the hypervisor is
+ * still holding onto the bar (denoted by the string in the matcher variable),
+ * then we can wait around a bit for that to clear up.
+ *
+ * A typical /proc/iomem looks like this (snipped for brevity):
+ * 00010000-0008efff : System RAM
+ * 0008f000-0008ffff : reserved
+ * ...
+ * 00100000-cc9fcfff : System RAM
+ *   00200000-00483d3b : Kernel code
+ *   00483d3c-005c88df : Kernel data
+ * cc9fd000-ccc71fff : ACPI Non-volatile Storage
+ * ...
+ * d0200000-d02fffff : PCI Bus #05
+ *   d0200000-d021ffff : 0000:05:00.0
+ *     d0200000-d021ffff : e1000e
+ *   d0220000-d023ffff : 0000:05:00.0
+ *     d0220000-d023ffff : e1000e
+ * ...
+ * f0000000-f0003fff : 0000:00:1b.0
+ *   f0000000-f0003fff : kvm_assigned_device
+ *
+ * Returns 0 if we are clear to continue, and 1 if the hypervisor is still
+ * holding onto the resource.
+ */
+int
+pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
+{
+    FILE *fp;
+    char line[160];
+    unsigned long long start, end;
+    int consumed;
+    char *rest;
+    unsigned long long domain;
+    int bus, slot, function;
+    int in_matching_device;
+    int ret;
+    size_t match_depth;
+
+    fp = fopen("/proc/iomem", "r");
+    if (!fp) {
+        /* If we failed to open iomem, we just basically ignore the error.  The
+         * unbind might succeed anyway, and besides, it's very likely we have
+         * no way to report the error
+         */
+        VIR_DEBUG0("Failed to open /proc/iomem, trying to continue anyway");
+        return 0;
+    }
+
+    ret = 0;
+    in_matching_device = 0;
+    match_depth = 0;
+    while (fgets(line, sizeof(line), fp) != 0) {
+        /* the logic here is a bit confusing.  For each line, we look to
+         * see if it matches the domain:bus:slot.function we were given.
+         * If this line matches the DBSF, then any subsequent lines indented
+         * by 2 spaces are the PCI regions for this device.  It's also
+         * possible that none of the PCI regions are currently mapped, in
+         * which case we have no indented regions.  This code handles all
+         * of these situations
+         */
+        if (in_matching_device && (strspn(line, " ") == (match_depth + 2))) {
+            if (sscanf(line, "%Lx-%Lx : %n", &start, &end, &consumed) != 2)
+                continue;
+
+            rest = line + consumed;
+            if (STRPREFIX(rest, matcher)) {
+                ret = 1;
+                break;
+            }
+        }
+        else {
+            in_matching_device = 0;
+            if (sscanf(line, "%Lx-%Lx : %n", &start, &end, &consumed) != 2)
+                continue;
+
+            rest = line + consumed;
+            if (sscanf(rest, "%Lx:%x:%x.%x", &domain, &bus, &slot, &function) != 4)
+                continue;
+
+            if (domain != dev->domain || bus != dev->bus || slot != dev->slot ||
+                function != dev->function)
+                continue;
+            in_matching_device = 1;
+            match_depth = strspn(line, " ");
+        }
+    }
+
+    fclose(fp);
+
+    return ret;
+}
+
 static char *
 pciReadDeviceID(pciDevice *dev, const char *id_name)
 {

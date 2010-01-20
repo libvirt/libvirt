@@ -2277,12 +2277,19 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciDeviceGetManaged(dev) &&
-            pciReAttachDevice(NULL, dev) < 0) {
-            virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                      err ? err->message : "");
-            virResetError(err);
+        int retries = 100;
+        if (pciDeviceGetManaged(dev)) {
+            while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
+                   && retries) {
+                usleep(100*1000);
+                retries--;
+            }
+            if (pciReAttachDevice(NULL, dev) < 0) {
+                virErrorPtr err = virGetLastError();
+                VIR_ERROR(_("Failed to re-attach PCI device: %s"),
+                          err ? err->message : "");
+                virResetError(err);
+            }
         }
     }
 
