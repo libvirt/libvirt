@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -4831,7 +4831,6 @@ virDomainChrDefFormat(virConnectPtr conn,
     const char *targetName = virDomainChrTargetTypeToString(def->targetType);
     const char *elementName;
 
-    const char *addr = NULL;
     int ret = 0;
 
     switch (def->targetType) {
@@ -4847,8 +4846,7 @@ virDomainChrDefFormat(virConnectPtr conn,
     if (!type) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("unexpected char type %d"), def->type);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
@@ -4931,23 +4929,25 @@ virDomainChrDefFormat(virConnectPtr conn,
 
     switch (def->targetType) {
     case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
-        addr = virSocketFormatAddr(def->target.addr);
-        if (addr == NULL) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("Unable to format guestfwd address"));
-            ret = -1;
-            goto cleanup;
+        {
+            int port = virSocketGetPort(def->target.addr);
+            if (port < 0) {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("Unable to format guestfwd port"));
+                return -1;
+            }
+            const char *addr = virSocketFormatAddr(def->target.addr);
+            if (addr == NULL) {
+                virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("Unable to format guestfwd address"));
+                return -1;
+            }
+            virBufferVSprintf(buf,
+                    "      <target type='guestfwd' address='%s' port='%d'/>\n",
+                              addr, port);
+            VIR_FREE(addr);
+            break;
         }
-        int port = virSocketGetPort(def->target.addr);
-        if (port < 0) {
-            virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("Unable to format guestfwd port"));
-            ret = -1;
-            goto cleanup;
-        }
-        virBufferVSprintf(buf, "      <target type='guestfwd' address='%s' port='%d'/>\n",
-                          addr, port);
-        break;
 
     case VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL:
     case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
@@ -4968,9 +4968,6 @@ virDomainChrDefFormat(virConnectPtr conn,
 
     virBufferVSprintf(buf, "    </%s>\n",
                       elementName);
-
-cleanup:
-    VIR_FREE(addr);
 
     return ret;
 }
