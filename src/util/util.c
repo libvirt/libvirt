@@ -804,9 +804,11 @@ error:
  * only if the command could not be run.
  */
 int
-virRun(virConnectPtr conn,
-       const char *const*argv,
-       int *status) {
+virRunWithHook(virConnectPtr conn,
+               const char *const*argv,
+               virExecHook hook,
+               void *data,
+               int *status) {
     pid_t childpid;
     int exitstatus, execret, waitret;
     int ret = -1;
@@ -823,7 +825,7 @@ virRun(virConnectPtr conn,
 
     if ((execret = __virExec(conn, argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,
-                             VIR_EXEC_NONE, NULL, NULL, NULL)) < 0) {
+                             VIR_EXEC_NONE, hook, data, NULL)) < 0) {
         ret = execret;
         goto error;
     }
@@ -879,9 +881,11 @@ virRun(virConnectPtr conn,
 #else /* __MINGW32__ */
 
 int
-virRun(virConnectPtr conn,
-       const char *const *argv ATTRIBUTE_UNUSED,
-       int *status)
+virRunWithHook(virConnectPtr conn,
+               const char *const *argv ATTRIBUTE_UNUSED,
+               virExecHook hook ATTRIBUTE_UNUSED,
+               void *data ATTRIBUTE_UNUSED,
+               int *status)
 {
     if (status)
         *status = ENOTSUP;
@@ -906,6 +910,13 @@ virExec(virConnectPtr conn,
 }
 
 #endif /* __MINGW32__ */
+
+int
+virRun(virConnectPtr conn,
+       const char *const*argv,
+       int *status) {
+    return virRunWithHook(conn, argv, NULL, NULL, status);
+}
 
 /* Like gnulib's fread_file, but read no more than the specified maximum
    number of bytes.  If the length of the input is <= max_len, and

@@ -81,6 +81,9 @@ int virExec(virConnectPtr conn,
             int *errfd,
             int flags) ATTRIBUTE_RETURN_CHECK;
 int virRun(virConnectPtr conn, const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
+int virRunWithHook(virConnectPtr conn, const char *const*argv,
+                   virExecHook hook, void *data,
+                   int *status) ATTRIBUTE_RETURN_CHECK;
 
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;
 
