@@ -366,9 +366,6 @@ int get_virtual_functions_linux(const char *sysfs_path,
         }
     }
 
-    closedir(dir);
-    dir = NULL;
-
     ret = 0;
 
 out:
