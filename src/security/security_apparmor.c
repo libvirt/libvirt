@@ -258,22 +258,23 @@ get_profile_name(virConnectPtr conn, virDomainObjPtr vm)
 static int
 use_apparmor(void)
 {
-    char libvirt_daemon[PATH_MAX];
     int rc = -1;
-    ssize_t len = 0;
+    char *libvirt_daemon = NULL;
 
-    if ((len = readlink("/proc/self/exe", libvirt_daemon,
-                        PATH_MAX - 1)) < 0) {
+    if (virFileResolveLink("/proc/self/exe", &libvirt_daemon) < 0) {
         virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                                "%s", _("could not find libvirtd"));
         return rc;
     }
-    libvirt_daemon[len] = '\0';
 
     if (access(APPARMOR_PROFILES_PATH, R_OK) != 0)
-        return rc;
+        goto cleanup;
 
-    return profile_status(libvirt_daemon, 1);
+    rc = profile_status(libvirt_daemon, 1);
+
+cleanup:
+    VIR_FREE(libvirt_daemon);
+    return rc;
 }
 
 /* Called on libvirtd startup to see if AppArmor is available */
