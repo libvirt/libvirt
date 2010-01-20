@@ -108,7 +108,7 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
 	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
-	  $(XMLLINT) --nonet --format --valid $< > $@ || : ; \
+	  $(XMLLINT) --nonet --format --valid $< > $@ || (rm $@ && exit 1) ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
 
