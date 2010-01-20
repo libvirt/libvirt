@@ -2,7 +2,7 @@
  * node_device_hal_linuc.c: Linux specific code to gather device data
  * not available through HAL.
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -367,10 +367,13 @@ int get_virtual_functions_linux(const char *sysfs_path,
     }
 
     closedir(dir);
+    dir = NULL;
 
     ret = 0;
 
 out:
+    if (dir)
+        closedir(dir);
     VIR_FREE(device_link);
     return 0;
 }
