@@ -317,7 +317,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
-    if ((rc = virFileMakePath(oldroot)) < 0) {
+    if ((rc = virFileMakePath(oldroot)) != 0) {
         virReportSystemError(NULL, rc,
                              _("Failed to create %s"),
                              oldroot);
@@ -339,7 +339,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
         goto err;
     }
 
-    if ((rc = virFileMakePath(newroot)) < 0) {
+    if ((rc = virFileMakePath(newroot)) != 0) {
         virReportSystemError(NULL, rc,
                              _("Failed to create %s"),
                              newroot);
@@ -407,7 +407,7 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
     }
 
     for (i = 0 ; i < ARRAY_CARDINALITY(mnts) ; i++) {
-        if (virFileMakePath(mnts[i].dst) < 0) {
+        if (virFileMakePath(mnts[i].dst) != 0) {
             virReportSystemError(NULL, errno,
                                  _("Failed to mkdir %s"),
                                  mnts[i].src);
@@ -421,7 +421,7 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
         }
     }
 
-    if ((rc = virFileMakePath("/dev/pts") < 0)) {
+    if ((rc = virFileMakePath("/dev/pts") != 0)) {
         virReportSystemError(NULL, rc, "%s",
                              _("Cannot create /dev/pts"));
         goto cleanup;
@@ -510,7 +510,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
             return -1;
         }
 
-        if (virFileMakePath(vmDef->fss[i]->dst) < 0) {
+        if (virFileMakePath(vmDef->fss[i]->dst) != 0) {
             virReportSystemError(NULL, errno,
                                  _("Failed to create %s"),
                                  vmDef->fss[i]->dst);

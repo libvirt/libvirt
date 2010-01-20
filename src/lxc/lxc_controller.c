@@ -556,7 +556,7 @@ lxcControllerRun(virDomainDefPtr def,
             goto cleanup;
         }
 
-        if (virFileMakePath(devpts) < 0) {
+        if (virFileMakePath(devpts) != 0) {
             virReportSystemError(NULL, errno,
                                  _("Failed to make path %s"),
                                  devpts);

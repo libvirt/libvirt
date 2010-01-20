@@ -1193,7 +1193,7 @@ static int lxcVmStart(virConnectPtr conn,
     char **veths = NULL;
     lxcDomainObjPrivatePtr priv = vm->privateData;
 
-    if ((r = virFileMakePath(driver->logDir)) < 0) {
+    if ((r = virFileMakePath(driver->logDir)) != 0) {
         virReportSystemError(conn, r,
                              _("Cannot create log directory '%s'"),
                              driver->logDir);

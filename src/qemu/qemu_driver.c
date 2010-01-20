@@ -1042,19 +1042,19 @@ qemudStartup(int privileged) {
             goto out_of_memory;
     }
 
-    if (virFileMakePath(qemu_driver->stateDir) < 0) {
+    if (virFileMakePath(qemu_driver->stateDir) != 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create state dir '%s': %s"),
                   qemu_driver->stateDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->libDir) < 0) {
+    if (virFileMakePath(qemu_driver->libDir) != 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create lib dir '%s': %s"),
                   qemu_driver->libDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
-    if (virFileMakePath(qemu_driver->cacheDir) < 0) {
+    if (virFileMakePath(qemu_driver->cacheDir) != 0) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create cache dir '%s': %s"),
                   qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
@@ -2786,7 +2786,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         vm->def->graphics[0]->data.vnc.port = port;
     }
 
-    if (virFileMakePath(driver->logDir) < 0) {
+    if (virFileMakePath(driver->logDir) != 0) {
         virReportSystemError(conn, errno,
                              _("cannot create log directory %s"),
                              driver->logDir);

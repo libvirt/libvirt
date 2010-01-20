@@ -539,13 +539,13 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if ((err = virFileMakePath(NETWORK_PID_DIR)) < 0) {
+    if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
         virReportSystemError(conn, err,
                              _("cannot create directory %s"),
                              NETWORK_PID_DIR);
         return -1;
     }
-    if ((err = virFileMakePath(NETWORK_STATE_DIR)) < 0) {
+    if ((err = virFileMakePath(NETWORK_STATE_DIR)) != 0) {
         virReportSystemError(conn, err,
                              _("cannot create directory %s"),
                              NETWORK_STATE_DIR);
