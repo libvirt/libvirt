@@ -188,6 +188,15 @@
     </element>
   </define>
 
+  <define name='initiatorinfoiqn'>
+    <element name='iqn'>
+      <attribute name='name'>
+	<text/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
   <define name='devextents'>
     <oneOrMore>
       <element name='freeExtent'>
@@ -362,6 +371,9 @@
     <element name='source'>
       <ref name='sourceinfohost'/>
       <ref name='sourceinfodev'/>
+      <optional>
+      <ref name='initiatorinfoiqn'/>
+      </optional>
       <optional>
         <ref name='sourceinfoauth'/>
       </optional>

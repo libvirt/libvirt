@@ -33,15 +33,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "virterror_internal.h"
 #include "storage_backend_scsi.h"
 #include "storage_backend_iscsi.h"
 #include "util.h"
 #include "memory.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
-
 
 static int
 virStorageBackendISCSITargetIP(virConnectPtr conn,
@@ -153,21 +154,254 @@ virStorageBackendISCSISession(virConnectPtr conn,
     return session;
 }
 
+
+#define LINE_SIZE 4096
+
+static int
+virStorageBackendIQNFound(virConnectPtr conn,
+                          virStoragePoolObjPtr pool,
+                          char **ifacename)
+{
+    int ret = IQN_MISSING, fd = -1;
+    char ebuf[64];
+    FILE *fp = NULL;
+    pid_t child = 0;
+    char *line = NULL, *newline = NULL, *iqn = NULL, *token = NULL,
+        *saveptr = NULL;
+    const char *const prog[] = {
+        ISCSIADM, "--mode", "iface", NULL
+    };
+
+    if (VIR_ALLOC_N(line, LINE_SIZE) != 0) {
+        ret = IQN_ERROR;
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Could not allocate memory for output of '%s'"),
+                              prog[0]);
+        goto out;
+    }
+
+    memset(line, 0, LINE_SIZE);
+
+    if (virExec(conn, prog, NULL, NULL, &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to run '%s' when looking for existing interface with IQN '%s'"),
+                              prog[0], pool->def->source.initiator.iqn);
+
+        ret = IQN_ERROR;
+        goto out;
+    }
+
+    if ((fp = fdopen(fd, "r")) == NULL) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to open stream for file descriptor "
+                                "when reading output from '%s': '%s'"),
+                              prog[0], virStrerror(errno, ebuf, sizeof ebuf));
+        ret = IQN_ERROR;
+        goto out;
+    }
+
+    while (fgets(line, LINE_SIZE, fp) != NULL) {
+        newline = strrchr(line, '\n');
+        if (newline == NULL) {
+            ret = IQN_ERROR;
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Unexpected line > %d characters "
+                                    "when parsing output of '%s'"),
+                                  LINE_SIZE, prog[0]);
+            goto out;
+        }
+        *newline = '\0';
+
+        iqn = strrchr(line, ',');
+        if (iqn == NULL) {
+            continue;
+        }
+        iqn++;
+
+        if (STREQ(iqn, pool->def->source.initiator.iqn)) {
+            token = strtok_r(line, " ", &saveptr);
+            *ifacename = strdup(token);
+            if (*ifacename == NULL) {
+                ret = IQN_ERROR;
+                virReportOOMError(conn);
+                goto out;
+            }
+            VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
+            ret = IQN_FOUND;
+            break;
+        }
+    }
+
+out:
+    if (ret == IQN_MISSING) {
+        VIR_DEBUG("Could not find interface witn IQN '%s'", iqn);
+    }
+
+    VIR_FREE(line);
+    if (fp != NULL) {
+        fclose(fp);
+    } else {
+        if (fd != -1) {
+            close(fd);
+        }
+    }
+
+    return ret;
+}
+
+
+static int
+virStorageBackendCreateIfaceIQN(virConnectPtr conn,
+                             virStoragePoolObjPtr pool,
+                             char **ifacename)
+{
+    int ret = -1, exitstatus = -1;
+    char temp_ifacename[32];
+
+    if (virRandomInitialize(time(NULL) ^ getpid()) == -1) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to initialize random generator "
+                                "when creating iscsi interface"));
+        goto out;
+    }
+
+    snprintf(temp_ifacename, sizeof(temp_ifacename), "libvirt-iface-%08x", virRandom(1024 * 1024 * 1024));
+
+    const char *const cmdargv1[] = {
+        ISCSIADM, "--mode", "iface", "--interface",
+        &temp_ifacename[0], "--op", "new", NULL
+    };
+
+    VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
+              &temp_ifacename[0], pool->def->source.initiator.iqn);
+
+    /* Note that we ignore the exitstatus.  Older versions of iscsiadm
+     * tools returned an exit status of > 0, even if they succeeded.
+     * We will just rely on whether the interface got created
+     * properly. */
+    if (virRun(conn, cmdargv1, &exitstatus) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to run command '%s' to create new iscsi interface"),
+                              cmdargv1[0]);
+        goto out;
+    }
+
+    const char *const cmdargv2[] = {
+        ISCSIADM, "--mode", "iface", "--interface", &temp_ifacename[0],
+        "--op", "update", "--name", "iface.initiatorname", "--value",
+        pool->def->source.initiator.iqn, NULL
+    };
+
+    /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
+     * returned an exit status of > 0, even if they succeeded.  We will just
+     * rely on whether iface file got updated properly. */
+    if (virRun(conn, cmdargv2, &exitstatus) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
+                              cmdargv1[0], pool->def->source.initiator.iqn);
+        goto out;
+    }
+
+    /* Check again to make sure the interface was created. */
+    if (virStorageBackendIQNFound(conn, pool, ifacename) != IQN_FOUND) {
+        VIR_DEBUG("Failed to find interface '%s' with IQN '%s' "
+                  "after attempting to create it",
+                  &temp_ifacename[0], pool->def->source.initiator.iqn);
+        goto out;
+    } else {
+        VIR_DEBUG("Interface '%s' with IQN '%s' was created successfully",
+                  *ifacename, pool->def->source.initiator.iqn);
+    }
+
+    ret = 0;
+
+out:
+    if (ret != 0)
+        VIR_FREE(*ifacename);
+    return ret;
+}
+
+
+static int
+virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
+                                    virStoragePoolObjPtr pool,
+                                    const char *portal,
+                                    const char *action)
+{
+    int ret = -1;
+    char *ifacename = NULL;
+
+    switch (virStorageBackendIQNFound(conn, pool, &ifacename)) {
+    case IQN_FOUND:
+        VIR_DEBUG("ifacename: '%s'", ifacename);
+        break;
+    case IQN_MISSING:
+        if (virStorageBackendCreateIfaceIQN(conn, pool, &ifacename) != 0) {
+            goto out;
+        }
+        break;
+    case IQN_ERROR:
+    default:
+        goto out;
+    }
+
+    const char *const sendtargets[] = {
+        ISCSIADM, "--mode", "discovery", "--type", "sendtargets", "--portal", portal, NULL
+    };
+    if (virRun(conn, sendtargets, NULL) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to run %s to get target list"),
+                              sendtargets[0]);
+        goto out;
+    }
+
+    const char *const cmdargv[] = {
+        ISCSIADM, "--mode", "node", "--portal", portal,
+        "--targetname", pool->def->source.devices[0].path, "--interface",
+        ifacename, action, NULL
+    };
+
+    if (virRun(conn, cmdargv, NULL) < 0) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to run command '%s' with action '%s'"),
+                              cmdargv[0], action);
+        goto out;
+    }
+
+    ret = 0;
+
+out:
+    VIR_FREE(ifacename);
+    return ret;
+}
+
+
 static int
 virStorageBackendISCSIConnection(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
                                  const char *portal,
                                  const char *action)
 {
-    const char *const cmdargv[] = {
-        ISCSIADM, "--mode", "node", "--portal", portal,
-        "--targetname", pool->def->source.devices[0].path, action, NULL
-    };
+    int ret = 0;
 
-    if (virRun(conn, cmdargv, NULL) < 0)
-        return -1;
+    if (pool->def->source.initiator.iqn != NULL) {
 
-    return 0;
+        ret = virStorageBackendISCSIConnectionIQN(conn, pool, portal, action);
+
+    } else {
+
+        const char *const cmdargv[] = {
+            ISCSIADM, "--mode", "node", "--portal", portal,
+            "--targetname", pool->def->source.devices[0].path, action, NULL
+        };
+
+        if (virRun(conn, cmdargv, NULL) < 0) {
+            ret = -1;
+        }
+
+    }
+
+    return ret;
 }
 
 

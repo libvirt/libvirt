@@ -182,6 +182,12 @@ struct _virStoragePoolSourceDeviceExtent {
     int type;  /* free space type */
 };
 
+typedef struct _virStoragePoolSourceInitiatorAttr virStoragePoolSourceInitiatorAttr;
+struct _virStoragePoolSourceInitiatorAttr {
+    /* Initiator IQN */
+    char *iqn;
+};
+
 /*
  * Pools can be backed by one or more devices, and some
  * allow us to track free space on underlying devices.
@@ -222,6 +228,9 @@ struct _virStoragePoolSource {
 
     /* Or a name */
     char *name;
+
+    /* Initiator IQN */
+    virStoragePoolSourceInitiatorAttr initiator;
 
     int authType;       /* virStoragePoolAuthType */
     union {
