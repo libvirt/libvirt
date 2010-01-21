@@ -1896,7 +1896,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
          * to have > 1 bus on a SCSI controller (yet). */
         if (disk->info.addr.drive.bus != 0) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("SCSI controller only supports 1 bus"));
+                             "%s", _("SCSI controller only supports 1 bus"));
             goto error;
         }
         busid = disk->info.addr.drive.controller;
