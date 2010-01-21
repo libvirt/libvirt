@@ -507,7 +507,11 @@ static int qemuMonitorParseExtraBalloonInfo(char *text,
                             ",total_mem=", &stats[nr_stats_found]))
             nr_stats_found++;
 
-        /* Skip to the next label */
+        /* Skip to the next label.  When *p is ',' the last match attempt
+         * failed so try to match the next ','.
+         */
+        if (*p == ',')
+            p++;
         p = strchr (p, ',');
         if (!p) break;
     }
