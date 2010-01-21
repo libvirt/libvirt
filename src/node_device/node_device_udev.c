@@ -1454,11 +1454,10 @@ static int udevSetupSystemDev(void)
     udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driverState));
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
     if (device == NULL) {
-        VIR_ERROR("Failed to get udev device for syspath '%s'", DMI_DEVPATH);
-
         device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
         if (device == NULL) {
-            VIR_ERROR("Failed to get udev device for syspath '%s'", DMI_DEVPATH_FALLBACK);
+            VIR_ERROR("Failed to get udev device for syspath '%s' or '%s'",
+                      DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
             goto out;
         }
     }
