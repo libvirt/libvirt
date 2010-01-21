@@ -3,16 +3,45 @@
   <body>
     <h1>Contacting the development team</h1>
 
-    <h2>Mailing list</h2>
+    <h2>Mailing lists</h2>
 
     <p>
-      There is a mailing-list <a href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvirt,
-      with an  <a href="https://www.redhat.com/archives/libvir-list/">on-line archive</a>.
-      Please subscribe to this list before posting by visiting the
-      <a href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
-      page and follow the instructions. Patches with explanations and provided as
-      attachments are really appreciated and will be discussed on the mailing list.
-      If possible generate the patches by using <code>git diff</code> in a GIT
+      There are two mailing-lists:
+    </p>
+
+    <dl>
+      <dt><a href="https://www.redhat.com/archives/libvir-list/">libvir-list@redhat.com</a></dt>
+      <dd>This list a place for discussions about the <strong>development</strong> of libvirt. Topics for discussion include
+	<ul>
+	  <li>New features for libvirt</li>
+	  <li>Bug fixing of libvirt</li>
+	  <li>New hypervisor drivers</li>
+	  <li>Development of language bindings for libvirt API</li>
+	  <li>Testing and documentation of libvirt</li>
+	</ul>
+      </dd>
+
+      <dt><a href="">libvirt-users@redhat.com</a></dt>
+      <dd>This list a place for discussions involving libvirt <strong>users</strong>. Topics for discussion include
+	<ul>
+	  <li>Usage of libvirt / virsh</li>
+	  <li>Administration of libvirtd</li>
+	  <li>Deployment of libvirt with hypervisors</li>
+	  <li>Development of applications on top of / using the libvirt API(s)</li>
+	  <li>Any other topics along these lines</li>
+	</ul>
+      </dd>
+    </dl>
+
+    <p>
+      Both mailing lists require that you subscribe before posting to the list,
+      otherwise your posting will be delayed for manual approval by mailman.
+      You can subscribe at the linked webpages above.
+    </p>
+    <p>
+      Patches with explanations and provided as attachments are really appreciated and should
+      be directed to the development mailing list will be discussed on the mailing list.
+      If possible generate the patches by using <code>git format-patch</code> in a GIT
       clone.
     </p>
 
