@@ -42,8 +42,9 @@ LDADDS = \
 qemuhelpdata = \
 	kvm-74 \
 	kvm-86 \
-	qemu-0.10.5 \
 	qemu-0.9.1 \
+	qemu-0.10.5 \
+	qemu-0.12.1 \
 	qemu-kvm-0.10.5 \
 	qemu-kvm-0.11.0-rc2
 
