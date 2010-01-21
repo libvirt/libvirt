@@ -51,7 +51,7 @@ static int open_wwn_file(const char *prefix,
 
     /* fd will be closed by caller */
     if ((*fd = open(wwn_path, O_RDONLY)) != -1) {
-        VIR_ERROR(_("Opened WWN path '%s' for reading"),
+        VIR_DEBUG(_("Opened WWN path '%s' for reading"),
                   wwn_path);
     } else {
         VIR_ERROR(_("Failed to open WWN path '%s' for reading"),
