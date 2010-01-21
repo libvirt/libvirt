@@ -1118,7 +1118,7 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
         }
     } else {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("No type specified for device address"));
+                             "%s", _("No type specified for device address"));
         goto cleanup;
     }
 
@@ -1136,7 +1136,7 @@ virDomainDeviceInfoParseXML(virConnectPtr conn,
     default:
         /* Should not happen */
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("Unknown device address type"));
+                             "%s", _("Unknown device address type"));
         goto cleanup;
     }
 
