@@ -231,5 +231,12 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='str *' info='the list of Names of None in case of error'/>
     </function>
+    <function name='virConnectBaselineCPU' file='python'>
+      <info>Computes the most feature-rich CPU which is compatible with all given host CPUs.</info>
+      <return type='char *' info='XML description of the computed CPU or NULL on error.'/>
+      <arg name='conn' type='virConnectPtr' info='virConnect connection'/>
+      <arg name='xmlCPUs' type='const char **' info='array of XML descriptions of host CPUs'/>
+      <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
+    </function>
   </symbols>
 </api>

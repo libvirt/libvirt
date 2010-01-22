@@ -308,6 +308,7 @@ skip_impl = (
     'virEventRegisterImpl',
     'virNodeListDevices',
     'virNodeDeviceListCaps',
+    'virConnectBaselineCPU',
 )
 
 

@@ -353,6 +353,7 @@ LIBVIRT_0.7.7 {
     global:
         virDomainAttachDeviceFlags;
         virDomainDetachDeviceFlags;
+        virConnectBaselineCPU;
 } LIBVIRT_0.7.5;
 
 # .... define new API here using predicted next version number ....

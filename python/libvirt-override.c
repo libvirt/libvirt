@@ -2019,6 +2019,57 @@ libvirt_virConnectListDefinedInterfaces(PyObject *self ATTRIBUTE_UNUSED,
     return(py_retval);
 }
 
+
+static PyObject *
+libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
+                              PyObject *args) {
+    PyObject *pyobj_conn;
+    PyObject *list;
+    virConnectPtr conn;
+    unsigned int flags;
+    const char **xmlcpus = NULL;
+    int ncpus = 0;
+    char *base_cpu;
+    PyObject *pybase_cpu;
+
+    if (!PyArg_ParseTuple(args, (char *)"OOi:virConnectBaselineCPU",
+                          &pyobj_conn, &list, &flags))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    if (PyList_Check(list)) {
+        int i;
+
+        ncpus = PyList_Size(list);
+        if ((xmlcpus = malloc(ncpus * sizeof(*xmlcpus))) == NULL)
+            return VIR_PY_INT_FAIL;
+
+        for (i = 0; i < ncpus; i++) {
+            xmlcpus[i] = PyString_AsString(PyList_GetItem(list, i));
+            if (xmlcpus[i] == NULL)
+                return VIR_PY_INT_FAIL;
+        }
+    }
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    base_cpu = virConnectBaselineCPU(conn, xmlcpus, ncpus, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    free(xmlcpus);
+
+    if (base_cpu == NULL)
+        return VIR_PY_INT_FAIL;
+
+    pybase_cpu = PyString_FromString(base_cpu);
+    free(base_cpu);
+
+    if (pybase_cpu == NULL)
+        return VIR_PY_INT_FAIL;
+
+    return pybase_cpu;
+}
+
+
 /*******************************************
  * Helper functions to avoid importing modules
  * for every callback
@@ -2734,6 +2785,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virSecretSetValue", libvirt_virSecretSetValue, METH_VARARGS, NULL},
     {(char *) "virConnectListInterfaces", libvirt_virConnectListInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedInterfaces", libvirt_virConnectListDefinedInterfaces, METH_VARARGS, NULL},
+    {(char *) "virConnectBaselineCPU", libvirt_virConnectBaselineCPU, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

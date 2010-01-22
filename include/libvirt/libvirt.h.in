@@ -1769,6 +1769,24 @@ int virConnectCompareCPU(virConnectPtr conn,
                          unsigned int flags);
 
 
+/**
+ * virConnectBaselineCPU:
+ *
+ * @conn: virConnect connection
+ * @ncpus: number of CPUs in xmlCPUs
+ * @xmlCPUs: array of XML descriptions of host CPUs
+ * @flags: fine-tuning flags
+ *
+ * Computes the most feature-rich CPU which is compatible with all given
+ * host CPUs.
+ *
+ * Returns XML description of the computed CPU or NULL on error.
+ */
+char *virConnectBaselineCPU(virConnectPtr conn,
+                            const char **xmlCPUs,
+                            unsigned int ncpus,
+                            unsigned int flags);
+
 #ifdef __cplusplus
 }
 #endif
