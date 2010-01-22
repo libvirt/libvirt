@@ -2876,7 +2876,7 @@ static int
 virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
                                      const xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
-                                     int flags) {
+                                     int flags ATTRIBUTE_UNUSED) {
 
     int ret = -1;
     xmlNodePtr cur;
@@ -2890,8 +2890,7 @@ virDomainHostdevSubsysPciDefParseXML(virConnectPtr conn,
 
                 if (virDomainDevicePCIAddressParseXML(conn, cur, addr) < 0)
                     goto out;
-            } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
-                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+            } else if (xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 char *devaddr = virXMLPropString(cur, "devaddr");
                 if (devaddr &&
