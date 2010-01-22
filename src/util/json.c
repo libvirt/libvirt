@@ -440,7 +440,7 @@ virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr array, unsigned int element
     return array->data.array.values[element];
 }
 
-char *virJSONValueGetString(virJSONValuePtr string)
+const char *virJSONValueGetString(virJSONValuePtr string)
 {
     if (string->type != VIR_JSON_TYPE_STRING)
         return NULL;
@@ -508,7 +508,7 @@ int virJSONValueIsNull(virJSONValuePtr val)
 }
 
 
-char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key)
+const char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key)
 {
     virJSONValuePtr val;
     if (object->type != VIR_JSON_TYPE_OBJECT)

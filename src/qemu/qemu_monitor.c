@@ -1245,10 +1245,15 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
                            virHashTablePtr paths)
 {
+    int ret;
     DEBUG("mon=%p, fd=%d",
           mon, mon->fd);
 
-    return qemuMonitorTextGetPtyPaths(mon, paths);
+    if (mon->json)
+        ret = qemuMonitorJSONGetPtyPaths(mon, paths);
+    else
+        ret = qemuMonitorTextGetPtyPaths(mon, paths);
+    return ret;
 }
 
 

@@ -99,7 +99,7 @@ virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key);
 int virJSONValueArraySize(virJSONValuePtr object);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);
 
-char *virJSONValueGetString(virJSONValuePtr object);
+const char *virJSONValueGetString(virJSONValuePtr object);
 int virJSONValueGetNumberInt(virJSONValuePtr object, int *value);
 int virJSONValueGetNumberUint(virJSONValuePtr object, unsigned int *value);
 int virJSONValueGetNumberLong(virJSONValuePtr object, long long *value);
@@ -108,7 +108,7 @@ int virJSONValueGetNumberDouble(virJSONValuePtr object, double *value);
 int virJSONValueGetBoolean(virJSONValuePtr object);
 int virJSONValueIsNull(virJSONValuePtr object);
 
-char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key);
+const char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key);
 int virJSONValueObjectGetNumberInt(virJSONValuePtr object, const char *key, int *value);
 int virJSONValueObjectGetNumberUint(virJSONValuePtr object, const char *key, unsigned int *value);
 int virJSONValueObjectGetNumberLong(virJSONValuePtr object, const char *key, long long *value);

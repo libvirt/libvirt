@@ -65,7 +65,7 @@ static int
 qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
                               virJSONValuePtr obj)
 {
-    char *type;
+    const char *type;
     int i;
     VIR_DEBUG("mon=%p obj=%p", mon, obj);
 
@@ -248,7 +248,7 @@ qemuMonitorJSONCommand(qemuMonitorPtr mon,
  */
 static char *qemuMonitorJSONStringifyError(virJSONValuePtr error)
 {
-    char *klass = virJSONValueObjectGetString(error, "class");
+    const char *klass = virJSONValueObjectGetString(error, "class");
 
     if (klass) {
         return strdup(klass);
@@ -304,7 +304,7 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
                         const char *klass)
 {
     virJSONValuePtr error;
-    char *thisklass;
+    const char *thisklass;
 
     if (!virJSONValueObjectHasKey(reply, "error"))
         return 0;
@@ -592,11 +592,19 @@ int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
 
         /* Success */
         if (ret == 0) {
+            virJSONValuePtr data;
             unsigned long long mem;
 
-            if (virJSONValueObjectGetNumberUlong(reply, "return", &mem) < 0) {
+            if (!(data = virJSONValueObjectGet(reply, "return"))) {
                 qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("info balloon reply was missing mem return data"));
+                                 _("info balloon reply was missing return data"));
+                ret = -1;
+                goto cleanup;
+            }
+
+            if (virJSONValueObjectGetNumberUlong(data, "balloon", &mem) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("info balloon reply was missing balloon data"));
                 ret = -1;
                 goto cleanup;
             }
@@ -916,7 +924,7 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
                                        unsigned long long *total)
 {
     virJSONValuePtr ret;
-    char *statusstr;
+    const char *statusstr;
 
     if (!(ret = virJSONValueObjectGet(reply, "return"))) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1483,6 +1491,105 @@ int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
 }
 
 
+/*
+ * Example return data
+ *
+ * {"return": [
+ *      {"filename": "stdio", "label": "monitor"},
+ *      {"filename": "pty:/dev/pts/6", "label": "serial0"},
+ *      {"filename": "pty:/dev/pts/7", "label": "parallel0"}
+ * ]}
+ *
+ */
+static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
+                                          virHashTablePtr paths)
+{
+    virJSONValuePtr data;
+    int ret = -1;
+    int i;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("character device reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (data->type != VIR_JSON_TYPE_ARRAY) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("character device information was not an array"));
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < virJSONValueArraySize(data) ; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        const char *type;
+        const char *id;
+        if (!entry) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("character device information was missing aray element"));
+            goto cleanup;
+        }
+
+        if (!(type = virJSONValueObjectGetString(entry, "filename"))) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("character device information was missing filename"));
+            goto cleanup;
+        }
+
+        if (!(id = virJSONValueObjectGetString(entry, "label"))) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("character device information was missing filename"));
+            goto cleanup;
+        }
+
+        if (STRPREFIX(type, "pty:")) {
+            char *path = strdup(type + strlen("pty:"));
+            if (!path) {
+                virReportOOMError(NULL);
+                goto cleanup;
+            }
+
+            if (virHashAddEntry(paths, id, path) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                                 _("failed to save chardev path '%s'"), path);
+                VIR_FREE(path);
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
+                               virHashTablePtr paths)
+
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-chardev",
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONExtractPtyPaths(reply, paths);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
                                            virDomainDevicePCIAddress *guestAddr)
@@ -1594,5 +1701,7 @@ int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                       qemuMonitorPCIAddress **addrs ATTRIBUTE_UNUSED)
 {
+    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("query-pci not suppported in JSON mode"));
     return -1;
 }
