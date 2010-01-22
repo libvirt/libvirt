@@ -536,6 +536,85 @@ int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon)
 }
 
 
+/*
+ * [ { "CPU": 0, "current": true, "halted": false, "pc": 3227107138 },
+ *   { "CPU": 1, "current": false, "halted": true, "pc": 7108165 } ]
+ */
+static int
+qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
+                              int **pids)
+{
+    virJSONValuePtr data;
+    int ret = -1;
+    int i;
+    int *threads = NULL;
+    int ncpus;
+
+    if (!(data = virJSONValueObjectGet(reply, "return"))) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cpu reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (data->type != VIR_JSON_TYPE_ARRAY) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cpu information was not an array"));
+        goto cleanup;
+    }
+
+    if ((ncpus = virJSONValueArraySize(data)) <= 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("cpu information was empty"));
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(threads, ncpus) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    for (i = 0 ; i < ncpus ; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        int cpu;
+        int thread;
+        if (!entry) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("character device information was missing aray element"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetNumberInt(entry, "CPU", &cpu) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("cpu information was missing cpu number"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetNumberInt(entry, "thread_id", &thread) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("cpu information was missing thread ID"));
+            goto cleanup;
+        }
+
+        if (cpu != i) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected cpu index %d expecting %d"),
+                             i, cpu);
+            goto cleanup;
+        }
+
+        threads[i] = thread;
+    }
+
+    *pids = threads;
+    threads = NULL;
+    ret = 0;
+
+cleanup:
+    VIR_FREE(threads);
+    return ret;
+}
+
+
 int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids)
 {
@@ -554,7 +633,8 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
     if (ret == 0)
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
-    /* XXX extract PIDs if present - QEMU hasn't implement this yet :-( */
+    if (ret == 0)
+        ret = qemuMonitorJSONExtractCPUInfo(reply, pids);
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
