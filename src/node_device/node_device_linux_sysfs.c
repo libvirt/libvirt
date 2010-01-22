@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include <fcntl.h>
+#include <sys/stat.h>
 
 #include "node_device_driver.h"
 #include "node_device_hal.h"
