@@ -3748,6 +3748,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                 }
                 def->nserials = 1;
                 def->serials[0] = chr;
+                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
             }
         } else {
             def->console = chr;
