@@ -378,8 +378,6 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
 static int
 AppArmorSetSecurityAllLabel(virConnectPtr conn, virDomainObjPtr vm)
 {
-    int rc = -1;
-
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
@@ -433,7 +431,7 @@ AppArmorGetSecurityProcessLabel(virConnectPtr conn,
  * more details. Currently called via qemudShutdownVMDaemon.
  */
 static int
-AppArmorReleaseSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
+AppArmorReleaseSecurityLabel(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainObjPtr vm)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
