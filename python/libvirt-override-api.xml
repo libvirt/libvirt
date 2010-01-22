@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <api name='libvir-python'>
   <symbols>
+    <function name="virConnectGetVersion" file='python'>
+      <info>Returns the running hypervisor version of the connection host</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='int' info="0 on success, -1 on error"/>
+    </function>
     <function name="virConnectGetLibVersion" file='python'>
       <info>Returns the libvirt version of the connection host</info>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>

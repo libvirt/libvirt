@@ -255,6 +255,7 @@ foreign_encoding_args = (
 # Class methods which are written by hand in libvir.c but the Python-level
 # code is still automatically generated (so they are not in skip_function()).
 skip_impl = (
+    'virConnectGetVersion',
     'virConnectGetLibVersion',
     'virConnectListDomainsID',
     'virConnectListDefinedDomains',
