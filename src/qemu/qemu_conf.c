@@ -92,8 +92,6 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* no arg needed for xen */
               "" /* don't support vbox */);
 
-#define PROC_MOUNT_BUF_LEN 255
-
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
     virConfPtr conf;
