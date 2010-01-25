@@ -1114,6 +1114,19 @@ char *virFindFileInPath(const char *file)
     char *pathseg;
     char fullpath[PATH_MAX];
 
+    if (file == NULL)
+        return NULL;
+
+    /* if we are passed an absolute path (starting with /), return a
+     * copy of that path
+     */
+    if (file[0] == '/') {
+        if (virFileExists(file))
+            return strdup(file);
+        else
+            return NULL;
+    }
+
     /* copy PATH env so we can tweak it */
     if (virStrcpyStatic(pathenv, getenv("PATH")) == NULL)
         return NULL;

@@ -804,7 +804,8 @@ qemudCapsInitGuest(virCapsPtr caps,
     if (STREQ(info->arch, hostmachine) ||
         (STREQ(hostmachine, "x86_64") && STREQ(info->arch, "i686"))) {
         if (access("/dev/kvm", F_OK) == 0) {
-            const char *const kvmbins[] = { "qemu-kvm", /* Fedora */
+            const char *const kvmbins[] = { "/usr/libexec/qemu-kvm", /* RHEL */
+                                            "qemu-kvm", /* Fedora */
                                             "kvm" }; /* Upstream .spec */
 
             for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
