@@ -853,7 +853,7 @@ int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid) {
  * @conn: the hypervisor connection
  * @domid: id of the domain
  *
- * Return the path to the psuedo TTY on which the guest domain's
+ * Return the path to the pseudo TTY on which the guest domain's
  * serial console is attached.
  *
  * Returns the path to the serial console. It is the callers

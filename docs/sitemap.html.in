@@ -134,7 +134,7 @@
               </li>
               <li>
                 <a href="drvtest.html">Test</a>
-                <span>Psuedo-driver simulating APIs in memory for test suites</span>
+                <span>Pseudo-driver simulating APIs in memory for test suites</span>
               </li>
               <li>
                 <a href="drvremote.html">Remote</a>
