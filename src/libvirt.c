@@ -11090,3 +11090,60 @@ error:
     virDispatchError(conn);
     return VIR_CPU_COMPARE_ERROR;
 }
+
+
+/**
+ * virConnectBaselineCPU:
+ *
+ * @conn: virConnect connection
+ * @xmlCPUs: array of XML descriptions of host CPUs
+ * @ncpus: number of CPUs in xmlCPUs
+ * @flags: fine-tuning flags, currently unused, pass 0.
+ *
+ * Computes the most feature-rich CPU which is compatible with all given
+ * host CPUs.
+ *
+ * Returns XML description of the computed CPU or NULL on error.
+ */
+char *
+virConnectBaselineCPU(virConnectPtr conn,
+                      const char **xmlCPUs,
+                      unsigned int ncpus,
+                      unsigned int flags)
+{
+    unsigned int i;
+
+    VIR_DEBUG("conn=%p, xmlCPUs=%p, ncpus=%u, flags=%u",
+              conn, xmlCPUs, ncpus, flags);
+    if (xmlCPUs) {
+        for (i = 0; i < ncpus; i++)
+            VIR_DEBUG("xmlCPUs[%u]=%s", i, NULLSTR(xmlCPUs[i]));
+    }
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+    if (xmlCPUs == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->cpuBaseline) {
+        char *cpu;
+
+        cpu = conn->driver->cpuBaseline(conn, xmlCPUs, ncpus, flags);
+        if (!cpu)
+            goto error;
+        return cpu;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
