@@ -2147,6 +2147,7 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                             virDomainDefPtr def)
 {
     pciDeviceList *pcidevs;
+    int i;
     int ret = -1;
 
     if (!def->nhostdevs)
@@ -2155,8 +2156,9 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     if (!(pcidevs = qemuGetPciHostDeviceList(NULL, def)))
         return -1;
 
-    while (pciDeviceListCount(pcidevs) > 0) {
-        pciDevice *dev = pciDeviceListSteal(NULL, pcidevs, 0);
+    for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
+        pciDevice *dev = pciDeviceListGet(pcidevs, i);
+        pciDeviceListSteal(NULL, pcidevs, dev);
         if (pciDeviceListAdd(NULL,
                              driver->activePciHostdevs,
                              dev) < 0) {
