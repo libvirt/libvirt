@@ -70,20 +70,20 @@ static int usbSysReadFile(virConnectPtr conn,
     tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
     if (tmp < 0) {
         virReportOOMError(conn);
-        goto error;
+        goto cleanup;
     }
 
     if (virFileReadAll(filename, 1024, &buf) < 0)
-        goto error;
+        goto cleanup;
 
     if (virStrToLong_ui(buf, &ignore, base, value) < 0) {
         usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse usb file %s"), filename);
-        goto error;
+        goto cleanup;
     }
 
     ret = 0;
-error:
+cleanup:
     VIR_FREE(filename);
     VIR_FREE(buf);
     return ret;
@@ -103,7 +103,7 @@ static int usbFindBusByVendor(virConnectPtr conn,
         virReportSystemError(conn, errno,
                              _("Could not open directory %s"),
                              USB_SYSFS "/devices");
-        goto error;
+        goto cleanup;
     }
 
     while ((de = readdir(dir))) {
@@ -113,10 +113,10 @@ static int usbFindBusByVendor(virConnectPtr conn,
 
         if (usbSysReadFile(conn, "idVendor", de->d_name,
                            16, &found_vend) < 0)
-            goto error;
+            goto cleanup;
         if (usbSysReadFile(conn, "idProduct", de->d_name,
                            16, &found_prod) < 0)
-            goto error;
+            goto cleanup;
 
         if (found_prod == product && found_vend == vendor) {
             /* Lookup bus.addr info */
@@ -130,12 +130,12 @@ static int usbFindBusByVendor(virConnectPtr conn,
                 usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                _("Failed to parse dir name '%s'"),
                                de->d_name);
-                goto error;
+                goto cleanup;
             }
 
             if (usbSysReadFile(conn, "devnum", de->d_name,
                                10, &found_addr) < 0)
-                goto error;
+                goto cleanup;
 
             *bus = found_bus;
             *devno = found_addr;
@@ -150,8 +150,12 @@ static int usbFindBusByVendor(virConnectPtr conn,
     else
         ret = 0;
 
-error:
-    closedir (dir);
+cleanup:
+    if (dir) {
+        int saved_errno = errno;
+        closedir (dir);
+        errno = saved_errno;
+    }
     return ret;
 }
 
