@@ -171,8 +171,10 @@ usbGetDevice(virConnectPtr conn,
 
     if (vendor) {
         /* Look up bus.dev by vendor:product */
-        if (usbFindBusByVendor(conn, vendor, product, &bus, &devno) < 0)
+        if (usbFindBusByVendor(conn, vendor, product, &bus, &devno) < 0) {
+            VIR_FREE(dev);
             return NULL;
+        }
     }
 
     dev->bus     = bus;
