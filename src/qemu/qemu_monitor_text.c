@@ -1881,13 +1881,13 @@ try_command:
     if (qemudParseDriveAddReply(reply, driveAddr) < 0) {
         if (!tryOldSyntax && strstr(reply, "invalid char in expression")) {
             VIR_FREE(reply);
+            VIR_FREE(cmd);
             tryOldSyntax = 1;
             goto try_command;
         }
         qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                           _("adding %s disk failed: %s"), drivestr, reply);
-        VIR_FREE(reply);
-        return -1;
+        goto cleanup;
     }
 
     ret = 0;
