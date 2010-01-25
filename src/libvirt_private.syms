@@ -72,6 +72,8 @@ virCgroupSetFreezerState;
 
 
 # cpu.h
+cpuBaseline;
+cpuBaselineXML;
 cpuCompare;
 cpuCompareXML;
 cpuDataFree;

@@ -118,5 +118,6 @@ struct cpuArchDriver cpuDriverGeneric = {
     .encode     = NULL,
     .free       = NULL,
     .nodeData   = NULL,
-    .guestData  = NULL
+    .guestData  = NULL,
+    .baseline   = NULL,
 };

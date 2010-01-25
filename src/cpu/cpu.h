@@ -1,7 +1,7 @@
 /*
  * cpu.h: internal functions for CPU manipulation
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009--2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,6 +70,12 @@ typedef virCPUCompareResult
                      virCPUDefPtr guest,
                      union cpuData **data);
 
+typedef virCPUDefPtr
+(*cpuArchBaseline)  (virCPUDefPtr *cpus,
+                     unsigned int ncpus,
+                     const char **models,
+                     unsigned int nmodels);
+
 
 struct cpuArchDriver {
     const char *name;
@@ -81,6 +87,7 @@ struct cpuArchDriver {
     cpuArchDataFree     free;
     cpuArchNodeData     nodeData;
     cpuArchGuestData    guestData;
+    cpuArchBaseline     baseline;
 };
 
 
@@ -118,5 +125,17 @@ extern virCPUCompareResult
 cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
              union cpuData **data);
+
+extern char *
+cpuBaselineXML(const char **xmlCPUs,
+               unsigned int ncpus,
+               const char **models,
+               unsigned int nmodels);
+
+extern virCPUDefPtr
+cpuBaseline (virCPUDefPtr *cpus,
+             unsigned int ncpus,
+             const char **models,
+             unsigned int nmodels);
 
 #endif /* __VIR_CPU_H__ */

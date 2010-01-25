@@ -1,7 +1,7 @@
 /*
  * cpu.c: internal functions for CPU manipulation
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009--2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "memory.h"
 #include "xml.h"
 #include "cpu.h"
 #include "cpu_x86.h"
@@ -236,4 +237,124 @@ cpuGuestData(virCPUDefPtr host,
     }
 
     return driver->guestData(host, guest, data);
+}
+
+
+char *
+cpuBaselineXML(const char **xmlCPUs,
+               unsigned int ncpus,
+               const char **models,
+               unsigned int nmodels)
+{
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virCPUDefPtr *cpus = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *cpustr;
+    unsigned int i;
+
+    if (xmlCPUs == NULL && ncpus != 0) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                "%s", _("nonzero ncpus doesn't match with NULL xmlCPUs"));
+        return NULL;
+    }
+
+    if (ncpus < 1) {
+        virCPUReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(cpus, ncpus))
+        goto no_memory;
+
+    for (i = 0; i < ncpus; i++) {
+        doc = xmlParseMemory(xmlCPUs[i], strlen(xmlCPUs[i]));
+        if (doc == NULL || (ctxt = xmlXPathNewContext(doc)) == NULL)
+            goto no_memory;
+
+        ctxt->node = xmlDocGetRootElement(doc);
+
+        cpus[i] = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_HOST);
+        if (cpus[i] == NULL)
+            goto error;
+
+        xmlXPathFreeContext(ctxt);
+        xmlFreeDoc(doc);
+        ctxt = NULL;
+        doc = NULL;
+    }
+
+    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels)))
+        goto error;
+
+    cpustr = virCPUDefFormat(cpu, "", 0);
+
+cleanup:
+    if (cpus) {
+        for (i = 0; i < ncpus; i++)
+            virCPUDefFree(cpus[i]);
+        VIR_FREE(cpus);
+    }
+    virCPUDefFree(cpu);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+
+    return cpustr;
+
+no_memory:
+    virReportOOMError();
+error:
+    cpustr = NULL;
+    goto cleanup;
+}
+
+
+virCPUDefPtr
+cpuBaseline(virCPUDefPtr *cpus,
+            unsigned int ncpus,
+            const char **models,
+            unsigned int nmodels)
+{
+    struct cpuArchDriver *driver;
+    virCPUDefPtr cpu;
+
+    if (cpus == NULL && ncpus != 0) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                "%s", _("nonzero ncpus doesn't match with NULL cpus"));
+        return NULL;
+    }
+
+    if (ncpus < 1) {
+        virCPUReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
+        return NULL;
+    }
+
+    if (models == NULL && nmodels != 0) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                "%s", _("nonzero nmodels doesn't match with NULL models"));
+        return NULL;
+    }
+
+    if ((driver = cpuGetSubDriver(cpus[0]->arch)) == NULL)
+        return NULL;
+
+    if (driver->baseline == NULL) {
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
+                _("cannot compute baseline CPU of %s architecture"),
+                cpus[0]->arch);
+        return NULL;
+    }
+
+    if ((cpu = driver->baseline(cpus, ncpus, models, nmodels))) {
+        int i;
+
+        cpu->type = VIR_CPU_TYPE_GUEST;
+        cpu->match = VIR_CPU_MATCH_EXACT;
+        VIR_FREE(cpu->arch);
+
+        for (i = 0; i < cpu->nfeatures; i++)
+            cpu->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+    }
+
+    return cpu;
 }

@@ -1205,5 +1205,6 @@ struct cpuArchDriver cpuDriverX86 = {
 #else
     .nodeData   = NULL,
 #endif
-    .guestData  = x86GuestData
+    .guestData  = x86GuestData,
+    .baseline   = NULL,
 };
