@@ -2240,6 +2240,26 @@ cleanup:
 }
 
 static void
+qemudReattachManagedDevice(pciDevice *dev)
+{
+    int retries = 100;
+
+    if (pciDeviceGetManaged(dev)) {
+        while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
+               && retries) {
+            usleep(100*1000);
+            retries--;
+        }
+        if (pciReAttachDevice(NULL, dev) < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to re-attach PCI device: %s"),
+                      err ? err->message : "");
+            virResetError(err);
+        }
+    }
+}
+
+static void
 qemuDomainReAttachHostDevices(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainDefPtr def)
@@ -2279,20 +2299,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        int retries = 100;
-        if (pciDeviceGetManaged(dev)) {
-            while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
-                   && retries) {
-                usleep(100*1000);
-                retries--;
-            }
-            if (pciReAttachDevice(NULL, dev) < 0) {
-                virErrorPtr err = virGetLastError();
-                VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                          err ? err->message : "");
-                virResetError(err);
-            }
-        }
+        qemudReattachManagedDevice(dev);
     }
 
     pciDeviceListFree(conn, pcidevs);
@@ -6128,11 +6135,11 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
     if (!pci)
         ret = -1;
     else {
+        pciDeviceSetManaged(pci, detach->managed);
         pciDeviceListDel(conn, driver->activePciHostdevs, pci);
         if (pciResetDevice(conn, pci, driver->activePciHostdevs) < 0)
             ret = -1;
-        if (detach->managed && pciReAttachDevice(conn, pci) < 0)
-            ret = -1;
+        qemudReattachManagedDevice(pci);
         pciFreeDevice(conn, pci);
     }
 
