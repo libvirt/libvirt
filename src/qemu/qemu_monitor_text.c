@@ -2029,3 +2029,80 @@ error:
 #undef SKIP_SPACE
 #undef CHECK_END
 #undef SKIP_TO
+
+
+int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
+                             const char *devicestr)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safedev;
+    int ret = -1;
+
+    if (!(safedev = qemuMonitorEscapeArg(devicestr))) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "device_add %s", safedev) < 0) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("cannot attach %s device"), devicestr);
+        goto cleanup;
+    }
+
+    if (STRNEQ(reply, "")) {
+        qemudReportError (NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                          _("adding %s device failed: %s"), devicestr, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
+int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
+                            const char *drivestr)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    int ret = -1;
+    char *safe_str;
+
+    safe_str = qemuMonitorEscapeArg(drivestr);
+    if (!safe_str) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    /* 'dummy' here is just a placeholder since there is no PCI
+     * address required when attaching drives to a controller */
+    ret = virAsprintf(&cmd, "drive_add dummy %s", safe_str);
+    if (ret == -1) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         _("failed to close fd in qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    VIR_FREE(safe_str);
+    return ret;
+}

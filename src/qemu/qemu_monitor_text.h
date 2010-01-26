@@ -160,4 +160,10 @@ int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
 int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
                                       qemuMonitorPCIAddress **addrs);
 
+int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
+                             const char *devicestr);
+
+int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
+                             const char *drivestr);
+
 #endif /* QEMU_MONITOR_TEXT_H */

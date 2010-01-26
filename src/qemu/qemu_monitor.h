@@ -285,4 +285,10 @@ struct _qemuMonitorPCIAddress {
 int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
                                   qemuMonitorPCIAddress **addrs);
 
+int qemuMonitorAddDevice(qemuMonitorPtr mon,
+                         const char *devicestr);
+
+int qemuMonitorAddDrive(qemuMonitorPtr mon,
+                        const char *drivestr);
+
 #endif /* QEMU_MONITOR_H */

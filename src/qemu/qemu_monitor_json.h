@@ -156,4 +156,10 @@ int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
                                       qemuMonitorPCIAddress **addrs);
 
+int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
+                             const char *devicestr);
+
+int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
+                            const char *drivestr);
+
 #endif /* QEMU_MONITOR_JSON_H */

@@ -1304,3 +1304,30 @@ int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
         ret = qemuMonitorTextGetAllPCIAddresses(mon, addrs);
     return ret;
 }
+
+
+int qemuMonitorAddDevice(qemuMonitorPtr mon,
+                         const char *devicestr)
+{
+    DEBUG("mon=%p, fd=%d device=%s", mon, mon->fd, devicestr);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONAddDevice(mon, devicestr);
+    else
+        ret = qemuMonitorTextAddDevice(mon, devicestr);
+    return ret;
+}
+
+int qemuMonitorAddDrive(qemuMonitorPtr mon,
+                        const char *drivestr)
+{
+    DEBUG("mon=%p, fd=%d drive=%s", mon, mon->fd, drivestr);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONAddDrive(mon, drivestr);
+    else
+        ret = qemuMonitorTextAddDrive(mon, drivestr);
+    return ret;
+}
