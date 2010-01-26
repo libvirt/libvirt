@@ -1443,32 +1443,66 @@ int virDirCreate(const char *path, mode_t mode,
 }
 #endif
 
-int virFileMakePath(const char *path)
-{
+static int virFileMakePathHelper(char *path) {
     struct stat st;
-    char parent[PATH_MAX];
-    char *p;
+    char *p = NULL;
     int err;
 
     if (stat(path, &st) >= 0)
         return 0;
 
-    if (virStrcpyStatic(parent, path) == NULL)
+    if ((p = strrchr(path, '/')) == NULL)
         return EINVAL;
 
-    if (!(p = strrchr(parent, '/')))
-        return EINVAL;
-
-    if (p != parent) {
+    if (p != path) {
         *p = '\0';
-        if ((err = virFileMakePath(parent)))
+        err = virFileMakePathHelper(path);
+        *p = '/';
+        if (err != 0)
             return err;
     }
 
-    if (mkdir(path, 0777) < 0 && errno != EEXIST)
+    if (mkdir(path, 0777) < 0 && errno != EEXIST) {
         return errno;
-
+    }
     return 0;
+}
+
+int virFileMakePath(const char *path)
+{
+    struct stat st;
+    char *parent = NULL;
+    char *p;
+    int err = 0;
+
+    if (stat(path, &st) >= 0)
+        goto cleanup;
+
+    if ((parent = strdup(path)) == NULL) {
+        err = ENOMEM;
+        goto cleanup;
+    }
+
+    if ((p = strrchr(parent, '/')) == NULL) {
+        err = EINVAL;
+        goto cleanup;
+    }
+
+    if (p != parent) {
+        *p = '\0';
+        if ((err = virFileMakePathHelper(parent)) != 0) {
+            goto cleanup;
+        }
+    }
+
+    if (mkdir(path, 0777) < 0 && errno != EEXIST) {
+        err = errno;
+        goto cleanup;
+    }
+
+cleanup:
+    VIR_FREE(parent);
+    return err;
 }
 
 /* Build up a fully qualfiied path for a config file to be
