@@ -2506,6 +2506,65 @@ error:
 }
 
 
+char *
+qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
+{
+    char *ret = NULL;
+
+    if (virAsprintf(&ret, "host=%.2x:%.2x.%.1x",
+                    dev->source.subsys.u.pci.bus,
+                    dev->source.subsys.u.pci.slot,
+                    dev->source.subsys.u.pci.function) < 0)
+        virReportOOMError(NULL);
+
+    return ret;
+}
+
+
+char *
+qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev)
+{
+    char *ret = NULL;
+
+    if (!dev->source.subsys.u.usb.bus &&
+        !dev->source.subsys.u.usb.device) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("USB host device is missing bus/device information"));
+        return NULL;
+    }
+
+    if (virAsprintf(&ret, "usb-host,hostbus=%.3d,hostaddr=%.3d,id=%s",
+                    dev->source.subsys.u.usb.bus,
+                    dev->source.subsys.u.usb.device,
+                    dev->info.alias) < 0)
+        virReportOOMError(NULL);
+
+    return ret;
+}
+
+
+char *
+qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
+{
+    char *ret = NULL;
+
+    if (!dev->source.subsys.u.usb.bus &&
+        !dev->source.subsys.u.usb.device) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("USB host device is missing bus/device information"));
+        return NULL;
+    }
+
+    if (virAsprintf(&ret, "host:%.3d.%.3d",
+                    dev->source.subsys.u.usb.bus,
+                    dev->source.subsys.u.usb.device) < 0)
+        virReportOOMError(NULL);
+
+    return ret;
+}
+
+
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 char *
@@ -3758,10 +3817,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     /* Add host passthrough hardware */
     for (i = 0 ; i < def->nhostdevs ; i++) {
-        int ret;
-        char* usbdev;
-        char* pcidev;
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        char *devstr;
 
         /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -3769,33 +3826,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 ADD_ARG_LIT("-device");
-                if (hostdev->source.subsys.u.usb.vendor) {
-                    ret = virAsprintf(&usbdev, "usb-host,vendor=%.4x,product=%.4x,id=%s",
-                                      hostdev->source.subsys.u.usb.vendor,
-                                      hostdev->source.subsys.u.usb.product,
-                                      hostdev->info.alias);
-                } else {
-                    ret = virAsprintf(&usbdev, "usb-host,hostbus=%.3d,hostaddr=%.3d,id=%s",
-                                      hostdev->source.subsys.u.usb.bus,
-                                      hostdev->source.subsys.u.usb.device,
-                                      hostdev->info.alias);
-                }
+                if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
+                    goto error;
+                ADD_ARG(devstr);
             } else {
                 ADD_ARG_LIT("-usbdevice");
-                if (hostdev->source.subsys.u.usb.vendor) {
-                    ret = virAsprintf(&usbdev, "host:%.4x:%.4x",
-                                      hostdev->source.subsys.u.usb.vendor,
-                                      hostdev->source.subsys.u.usb.product);
-                } else {
-                    ret = virAsprintf(&usbdev, "host:%.3d.%.3d",
-                                      hostdev->source.subsys.u.usb.bus,
-                                      hostdev->source.subsys.u.usb.device);
-                }
+                if (!(devstr = qemuBuildUSBHostdevUsbDevStr(hostdev)))
+                    goto error;
+                ADD_ARG(devstr);
             }
-            if (ret < 0)
-                goto error;
-
-            ADD_ARG(usbdev);
         }
 
         /* PCI */
@@ -3803,21 +3842,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 ADD_ARG_LIT("-device");
-                if (!(pcidev = qemuBuildPCIHostdevDevStr(hostdev)))
+                if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
                     goto error;
+                ADD_ARG(devstr);
             } else if (qemuCmdFlags & QEMUD_CMD_FLAG_PCIDEVICE) {
                 ADD_ARG_LIT("-pcidevice");
-                if (virAsprintf(&pcidev, "host=%.2x:%.2x.%.1x",
-                                hostdev->source.subsys.u.pci.bus,
-                                hostdev->source.subsys.u.pci.slot,
-                                hostdev->source.subsys.u.pci.function) < 0)
-                    goto no_memory;
+                if (!(devstr = qemuBuildPCIHostdevPCIDevStr(hostdev)))
+                    goto error;
+                ADD_ARG(devstr);
             } else {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
                                  _("PCI device assignment is not supported by this version of qemu"));
                 goto error;
             }
-            ADD_ARG(pcidev);
         }
     }
 

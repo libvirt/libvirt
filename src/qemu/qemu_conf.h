@@ -227,10 +227,20 @@ char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
 
 char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound);
 
+/* Legacy, pre device support */
+char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
+/* Current, best practice */
 char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev);
 
+/* Current, best practice */
 char * qemuBuildChrChardevStr(virDomainChrDefPtr dev);
+/* Legacy, pre device support */
 char * qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix);
+
+/* Legacy, pre device support */
+char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);
+/* Current, best practice */
+char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev);
 
 
 
