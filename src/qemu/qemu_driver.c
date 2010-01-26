@@ -5192,12 +5192,14 @@ error:
 static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
                                           struct qemud_driver *driver,
                                           virDomainObjPtr vm,
-                                          virDomainDiskDefPtr disk)
+                                          virDomainDiskDefPtr disk,
+                                          int qemuCmdFlags)
 {
     int i, ret;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDevicePCIAddress guestAddr;
+    char *devstr = NULL;
+    char *drivestr = NULL;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -5212,28 +5214,52 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         driver->securityDriver->domainSetSecurityImageLabel(conn, vm, disk) < 0)
         return -1;
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
+            goto error;
+
+        if (!(devstr = qemuBuildDriveDevStr(NULL, disk)))
+            goto error;
+    }
+
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         virReportOOMError(conn);
         goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorAddPCIDisk(priv->mon,
-                                disk->src,
-                                type,
-                                &guestAddr);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ret = qemuMonitorAddDrive(priv->mon, drivestr);
+        if (ret == 0)
+            qemuMonitorAddDevice(priv->mon, devstr);
+            /* XXX remove the drive upon fail */
+    } else {
+        virDomainDevicePCIAddress guestAddr;
+        ret = qemuMonitorAddPCIDisk(priv->mon,
+                                    disk->src,
+                                    type,
+                                    &guestAddr);
+        if (ret == 0) {
+            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            memcpy(&disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
+        }
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0)
         goto error;
 
-    disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    memcpy(&disk->info.addr.pci, &guestAddr, sizeof(guestAddr));
     virDomainDiskInsertPreAlloced(vm->def, disk);
+
+    VIR_FREE(devstr);
+    VIR_FREE(drivestr);
 
     return 0;
 
 error:
+    VIR_FREE(devstr);
+    VIR_FREE(drivestr);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
@@ -5246,10 +5272,13 @@ error:
 static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
                                                 struct qemud_driver *driver,
                                                 virDomainObjPtr vm,
-                                                virDomainControllerDefPtr controller)
+                                                virDomainControllerDefPtr controller,
+                                                int qemuCmdFlags)
 {
-    int i, ret;
+    int i;
+    int ret = -1;
     const char* type = virDomainControllerTypeToString(controller->type);
+    char *devstr = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     for (i = 0 ; i < vm->def->ncontrollers ; i++) {
@@ -5262,15 +5291,24 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
         }
     }
 
+    if (!(devstr = qemuBuildControllerDevStr(controller))) {
+        virReportOOMError(NULL);
+        goto cleanup;
+    }
+
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0) {
-        virReportOOMError(conn);
-        return -1;
+        virReportOOMError(NULL);
+        goto cleanup;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorAttachPCIDiskController(priv->mon,
-                                             type,
-                                             &controller->info.addr.pci);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ret = qemuMonitorAddDevice(priv->mon, devstr);
+    } else {
+        ret = qemuMonitorAttachPCIDiskController(priv->mon,
+                                                 type,
+                                                 &controller->info.addr.pci);
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret == 0) {
@@ -5278,6 +5316,8 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
         virDomainControllerInsertPreAlloced(vm->def, controller);
     }
 
+cleanup:
+    VIR_FREE(devstr);
     return ret;
 }
 
@@ -5286,7 +5326,8 @@ static virDomainControllerDefPtr
 qemuDomainFindOrCreateSCSIDiskController(virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainObjPtr vm,
-                                         int controller)
+                                         int controller,
+                                         int qemuCmdFlags)
 {
     int i;
     virDomainControllerDefPtr cont;
@@ -5311,7 +5352,7 @@ qemuDomainFindOrCreateSCSIDiskController(virConnectPtr conn,
 
     VIR_INFO0("No SCSI controller present, hotplugging one");
     if (qemudDomainAttachPciControllerDevice(conn, driver,
-                                             vm, cont) < 0) {
+                                             vm, cont, qemuCmdFlags) < 0) {
         VIR_FREE(cont);
         return NULL;
     }
@@ -5327,9 +5368,9 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
 {
     int i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDeviceDriveAddress driveAddr;
     virDomainControllerDefPtr cont;
     char *drivestr = NULL;
+    char *devstr = NULL;
     int ret = -1;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -5352,6 +5393,9 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
     if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
         goto error;
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        !(devstr = qemuBuildDriveDevStr(NULL, disk)))
+        goto error;
 
     /* We should have an adddress now, so make sure */
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
@@ -5362,7 +5406,7 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
     }
 
     for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
-        cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i);
+        cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i, qemuCmdFlags);
         if (!cont)
             goto error;
     }
@@ -5379,26 +5423,42 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorAttachDrive(priv->mon,
-                                 drivestr,
-                                 &cont->info.addr.pci,
-                                 &driveAddr);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ret = qemuMonitorAddDrive(priv->mon,
+                                  drivestr);
+        if (ret == 0)
+            ret = qemuMonitorAddDevice(priv->mon,
+                                       devstr);
+            /* XXX should call 'drive_del' on error but this does not exist yet */
+    } else {
+        virDomainDeviceDriveAddress driveAddr;
+        ret = qemuMonitorAttachDrive(priv->mon,
+                                     drivestr,
+                                     &cont->info.addr.pci,
+                                     &driveAddr);
+        if (ret == 0) {
+            /* XXX we should probably validate that the addr matches
+             * our existing defined addr instead of overwriting */
+            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+            memcpy(&disk->info.addr.drive, &driveAddr, sizeof(driveAddr));
+        }
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0)
         goto error;
 
-    /* XXX we should probably validate that the addr matches
-     * our existing defined addr instead of overwriting */
-    disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-    memcpy(&disk->info.addr.drive, &driveAddr, sizeof(driveAddr));
     virDomainDiskInsertPreAlloced(vm->def, disk);
+
+    VIR_FREE(devstr);
     VIR_FREE(drivestr);
 
     return 0;
 
 error:
+    VIR_FREE(devstr);
     VIR_FREE(drivestr);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
@@ -5411,10 +5471,13 @@ error:
 static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
                                                  struct qemud_driver *driver,
                                                  virDomainObjPtr vm,
-                                                 virDomainDiskDefPtr disk)
+                                                 virDomainDiskDefPtr disk,
+                                                 int qemuCmdFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int i, ret;
+    char *drivestr = NULL;
+    char *devstr = NULL;
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -5435,13 +5498,29 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
         goto error;
     }
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
+            goto error;
+        if (!(devstr = qemuBuildDriveDevStr(NULL, disk)))
+            goto error;
+    }
+
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
         virReportOOMError(conn);
         goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorAddUSBDisk(priv->mon, disk->src);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ret = qemuMonitorAddDrive(priv->mon,
+                                  drivestr);
+        if (ret == 0)
+            ret = qemuMonitorAddDevice(priv->mon,
+                                       devstr);
+            /* XXX should call 'drive_del' on error but this does not exist yet */
+    } else {
+        ret = qemuMonitorAddUSBDisk(priv->mon, disk->src);
+    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0)
@@ -5449,9 +5528,15 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
 
     virDomainDiskInsertPreAlloced(vm->def, disk);
 
+    VIR_FREE(devstr);
+    VIR_FREE(drivestr);
+
     return 0;
 
 error:
+    VIR_FREE(devstr);
+    VIR_FREE(drivestr);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
@@ -5594,12 +5679,14 @@ no_memory:
 static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
                                           struct qemud_driver *driver,
                                           virDomainObjPtr vm,
-                                          virDomainHostdevDefPtr hostdev)
+                                          virDomainHostdevDefPtr hostdev,
+                                          int qemuCmdFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pciDevice *pci;
     int ret;
     virDomainDevicePCIAddress guestAddr;
+    char *devstr = NULL;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError(conn);
@@ -5626,10 +5713,17 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        !(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+        goto error;
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorAddPCIHostDevice(priv->mon,
-                                      &hostdev->source.subsys.u.pci,
-                                      &guestAddr);
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        ret = qemuMonitorAddDevice(priv->mon, devstr);
+    else
+        ret = qemuMonitorAddPCIHostDevice(priv->mon,
+                                          &hostdev->source.subsys.u.pci,
+                                          &guestAddr);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
     if (ret < 0)
         goto error;
@@ -5638,9 +5732,12 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
+    VIR_FREE(devstr);
+
     return 0;
 
 error:
+    VIR_FREE(devstr);
     pciDeviceListDel(conn, driver->activePciHostdevs, pci);
 
     return -1;
@@ -5650,39 +5747,50 @@ error:
 static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
                                           struct qemud_driver *driver,
                                           virDomainObjPtr vm,
-                                          virDomainHostdevDefPtr hostdev)
+                                          virDomainHostdevDefPtr hostdev,
+                                          int qemuCmdFlags)
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *devstr = NULL;
+
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        !(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+        goto error;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError(conn);
-        return -1;
+        goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (hostdev->source.subsys.u.usb.vendor) {
-        ret = qemuMonitorAddUSBDeviceMatch(priv->mon,
-                                           hostdev->source.subsys.u.usb.vendor,
-                                           hostdev->source.subsys.u.usb.product);
-    } else {
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        ret = qemuMonitorAddDevice(priv->mon, devstr);
+    else
         ret = qemuMonitorAddUSBDeviceExact(priv->mon,
                                            hostdev->source.subsys.u.usb.bus,
                                            hostdev->source.subsys.u.usb.device);
-    }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (ret < 0)
+        goto error;
 
-    if (ret == 0)
-        vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
-    return ret;
+    VIR_FREE(devstr);
+
+    return 0;
+
+error:
+    VIR_FREE(devstr);
+    return -1;
 }
 
 
 static int qemudDomainAttachHostDevice(virConnectPtr conn,
                                        struct qemud_driver *driver,
                                        virDomainObjPtr vm,
-                                       virDomainHostdevDefPtr hostdev)
+                                       virDomainHostdevDefPtr hostdev,
+                                       int qemuCmdFlags)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT,
@@ -5698,12 +5806,14 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (qemudDomainAttachHostPciDevice(conn, driver, vm, hostdev) < 0)
+        if (qemudDomainAttachHostPciDevice(conn, driver, vm,
+                                           hostdev, qemuCmdFlags) < 0)
             goto error;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (qemudDomainAttachHostUsbDevice(conn, driver, vm, hostdev) < 0)
+        if (qemudDomainAttachHostUsbDevice(conn, driver, vm,
+                                           hostdev, qemuCmdFlags) < 0)
             goto error;
         break;
 
@@ -5794,15 +5904,18 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
 
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
-                ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, driver, vm, dev->data.disk);
+                ret = qemudDomainAttachUsbMassstorageDevice(dom->conn, driver, vm,
+                                                            dev->data.disk, qemuCmdFlags);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-                ret = qemudDomainAttachPciDiskDevice(dom->conn, driver, vm, dev->data.disk);
+                ret = qemudDomainAttachPciDiskDevice(dom->conn, driver, vm,
+                                                     dev->data.disk, qemuCmdFlags);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-                ret = qemudDomainAttachSCSIDisk(dom->conn, driver, vm, dev->data.disk, qemuCmdFlags);
+                ret = qemudDomainAttachSCSIDisk(dom->conn, driver, vm,
+                                                dev->data.disk, qemuCmdFlags);
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else {
@@ -5825,7 +5938,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            ret = qemudDomainAttachPciControllerDevice(dom->conn, driver, vm, dev->data.controller);
+            ret = qemudDomainAttachPciControllerDevice(dom->conn, driver, vm,
+                                                       dev->data.controller, qemuCmdFlags);
         } else {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
                              _("disk controller bus '%s' cannot be hotplugged."),
@@ -5833,11 +5947,13 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             /* fallthrough */
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        ret = qemudDomainAttachNetDevice(dom->conn, driver, vm, dev->data.net, qemuCmdFlags);
+        ret = qemudDomainAttachNetDevice(dom->conn, driver, vm,
+                                         dev->data.net, qemuCmdFlags);
         if (ret == 0)
             dev->data.net = NULL;
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        ret = qemudDomainAttachHostDevice(dom->conn, driver, vm, dev->data.hostdev);
+        ret = qemudDomainAttachHostDevice(dom->conn, driver, vm,
+                                          dev->data.hostdev, qemuCmdFlags);
         if (ret == 0)
             dev->data.hostdev = NULL;
     } else {
