@@ -291,6 +291,7 @@ virGetLastError(void)
 
 /**
  * virSetError:
+ * @newerr: previously saved error object
  *
  * Set the current error from a previously saved error object
  *

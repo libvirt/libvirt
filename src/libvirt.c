@@ -10939,7 +10939,10 @@ error:
 /**
  * virConnectCompareCPU:
  * @conn: virConnect connection
- * @xml: XML describing the CPU to compare with host CPU
+ * @xmlDesc: XML describing the CPU to compare with host CPU
+ * @flags: currently unused, pass 0
+ *
+ * Compares the given CPU description with the host CPU
  *
  * Returns comparison result according to enum virCPUCompareResult
  */
