@@ -335,9 +335,10 @@ int main(int argc, char **argv)
 
             sts = poll(&pfd, 1, TIMEOUT_MS);
 
-            /* We are assuming timeout of 0 here - so execute every time */
-            if(t_cb && t_active)
+            /* if t_timeout < 0 then t_cb must not be called */
+            if (t_cb && t_active && t_timeout >= 0) {
                 t_cb(t_timeout,t_opaque);
+            }
 
             if (sts == 0) {
                 /* DEBUG0("Poll timeout"); */
