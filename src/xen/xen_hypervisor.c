@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005, 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2005-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -3477,11 +3477,8 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if (domain == NULL || domain->conn == NULL) {
-        virXenErrorFunc (domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                        "invalid argument", 0);
+    if (domain == NULL || domain->conn == NULL)
         return -1;
-    }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
     if (priv->handle < 0 || (domain->id < 0) ||
