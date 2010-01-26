@@ -1,7 +1,7 @@
 /*
  * cpu_x86.c: CPU driver for CPUs with x86 compatible CPUID instruction
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -952,6 +952,9 @@ x86Decode(virCPUDefPtr cpu,
     int i;
 
     if (data == NULL || (map = x86LoadMap()) == NULL)
+        return -1;
+
+    if (models == NULL && nmodels != 0)
         return -1;
 
     candidate = map->models;
