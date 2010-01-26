@@ -1676,6 +1676,7 @@ static virDeviceMonitor udevDeviceMonitor = {
 };
 
 static virStateDriver udevStateDriver = {
+    .name = "udev",
     .initialize = udevDeviceMonitorStartup,
     .cleanup = udevDeviceMonitorShutdown,
     .reload = udevDeviceMonitorReload,
