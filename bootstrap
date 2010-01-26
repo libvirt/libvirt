@@ -68,6 +68,7 @@ modules='
 areadlink
 base64
 c-ctype
+canonicalize-lgpl
 close
 connect
 getaddrinfo

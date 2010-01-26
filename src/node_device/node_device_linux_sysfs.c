@@ -24,6 +24,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 
 #include "node_device_driver.h"
 #include "node_device_hal.h"
@@ -242,7 +243,8 @@ out:
 static int get_sriov_function(const char *device_link,
                               struct pci_config_address **bdf)
 {
-    char *device_path = NULL, *config_address = NULL;
+    char *config_address = NULL;
+    char *device_path = NULL;
     char errbuf[64];
     int ret = SRIOV_ERROR;
 
@@ -259,7 +261,7 @@ static int get_sriov_function(const char *device_link,
 
     }
 
-    device_path = realpath(device_link, device_path);
+    device_path = canonicalize_file_name (device_link);
     if (device_path == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
         VIR_ERROR("Failed to resolve device link '%s': '%s'", device_link,
