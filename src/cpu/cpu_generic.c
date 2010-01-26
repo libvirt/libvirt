@@ -2,7 +2,7 @@
  * cpu_generic.c: CPU manipulation driver for architectures which are not
  * handled by their own driver
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009--2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 
 #include <config.h>
 
+#include "memory.h"
 #include "hash.h"
 #include "cpu.h"
 #include "cpu_generic.h"
@@ -109,6 +110,104 @@ cleanup:
 }
 
 
+static virCPUDefPtr
+genericBaseline(virCPUDefPtr *cpus,
+                unsigned int ncpus,
+                const char **models,
+                unsigned int nmodels)
+{
+    virCPUDefPtr cpu = NULL;
+    virCPUFeatureDefPtr features = NULL;
+    unsigned int nfeatures;
+    unsigned int count;
+    unsigned int i, j;
+
+    if (models) {
+        bool found = false;
+        for (i = 0; i < nmodels; i++) {
+            if (STREQ(cpus[0]->model, models[i])) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("CPU model '%s' is not support by hypervisor"),
+                    cpus[0]->model);
+            goto error;
+        }
+    }
+
+    if (VIR_ALLOC(cpu) < 0 ||
+        !(cpu->arch = strdup(cpus[0]->arch)) ||
+        !(cpu->model = strdup(cpus[0]->model)) ||
+        VIR_ALLOC_N(features, cpus[0]->nfeatures) < 0)
+        goto no_memory;
+
+    cpu->type = VIR_CPU_TYPE_HOST;
+
+    count = nfeatures = cpus[0]->nfeatures;
+    for (i = 0; i < nfeatures; i++)
+        features[i].name = cpus[0]->features[i].name;
+
+    for (i = 1; i < ncpus; i++) {
+        virHashTablePtr hash;
+
+        if (STRNEQ(cpu->arch, cpus[i]->arch)) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("CPUs have incompatible architectures: '%s' != '%s'"),
+                    cpu->arch, cpus[i]->arch);
+            goto error;
+        }
+
+        if (STRNEQ(cpu->model, cpus[i]->model)) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("CPU models don't match: '%s' != '%s'"),
+                    cpu->model, cpus[i]->model);
+            goto error;
+        }
+
+        if (!(hash = genericHashFeatures(cpus[i])))
+            goto no_memory;
+
+        for (j = 0; j < nfeatures; j++) {
+            if (features[j].name &&
+                !virHashLookup(hash, features[j].name)) {
+                features[j].name = NULL;
+                count--;
+            }
+        }
+
+        virHashFree(hash, NULL);
+    }
+
+    if (VIR_ALLOC_N(cpu->features, count) < 0)
+        goto no_memory;
+    cpu->nfeatures = count;
+
+    j = 0;
+    for (i = 0; i < nfeatures; i++) {
+        if (!features[i].name)
+            continue;
+
+        if (!(cpu->features[j++].name = strdup(features[i].name)))
+            goto no_memory;
+    }
+
+cleanup:
+    VIR_FREE(features);
+
+    return cpu;
+
+no_memory:
+    virReportOOMError();
+error:
+    virCPUDefFree(cpu);
+    cpu = NULL;
+    goto cleanup;
+}
+
+
 struct cpuArchDriver cpuDriverGeneric = {
     .name = "generic",
     .arch = NULL,
@@ -119,5 +218,5 @@ struct cpuArchDriver cpuDriverGeneric = {
     .free       = NULL,
     .nodeData   = NULL,
     .guestData  = NULL,
-    .baseline   = NULL,
+    .baseline   = genericBaseline,
 };
