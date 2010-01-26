@@ -41,6 +41,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
+struct _udevPrivate {
+    struct udev_monitor *udev_monitor;
+    int watch;
+};
+
 static virDeviceMonitorStatePtr driverState = NULL;
 
 static int udevStrToLong_ull(char const *s,
@@ -1354,12 +1359,18 @@ static int udevDeviceMonitorShutdown(void)
 {
     int ret = 0;
 
+    udevPrivate *priv = NULL;
     struct udev_monitor *udev_monitor = NULL;
     struct udev *udev = NULL;
 
     if (driverState) {
-
         nodeDeviceLock(driverState);
+
+        priv = driverState->privateData;
+
+        if (priv->watch != -1)
+            virEventRemoveHandle(priv->watch);
+
         udev_monitor = DRV_STATE_UDEV_MONITOR(driverState);
 
         if (udev_monitor != NULL) {
@@ -1375,7 +1386,7 @@ static int udevDeviceMonitorShutdown(void)
         nodeDeviceUnlock(driverState);
         virMutexDestroy(&driverState->lock);
         VIR_FREE(driverState);
-
+        VIR_FREE(priv);
     } else {
         ret = -1;
     }
@@ -1534,18 +1545,28 @@ out:
 
 static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
 {
+    udevPrivate *priv = NULL;
     struct udev *udev = NULL;
-    struct udev_monitor *udev_monitor = NULL;
     int ret = 0;
+
+    if (VIR_ALLOC(priv) < 0) {
+        virReportOOMError(NULL);
+        ret = -1;
+        goto out;
+    }
+
+    priv->watch = -1;
 
     if (VIR_ALLOC(driverState) < 0) {
         virReportOOMError(NULL);
+        VIR_FREE(priv);
         ret = -1;
         goto out;
     }
 
     if (virMutexInit(&driverState->lock) < 0) {
         VIR_ERROR0("Failed to initialize mutex for driverState");
+        VIR_FREE(priv);
         VIR_FREE(driverState);
         ret = -1;
         goto out;
@@ -1562,18 +1583,19 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     udev = udev_new();
     udev_set_log_fn(udev, udevLogFunction);
 
-    udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
-    if (udev_monitor == NULL) {
+    priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
+    if (priv->udev_monitor == NULL) {
+        VIR_FREE(priv);
+        nodeDeviceUnlock(driverState);
         VIR_ERROR0("udev_monitor_new_from_netlink returned NULL");
         ret = -1;
         goto out;
     }
 
-    udev_monitor_enable_receiving(udev_monitor);
+    udev_monitor_enable_receiving(priv->udev_monitor);
 
     /* udev can be retrieved from udev_monitor */
-    driverState->privateData = udev_monitor;
-    nodeDeviceUnlock(driverState);
+    driverState->privateData = priv;
 
     /* We register the monitor with the event callback so we are
      * notified by udev of device changes before we enumerate existing
@@ -1583,13 +1605,16 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
      * enumeration.  The alternative is to register the callback after
      * we enumerate, in which case we will fail to create any devices
      * that appear while the enumeration is taking place.  */
-    if (virEventAddHandle(udev_monitor_get_fd(udev_monitor),
-                          VIR_EVENT_HANDLE_READABLE,
-                          udevEventHandleCallback,
-                          NULL, NULL) == -1) {
+    priv->watch = virEventAddHandle(udev_monitor_get_fd(priv->udev_monitor),
+                                    VIR_EVENT_HANDLE_READABLE,
+                                    udevEventHandleCallback, NULL, NULL);
+    if (priv->watch == -1) {
+        nodeDeviceUnlock(driverState);
         ret = -1;
         goto out;
     }
+
+    nodeDeviceUnlock(driverState);
 
     /* Create a fictional 'computer' device to root the device tree. */
     if (udevSetupSystemDev() != 0) {
