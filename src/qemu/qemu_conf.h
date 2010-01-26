@@ -188,23 +188,51 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          int *ntapfds,
                                          const char *migrateFrom);
 
-int         qemuBuildHostNetStr         (virConnectPtr conn,
-                                         virDomainNetDefPtr net,
-                                         char type_sep,
-                                         int vlan,
-                                         const char *tapfd,
-                                         char **str);
+/* Legacy, pre device support */
+char * qemuBuildHostNetStr(virConnectPtr conn,
+                           virDomainNetDefPtr net,
+                           char type_sep,
+                           int vlan,
+                           const char *tapfd);
 
-int         qemuBuildNicStr             (virConnectPtr conn,
-                                         virDomainNetDefPtr net,
-                                         const char *prefix,
-                                         int vlan,
-                                         char **str);
+/* Current, best practice */
+char * qemuBuildNetDevStr(virConnectPtr conn,
+                          virDomainNetDefPtr net,
+                          const char *tapfd);
 
 
-char *      qemuBuildDriveStr           (virDomainDiskDefPtr disk,
-                                         int bootable,
-                                         int qemuCmdFlags);
+/* Legacy, pre device support */
+char * qemuBuildNicStr(virConnectPtr conn,
+                       virDomainNetDefPtr net,
+                       const char *prefix,
+                       int vlan);
+
+/* Current, best practice */
+char * qemuBuildNicDevStr(virDomainNetDefPtr net);
+
+/* Both legacy & current support */
+char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
+                        int bootable,
+                        int qemuCmdFlags);
+
+/* Current, best practice */
+char * qemuBuildDriveDevStr(virConnectPtr conn,
+                            virDomainDiskDefPtr disk);
+/* Current, best practice */
+char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);
+
+char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev);
+
+char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
+
+char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound);
+
+char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev);
+
+char * qemuBuildChrChardevStr(virDomainChrDefPtr dev);
+char * qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix);
+
+
 
 int         qemudNetworkIfaceConnect    (virConnectPtr conn,
                                          struct qemud_driver *driver,

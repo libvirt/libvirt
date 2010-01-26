@@ -2057,10 +2057,10 @@ error:
     return NULL;
 }
 
-static int
+
+char *
 qemuBuildDriveDevStr(virConnectPtr conn,
-                     virDomainDiskDefPtr disk,
-                     char **str)
+                     virDomainDiskDefPtr disk)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -2101,17 +2101,20 @@ qemuBuildDriveDevStr(virConnectPtr conn,
     virBufferVSprintf(&opt, ",drive=drive-%s", disk->info.alias);
     virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
 
-    *str = virBufferContentAndReset(&opt);
-    return 0;
+    if (virBufferError(&opt)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&opt);
 
 error:
     virBufferFreeAndReset(&opt);
-    *str = NULL;
-    return -1;
+    return NULL;
 }
 
 
-static char *
+char *
 qemuBuildControllerDevStr(virDomainControllerDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2131,8 +2134,10 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def)
     if (qemuBuildDeviceAddressStr(&buf, &def->info) < 0)
         goto error;
 
-    if (virBufferError(&buf))
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
         goto error;
+    }
 
     return virBufferContentAndReset(&buf);
 
@@ -2142,14 +2147,14 @@ error:
 }
 
 
-int
+char *
 qemuBuildNicStr(virConnectPtr conn,
                 virDomainNetDefPtr net,
                 const char *prefix,
-                int vlan,
-                char **str)
+                int vlan)
 {
-    if (virAsprintf(str,
+    char *str;
+    if (virAsprintf(&str,
                     "%smacaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d%s%s%s%s",
                     prefix ? prefix : "",
                     net->mac[0], net->mac[1],
@@ -2161,13 +2166,14 @@ qemuBuildNicStr(virConnectPtr conn,
                     (net->info.alias ? ",name=" : ""),
                     (net->info.alias ? net->info.alias : "")) < 0) {
         virReportOOMError(conn);
-        return -1;
+        return NULL;
     }
 
-    return 0;
+    return str;
 }
 
-static char *
+
+char *
 qemuBuildNicDevStr(virDomainNetDefPtr net)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2202,23 +2208,25 @@ error:
     return NULL;
 }
 
-int
+
+char *
 qemuBuildHostNetStr(virConnectPtr conn,
                     virDomainNetDefPtr net,
                     char type_sep,
                     int vlan,
-                    const char *tapfd,
-                    char **str)
+                    const char *tapfd)
 {
+    char *str = NULL;
+
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(str, "tap%cfd=%s,vlan=%d%s%s",
+        if (virAsprintf(&str, "tap%cfd=%s,vlan=%d%s%s",
                         type_sep, tapfd, vlan,
                         (net->hostnet_name ? ",name=" : ""),
                         (net->hostnet_name ? net->hostnet_name : "")) < 0) {
             virReportOOMError(conn);
-            return -1;
+            return NULL;
         }
         break;
 
@@ -2245,10 +2253,10 @@ qemuBuildHostNetStr(virConnectPtr conn,
             if (virBufferError(&buf)) {
                 virBufferFreeAndReset(&buf);
                 virReportOOMError(conn);
-                return -1;
+                return NULL;
             }
 
-            *str = virBufferContentAndReset(&buf);
+            str = virBufferContentAndReset(&buf);
         }
         break;
 
@@ -2270,7 +2278,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
                 break;
             }
 
-            if (virAsprintf(str, "socket%c%s=%s:%d,vlan=%d%s%s",
+            if (virAsprintf(&str, "socket%c%s=%s:%d,vlan=%d%s%s",
                             type_sep, mode,
                             net->data.socket.address,
                             net->data.socket.port,
@@ -2278,40 +2286,41 @@ qemuBuildHostNetStr(virConnectPtr conn,
                             (net->hostnet_name ? ",name=" : ""),
                             (net->hostnet_name ? net->hostnet_name : "")) < 0) {
                 virReportOOMError(conn);
-                return -1;
+                return NULL;
             }
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
-        if (virAsprintf(str, "user%cvlan=%d%s%s",
+        if (virAsprintf(&str, "user%cvlan=%d%s%s",
                         type_sep, vlan,
                         (net->hostnet_name ? ",name=" : ""),
                         (net->hostnet_name ? net->hostnet_name : "")) < 0) {
             virReportOOMError(conn);
-            return -1;
+            return NULL;
         }
         break;
     }
 
-    return 0;
+    return str;
 }
 
 
-static int
+char *
 qemuBuildNetDevStr(virConnectPtr conn,
                    virDomainNetDefPtr net,
-                   const char *tapfd,
-                   char **str)
+                   const char *tapfd)
 {
+    char *str = NULL;
+
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(str, "tap,fd=%s,id=%s",
+        if (virAsprintf(&str, "tap,fd=%s,id=%s",
                         tapfd, net->hostnet_name) < 0) {
             virReportOOMError(conn);
-            return -1;
+            return NULL;
         }
         break;
 
@@ -2331,10 +2340,10 @@ qemuBuildNetDevStr(virConnectPtr conn,
             if (virBufferError(&buf)) {
                 virBufferFreeAndReset(&buf);
                 virReportOOMError(conn);
-                return -1;
+                return NULL;
             }
 
-            *str = virBufferContentAndReset(&buf);
+            str = virBufferContentAndReset(&buf);
         }
         break;
 
@@ -2356,32 +2365,33 @@ qemuBuildNetDevStr(virConnectPtr conn,
                 break;
             }
 
-            if (virAsprintf(str, "socket,%s=%s:%d,id=%s",
+            if (virAsprintf(&str, "socket,%s=%s:%d,id=%s",
                             mode,
                             net->data.socket.address,
                             net->data.socket.port,
                             net->hostnet_name) < 0) {
                 virReportOOMError(conn);
-                return -1;
+                return NULL;
             }
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
-        if (virAsprintf(str, "user,id=%s",
+        if (virAsprintf(&str, "user,id=%s",
                         net->hostnet_name) < 0) {
             virReportOOMError(conn);
-            return -1;
+            return NULL;
         }
         break;
     }
 
-    return 0;
+    return str;
 }
 
 
-static char *qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev)
+char *
+qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2410,7 +2420,8 @@ error:
 }
 
 
-static char *qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
+char *
+qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2432,7 +2443,7 @@ error:
 }
 
 
-static char *
+char *
 qemuBuildSoundDevStr(virDomainSoundDefPtr sound)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2468,7 +2479,7 @@ error:
 }
 
 
-static char *
+char *
 qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2494,43 +2505,46 @@ error:
     return NULL;
 }
 
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
-static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
-                                                  virBufferPtr buf)
+char *
+qemuBuildChrChardevStr(virDomainChrDefPtr dev)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
+
     switch(dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferVSprintf(buf, "null,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "null,id=%s", dev->info.alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferVSprintf(buf, "vc,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "vc,id=%s", dev->info.alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferVSprintf(buf, "pty,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "pty,id=%s", dev->info.alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferVSprintf(buf, "tty,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "tty,id=%s,path=%s", dev->info.alias, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferVSprintf(buf, "file,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "file,id=%s,path=%s", dev->info.alias, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(buf, "pipe,id=%s,path=%s", dev->info.alias, dev->data.file.path);
+        virBufferVSprintf(&buf, "pipe,id=%s,path=%s", dev->info.alias, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferVSprintf(buf, "stdio,id=%s", dev->info.alias);
+        virBufferVSprintf(&buf, "stdio,id=%s", dev->info.alias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        virBufferVSprintf(buf,
+        virBufferVSprintf(&buf,
                           "udp,id=%s,host=%s,port=%s,localaddr=%s,localport=%s",
                           dev->info.alias,
                           dev->data.udp.connectHost,
@@ -2541,7 +2555,7 @@ static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
-        virBufferVSprintf(buf,
+        virBufferVSprintf(&buf,
                           "socket,id=%s,host=%s,port=%s%s%s",
                           dev->info.alias,
                           dev->data.tcp.host,
@@ -2551,49 +2565,66 @@ static void qemudBuildCommandLineChrDevChardevStr(virDomainChrDefPtr dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferVSprintf(buf,
+        virBufferVSprintf(&buf,
                           "socket,id=%s,path=%s%s",
                           dev->info.alias,
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
         break;
     }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
-static void qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
-                                           virBufferPtr buf)
+
+char *
+qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (prefix)
+        virBufferAdd(&buf, prefix, strlen(prefix));
+
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferAddLit(buf, "null");
+        virBufferAddLit(&buf, "null");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferAddLit(buf, "vc");
+        virBufferAddLit(&buf, "vc");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferAddLit(buf, "pty");
+        virBufferAddLit(&buf, "pty");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferStrcat(buf, dev->data.file.path, NULL);
+        virBufferStrcat(&buf, dev->data.file.path, NULL);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferVSprintf(buf, "file:%s", dev->data.file.path);
+        virBufferVSprintf(&buf, "file:%s", dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferVSprintf(buf, "pipe:%s", dev->data.file.path);
+        virBufferVSprintf(&buf, "pipe:%s", dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferAddLit(buf, "stdio");
+        virBufferAddLit(&buf, "stdio");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        virBufferVSprintf(buf, "udp:%s:%s@%s:%s",
+        virBufferVSprintf(&buf, "udp:%s:%s@%s:%s",
                           dev->data.udp.connectHost,
                           dev->data.udp.connectService,
                           dev->data.udp.bindHost,
@@ -2602,12 +2633,12 @@ static void qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         if (dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET) {
-            virBufferVSprintf(buf, "telnet:%s:%s%s",
+            virBufferVSprintf(&buf, "telnet:%s:%s%s",
                               dev->data.tcp.host,
                               dev->data.tcp.service,
                               dev->data.tcp.listen ? ",server,nowait" : "");
         } else {
-            virBufferVSprintf(buf, "tcp:%s:%s%s",
+            virBufferVSprintf(&buf, "tcp:%s:%s%s",
                               dev->data.tcp.host,
                               dev->data.tcp.service,
                               dev->data.tcp.listen ? ",server,nowait" : "");
@@ -2615,21 +2646,32 @@ static void qemudBuildCommandLineChrDevStr(virDomainChrDefPtr dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferVSprintf(buf, "unix:%s%s",
+        virBufferVSprintf(&buf, "unix:%s%s",
                           dev->data.nix.path,
                           dev->data.nix.listen ? ",server,nowait" : "");
         break;
     }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError(NULL);
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 
 static int
-qemudBuildCommandLineCPU(virConnectPtr conn,
-                         const struct qemud_driver *driver,
-                         const virDomainDefPtr def,
-                         const char *emulator,
-                         const struct utsname *ut,
-                         char **opt)
+qemuBuildCpuArgStr(virConnectPtr conn,
+                   const struct qemud_driver *driver,
+                   const virDomainDefPtr def,
+                   const char *emulator,
+                   const struct utsname *ut,
+                   char **opt)
 {
     const virCPUDefPtr host = driver->caps->host.cpu;
     virCPUDefPtr guest = NULL;
@@ -2715,9 +2757,9 @@ no_memory:
 }
 
 static char *
-qemudBuildCommandLineSmp(virConnectPtr conn,
-                         const virDomainDefPtr def,
-                         int qemuCmdFlags)
+qemuBuildSmpArgStr(virConnectPtr conn,
+                   const virDomainDefPtr def,
+                   int qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2947,7 +2989,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT(def->os.machine);
     }
 
-    if (qemudBuildCommandLineCPU(conn, driver, def, emulator, &ut, &cpu) < 0)
+    if (qemuBuildCpuArgStr(conn, driver, def, emulator, &ut, &cpu) < 0)
         goto error;
 
     if (cpu) {
@@ -2987,7 +3029,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     ADD_ARG_LIT("-smp");
-    if (!(smp = qemudBuildCommandLineSmp(conn, def, qemuCmdFlags)))
+    if (!(smp = qemuBuildSmpArgStr(conn, def, qemuCmdFlags)))
         goto error;
     ADD_ARG(smp);
 
@@ -3031,25 +3073,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-nodefaults");
 
     if (monitor_chr) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
-
+        char *chrdev;
         /* Use -chardev if it's available */
         if (qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) {
-            qemudBuildCommandLineChrDevChardevStr(monitor_chr, &buf);
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
-            }
 
             ADD_ARG_LIT("-chardev");
-            ADD_ARG(virBufferContentAndReset(&buf));
-
-            virBufferVSprintf(&buf, "chardev=%s", monitor_chr->info.alias);
-
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
-            }
+            if (!(chrdev = qemuBuildChrChardevStr(monitor_chr)))
+                goto error;
+            ADD_ARG(chrdev);
 
             ADD_ARG_LIT("-mon");
             if (monitor_json)
@@ -3057,18 +3088,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
             else
                 ADD_ARG_LIT("chardev=monitor,mode=readline");
         } else {
+            const char *prefix = NULL;
             if (monitor_json)
-                virBufferAddLit(&buf, "control,");
-
-            qemudBuildCommandLineChrDevStr(monitor_chr, &buf);
-
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
-            }
+                prefix = "control,";
 
             ADD_ARG_LIT("-monitor");
-            ADD_ARG(virBufferContentAndReset(&buf));
+            if (!(chrdev = qemuBuildChrArgStr(monitor_chr, prefix)))
+                goto error;
+            ADD_ARG(chrdev);
         }
     }
 
@@ -3250,7 +3277,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 } else {
                     ADD_ARG_LIT("-device");
 
-                    if (qemuBuildDriveDevStr(conn, disk, &optstr) < 0)
+                    if (!(optstr = qemuBuildDriveDevStr(conn, disk)))
                         goto error;
                     ADD_ARG(optstr);
                 }
@@ -3357,7 +3384,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 ADD_ARG_LIT("-netdev");
-                if (qemuBuildNetDevStr(conn, net, tapfd_name, &host) < 0)
+                if (!(host = qemuBuildNetDevStr(conn, net, tapfd_name)))
                     goto error;
                 ADD_ARG(host);
 
@@ -3367,13 +3394,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 ADD_ARG(nic);
             } else {
                 ADD_ARG_LIT("-net");
-                if (qemuBuildNicStr(conn, net, "nic,", net->vlan, &nic) < 0)
+                if (!(nic = qemuBuildNicStr(conn, net, "nic,", net->vlan)))
                     goto error;
                 ADD_ARG(nic);
 
                 ADD_ARG_LIT("-net");
-                if (qemuBuildHostNetStr(conn, net, ',',
-                                        net->vlan, tapfd_name, &host) < 0)
+                if (!(host = qemuBuildHostNetStr(conn, net, ',',
+                                                 net->vlan, tapfd_name)))
                     goto error;
                 ADD_ARG(host);
             }
@@ -3388,40 +3415,26 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     } else {
         for (i = 0 ; i < def->nserials ; i++) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr serial = def->serials[i];
+            char *devstr;
 
             /* Use -chardev with -device if they are available */
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-                qemudBuildCommandLineChrDevChardevStr(serial, &buf);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
-                    goto no_memory;
-                }
-
                 ADD_ARG_LIT("-chardev");
-                ADD_ARG(virBufferContentAndReset(&buf));
-
-                virBufferVSprintf(&buf, "isa-serial,chardev=%s", serial->info.alias);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
-                    goto no_memory;
-                }
+                if (!(devstr = qemuBuildChrChardevStr(serial)))
+                    goto error;
+                ADD_ARG(devstr);
 
                 ADD_ARG_LIT("-device");
-                ADD_ARG(virBufferContentAndReset(&buf));
-            }
-
-            else {
-                qemudBuildCommandLineChrDevStr(serial, &buf);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
+                if (virAsprintf(&devstr, "isa-serial,chardev=%s", serial->info.alias) < 0)
                     goto no_memory;
-                }
-
+                ADD_ARG(devstr);
+            } else {
                 ADD_ARG_LIT("-serial");
-                ADD_ARG(virBufferContentAndReset(&buf));
+                if (!(devstr = qemuBuildChrArgStr(serial, NULL)))
+                    goto error;
+                ADD_ARG(devstr);
             }
         }
     }
@@ -3434,47 +3447,33 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     } else {
         for (i = 0 ; i < def->nparallels ; i++) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
             virDomainChrDefPtr parallel = def->parallels[i];
+            char *devstr;
 
             /* Use -chardev with -device if they are available */
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-                qemudBuildCommandLineChrDevChardevStr(parallel, &buf);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
-                    goto no_memory;
-                }
-
                 ADD_ARG_LIT("-chardev");
-                ADD_ARG(virBufferContentAndReset(&buf));
-
-                virBufferVSprintf(&buf, "isa-parallel,chardev=%s", parallel->info.alias);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
-                    goto no_memory;
-                }
+                if (!(devstr = qemuBuildChrChardevStr(parallel)))
+                    goto error;
+                ADD_ARG(devstr);
 
                 ADD_ARG_LIT("-device");
-                ADD_ARG(virBufferContentAndReset(&buf));
-            }
-
-            else {
-                qemudBuildCommandLineChrDevStr(parallel, &buf);
-                if (virBufferError(&buf)) {
-                    virBufferFreeAndReset(&buf);
+                if (virAsprintf(&devstr, "isa-parallel,chardev=%s", parallel->info.alias) < 0)
                     goto no_memory;
-                }
-
+                ADD_ARG(devstr);
+            } else {
                 ADD_ARG_LIT("-parallel");
-                ADD_ARG(virBufferContentAndReset(&buf));
+                if (!(devstr = qemuBuildChrArgStr(parallel, NULL)))
+                      goto error;
+                ADD_ARG(devstr);
             }
         }
     }
 
     for (i = 0 ; i < def->nchannels ; i++) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
         virDomainChrDefPtr channel = def->channels[i];
+        char *devstr;
 
         switch(channel->targetType) {
         case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
@@ -3485,30 +3484,22 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            qemudBuildCommandLineChrDevChardevStr(channel, &buf);
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                goto no_memory;
-            }
-
             ADD_ARG_LIT("-chardev");
-            ADD_ARG(virBufferContentAndReset(&buf));
+            if (!(devstr = qemuBuildChrChardevStr(channel)))
+                goto error;
+            ADD_ARG(devstr);
 
-            const char *addr = virSocketFormatAddr(channel->target.addr);
+            char *addr = virSocketFormatAddr(channel->target.addr);
             int port = virSocketGetPort(channel->target.addr);
 
             ADD_ARG_LIT("-netdev");
-            virBufferVSprintf(&buf, "user,guestfwd=tcp:%s:%i,chardev=%s,id=user-%s",
-                              addr, port, channel->info.alias, channel->info.alias);
-
-            VIR_FREE(addr);
-
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
+            if (virAsprintf(&devstr, "user,guestfwd=tcp:%s:%i,chardev=%s,id=user-%s",
+                            addr, port, channel->info.alias, channel->info.alias) < 0) {
+                VIR_FREE(addr);
                 goto no_memory;
             }
-
-            ADD_ARG(virBufferContentAndReset(&buf));
+            VIR_FREE(addr);
+            ADD_ARG(devstr);
         }
     }
 

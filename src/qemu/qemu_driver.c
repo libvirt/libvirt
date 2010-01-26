@@ -5522,8 +5522,8 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
-    if (qemuBuildHostNetStr(conn, net, ' ',
-                            net->vlan, tapfd_name, &netstr) < 0)
+    if (!(netstr = qemuBuildHostNetStr(conn, net, ' ',
+                                       net->vlan, tapfd_name)))
         goto try_tapfd_close;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5537,7 +5537,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         close(tapfd);
     tapfd = -1;
 
-    if (qemuBuildNicStr(conn, net, NULL, net->vlan, &nicstr) < 0)
+    if (!(nicstr = qemuBuildNicStr(conn, net, NULL, net->vlan)))
         goto try_remove;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
