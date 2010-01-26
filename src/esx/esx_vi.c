@@ -251,8 +251,8 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 
     if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "curl_easy_perform() returned an error: %s (%d)",
-                     curl_easy_strerror(errorCode), errorCode);
+                     "curl_easy_perform() returned an error: %s (%d) : %s",
+                     curl_easy_strerror(errorCode), errorCode, ctx->curl_error);
         return -1;
     }
 
@@ -262,8 +262,8 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
     if (errorCode != CURLE_OK) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                      "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an "
-                     "error: %s (%d)", curl_easy_strerror(errorCode),
-                     errorCode);
+                     "error: %s (%d) : %s", curl_easy_strerror(errorCode),
+                     errorCode, ctx->curl_error);
         return -1;
     }
 
@@ -282,8 +282,8 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
         if (errorCode != CURLE_OK) {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                          "curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned "
-                         "an error: %s (%d)", curl_easy_strerror(errorCode),
-                         errorCode);
+                         "an error: %s (%d) : %s", curl_easy_strerror(errorCode),
+                         errorCode, ctx->curl_error);
         } else {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                          "The server redirects from '%s' to '%s'", url,
@@ -360,6 +360,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                      esxVI_CURL_ReadString);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_WRITEFUNCTION,
                      esxVI_CURL_WriteBuffer);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_ERRORBUFFER,
+                     ctx->curl_error);
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
     curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 1);

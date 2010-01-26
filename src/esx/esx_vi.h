@@ -77,6 +77,7 @@ struct _esxVI_Context {
     char *ipAddress;
     CURL *curl_handle;
     struct curl_slist *curl_headers;
+    char curl_error[CURL_ERROR_SIZE];
     virMutex curl_lock;
     char *username;
     char *password;
