@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1266,7 +1266,7 @@ pciDeviceDownstreamLacksACS(virConnectPtr conn,
         return -1;
 
     pos = dev->pcie_cap_pos;
-    if (!pos || !pciRead16(dev, PCI_CLASS_DEVICE) == PCI_CLASS_BRIDGE_PCI)
+    if (!pos || pciRead16(dev, PCI_CLASS_DEVICE) != PCI_CLASS_BRIDGE_PCI)
         return 0;
 
     flags = pciRead16(dev, pos + PCI_EXP_FLAGS);
