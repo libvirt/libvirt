@@ -1130,7 +1130,7 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     char *schedulertype = NULL;
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL)) {
+    if (domain->conn == NULL) {
         virXenErrorFunc(NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "domain or conn is NULL", 0);
         return NULL;
@@ -1214,7 +1214,7 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 {
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL)) {
+    if (domain->conn == NULL) {
         virXenErrorFunc(NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "domain or conn is NULL", 0);
         return -1;
@@ -1317,7 +1317,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
     xenUnifiedPrivatePtr priv;
     char buf[256];
 
-    if ((domain == NULL) || (domain->conn == NULL)) {
+    if (domain->conn == NULL) {
         virXenErrorFunc (NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                          "domain or conn is NULL", 0);
         return -1;
@@ -3064,12 +3064,12 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
  *
  * Returns the memory size in kilobytes or 0 in case of error.
  */
-static unsigned long
+static unsigned long ATTRIBUTE_NONNULL (1)
 xenHypervisorGetMaxMemory(virDomainPtr domain)
 {
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL))
+    if (domain->conn == NULL)
         return 0;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3178,7 +3178,7 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL))
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3286,7 +3286,7 @@ xenHypervisorPauseDomain(virDomainPtr domain)
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL))
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3313,7 +3313,7 @@ xenHypervisorResumeDomain(virDomainPtr domain)
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if ((domain == NULL) || (domain->conn == NULL))
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3340,7 +3340,7 @@ xenHypervisorDestroyDomain(virDomainPtr domain)
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3368,7 +3368,7 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3399,7 +3399,7 @@ xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3431,7 +3431,7 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
     int ret;
     xenUnifiedPrivatePtr priv;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3477,7 +3477,7 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -3550,7 +3550,7 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
     int maxcpu;
     xenUnifiedPrivatePtr priv;
 
-    if (domain == NULL || domain->conn == NULL)
+    if (domain->conn == NULL)
         return -1;
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
