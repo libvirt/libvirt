@@ -10,7 +10,7 @@
  * in a reliable fashion if merely after a list of partitions & sizes,
  * though it is fine for creating partitions.
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@
 #include <string.h>
 
 /* we don't need to include the full internal.h just for this */
-#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#define STREQ(a,b) (strcmp(a,b) == 0)
 
 /* Make the comparisons below fail if your parted headers
    are so old that they lack the definition.  */
