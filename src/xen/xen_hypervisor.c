@@ -2100,12 +2100,14 @@ xenHypervisorInit(void)
             DEBUG0("Using hypervisor call v2, sys ver6 dom ver5\n");
             goto done;
         }
-        /* Xen 4.0 */
+    }
+
+    /* Xen 4.0 */
+    sys_interface_version = 7; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         dom_interface_version = 6; /* XEN_DOMCTL_INTERFACE_VERSION */
-        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
-            DEBUG0("Using hypervisor call v2, sys ver6 dom ver6\n");
-            goto done;
-        }
+        DEBUG0("Using hypervisor call v2, sys ver7 dom ver6\n");
+        goto done;
     }
 
     hypervisor_version = 1;
