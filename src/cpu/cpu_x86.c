@@ -137,6 +137,17 @@ x86cpuidClearBits(struct cpuX86cpuid *cpuid,
 }
 
 
+static inline void
+x86cpuidAndBits(struct cpuX86cpuid *cpuid,
+                const struct cpuX86cpuid *mask)
+{
+    cpuid->eax &= mask->eax;
+    cpuid->ebx &= mask->ebx;
+    cpuid->ecx &= mask->ecx;
+    cpuid->edx &= mask->edx;
+}
+
+
 static struct cpuX86cpuid *
 x86DataCpuid(const union cpuData *data,
              uint32_t function)
@@ -473,6 +484,27 @@ x86ModelSubtract(struct x86_model *model1,
                              model2->cpuid[i].function);
         if (cpuid != NULL)
             x86cpuidClearBits(cpuid, model2->cpuid + i);
+    }
+}
+
+
+static void
+x86ModelIntersect(struct x86_model *model1,
+                  const struct x86_model *model2)
+{
+    int i;
+    struct cpuX86cpuid *cpuid;
+
+    for (i = 0; i < model1->ncpuid; i++) {
+        struct cpuX86cpuid *intersection = model1->cpuid + i;
+
+        cpuid = x86cpuidFind(model2->cpuid,
+                             model2->ncpuid,
+                             intersection->function);
+        if (cpuid != NULL)
+            x86cpuidAndBits(intersection, cpuid);
+        else
+            x86cpuidClearBits(intersection, intersection);
     }
 }
 
@@ -1192,6 +1224,59 @@ error:
 #endif
 
 
+static virCPUDefPtr
+x86Baseline(virCPUDefPtr *cpus,
+            unsigned int ncpus,
+            const char **models,
+            unsigned int nmodels)
+{
+    struct x86_map *map = NULL;
+    struct x86_model *base_model = NULL;
+    union cpuData *data = NULL;
+    virCPUDefPtr cpu = NULL;
+    unsigned int i;
+
+    if (!(map = x86LoadMap()))
+        goto error;
+
+    if (!(base_model = x86ModelFromCPU(cpus[0], map, 0)))
+        goto error;
+
+    if (VIR_ALLOC(cpu) < 0 ||
+        !(cpu->arch = strdup(cpus[0]->arch)))
+        goto no_memory;
+
+    for (i = 1; i < ncpus; i++) {
+        struct x86_model *model;
+        if (!(model = x86ModelFromCPU(cpus[i], map, 0)))
+            goto error;
+
+        x86ModelIntersect(base_model, model);
+        x86ModelFree(model);
+    }
+
+    if (!(data = x86DataFromModel(base_model)))
+        goto no_memory;
+
+    if (x86Decode(cpu, data, models, nmodels) < 0)
+        goto error;
+
+cleanup:
+    x86DataFree(data);
+    x86ModelFree(base_model);
+    x86MapFree(map);
+
+    return cpu;
+
+no_memory:
+    virReportOOMError();
+error:
+    virCPUDefFree(cpu);
+    cpu = NULL;
+    goto cleanup;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -1206,5 +1291,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .nodeData   = NULL,
 #endif
     .guestData  = x86GuestData,
-    .baseline   = NULL,
+    .baseline   = x86Baseline,
 };
