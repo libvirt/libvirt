@@ -222,7 +222,7 @@ one of the following semantically named macros
      STREQ(a,b)
      STRNEQ(a,b)
 
-  - For case sensitive equality:
+  - For case insensitive equality:
      STRCASEEQ(a,b)
      STRCASENEQ(a,b)
 
@@ -231,7 +231,7 @@ one of the following semantically named macros
      STREQLEN(a,b,n)
      STRNEQLEN(a,b,n)
 
-  - For case sensitive equality of a substring:
+  - For case insensitive equality of a substring:
 
      STRCASEEQLEN(a,b,n)
      STRCASENEQLEN(a,b,n)

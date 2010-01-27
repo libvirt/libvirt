@@ -256,7 +256,7 @@
 </pre>
       </li>
 
-      <li><p>For case sensitive equality:</p>
+      <li><p>For case insensitive equality:</p>
         <pre>
      STRCASEEQ(a,b)
      STRCASENEQ(a,b)
@@ -271,7 +271,7 @@
 </pre>
       </li>
 
-      <li><p>For case sensitive equality of a substring:</p>
+      <li><p>For case insensitive equality of a substring:</p>
 
         <pre>
      STRCASEEQLEN(a,b,n)
