@@ -529,6 +529,7 @@
             <value>fdc</value>
             <value>ide</value>
             <value>scsi</value>
+            <value>sata</value>
           </choice>
         </attribute>
       </optional>
