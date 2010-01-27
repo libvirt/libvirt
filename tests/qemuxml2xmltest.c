@@ -134,7 +134,6 @@ mymain(int argc, char **argv)
     DO_TEST("console-compat");
     DO_TEST("channel-guestfwd");
 
-    DO_TEST("hostdev-usb-product");
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");
 

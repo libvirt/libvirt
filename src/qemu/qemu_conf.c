@@ -1588,28 +1588,175 @@ qemuAssignDeviceAliases(virDomainDefPtr def)
 }
 
 
-static void
-qemuAssignDevicePCISlot(virDomainDeviceInfoPtr info,
-                        int slot)
+#define QEMU_PCI_ADDRESS_LAST_SLOT 31
+struct _qemuDomainPCIAddressSet {
+    virHashTablePtr used;
+    int nextslot;
+    /* XXX add domain, bus later when QEMU allows > 1 */
+};
+
+
+static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
 {
-    info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    info->addr.pci.domain = 0;
-    info->addr.pci.bus = 0;
-    info->addr.pci.slot = slot;
-    info->addr.pci.function = 0;
+    char *addr;
+
+    if (virAsprintf(&addr, "%d:%d:%d",
+                    dev->addr.pci.domain,
+                    dev->addr.pci.bus,
+                    dev->addr.pci.slot) < 0) {
+        virReportOOMError(NULL);
+        return NULL;
+    }
+    return addr;
 }
 
-static void
-qemuAssignDevicePCISlots(virDomainDefPtr def)
+
+static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                 virDomainDeviceInfoPtr dev,
+                                 void *opaque)
+{
+    qemuDomainPCIAddressSetPtr addrs = opaque;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        char *addr = qemuPCIAddressAsString(dev);
+
+        if (virHashAddEntry(addrs->used, addr, addr) < 0) {
+            VIR_FREE(addr);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
+{
+    qemuDomainPCIAddressSetPtr addrs;
+
+    if (VIR_ALLOC(addrs) < 0)
+        goto no_memory;
+
+    if (!(addrs->used = virHashCreate(10)))
+        goto no_memory;
+
+    if (virDomainDeviceInfoIterate(def, qemuCollectPCIAddress, addrs) < 0)
+        goto error;
+
+    return addrs;
+
+no_memory:
+    virReportOOMError(NULL);
+error:
+    qemuDomainPCIAddressSetFree(addrs);
+    return NULL;
+}
+
+int qemuDomainPCIAddressReserve(qemuDomainPCIAddressSetPtr addrs,
+                                int slot)
+{
+    virDomainDeviceInfo dev;
+    char *addr;
+
+    dev.addr.pci.domain = 0;
+    dev.addr.pci.bus = 0;
+    dev.addr.pci.slot = slot;
+
+    addr = qemuPCIAddressAsString(&dev);
+    if (!addr)
+        return -1;
+
+    if (virHashLookup(addrs->used, addr)) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unable to reserve PCI address %s"), addr);
+        VIR_FREE(addr);
+        return -1;
+    }
+
+    if (virHashAddEntry(addrs->used, addr, addr)) {
+        VIR_FREE(addr);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static void qemuDomainPCIAddressSetFreeEntry(void *payload, const char *name ATTRIBUTE_UNUSED)
+{
+    VIR_FREE(payload);
+}
+
+
+void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
+{
+    if (!addrs)
+        return;
+
+    virHashFree(addrs->used, qemuDomainPCIAddressSetFreeEntry);
+    addrs->used = NULL;
+}
+
+
+int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev)
 {
     int i;
-    /*
-     * slot = 0 -> Host bridge
-     * slot = 1 -> PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
-     * slot = 2 -> VGA
-     * slot = 3 -> VirtIO Balloon
-     */
-    int nextslot = 4;
+
+    for (i = addrs->nextslot ; i <= QEMU_PCI_ADDRESS_LAST_SLOT ; i++) {
+        virDomainDeviceInfo maybe;
+        char *addr;
+
+        memset(&maybe, 0, sizeof(maybe));
+        maybe.addr.pci.domain = 0;
+        maybe.addr.pci.bus = 0;
+        maybe.addr.pci.slot = i;
+
+        addr = qemuPCIAddressAsString(&maybe);
+
+        if (virHashLookup(addrs->used, addr)) {
+            VIR_FREE(addr);
+            continue;
+        }
+
+        if (virHashAddEntry(addrs->used, addr, addr) < 0) {
+            VIR_FREE(addr);
+            return -1;
+        }
+
+        dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        dev->addr.pci.domain = 0;
+        dev->addr.pci.bus = 0;
+        dev->addr.pci.slot = i;
+
+        addrs->nextslot = i + 1;
+
+        return 0;
+    }
+
+    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                     "%s", _("No more available PCI addresses"));
+    return -1;
+}
+
+
+int
+qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
+{
+    int i;
+
+    /* Host bridge */
+    if (qemuDomainPCIAddressReserve(addrs, 0) < 0)
+        goto error;
+    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller) */
+    if (qemuDomainPCIAddressReserve(addrs, 1) < 0)
+        goto error;
+    /* VGA */
+    if (qemuDomainPCIAddressReserve(addrs, 2) < 0)
+        goto error;
+    /* VirtIO Balloon */
+    if (qemuDomainPCIAddressReserve(addrs, 3) < 0)
+        goto error;
 
     for (i = 0; i < def->ndisks ; i++) {
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -1619,13 +1766,15 @@ qemuAssignDevicePCISlots(virDomainDefPtr def)
         if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
             continue;
 
-        qemuAssignDevicePCISlot(&def->disks[i]->info, nextslot++);
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->disks[i]->info) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->nnets ; i++) {
         if (def->nets[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
-        qemuAssignDevicePCISlot(&def->nets[i]->info, nextslot++);
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->nets[i]->info) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->nsounds ; i++) {
@@ -1636,7 +1785,8 @@ qemuAssignDevicePCISlots(virDomainDefPtr def)
             def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_PCSPK)
             continue;
 
-        qemuAssignDevicePCISlot(&def->sounds[i]->info, nextslot++);
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->sounds[i]->info) < 0)
+            goto error;
     }
 
     for (i = 0; i < def->nhostdevs ; i++) {
@@ -1646,14 +1796,23 @@ qemuAssignDevicePCISlots(virDomainDefPtr def)
             def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        qemuAssignDevicePCISlot(&def->hostdevs[i]->info, nextslot++);
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->hostdevs[i]->info) < 0)
+            goto error;
     }
     for (i = 0; i < def->nvideos ; i++) {
+        if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
         /* First VGA is hardcoded slot=2 */
-        if (i == 0)
-            qemuAssignDevicePCISlot(&def->videos[i]->info, 2);
-        else
-            qemuAssignDevicePCISlot(&def->videos[i]->info, nextslot++);
+        if (i == 0) {
+            def->videos[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            def->videos[i]->info.addr.pci.domain = 0;
+            def->videos[i]->info.addr.pci.bus = 0;
+            def->videos[i]->info.addr.pci.slot = 2;
+            def->videos[i]->info.addr.pci.function = 0;
+        } else {
+            if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
+                goto error;
+        }
     }
     for (i = 0; i < def->ncontrollers ; i++) {
         if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -1665,10 +1824,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def)
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             def->controllers[i]->idx == 0) {
-            qemuAssignDevicePCISlot(&def->controllers[i]->info, 1);
+            def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            def->controllers[i]->info.addr.pci.domain = 0;
+            def->controllers[i]->info.addr.pci.bus = 0;
+            def->controllers[i]->info.addr.pci.slot = 1;
             def->controllers[i]->info.addr.pci.function = 1;
         } else {
-            qemuAssignDevicePCISlot(&def->controllers[i]->info, nextslot++);
+            if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
+                goto error;
         }
     }
     for (i = 0; i < def->ninputs ; i++) {
@@ -1684,9 +1847,16 @@ qemuAssignDevicePCISlots(virDomainDefPtr def)
         /* Nada - none are PCI based (yet) */
         /* XXX virtio-serial will need one */
     }
-    if (def->watchdog) {
-        qemuAssignDevicePCISlot(&def->watchdog->info, nextslot++);
+    if (def->watchdog &&
+        def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->watchdog->info) < 0)
+            goto error;
     }
+
+    return 0;
+
+error:
+    return -1;
 }
 
 
@@ -2885,7 +3055,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         qemuAssignDeviceAliases(def);
-        qemuAssignDevicePCISlots(def);
     } else {
         qemuAssignDiskAliases(def, qemuCmdFlags);
     }

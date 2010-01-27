@@ -93,6 +93,8 @@ struct _qemuDomainObjPrivate {
 
     int nvcpupids;
     int *vcpupids;
+
+    qemuDomainPCIAddressSetPtr pciaddrs;
 };
 
 static int qemudShutdown(void);
@@ -146,6 +148,7 @@ static void qemuDomainObjPrivateFree(void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
 
+    qemuDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainChrDefFree(priv->monConfig);
     VIR_FREE(priv->vcpupids);
 
@@ -843,10 +846,13 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
 {
     virDomainObjPtr obj = payload;
     struct qemud_driver *driver = opaque;
+    qemuDomainObjPrivatePtr priv;
 
     virDomainObjLock(obj);
 
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
+
+    priv = obj->privateData;
 
     /* XXX check PID liveliness & EXE path */
     if (qemuConnectMonitor(obj) < 0)
@@ -855,6 +861,9 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
         goto error;
     }
+
+    if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)))
+        goto error;
 
     if (driver->securityDriver &&
         driver->securityDriver->domainReserveSecurityLabel &&
@@ -2635,6 +2644,18 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (priv->pciaddrs) {
+            qemuDomainPCIAddressSetFree(priv->pciaddrs);
+            priv->pciaddrs = NULL;
+        }
+        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(vm->def)))
+            goto cleanup;
+
+        if (qemuAssignDevicePCISlots(vm->def, priv->pciaddrs) < 0)
+            goto cleanup;
+    }
+
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                               priv->monJSON, qemuCmdFlags, &argv, &progenv,
@@ -2867,6 +2888,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 
     virDomainDefClearPCIAddresses(vm->def);
     virDomainDefClearDeviceAliases(vm->def);
+    qemuDomainPCIAddressSetFree(priv->pciaddrs);
+    priv->pciaddrs = NULL;
 
     qemuDomainReAttachHostDevices(conn, driver, vm->def);
 

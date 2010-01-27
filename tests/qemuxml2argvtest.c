@@ -62,6 +62,18 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (qemudCanonicalizeMachine(&driver, vmdef) < 0)
         goto fail;
 
+    if (flags & QEMUD_CMD_FLAG_DEVICE) {
+        qemuDomainPCIAddressSetPtr pciaddrs;
+        if (!(pciaddrs = qemuDomainPCIAddressSetCreate(vmdef)))
+            goto fail;
+
+        if (qemuAssignDevicePCISlots(vmdef, pciaddrs) < 0)
+            goto fail;
+
+        qemuDomainPCIAddressSetFree(pciaddrs);
+    }
+
+
     if (qemudBuildCommandLine(NULL, &driver,
                               vmdef, &monitor_chr, 0, flags,
                               &argv, &qenv,
@@ -303,7 +315,6 @@ mymain(int argc, char **argv)
     DO_TEST("sound", 0);
     DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE);
 
-    DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);
     DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);

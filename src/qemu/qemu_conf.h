@@ -146,6 +146,8 @@ struct qemud_driver {
     pciDeviceList *activePciHostdevs;
 };
 
+typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
+typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
 /* Port numbers used for KVM migration. */
 #define QEMUD_MIGRATION_FIRST_PORT 49152
@@ -271,5 +273,15 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
 virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
                                            virCapsPtr caps,
                                            const char *args);
+
+qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
+int qemuDomainPCIAddressReserve(qemuDomainPCIAddressSetPtr addrs,
+                                int slot);
+int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev);
+void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
+int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
+
+
 
 #endif /* __QEMUD_CONF_H */

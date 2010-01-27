@@ -213,7 +213,6 @@ mymain(int argc, char **argv)
     DO_TEST("sound", 0);
     DO_TEST("watchdog", 0);
 
-    DO_TEST("hostdev-usb-product", 0);
     DO_TEST("hostdev-usb-address", 0);
 
     DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);
