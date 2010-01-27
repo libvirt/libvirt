@@ -824,59 +824,82 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 }
 
 
-static void virDomainDeviceInfoClearField(virDomainDeviceInfoPtr info, int alias, int pciaddr)
+static int virDomainDeviceInfoClearAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                         virDomainDeviceInfoPtr info,
+                                         void *opaque ATTRIBUTE_UNUSED)
 {
-    if (alias)
-        VIR_FREE(info->alias);
-    if (pciaddr &&
-        info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+    VIR_FREE(info->alias);
+    return 0;
+}
+
+static int virDomainDeviceInfoClearPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                              virDomainDeviceInfoPtr info,
+                                              void *opaque ATTRIBUTE_UNUSED)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         memset(&info->addr, 0, sizeof(info->addr));
         info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     }
+    return 0;
 }
 
-
-static void virDomainDefClearDeviceInfo(virDomainDefPtr def, int alias, int pciaddr)
+int virDomainDeviceInfoIterate(virDomainDefPtr def,
+                               virDomainDeviceInfoCallback cb,
+                               void *opaque)
 {
     int i;
 
     for (i = 0; i < def->ndisks ; i++)
-        virDomainDeviceInfoClearField(&def->disks[i]->info, alias, pciaddr);
+        if (cb(def, &def->disks[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nnets ; i++)
-        virDomainDeviceInfoClearField(&def->nets[i]->info, alias, pciaddr);
+        if (cb(def, &def->nets[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nsounds ; i++)
-        virDomainDeviceInfoClearField(&def->sounds[i]->info, alias, pciaddr);
+        if (cb(def, &def->sounds[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nhostdevs ; i++)
-        virDomainDeviceInfoClearField(&def->hostdevs[i]->info, alias, pciaddr);
+        if (cb(def, &def->hostdevs[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nvideos ; i++)
-        virDomainDeviceInfoClearField(&def->videos[i]->info, alias, pciaddr);
+        if (cb(def, &def->videos[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->ncontrollers ; i++)
-        virDomainDeviceInfoClearField(&def->controllers[i]->info, alias, pciaddr);
+        if (cb(def, &def->controllers[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nserials ; i++)
-        virDomainDeviceInfoClearField(&def->serials[i]->info, alias, pciaddr);
+        if (cb(def, &def->serials[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nparallels ; i++)
-        virDomainDeviceInfoClearField(&def->parallels[i]->info, alias, pciaddr);
+        if (cb(def, &def->parallels[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nchannels ; i++)
-        virDomainDeviceInfoClearField(&def->channels[i]->info, alias, pciaddr);
+        if (cb(def, &def->channels[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->ninputs ; i++)
-        virDomainDeviceInfoClearField(&def->inputs[i]->info, alias, pciaddr);
+        if (cb(def, &def->inputs[i]->info, opaque) < 0)
+            return -1;
     for (i = 0; i < def->nfss ; i++)
-        virDomainDeviceInfoClearField(&def->fss[i]->info, alias, pciaddr);
+        if (cb(def, &def->fss[i]->info, opaque) < 0)
+            return -1;
     if (def->watchdog)
-        virDomainDeviceInfoClearField(&def->watchdog->info, alias, pciaddr);
+        if (cb(def, &def->watchdog->info, opaque) < 0)
+            return -1;
     if (def->console)
-        virDomainDeviceInfoClearField(&def->console->info, alias, pciaddr);
+        if (cb(def, &def->console->info, opaque) < 0)
+            return -1;
+    return 0;
 }
 
 
 void virDomainDefClearPCIAddresses(virDomainDefPtr def)
 {
-    virDomainDefClearDeviceInfo(def, 0, 1);
+    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearPCIAddress, NULL);
 }
 
 void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 {
-    virDomainDefClearDeviceInfo(def, 1, 0);
+    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearAlias, NULL);
 }
 
 

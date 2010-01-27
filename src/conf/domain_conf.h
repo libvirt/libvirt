@@ -742,6 +742,14 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
 
+typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,
+                                           virDomainDeviceInfoPtr dev,
+                                           void *opaque);
+
+int virDomainDeviceInfoIterate(virDomainDefPtr def,
+                               virDomainDeviceInfoCallback cb,
+                               void *opaque);
+
 void virDomainDefFree(virDomainDefPtr vm);
 void virDomainObjRef(virDomainObjPtr vm);
 /* Returns 1 if the object was freed, 0 if more refs exist */
