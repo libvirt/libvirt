@@ -1652,17 +1652,12 @@ error:
     return NULL;
 }
 
-int qemuDomainPCIAddressReserve(qemuDomainPCIAddressSetPtr addrs,
-                                int slot)
+int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev)
 {
-    virDomainDeviceInfo dev;
     char *addr;
 
-    dev.addr.pci.domain = 0;
-    dev.addr.pci.bus = 0;
-    dev.addr.pci.slot = slot;
-
-    addr = qemuPCIAddressAsString(&dev);
+    addr = qemuPCIAddressAsString(dev);
     if (!addr)
         return -1;
 
@@ -1681,10 +1676,51 @@ int qemuDomainPCIAddressReserve(qemuDomainPCIAddressSetPtr addrs,
     return 0;
 }
 
+int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
+                                    int slot)
+{
+    virDomainDeviceInfo dev;
+
+    dev.addr.pci.domain = 0;
+    dev.addr.pci.bus = 0;
+    dev.addr.pci.slot = slot;
+
+    return qemuDomainPCIAddressReserveAddr(addrs, &dev);
+}
+
+
+int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev)
+{
+    int ret = 0;
+    if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        ret = qemuDomainPCIAddressReserveAddr(addrs, dev);
+    else
+        ret = qemuDomainPCIAddressSetNextAddr(addrs, dev);
+    return ret;
+}
 
 static void qemuDomainPCIAddressSetFreeEntry(void *payload, const char *name ATTRIBUTE_UNUSED)
 {
     VIR_FREE(payload);
+}
+
+
+int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev)
+{
+    char *addr;
+    int ret;
+
+    addr = qemuPCIAddressAsString(dev);
+    if (!addr)
+        return -1;
+
+    ret = virHashRemoveEntry(addrs->used, addr, qemuDomainPCIAddressSetFreeEntry);
+
+    VIR_FREE(addr);
+
+    return ret;
 }
 
 
@@ -1746,16 +1782,16 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     int i;
 
     /* Host bridge */
-    if (qemuDomainPCIAddressReserve(addrs, 0) < 0)
+    if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
         goto error;
     /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller) */
-    if (qemuDomainPCIAddressReserve(addrs, 1) < 0)
+    if (qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
         goto error;
     /* VGA */
-    if (qemuDomainPCIAddressReserve(addrs, 2) < 0)
+    if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
         goto error;
     /* VirtIO Balloon */
-    if (qemuDomainPCIAddressReserve(addrs, 3) < 0)
+    if (qemuDomainPCIAddressReserveSlot(addrs, 3) < 0)
         goto error;
 
     for (i = 0; i < def->ndisks ; i++) {

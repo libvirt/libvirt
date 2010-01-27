@@ -275,10 +275,17 @@ virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
                                            const char *args);
 
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);
-int qemuDomainPCIAddressReserve(qemuDomainPCIAddressSetPtr addrs,
-                                int slot);
+int qemuDomainPCIAddressReserveSlot(qemuDomainPCIAddressSetPtr addrs,
+                                    int slot);
+int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev);
 int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev);
+int qemuDomainPCIAddressEnsureAddr(qemuDomainPCIAddressSetPtr addrs,
+                                   virDomainDeviceInfoPtr dev);
+int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
+                                    virDomainDeviceInfoPtr dev);
+
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
 

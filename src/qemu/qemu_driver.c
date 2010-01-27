@@ -5238,6 +5238,9 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
         return -1;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
+            goto error;
+
         if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
             goto error;
 
@@ -5283,6 +5286,11 @@ error:
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &disk->info) < 0)
+        VIR_WARN("Unable to release PCI address on %s", disk->src);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
@@ -5314,6 +5322,10 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
         }
     }
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
+        goto cleanup;
+
     if (!(devstr = qemuBuildControllerDevStr(controller))) {
         virReportOOMError(NULL);
         goto cleanup;
@@ -5340,6 +5352,12 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
     }
 
 cleanup:
+    if ((ret != 0) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &controller->info) < 0)
+        VIR_WARN0("Unable to release PCI address on controller");
+
     VIR_FREE(devstr);
     return ret;
 }
@@ -5610,6 +5628,10 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         qemuAssignNetNames(vm->def, net) < 0)
         goto no_memory;
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
+        goto cleanup;
+
     /* Choose a vlan value greater than all other values since
      * older versions did not store the value in the state file.
      */
@@ -5663,6 +5685,12 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     vm->def->nets[vm->def->nnets++] = net;
 
 cleanup:
+    if ((ret != 0) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
+        VIR_WARN0("Unable to release PCI address on NIC");
+
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
     VIR_FREE(tapfd_name);
@@ -5736,9 +5764,13 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-        !(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
-        goto error;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
+            goto error;
+
+        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+            goto error;
+    }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
@@ -5760,6 +5792,11 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
     return 0;
 
 error:
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        (hostdev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
+        VIR_WARN0("Unable to release PCI address on host device");
+
     VIR_FREE(devstr);
     pciDeviceListDel(conn, driver->activePciHostdevs, pci);
 
