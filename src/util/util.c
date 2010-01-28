@@ -2317,7 +2317,13 @@ static char *virGetUserEnt(virConnectPtr conn,
     char *ret;
     struct passwd pwbuf;
     struct passwd *pw = NULL;
-    size_t strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+    long val = sysconf(_SC_GETPW_R_SIZE_MAX);
+    size_t strbuflen = val;
+
+    if (val < 0) {
+        virReportSystemError(conn, errno, "%s", _("sysconf failed"));
+        return NULL;
+    }
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
         virReportOOMError(conn);
