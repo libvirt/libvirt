@@ -81,6 +81,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_DEVICE        = (1 << 26), /* Is the new -device arg available */
     QEMUD_CMD_FLAG_SDL           = (1 << 27), /* Is the new -sdl arg available */
     QEMUD_CMD_FLAG_SMP_TOPOLOGY  = (1 << 28), /* Is sockets=s,cores=c,threads=t available for -smp? */
+    QEMUD_CMD_FLAG_NETDEV        = (1 << 29), /* The -netdev flag & netdev_add/remove monitor commands */
 };
 
 /* Main driver state */
@@ -210,7 +211,8 @@ char * qemuBuildNicStr(virConnectPtr conn,
                        int vlan);
 
 /* Current, best practice */
-char * qemuBuildNicDevStr(virDomainNetDefPtr net);
+char * qemuBuildNicDevStr(virDomainNetDefPtr net,
+                          int qemuCmdFlags);
 
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,

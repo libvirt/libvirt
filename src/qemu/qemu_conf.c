@@ -1154,6 +1154,17 @@ static unsigned int qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_BALLOON;
     if (strstr(help, "-device"))
         flags |= QEMUD_CMD_FLAG_DEVICE;
+    /* Keep disabled till we're actually ready to turn on netdev mode
+     * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
+#if 0
+    if (strstr(help, "-netdev")) {
+        /* Disable -netdev on 0.12 since although it exists,
+         * the corresponding netdev_add/remove monitor commands
+         * do not, and we need them to be able todo hotplug */
+        if (version >= 13000)
+            flags |= QEMUD_CMD_FLAG_NETDEV;
+    }
+#endif
     if (strstr(help, "-sdl"))
         flags |= QEMUD_CMD_FLAG_SDL;
     if (strstr(help, "cores=") &&
@@ -2380,7 +2391,7 @@ qemuBuildNicStr(virConnectPtr conn,
 
 
 char *
-qemuBuildNicDevStr(virDomainNetDefPtr net)
+qemuBuildNicDevStr(virDomainNetDefPtr net, int qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
@@ -2393,7 +2404,11 @@ qemuBuildNicDevStr(virDomainNetDefPtr net)
         nic = net->model;
     }
 
-    virBufferVSprintf(&buf, "%s,netdev=%s", nic, net->hostnet_name);
+    virBufferAdd(&buf, nic, strlen(nic));
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV)
+        virBufferVSprintf(&buf, ",netdev=%s", net->hostnet_name);
+    else
+        virBufferVSprintf(&buf, ",vlan=%d", net->vlan);
     virBufferVSprintf(&buf, ",id=%s", net->info.alias);
     virBufferVSprintf(&buf, ",mac=%02x:%02x:%02x:%02x:%02x:%02x",
                       net->mac[0], net->mac[1],
@@ -3621,7 +3636,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
             char *nic, *host;
             char tapfd_name[50];
 
-            net->vlan = i;
+            /* VLANs are not used with -netdev, so don't record them */
+            if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+                (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
+                net->vlan = -1;
+            else
+                net->vlan = i;
 
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
@@ -3646,14 +3666,24 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
             }
 
-            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+            /* Possible combinations:
+             *
+             *  1. Old way:   -net nic,model=e1000,vlan=1 -net tap,vlan=1
+             *  2. Semi-new:  -device e1000,vlan=1        -net tap,vlan=1
+             *  3. Best way:  -netdev type=tap,id=netdev1 -device e1000,id=netdev1
+             *
+             * NB, no support for -netdev without use of -device
+             */
+            if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+                (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 ADD_ARG_LIT("-netdev");
                 if (!(host = qemuBuildNetDevStr(conn, net, tapfd_name)))
                     goto error;
                 ADD_ARG(host);
-
+            }
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 ADD_ARG_LIT("-device");
-                if (!(nic = qemuBuildNicDevStr(net)))
+                if (!(nic = qemuBuildNicDevStr(net, qemuCmdFlags)))
                     goto error;
                 ADD_ARG(nic);
             } else {
@@ -3661,7 +3691,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 if (!(nic = qemuBuildNicStr(conn, net, "nic,", net->vlan)))
                     goto error;
                 ADD_ARG(nic);
-
+            }
+            if (!((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+                  (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))) {
                 ADD_ARG_LIT("-net");
                 if (!(host = qemuBuildHostNetStr(conn, net, ',',
                                                  net->vlan, tapfd_name)))
