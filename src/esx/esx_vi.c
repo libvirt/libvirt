@@ -1317,16 +1317,18 @@ esxVI_BuildFullTraversalSpecList(esxVI_SelectionSpec **fullTraversalSpecList)
  * you try to call it. Query the session manager for the current session of
  * this connection instead and re-login if there is no current session for this
  * connection.
+ *
+ * Update: 'ESX 4.0.0 build-171294' doesn't implement this method.
  */
 #define ESX_VI_USE_SESSION_IS_ACTIVE 0
 
 int
 esxVI_EnsureSession(esxVI_Context *ctx)
 {
-    int result = 0;
 #if ESX_VI_USE_SESSION_IS_ACTIVE
     esxVI_Boolean active = esxVI_Boolean_Undefined;
 #else
+    int result = 0;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *sessionManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -1352,6 +1354,8 @@ esxVI_EnsureSession(esxVI_Context *ctx)
             return -1;
         }
     }
+
+    return 0;
 #else
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "currentSession") < 0 ||
@@ -1388,16 +1392,11 @@ esxVI_EnsureSession(esxVI_Context *ctx)
                      "last login");
         goto failure;
     }
-#endif
 
   cleanup:
-#if ESX_VI_USE_SESSION_IS_ACTIVE
-    /* nothing */
-#else
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&sessionManager);
     esxVI_UserSession_Free(&currentSession);
-#endif
 
     return result;
 
@@ -1405,8 +1404,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     result = -1;
 
     goto cleanup;
-
-    return 0;
+#endif
 }
 
 
