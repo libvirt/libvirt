@@ -249,7 +249,6 @@ virCPUDefFormat(virConnectPtr conn,
                 int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *tmp;
 
     if (virCPUDefFormatBuf(conn, &buf, def, indent, flags) < 0)
         goto cleanup;
@@ -262,8 +261,7 @@ virCPUDefFormat(virConnectPtr conn,
 no_memory:
     virReportOOMError(conn);
 cleanup:
-    tmp = virBufferContentAndReset(&buf);
-    VIR_FREE(tmp);
+    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
