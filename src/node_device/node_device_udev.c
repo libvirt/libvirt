@@ -500,14 +500,14 @@ static int udevProcessUSBDevice(struct udev_device *device,
     if (udevGetUintProperty(device,
                             "BUSNUM",
                             &data->usb_dev.bus,
-                            0) == PROPERTY_ERROR) {
+                            10) == PROPERTY_ERROR) {
         goto out;
     }
 
     if (udevGetUintProperty(device,
                             "DEVNUM",
                             &data->usb_dev.device,
-                            0) == PROPERTY_ERROR) {
+                            10) == PROPERTY_ERROR) {
         goto out;
     }
 
