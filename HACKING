@@ -166,13 +166,13 @@ codebase, because they encourage a number of serious coding bugs and do
 not enable compile time verification of checks for NULL. Instead of these
 routines, use the macros from memory.h
 
-  - eg to allocate  a single object:
+  - eg to allocate a single object:
 
       virDomainPtr domain;
 
       if (VIR_ALLOC(domain) < 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+          virReportOOMError(NULL);
+          return NULL;
       }
 
 
@@ -182,8 +182,8 @@ routines, use the macros from memory.h
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) < 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 
   - eg to allocate an array of object pointers
@@ -192,8 +192,8 @@ routines, use the macros from memory.h
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) < 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 
    - eg to re-allocate the array of domains to be longer
@@ -201,8 +201,8 @@ routines, use the macros from memory.h
        ndomains = 20
 
        if (VIR_REALLOC_N(domains, ndomains) < 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 
    - eg to free the domain
@@ -297,7 +297,7 @@ eg typical usage is as follows:
 
      if (virBufferError(&buf)) {
          virBufferFreeAndReset(&buf);
-         virReportOOMError(...);
+         virReportOOMError(NULL);
          return NULL;
      }
 
@@ -385,7 +385,7 @@ to build:
   - if a recently commited patch breaks compilation on a platform
     or for a given driver then it's fine to commit a minimal fix
     directly without getting the review feedback first
-  - similary if make check or make syntax-chek breaks, if there is
+  - similary if make check or make syntax-check breaks, if there is
     an obvious fix, it's fine to commit immediately
 The patch should still be sent to the list (or tell what the fix was if
 trivial) and 'make check syntax-check' should pass too before commiting

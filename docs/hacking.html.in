@@ -192,8 +192,8 @@
       virDomainPtr domain;
 
       if (VIR_ALLOC(domain) &lt; 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+          virReportOOMError(NULL);
+          return NULL;
       }
 </pre></li>
 
@@ -204,8 +204,8 @@
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 </pre></li>
 
@@ -216,8 +216,8 @@
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 </pre></li>
 
@@ -227,8 +227,8 @@
        ndomains = 20
 
        if (VIR_REALLOC_N(domains, ndomains) &lt; 0) {
-         __virRaiseError(VIR_ERROR_NO_MEMORY)
-         return NULL;
+           virReportOOMError(NULL);
+           return NULL;
        }
 </pre></li>
 
@@ -314,7 +314,7 @@
 
      if (virBufferError(&amp;buf)) {
          virBufferFreeAndReset(&amp;buf);
-         virReportOOMError(...);
+         virReportOOMError(NULL);
          return NULL;
      }
 
@@ -419,7 +419,7 @@
       <li>if a recently commited patch breaks compilation on a platform
         or for a given driver then it's fine to commit a minimal fix
         directly without getting the review feedback first</li>
-      <li>if make check or make syntax-chek breaks, if there is
+      <li>if make check or make syntax-check breaks, if there is
         an obvious fix, it's fine to commit immediately.
         The patch should still be sent to the list (or tell what the fix was if
         trivial) and 'make check syntax-check' should pass too before commiting
