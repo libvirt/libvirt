@@ -558,7 +558,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 static int
 esxClose(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
 
     esxVI_EnsureSession(priv->host);
 
@@ -645,7 +645,7 @@ esxSupportsVMotion(esxPrivate *priv)
 static int
 esxSupportsFeature(virConnectPtr conn, int feature)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_Boolean supportsVMotion = esxVI_Boolean_Undefined;
 
     switch (feature) {
@@ -678,7 +678,7 @@ esxGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
 static int
 esxGetVersion(virConnectPtr conn, unsigned long *version)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     char *temp;
     unsigned int major, minor, release;
 
@@ -716,7 +716,7 @@ esxGetVersion(virConnectPtr conn, unsigned long *version)
 static char *
 esxGetHostname(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -805,7 +805,7 @@ static int
 esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -958,7 +958,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 static char *
 esxGetCapabilities(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     char *xml = virCapabilitiesFormatXML(priv->caps);
 
     if (xml == NULL) {
@@ -974,7 +974,7 @@ esxGetCapabilities(virConnectPtr conn)
 static int
 esxListDomains(virConnectPtr conn, int *ids, int maxids)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -1046,7 +1046,7 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
 static int
 esxNumberOfDomains(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         return -1;
@@ -1062,7 +1062,7 @@ esxNumberOfDomains(virConnectPtr conn)
 static virDomainPtr
 esxDomainLookupByID(virConnectPtr conn, int id)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -1145,7 +1145,7 @@ esxDomainLookupByID(virConnectPtr conn, int id)
 static virDomainPtr
 esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -1199,7 +1199,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 static virDomainPtr
 esxDomainLookupByName(virConnectPtr conn, const char *name)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -1283,7 +1283,7 @@ static int
 esxDomainSuspend(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -1338,7 +1338,7 @@ static int
 esxDomainResume(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -1393,7 +1393,7 @@ static int
 esxDomainShutdown(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -1438,7 +1438,7 @@ static int
 esxDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -1483,7 +1483,7 @@ static int
 esxDomainDestroy(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_Context *ctx = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -1559,7 +1559,7 @@ esxDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
 static unsigned long
 esxDomainGetMaxMemory(virDomainPtr domain)
 {
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -1616,7 +1616,7 @@ static int
 esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
@@ -1669,7 +1669,7 @@ static int
 esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
@@ -1723,7 +1723,7 @@ static int
 esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -1978,7 +1978,7 @@ static int
 esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     int maxVcpus;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
@@ -2050,7 +2050,7 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 static int
 esxDomainGetMaxVcpus(virDomainPtr domain)
 {
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -2109,7 +2109,7 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
 static char *
 esxDomainDumpXML(virDomainPtr domain, int flags)
 {
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -2211,7 +2211,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                        const char *nativeConfig,
                        unsigned int flags ATTRIBUTE_UNUSED)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
     char *xml = NULL;
 
@@ -2240,7 +2240,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
                      const char *domainXml,
                      unsigned int flags ATTRIBUTE_UNUSED)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
 
@@ -2268,7 +2268,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
 static int
 esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -2358,7 +2358,7 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
 static int
 esxNumberOfDefinedDomains(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         return -1;
@@ -2375,7 +2375,7 @@ static int
 esxDomainCreate(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
@@ -2430,7 +2430,7 @@ esxDomainCreate(virDomainPtr domain)
 static virDomainPtr
 esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
     char *vmx = NULL;
     int i;
@@ -2638,7 +2638,7 @@ static int
 esxDomainUndefine(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_Context *ctx = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -2740,7 +2740,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
                                 virSchedParameterPtr params, int *nparams)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -2869,7 +2869,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
                                 virSchedParameterPtr params, int nparams)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_SharesInfo *sharesInfo = NULL;
@@ -3040,7 +3040,7 @@ esxDomainMigratePerform(virDomainPtr domain,
                         unsigned long bandwidth ATTRIBUTE_UNUSED)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     xmlURIPtr xmlUri = NULL;
     char hostIpAddress[NI_MAXHOST] = "";
     esxVI_ObjectContent *virtualMachine = NULL;
@@ -3171,7 +3171,7 @@ static unsigned long long
 esxNodeGetFreeMemory(virConnectPtr conn)
 {
     unsigned long long result = 0;
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
@@ -3249,7 +3249,7 @@ esxNodeGetFreeMemory(virConnectPtr conn)
 static int
 esxIsEncrypted(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
 
     if (STRCASEEQ(priv->transport, "https")) {
         return 1;
@@ -3263,7 +3263,7 @@ esxIsEncrypted(virConnectPtr conn)
 static int
 esxIsSecure(virConnectPtr conn)
 {
-    esxPrivate *priv = (esxPrivate *)conn->privateData;
+    esxPrivate *priv = conn->privateData;
 
     if (STRCASEEQ(priv->transport, "https")) {
         return 1;
@@ -3278,7 +3278,7 @@ static int
 esxDomainIsActive(virDomainPtr domain)
 {
     int result = 0;
-    esxPrivate *priv = (esxPrivate *)domain->conn->privateData;
+    esxPrivate *priv = domain->conn->privateData;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
