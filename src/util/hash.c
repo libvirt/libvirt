@@ -237,7 +237,7 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
 }
 
 /**
- * virHashAddEntry3:
+ * virHashAddEntry:
  * @table: the hash table
  * @name: the name of the userdata
  * @userdata: a pointer to the userdata
