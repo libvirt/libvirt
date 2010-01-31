@@ -40,10 +40,9 @@
 #include "storage_conf.h"
 #include "memory.h"
 #include "storage_backend.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
-
-#define storageLog(msg...) fprintf(stderr, msg)
 
 static virStorageDriverStatePtr driverState;
 
@@ -70,8 +69,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
             !virStoragePoolObjIsActive(pool)) {
             virStorageBackendPtr backend;
             if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
-                storageLog("Missing backend %d",
-                           pool->def->type);
+                VIR_ERROR("Missing backend %d", pool->def->type);
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -79,9 +77,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
             if (backend->startPool &&
                 backend->startPool(NULL, pool) < 0) {
                 virErrorPtr err = virGetLastError();
-                storageLog("Failed to autostart storage pool '%s': %s",
-                           pool->def->name, err ? err->message :
-                           "no error message found");
+                VIR_ERROR("Failed to autostart storage pool '%s': %s",
+                          pool->def->name, err ? err->message :
+                          "no error message found");
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -90,9 +88,9 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
                 virErrorPtr err = virGetLastError();
                 if (backend->stopPool)
                     backend->stopPool(NULL, pool);
-                storageLog("Failed to autostart storage pool '%s': %s",
-                           pool->def->name, err ? err->message :
-                           "no error message found");
+                VIR_ERROR("Failed to autostart storage pool '%s': %s",
+                          pool->def->name, err ? err->message :
+                          "no error message found");
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -132,7 +130,6 @@ storageDriverStartup(int privileged) {
             goto error;
 
         if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
-            storageLog("out of memory in virAsprintf");
             VIR_FREE(userdir);
             goto out_of_memory;
         }
@@ -175,7 +172,7 @@ storageDriverStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    storageLog("virStorageStartup: out of memory");
+    virReportOOMError(NULL);
 error:
     VIR_FREE(base);
     storageDriverUnlock(driverState);
@@ -635,7 +632,7 @@ storagePoolUndefine(virStoragePoolPtr obj) {
 
     if (unlink(pool->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
         char ebuf[1024];
-        storageLog("Failed to delete autostart link '%s': %s",
+        VIR_ERROR("Failed to delete autostart link '%s': %s",
                    pool->autostartLink, virStrerror(errno, ebuf, sizeof ebuf));
     }
 
