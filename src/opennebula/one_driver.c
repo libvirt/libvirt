@@ -108,7 +108,7 @@ static int oneIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
 static virDomainPtr oneDomainLookupByID(virConnectPtr conn,
                                         int id)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     virDomainPtr dom = NULL;
     virDomainObjPtr vm = NULL;
 
@@ -137,7 +137,7 @@ return_point:
 static virDomainPtr oneDomainLookupByUUID(virConnectPtr conn,
                                           const unsigned char *uuid)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     virDomainPtr dom = NULL;
     virDomainObjPtr vm = NULL;
 
@@ -165,7 +165,7 @@ return_point:
 static virDomainPtr oneDomainLookupByName(virConnectPtr conn,
                                           const char *name)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom=NULL;
 
@@ -192,7 +192,7 @@ return_point:
 
 static int oneListDomains(virConnectPtr conn, int *ids, int nids)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     int n;
 
     oneDriverLock(driver);
@@ -204,7 +204,7 @@ static int oneListDomains(virConnectPtr conn, int *ids, int nids)
 
 static int oneNumDomains(virConnectPtr conn)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     int n;
 
     oneDriverLock(driver);
@@ -216,7 +216,7 @@ static int oneNumDomains(virConnectPtr conn)
 
 static int oneListDefinedDomains(virConnectPtr conn,
                                  char **const names, int nnames) {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     int n;
 
     oneDriverLock(driver);
@@ -228,7 +228,7 @@ static int oneListDefinedDomains(virConnectPtr conn,
 
 static int oneNumDefinedDomains(virConnectPtr conn)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     int n;
 
     oneDriverLock(driver);
@@ -240,7 +240,7 @@ static int oneNumDefinedDomains(virConnectPtr conn)
 
 static virDomainPtr oneDomainDefine(virConnectPtr conn, const char *xml)
 {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm;
     virDomainPtr dom=NULL;
@@ -272,7 +272,7 @@ return_point:
 
 static int oneDomainUndefine(virDomainPtr dom)
 {
-    one_driver_t *driver = (one_driver_t *)dom->conn->privateData;
+    one_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret=-1;
 
@@ -302,7 +302,7 @@ return_point:
 static int oneDomainGetInfo(virDomainPtr dom,
                             virDomainInfoPtr info)
 {
-    one_driver_t *driver = (one_driver_t *)dom->conn->privateData;
+    one_driver_t *driver = dom->conn->privateData;
     struct timeval tv;
     virDomainObjPtr vm;
     oneDriverLock(driver);
@@ -377,7 +377,7 @@ static int oneDomainGetInfo(virDomainPtr dom,
 
 static char *oneGetOSType(virDomainPtr dom)
 {
-    one_driver_t *driver = (one_driver_t *)dom->conn->privateData;
+    one_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *ret = NULL;
 
@@ -403,7 +403,7 @@ cleanup:
 static int oneDomainStart(virDomainPtr dom)
 {
     virConnectPtr conn = dom->conn;
-    one_driver_t *driver = (one_driver_t *)(conn->privateData);
+    one_driver_t *driver = conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     int oneid;
@@ -436,7 +436,7 @@ static virDomainPtr
 oneDomainCreateAndStart(virConnectPtr conn,
                         const char *xml,
                         unsigned int flags ATTRIBUTE_UNUSED) {
-    one_driver_t *driver = (one_driver_t *)conn->privateData;
+    one_driver_t *driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainPtr dom = NULL;
@@ -486,7 +486,7 @@ return_point:
 
 static int oneDomainShutdown(virDomainPtr dom)
 {
-    one_driver_t *driver = (one_driver_t*)dom->conn->privateData;
+    one_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret=-1;
 
@@ -520,7 +520,7 @@ return_point:
 
 static int oneDomainDestroy(virDomainPtr dom)
 {
-    one_driver_t *driver = (one_driver_t*)dom->conn->privateData;
+    one_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret=-1;
 
@@ -556,7 +556,7 @@ return_point:
 
 static int oneDomainSuspend(virDomainPtr dom)
 {
-    one_driver_t* driver=dom->conn->privateData;
+    one_driver_t* driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret=-1;
 
@@ -590,7 +590,7 @@ return_point:
 
 static int oneDomainResume(virDomainPtr dom)
 {
-    one_driver_t* driver=dom->conn->privateData;
+    one_driver_t* driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret=-1;
 
@@ -698,7 +698,7 @@ static int oneGetAutostart(virDomainPtr domain ATTRIBUTE_UNUSED, int *autostart)
 }
 
 static char*  oneGetCapabilities(virConnectPtr conn){
-    one_driver_t* privconn=conn->privateData;
+    one_driver_t* privconn = conn->privateData;
     char *xml;
     oneDriverLock(privconn);
     if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
