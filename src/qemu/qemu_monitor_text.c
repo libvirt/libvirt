@@ -44,6 +44,8 @@
 #define QEMU_CMD_PROMPT "\n(qemu) "
 #define QEMU_PASSWD_PROMPT "Password: "
 
+#define DEBUG_IO 0
+
 /* Return -1 for error, 0 for success */
 typedef int qemuMonitorExtraPromptHandler(qemuMonitorPtr mon,
                                           const char *buf,
@@ -67,7 +69,7 @@ typedef int qemuMonitorExtraPromptHandler(qemuMonitorPtr mon,
 
 int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                              const char *data,
-                             size_t len,
+                             size_t len ATTRIBUTE_UNUSED,
                              qemuMonitorMessagePtr msg)
 {
     int used = 0;
@@ -79,18 +81,24 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         /* We see the greeting prefix, but not postfix, so pretend we've
            not consumed anything. We'll restart when more data arrives. */
         if (!offset) {
+#if DEBUG_IO
             VIR_DEBUG0("Partial greeting seen, getting out & waiting for more");
+#endif
             return 0;
         }
 
         used = offset - data + strlen(GREETING_POSTFIX);
 
+#if DEBUG_IO
         VIR_DEBUG0("Discarded monitor greeting");
+#endif
     }
 
     /* Don't print raw data in debug because its full of control chars */
     /*VIR_DEBUG("Process data %d byts of data [%s]", len - used, data + used);*/
+#if DEBUG_IO
     VIR_DEBUG("Process data %d byts of data", (int)(len - used));
+#endif
 
     /* Look for a non-zero reply followed by prompt */
     if (msg && !msg->finished) {
@@ -138,7 +146,9 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             /* We might get a prompt for a password before the (qemu) prompt */
             passwd = strstr(start, PASSWORD_PROMPT);
             if (passwd) {
+#if DEBUG_IO
                 VIR_DEBUG("Seen a passwowrd prompt [%s]", data + used);
+#endif
                 if (msg->passwordHandler) {
                     int i;
                     /* Try and handle the prompt */
@@ -176,9 +186,11 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                 memcpy(msg->rxBuffer + msg->rxLength, start, want);
                 msg->rxLength += want;
                 msg->rxBuffer[msg->rxLength] = '\0';
+#if DEBUG_IO
                 VIR_DEBUG("Finished %d byte reply [%s]", want, msg->rxBuffer);
             } else {
                 VIR_DEBUG0("Finished 0 byte reply");
+#endif
             }
             msg->finished = 1;
             used += end - (data + used);
@@ -186,7 +198,9 @@ int qemuMonitorTextIOProcess(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
     }
 
+#if DEBUG_IO
     VIR_DEBUG("Total used %d", used);
+#endif
     return used;
 }
 
