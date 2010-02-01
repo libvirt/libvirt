@@ -247,9 +247,6 @@ int         qemudNetworkIfaceConnect    (virConnectPtr conn,
                                          virDomainNetDefPtr net,
                                          int qemuCmdFlags);
 
-int         qemuAssignNetNames          (virDomainDefPtr def,
-                                         virDomainNetDefPtr net);
-
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,
                                          int *nmachines);
@@ -286,6 +283,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
 
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
+int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
 
 
 #endif /* __QEMUD_CONF_H */

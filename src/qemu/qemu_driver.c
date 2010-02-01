@@ -5625,15 +5625,23 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
         goto no_memory;
 
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
-        qemuAssignNetNames(vm->def, net) < 0)
-        goto cleanup;
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) ||
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
+            goto cleanup;
+    }
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
         qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
         goto cleanup;
 
     vlan = qemuDomainNetVLAN(net);
+
+    if (vlan < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT, "%s",
+                         _("Unable to attach network devices without vlan"));
+        goto cleanup;
+    }
 
     if (tapfd != -1) {
         if (virAsprintf(&tapfd_name, "fd-%s", net->info.alias) < 0)

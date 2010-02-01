@@ -1537,29 +1537,165 @@ int qemuDomainNetVLAN(virDomainNetDefPtr def)
     return qemuDomainDeviceAliasIndex(&def->info, "net");
 }
 
+
+/* Names used before -drive existed */
+static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
+{
+    char *devname;
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        STREQ(disk->dst, "hdc"))
+        devname = strdup("cdrom");
+    else
+        devname = strdup(disk->dst);
+
+    if (!devname) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    disk->info.alias = devname;
+    return 0;
+}
+
+
+/* Names used before -drive supported the id= option */
+static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
+{
+    int busid, devid;
+    int ret;
+    char *devname;
+
+    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot convert disk '%s' to bus/device index"),
+                         disk->dst);
+        return -1;
+    }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
+            ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
+        else
+            ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+            ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
+        else
+            ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        ret = virAsprintf(&devname, "floppy%d", devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        ret = virAsprintf(&devname, "virtio%d", devid);
+        break;
+    case VIR_DOMAIN_DISK_BUS_XEN:
+        ret = virAsprintf(&devname, "xenblk%d", devid);
+        break;
+    default:
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                         _("Unsupported disk name mapping for bus '%s'"),
+                         virDomainDiskBusTypeToString(disk->bus));
+        return -1;
+    }
+
+    if (ret == -1) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    disk->info.alias = devname;
+
+    return 0;
+}
+
+
+/* Our custom -drive naming scheme used with id= */
+static int qemuAssignDeviceDiskAliasCustom(virDomainDiskDefPtr disk)
+{
+    const char *prefix = virDomainDiskBusTypeToString(disk->bus);
+    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+        if (virAsprintf(&disk->info.alias, "%s%d-%d-%d", prefix,
+                        disk->info.addr.drive.controller,
+                        disk->info.addr.drive.bus,
+                        disk->info.addr.drive.unit) < 0)
+            goto no_memory;
+    } else {
+        int idx = virDiskNameToIndex(disk->dst);
+        if (virAsprintf(&disk->info.alias, "%s-disk%d", prefix, idx) < 0)
+            goto no_memory;
+    }
+
+    return 0;
+
+no_memory:
+    virReportOOMError(NULL);
+    return -1;
+}
+
+
 static int
-qemuAssignDeviceAliases(virDomainDefPtr def)
+qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, int qemuCmdFlags)
+{
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+            return qemuAssignDeviceDiskAliasCustom(def);
+        else
+            return qemuAssignDeviceDiskAliasFixed(def);
+    } else {
+        return qemuAssignDeviceDiskAliasLegacy(def);
+    }
+}
+
+
+int
+qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
+{
+    if (idx == -1) {
+        int i;
+        idx = 0;
+        for (i = 0 ; i < def->nnets ; i++) {
+            int thisidx;
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Unable to determine device index for network device"));
+                return -1;
+            }
+            if (thisidx >= idx)
+                idx = thisidx + 1;
+        }
+    }
+
+    if (virAsprintf(&net->info.alias, "net%d", idx) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+qemuAssignDeviceAliases(virDomainDefPtr def, int qemuCmdFlags)
 {
     int i;
 
     for (i = 0; i < def->ndisks ; i++) {
-        const char *prefix = virDomainDiskBusTypeToString(def->disks[i]->bus);
-        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-            if (virAsprintf(&def->disks[i]->info.alias, "%s%d-%d-%d", prefix,
-                            def->disks[i]->info.addr.drive.controller,
-                            def->disks[i]->info.addr.drive.bus,
-                            def->disks[i]->info.addr.drive.unit) < 0)
-                goto no_memory;
-        } else {
-            int idx = virDiskNameToIndex(def->disks[i]->dst);
-            if (virAsprintf(&def->disks[i]->info.alias, "%s-disk%d", prefix, idx) < 0)
-                goto no_memory;
+        if (qemuAssignDeviceDiskAlias(def->disks[i], qemuCmdFlags) < 0)
+            return -1;
+    }
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) ||
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        for (i = 0; i < def->nnets ; i++) {
+            if (qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0)
+                return -1;
         }
     }
-    for (i = 0; i < def->nnets ; i++) {
-        if (virAsprintf(&def->nets[i]->info.alias, "net%d", i) < 0)
-            goto no_memory;
-    }
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
+        return 0;
 
     for (i = 0; i < def->nsounds ; i++) {
         if (virAsprintf(&def->sounds[i]->info.alias, "sound%d", i) < 0)
@@ -1922,92 +2058,6 @@ error:
 }
 
 
-static char *qemuDiskLegacyName(const virDomainDiskDefPtr disk)
-{
-    char *devname;
-
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        STREQ(disk->dst, "hdc"))
-        devname = strdup("cdrom");
-    else
-        devname = strdup(disk->dst);
-
-    if (!devname)
-        virReportOOMError(NULL);
-
-    return NULL;
-}
-
-/* Return the -drive QEMU disk name for use in monitor commands */
-static char *qemuDiskDriveName(const virDomainDiskDefPtr disk)
-{
-    int busid, devid;
-    int ret;
-    char *devname;
-
-    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot convert disk '%s' to bus/device index"),
-                         disk->dst);
-        return NULL;
-    }
-
-    switch (disk->bus) {
-    case VIR_DOMAIN_DISK_BUS_IDE:
-        if (disk->device== VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&devname, "ide%d-hd%d", busid, devid);
-        else
-            ret = virAsprintf(&devname, "ide%d-cd%d", busid, devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_SCSI:
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&devname, "scsi%d-hd%d", busid, devid);
-        else
-            ret = virAsprintf(&devname, "scsi%d-cd%d", busid, devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_FDC:
-        ret = virAsprintf(&devname, "floppy%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        ret = virAsprintf(&devname, "virtio%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_XEN:
-        ret = virAsprintf(&devname, "xenblk%d", devid);
-        break;
-    default:
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_SUPPORT,
-                         _("Unsupported disk name mapping for bus '%s'"),
-                         virDomainDiskBusTypeToString(disk->bus));
-        return NULL;
-    }
-
-    if (ret == -1) {
-        virReportOOMError(NULL);
-        return NULL;
-    }
-
-    return devname;
-}
-
-static int
-qemuAssignDiskAliases(virDomainDefPtr def, int qemuCmdFlags)
-{
-    int i;
-
-    for (i = 0 ; i < def->ndisks ; i++) {
-        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE)
-            def->disks[i]->info.alias =
-                qemuDiskDriveName(def->disks[i]);
-        else
-            def->disks[i]->info.alias =
-                qemuDiskLegacyName(def->disks[i]);
-
-        if (!def->disks[i]->info.alias)
-            return -1;
-    }
-    return 0;
-}
-
 static int
 qemuBuildDeviceAddressStr(virBufferPtr buf,
                           virDomainDeviceInfoPtr info)
@@ -2040,34 +2090,6 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
     return 0;
 }
 
-
-int
-qemuAssignNetNames(virDomainDefPtr def,
-                   virDomainNetDefPtr net)
-{
-    int i;
-    int lastidx = -1;
-
-    for (i = 0; i < def->nnets && def->nets[i] != net ; i++) {
-        int idx;
-
-        if ((idx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0) {
-            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Unable to determine device index for network device"));
-            return -1;
-        }
-
-        if (idx > lastidx)
-            lastidx = idx;
-    }
-
-    if (virAsprintf(&net->info.alias, "net%d", lastidx + 1) < 0) {
-        virReportOOMError(NULL);
-        return -1;
-    }
-
-    return 0;
-}
 
 #define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
@@ -2984,11 +3006,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     uname_normalize(&ut);
 
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        qemuAssignDeviceAliases(def);
-    } else {
-        qemuAssignDiskAliases(def, qemuCmdFlags);
-    }
+    if (qemuAssignDeviceAliases(def, qemuCmdFlags) < 0)
+        return -1;
 
     virUUIDFormat(def->uuid, uuid);
 
@@ -3538,12 +3557,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 (*tapfds)[(*ntapfds)++] = tapfd;
 
                 if (snprintf(tapfd_name, sizeof(tapfd_name), "%d", tapfd) >= sizeof(tapfd_name))
-                    goto no_memory;
-            }
-
-            if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
-                !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-                if (qemuAssignNetNames(def, net) < 0)
                     goto no_memory;
             }
 
