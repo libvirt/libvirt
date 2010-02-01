@@ -1959,7 +1959,7 @@ int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, "info pci", &reply) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("cannot query PCI addresses"));
+                         "%s", _("cannot query PCI addresses"));
         return -1;
     }
 

@@ -1,7 +1,7 @@
 /*
  * storage_backend_iscsi.c: storage backend for iSCSI handling
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -259,7 +259,7 @@ virStorageBackendCreateIfaceIQN(virConnectPtr conn,
     char temp_ifacename[32];
 
     if (virRandomInitialize(time(NULL) ^ getpid()) == -1) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Failed to initialize random generator "
                                 "when creating iscsi interface"));
         goto out;

@@ -1,7 +1,7 @@
 /*
  * virsh.c: a Xen shell used to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -5482,7 +5482,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (!base64_decode_alloc(base64, strlen(base64), &value, &value_size)) {
-        vshError(ctl, _("Invalid base64 data"));
+        vshError(ctl, "%s", _("Invalid base64 data"));
         goto cleanup;
     }
     if (value == NULL) {
