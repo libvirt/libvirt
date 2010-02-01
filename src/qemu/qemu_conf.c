@@ -2122,11 +2122,8 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def)
         virBufferVSprintf(&buf, ",id=scsi%d", def->idx);
         break;
 
+    /* We always get an IDE controller, whether we want it or not. */
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
-        virBufferAddLit(&buf, "piix4-ide");
-        virBufferVSprintf(&buf, ",id=ide%d", def->idx);
-        break;
-
     default:
         goto error;
     }
@@ -3142,16 +3139,29 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         for (i = 0 ; i < def->ncontrollers ; i++) {
-            char *scsi;
-            if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            virDomainControllerDefPtr cont = def->controllers[i];
+
+            /* We don't add an explicit IDE or FD controller because the
+             * provided PIIX4 device already includes one. It isn't possible to
+             * remove the PIIX4. */
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE ||
+                cont->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
                 continue;
+
+            /* QEMU doesn't implement a SATA driver */
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SUPPORT,
+                                 "%s", _("SATA is not supported with this QEMU binary"));
+                goto error;
+            }
 
             ADD_ARG_LIT("-device");
 
-            if (!(scsi = qemuBuildControllerDevStr(def->controllers[i])))
+            char *devstr;
+            if (!(devstr = qemuBuildControllerDevStr(def->controllers[i])))
                 goto no_memory;
 
-            ADD_ARG(scsi);
+            ADD_ARG(devstr);
         }
     }
 
