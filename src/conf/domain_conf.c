@@ -5244,11 +5244,12 @@ virDomainHostdevDefFormat(virConnectPtr conn,
                               def->source.subsys.u.usb.vendor);
             virBufferVSprintf(buf, "        <product id='0x%.4x'/>\n",
                               def->source.subsys.u.usb.product);
-        } else {
+        }
+        if (def->source.subsys.u.usb.bus ||
+            def->source.subsys.u.usb.device)
             virBufferVSprintf(buf, "        <address bus='%d' device='%d'/>\n",
                               def->source.subsys.u.usb.bus,
                               def->source.subsys.u.usb.device);
-        }
     } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
         virBufferVSprintf(buf, "        <address domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
                           def->source.subsys.u.pci.domain,

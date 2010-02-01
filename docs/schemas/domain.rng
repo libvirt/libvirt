@@ -1179,7 +1179,12 @@
       <group>
         <element name="source">
           <choice>
-            <ref name="usbproduct"/>
+	    <group>
+              <ref name="usbproduct"/>
+	      <optional>
+		<ref name="usbaddress"/>
+	      </optional>
+	    </group>
             <ref name="usbaddress"/>
             <element name="address">
               <ref name="pciaddress"/>
