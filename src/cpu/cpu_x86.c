@@ -954,9 +954,6 @@ x86Decode(virCPUDefPtr cpu,
     if (data == NULL || (map = x86LoadMap()) == NULL)
         return -1;
 
-    if (models == NULL && nmodels != 0)
-        return -1;
-
     candidate = map->models;
     while (candidate != NULL) {
         bool allowed = (models == NULL);

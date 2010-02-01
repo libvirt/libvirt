@@ -128,6 +128,12 @@ cpuDecode(virConnectPtr conn,
 {
     struct cpuArchDriver *driver;
 
+    if (models == NULL && nmodels != 0) {
+        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                "%s", _("nonzero nmodels doesn't match with NULL models"));
+        return -1;
+    }
+
     if (cpu == NULL) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
                           "%s", _("invalid CPU definition"));
