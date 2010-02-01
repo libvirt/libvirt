@@ -1637,7 +1637,7 @@ no_memory:
 }
 
 
-static int
+int
 qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, int qemuCmdFlags)
 {
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
@@ -1677,6 +1677,49 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
     return 0;
 }
 
+
+int
+qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx)
+{
+    if (idx == -1) {
+        int i;
+        idx = 0;
+        for (i = 0 ; i < def->nhostdevs ; i++) {
+            int thisidx;
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->hostdevs[i]->info, "hostdev")) < 0) {
+                qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Unable to determine device index for hostdevwork device"));
+                return -1;
+            }
+            if (thisidx >= idx)
+                idx = thisidx + 1;
+        }
+    }
+
+    if (virAsprintf(&hostdev->info.alias, "hostdev%d", idx) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
+{
+    const char *prefix = virDomainControllerTypeToString(controller->type);
+
+    if (virAsprintf(&controller->info.alias,  "%s%d", prefix,
+                    controller->idx) < 0) {
+        virReportOOMError(NULL);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuAssignDeviceAliases(virDomainDefPtr def, int qemuCmdFlags)
 {
@@ -1702,24 +1745,16 @@ qemuAssignDeviceAliases(virDomainDefPtr def, int qemuCmdFlags)
             goto no_memory;
     }
     for (i = 0; i < def->nhostdevs ; i++) {
-        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-            const char *prefix = virDomainHostdevSubsysTypeToString
-                (def->hostdevs[i]->source.subsys.type);
-            if (virAsprintf(&def->hostdevs[i]->info.alias, "host%s%d", prefix, i) < 0)
-                goto no_memory;
-        } else {
-            if (virAsprintf(&def->hostdevs[i]->info.alias, "host%d",i) < 0)
-                goto no_memory;
-        }
+        if (qemuAssignDeviceHostdevAlias(def, def->hostdevs[i], i) < 0)
+            return -1;
     }
     for (i = 0; i < def->nvideos ; i++) {
         if (virAsprintf(&def->videos[i]->info.alias, "video%d", i) < 0)
             goto no_memory;
     }
     for (i = 0; i < def->ncontrollers ; i++) {
-        const char *prefix = virDomainControllerTypeToString(def->controllers[i]->type);
-        if (virAsprintf(&def->controllers[i]->info.alias, "%s%d", prefix, i) < 0)
-            goto no_memory;
+        if (qemuAssignDeviceControllerAlias(def->controllers[i]) < 0)
+            return -1;
     }
     for (i = 0; i < def->ninputs ; i++) {
         if (virAsprintf(&def->inputs[i]->info.alias, "input%d", i) < 0)

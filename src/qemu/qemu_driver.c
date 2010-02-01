@@ -5240,6 +5240,8 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &disk->info) < 0)
             goto error;
+        if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
+            goto error;
 
         if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
             goto error;
@@ -5322,9 +5324,12 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
         }
     }
 
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-        qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
-        goto cleanup;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
+            goto cleanup;
+        if (qemuAssignDeviceControllerAlias(controller) < 0)
+            goto cleanup;
+    }
 
     if (!(devstr = qemuBuildControllerDevStr(controller))) {
         virReportOOMError(NULL);
@@ -5428,23 +5433,23 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
         driver->securityDriver->domainSetSecurityImageLabel(conn, vm, disk) < 0)
         return -1;
 
-    /* This func allocates the bus/unit IDs so must be before
-     * we search for controller
-     */
-    if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
-        goto error;
-
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-        !(devstr = qemuBuildDriveDevStr(NULL, disk)))
-        goto error;
-
-    /* We should have an adddress now, so make sure */
+    /* We should have an address already, so make sure */
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unexpected disk address type %s"),
                          virDomainDeviceAddressTypeToString(disk->info.type));
         goto error;
     }
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
+            goto error;
+        if (!(devstr = qemuBuildDriveDevStr(NULL, disk)))
+            goto error;
+    }
+
+    if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
+        goto error;
 
     for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
         cont = qemuDomainFindOrCreateSCSIDiskController(conn, driver, vm, i, qemuCmdFlags);
@@ -5540,6 +5545,8 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     }
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuAssignDeviceDiskAlias(disk, qemuCmdFlags) < 0)
+            goto error;
         if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
             goto error;
         if (!(devstr = qemuBuildDriveDevStr(NULL, disk)))

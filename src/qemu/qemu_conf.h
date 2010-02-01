@@ -284,6 +284,9 @@ int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr ad
 
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
+int qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, int qemuCmdFlags);
+int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr net, int idx);
+int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
 
 
 #endif /* __QEMUD_CONF_H */
