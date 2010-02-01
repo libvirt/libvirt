@@ -1515,6 +1515,28 @@ cleanup:
 }
 
 
+static int qemuDomainDeviceAliasIndex(virDomainDeviceInfoPtr info,
+                                      const char *prefix)
+{
+    int idx;
+
+    if (!info->alias)
+        return -1;
+    if (!STRPREFIX(info->alias, prefix))
+        return -1;
+
+    if (virStrToLong_i(info->alias + strlen(prefix), NULL, 10, &idx) < 0)
+        return -1;
+
+    return idx;
+}
+
+
+int qemuDomainNetVLAN(virDomainNetDefPtr def)
+{
+    return qemuDomainDeviceAliasIndex(&def->info, "net");
+}
+
 static int
 qemuAssignDeviceAliases(virDomainDefPtr def)
 {
@@ -1535,14 +1557,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def)
         }
     }
     for (i = 0; i < def->nnets ; i++) {
-        if (def->nets[i]->model) {
-            if (virAsprintf(&def->nets[i]->info.alias, "%s-nic%d", def->nets[i]->model, i) < 0)
-                goto no_memory;
-        } else {
-            if (virAsprintf(&def->nets[i]->info.alias, "nic%d", i) < 0)
-                goto no_memory;
-        }
-        if (virAsprintf(&def->nets[i]->hostnet_name, "netdev%d", i) < 0)
+        if (virAsprintf(&def->nets[i]->info.alias, "net%d", i) < 0)
             goto no_memory;
     }
 
@@ -2026,67 +2041,30 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 }
 
 
-static const char *
-qemuNetTypeToHostNet(int type)
-{
-    switch (type) {
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        return "tap";
-
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-        return "socket";
-
-    case VIR_DOMAIN_NET_TYPE_USER:
-    default:
-        return "user";
-    }
-}
-
 int
 qemuAssignNetNames(virDomainDefPtr def,
                    virDomainNetDefPtr net)
 {
-    char *nic_name, *hostnet_name;
-    int i, nic_index = 0, hostnet_index = 0;
+    int i;
+    int lastidx = -1;
 
-    for (i = 0; i < def->nnets; i++) {
-        if (def->nets[i] == net)
-            continue;
+    for (i = 0; i < def->nnets && def->nets[i] != net ; i++) {
+        int idx;
 
-        if (!def->nets[i]->info.alias || !def->nets[i]->hostnet_name)
-            continue;
+        if ((idx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Unable to determine device index for network device"));
+            return -1;
+        }
 
-        if ((def->nets[i]->model == NULL && net->model == NULL) ||
-            (def->nets[i]->model != NULL && net->model != NULL &&
-             STREQ(def->nets[i]->model, net->model)))
-            ++nic_index;
-
-        if (STREQ(qemuNetTypeToHostNet(def->nets[i]->type),
-                  qemuNetTypeToHostNet(net->type)))
-            ++hostnet_index;
+        if (idx > lastidx)
+            lastidx = idx;
     }
 
-    if (virAsprintf(&nic_name, "%s.%d",
-                    net->model ? net->model : "nic",
-                    nic_index) < 0) {
+    if (virAsprintf(&net->info.alias, "net%d", lastidx + 1) < 0) {
         virReportOOMError(NULL);
         return -1;
     }
-
-    if (virAsprintf(&hostnet_name, "%s.%d",
-                    qemuNetTypeToHostNet(net->type),
-                    hostnet_index) < 0) {
-        virReportOOMError(NULL);
-        VIR_FREE(nic_name);
-        return -1;
-    }
-
-    net->info.alias = nic_name;
-    net->hostnet_name = hostnet_name;
 
     return 0;
 }
@@ -2391,7 +2369,7 @@ qemuBuildNicStr(virConnectPtr conn,
 
 
 char *
-qemuBuildNicDevStr(virDomainNetDefPtr net, int qemuCmdFlags)
+qemuBuildNicDevStr(virDomainNetDefPtr net, int vlan)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic;
@@ -2405,10 +2383,10 @@ qemuBuildNicDevStr(virDomainNetDefPtr net, int qemuCmdFlags)
     }
 
     virBufferAdd(&buf, nic, strlen(nic));
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV)
-        virBufferVSprintf(&buf, ",netdev=%s", net->hostnet_name);
+    if (vlan == -1)
+        virBufferVSprintf(&buf, ",netdev=host%s", net->info.alias);
     else
-        virBufferVSprintf(&buf, ",vlan=%d", net->vlan);
+        virBufferVSprintf(&buf, ",vlan=%d", vlan);
     virBufferVSprintf(&buf, ",id=%s", net->info.alias);
     virBufferVSprintf(&buf, ",mac=%02x:%02x:%02x:%02x:%02x:%02x",
                       net->mac[0], net->mac[1],
@@ -2437,177 +2415,79 @@ qemuBuildHostNetStr(virConnectPtr conn,
                     int vlan,
                     const char *tapfd)
 {
-    char *str = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(&str, "tap%cfd=%s,vlan=%d%s%s",
-                        type_sep, tapfd, vlan,
-                        (net->hostnet_name ? ",name=" : ""),
-                        (net->hostnet_name ? net->hostnet_name : "")) < 0) {
-            virReportOOMError(conn);
-            return NULL;
-        }
+        virBufferAddLit(&buf, "tap");
+        virBufferVSprintf(&buf, "%cfd=%s", type_sep, tapfd);
+        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-            virBufferAddLit(&buf, "tap");
-            if (net->ifname) {
-                virBufferVSprintf(&buf, "%cifname=%s", type_sep, net->ifname);
-                type_sep = ',';
-            }
-            if (net->data.ethernet.script) {
-                virBufferVSprintf(&buf, "%cscript=%s", type_sep,
-                                  net->data.ethernet.script);
-                type_sep = ',';
-            }
-            virBufferVSprintf(&buf, "%cvlan=%d", type_sep, vlan);
-            if (net->hostnet_name) {
-                virBufferVSprintf(&buf, "%cname=%s", type_sep,
-                                  net->hostnet_name);
-                type_sep = ','; /* dead-store, but leave it, in case... */
-            }
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                virReportOOMError(conn);
-                return NULL;
-            }
-
-            str = virBufferContentAndReset(&buf);
+        virBufferAddLit(&buf, "tap");
+        if (net->ifname) {
+            virBufferVSprintf(&buf, "%cifname=%s", type_sep, net->ifname);
+            type_sep = ',';
+        }
+        if (net->data.ethernet.script) {
+            virBufferVSprintf(&buf, "%cscript=%s", type_sep,
+                              net->data.ethernet.script);
+            type_sep = ',';
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        {
-            const char *mode = NULL;
-
-            switch (net->type) {
-            case VIR_DOMAIN_NET_TYPE_CLIENT:
-                mode = "connect";
-                break;
-            case VIR_DOMAIN_NET_TYPE_SERVER:
-                mode = "listen";
-                break;
-            case VIR_DOMAIN_NET_TYPE_MCAST:
-                mode = "mcast";
-                break;
-            }
-
-            if (virAsprintf(&str, "socket%c%s=%s:%d,vlan=%d%s%s",
-                            type_sep, mode,
-                            net->data.socket.address,
-                            net->data.socket.port,
-                            vlan,
-                            (net->hostnet_name ? ",name=" : ""),
-                            (net->hostnet_name ? net->hostnet_name : "")) < 0) {
-                virReportOOMError(conn);
-                return NULL;
-            }
+        virBufferAddLit(&buf, "socket");
+        switch (net->type) {
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+            virBufferVSprintf(&buf, "%cconnect=%s:%d",
+                              type_sep,
+                              net->data.socket.address,
+                              net->data.socket.port);
+            break;
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+            virBufferVSprintf(&buf, "%clisten=%s:%d",
+                              type_sep,
+                              net->data.socket.address,
+                              net->data.socket.port);
+            break;
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+            virBufferVSprintf(&buf, "%cmcast=%s:%d",
+                              type_sep,
+                              net->data.socket.address,
+                              net->data.socket.port);
+            break;
         }
+        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
-        if (virAsprintf(&str, "user%cvlan=%d%s%s",
-                        type_sep, vlan,
-                        (net->hostnet_name ? ",name=" : ""),
-                        (net->hostnet_name ? net->hostnet_name : "")) < 0) {
-            virReportOOMError(conn);
-            return NULL;
-        }
+        virBufferAddLit(&buf, "user");
         break;
     }
 
-    return str;
-}
-
-
-char *
-qemuBuildNetDevStr(virConnectPtr conn,
-                   virDomainNetDefPtr net,
-                   const char *tapfd)
-{
-    char *str = NULL;
-
-    switch (net->type) {
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (virAsprintf(&str, "tap,fd=%s,id=%s",
-                        tapfd, net->hostnet_name) < 0) {
-            virReportOOMError(conn);
-            return NULL;
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-            virBufferAddLit(&buf, "tap");
-            if (net->ifname)
-                virBufferVSprintf(&buf, ",ifname=%s", net->ifname);
-            if (net->data.ethernet.script)
-                virBufferVSprintf(&buf, ",script=%s",
-                                  net->data.ethernet.script);
-            if (net->hostnet_name)
-                virBufferVSprintf(&buf, ",id=%s",
-                                  net->hostnet_name);
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                virReportOOMError(conn);
-                return NULL;
-            }
-
-            str = virBufferContentAndReset(&buf);
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-        {
-            const char *mode = NULL;
-
-            switch (net->type) {
-            case VIR_DOMAIN_NET_TYPE_CLIENT:
-                mode = "connect";
-                break;
-            case VIR_DOMAIN_NET_TYPE_SERVER:
-                mode = "listen";
-                break;
-            case VIR_DOMAIN_NET_TYPE_MCAST:
-                mode = "mcast";
-                break;
-            }
-
-            if (virAsprintf(&str, "socket,%s=%s:%d,id=%s",
-                            mode,
-                            net->data.socket.address,
-                            net->data.socket.port,
-                            net->hostnet_name) < 0) {
-                virReportOOMError(conn);
-                return NULL;
-            }
-        }
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_USER:
-    default:
-        if (virAsprintf(&str, "user,id=%s",
-                        net->hostnet_name) < 0) {
-            virReportOOMError(conn);
-            return NULL;
-        }
-        break;
+    if (vlan >= 0) {
+        virBufferVSprintf(&buf, "%cvlan=%d", type_sep, vlan);
+        if (net->info.alias)
+            virBufferVSprintf(&buf, ",name=host%s",
+                              net->info.alias);
+    } else {
+        virBufferVSprintf(&buf, "%cid=host%s",
+                          type_sep, net->info.alias);
     }
 
-    return str;
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError(conn);
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
 }
 
 
@@ -3635,13 +3515,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
             char tapfd_name[50];
+            int vlan;
 
             /* VLANs are not used with -netdev, so don't record them */
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
-                net->vlan = -1;
+                vlan = -1;
             else
-                net->vlan = i;
+                vlan = i;
 
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
@@ -3677,18 +3558,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 ADD_ARG_LIT("-netdev");
-                if (!(host = qemuBuildNetDevStr(conn, net, tapfd_name)))
+                if (!(host = qemuBuildHostNetStr(conn, net, ',',
+                                                 vlan, tapfd_name)))
                     goto error;
                 ADD_ARG(host);
             }
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
                 ADD_ARG_LIT("-device");
-                if (!(nic = qemuBuildNicDevStr(net, qemuCmdFlags)))
+                if (!(nic = qemuBuildNicDevStr(net, vlan)))
                     goto error;
                 ADD_ARG(nic);
             } else {
                 ADD_ARG_LIT("-net");
-                if (!(nic = qemuBuildNicStr(conn, net, "nic,", net->vlan)))
+                if (!(nic = qemuBuildNicStr(conn, net, "nic,", vlan)))
                     goto error;
                 ADD_ARG(nic);
             }
@@ -3696,7 +3578,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                   (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))) {
                 ADD_ARG_LIT("-net");
                 if (!(host = qemuBuildHostNetStr(conn, net, ',',
-                                                 net->vlan, tapfd_name)))
+                                                 vlan, tapfd_name)))
                     goto error;
                 ADD_ARG(host);
             }

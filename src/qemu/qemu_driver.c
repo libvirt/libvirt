@@ -5595,11 +5595,12 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tapfd_name = NULL;
-    int i, tapfd = -1;
+    int tapfd = -1;
     char *nicstr = NULL;
     char *netstr = NULL;
     int ret = -1;
     virDomainDevicePCIAddress guestAddr;
+    int vlan;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
         qemudReportError(conn, dom, NULL, VIR_ERR_NO_SUPPORT, "%s",
@@ -5626,22 +5627,16 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NET_NAME) &&
         qemuAssignNetNames(vm->def, net) < 0)
-        goto no_memory;
+        goto cleanup;
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
         qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
         goto cleanup;
 
-    /* Choose a vlan value greater than all other values since
-     * older versions did not store the value in the state file.
-     */
-    net->vlan = vm->def->nnets;
-    for (i = 0; i < vm->def->nnets; i++)
-        if (vm->def->nets[i]->vlan >= net->vlan)
-            net->vlan = vm->def->nets[i]->vlan;
+    vlan = qemuDomainNetVLAN(net);
 
     if (tapfd != -1) {
-        if (virAsprintf(&tapfd_name, "fd-%s", net->hostnet_name) < 0)
+        if (virAsprintf(&tapfd_name, "fd-%s", net->info.alias) < 0)
             goto no_memory;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5653,7 +5648,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     }
 
     if (!(netstr = qemuBuildHostNetStr(conn, net, ' ',
-                                       net->vlan, tapfd_name)))
+                                       vlan, tapfd_name)))
         goto try_tapfd_close;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5667,7 +5662,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         close(tapfd);
     tapfd = -1;
 
-    if (!(nicstr = qemuBuildNicStr(conn, net, NULL, net->vlan)))
+    if (!(nicstr = qemuBuildNicStr(conn, net, NULL, vlan)))
         goto try_remove;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5700,14 +5695,18 @@ cleanup:
     return ret;
 
 try_remove:
-    if (!net->hostnet_name || net->vlan == 0)
+    if (vlan < 0) {
         VIR_WARN0(_("Unable to remove network backend"));
-    else {
+    } else {
+        char *hostnet_name;
+        if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
+            goto no_memory;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorRemoveHostNetwork(priv->mon, net->vlan, net->hostnet_name) < 0)
+        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
             VIR_WARN(_("Failed to remove network backend for vlan %d, net %s"),
-                     net->vlan, net->hostnet_name);
+                     vlan, hostnet_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+        VIR_FREE(hostnet_name);
     }
     goto cleanup;
 
@@ -6174,6 +6173,8 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     int i, ret = -1;
     virDomainNetDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int vlan;
+    char *hostnet_name = NULL;
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
@@ -6200,9 +6201,14 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (detach->vlan < 0 || !detach->hostnet_name) {
+    if ((vlan = qemuDomainNetVLAN(detach)) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "%s", _("network device cannot be detached - device state missing"));
+                         "%s", _("unable to determine original VLAN"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0) {
+        virReportOOMError(NULL);
         goto cleanup;
     }
 
@@ -6213,7 +6219,7 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuMonitorRemoveHostNetwork(priv->mon, detach->vlan, detach->hostnet_name) < 0) {
+    if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
@@ -6248,6 +6254,7 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     ret = 0;
 
 cleanup:
+    VIR_FREE(hostnet_name);
     return ret;
 }
 

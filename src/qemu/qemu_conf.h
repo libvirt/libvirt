@@ -191,18 +191,12 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          int *ntapfds,
                                          const char *migrateFrom);
 
-/* Legacy, pre device support */
+/* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virConnectPtr conn,
                            virDomainNetDefPtr net,
                            char type_sep,
                            int vlan,
                            const char *tapfd);
-
-/* Current, best practice */
-char * qemuBuildNetDevStr(virConnectPtr conn,
-                          virDomainNetDefPtr net,
-                          const char *tapfd);
-
 
 /* Legacy, pre device support */
 char * qemuBuildNicStr(virConnectPtr conn,
@@ -291,6 +285,7 @@ int qemuDomainPCIAddressReleaseAddr(qemuDomainPCIAddressSetPtr addrs,
 void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs);
 int  qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs);
 
+int qemuDomainNetVLAN(virDomainNetDefPtr def);
 
 
 #endif /* __QEMUD_CONF_H */

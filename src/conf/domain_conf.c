@@ -433,7 +433,6 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     }
 
     VIR_FREE(def->ifname);
-    VIR_FREE(def->hostnet_name);
 
     virDomainDeviceInfoClear(&def->info);
 
@@ -1631,10 +1630,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *port = NULL;
     char *model = NULL;
     char *internal = NULL;
-    char *nic_name = NULL;
-    char *hostnet_name = NULL;
     char *devaddr = NULL;
-    char *vlan = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError(conn);
@@ -1704,10 +1700,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
-                nic_name = virXMLPropString(cur, "nic");
-                hostnet_name = virXMLPropString(cur, "hostnet");
                 devaddr = virXMLPropString(cur, "devaddr");
-                vlan = virXMLPropString(cur, "vlan");
             }
         }
         cur = cur->next;
@@ -1735,8 +1728,6 @@ virDomainNetDefParseXML(virConnectPtr conn,
             goto error;
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        def->info.alias = nic_name;
-        nic_name = NULL;
     } else {
         if (virDomainDeviceInfoParseXML(conn, node, &def->info, flags) < 0)
             goto error;
@@ -1748,16 +1739,6 @@ virDomainNetDefParseXML(virConnectPtr conn,
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Network interfaces must use 'pci' address type"));
-        goto error;
-    }
-
-    def->hostnet_name = hostnet_name;
-    hostnet_name = NULL;
-
-    def->vlan = -1;
-    if (vlan && virStrToLong_i(vlan, NULL, 10, &def->vlan) < 0) {
-        virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Cannot parse <state> 'vlan' attribute"));
         goto error;
     }
 
@@ -1880,10 +1861,7 @@ cleanup:
     VIR_FREE(model);
     VIR_FREE(type);
     VIR_FREE(internal);
-    VIR_FREE(nic_name);
-    VIR_FREE(hostnet_name);
     VIR_FREE(devaddr);
-    VIR_FREE(vlan);
 
     return def;
 
@@ -4825,16 +4803,6 @@ virDomainNetDefFormat(virConnectPtr conn,
     if (def->model)
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
-
-    if (flags & VIR_DOMAIN_XML_INTERNAL_STATUS) {
-        /* Legacy back-compat. Don't add any more attributes here */
-        virBufferAddLit(buf, "      <state");
-        if (def->hostnet_name)
-            virBufferEscapeString(buf, " hostnet='%s'", def->hostnet_name);
-        if (def->vlan > 0)
-            virBufferVSprintf(buf, " vlan='%d'", def->vlan);
-        virBufferAddLit(buf, "/>\n");
-    }
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;

@@ -247,10 +247,6 @@ struct _virDomainNetDef {
     } data;
     char *ifname;
     virDomainDeviceInfo info;
-    /* XXX figure out how to remove this */
-    char *hostnet_name;
-    /* XXX figure out how to remove this */
-    int vlan;
 };
 
 enum virDomainChrTargetType {
