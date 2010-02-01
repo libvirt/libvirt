@@ -558,8 +558,8 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
         close(fd);
         return -1;
     }
-    if (lseek(fd, pos, SEEK_SET) < 0) {
-        virReportSystemError(conn, errno,
+    if (pos < 0 || lseek(fd, pos, SEEK_SET) < 0) {
+      virReportSystemError(conn, pos < 0 ? 0 : errno,
                              _("Unable to seek to %lld in %s"),
                              (long long) pos, logfile);
         close(fd);
