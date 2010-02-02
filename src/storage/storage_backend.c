@@ -1,7 +1,7 @@
 /*
  * storage_backend.c: internal storage driver backend contract
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1326,8 +1326,10 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
     if (list)
         fclose(list);
-    else
-        close(fd);
+    else {
+        if (fd >= 0)
+            close(fd);
+    }
 
     while ((err = waitpid(child, &exitstatus, 0) == -1) && errno == EINTR);
 
