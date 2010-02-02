@@ -1694,13 +1694,7 @@ virStoragePoolSourceListNewSource(virConnectPtr conn,
 {
     virStoragePoolSourcePtr source;
 
-    if (VIR_ALLOC(source) < 0) {
-        virReportOOMError(conn);
-        return NULL;
-    }
-
     if (VIR_REALLOC_N(list->sources, list->nsources+1) < 0) {
-        VIR_FREE(source);
         virReportOOMError(conn);
         return NULL;
     }
