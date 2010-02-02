@@ -232,6 +232,10 @@ VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
               "private",
               "bridge")
 
+VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
+              "utc",
+              "localtime");
+
 #define virDomainReportError(code, fmt...)                           \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
                          __FUNCTION__, __LINE__, fmt)
@@ -3566,9 +3570,16 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
 
     tmp = virXPathString("string(./clock/@offset)", ctxt);
-    if (tmp && STREQ(tmp, "localtime"))
-        def->localtime = 1;
-    VIR_FREE(tmp);
+    if (tmp) {
+        if ((def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown clock offset '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    } else {
+        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+    }
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
@@ -5525,7 +5536,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
         goto cleanup;
 
     virBufferVSprintf(&buf, "  <clock offset='%s'/>\n",
-                      def->localtime ? "localtime" : "utc");
+                      virDomainClockOffsetTypeToString(def->clock.offset));
 
     if (virDomainLifecycleDefFormat(&buf, def->onPoweroff,
                                     "on_poweroff") < 0)

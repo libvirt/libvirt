@@ -2451,7 +2451,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     } else
         def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
 
-
+    def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     if (hvm) {
         if (sexpr_int(root, "domain/image/hvm/acpi"))
             def->features |= (1 << VIR_DOMAIN_FEATURE_ACPI);
@@ -2462,12 +2462,12 @@ xenDaemonParseSxpr(virConnectPtr conn,
 
         /* Old XenD only allows localtime here for HVM */
         if (sexpr_int(root, "domain/image/hvm/localtime"))
-            def->localtime = 1;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
     }
 
     /* Current XenD allows localtime here, for PV and HVM */
     if (sexpr_int(root, "domain/localtime"))
-        def->localtime = 1;
+        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
 
     if (sexpr_node_copy(root, hvm ?
                         "domain/image/hvm/device_model" :
@@ -5846,8 +5846,14 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(on_crash '%s')", tmp);
 
     /* Set localtime here for current XenD (both PV & HVM) */
-    if (def->localtime)
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
         virBufferAddLit(&buf, "(localtime 1)");
+    else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
+        virXendError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                     _("unsupported clock offset '%s'"),
+                     virDomainClockOffsetTypeToString(def->clock.offset));
+        goto error;
+    }
 
     if (!def->os.bootloader) {
         if (STREQ(def->os.type, "hvm"))
@@ -5965,7 +5971,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
             }
 
             /* Set localtime here to keep old XenD happy for HVM */
-            if (def->localtime)
+            if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
                 virBufferAddLit(&buf, "(localtime 1)");
 
             if (def->sounds) {

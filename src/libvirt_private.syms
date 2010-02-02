@@ -189,6 +189,8 @@ virDomainDefAddImplicitControllers;
 virDomainDefClearPCIAddresses;
 virDomainDefClearDeviceAliases;
 virDomainDeviceInfoIterate;
+virDomainClockOffsetTypeToString;
+virDomainClockOffsetTypeFromString;
 
 
 # domain_event.h

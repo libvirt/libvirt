@@ -2051,7 +2051,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
 
             /* Currently VirtualBox always uses locatime
              * so locatime is always true here */
-            def->localtime = 1;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
 
             /* dump video options vram/2d/3d/directx/etc. */
             {

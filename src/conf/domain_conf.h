@@ -631,6 +631,19 @@ struct _virSecurityLabelDef {
     int type;
 };
 
+enum virDomainClockOffsetType {
+    VIR_DOMAIN_CLOCK_OFFSET_UTC = 0,
+    VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME = 1,
+
+    VIR_DOMAIN_CLOCK_OFFSET_LAST,
+};
+
+typedef struct _virDomainClockDef virDomainClockDef;
+typedef virDomainClockDef *virDomainClockDefPtr;
+struct _virDomainClockDef {
+    int offset;
+};
+
 #define VIR_DOMAIN_CPUMASK_LEN 1024
 
 /* Guest VM main configuration */
@@ -659,7 +672,7 @@ struct _virDomainDef {
     char *emulator;
     int features;
 
-    int localtime;
+    virDomainClockDef clock;
 
     int ngraphics;
     virDomainGraphicsDefPtr *graphics;
@@ -927,6 +940,7 @@ VIR_ENUM_DECL(virDomainGraphics)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainSeclabel)
+VIR_ENUM_DECL(virDomainClockOffset)
 
 VIR_ENUM_DECL(virDomainNetdevMacvtap)
 

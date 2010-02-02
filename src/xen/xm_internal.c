@@ -683,6 +683,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
     virDomainHostdevDefPtr hostdev = NULL;
     int i;
     const char *defaultArch, *defaultMachine;
+    int vmlocaltime = 0;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -830,8 +831,12 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         else if (val)
             def->features |= (1 << VIR_DOMAIN_FEATURE_APIC);
     }
-    if (xenXMConfigGetBool(conn, conf, "localtime", &def->localtime, 0) < 0)
+    if (xenXMConfigGetBool(conn, conf, "localtime", &vmlocaltime, 0) < 0)
         goto cleanup;
+
+    def->clock.offset = vmlocaltime ?
+        VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME :
+        VIR_DOMAIN_CLOCK_OFFSET_UTC;
 
     if (xenXMConfigCopyStringOpt(conn, conf, "device_model", &def->emulator) < 0)
         goto cleanup;
@@ -2323,8 +2328,18 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             goto no_memory;
 
 
-        if (xenXMConfigSetInt(conf, "localtime", def->localtime ? 1 : 0) < 0)
-            goto no_memory;
+        if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME ||
+            def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) {
+            if (xenXMConfigSetInt(conf, "localtime",
+                                  def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME ?
+                                  1 : 0) < 0)
+                goto no_memory;
+        } else {
+            xenXMError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported clock offset '%s'"),
+                       virDomainClockOffsetTypeToString(def->clock.offset));
+            goto cleanup;
+        }
 
         if (priv->xendConfigVersion == 1) {
             for (i = 0 ; i < def->ndisks ; i++) {

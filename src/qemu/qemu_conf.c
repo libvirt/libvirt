@@ -3488,8 +3488,14 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->localtime)
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
         ADD_ARG_LIT("-localtime");
+    else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported clock offset '%s'"),
+                        virDomainClockOffsetTypeToString(def->clock.offset));
+        goto error;
+    }
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&
         def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART)
@@ -5326,6 +5332,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     def->id = -1;
     def->memory = def->maxmem = 64 * 1024;
     def->vcpus = 1;
+    def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     def->features = (1 << VIR_DOMAIN_FEATURE_ACPI)
         /*| (1 << VIR_DOMAIN_FEATURE_APIC)*/;
     def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
@@ -5505,7 +5512,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-full-screen")) {
             fullscreen = 1;
         } else if (STREQ(arg, "-localtime")) {
-            def->localtime = 1;
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
         } else if (STREQ(arg, "-kernel")) {
             WANT_VALUE();
             if (!(def->os.kernel = strdup(val)))
