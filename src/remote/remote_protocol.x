@@ -155,6 +155,11 @@ const REMOTE_SECRET_VALUE_MAX = 65536;
  */
 const REMOTE_SECRET_UUID_LIST_MAX = 16384;
 
+/*
+ * Upper limit on list of CPUs accepted when computing a baseline CPU.
+ */
+const REMOTE_CPU_BASELINE_MAX = 256;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -1473,6 +1478,16 @@ struct remote_cpu_compare_ret {
 };
 
 
+struct remote_cpu_baseline_args {
+    remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>;
+    unsigned flags;
+};
+
+struct remote_cpu_baseline_ret {
+    remote_nonnull_string cpu;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1656,7 +1671,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MEMORY_STATS = 159,
     REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS = 160,
 
-    REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161
+    REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
+    REMOTE_PROC_CPU_BASELINE = 162
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -50,6 +50,14 @@ static int remoteDispatchClose(
     remote_error *err,
     void *args,
     void *ret);
+static int remoteDispatchCpuBaseline(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_cpu_baseline_args *args,
+    remote_cpu_baseline_ret *ret);
 static int remoteDispatchCpuCompare(
     struct qemud_server *server,
     struct qemud_client *client,

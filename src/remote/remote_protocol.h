@@ -48,6 +48,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_SECURITY_DOI_MAX VIR_SECURITY_DOI_BUFLEN
 #define REMOTE_SECRET_VALUE_MAX 65536
 #define REMOTE_SECRET_UUID_LIST_MAX 16384
+#define REMOTE_CPU_BASELINE_MAX 256
 
 typedef char remote_uuid[VIR_UUID_BUFLEN];
 
@@ -1663,6 +1664,20 @@ struct remote_cpu_compare_ret {
         int result;
 };
 typedef struct remote_cpu_compare_ret remote_cpu_compare_ret;
+
+struct remote_cpu_baseline_args {
+        struct {
+                u_int xmlCPUs_len;
+                remote_nonnull_string *xmlCPUs_val;
+        } xmlCPUs;
+        u_int flags;
+};
+typedef struct remote_cpu_baseline_args remote_cpu_baseline_args;
+
+struct remote_cpu_baseline_ret {
+        remote_nonnull_string cpu;
+};
+typedef struct remote_cpu_baseline_ret remote_cpu_baseline_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1828,6 +1843,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MEMORY_STATS = 159,
         REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS = 160,
         REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
+        REMOTE_PROC_CPU_BASELINE = 162,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2132,6 +2148,8 @@ extern  bool_t xdr_remote_interface_is_active_args (XDR *, remote_interface_is_a
 extern  bool_t xdr_remote_interface_is_active_ret (XDR *, remote_interface_is_active_ret*);
 extern  bool_t xdr_remote_cpu_compare_args (XDR *, remote_cpu_compare_args*);
 extern  bool_t xdr_remote_cpu_compare_ret (XDR *, remote_cpu_compare_ret*);
+extern  bool_t xdr_remote_cpu_baseline_args (XDR *, remote_cpu_baseline_args*);
+extern  bool_t xdr_remote_cpu_baseline_ret (XDR *, remote_cpu_baseline_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2410,6 +2428,8 @@ extern bool_t xdr_remote_interface_is_active_args ();
 extern bool_t xdr_remote_interface_is_active_ret ();
 extern bool_t xdr_remote_cpu_compare_args ();
 extern bool_t xdr_remote_cpu_compare_ret ();
+extern bool_t xdr_remote_cpu_baseline_args ();
+extern bool_t xdr_remote_cpu_baseline_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

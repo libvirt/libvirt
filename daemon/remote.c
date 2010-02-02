@@ -5365,6 +5365,31 @@ remoteDispatchCpuCompare(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchCpuBaseline(struct qemud_server *server ATTRIBUTE_UNUSED,
+                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                          virConnectPtr conn,
+                          remote_message_header *hdr ATTRIBUTE_UNUSED,
+                          remote_error *err,
+                          remote_cpu_baseline_args *args,
+                          remote_cpu_baseline_ret *ret)
+{
+    char *cpu;
+
+    cpu = virConnectBaselineCPU(conn,
+                                (const char **) args->xmlCPUs.xmlCPUs_val,
+                                args->xmlCPUs.xmlCPUs_len,
+                                args->flags);
+    if (cpu == NULL) {
+        remoteDispatchConnError(err, conn);
+        return -1;
+    }
+
+    ret->cpu = cpu;
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

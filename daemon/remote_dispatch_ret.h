@@ -117,3 +117,4 @@
     remote_get_lib_version_ret val_remote_get_lib_version_ret;
     remote_cpu_compare_ret val_remote_cpu_compare_ret;
     remote_domain_memory_stats_ret val_remote_domain_memory_stats_ret;
+    remote_cpu_baseline_ret val_remote_cpu_baseline_ret;

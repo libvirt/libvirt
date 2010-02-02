@@ -812,3 +812,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_detach_device_flags_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* CpuBaseline => 162 */
+    .fn = (dispatch_fn) remoteDispatchCpuBaseline,
+    .args_filter = (xdrproc_t) xdr_remote_cpu_baseline_args,
+    .ret_filter = (xdrproc_t) xdr_remote_cpu_baseline_ret,
+},

@@ -2938,6 +2938,28 @@ xdr_remote_cpu_compare_ret (XDR *xdrs, remote_cpu_compare_ret *objp)
 }
 
 bool_t
+xdr_remote_cpu_baseline_args (XDR *xdrs, remote_cpu_baseline_args *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->xmlCPUs.xmlCPUs_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->xmlCPUs.xmlCPUs_len, REMOTE_CPU_BASELINE_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_cpu_baseline_ret (XDR *xdrs, remote_cpu_baseline_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->cpu))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 
