@@ -1,7 +1,7 @@
 /*
  * libvirtd.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -582,7 +582,7 @@ static int qemudListenUnix(struct qemud_server *server,
     return 0;
 
  cleanup:
-    if (sock->fd)
+    if (sock->fd >= 0)
         close(sock->fd);
     VIR_FREE(sock);
     return -1;
