@@ -8587,6 +8587,7 @@ static virDriver qemuDriver = {
     qemuDomainIsActive,
     qemuDomainIsPersistent,
     qemuCPUCompare, /* cpuCompare */
+    NULL, /* cpuBaseline */
 };
 
 

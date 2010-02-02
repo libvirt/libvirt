@@ -3403,6 +3403,7 @@ static virDriver esxDriver = {
     esxDomainIsActive,               /* domainIsActive */
     esxDomainIsPersistent,           /* domainIsPersistent */
     NULL,                            /* cpuCompare */
+    NULL,                            /* cpuBaseline */
 };
 
 

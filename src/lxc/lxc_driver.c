@@ -2449,6 +2449,7 @@ static virDriver lxcDriver = {
     lxcDomainIsActive,
     lxcDomainIsPersistent,
     NULL, /* cpuCompare */
+    NULL, /* cpuBaseline */
 };
 
 static virStateDriver lxcStateDriver = {

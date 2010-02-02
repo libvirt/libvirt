@@ -367,6 +367,11 @@ typedef int
     (*virDrvCPUCompare)(virConnectPtr conn,
                         const char *cpu,
                         unsigned int flags);
+typedef char *
+    (*virDrvCPUBaseline)(virConnectPtr conn,
+                         const char **xmlCPUs,
+                         unsigned int ncpus,
+                         unsigned int flags);
 
 /**
  * _virDriver:
@@ -458,6 +463,7 @@ struct _virDriver {
     virDrvDomainIsActive       domainIsActive;
     virDrvDomainIsPersistent   domainIsPersistent;
     virDrvCPUCompare            cpuCompare;
+    virDrvCPUBaseline           cpuBaseline;
 };
 
 typedef int

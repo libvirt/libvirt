@@ -8980,6 +8980,7 @@ static virDriver remote_driver = {
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
     remoteCPUCompare, /* cpuCompare */
+    NULL, /* cpuBaseline */
 };
 
 static virNetworkDriver network_driver = {
