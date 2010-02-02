@@ -1,7 +1,7 @@
 /*
  * interface_conf.c: interfaces XML handling
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -320,6 +320,8 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
     }
 
     nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
+    if (nIpNodes < 0)
+        return -1;
     if (ipNodes == NULL)
         return 0;
 
@@ -377,6 +379,8 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
     }
 
     nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
+    if (nIpNodes < 0)
+        return -1;
     if (ipNodes == NULL)
         return 0;
 
