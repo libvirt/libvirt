@@ -230,6 +230,8 @@ mymain(int argc, char **argv)
      * Can't be enabled since the absolute timestamp changes every time
     DO_TEST("clock-variable", QEMUD_CMD_FLAG_RTC);
     */
+    DO_TEST("clock-france", QEMUD_CMD_FLAG_RTC);
+
     DO_TEST("hugepages", QEMUD_CMD_FLAG_MEM_PATH);
     DO_TEST("disk-cdrom", 0);
     DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE);

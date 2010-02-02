@@ -3071,6 +3071,7 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         break;
 
     case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferAddLit(&buf, "base=localtime");
         break;
 
@@ -3550,6 +3551,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     } else {
         switch (def->clock.offset) {
         case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+        case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
             ADD_ARG_LIT("-localtime");
             break;
 
@@ -3563,6 +3565,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
                             virDomainClockOffsetTypeToString(def->clock.offset));
             goto error;
         }
+    }
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE &&
+        def->clock.data.timezone) {
+        ADD_ENV_PAIR("TZ", def->clock.data.timezone);
     }
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&
