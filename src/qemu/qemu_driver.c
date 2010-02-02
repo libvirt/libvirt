@@ -906,26 +906,28 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
     int ret;
     virSecurityDriverPtr security_drv;
 
+    qemuSecurityStackedSetDriver(qemud_drv);
+    qemuSecurityDACSetDriver(qemud_drv);
+
     ret = virSecurityDriverStartup(&security_drv,
                                    qemud_drv->securityDriverName);
     if (ret == -1) {
         VIR_ERROR0(_("Failed to start security driver"));
         return -1;
     }
-    /* No security driver wanted to be enabled: just return */
+
+    /* No primary security driver wanted to be enabled: just setup
+     * the DAC driver on its own */
     if (ret == -2) {
+        qemud_drv->securityDriver = &qemuDACSecurityDriver;
         VIR_INFO0(_("No security driver available"));
-        return 0;
+    } else {
+        qemud_drv->securityPrimaryDriver = security_drv;
+        qemud_drv->securitySecondaryDriver = &qemuDACSecurityDriver;
+        qemud_drv->securityDriver = &qemuStackedSecurityDriver;
+        VIR_INFO("Initialized security driver %s", security_drv->name);
     }
 
-    qemuSecurityStackedSetDriver(qemud_drv);
-    qemuSecurityDACSetDriver(qemud_drv);
-
-    qemud_drv->securityPrimaryDriver = security_drv;
-    qemud_drv->securitySecondaryDriver = &qemuDACSecurityDriver;
-    qemud_drv->securityDriver = &qemuStackedSecurityDriver;
-
-    VIR_INFO("Initialized security driver %s", security_drv->name);
     return 0;
 }
 
