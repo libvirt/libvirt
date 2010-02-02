@@ -226,6 +226,10 @@ mymain(int argc, char **argv)
     DO_TEST("bootloader", QEMUD_CMD_FLAG_DOMID);
     DO_TEST("clock-utc", 0);
     DO_TEST("clock-localtime", 0);
+    /*
+     * Can't be enabled since the absolute timestamp changes every time
+    DO_TEST("clock-variable", QEMUD_CMD_FLAG_RTC);
+    */
     DO_TEST("hugepages", QEMUD_CMD_FLAG_MEM_PATH);
     DO_TEST("disk-cdrom", 0);
     DO_TEST("disk-cdrom-empty", QEMUD_CMD_FLAG_DRIVE);

@@ -1156,6 +1156,9 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_BALLOON;
     if (strstr(help, "-device"))
         flags |= QEMUD_CMD_FLAG_DEVICE;
+    /* The trailing ' ' is important to avoid a bogus match */
+    if (strstr(help, "-rtc "))
+        flags |= QEMUD_CMD_FLAG_RTC;
     /* Keep disabled till we're actually ready to turn on netdev mode
      * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
 #if 0
@@ -3057,6 +3060,56 @@ error:
 }
 
 
+static char *
+qemuBuildClockArgStr(virDomainClockDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    switch (def->offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        virBufferAddLit(&buf, "base=utc");
+        break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+        virBufferAddLit(&buf, "base=localtime");
+        break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE: {
+        time_t now = time(NULL);
+        struct tm nowbits;
+
+        now += def->data.adjustment;
+        gmtime_r(&now, &nowbits);
+
+        virBufferVSprintf(&buf, "base=%d-%d-%dT%d:%d:%d",
+                          nowbits.tm_year + 1900,
+                          nowbits.tm_mon,
+                          nowbits.tm_mday,
+                          nowbits.tm_hour,
+                          nowbits.tm_min,
+                          nowbits.tm_sec);
+    }   break;
+
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported clock offset '%s'"),
+                        virDomainClockOffsetTypeToString(def->offset));
+        goto error;
+    }
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
 static int
 qemuBuildCpuArgStr(const struct qemud_driver *driver,
                    const virDomainDefPtr def,
@@ -3488,13 +3541,28 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
-        ADD_ARG_LIT("-localtime");
-    else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
-        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                        _("unsupported clock offset '%s'"),
-                        virDomainClockOffsetTypeToString(def->clock.offset));
-        goto error;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_RTC) {
+        const char *rtcopt;
+        ADD_ARG_LIT("-rtc");
+        if (!(rtcopt = qemuBuildClockArgStr(&def->clock)))
+            goto error;
+        ADD_ARG(rtcopt);
+    } else {
+        switch (def->clock.offset) {
+        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+            ADD_ARG_LIT("-localtime");
+            break;
+
+        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+            /* Nothing, its the default */
+            break;
+
+        default:
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported clock offset '%s'"),
+                            virDomainClockOffsetTypeToString(def->clock.offset));
+            goto error;
+        }
     }
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&

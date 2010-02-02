@@ -82,6 +82,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_SDL           = (1 << 27), /* Is the new -sdl arg available */
     QEMUD_CMD_FLAG_SMP_TOPOLOGY  = (1 << 28), /* Is sockets=s,cores=c,threads=t available for -smp? */
     QEMUD_CMD_FLAG_NETDEV        = (1 << 29), /* The -netdev flag & netdev_add/remove monitor commands */
+    QEMUD_CMD_FLAG_RTC           = (1 << 30), /* The -rtc flag for clock options */
 };
 
 /* Main driver state */

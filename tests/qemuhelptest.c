@@ -226,7 +226,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_CHARDEV |
             QEMUD_CMD_FLAG_BALLOON |
             QEMUD_CMD_FLAG_DEVICE |
-            QEMUD_CMD_FLAG_SMP_TOPOLOGY,
+            QEMUD_CMD_FLAG_SMP_TOPOLOGY |
+            QEMUD_CMD_FLAG_RTC,
             12001, 0,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
