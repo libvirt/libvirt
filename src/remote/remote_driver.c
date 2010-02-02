@@ -7590,6 +7590,37 @@ done:
     return rv;
 }
 
+
+static char *
+remoteCPUBaseline(virConnectPtr conn,
+                  const char **xmlCPUs,
+                  unsigned int ncpus,
+                  unsigned int flags)
+{
+    struct private_data *priv = conn->privateData;
+    remote_cpu_baseline_args args;
+    remote_cpu_baseline_ret ret;
+    char *cpu = NULL;
+
+    remoteDriverLock(priv);
+
+    args.xmlCPUs.xmlCPUs_len = ncpus;
+    args.xmlCPUs.xmlCPUs_val = (char **) xmlCPUs;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof (ret));
+    if (call(conn, priv, 0, REMOTE_PROC_CPU_BASELINE,
+             (xdrproc_t) xdr_remote_cpu_baseline_args, (char *) &args,
+             (xdrproc_t) xdr_remote_cpu_baseline_ret, (char *) &ret) == -1)
+        goto done;
+
+    cpu = ret.cpu;
+
+done:
+    remoteDriverUnlock(priv);
+    return cpu;
+}
+
 /*----------------------------------------------------------------------*/
 
 
@@ -8980,7 +9011,7 @@ static virDriver remote_driver = {
     remoteDomainIsActive, /* domainIsActive */
     remoteDomainIsPersistent, /* domainIsPersistent */
     remoteCPUCompare, /* cpuCompare */
-    NULL, /* cpuBaseline */
+    remoteCPUBaseline, /* cpuBaseline */
 };
 
 static virNetworkDriver network_driver = {

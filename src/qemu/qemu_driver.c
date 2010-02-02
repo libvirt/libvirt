@@ -8509,6 +8509,19 @@ qemuCPUCompare(virConnectPtr conn,
     return ret;
 }
 
+static char *
+qemuCPUBaseline(virConnectPtr conn ATTRIBUTE_UNUSED,
+                const char **xmlCPUs,
+                unsigned int ncpus,
+                unsigned int flags ATTRIBUTE_UNUSED)
+{
+    char *cpu;
+
+    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0);
+
+    return cpu;
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -8587,7 +8600,7 @@ static virDriver qemuDriver = {
     qemuDomainIsActive,
     qemuDomainIsPersistent,
     qemuCPUCompare, /* cpuCompare */
-    NULL, /* cpuBaseline */
+    qemuCPUBaseline, /* cpuBaseline */
 };
 
 
