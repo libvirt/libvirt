@@ -1,7 +1,7 @@
 /*
  * xs_internal.c: access to Xen Store
  *
- * Copyright (C) 2006, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2009-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1367,6 +1367,9 @@ int xenStoreDomainIntroduced(virConnectPtr conn,
 
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
+    if (new_domain_cnt < 0)
+        return -1;
+
     if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
         virReportOOMError(NULL);
         return -1;
@@ -1447,6 +1450,8 @@ int xenStoreDomainReleased(virConnectPtr conn,
 
 retry:
     new_domain_cnt = xenStoreNumOfDomains(conn);
+    if (new_domain_cnt < 0)
+        return -1;
 
     if( VIR_ALLOC_N(new_domids,new_domain_cnt) < 0 ) {
         virReportOOMError(NULL);
