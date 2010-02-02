@@ -635,6 +635,7 @@ enum virDomainClockOffsetType {
     VIR_DOMAIN_CLOCK_OFFSET_UTC = 0,
     VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME = 1,
     VIR_DOMAIN_CLOCK_OFFSET_VARIABLE = 2,
+    VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE = 3,
 
     VIR_DOMAIN_CLOCK_OFFSET_LAST,
 };
@@ -644,9 +645,15 @@ typedef virDomainClockDef *virDomainClockDefPtr;
 struct _virDomainClockDef {
     int offset;
 
-    /* Adjustment in seconds, relative to UTC, when
-     * offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE */
-    long long adjustment;
+    union {
+        /* Adjustment in seconds, relative to UTC, when
+         * offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE */
+        long long adjustment;
+
+        /* Timezone name, when
+         * offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME */
+        char *timezone;
+    } data;
 };
 
 #define VIR_DOMAIN_CPUMASK_LEN 1024

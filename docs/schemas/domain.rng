@@ -306,6 +306,16 @@
           </attribute>
           <group>
             <attribute name="offset">
+              <value>timezone</value>
+            </attribute>
+            <optional>
+              <attribute name="timezone">
+                <ref name="timeZone"/>
+              </attribute>
+            </optional>
+          </group>
+          <group>
+            <attribute name="offset">
               <value>variable</value>
             </attribute>
             <optional>
@@ -1631,6 +1641,11 @@
   <define name="timeDelta">
     <data type="string">
       <param name="pattern">(-|\+)?[0-9]+</param>
+    </data>
+  </define>
+  <define name="timeZone">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_\.\+\-/]+</param>
     </data>
   </define>
 </grammar>

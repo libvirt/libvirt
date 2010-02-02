@@ -235,7 +235,8 @@ VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
 VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "utc",
               "localtime",
-              "variable");
+              "variable",
+              "timezone");
 
 #define virDomainReportError(code, fmt...)                           \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
@@ -656,6 +657,9 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.loader);
     VIR_FREE(def->os.bootloader);
     VIR_FREE(def->os.bootloaderArgs);
+
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE)
+        VIR_FREE(def->clock.data.timezone);
 
     VIR_FREE(def->name);
     VIR_FREE(def->cpumask);
@@ -3584,8 +3588,17 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     switch (def->clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
         if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
-                             &def->clock.adjustment) < 0)
-            def->clock.adjustment = 0;
+                             &def->clock.data.adjustment) < 0)
+            def->clock.data.adjustment = 0;
+        break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
+        def->clock.data.timezone = virXPathString("string(./clock/@timezone)", ctxt);
+        if (!def->clock.data.timezone) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("missing 'timezone' attribute for clock with offset='timezone'"));
+            goto error;
+        }
         break;
     }
 
@@ -5547,7 +5560,10 @@ char *virDomainDefFormat(virDomainDefPtr def,
                       virDomainClockOffsetTypeToString(def->clock.offset));
     switch (def->clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        virBufferVSprintf(&buf, " adjustment='%lld'", def->clock.adjustment);
+        virBufferVSprintf(&buf, " adjustment='%lld'", def->clock.data.adjustment);
+        break;
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
+        virBufferEscapeString(&buf, " timezone='%s'", def->clock.data.timezone);
         break;
     }
     virBufferAddLit(&buf, "/>\n");

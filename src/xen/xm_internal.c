@@ -2328,13 +2328,20 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             goto no_memory;
 
 
-        if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME ||
-            def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) {
-            if (xenXMConfigSetInt(conf, "localtime",
-                                  def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME ?
-                                  1 : 0) < 0)
+        if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
+            if (def->clock.data.timezone) {
+                xenXMError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("configurable timezones are not supported"));
+                goto cleanup;
+            }
+
+            if (xenXMConfigSetInt(conf, "localtime", 1) < 0)
+                goto no_memory;
+        } else if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) {
+            if (xenXMConfigSetInt(conf, "localtime", 0) < 0)
                 goto no_memory;
         } else {
+            /* XXX We could support Xen's rtc clock offset */
             xenXMError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported clock offset '%s'"),
                        virDomainClockOffsetTypeToString(def->clock.offset));

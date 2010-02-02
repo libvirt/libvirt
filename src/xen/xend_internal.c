@@ -5846,9 +5846,15 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(on_crash '%s')", tmp);
 
     /* Set localtime here for current XenD (both PV & HVM) */
-    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME)
+    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
+        if (def->clock.data.timezone) {
+            virXendError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
+                         _("configurable timezones are not supported"));
+            goto error;
+        }
+
         virBufferAddLit(&buf, "(localtime 1)");
-    else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
+    } else if (def->clock.offset != VIR_DOMAIN_CLOCK_OFFSET_UTC) {
         virXendError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
                      _("unsupported clock offset '%s'"),
                      virDomainClockOffsetTypeToString(def->clock.offset));
