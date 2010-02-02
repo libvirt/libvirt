@@ -364,6 +364,60 @@ virXPathULongLong(const char *xpath,
     return (ret);
 }
 
+/**
+ * virXPathULongLong:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned long long value
+ *
+ * Convenience function to evaluate an XPath number
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the XPath evaluation failed or -2 if the
+ *         value doesn't have a long format.
+ */
+int
+virXPathLongLong(const char *xpath,
+                 xmlXPathContextPtr ctxt,
+                 long long *value)
+{
+    xmlXPathObjectPtr obj;
+    xmlNodePtr relnode;
+    int ret = 0;
+
+    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
+        virXMLError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Invalid parameter to virXPathLongLong()"));
+        return (-1);
+    }
+    relnode = ctxt->node;
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    ctxt->node = relnode;
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+        char *conv = NULL;
+        unsigned long long val;
+
+        val = strtoll((const char *) obj->stringval, &conv, 10);
+        if (conv == (const char *) obj->stringval) {
+            ret = -2;
+        } else {
+            *value = val;
+        }
+    } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
+               (!(isnan(obj->floatval)))) {
+        *value = (long long) obj->floatval;
+        if (*value != obj->floatval) {
+            ret = -2;
+        }
+    } else {
+        ret = -1;
+    }
+
+    xmlXPathFreeObject(obj);
+    return (ret);
+}
+
 char *
 virXMLPropString(xmlNodePtr node,
                  const char *name)

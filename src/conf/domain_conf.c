@@ -234,7 +234,8 @@ VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
 
 VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "utc",
-              "localtime");
+              "localtime",
+              "variable");
 
 #define virDomainReportError(code, fmt...)                           \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
@@ -3580,6 +3581,13 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     } else {
         def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
     }
+    switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+        if (virXPathLongLong("number(./clock/@adjustment)", ctxt,
+                             &def->clock.adjustment) < 0)
+            def->clock.adjustment = 0;
+        break;
+    }
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
@@ -5535,8 +5543,14 @@ char *virDomainDefFormat(virDomainDefPtr def,
     if (virCPUDefFormatBuf(&buf, def->cpu, "  ", 0) < 0)
         goto cleanup;
 
-    virBufferVSprintf(&buf, "  <clock offset='%s'/>\n",
+    virBufferVSprintf(&buf, "  <clock offset='%s'",
                       virDomainClockOffsetTypeToString(def->clock.offset));
+    switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+        virBufferVSprintf(&buf, " adjustment='%lld'", def->clock.adjustment);
+        break;
+    }
+    virBufferAddLit(&buf, "/>\n");
 
     if (virDomainLifecycleDefFormat(&buf, def->onPoweroff,
                                     "on_poweroff") < 0)

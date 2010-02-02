@@ -297,12 +297,24 @@
   <define name="clock">
     <optional>
       <element name="clock">
-        <attribute name="offset">
-          <choice>
+        <choice>
+          <attribute name="offset">
             <value>localtime</value>
+          </attribute>
+          <attribute name="offset">
             <value>utc</value>
-          </choice>
-        </attribute>
+          </attribute>
+          <group>
+            <attribute name="offset">
+              <value>variable</value>
+            </attribute>
+            <optional>
+              <attribute name="adjustment">
+                <ref name="timeDelta"/>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
         <empty/>
       </element>
     </optional>
@@ -1614,6 +1626,11 @@
   <define name="featureName">
     <data type="string">
       <param name='pattern'>[a-zA-Z0-9\-_]+</param>
+    </data>
+  </define>
+  <define name="timeDelta">
+    <data type="string">
+      <param name="pattern">(-|\+)?[0-9]+</param>
     </data>
   </define>
 </grammar>

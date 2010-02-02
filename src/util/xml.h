@@ -30,7 +30,10 @@ int                 virXPathULong(const char *xpath,
 int            virXPathULongLong(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  unsigned long long *value);
-int              virXPathLongHex(const char *xpath,
+int	        virXPathLongLong(const char *xpath,
+                                 xmlXPathContextPtr ctxt,
+                                 long long *value);
+int		virXPathLongHex	(const char *xpath,
                                  xmlXPathContextPtr ctxt,
                                  long *value);
 int             virXPathULongHex(const char *xpath,

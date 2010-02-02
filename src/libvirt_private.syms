@@ -629,6 +629,7 @@ virXPathStringLimit;
 virXPathBoolean;
 virXPathNumber;
 virXPathULong;
+virXPathLongLong;
 virXPathULongLong;
 virXPathLongHex;
 virXPathULongHex;
