@@ -400,9 +400,41 @@
 
     <dl>
       <dt><code>clock</code></dt>
-      <dd>The <code>offset</code> attribute takes either "utc" or
-        "localtime" to specify how the guest clock is initialized
-        in relation to the host OS.
+      <dd>
+	<p>The <code>offset</code> attribute takes three possible
+	  values, allowing fine grained control over how the guest
+	  clock is synchronized to the host. NB, not all hypervisors
+	  support all modes.</p>
+	<dl>
+	  <dt><code>utc</code></dt>
+	  <dd>
+	    The guest clock will always be synchronized to UTC when
+	    booted</dd>
+	  <dt><code>localtime</code></dt>
+	  <dd>
+	    The guest clock will be synchronized to the host's configured
+	    timezone when booted, if any.
+	  </dd>
+	  <dt><code>timezone</code></dt>
+	  <dd>
+	    The guest clock will be synchronized to the requested timezone
+	    using the <code>timezone</code> attribute.
+	  </dd>
+	  <dt><code>variable</code></dt>
+	  <dd>
+	    The guest clock will have an arbitrary offset applied
+	    relative to UTC. The delta relative to UTC is specified
+	    in seconds, using the <code>adjustment</code> attribute.
+	    The guest is free to adjust the RTC over time an expect
+	    that it will be honoured at next reboot. This is in
+	    contrast to 'utc' mode, where the RTC adjustments are
+	    lost at each reboot.
+	  </dd>
+	</dl>
+	<p>
+	  NB, at time of writing, only QEMU supports the variable
+	  clock mode, or custom timezones.
+	</p>
       </dd>
     </dl>
 
