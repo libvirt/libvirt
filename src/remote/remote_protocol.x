@@ -1488,6 +1488,30 @@ struct remote_cpu_baseline_ret {
 };
 
 
+struct remote_domain_get_job_info_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_job_info_ret {
+    int type;
+
+    unsigned hyper timeElapsed;
+    unsigned hyper timeRemaining;
+
+    unsigned hyper dataTotal;
+    unsigned hyper dataProcessed;
+    unsigned hyper dataRemaining;
+
+    unsigned hyper memTotal;
+    unsigned hyper memProcessed;
+    unsigned hyper memRemaining;
+
+    unsigned hyper fileTotal;
+    unsigned hyper fileProcessed;
+    unsigned hyper fileRemaining;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1672,7 +1696,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS = 160,
 
     REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
-    REMOTE_PROC_CPU_BASELINE = 162
+    REMOTE_PROC_CPU_BASELINE = 162,
+    REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -194,6 +194,14 @@ static int remoteDispatchDomainGetInfo(
     remote_error *err,
     remote_domain_get_info_args *args,
     remote_domain_get_info_ret *ret);
+static int remoteDispatchDomainGetJobInfo(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_get_job_info_args *args,
+    remote_domain_get_job_info_ret *ret);
 static int remoteDispatchDomainGetMaxMemory(
     struct qemud_server *server,
     struct qemud_client *client,

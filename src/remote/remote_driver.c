@@ -7643,6 +7643,46 @@ done:
     return cpu;
 }
 
+
+static int
+remoteDomainGetJobInfo (virDomainPtr domain, virDomainJobInfoPtr info)
+{
+    int rv = -1;
+    remote_domain_get_job_info_args args;
+    remote_domain_get_job_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_JOB_INFO,
+              (xdrproc_t) xdr_remote_domain_get_job_info_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_job_info_ret, (char *) &ret) == -1)
+        goto done;
+
+    info->type = ret.type;
+    info->timeElapsed = ret.timeElapsed;
+    info->timeRemaining = ret.timeRemaining;
+    info->dataTotal = ret.dataTotal;
+    info->dataProcessed = ret.dataProcessed;
+    info->dataRemaining = ret.dataRemaining;
+    info->memTotal = ret.memTotal;
+    info->memProcessed = ret.memProcessed;
+    info->memRemaining = ret.memRemaining;
+    info->fileTotal = ret.fileTotal;
+    info->fileProcessed = ret.fileProcessed;
+    info->fileRemaining = ret.fileRemaining;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /*----------------------------------------------------------------------*/
 
 
@@ -9060,7 +9100,7 @@ static virDriver remote_driver = {
     remoteDomainIsPersistent, /* domainIsPersistent */
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
+    remoteDomainGetJobInfo, /* domainGetJobInfo */
 };
 
 static virNetworkDriver network_driver = {

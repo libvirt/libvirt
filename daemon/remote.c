@@ -5386,6 +5386,50 @@ remoteDispatchCpuBaseline(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     ret->cpu = cpu;
+
+    return 0;
+}
+
+
+static int
+remoteDispatchDomainGetJobInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
+                                remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                remote_error *rerr,
+                                remote_domain_get_job_info_args *args,
+                                remote_domain_get_job_info_ret *ret)
+{
+    virDomainPtr dom;
+    virDomainJobInfo info;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainGetJobInfo (dom, &info) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->type = info.type;
+    ret->timeElapsed = info.timeElapsed;
+    ret->timeRemaining = info.timeRemaining;
+    ret->dataTotal = info.dataTotal;
+    ret->dataProcessed = info.dataProcessed;
+    ret->dataRemaining = info.dataRemaining;
+    ret->memTotal = info.memTotal;
+    ret->memProcessed = info.memProcessed;
+    ret->memRemaining = info.memRemaining;
+    ret->fileTotal = info.fileTotal;
+    ret->fileProcessed = info.fileProcessed;
+    ret->fileRemaining = info.fileRemaining;
+
+    virDomainFree(dom);
+
     return 0;
 }
 

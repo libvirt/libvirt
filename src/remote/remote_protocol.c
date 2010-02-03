@@ -2960,6 +2960,46 @@ xdr_remote_cpu_baseline_ret (XDR *xdrs, remote_cpu_baseline_ret *objp)
 }
 
 bool_t
+xdr_remote_domain_get_job_info_args (XDR *xdrs, remote_domain_get_job_info_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_get_job_info_ret (XDR *xdrs, remote_domain_get_job_info_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->type))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->timeElapsed))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->timeRemaining))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->dataTotal))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->dataProcessed))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->dataRemaining))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->memTotal))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->memProcessed))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->memRemaining))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->fileTotal))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->fileProcessed))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->fileRemaining))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

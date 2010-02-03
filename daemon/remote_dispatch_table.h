@@ -817,3 +817,8 @@
     .args_filter = (xdrproc_t) xdr_remote_cpu_baseline_args,
     .ret_filter = (xdrproc_t) xdr_remote_cpu_baseline_ret,
 },
+{   /* DomainGetJobInfo => 163 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetJobInfo,
+    .args_filter = (xdrproc_t) xdr_remote_domain_get_job_info_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_get_job_info_ret,
+},

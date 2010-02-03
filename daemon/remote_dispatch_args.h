@@ -138,3 +138,4 @@
     remote_domain_attach_device_flags_args val_remote_domain_attach_device_flags_args;
     remote_domain_detach_device_flags_args val_remote_domain_detach_device_flags_args;
     remote_cpu_baseline_args val_remote_cpu_baseline_args;
+    remote_domain_get_job_info_args val_remote_domain_get_job_info_args;
