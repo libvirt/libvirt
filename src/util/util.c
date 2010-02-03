@@ -1264,7 +1264,11 @@ int virFileCreate(const char *path, mode_t mode,
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
-    if ((pid = fork()) < 0) {
+    virLogLock();
+    pid = fork();
+    virLogUnlock();
+
+    if (pid < 0) {
         ret = errno;
         virReportSystemError(NULL, errno,
                              _("cannot fork o create file '%s'"), path);
@@ -1370,7 +1374,11 @@ int virDirCreate(const char *path, mode_t mode,
         return virDirCreateSimple(path, mode, uid, gid, flags);
     }
 
-    if ((pid = fork()) < 0) {
+    virLogLock();
+    pid = fork();
+    virLogUnlock();
+
+    if (pid < 0) {
         ret = errno;
         virReportSystemError(NULL, errno,
                              _("cannot fork to create directory '%s'"),
