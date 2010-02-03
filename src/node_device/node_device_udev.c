@@ -1190,7 +1190,9 @@ static int udevRemoveOneDevice(struct udev_device *device)
     int ret = 0;
 
     name = udev_device_get_syspath(device);
+    nodeDeviceLock(driverState);
     dev = virNodeDeviceFindBySysfsPath(&driverState->devs, name);
+
     if (dev != NULL) {
         VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
                   dev->def->name, name);
@@ -1200,6 +1202,7 @@ static int udevRemoveOneDevice(struct udev_device *device)
                  name);
         ret = -1;
     }
+    nodeDeviceUnlock(driverState);
 
     return ret;
 }
@@ -1288,7 +1291,10 @@ static int udevAddOneDevice(struct udev_device *device)
         goto out;
     }
 
+    nodeDeviceLock(driverState);
     dev = virNodeDeviceAssignDef(NULL, &driverState->devs, def);
+    nodeDeviceUnlock(driverState);
+
     if (dev == NULL) {
         VIR_ERROR("Failed to create device for '%s'", def->name);
         virNodeDeviceDefFree(def);
