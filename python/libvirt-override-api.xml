@@ -48,6 +48,11 @@
       <return type='int *' info='the list of information or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetJobInfo' file='python'>
+      <info>Extract information about an active job being processed for a domain.</info>
+      <return type='int *' info='the list of information or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
     <function name='virNodeGetInfo' file='python'>
       <info>Extract hardware information about the Node.</info>
       <return type='int *' info='the list of information or None in case of error'/>

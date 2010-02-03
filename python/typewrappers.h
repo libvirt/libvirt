@@ -138,6 +138,7 @@ PyObject * libvirt_intWrap(int val);
 PyObject * libvirt_longWrap(long val);
 PyObject * libvirt_ulongWrap(unsigned long val);
 PyObject * libvirt_longlongWrap(long long val);
+PyObject * libvirt_ulonglongWrap(unsigned long long val);
 PyObject * libvirt_charPtrWrap(char *str);
 PyObject * libvirt_constcharPtrWrap(const char *str);
 PyObject * libvirt_charPtrConstWrap(const char *str);

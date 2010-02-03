@@ -2072,6 +2072,41 @@ libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 
+static PyObject *
+libvirt_virDomainGetJobInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    virDomainJobInfo info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetJobInfo", &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetJobInfo(domain, &info);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+    py_retval = PyList_New(12);
+    PyList_SetItem(py_retval, 0, libvirt_intWrap((int) info.type));
+    PyList_SetItem(py_retval, 1, libvirt_ulonglongWrap(info.timeElapsed));
+    PyList_SetItem(py_retval, 2, libvirt_ulonglongWrap(info.timeRemaining));
+    PyList_SetItem(py_retval, 3, libvirt_ulonglongWrap(info.dataTotal));
+    PyList_SetItem(py_retval, 4, libvirt_ulonglongWrap(info.dataProcessed));
+    PyList_SetItem(py_retval, 5, libvirt_ulonglongWrap(info.dataRemaining));
+    PyList_SetItem(py_retval, 6, libvirt_ulonglongWrap(info.memTotal));
+    PyList_SetItem(py_retval, 7, libvirt_ulonglongWrap(info.memProcessed));
+    PyList_SetItem(py_retval, 8, libvirt_ulonglongWrap(info.memRemaining));
+    PyList_SetItem(py_retval, 9, libvirt_ulonglongWrap(info.fileTotal));
+    PyList_SetItem(py_retval, 10, libvirt_ulonglongWrap(info.fileProcessed));
+    PyList_SetItem(py_retval, 11, libvirt_ulonglongWrap(info.fileRemaining));
+
+    return(py_retval);
+}
+
+
 /*******************************************
  * Helper functions to avoid importing modules
  * for every callback
@@ -2788,6 +2823,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectListInterfaces", libvirt_virConnectListInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedInterfaces", libvirt_virConnectListDefinedInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectBaselineCPU", libvirt_virConnectBaselineCPU, METH_VARARGS, NULL},
+    {(char *) "virDomainGetJobInfo", libvirt_virDomainGetJobInfo, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
