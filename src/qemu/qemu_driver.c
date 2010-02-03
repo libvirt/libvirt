@@ -84,9 +84,10 @@ typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
     virCond jobCond; /* Use in conjunction with main virDomainObjPtr lock */
-    int jobActive; /* Non-zero if a job is active. Only 1 job is allowed at any time
-                    * A job includes *all* monitor commands, even those just querying
-                    * information, not merely actions */
+    unsigned int jobActive : 1; /* Non-zero if a job is active. Only 1 job is allowed at any time
+                                 * A job includes *all* monitor commands, even those just querying
+                                 * information, not merely actions */
+    unsigned int jobCancel : 1; /* Non-zero if a cancel request from client has arrived */
     virDomainJobInfo jobInfo;
     unsigned long long jobStart;
 
@@ -331,6 +332,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
         }
     }
     priv->jobActive = 1;
+    priv->jobCancel = 0;
     priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
@@ -377,6 +379,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
         }
     }
     priv->jobActive = 1;
+    priv->jobCancel = 0;
     priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
@@ -401,6 +404,7 @@ static int ATTRIBUTE_RETURN_CHECK qemuDomainObjEndJob(virDomainObjPtr obj)
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     priv->jobActive = 0;
+    priv->jobCancel = 0;
     priv->jobStart = 0;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
     virCondSignal(&priv->jobCond);
@@ -3944,6 +3948,17 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000ull };
         struct timeval now;
         int rc;
+
+        if (priv->jobCancel) {
+            priv->jobCancel = 0;
+            VIR_DEBUG0("Cancelling migration at client request");
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            rc = qemuMonitorMigrateCancel(priv->mon);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            if (rc < 0) {
+                VIR_WARN0("Unable to cancel migration");
+            }
+        }
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         rc = qemuMonitorGetMigrationStatus(priv->mon,
@@ -8838,6 +8853,49 @@ cleanup:
 }
 
 
+static int qemuDomainAbortJob(virDomainPtr dom) {
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (virDomainObjIsActive(vm)) {
+        if (priv->jobActive) {
+            VIR_DEBUG("Requesting cancellation of job on vm %s", vm->def->name);
+            priv->jobCancel = 1;
+        } else {
+            qemuReportError(VIR_ERR_OPERATION_INVALID,
+                            "%s", _("no job is active on the domain"));
+            goto cleanup;
+        }
+    } else {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -8918,7 +8976,7 @@ static virDriver qemuDriver = {
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
     qemuDomainGetJobInfo, /* domainGetJobInfo */
-    NULL, /* domainFinishJob */
+    qemuDomainAbortJob, /* domainAbortJob */
 };
 
 

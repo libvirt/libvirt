@@ -1907,6 +1907,42 @@ cleanup:
 }
 
 /*
+ * "domjobabort" command
+ */
+static const vshCmdInfo info_domjobabort[] = {
+    {"help", gettext_noop("abort active domain job")},
+    {"desc", gettext_noop("Aborts the currently running domain job")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domjobabort[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int ret = TRUE;
+    unsigned int id;
+    char *str, uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    if (virDomainAbortJob(dom) < 0)
+        ret = FALSE;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "freecell" command
  */
 static const vshCmdInfo info_freecell[] = {
@@ -7621,6 +7657,7 @@ static const vshCmdDef commands[] = {
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
     {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo},
+    {"domjobabort", cmdDomjobabort, opts_domjobabort, info_domjobabort},
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
