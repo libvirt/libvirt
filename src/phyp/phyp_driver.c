@@ -1654,6 +1654,7 @@ virDriver phypDriver = {
     NULL,                       /* domainIsPersistent */
     NULL,                       /* cpuCompare */
     NULL,                       /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 int

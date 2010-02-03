@@ -9060,6 +9060,7 @@ static virDriver remote_driver = {
     remoteDomainIsPersistent, /* domainIsPersistent */
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 static virNetworkDriver network_driver = {

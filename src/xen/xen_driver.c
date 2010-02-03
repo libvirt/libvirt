@@ -1904,6 +1904,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainisPersistent,
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 /**

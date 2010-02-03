@@ -1920,6 +1920,7 @@ static virDriver umlDriver = {
     umlDomainIsPersistent,
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 

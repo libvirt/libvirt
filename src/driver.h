@@ -373,6 +373,10 @@ typedef char *
                          unsigned int ncpus,
                          unsigned int flags);
 
+typedef int
+    (*virDrvDomainGetJobInfo)(virDomainPtr domain,
+                              virDomainJobInfoPtr info);
+
 /**
  * _virDriver:
  *
@@ -464,6 +468,7 @@ struct _virDriver {
     virDrvDomainIsPersistent   domainIsPersistent;
     virDrvCPUCompare            cpuCompare;
     virDrvCPUBaseline           cpuBaseline;
+    virDrvDomainGetJobInfo     domainGetJobInfo;
 };
 
 typedef int

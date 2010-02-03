@@ -5243,6 +5243,7 @@ static virDriver testDriver = {
     testDomainIsPersistent, /* domainIsPersistent */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 static virNetworkDriver testNetworkDriver = {

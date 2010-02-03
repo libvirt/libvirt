@@ -8773,6 +8773,7 @@ static virDriver qemuDriver = {
     qemuDomainIsPersistent,
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 

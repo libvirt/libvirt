@@ -11159,3 +11159,51 @@ error:
     virDispatchError(conn);
     return NULL;
 }
+
+
+/**
+ * virDomainGetJobInfo:
+ * @domain: a domain object
+ * @info: pointer to a virDomainJobInfo structure allocated by the user
+ *
+ * Extract information about progress of a background job on a domain.
+ * Will return an error if the domain is not active.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, info=%p", domain, info);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    if (info == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    memset(info, 0, sizeof(virDomainJobInfo));
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetJobInfo) {
+        int ret;
+        ret = conn->driver->domainGetJobInfo (domain, info);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}

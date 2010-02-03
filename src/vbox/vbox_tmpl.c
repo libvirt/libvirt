@@ -7063,6 +7063,7 @@ virDriver NAME(Driver) = {
     vboxDomainIsPersistent,
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
+    NULL, /* domainGetJobInfo */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
