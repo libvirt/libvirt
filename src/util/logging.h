@@ -128,6 +128,8 @@ extern int virLogDefineOutput(virLogOutputFunc f, virLogCloseFunc c, void *data,
  * Internal logging API
  */
 
+extern void virLogLock(void);
+extern void virLogUnlock(void);
 extern int virLogStartup(void);
 extern int virLogReset(void);
 extern void virLogShutdown(void);

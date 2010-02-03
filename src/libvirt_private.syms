@@ -366,6 +366,8 @@ virLogParseOutputs;
 virLogStartup;
 virLogShutdown;
 virLogReset;
+virLogLock;
+virLogUnlock;
 
 
 # memory.h

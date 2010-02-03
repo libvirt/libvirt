@@ -133,11 +133,11 @@ static int virLogResetOutputs(void);
  */
 virMutex virLogMutex;
 
-static void virLogLock(void)
+void virLogLock(void)
 {
     virMutexLock(&virLogMutex);
 }
-static void virLogUnlock(void)
+void virLogUnlock(void)
 {
     virMutexUnlock(&virLogMutex);
 }

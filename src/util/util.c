@@ -415,7 +415,15 @@ __virExec(virConnectPtr conn,
         childerr = null;
     }
 
-    if ((pid = fork()) < 0) {
+    /* Ensure we hold the logging lock, to protect child processes
+     * from deadlocking on another threads inheirited mutex state */
+    virLogLock();
+    pid = fork();
+
+    /* Unlock for both parent and child process */
+    virLogUnlock();
+
+    if (pid < 0) {
         virReportSystemError(conn, errno,
                              "%s", _("cannot fork child process"));
         goto cleanup;
