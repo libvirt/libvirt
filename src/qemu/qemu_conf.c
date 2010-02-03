@@ -1797,6 +1797,13 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
 {
     char *addr;
 
+    if (dev->addr.pci.domain != 0 ||
+        dev->addr.pci.bus != 0) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Only PCI domain 0 and bus 0 are available"));
+        return NULL;
+    }
+
     if (virAsprintf(&addr, "%d:%d:%d",
                     dev->addr.pci.domain,
                     dev->addr.pci.bus,
@@ -1816,6 +1823,8 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
     if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         char *addr = qemuPCIAddressAsString(dev);
+
+        VIR_DEBUG("Remembering PCI addr %s", addr);
 
         if (virHashAddEntry(addrs->used, addr, addr) < 0) {
             VIR_FREE(addr);
@@ -1858,6 +1867,8 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
     if (!addr)
         return -1;
 
+    VIR_DEBUG("Reserving PCI addr %s", addr);
+
     if (virHashLookup(addrs->used, addr)) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          _("unable to reserve PCI address %s"), addr);
@@ -1869,6 +1880,9 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
         VIR_FREE(addr);
         return -1;
     }
+
+    if (dev->addr.pci.slot > addrs->nextslot)
+        addrs->nextslot = dev->addr.pci.slot + 1;
 
     return 0;
 }
@@ -1947,6 +1961,8 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
 
         addr = qemuPCIAddressAsString(&maybe);
 
+        VIR_DEBUG("Allocating PCI addr %s", addr);
+
         if (virHashLookup(addrs->used, addr)) {
             VIR_FREE(addr);
             continue;
@@ -1981,12 +1997,13 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     /* Host bridge */
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
         goto error;
-    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller) */
-    if (qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
-        goto error;
-    /* VGA */
-    if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
-        goto error;
+
+    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
+     * at slot 1....reserve it later
+     */
+
+    /* VGA at slot 2.... reserve it later */
+
     /* VirtIO Balloon */
     if (qemuDomainPCIAddressReserveSlot(addrs, 3) < 0)
         goto error;
@@ -2033,23 +2050,34 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
     for (i = 0; i < def->nvideos ; i++) {
-        if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
         /* First VGA is hardcoded slot=2 */
         if (i == 0) {
-            def->videos[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            def->videos[i]->info.addr.pci.domain = 0;
-            def->videos[i]->info.addr.pci.bus = 0;
-            def->videos[i]->info.addr.pci.slot = 2;
-            def->videos[i]->info.addr.pci.function = 0;
+            if (def->videos[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                if (def->videos[i]->info.addr.pci.domain != 0 ||
+                    def->videos[i]->info.addr.pci.bus != 0 ||
+                    def->videos[i]->info.addr.pci.slot != 2 ||
+                    def->videos[i]->info.addr.pci.function != 0) {
+                    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("Primary video card must have PCI address 0:0:2.0"));
+                    goto error;
+                }
+            } else {
+                def->videos[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                def->videos[i]->info.addr.pci.domain = 0;
+                def->videos[i]->info.addr.pci.bus = 0;
+                def->videos[i]->info.addr.pci.slot = 2;
+                def->videos[i]->info.addr.pci.function = 0;
+                if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
+                    goto error;
+            }
         } else {
+            if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+                continue;
             if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
                 goto error;
         }
     }
     for (i = 0; i < def->ncontrollers ; i++) {
-        if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
         /* FDC lives behind the ISA bridge */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
             continue;
@@ -2057,12 +2085,27 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             def->controllers[i]->idx == 0) {
-            def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            def->controllers[i]->info.addr.pci.domain = 0;
-            def->controllers[i]->info.addr.pci.bus = 0;
-            def->controllers[i]->info.addr.pci.slot = 1;
-            def->controllers[i]->info.addr.pci.function = 1;
+            if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                if (def->videos[i]->info.addr.pci.domain != 0 ||
+                    def->videos[i]->info.addr.pci.bus != 0 ||
+                    def->videos[i]->info.addr.pci.slot != 2 ||
+                    def->videos[i]->info.addr.pci.function != 0) {
+                    qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("Primary IDE controller must have PCI address 0:0:1.1"));
+                    goto error;
+                }
+            } else {
+                def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                def->controllers[i]->info.addr.pci.domain = 0;
+                def->controllers[i]->info.addr.pci.bus = 0;
+                def->controllers[i]->info.addr.pci.slot = 1;
+                def->controllers[i]->info.addr.pci.function = 1;
+                if (qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
+                    goto error;
+            }
         } else {
+            if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+                continue;
             if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
                 goto error;
         }
