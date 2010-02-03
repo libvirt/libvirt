@@ -87,6 +87,8 @@ struct _qemuDomainObjPrivate {
     int jobActive; /* Non-zero if a job is active. Only 1 job is allowed at any time
                     * A job includes *all* monitor commands, even those just querying
                     * information, not merely actions */
+    virDomainJobInfo jobInfo;
+    unsigned long long jobStart;
 
     qemuMonitorPtr mon;
     virDomainChrDefPtr monConfig;
@@ -329,6 +331,8 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
         }
     }
     priv->jobActive = 1;
+    priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     return 0;
 }
@@ -373,6 +377,8 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
         }
     }
     priv->jobActive = 1;
+    priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     virDomainObjUnlock(obj);
     qemuDriverLock(driver);
@@ -395,6 +401,8 @@ static int ATTRIBUTE_RETURN_CHECK qemuDomainObjEndJob(virDomainObjPtr obj)
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
     priv->jobActive = 0;
+    priv->jobStart = 0;
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
     virCondSignal(&priv->jobCond);
 
     return virDomainObjUnref(obj);
@@ -3919,6 +3927,96 @@ cleanup:
 }
 
 
+static int
+qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr vm)
+{
+    int ret = -1;
+    int status;
+    unsigned long long memProcessed;
+    unsigned long long memRemaining;
+    unsigned long long memTotal;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+
+    while (priv->jobInfo.type == VIR_DOMAIN_JOB_UNBOUNDED) {
+        /* Poll every 50ms for progress & to allow cancellation */
+        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000ull };
+        struct timeval now;
+        int rc;
+
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        rc = qemuMonitorGetMigrationStatus(priv->mon,
+                                           &status,
+                                           &memProcessed,
+                                           &memRemaining,
+                                           &memTotal);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+        if (rc < 0) {
+            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+            goto cleanup;
+        }
+
+        if (gettimeofday(&now, NULL) < 0) {
+            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+            virReportSystemError(errno, "%s",
+                                 _("cannot get time of day"));
+            goto cleanup;
+        }
+        priv->jobInfo.timeElapsed =
+            ((now.tv_sec * 1000ull) + (now.tv_usec / 1000)) -
+            priv->jobStart;
+
+        switch (status) {
+        case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
+            priv->jobInfo.type = VIR_DOMAIN_JOB_NONE;
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Migration is not active"));
+            break;
+
+        case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+            priv->jobInfo.dataTotal = memTotal;
+            priv->jobInfo.dataRemaining = memRemaining;
+            priv->jobInfo.dataProcessed = memProcessed;
+
+            priv->jobInfo.memTotal = memTotal;
+            priv->jobInfo.memRemaining = memRemaining;
+            priv->jobInfo.memProcessed = memProcessed;
+            break;
+
+        case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+            priv->jobInfo.type = VIR_DOMAIN_JOB_COMPLETED;
+            ret = 0;
+            break;
+
+        case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+            priv->jobInfo.type = VIR_DOMAIN_JOB_FAILED;
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Migration unexpectedly failed"));
+            break;
+
+        case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
+            priv->jobInfo.type = VIR_DOMAIN_JOB_CANCELLED;
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Migration was cancelled by client"));
+            break;
+        }
+
+        virDomainObjUnlock(vm);
+        qemuDriverUnlock(driver);
+
+        nanosleep(&ts, NULL);
+
+        qemuDriverLock(driver);
+        virDomainObjLock(vm);
+    }
+
+cleanup:
+    return ret;
+}
+
+
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 2
 
@@ -3967,6 +4065,7 @@ static int qemudDomainSave(virDomainPtr dom,
     int ret = -1;
     int rc;
     virDomainEventPtr event = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -3995,6 +4094,7 @@ static int qemudDomainSave(virDomainPtr dom,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -4005,9 +4105,11 @@ static int qemudDomainSave(virDomainPtr dom,
         goto endjob;
     }
 
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         header.was_running = 1;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
@@ -4061,22 +4163,25 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
+        rc = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         const char *args[] = {
             prog,
             "-c",
             NULL
         };
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
+        rc = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
+
+    if (rc < 0)
+        goto endjob;
+
+    rc = qemuDomainWaitForMigrationComplete(driver, vm);
 
     if (rc < 0)
         goto endjob;
@@ -4103,7 +4208,7 @@ static int qemudDomainSave(virDomainPtr dom,
 endjob:
     if (vm &&
         qemuDomainObjEndJob(vm) == 0)
-        vm = NULL;
+            vm = NULL;
 
 cleanup:
     if (fd != -1)
@@ -4132,6 +4237,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         "cat",
         NULL,
     };
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4144,6 +4250,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
@@ -4177,8 +4284,6 @@ static int qemudDomainCoreDump(virDomainPtr dom,
        independent of whether the stop command is issued.  */
     resume = (vm->state == VIR_DOMAIN_RUNNING);
 
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
     /* Pause domain for non-live dump */
     if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
         qemuDomainObjEnterMonitor(vm);
@@ -4191,9 +4296,18 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
 
     qemuDomainObjEnterMonitor(vm);
-    ret = qemuMonitorMigrateToCommand(priv->mon, 0, args, path);
+    ret = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
     qemuDomainObjExitMonitor(vm);
-    paused |= (ret == 0);
+
+    if (ret < 0)
+        goto endjob;
+
+    ret = qemuDomainWaitForMigrationComplete(driver, vm);
+
+    if (ret < 0)
+        goto endjob;
+
+    paused = 1;
 
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSavedStateLabel &&
@@ -7915,8 +8029,6 @@ static int doNativeMigrate(struct qemud_driver *driver,
 {
     int ret = -1;
     xmlURIPtr uribits = NULL;
-    int status;
-    unsigned long long transferred, remaining, total;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     /* Issue the migrate command. */
@@ -7945,29 +8057,14 @@ static int doNativeMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (qemuMonitorMigrateToHost(priv->mon, 0, uribits->server, uribits->port) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto cleanup;
-    }
-
-    /* it is also possible that the migrate didn't fail initially, but
-     * rather failed later on.  Check the output of "info migrate"
-     */
-    if (qemuMonitorGetMigrationStatus(priv->mon,
-                                      &status,
-                                      &transferred,
-                                      &remaining,
-                                      &total) < 0) {
+    if (qemuMonitorMigrateToHost(priv->mon, 1, uribits->server, uribits->port) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("migrate did not successfully complete"));
+    if (qemuDomainWaitForMigrationComplete(driver, vm) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
@@ -8318,6 +8415,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     virDomainEventPtr event = NULL;
     int ret = -1;
     int paused = 0;
+    qemuDomainObjPrivatePtr priv;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -8328,6 +8426,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -8338,8 +8437,10 @@ qemudDomainMigratePerform (virDomainPtr dom,
         goto endjob;
     }
 
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
+    priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+
     if (!(flags & VIR_MIGRATE_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         /* Pause domain for non-live migration */
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
@@ -8384,7 +8485,6 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
 endjob:
     if (paused) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         /* we got here through some sort of failure; start the domain again */
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
@@ -8681,6 +8781,7 @@ qemuCPUCompare(virConnectPtr conn,
     return ret;
 }
 
+
 static char *
 qemuCPUBaseline(virConnectPtr conn ATTRIBUTE_UNUSED,
                 const char **xmlCPUs,
@@ -8693,6 +8794,49 @@ qemuCPUBaseline(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     return cpu;
 }
+
+
+static int qemuDomainGetJobInfo(virDomainPtr dom,
+                                virDomainJobInfoPtr info) {
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (virDomainObjIsActive(vm)) {
+        if (priv->jobActive) {
+            memcpy(info, &priv->jobInfo, sizeof(*info));
+        } else {
+            memset(info, 0, sizeof(*info));
+            info->type = VIR_DOMAIN_JOB_NONE;
+        }
+    } else {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
 
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
@@ -8773,7 +8917,7 @@ static virDriver qemuDriver = {
     qemuDomainIsPersistent,
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
-    NULL, /* domainGetJobInfo */
+    qemuDomainGetJobInfo, /* domainGetJobInfo */
 };
 
 

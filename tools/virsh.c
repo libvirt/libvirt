@@ -327,6 +327,28 @@ static int namesorter(const void *a, const void *b) {
   return strcasecmp(*sa, *sb);
 }
 
+static double
+prettyCapacity(unsigned long long val,
+               const char **unit) {
+    if (val < 1024) {
+        *unit = "";
+        return (double)val;
+    } else if (val < (1024.0l * 1024.0l)) {
+        *unit = "KB";
+        return (((double)val / 1024.0l));
+    } else if (val < (1024.0l * 1024.0l * 1024.0l)) {
+        *unit = "MB";
+        return ((double)val / (1024.0l * 1024.0l));
+    } else if (val < (1024.0l * 1024.0l * 1024.0l * 1024.0l)) {
+        *unit = "GB";
+        return ((double)val / (1024.0l * 1024.0l * 1024.0l));
+    } else {
+        *unit = "TB";
+        return ((double)val / (1024.0l * 1024.0l * 1024.0l * 1024.0l));
+    }
+}
+
+
 static virErrorPtr last_error;
 
 /*
@@ -1795,6 +1817,91 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             }
         }
     }
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "domjobinfo" command
+ */
+static const vshCmdInfo info_domjobinfo[] = {
+    {"help", gettext_noop("domain job information")},
+    {"desc", gettext_noop("Returns information about jobs running on a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domjobinfo[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+
+static int
+cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainJobInfo info;
+    virDomainPtr dom;
+    int ret = TRUE, autostart;
+    unsigned int id;
+    char *str, uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    if (virDomainGetJobInfo(dom, &info) == 0) {
+        const char *unit;
+        double val;
+
+        vshPrint(ctl, "%-17s ", _("Job type:"));
+        switch (info.type) {
+        case VIR_DOMAIN_JOB_BOUNDED:
+            vshPrint(ctl, "%-12s\n", _("Bounded"));
+            break;
+
+        case VIR_DOMAIN_JOB_UNBOUNDED:
+            vshPrint(ctl, "%-12s\n", _("Unbounded"));
+            break;
+
+        case VIR_DOMAIN_JOB_NONE:
+        default:
+            vshPrint(ctl, "%-12s\n", _("None"));
+            goto cleanup;
+        }
+
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
+        if (info.type == VIR_DOMAIN_JOB_BOUNDED)
+            vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
+        if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
+            val = prettyCapacity(info.dataProcessed, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data processed:"), val, unit);
+            val = prettyCapacity(info.dataRemaining, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data remaining:"), val, unit);
+            val = prettyCapacity(info.dataTotal, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data total:"), val, unit);
+        }
+        if (info.memTotal || info.memRemaining || info.memProcessed) {
+            val = prettyCapacity(info.memProcessed, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory processed:"), val, unit);
+            val = prettyCapacity(info.memRemaining, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory remaining:"), val, unit);
+            val = prettyCapacity(info.memTotal, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory total:"), val, unit);
+        }
+        if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
+            val = prettyCapacity(info.fileProcessed, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File processed:"), val, unit);
+            val = prettyCapacity(info.fileRemaining, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File remaining:"), val, unit);
+            val = prettyCapacity(info.fileTotal, &unit);
+            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File total:"), val, unit);
+        }
+    } else {
+        ret = FALSE;
+    }
+cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -4460,27 +4567,6 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     return TRUE;
 }
 
-
-static double
-prettyCapacity(unsigned long long val,
-               const char **unit) {
-    if (val < 1024) {
-        *unit = "";
-        return (double)val;
-    } else if (val < (1024.0l * 1024.0l)) {
-        *unit = "KB";
-        return (((double)val / 1024.0l));
-    } else if (val < (1024.0l * 1024.0l * 1024.0l)) {
-        *unit = "MB";
-        return ((double)val / (1024.0l * 1024.0l));
-    } else if (val < (1024.0l * 1024.0l * 1024.0l * 1024.0l)) {
-        *unit = "GB";
-        return ((double)val / (1024.0l * 1024.0l * 1024.0l));
-    } else {
-        *unit = "TB";
-        return ((double)val / (1024.0l * 1024.0l * 1024.0l * 1024.0l));
-    }
-}
 
 /*
  * "pool-info" command
@@ -7534,6 +7620,7 @@ static const vshCmdDef commands[] = {
     {"domid", cmdDomid, opts_domid, info_domid},
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
+    {"domjobinfo", cmdDomjobinfo, opts_domjobinfo, info_domjobinfo},
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},

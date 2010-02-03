@@ -1009,18 +1009,19 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                 goto done;
             tmp += strlen(MIGRATION_TRANSFER_PREFIX);
 
-            if (virStrToLong_ull(tmp, NULL, 10, transferred) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, transferred) < 0 || !end) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("cannot parse migration data transferred statistic %s"), tmp);
                 goto cleanup;
             }
             *transferred *= 1024;
+            tmp = end;
 
             if (!(tmp = strstr(tmp, MIGRATION_REMAINING_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_REMAINING_PREFIX);
 
-            if (virStrToLong_ull(tmp, NULL, 10, remaining) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, remaining) < 0 || !end) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("cannot parse migration data remaining statistic %s"), tmp);
                 goto cleanup;
@@ -1031,7 +1032,7 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                 goto done;
             tmp += strlen(MIGRATION_TOTAL_PREFIX);
 
-            if (virStrToLong_ull(tmp, NULL, 10, total) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, total) < 0 || !end) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("cannot parse migration data total statistic %s"), tmp);
                 goto cleanup;
