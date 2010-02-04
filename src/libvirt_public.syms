@@ -355,6 +355,7 @@ LIBVIRT_0.7.7 {
         virDomainDetachDeviceFlags;
         virConnectBaselineCPU;
         virDomainGetJobInfo;
+	virDomainAbortJob;
 } LIBVIRT_0.7.5;
 
 # .... define new API here using predicted next version number ....

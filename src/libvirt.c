@@ -11207,3 +11207,50 @@ error:
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainAbortJob:
+ * @domain: a domain object
+ *
+ * Requests that the current background job be aborted at the
+ * soonest opportunity. This will block until the job has
+ * either completed, or aborted.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainAbortJob(virDomainPtr domain)
+{
+    virConnectPtr conn;
+
+    DEBUG("domain=%p", domain);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainAbortJob) {
+        int ret;
+        ret = conn->driver->domainAbortJob(domain);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}

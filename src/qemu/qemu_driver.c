@@ -8918,6 +8918,7 @@ static virDriver qemuDriver = {
     qemuCPUCompare, /* cpuCompare */
     qemuCPUBaseline, /* cpuBaseline */
     qemuDomainGetJobInfo, /* domainGetJobInfo */
+    NULL, /* domainFinishJob */
 };
 
 

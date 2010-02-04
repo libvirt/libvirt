@@ -3405,6 +3405,7 @@ static virDriver esxDriver = {
     NULL,                            /* cpuCompare */
     NULL,                            /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 

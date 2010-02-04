@@ -787,6 +787,7 @@ static virDriver oneDriver = {
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 static virStateDriver oneStateDriver = {

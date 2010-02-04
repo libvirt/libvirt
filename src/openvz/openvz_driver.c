@@ -1539,6 +1539,7 @@ static virDriver openvzDriver = {
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 int openvzRegister(void) {

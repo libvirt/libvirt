@@ -5244,6 +5244,7 @@ static virDriver testDriver = {
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 static virNetworkDriver testNetworkDriver = {

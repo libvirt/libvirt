@@ -1921,6 +1921,7 @@ static virDriver umlDriver = {
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 

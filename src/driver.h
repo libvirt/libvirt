@@ -377,6 +377,9 @@ typedef int
     (*virDrvDomainGetJobInfo)(virDomainPtr domain,
                               virDomainJobInfoPtr info);
 
+typedef int
+    (*virDrvDomainAbortJob)(virDomainPtr domain);
+
 /**
  * _virDriver:
  *
@@ -469,6 +472,7 @@ struct _virDriver {
     virDrvCPUCompare            cpuCompare;
     virDrvCPUBaseline           cpuBaseline;
     virDrvDomainGetJobInfo     domainGetJobInfo;
+    virDrvDomainAbortJob     domainAbortJob;
 };
 
 typedef int

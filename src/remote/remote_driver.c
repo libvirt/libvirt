@@ -9101,6 +9101,7 @@ static virDriver remote_driver = {
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
+    NULL, /* domainFinishJob */
 };
 
 static virNetworkDriver network_driver = {

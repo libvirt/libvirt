@@ -7064,6 +7064,7 @@ virDriver NAME(Driver) = {
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
+    NULL, /* domainAbortJob */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
