@@ -36,8 +36,8 @@
 
 /* XXX fixme */
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define ReportError(conn, code, fmt...)                                 \
-    virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,           \
+#define virJSONError(code, fmt...)                                      \
+    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
                          __FUNCTION__, __LINE__, fmt)
 
 
@@ -909,9 +909,9 @@ virJSONValuePtr virJSONValueFromString(const char *jsonstring)
                                                (const unsigned char*)jsonstring,
                                                strlen(jsonstring));
 
-        ReportError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    _("cannot parse json %s: %s"),
-                    jsonstring, (const char*) errstr);
+        virJSONError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot parse json %s: %s"),
+                     jsonstring, (const char*) errstr);
         VIR_FREE(errstr);
         virJSONValueFree(parser.head);
         goto cleanup;
@@ -1034,14 +1034,14 @@ cleanup:
 #else
 virJSONValuePtr virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 {
-    ReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                _("No JSON parser implementation is available"));
+    virJSONError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("No JSON parser implementation is available"));
     return NULL;
 }
 char *virJSONValueToString(virJSONValuePtr object ATTRIBUTE_UNUSED)
 {
-    ReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                _("No JSON parser implementation is available"));
+    virJSONError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("No JSON parser implementation is available"));
     return NULL;
 }
 #endif
