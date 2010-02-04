@@ -101,7 +101,7 @@ int cpuMapLoad(const char *arch,
 
     ctxt->node = xmlDocGetRootElement(xml);
 
-    if ((ctxt->node = virXPathNode(NULL, xpath, ctxt)) == NULL) {
+    if ((ctxt->node = virXPathNode(xpath, ctxt)) == NULL) {
         virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                 _("cannot find CPU map for %s architecture"), arch);
         goto cleanup;

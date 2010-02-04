@@ -66,7 +66,7 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
     char *type_str;
     int type;
 
-    type_str = virXPathString(conn, "string(./usage/@type)", ctxt);
+    type_str = virXPathString("string(./usage/@type)", ctxt);
     if (type_str == NULL) {
         virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
                              _("unknown secret usage type"));
@@ -86,8 +86,7 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        def->usage.volume = virXPathString(conn, "string(./usage/volume)",
-                                           ctxt);
+        def->usage.volume = virXPathString("string(./usage/volume)", ctxt);
         if (!def->usage.volume) {
             virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("volume usage specified, but volume path is missing"));
@@ -130,7 +129,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         goto cleanup;
     }
 
-    prop = virXPathString(conn, "string(./@ephemeral)", ctxt);
+    prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {
         if (STREQ(prop, "yes"))
             def->ephemeral = 1;
@@ -144,7 +143,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         VIR_FREE(prop);
     }
 
-    prop = virXPathString(conn, "string(./@private)", ctxt);
+    prop = virXPathString("string(./@private)", ctxt);
     if (prop != NULL) {
         if (STREQ(prop, "yes"))
             def->private = 1;
@@ -158,7 +157,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         VIR_FREE(prop);
     }
 
-    uuidstr = virXPathString(conn, "string(./uuid)", ctxt);
+    uuidstr = virXPathString("string(./uuid)", ctxt);
     if (!uuidstr) {
         if (virUUIDGenerate(def->uuid)) {
             virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -174,8 +173,8 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         VIR_FREE(uuidstr);
     }
 
-    def->description = virXPathString(conn, "string(./description)", ctxt);
-    if (virXPathNode(conn, "./usage", ctxt) != NULL
+    def->description = virXPathString("string(./description)", ctxt);
+    if (virXPathNode("./usage", ctxt) != NULL
         && virSecretDefParseUsage(conn, ctxt, def) < 0)
         goto cleanup;
     ret = def;

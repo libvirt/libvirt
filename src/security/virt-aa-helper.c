@@ -626,12 +626,12 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     }
     ctxt->node = root;
 
-    ctl->hvm = virXPathString(NULL, "string(./os/type[1])", ctxt);
+    ctl->hvm = virXPathString("string(./os/type[1])", ctxt);
     if (!ctl->hvm || STRNEQ(ctl->hvm, "hvm")) {
         vah_error(ctl, 0, "os.type is not 'hvm'");
         goto cleanup;
     }
-    ctl->arch = virXPathString(NULL, "string(./os/type[1]/@arch)", ctxt);
+    ctl->arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
     if (!ctl->arch) {
         /* The XML we are given should have an arch, but in case it doesn't,
          * just use the host's arch.

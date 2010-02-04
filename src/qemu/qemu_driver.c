@@ -217,20 +217,20 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     }
 
     if (!(monitorpath =
-          virXPathString(NULL, "string(./monitor[1]/@path)", ctxt))) {
+          virXPathString("string(./monitor[1]/@path)", ctxt))) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("no monitor path"));
         goto error;
     }
 
-    tmp = virXPathString(NULL, "string(./monitor[1]/@type)", ctxt);
+    tmp = virXPathString("string(./monitor[1]/@type)", ctxt);
     if (tmp)
         priv->monConfig->type = virDomainChrTypeFromString(tmp);
     else
         priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
 
-    if (virXPathBoolean(NULL, "count(./monitor[@json = '1']) > 0", ctxt)) {
+    if (virXPathBoolean("count(./monitor[@json = '1']) > 0", ctxt)) {
         priv->monJSON = 1;
     } else {
         priv->monJSON = 0;
@@ -251,7 +251,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
         goto error;
     }
 
-    n = virXPathNodeSet(NULL, "./vcpus/vcpu", ctxt, &nodes);
+    n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes);
     if (n < 0)
         goto error;
     if (n) {

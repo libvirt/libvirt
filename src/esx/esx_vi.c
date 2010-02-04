@@ -667,7 +667,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
         if ((*response)->responseCode == 500) {
             (*response)->node =
-              virXPathNode(NULL, "/soapenv:Envelope/soapenv:Body/soapenv:Fault",
+              virXPathNode("/soapenv:Envelope/soapenv:Body/soapenv:Fault",
                            xpathContext);
 
             if ((*response)->node == NULL) {
@@ -705,7 +705,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                 goto failure;
             }
 
-            responseNode = virXPathNode(NULL, xpathExpression, xpathContext);
+            responseNode = virXPathNode(xpathExpression, xpathContext);
 
             if (responseNode == NULL) {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -715,8 +715,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
             }
 
             xpathContext->node = responseNode;
-            (*response)->node = virXPathNode(NULL, "./vim:returnval",
-                                             xpathContext);
+            (*response)->node = virXPathNode("./vim:returnval", xpathContext);
 
             switch (occurrence) {
               case esxVI_Occurrence_RequiredItem:

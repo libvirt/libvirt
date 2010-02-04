@@ -85,7 +85,7 @@ virCPUDefParseXML(virConnectPtr conn,
     }
 
     if (mode == VIR_CPU_TYPE_AUTO) {
-        if (virXPathBoolean(conn, "boolean(./arch)", ctxt))
+        if (virXPathBoolean("boolean(./arch)", ctxt))
             def->type = VIR_CPU_TYPE_HOST;
         else
             def->type = VIR_CPU_TYPE_GUEST;
@@ -96,7 +96,7 @@ virCPUDefParseXML(virConnectPtr conn,
         char *match = virXMLPropString(node, "match");
 
         if (!match) {
-            if (virXPathBoolean(conn, "boolean(./model)", ctxt)) {
+            if (virXPathBoolean("boolean(./model)", ctxt)) {
                 virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Missing match attribute for CPU specification"));
                 goto error;
@@ -115,7 +115,7 @@ virCPUDefParseXML(virConnectPtr conn,
     }
 
     if (def->type == VIR_CPU_TYPE_HOST) {
-        def->arch = virXPathString(conn, "string(./arch[1])", ctxt);
+        def->arch = virXPathString("string(./arch[1])", ctxt);
         if (!def->arch) {
             virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing CPU architecture"));
@@ -123,18 +123,18 @@ virCPUDefParseXML(virConnectPtr conn,
         }
     }
 
-    if (!(def->model = virXPathString(conn, "string(./model[1])", ctxt)) &&
+    if (!(def->model = virXPathString("string(./model[1])", ctxt)) &&
         def->type == VIR_CPU_TYPE_HOST) {
         virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto error;
     }
 
-    if (virXPathNode(conn, "./topology[1]", ctxt)) {
+    if (virXPathNode("./topology[1]", ctxt)) {
         int ret;
         unsigned long ul;
 
-        ret = virXPathULong(conn, "string(./topology[1]/@sockets)",
+        ret = virXPathULong("string(./topology[1]/@sockets)",
                             ctxt, &ul);
         if (ret < 0) {
             virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -143,7 +143,7 @@ virCPUDefParseXML(virConnectPtr conn,
         }
         def->sockets = (unsigned int) ul;
 
-        ret = virXPathULong(conn, "string(./topology[1]/@cores)",
+        ret = virXPathULong("string(./topology[1]/@cores)",
                             ctxt, &ul);
         if (ret < 0) {
             virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -152,7 +152,7 @@ virCPUDefParseXML(virConnectPtr conn,
         }
         def->cores = (unsigned int) ul;
 
-        ret = virXPathULong(conn, "string(./topology[1]/@threads)",
+        ret = virXPathULong("string(./topology[1]/@threads)",
                             ctxt, &ul);
         if (ret < 0) {
             virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -168,7 +168,7 @@ virCPUDefParseXML(virConnectPtr conn,
         }
     }
 
-    n = virXPathNodeSet(conn, "./feature", ctxt, &nodes);
+    n = virXPathNodeSet("./feature", ctxt, &nodes);
     if (n < 0)
         goto error;
 

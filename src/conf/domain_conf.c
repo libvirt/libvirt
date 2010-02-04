@@ -3030,7 +3030,7 @@ static int virDomainLifecycleParseXML(virConnectPtr conn,
                                       int *val,
                                       int defaultVal)
 {
-    char *tmp = virXPathString(conn, xpath, ctxt);
+    char *tmp = virXPathString(xpath, ctxt);
     if (tmp == NULL) {
         *val = defaultVal;
     } else {
@@ -3054,10 +3054,10 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
 {
     char *p;
 
-    if (virXPathNode(conn, "./seclabel", ctxt) == NULL)
+    if (virXPathNode("./seclabel", ctxt) == NULL)
         return 0;
 
-    p = virXPathStringLimit(conn, "string(./seclabel/@type)",
+    p = virXPathStringLimit("string(./seclabel/@type)",
                             VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     if (p == NULL) {
         virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -3077,7 +3077,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
      */
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC ||
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        p = virXPathStringLimit(conn, "string(./seclabel/@model)",
+        p = virXPathStringLimit("string(./seclabel/@model)",
                                 VIR_SECURITY_MODEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -3086,7 +3086,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
         }
         def->seclabel.model = p;
 
-        p = virXPathStringLimit(conn, "string(./seclabel/label[1])",
+        p = virXPathStringLimit("string(./seclabel/label[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -3100,7 +3100,7 @@ virSecurityLabelDefParseXML(virConnectPtr conn,
     /* Only parse imagelabel, if requested live XML for dynamic label */
     if (def->seclabel.type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         !(flags & VIR_DOMAIN_XML_INACTIVE)) {
-        p = virXPathStringLimit(conn, "string(./seclabel/imagelabel[1])",
+        p = virXPathStringLimit("string(./seclabel/imagelabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
         if (p == NULL) {
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
@@ -3358,12 +3358,12 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     if (!(flags & VIR_DOMAIN_XML_INACTIVE))
-        if ((virXPathLong(conn, "string(./@id)", ctxt, &id)) < 0)
+        if ((virXPathLong("string(./@id)", ctxt, &id)) < 0)
             id = -1;
     def->id = (int)id;
 
     /* Find out what type of virtualization to use */
-    if (!(tmp = virXPathString(conn, "string(./@type)", ctxt))) {
+    if (!(tmp = virXPathString("string(./@type)", ctxt))) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing domain type attribute"));
         goto error;
@@ -3377,13 +3377,13 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(tmp);
 
     /* Extract domain name */
-    if (!(def->name = virXPathString(conn, "string(./name[1])", ctxt))) {
+    if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
         virDomainReportError(conn, VIR_ERR_NO_NAME, NULL);
         goto error;
     }
 
     /* Extract domain uuid */
-    tmp = virXPathString(conn, "string(./uuid[1])", ctxt);
+    tmp = virXPathString("string(./uuid[1])", ctxt);
     if (!tmp) {
         if (virUUIDGenerate(def->uuid)) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -3400,26 +3400,26 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     /* Extract documentation if present */
-    def->description = virXPathString(conn, "string(./description[1])", ctxt);
+    def->description = virXPathString("string(./description[1])", ctxt);
 
     /* Extract domain memory */
-    if (virXPathULong(conn, "string(./memory[1])", ctxt, &def->maxmem) < 0) {
+    if (virXPathULong("string(./memory[1])", ctxt, &def->maxmem) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing memory element"));
         goto error;
     }
 
-    if (virXPathULong(conn, "string(./currentMemory[1])", ctxt, &def->memory) < 0)
+    if (virXPathULong("string(./currentMemory[1])", ctxt, &def->memory) < 0)
         def->memory = def->maxmem;
 
-    node = virXPathNode(conn, "./memoryBacking/hugepages", ctxt);
+    node = virXPathNode("./memoryBacking/hugepages", ctxt);
     if (node)
         def->hugepage_backed = 1;
 
-    if (virXPathULong(conn, "string(./vcpu[1])", ctxt, &def->vcpus) < 0)
+    if (virXPathULong("string(./vcpu[1])", ctxt, &def->vcpus) < 0)
         def->vcpus = 1;
 
-    tmp = virXPathString(conn, "string(./vcpu[1]/@cpuset)", ctxt);
+    tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
     if (tmp) {
         char *set = tmp;
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
@@ -3434,7 +3434,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         VIR_FREE(tmp);
     }
 
-    n = virXPathNodeSet(conn, "./features/*", ctxt, &nodes);
+    n = virXPathNodeSet("./features/*", ctxt, &nodes);
     if (n < 0)
         goto error;
     if (n) {
@@ -3464,15 +3464,15 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto error;
 
 
-    tmp = virXPathString(conn, "string(./clock/@offset)", ctxt);
+    tmp = virXPathString("string(./clock/@offset)", ctxt);
     if (tmp && STREQ(tmp, "localtime"))
         def->localtime = 1;
     VIR_FREE(tmp);
 
-    def->os.bootloader = virXPathString(conn, "string(./bootloader)", ctxt);
-    def->os.bootloaderArgs = virXPathString(conn, "string(./bootloader_args)", ctxt);
+    def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
+    def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
 
-    def->os.type = virXPathString(conn, "string(./os/type[1])", ctxt);
+    def->os.type = virXPathString("string(./os/type[1])", ctxt);
     if (!def->os.type) {
         if (def->os.bootloader) {
             def->os.type = strdup("xen");
@@ -3506,7 +3506,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto error;
     }
 
-    def->os.arch = virXPathString(conn, "string(./os/type[1]/@arch)", ctxt);
+    def->os.arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
     if (def->os.arch) {
         if (!virCapabilitiesSupportsGuestArch(caps, def->os.type, def->os.arch)) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -3528,7 +3528,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         }
     }
 
-    def->os.machine = virXPathString(conn, "string(./os/type[1]/@machine)", ctxt);
+    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
     if (!def->os.machine) {
         const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
                                                                         def->os.type,
@@ -3552,22 +3552,22 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
      */
 
     if (STREQ(def->os.type, "exe")) {
-        def->os.init = virXPathString(conn, "string(./os/init[1])", ctxt);
+        def->os.init = virXPathString("string(./os/init[1])", ctxt);
     }
 
     if (STREQ(def->os.type, "xen") ||
         STREQ(def->os.type, "hvm") ||
         STREQ(def->os.type, "uml")) {
-        def->os.kernel = virXPathString(conn, "string(./os/kernel[1])", ctxt);
-        def->os.initrd = virXPathString(conn, "string(./os/initrd[1])", ctxt);
-        def->os.cmdline = virXPathString(conn, "string(./os/cmdline[1])", ctxt);
-        def->os.root = virXPathString(conn, "string(./os/root[1])", ctxt);
-        def->os.loader = virXPathString(conn, "string(./os/loader[1])", ctxt);
+        def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
+        def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
+        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+        def->os.root = virXPathString("string(./os/root[1])", ctxt);
+        def->os.loader = virXPathString("string(./os/loader[1])", ctxt);
     }
 
     if (STREQ(def->os.type, "hvm")) {
         /* analysis of the boot devices */
-        if ((n = virXPathNodeSet(conn, "./os/boot", ctxt, &nodes)) < 0) {
+        if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
             virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("cannot extract boot device"));
             goto error;
@@ -3597,7 +3597,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         VIR_FREE(nodes);
     }
 
-    def->emulator = virXPathString(conn, "string(./devices/emulator[1])", ctxt);
+    def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
     if (!def->emulator && virCapabilitiesIsEmulatorRequired(caps)) {
         def->emulator = virDomainDefDefaultEmulator(conn, def, caps);
         if (!def->emulator)
@@ -3605,7 +3605,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     /* analysis of the disk devices */
-    if ((n = virXPathNodeSet(conn, "./devices/disk", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract disk devices"));
         goto error;
@@ -3624,7 +3624,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(nodes);
 
     /* analysis of the controller devices */
-    if ((n = virXPathNodeSet(conn, "./devices/controller", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/controller", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract controller devices"));
         goto error;
@@ -3649,7 +3649,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         goto error;
 
     /* analysis of the filesystems */
-    if ((n = virXPathNodeSet(conn, "./devices/filesystem", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract filesystem devices"));
         goto error;
@@ -3668,7 +3668,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(nodes);
 
     /* analysis of the network devices */
-    if ((n = virXPathNodeSet(conn, "./devices/interface", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/interface", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract network devices"));
         goto error;
@@ -3689,7 +3689,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
 
     /* analysis of the character devices */
-    if ((n = virXPathNodeSet(conn, "./devices/parallel", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract parallel devices"));
         goto error;
@@ -3709,7 +3709,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet(conn, "./devices/serial", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/serial", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract serial devices"));
         goto error;
@@ -3729,7 +3729,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
     VIR_FREE(nodes);
 
-    if ((node = virXPathNode(conn, "./devices/console[1]", ctxt)) != NULL) {
+    if ((node = virXPathNode("./devices/console[1]", ctxt)) != NULL) {
         virDomainChrDefPtr chr = virDomainChrDefParseXML(conn,
                                                          node,
                                                          flags);
@@ -3758,7 +3758,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         }
     }
 
-    if ((n = virXPathNodeSet(conn, "./devices/channel", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/channel", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract channel devices"));
         goto error;
@@ -3779,7 +3779,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
 
     /* analysis of the input devices */
-    if ((n = virXPathNodeSet(conn, "./devices/input", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/input", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract input devices"));
         goto error;
@@ -3814,7 +3814,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(nodes);
 
     /* analysis of the graphics devices */
-    if ((n = virXPathNodeSet(conn, "./devices/graphics", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/graphics", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract graphics devices"));
         goto error;
@@ -3858,7 +3858,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
 
     /* analysis of the sound devices */
-    if ((n = virXPathNodeSet(conn, "./devices/sound", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract sound devices"));
         goto error;
@@ -3877,7 +3877,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     VIR_FREE(nodes);
 
     /* analysis of the video devices */
-    if ((n = virXPathNodeSet(conn, "./devices/video", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract video devices"));
         goto error;
@@ -3918,7 +3918,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     }
 
     /* analysis of the host devices */
-    if ((n = virXPathNodeSet(conn, "./devices/hostdev", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract host devices"));
         goto error;
@@ -3938,7 +3938,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
 
     /* analysis of the watchdog devices */
     def->watchdog = NULL;
-    if ((n = virXPathNodeSet(conn, "./devices/watchdog", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("cannot extract watchdog devices"));
         goto error;
@@ -3962,7 +3962,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     if (virSecurityLabelDefParseXML(conn, def, ctxt, flags) == -1)
         goto error;
 
-    if ((node = virXPathNode(conn, "./cpu[1]", ctxt)) != NULL) {
+    if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
         xmlNodePtr oldnode = ctxt->node;
         ctxt->node = node;
         def->cpu = virCPUDefParseXML(conn, node, ctxt, VIR_CPU_TYPE_GUEST);
@@ -3999,7 +3999,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     if (!(obj = virDomainObjNew(conn, caps)))
         return NULL;
 
-    if (!(config = virXPathNode(conn, "./domain", ctxt))) {
+    if (!(config = virXPathNode("./domain", ctxt))) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("no domain config"));
         goto error;
@@ -4013,7 +4013,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     if (!obj->def)
         goto error;
 
-    if (!(tmp = virXPathString(conn, "string(./@state)", ctxt))) {
+    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("missing domain state"));
         goto error;
@@ -4026,7 +4026,7 @@ static virDomainObjPtr virDomainObjParseXML(virConnectPtr conn,
     }
     VIR_FREE(tmp);
 
-    if ((virXPathLong(conn, "string(./@pid)", ctxt, &val)) < 0) {
+    if ((virXPathLong("string(./@pid)", ctxt, &val)) < 0) {
         virDomainReportError(conn, VIR_ERR_INTERNAL_ERROR,
                              "%s", _("invalid pid"));
         goto error;

@@ -332,7 +332,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(feature) < 0)
         goto no_memory;
 
-    feature->name = virXPathString(NULL, "string(@name)", ctxt);
+    feature->name = virXPathString("string(@name)", ctxt);
     if (feature->name == NULL) {
         virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU feature name"));
@@ -345,7 +345,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
-    n = virXPathNodeSet(NULL, "./cpuid", ctxt, &nodes);
+    n = virXPathNodeSet("./cpuid", ctxt, &nodes);
     if (n < 0)
         goto ignore;
 
@@ -362,11 +362,11 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 
         ctxt->node = nodes[i];
         fun = eax = ebx = ecx = edx = 0;
-        ret_fun = virXPathULongHex(NULL, "string(@function)", ctxt, &fun);
-        ret_eax = virXPathULongHex(NULL, "string(@eax)", ctxt, &eax);
-        ret_ebx = virXPathULongHex(NULL, "string(@ebx)", ctxt, &ebx);
-        ret_ecx = virXPathULongHex(NULL, "string(@ecx)", ctxt, &ecx);
-        ret_edx = virXPathULongHex(NULL, "string(@edx)", ctxt, &edx);
+        ret_fun = virXPathULongHex("string(@function)", ctxt, &fun);
+        ret_eax = virXPathULongHex("string(@eax)", ctxt, &eax);
+        ret_ebx = virXPathULongHex("string(@ebx)", ctxt, &ebx);
+        ret_ecx = virXPathULongHex("string(@ecx)", ctxt, &ecx);
+        ret_edx = virXPathULongHex("string(@edx)", ctxt, &edx);
 
         if (ret_fun < 0 || ret_eax == -2 || ret_ebx == -2
             || ret_ecx == -2 || ret_edx == -2) {
@@ -645,18 +645,18 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(model) < 0)
         goto no_memory;
 
-    model->name = virXPathString(NULL, "string(@name)", ctxt);
+    model->name = virXPathString("string(@name)", ctxt);
     if (model->name == NULL) {
         virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto ignore;
     }
 
-    if (virXPathNode(NULL, "./model", ctxt) != NULL) {
+    if (virXPathNode("./model", ctxt) != NULL) {
         const struct x86_model *ancestor;
         char *name;
 
-        name = virXPathString(NULL, "string(./model/@name)", ctxt);
+        name = virXPathString("string(./model/@name)", ctxt);
         if (name == NULL) {
             virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                     _("Missing ancestor's name in CPU model %s"),
@@ -682,7 +682,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
                sizeof(*model->cpuid) * model->ncpuid);
     }
 
-    n = virXPathNodeSet(NULL, "./feature", ctxt, &nodes);
+    n = virXPathNodeSet("./feature", ctxt, &nodes);
     if (n < 0)
         goto ignore;
 

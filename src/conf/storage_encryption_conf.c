@@ -87,7 +87,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     old_node = ctxt->node;
     ctxt->node = node;
 
-    type_str = virXPathString(conn, "string(./@type)", ctxt);
+    type_str = virXPathString("string(./@type)", ctxt);
     if (type_str == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
                               _("unknown volume encryption secret type"));
@@ -104,7 +104,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     VIR_FREE(type_str);
     ret->type = type;
 
-    uuidstr = virXPathString(conn, "string(./@uuid)", ctxt);
+    uuidstr = virXPathString("string(./@uuid)", ctxt);
     if (uuidstr) {
         if (virUUIDParse(uuidstr, ret->uuid) < 0) {
             virStorageReportError(conn, VIR_ERR_XML_ERROR,
@@ -141,7 +141,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
         return NULL;
     }
 
-    format_str = virXPathString(conn, "string(./@format)", ctxt);
+    format_str = virXPathString("string(./@format)", ctxt);
     if (format_str == NULL) {
         virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
                               _("unknown volume encryption format"));
@@ -158,7 +158,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
     VIR_FREE(format_str);
     ret->format = format;
 
-    n = virXPathNodeSet(conn, "./secret", ctxt, &nodes);
+    n = virXPathNodeSet("./secret", ctxt, &nodes);
     if (n < 0){
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                               _("cannot extract volume encryption secrets"));

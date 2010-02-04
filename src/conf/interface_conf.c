@@ -122,7 +122,7 @@ virInterfaceDefParseName(virConnectPtr conn, virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
     char *tmp;
 
-    tmp = virXPathString(conn, "string(./@name)", ctxt);
+    tmp = virXPathString("string(./@name)", ctxt);
     if (tmp == NULL) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                               "%s",  _("interface has no name"));
@@ -138,7 +138,7 @@ virInterfaceDefParseMtu(virConnectPtr conn, virInterfaceDefPtr def,
     unsigned long mtu;
     int ret;
 
-    ret = virXPathULong(conn, "string(./mtu/@size)", ctxt, &mtu);
+    ret = virXPathULong("string(./mtu/@size)", ctxt, &mtu);
     if ((ret == -2) || ((ret == 0) && (mtu > 100000))) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                          "%s", _("interface mtu value is improper"));
@@ -154,7 +154,7 @@ virInterfaceDefParseStartMode(virConnectPtr conn, virInterfaceDefPtr def,
                               xmlXPathContextPtr ctxt) {
     char *tmp;
 
-    tmp = virXPathString(conn, "string(./start/@mode)", ctxt);
+    tmp = virXPathString("string(./start/@mode)", ctxt);
     if (tmp == NULL)
         def->startmode = VIR_INTERFACE_START_UNSPECIFIED;
     else if (STREQ(tmp, "onboot"))
@@ -178,7 +178,7 @@ virInterfaceDefParseBondMode(virConnectPtr conn, xmlXPathContextPtr ctxt) {
     char *tmp;
     int ret = 0;
 
-    tmp = virXPathString(conn, "string(./@mode)", ctxt);
+    tmp = virXPathString("string(./@mode)", ctxt);
     if (tmp == NULL)
         return(VIR_INTERFACE_BOND_NONE);
     if (STREQ(tmp, "balance-rr"))
@@ -209,7 +209,7 @@ virInterfaceDefParseBondMiiCarrier(virConnectPtr conn, xmlXPathContextPtr ctxt) 
     char *tmp;
     int ret = 0;
 
-    tmp = virXPathString(conn, "string(./miimon/@carrier)", ctxt);
+    tmp = virXPathString("string(./miimon/@carrier)", ctxt);
     if (tmp == NULL)
         return(VIR_INTERFACE_BOND_MII_NONE);
     if (STREQ(tmp, "ioctl"))
@@ -230,7 +230,7 @@ virInterfaceDefParseBondArpValid(virConnectPtr conn, xmlXPathContextPtr ctxt) {
     char *tmp;
     int ret = 0;
 
-    tmp = virXPathString(conn, "string(./arpmon/@validate)", ctxt);
+    tmp = virXPathString("string(./arpmon/@validate)", ctxt);
     if (tmp == NULL)
         return(VIR_INTERFACE_BOND_ARP_NONE);
     if (STREQ(tmp, "active"))
@@ -259,7 +259,7 @@ virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceProtocolDefPtr def,
     save = ctxt->node;
     ctxt->node = dhcp;
     /* Not much to do in the current version */
-    tmp = virXPathString(conn, "string(./@peerdns)", ctxt);
+    tmp = virXPathString("string(./@peerdns)", ctxt);
     if (tmp) {
         if (STREQ(tmp, "yes"))
             def->peerdns = 1;
@@ -285,10 +285,10 @@ virInterfaceDefParseIp(virConnectPtr conn, virInterfaceIpDefPtr def,
     char *tmp;
     long l;
 
-    tmp = virXPathString(conn, "string(./@address)", ctxt);
+    tmp = virXPathString("string(./@address)", ctxt);
     def->address = tmp;
     if (tmp != NULL) {
-        ret = virXPathLong(conn, "string(./@prefix)", ctxt, &l);
+        ret = virXPathLong("string(./@prefix)", ctxt, &l);
         if (ret == 0)
             def->prefix = (int) l;
         else if (ret == -2) {
@@ -309,17 +309,17 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
     int nIpNodes, ii, ret = -1;
     char *tmp;
 
-    tmp = virXPathString(conn, "string(./route[1]/@gateway)", ctxt);
+    tmp = virXPathString("string(./route[1]/@gateway)", ctxt);
     def->gateway = tmp;
 
-    dhcp = virXPathNode(conn, "./dhcp", ctxt);
+    dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
         ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
         if (ret != 0)
            return(ret);
     }
 
-    nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
+    nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
     if (nIpNodes < 0)
         return -1;
     if (ipNodes == NULL)
@@ -364,21 +364,21 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
     int nIpNodes, ii, ret = -1;
     char *tmp;
 
-    tmp = virXPathString(conn, "string(./route[1]/@gateway)", ctxt);
+    tmp = virXPathString("string(./route[1]/@gateway)", ctxt);
     def->gateway = tmp;
 
-    autoconf = virXPathNode(conn, "./autoconf", ctxt);
+    autoconf = virXPathNode("./autoconf", ctxt);
     if (autoconf != NULL)
         def->autoconf = 1;
 
-    dhcp = virXPathNode(conn, "./dhcp", ctxt);
+    dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
         ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
         if (ret != 0)
            return(ret);
     }
 
-    nIpNodes = virXPathNodeSet(conn, "./ip", ctxt, &ipNodes);
+    nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
     if (nIpNodes < 0)
         return -1;
     if (ipNodes == NULL)
@@ -425,7 +425,7 @@ virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
 
     save = ctxt->node;
 
-    nProtoNodes = virXPathNodeSet(conn, "./protocol", ctxt, &protoNodes);
+    nProtoNodes = virXPathNodeSet("./protocol", ctxt, &protoNodes);
     if (nProtoNodes <= 0) {
         /* no protocols is an acceptable outcome */
         return 0;
@@ -447,7 +447,7 @@ virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
         }
 
         ctxt->node = protoNodes[pp];
-        tmp = virXPathString(conn, "string(./@family)", ctxt);
+        tmp = virXPathString("string(./@family)", ctxt);
         if (tmp == NULL) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                                     "%s", _("protocol misses the family attribute"));
@@ -495,7 +495,7 @@ virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
     int ret = 0;
 
     bridge = ctxt->node;
-    nbItf = virXPathNodeSet(conn, "./interface", ctxt, &interfaces);
+    nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf < 0) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                                 "%s", _("bridge interfaces"));
@@ -537,7 +537,7 @@ virInterfaceDefParseBondItfs(virConnectPtr conn, virInterfaceDefPtr def,
     int nbItf, i;
     int ret = 0;
 
-    nbItf = virXPathNodeSet(conn, "./interface", ctxt, &interfaces);
+    nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf <= 0) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                                 "%s", _("bond has no interfaces"));
@@ -583,11 +583,11 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
     if (ret != 0)
        goto error;
 
-    node = virXPathNode(conn, "./miimon[1]", ctxt);
+    node = virXPathNode("./miimon[1]", ctxt);
     if (node != NULL) {
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_MII;
 
-        ret = virXPathULong(conn, "string(./miimon/@freq)", ctxt, &tmp);
+        ret = virXPathULong("string(./miimon/@freq)", ctxt, &tmp);
         if ((ret == -2) || (ret == -1)) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon freq missing or invalid"));
@@ -595,7 +595,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
         }
         def->data.bond.frequency = (int) tmp;
 
-        ret = virXPathULong(conn, "string(./miimon/@downdelay)", ctxt, &tmp);
+        ret = virXPathULong("string(./miimon/@downdelay)", ctxt, &tmp);
         if (ret == -2) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon downdelay invalid"));
@@ -604,7 +604,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
             def->data.bond.downdelay = (int) tmp;
         }
 
-        ret = virXPathULong(conn, "string(./miimon/@updelay)", ctxt, &tmp);
+        ret = virXPathULong("string(./miimon/@updelay)", ctxt, &tmp);
         if (ret == -2) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon updelay invalid"));
@@ -619,11 +619,11 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
             goto error;
         }
 
-    } else if ((node = virXPathNode(conn, "./arpmon[1]", ctxt)) != NULL) {
+    } else if ((node = virXPathNode("./arpmon[1]", ctxt)) != NULL) {
 
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_ARP;
 
-        ret = virXPathULong(conn, "string(./arpmon/@interval)", ctxt, &tmp);
+        ret = virXPathULong("string(./arpmon/@interval)", ctxt, &tmp);
         if ((ret == -2) || (ret == -1)) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                  "%s", _("bond interface arpmon interval missing or invalid"));
@@ -632,7 +632,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
         def->data.bond.interval = (int) tmp;
 
         def->data.bond.target =
-            virXPathString(conn, "string(./arpmon/@target)", ctxt);
+            virXPathString("string(./arpmon/@target)", ctxt);
         if (def->data.bond.target == NULL) {
             virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                  "%s", _("bond interface arpmon target missing"));
@@ -653,7 +653,7 @@ error:
 static int
 virInterfaceDefParseVlan(virConnectPtr conn, virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
-    def->data.vlan.tag = virXPathString(conn, "string(./@tag)", ctxt);
+    def->data.vlan.tag = virXPathString("string(./@tag)", ctxt);
     if (def->data.vlan.tag == NULL) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                     "%s", _("vlan interface misses the tag attribute"));
@@ -661,7 +661,7 @@ virInterfaceDefParseVlan(virConnectPtr conn, virInterfaceDefPtr def,
     }
 
     def->data.vlan.devname =
-         virXPathString(conn, "string(./interface/@name)", ctxt);
+         virXPathString("string(./interface/@name)", ctxt);
     if (def->data.vlan.devname == NULL) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                     "%s", _("vlan interface misses name attribute"));
@@ -679,7 +679,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
     xmlNodePtr cur = ctxt->node;
 
     /* check @type */
-    tmp = virXPathString(conn, "string(./@type)", ctxt);
+    tmp = virXPathString("string(./@type)", ctxt);
     if (tmp == NULL) {
         virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                                 "%s", _("interface misses the type attribute"));
@@ -718,7 +718,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
         case VIR_INTERFACE_TYPE_ETHERNET:
             if (virInterfaceDefParseName(conn, def, ctxt) < 0)
                 goto error;
-            tmp = virXPathString(conn, "string(./mac/@address)", ctxt);
+            tmp = virXPathString("string(./mac/@address)", ctxt);
             if (tmp != NULL)
                 def->mac = tmp;
             if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
@@ -743,7 +743,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
             if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
                 goto error;
 
-            bridge = virXPathNode(conn, "./bridge[1]", ctxt);
+            bridge = virXPathNode("./bridge[1]", ctxt);
             if (bridge == NULL) {
                 virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                                         "%s", _("bridge interface misses the bridge element"));
@@ -785,7 +785,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
                     goto error;
             }
 
-            bond = virXPathNode(conn, "./bond[1]", ctxt);
+            bond = virXPathNode("./bond[1]", ctxt);
             if (bond == NULL) {
                 virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                             "%s", _("bond interface misses the bond element"));
@@ -799,14 +799,14 @@ virInterfaceDefParseXML(virConnectPtr conn,
         case VIR_INTERFACE_TYPE_VLAN: {
             xmlNodePtr vlan;
 
-            tmp = virXPathString(conn, "string(./@name)", ctxt);
+            tmp = virXPathString("string(./@name)", ctxt);
             if (tmp != NULL)
                 def->name = tmp;
             if (virInterfaceDefParseStartMode(conn, def, ctxt) < 0)
                 goto error;
             if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
                 goto error;
-            vlan = virXPathNode(conn, "./vlan[1]", ctxt);
+            vlan = virXPathNode("./vlan[1]", ctxt);
             if (vlan == NULL) {
                 virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
                             "%s", _("vlan interface misses the vlan element"));

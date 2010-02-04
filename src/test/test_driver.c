@@ -665,7 +665,7 @@ static int testOpenVolumesForPool(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathNodeSet(conn, vol_xpath, ctxt, &vols);
+    ret = virXPathNodeSet(vol_xpath, ctxt, &vols);
     VIR_FREE(vol_xpath);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR,
@@ -805,7 +805,7 @@ static int testOpenFromFile(virConnectPtr conn,
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     nodeInfo = &privconn->nodeInfo;
-    ret = virXPathLong(conn, "string(/node/cpu/nodes[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/nodes[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->nodes = l;
     } else if (ret == -2) {
@@ -813,7 +813,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong(conn, "string(/node/cpu/sockets[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/sockets[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->sockets = l;
     } else if (ret == -2) {
@@ -821,7 +821,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong(conn, "string(/node/cpu/cores[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/cores[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->cores = l;
     } else if (ret == -2) {
@@ -829,7 +829,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathLong(conn, "string(/node/cpu/threads[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/threads[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->threads = l;
     } else if (ret == -2) {
@@ -838,7 +838,7 @@ static int testOpenFromFile(virConnectPtr conn,
     }
 
     nodeInfo->cpus = nodeInfo->cores * nodeInfo->threads * nodeInfo->sockets * nodeInfo->nodes;
-    ret = virXPathLong(conn, "string(/node/cpu/active[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/active[1])", ctxt, &l);
     if (ret == 0) {
         if (l < nodeInfo->cpus) {
             nodeInfo->cpus = l;
@@ -847,7 +847,7 @@ static int testOpenFromFile(virConnectPtr conn,
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node active cpu"));
         goto error;
     }
-    ret = virXPathLong(conn, "string(/node/cpu/mhz[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->mhz = l;
     } else if (ret == -2) {
@@ -855,7 +855,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    str = virXPathString(conn, "string(/node/cpu/model[1])", ctxt);
+    str = virXPathString("string(/node/cpu/model[1])", ctxt);
     if (str != NULL) {
         if (virStrcpyStatic(nodeInfo->model, str) == NULL) {
             testError(NULL, VIR_ERR_INTERNAL_ERROR,
@@ -866,7 +866,7 @@ static int testOpenFromFile(virConnectPtr conn,
         VIR_FREE(str);
     }
 
-    ret = virXPathLong(conn, "string(/node/memory[1])", ctxt, &l);
+    ret = virXPathLong("string(/node/memory[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->memory = l;
     } else if (ret == -2) {
@@ -874,7 +874,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    ret = virXPathNodeSet(conn, "/node/domain", ctxt, &domains);
+    ret = virXPathNodeSet("/node/domain", ctxt, &domains);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node domain list"));
         goto error;
@@ -918,7 +918,7 @@ static int testOpenFromFile(virConnectPtr conn,
     }
     VIR_FREE(domains);
 
-    ret = virXPathNodeSet(conn, "/node/network", ctxt, &networks);
+    ret = virXPathNodeSet("/node/network", ctxt, &networks);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node network list"));
         goto error;
@@ -954,7 +954,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(networks);
 
     /* Parse interface definitions */
-    ret = virXPathNodeSet(conn, "/node/interface", ctxt, &ifaces);
+    ret = virXPathNodeSet("/node/interface", ctxt, &ifaces);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node interface list"));
         goto error;
@@ -990,7 +990,7 @@ static int testOpenFromFile(virConnectPtr conn,
     VIR_FREE(ifaces);
 
     /* Parse Storage Pool list */
-    ret = virXPathNodeSet(conn, "/node/pool", ctxt, &pools);
+    ret = virXPathNodeSet("/node/pool", ctxt, &pools);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node pool list"));
         goto error;
@@ -1041,7 +1041,7 @@ static int testOpenFromFile(virConnectPtr conn,
     }
     VIR_FREE(pools);
 
-    ret = virXPathNodeSet(conn, "/node/device", ctxt, &devs);
+    ret = virXPathNodeSet("/node/device", ctxt, &devs);
     if (ret < 0) {
         testError(NULL, VIR_ERR_XML_ERROR, "%s", _("node device list"));
         goto error;
