@@ -1834,6 +1834,7 @@ struct _virDomainJobInfo {
 
 int virDomainGetJobInfo(virDomainPtr dom,
                         virDomainJobInfoPtr info);
+int virDomainAbortJob(virDomainPtr dom);
 
 
 #ifdef __cplusplus
