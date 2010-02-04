@@ -407,7 +407,7 @@ SELinuxRestoreSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-SELinuxSetSecurityImageLabel(virConnectPtr conn,
+SELinuxSetSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 
@@ -428,7 +428,7 @@ SELinuxSetSecurityImageLabel(virConnectPtr conn,
 
         memset(&meta, 0, sizeof(meta));
 
-        ret = virStorageFileGetMetadata(conn, path, &meta);
+        ret = virStorageFileGetMetadata(path, &meta);
 
         if (path != disk->src)
             VIR_FREE(path);

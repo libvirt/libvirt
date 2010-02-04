@@ -105,7 +105,7 @@ err:
 
 
 static int
-qemuSecurityDACSetSecurityImageLabel(virConnectPtr conn,
+qemuSecurityDACSetSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                      virDomainDiskDefPtr disk)
 
@@ -125,7 +125,7 @@ qemuSecurityDACSetSecurityImageLabel(virConnectPtr conn,
 
         memset(&meta, 0, sizeof(meta));
 
-        ret = virStorageFileGetMetadata(conn, path, &meta);
+        ret = virStorageFileGetMetadata(path, &meta);
 
         if (path != disk->src)
             VIR_FREE(path);

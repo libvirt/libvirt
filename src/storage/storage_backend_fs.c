@@ -49,8 +49,7 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int
-virStorageBackendProbeTarget(virConnectPtr conn,
-                             virStorageVolTargetPtr target,
+virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                              char **backingStore,
                              unsigned long long *allocation,
                              unsigned long long *capacity,
@@ -78,7 +77,7 @@ virStorageBackendProbeTarget(virConnectPtr conn,
 
     memset(&meta, 0, sizeof(meta));
 
-    if (virStorageFileGetMetadataFromFD(conn, target->path, fd, &meta) < 0) {
+    if (virStorageFileGetMetadataFromFD(target->path, fd, &meta) < 0) {
         close(fd);
         return -1;
     }
@@ -556,7 +555,7 @@ error:
  * within it. This is non-recursive.
  */
 static int
-virStorageBackendFileSystemRefresh(virConnectPtr conn,
+virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool)
 {
     DIR *dir;
@@ -591,8 +590,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         if ((vol->key = strdup(vol->target.path)) == NULL)
             goto no_memory;
 
-        if ((ret = virStorageBackendProbeTarget(conn,
-                                                &vol->target,
+        if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
                                                 &vol->allocation,
                                                 &vol->capacity,
@@ -633,8 +631,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
             } else {
                 vol->backingStore.path = backingStore;
 
-                if ((ret = virStorageBackendProbeTarget(conn,
-                                                        &vol->backingStore,
+                if ((ret = virStorageBackendProbeTarget(&vol->backingStore,
                                                         NULL, NULL, NULL,
                                                         NULL)) < 0) {
                     if (ret == -1)

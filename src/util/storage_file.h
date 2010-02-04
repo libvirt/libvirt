@@ -51,11 +51,9 @@ typedef struct _virStorageFileMetadata {
     bool encrypted;
 } virStorageFileMetadata;
 
-int virStorageFileGetMetadata(virConnectPtr conn,
-                              const char *path,
+int virStorageFileGetMetadata(const char *path,
                               virStorageFileMetadata *meta);
-int virStorageFileGetMetadataFromFD(virConnectPtr conn,
-                                    const char *path,
+int virStorageFileGetMetadataFromFD(const char *path,
                                     int fd,
                                     virStorageFileMetadata *meta);
 

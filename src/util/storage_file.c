@@ -73,16 +73,12 @@ struct FileTypeInfo {
     int qcowCryptOffset;  /* Byte offset from start of file
                            * where to find encryption mode,
                            * -1 if encryption is not used */
-    int (*getBackingStore)(virConnectPtr conn, char **res,
-                           const unsigned char *buf, size_t buf_size);
+    int (*getBackingStore)(char **res, const unsigned char *buf, size_t buf_size);
 };
 
-static int cowGetBackingStore(virConnectPtr, char **,
-                              const unsigned char *, size_t);
-static int qcowXGetBackingStore(virConnectPtr, char **,
-                                const unsigned char *, size_t);
-static int vmdk4GetBackingStore(virConnectPtr, char **,
-                                const unsigned char *, size_t);
+static int cowGetBackingStore(char **, const unsigned char *, size_t);
+static int qcowXGetBackingStore(char **, const unsigned char *, size_t);
+static int vmdk4GetBackingStore(char **, const unsigned char *, size_t);
 
 
 static struct FileTypeInfo const fileTypeInfo[] = {
@@ -142,8 +138,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
 };
 
 static int
-cowGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                   char **res,
+cowGetBackingStore(char **res,
                    const unsigned char *buf,
                    size_t buf_size)
 {
@@ -163,8 +158,7 @@ cowGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
 }
 
 static int
-qcowXGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                     char **res,
+qcowXGetBackingStore(char **res,
                      const unsigned char *buf,
                      size_t buf_size)
 {
@@ -205,8 +199,7 @@ qcowXGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
 
 
 static int
-vmdk4GetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                     char **res,
+vmdk4GetBackingStore(char **res,
                      const unsigned char *buf,
                      size_t buf_size)
 {
@@ -269,8 +262,7 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
  * it is, and info about its capacity if available.
  */
 int
-virStorageFileGetMetadataFromFD(virConnectPtr conn,
-                                const char *path,
+virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 virStorageFileMetadata *meta)
 {
@@ -362,7 +354,7 @@ virStorageFileGetMetadataFromFD(virConnectPtr conn,
         if (fileTypeInfo[i].getBackingStore != NULL) {
             char *base;
 
-            switch (fileTypeInfo[i].getBackingStore(conn, &base, head, len)) {
+            switch (fileTypeInfo[i].getBackingStore(&base, head, len)) {
             case BACKING_STORE_OK:
                 break;
 
@@ -400,8 +392,7 @@ virStorageFileGetMetadataFromFD(virConnectPtr conn,
 }
 
 int
-virStorageFileGetMetadata(virConnectPtr conn,
-                          const char *path,
+virStorageFileGetMetadata(const char *path,
                           virStorageFileMetadata *meta)
 {
     int fd, ret;
@@ -411,7 +402,7 @@ virStorageFileGetMetadata(virConnectPtr conn,
         return -1;
     }
 
-    ret = virStorageFileGetMetadataFromFD(conn, path, fd, meta);
+    ret = virStorageFileGetMetadataFromFD(path, fd, meta);
 
     close(fd);
 
