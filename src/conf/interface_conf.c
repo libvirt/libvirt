@@ -326,7 +326,7 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
         return 0;
 
     if (VIR_ALLOC_N(def->ips, nIpNodes) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -336,7 +336,7 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
         virInterfaceIpDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -385,7 +385,7 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
         return 0;
 
     if (VIR_ALLOC_N(def->ips, nIpNodes) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -395,7 +395,7 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
         virInterfaceIpDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -432,7 +432,7 @@ virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
     }
 
     if (VIR_ALLOC_N(def->protos, nProtoNodes) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -442,7 +442,7 @@ virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
         virInterfaceProtocolDefPtr proto;
 
         if (VIR_ALLOC(proto) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -504,7 +504,7 @@ virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
     }
     if (nbItf > 0) {
         if (VIR_ALLOC_N(def->data.bridge.itf, nbItf) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             ret = -1;
             goto error;
         }
@@ -545,7 +545,7 @@ virInterfaceDefParseBondItfs(virConnectPtr conn, virInterfaceDefPtr def,
         goto error;
     }
     if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         ret = -1;
         goto error;
     }
@@ -695,7 +695,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
     VIR_FREE(tmp);
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -844,7 +844,7 @@ virInterfaceDefPtr virInterfaceDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1212,7 +1212,7 @@ virInterfaceDefDevFormat(virConnectPtr conn, virBufferPtr buf,
         goto no_memory;
     return 0;
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 cleanup:
     return -1;
 }
@@ -1319,7 +1319,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(iface) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     if (virMutexInit(&iface->lock) < 0) {
@@ -1332,7 +1332,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
     iface->def = def;
 
     if (VIR_REALLOC_N(interfaces->objs, interfaces->count + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         VIR_FREE(iface);
         return NULL;
     }

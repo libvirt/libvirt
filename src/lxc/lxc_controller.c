@@ -159,7 +159,7 @@ static char*lxcMonitorPath(virDomainDefPtr def)
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     LXC_STATE_DIR, def->name) < 0)
-        virReportOOMError(NULL);
+        virReportOOMError();
     return sockpath;
 }
 
@@ -552,7 +552,7 @@ lxcControllerRun(virDomainDefPtr def,
 
         if (virAsprintf(&devpts, "%s/dev/pts", root->src) < 0 ||
             virAsprintf(&devptmx, "%s/dev/pts/ptmx", root->src) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -683,18 +683,18 @@ int main(int argc, char *argv[])
 
         case 'n':
             if ((name = strdup(optarg)) == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto cleanup;
             }
             break;
 
         case 'v':
             if (VIR_REALLOC_N(veths, nveths+1) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto cleanup;
             }
             if ((veths[nveths++] = strdup(optarg)) == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto cleanup;
             }
             break;

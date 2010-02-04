@@ -80,7 +80,7 @@ virCPUDefParseXML(virConnectPtr conn,
     unsigned int i;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -232,7 +232,7 @@ cleanup:
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 
 error:
     virCPUDefFree(def);
@@ -259,7 +259,7 @@ virCPUDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -381,6 +381,6 @@ virCPUDefAddFeature(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     return -1;
 }

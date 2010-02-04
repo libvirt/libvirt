@@ -315,7 +315,7 @@ openvzReadNetworkConf(virConnectPtr conn,
 
     return 0;
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainNetDefFree(net);
     return -1;
@@ -411,7 +411,7 @@ openvzReadFSConf(virConnectPtr conn,
 
     return 0;
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainFSDefFree(fs);
     return -1;
@@ -531,7 +531,7 @@ int openvzLoadDomains(struct openvz_driver *driver) {
     return 0;
 
  no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 
  cleanup:
     fclose(fp);
@@ -559,7 +559,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     char line[PATH_MAX] ;
 
     if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -747,7 +747,7 @@ openvzCopyDefaultConfig(int vpsid)
         goto cleanup;
 
     if (virAsprintf(&default_conf_file, "%s/ve-%s.conf-sample", confdir, configfile_value) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 

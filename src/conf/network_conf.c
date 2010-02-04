@@ -167,7 +167,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(network) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     if (virMutexInit(&network->lock) < 0) {
@@ -180,7 +180,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
     network->def = def;
 
     if (VIR_REALLOC_N(nets->objs, nets->count + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         VIR_FREE(network);
         return NULL;
     }
@@ -278,7 +278,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0) {
                 xmlFree(start);
                 xmlFree(end);
-                virReportOOMError(conn);
+                virReportOOMError();
                 return -1;
             }
             def->ranges[def->nranges].start = (char *)start;
@@ -330,7 +330,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
                 VIR_FREE(ip);
                 VIR_FREE(mac);
                 VIR_FREE(name);
-                virReportOOMError(conn);
+                virReportOOMError();
                 return -1;
             }
             def->hosts[def->nhosts].mac = (char *)mac;
@@ -396,7 +396,7 @@ virNetworkDefParseXML(virConnectPtr conn,
     char *tmp;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -463,7 +463,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         netaddr = inet_ntoa(inaddress);
 
         if (virAsprintf(&def->network, "%s/%s", netaddr, def->netmask) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -625,7 +625,7 @@ virNetworkDefPtr virNetworkDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -637,7 +637,7 @@ cleanup:
     return def;
 }
 
-char *virNetworkDefFormat(virConnectPtr conn,
+char *virNetworkDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                           const virNetworkDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -729,7 +729,7 @@ char *virNetworkDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -937,14 +937,14 @@ error:
     return ret;
 }
 
-char *virNetworkConfigFile(virConnectPtr conn,
+char *virNetworkConfigFile(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                            const char *dir,
                            const char *name)
 {
     char *ret = NULL;
 
     if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -988,7 +988,7 @@ char *virNetworkAllocateBridge(virConnectPtr conn,
 
         if (!virNetworkBridgeInUse(nets, try, NULL)) {
             if (!(newname = strdup(try))) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 return NULL;
             }
             return newname;

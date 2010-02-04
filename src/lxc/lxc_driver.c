@@ -113,7 +113,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
 
         conn->uri = xmlParseURI("lxc:///");
         if (!conn->uri) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else {
@@ -179,7 +179,7 @@ static char *lxcGetCapabilities(virConnectPtr conn) {
 
     lxcDriverLock(driver);
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
     lxcDriverUnlock(driver);
 
     return xml;
@@ -536,7 +536,7 @@ static char *lxcGetOSType(virDomainPtr dom)
     ret = strdup(vm->def->os.type);
 
     if (ret == NULL)
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     if (vm)
@@ -820,17 +820,17 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             def->nets[i]->ifname = strdup(parentVeth);
         }
         if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error_exit;
         }
         if (((*veths)[(*nveths)] = strdup(containerVeth)) == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error_exit;
         }
         (*nveths)++;
 
         if (NULL == def->nets[i]->ifname) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error_exit;
         }
 
@@ -879,7 +879,7 @@ static int lxcMonitorClient(virConnectPtr conn,
 
     if (virAsprintf(&sockpath, "%s/%s.sock",
                     driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -1153,7 +1153,7 @@ static int lxcControllerStart(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 cleanup:
     if (largv) {
         for (i = 0 ; i < largc ; i++)
@@ -1202,7 +1202,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     driver->logDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -1890,7 +1890,8 @@ static int lxcVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-static char *lxcGetSchedulerType(virDomainPtr domain, int *nparams)
+static char *lxcGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
+                                 int *nparams)
 {
     char *schedulerType = NULL;
 
@@ -1900,7 +1901,7 @@ static char *lxcGetSchedulerType(virDomainPtr domain, int *nparams)
     schedulerType = strdup("posix");
 
     if (schedulerType == NULL)
-        virReportOOMError(domain->conn);
+        virReportOOMError();
 
     return schedulerType;
 }

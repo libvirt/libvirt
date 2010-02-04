@@ -140,7 +140,7 @@ virGetConnect(void) {
     virConnectPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failed;
     }
     if (virMutexInit(&ret->lock) < 0) {
@@ -320,13 +320,13 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->magic = VIR_DOMAIN_MAGIC;
@@ -462,13 +462,13 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->magic = VIR_NETWORK_MAGIC;
@@ -635,19 +635,19 @@ _("Failed to change interface mac address from %s to %s due to differing lengths
     } else {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->mac = strdup(mac);
         if (ret->mac == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -781,13 +781,13 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->magic = VIR_STORAGE_POOL_MAGIC;
@@ -918,19 +918,19 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name, const c
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->pool = strdup(pool);
         if (ret->pool == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         if (virStrcpyStatic(ret->key, key) == NULL) {
@@ -1066,7 +1066,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->magic = VIR_NODE_DEVICE_MAGIC;
@@ -1074,7 +1074,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
         ret->name = strdup(name);
         if (ret->name == NULL) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -1200,7 +1200,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
     if (ret == NULL) {
         if (VIR_ALLOC(ret) < 0) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         ret->magic = VIR_SECRET_MAGIC;
@@ -1209,7 +1209,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
         ret->usageType = usageType;
         if (!(ret->usageID = strdup(usageID))) {
             virMutexUnlock(&conn->lock);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         if (virHashAddEntry(conn->secrets, uuidstr, ret) < 0) {
@@ -1311,7 +1311,7 @@ virStreamPtr virGetStream(virConnectPtr conn) {
     virMutexLock(&conn->lock);
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
     ret->magic = VIR_STREAM_MAGIC;

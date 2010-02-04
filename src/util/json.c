@@ -1010,17 +1010,17 @@ char *virJSONValueToString(virJSONValuePtr object)
     g = yajl_gen_alloc(&conf, NULL);
 
     if (virJSONValueToStringOne(object, g) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (yajl_gen_get_buf(g, &str, &len) != yajl_gen_status_ok) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (!(ret = strdup((const char *)str)))
-        virReportOOMError(NULL);
+        virReportOOMError();
 
 cleanup:
     yajl_gen_free(g);

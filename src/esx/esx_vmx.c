@@ -647,7 +647,7 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
 
     if (virAsprintf(&datastoreRelatedPath, "[%s] %s", datastoreName,
                     directoryAndFileName) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -686,7 +686,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
         src = strdup(fileName);
 
         if (src == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return NULL;
         }
 
@@ -703,7 +703,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
         /* Found single file name referencing a file inside a datastore */
         if (virAsprintf(&src, "[%s] %s/%s", datastoreName, directoryName,
                         fileName) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return NULL;
         }
 
@@ -742,7 +742,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     }
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -873,7 +873,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
         def->cpumasklen = 0;
 
         if (VIR_ALLOC_N(def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
 
@@ -939,7 +939,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     def->os.type = strdup("hvm");
 
     if (def->os.type == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -955,7 +955,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     }
 
     if (def->os.arch == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -968,7 +968,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:graphics */
     if (VIR_ALLOC_N(def->graphics, 1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -984,7 +984,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:disks: 4 * 15 scsi + 2 * 2 ide + 2 floppy = 66 */
     if (VIR_ALLOC_N(def->disks, 66) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1084,7 +1084,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:nets */
     if (VIR_ALLOC_N(def->nets, 4) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1112,7 +1112,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:serials */
     if (VIR_ALLOC_N(def->serials, 4) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1132,7 +1132,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:parallels */
     if (VIR_ALLOC_N(def->parallels, 3) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1188,7 +1188,7 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     }
 
     if (VIR_ALLOC(*def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1356,7 +1356,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
     }
 
     if (VIR_ALLOC(*def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1381,7 +1381,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             }
 
             if (virAsprintf(&prefix, "scsi%d:%d", controller, id) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
 
@@ -1397,7 +1397,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
                 (*def)->driverName = strdup(virtualDev);
 
                 if ((*def)->driverName == NULL) {
-                    virReportOOMError(NULL);
+                    virReportOOMError();
                     goto failure;
                 }
             }
@@ -1416,7 +1416,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             }
 
             if (virAsprintf(&prefix, "ide%d:%d", controller, id) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
 
@@ -1442,7 +1442,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             }
 
             if (virAsprintf(&prefix, "floppy%d", controller) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
 
@@ -1715,7 +1715,7 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     }
 
     if (VIR_ALLOC(*def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1909,7 +1909,7 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     }
 
     if (VIR_ALLOC(*def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2032,7 +2032,7 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     }
 
     if (VIR_ALLOC(*def) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2135,13 +2135,13 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
         if (directoryName == NULL) {
             if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s",
                             datastoreName, fileName) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
         } else {
             if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s/%s",
                             datastoreName, directoryName, fileName) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
         }
@@ -2150,7 +2150,7 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
         absolutePath = strdup(src);
 
         if (absolutePath == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     } else {
@@ -2421,7 +2421,7 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
 
     /* Get final VMX output */
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 

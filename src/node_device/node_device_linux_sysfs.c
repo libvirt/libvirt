@@ -46,7 +46,7 @@ static int open_wwn_file(const char *prefix,
     char *wwn_path = NULL;
 
     if (virAsprintf(&wwn_path, "%s/host%d/%s", prefix, host, file) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         retval = -1;
         goto out;
     }
@@ -93,7 +93,7 @@ int read_wwn_linux(int host, const char *file, char **wwn)
 
     *wwn = strndup(p, sizeof(buf));
     if (*wwn == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         retval = -1;
         goto out;
     }
@@ -122,7 +122,7 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
     if (virAsprintf(&sysfs_path, "%s/host%d",
                     LINUX_SYSFS_FC_HOST_PREFIX,
                     d->scsi_host.host) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         retval = -1;
         goto out;
     }
@@ -170,7 +170,7 @@ int check_vport_capable_linux(union _virNodeDevCapData *d)
     if (virAsprintf(&sysfs_path, "%s/host%d/vport_create",
                     LINUX_SYSFS_FC_HOST_PREFIX,
                     d->scsi_host.host) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         retval = -1;
         goto out;
     }
@@ -305,7 +305,7 @@ int get_physical_function_linux(const char *sysfs_path,
               "with sysfs path '%s'\n", sysfs_path);
 
     if (virBuildPath(&device_link, sysfs_path, "physfn") == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
     } else {
         ret = get_sriov_function(device_link, &d->pci_dev.physical_function);
         if (ret == SRIOV_FOUND) {
@@ -340,14 +340,14 @@ int get_virtual_functions_linux(const char *sysfs_path,
             unsigned int *num_funcs = &d->pci_dev.num_virtual_functions;
 
             if (virBuildPath(&device_link, sysfs_path, entry->d_name) == -1) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto out;
             }
 
             VIR_DEBUG("Number of virtual functions: %d", *num_funcs);
             if (VIR_REALLOC_N(d->pci_dev.virtual_functions,
                               (*num_funcs) + 1) != 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto out;
             }
 

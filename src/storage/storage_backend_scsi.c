@@ -55,7 +55,7 @@ getDeviceType(virConnectPtr conn,
 
     if (virAsprintf(&type_path, "/sys/bus/scsi/devices/%u:%u:%u:%u/type",
                     host, bus, target, lun) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto out;
     }
 
@@ -206,7 +206,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
     int retval = 0;
 
     if (VIR_ALLOC(vol) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto out;
     }
@@ -214,13 +214,13 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (virAsprintf(&(vol->name), "%u.%u.%u.%u", host, bus, target, lun) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto free_vol;
     }
 
     if (virAsprintf(&devpath, "/dev/%s", dev) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto free_vol;
     }
@@ -266,7 +266,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
     /* XXX should use logical unit's UUID instead */
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto free_vol;
     }
@@ -276,7 +276,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto free_vol;
     }
@@ -304,7 +304,7 @@ getNewStyleBlockDevice(virConnectPtr conn,
     int retval = 0;
 
     if (virAsprintf(&block_path, "%s/block", lun_path) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto out;
     }
 
@@ -328,7 +328,7 @@ getNewStyleBlockDevice(virConnectPtr conn,
         *block_device = strdup(block_dirent->d_name);
 
         if (*block_device == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             closedir(block_dir);
             retval = -1;
             goto out;
@@ -369,7 +369,7 @@ getOldStyleBlockDevice(virConnectPtr conn,
         *block_device = strdup(blockp);
 
         if (*block_device == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             retval = -1;
             goto out;
         }
@@ -397,7 +397,7 @@ getBlockDevice(virConnectPtr conn,
 
     if (virAsprintf(&lun_path, "/sys/bus/scsi/devices/%u:%u:%u:%u",
                     host, bus, target, lun) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto out;
     }
 
@@ -512,7 +512,7 @@ virStorageBackendSCSIFindLUs(virConnectPtr conn,
     virFileWaitForDevices(conn);
 
     if (virAsprintf(&device_path, "/sys/bus/scsi/devices") < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto out;
     }
 
@@ -596,7 +596,7 @@ virStorageBackendSCSITriggerRescan(virConnectPtr conn,
     VIR_DEBUG(_("Triggering rescan of host %d"), host);
 
     if (virAsprintf(&path, "/sys/class/scsi_host/host%u/scan", host) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto out;
     }

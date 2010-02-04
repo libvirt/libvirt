@@ -99,7 +99,7 @@ virStorageBackendProbeTarget(virConnectPtr conn,
 
     if (encryption != NULL && meta.encrypted) {
         if (VIR_ALLOC(*encryption) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             if (backingStore)
                 VIR_FREE(*backingStore);
             return -1;
@@ -166,7 +166,7 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virConnectPtr conn,
 
     if (!(src->host.name = strdup(state->host)) ||
         !(src->dir = strdup(path))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
@@ -228,7 +228,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
 
     retval = virStoragePoolSourceListFormat(conn, &state.list);
     if (retval == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -381,20 +381,20 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS) {
             if (virAsprintf(&options, "direct-io-mode=1") == -1) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 return -1;
             }
         }
         if (virAsprintf(&src, "%s:%s",
                         pool->def->source.host.name,
                         pool->def->source.dir) == -1) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
 
     } else {
         if ((src = strdup(pool->def->source.devices[0].path)) == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
     }
@@ -510,7 +510,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn,
     char *p;
 
     if ((parent = strdup(pool->def->target.path)) == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
     if (!(p = strrchr(parent, '/'))) {
@@ -676,7 +676,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     /* fallthrough */
 
  cleanup:
@@ -746,7 +746,7 @@ virStorageBackendFileSystemDelete(virConnectPtr conn,
  * function), and can drop the parent pool lock during the (slow) allocation.
  */
 static int
-virStorageBackendFileSystemVolCreate(virConnectPtr conn,
+virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virStoragePoolObjPtr pool,
                                      virStorageVolDefPtr vol)
 {
@@ -757,14 +757,14 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
                     vol->name) == -1) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
     VIR_FREE(vol->key);
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -914,7 +914,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
             if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
                 VIR_ALLOC(encsec) < 0) {
                 VIR_FREE(vol->target.encryption->secrets);
-                virReportOOMError(conn);
+                virReportOOMError();
                 virSecretFree(sec);
                 return -1;
             }

@@ -279,7 +279,7 @@ cleanup:
     return cpu;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 error:
     virCPUDefFree(cpu);
     cpu = NULL;
@@ -396,7 +396,7 @@ out:
     return ret;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     ret = -1;
 
 ignore:
@@ -570,7 +570,7 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
     return model;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 
 error:
     x86ModelFree(model);
@@ -721,7 +721,7 @@ out:
     return ret;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     ret = -1;
 
 ignore:
@@ -758,7 +758,7 @@ x86LoadMap(void)
     struct x86_map *map;
 
     if (VIR_ALLOC(map) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -912,7 +912,7 @@ out:
     return ret;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 
 error:
     ret = VIR_CPU_COMPARE_ERROR;
@@ -1025,7 +1025,7 @@ x86EncodePolicy(const virCPUDefPtr cpu,
         return NULL;
 
     if (!(data = x86DataFromModel(model)))
-        virReportOOMError(NULL);
+        virReportOOMError();
 
     x86ModelFree(model);
 
@@ -1150,7 +1150,7 @@ cpuidSet(uint32_t base, struct cpuX86cpuid **set)
     max = cpuid.eax - base;
 
     if (VIR_ALLOC_N(*set, max + 1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1170,7 +1170,7 @@ x86NodeData(void)
     union cpuData *data;
 
     if (VIR_ALLOC(data) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 

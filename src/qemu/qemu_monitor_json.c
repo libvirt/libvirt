@@ -188,11 +188,11 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
     memset(&msg, 0, sizeof msg);
 
     if (!(cmdstr = virJSONValueToString(cmd))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
     if (virAsprintf(&msg.txBuffer, "%s\r\n", cmdstr) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
     msg.txLength = strlen(msg.txBuffer);
@@ -350,7 +350,7 @@ qemuMonitorJSONCommandAddTimestamp(virJSONValuePtr obj)
     return 0;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     virJSONValueFree(timestamp);
     return -1;
 }
@@ -446,7 +446,7 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
     return obj;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 error:
     virJSONValueFree(obj);
     virJSONValueFree(jargs);
@@ -569,7 +569,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
     }
 
     if (VIR_REALLOC_N(threads, ncpus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -975,7 +975,7 @@ int qemuMonitorJSONSetMigrationSpeed(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     if (virAsprintf(&bandwidthstr, "%lum", bandwidth) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     cmd = qemuMonitorJSONMakeCommand("migrate_set_speed",
@@ -1123,7 +1123,7 @@ int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
     int ret;
 
     if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1147,19 +1147,19 @@ int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
 
     argstr = virArgvToString(argv);
     if (!argstr) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     /* Migrate to file */
     safe_target = qemuMonitorEscapeShell(target);
     if (!safe_target) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&dest, "exec:%s >>%s 2>/dev/null", argstr, safe_target) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1180,7 +1180,7 @@ int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1241,7 +1241,7 @@ int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon,
     char *disk;
 
     if (virAsprintf(&disk, "disk:%s", path) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1261,7 +1261,7 @@ int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon,
     char *addr;
 
     if (virAsprintf(&addr, "host:%.3d.%.3d", bus, dev) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1280,7 +1280,7 @@ int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
     char *addr;
 
     if (virAsprintf(&addr, "host:%.4x:%.4x", vendor, product) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1346,7 +1346,7 @@ int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
     /* XXX hostDomain */
     if (virAsprintf(&dev, "host=%.2x:%.2x.%.1x",
                     hostAddr->bus, hostAddr->slot, hostAddr->function) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1387,7 +1387,7 @@ int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
     memset(guestAddr, 0, sizeof(*guestAddr));
 
     if (virAsprintf(&dev, "file=%s,if=%s", path, bus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1458,7 +1458,7 @@ int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
     /* XXX what about function ? */
     if (virAsprintf(&addr, "%.4x:%.2x:%.2x",
                     guestAddr->domain, guestAddr->bus, guestAddr->slot) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1625,7 +1625,7 @@ static int qemuMonitorJSONExtractPtyPaths(virJSONValuePtr reply,
         if (STRPREFIX(type, "pty:")) {
             char *path = strdup(type + strlen("pty:"));
             if (!path) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto cleanup;
             }
 
@@ -1682,7 +1682,7 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
     memset(guestAddr, 0, sizeof(*guestAddr));
 
     if (virAsprintf(&dev, "if=%s", bus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1751,7 +1751,7 @@ int qemuMonitorJSONAttachDrive(qemuMonitorPtr mon,
 
     if (virAsprintf(&dev, "%.2x:%.2x.%.1x",
                     controllerAddr->bus, controllerAddr->slot, controllerAddr->function) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 

@@ -57,7 +57,7 @@ profile_status(const char *str, const int check_enforcing)
 
     /* create string that is '<str> \0' for accurate matching */
     if (virAsprintf(&tmp, "%s ", str) == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return rc;
     }
 
@@ -65,7 +65,7 @@ profile_status(const char *str, const int check_enforcing)
         /* create string that is '<str> (enforce)\0' for accurate matching */
         if (virAsprintf(&etmp, "%s (enforce)", str) == -1) {
             VIR_FREE(tmp);
-            virReportOOMError(NULL);
+            virReportOOMError();
             return rc;
         }
     }
@@ -112,7 +112,7 @@ profile_status_file(const char *str)
     int len;
 
     if (virAsprintf(&profile, "%s/%s", APPARMOR_DIR "/libvirt", str) == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return rc;
     }
 
@@ -127,7 +127,7 @@ profile_status_file(const char *str)
 
     /* create string that is ' <str> flags=(complain)\0' */
     if (virAsprintf(&tmp, " %s flags=(complain)", str) == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failed;
     }
 
@@ -237,14 +237,14 @@ remove_profile(const char *profile)
 }
 
 static char *
-get_profile_name(virConnectPtr conn, virDomainObjPtr vm)
+get_profile_name(virDomainObjPtr vm)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *name = NULL;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (virAsprintf(&name, "%s%s", AA_PREFIX, uuidstr) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -290,7 +290,7 @@ AppArmorSecurityDriverProbe(void)
     /* see if template file exists */
     if (virAsprintf(&template, "%s/TEMPLATE",
                                APPARMOR_DIR "/libvirt") == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return rc;
     }
 
@@ -339,12 +339,12 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
         return rc;
     }
 
-    if ((profile_name = get_profile_name(conn, vm)) == NULL)
+    if ((profile_name = get_profile_name(vm)) == NULL)
         return rc;
 
     vm->def->seclabel.label = strndup(profile_name, strlen(profile_name));
     if (!vm->def->seclabel.label) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto clean;
     }
 
@@ -352,13 +352,13 @@ AppArmorGenSecurityLabel(virConnectPtr conn, virDomainObjPtr vm)
     vm->def->seclabel.imagelabel = strndup(profile_name,
                                            strlen(profile_name));
     if (!vm->def->seclabel.imagelabel) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto err;
     }
 
     vm->def->seclabel.model = strdup(SECURITY_APPARMOR_NAME);
     if (!vm->def->seclabel.model) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -405,7 +405,7 @@ AppArmorGetSecurityProcessLabel(virConnectPtr conn,
     int rc = -1;
     char *profile_name = NULL;
 
-    if ((profile_name = get_profile_name(conn, vm)) == NULL)
+    if ((profile_name = get_profile_name(vm)) == NULL)
         return rc;
 
     if (virStrcpy(sec->label, profile_name,
@@ -471,7 +471,7 @@ AppArmorSetSecurityProcessLabel(virConnectPtr conn,
     int rc = -1;
     char *profile_name = NULL;
 
-    if ((profile_name = get_profile_name(conn, vm)) == NULL)
+    if ((profile_name = get_profile_name(vm)) == NULL)
         return rc;
 
     if (STRNEQ(drv->name, secdef->model)) {
@@ -511,7 +511,7 @@ AppArmorRestoreSecurityImageLabel(virConnectPtr conn,
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    if ((profile_name = get_profile_name(conn, vm)) == NULL)
+    if ((profile_name = get_profile_name(vm)) == NULL)
         return rc;
 
     /* Update the profile only if it is loaded */
@@ -555,7 +555,7 @@ AppArmorSetSecurityImageLabel(virConnectPtr conn,
             return rc;
         }
 
-        if ((profile_name = get_profile_name(conn, vm)) == NULL)
+        if ((profile_name = get_profile_name(vm)) == NULL)
             return rc;
 
         /* update the profile only if it is loaded */

@@ -1016,7 +1016,7 @@ pciGetDevice(virConnectPtr conn,
     char *vendor, *product;
 
     if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1077,12 +1077,12 @@ unsigned pciDeviceGetManaged(pciDevice *dev)
 }
 
 pciDeviceList *
-pciDeviceListNew(virConnectPtr conn)
+pciDeviceListNew(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/)
 {
     pciDeviceList *list;
 
     if (VIR_ALLOC(list) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1120,7 +1120,7 @@ pciDeviceListAdd(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(list->devs, list->count+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -1216,7 +1216,7 @@ int pciDeviceFileIterate(virConnectPtr conn,
 
     if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
                     dev->domain, dev->bus, dev->slot, dev->function) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1234,7 +1234,7 @@ int pciDeviceFileIterate(virConnectPtr conn,
             STRPREFIX(ent->d_name, "resource") ||
             STREQ(ent->d_name, "rom")) {
             if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             if ((actor)(conn, dev, file, opaque) < 0)

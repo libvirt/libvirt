@@ -219,7 +219,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     }
     /* Allocate new event */
     if (VIR_ALLOC(event) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
     event->conn = conn;
@@ -230,7 +230,7 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     /* Make space on list */
     n = cbList->count;
     if (VIR_REALLOC_N(cbList->callbacks, n + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         VIR_FREE(event);
         return -1;
     }
@@ -257,7 +257,7 @@ virDomainEventQueuePtr virDomainEventQueueNew(void)
     virDomainEventQueuePtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -271,14 +271,14 @@ virDomainEventPtr virDomainEventNew(int id, const char *name,
     virDomainEventPtr event;
 
     if (VIR_ALLOC(event) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
     event->type = type;
     event->detail = detail;
     if (!(event->name = strdup(name))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         VIR_FREE(event);
         return NULL;
     }
@@ -379,7 +379,7 @@ virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
     /* Make space on queue */
     if (VIR_REALLOC_N(evtQueue->events,
                       evtQueue->count + 1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 

@@ -219,7 +219,7 @@ qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
     memset(&msg, 0, sizeof msg);
 
     if (virAsprintf(&msg.txBuffer, "%s\r", cmd) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     msg.txLength = strlen(msg.txBuffer);
@@ -244,7 +244,7 @@ qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
     } else {
         *reply = strdup("");
         if (!*reply) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
     }
@@ -765,7 +765,7 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
      * we just worked in bytes with unsigned long long everywhere.
      */
     if (virAsprintf(&cmd, "balloon %lu", (newmem / 1024)) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -798,7 +798,7 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "eject %s", devname) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -837,12 +837,12 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
     int ret = -1;
 
     if (!(safepath = qemuMonitorEscapeArg(newmedia))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&cmd, "change %s \"%s\"", devname, safepath) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -882,12 +882,12 @@ static int qemuMonitorTextSaveMemory(qemuMonitorPtr mon,
     int ret = -1;
 
     if (!(safepath = qemuMonitorEscapeArg(path))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&cmd, "%s %llu %zi \"%s\"", cmdtype, offset, length, safepath) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -934,7 +934,7 @@ int qemuMonitorTextSetMigrationSpeed(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "migrate_set_speed %lum", bandwidth) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1049,7 +1049,7 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     const char *extra;
 
     if (!safedest) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1059,7 +1059,7 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
         extra = " ";
 
     if (virAsprintf(&cmd, "migrate %s\"%s\"", extra, safedest) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1102,7 +1102,7 @@ int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
     int ret;
 
     if (virAsprintf(&uri, "tcp:%s:%d", hostname, port) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1126,19 +1126,19 @@ int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
 
     argstr = virArgvToString(argv);
     if (!argstr) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     /* Migrate to file */
     safe_target = qemuMonitorEscapeShell(target);
     if (!safe_target) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&dest, "exec:%s >>%s 2>/dev/null", argstr, safe_target) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1159,7 +1159,7 @@ int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&dest, "unix:%s", unixfile) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1194,12 +1194,12 @@ int qemuMonitorTextAddUSBDisk(qemuMonitorPtr mon,
 
     safepath = qemuMonitorEscapeArg(path);
     if (!safepath) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
     if (virAsprintf(&cmd, "usb_add disk:%s", safepath) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1234,7 +1234,7 @@ static int qemuMonitorTextAddUSBDevice(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "usb_add %s", addr) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1269,7 +1269,7 @@ int qemuMonitorTextAddUSBDeviceExact(qemuMonitorPtr mon,
     char *addr;
 
     if (virAsprintf(&addr, "host:%.3d.%.3d", bus, dev) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1287,7 +1287,7 @@ int qemuMonitorTextAddUSBDeviceMatch(qemuMonitorPtr mon,
     char *addr;
 
     if (virAsprintf(&addr, "host:%.4x:%.4x", vendor, product) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1375,7 +1375,7 @@ int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
     /* XXX hostAddr->domain */
     if (virAsprintf(&cmd, "pci_add pci_addr=auto host host=%.2x:%.2x.%.1x",
                     hostAddr->bus, hostAddr->slot, hostAddr->function) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1419,14 +1419,14 @@ int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
 
     safe_path = qemuMonitorEscapeArg(path);
     if (!safe_path) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
 try_command:
     if (virAsprintf(&cmd, "pci_add %s storage file=%s,if=%s",
                     (tryOldSyntax ? "0": "pci_addr=auto"), safe_path, bus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1468,7 +1468,7 @@ int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "pci_add pci_addr=auto nic %s", nicstr) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1504,14 +1504,14 @@ int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
 try_command:
     if (tryOldSyntax) {
         if (virAsprintf(&cmd, "pci_del 0 %.2x", guestAddr->slot) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto cleanup;
         }
     } else {
         /* XXX function ? */
         if (virAsprintf(&cmd, "pci_del pci_addr=%.4x:%.2x:%.2x",
                         guestAddr->domain, guestAddr->bus, guestAddr->slot) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -1560,7 +1560,7 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "getfd %s", fdname) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1596,7 +1596,7 @@ int qemuMonitorTextCloseFileHandle(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "closefd %s", fdname) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1632,7 +1632,7 @@ int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "host_net_add %s", netstr) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1662,7 +1662,7 @@ int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
     int ret = -1;
 
     if (virAsprintf(&cmd, "host_net_remove %d %s", vlan, netname) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1748,7 +1748,7 @@ int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
         *eol = '\0';
         char *path = strdup(needle + strlen(NEEDLE));
         if (path == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -1782,7 +1782,7 @@ int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
 try_command:
     if (virAsprintf(&cmd, "pci_add %s storage if=%s",
                     (tryOldSyntax ? "0": "pci_addr=auto"), bus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1872,7 +1872,7 @@ int qemuMonitorTextAttachDrive(qemuMonitorPtr mon,
 
     safe_str = qemuMonitorEscapeArg(drivestr);
     if (!safe_str) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1882,7 +1882,7 @@ try_command:
                       controllerAddr->domain, controllerAddr->bus,
                       controllerAddr->slot, safe_str);
     if (ret == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -2013,7 +2013,7 @@ int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
         GET_INT(p, 16, product);
 
         if (VIR_REALLOC_N(addrs, naddrs+1) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto error;
         }
 
@@ -2054,12 +2054,12 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
     int ret = -1;
 
     if (!(safedev = qemuMonitorEscapeArg(devicestr))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&cmd, "device_add %s", safedev) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -2094,7 +2094,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
 
     safe_str = qemuMonitorEscapeArg(drivestr);
     if (!safe_str) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -2102,7 +2102,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
      * address required when attaching drives to a controller */
     ret = virAsprintf(&cmd, "drive_add dummy %s", safe_str);
     if (ret == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 

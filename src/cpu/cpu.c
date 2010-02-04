@@ -77,7 +77,7 @@ cpuCompareXML(virConnectPtr conn,
     doc = xmlParseMemory(xml, strlen(xml));
 
     if (doc == NULL || (ctxt = xmlXPathNewContext(doc)) == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 

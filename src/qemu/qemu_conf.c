@@ -104,11 +104,11 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     driver->dynamicOwnership = 1;
 
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     if (!(driver->vncTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-vnc"))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -157,7 +157,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncTLSx509certdir);
         if (!(driver->vncTLSx509certdir = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -168,7 +168,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncListen);
         if (!(driver->vncListen = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -179,7 +179,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncPassword);
         if (!(driver->vncPassword = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -189,7 +189,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE ("security_driver", VIR_CONF_STRING);
     if (p && p->str) {
         if (!(driver->securityDriverName = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -204,7 +204,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncSASLdir);
         if (!(driver->vncSASLdir = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -213,7 +213,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "user");
     CHECK_TYPE ("user", VIR_CONF_STRING);
     if (!(user = strdup(p && p->str ? p->str : QEMU_USER))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         virConfFree(conf);
         return -1;
     }
@@ -228,7 +228,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "group");
     CHECK_TYPE ("group", VIR_CONF_STRING);
     if (!(group = strdup(p && p->str ? p->str : QEMU_GROUP))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         virConfFree(conf);
         return -1;
     }
@@ -284,7 +284,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         for (pp = p->list; pp; pp = pp->next)
             len++;
         if (VIR_ALLOC_N(driver->cgroupDeviceACL, 1+len) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -296,7 +296,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             }
             driver->cgroupDeviceACL[i] = strdup (pp->str);
             if (driver->cgroupDeviceACL[i] == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 virConfFree(conf);
                 return -1;
             }
@@ -310,7 +310,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->saveImageFormat);
         if (!(driver->saveImageFormat = strdup(p->str))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFree(conf);
             return -1;
         }
@@ -321,7 +321,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
      if (p && p->str) {
          VIR_FREE(driver->hugetlbfs_mount);
          if (!(driver->hugetlbfs_mount = strdup(p->str))) {
-             virReportOOMError(NULL);
+             virReportOOMError();
              virConfFree(conf);
              return -1;
          }
@@ -467,7 +467,7 @@ qemudParseMachineTypesStr(const char *output,
     return 0;
 
   no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     virCapabilitiesFreeMachines(list, nitems);
     return -1;
 }
@@ -550,7 +550,7 @@ qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
     }
 
     if (VIR_ALLOC_N(list, info->nmachines) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return 0;
     }
 
@@ -574,7 +574,7 @@ qemudGetOldMachinesFromInfo(virCapsGuestDomainInfoPtr info,
     return 1;
 
   no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     virCapabilitiesFreeMachines(list, info->nmachines);
     return 0;
 }
@@ -731,7 +731,7 @@ qemudProbeCPUModels(const char *qemu,
     }
 
     if (parse(output, count, cpus) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -983,7 +983,7 @@ cleanup:
     return ret;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 
 error:
     virCapabilitiesFreeMachines(machines, nmachines);
@@ -1003,7 +1003,7 @@ qemudCapsInitCPU(virCapsPtr caps,
 
     if (VIR_ALLOC(cpu) < 0
         || !(cpu->arch = strdup(arch))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -1448,7 +1448,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         if (!(brname = strdup(net->data.bridge.brname))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
     } else {
@@ -1468,7 +1468,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
         if (!(net->ifname = strdup("vnet%d"))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
         /* avoid exposing vnet%d in dumpxml or error outputs */
@@ -1550,7 +1550,7 @@ static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
         devname = strdup(disk->dst);
 
     if (!devname) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1603,7 +1603,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
     }
 
     if (ret == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1632,7 +1632,7 @@ static int qemuAssignDeviceDiskAliasCustom(virDomainDiskDefPtr disk)
     return 0;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     return -1;
 }
 
@@ -1670,7 +1670,7 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx)
     }
 
     if (virAsprintf(&net->info.alias, "net%d", idx) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1697,7 +1697,7 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev
     }
 
     if (virAsprintf(&hostdev->info.alias, "hostdev%d", idx) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1712,7 +1712,7 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 
     if (virAsprintf(&controller->info.alias,  "%s%d", prefix,
                     controller->idx) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1780,7 +1780,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, int qemuCmdFlags)
     return 0;
 
     no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     return -1;
 }
 
@@ -1808,7 +1808,7 @@ static char *qemuPCIAddressAsString(virDomainDeviceInfoPtr dev)
                     dev->addr.pci.domain,
                     dev->addr.pci.bus,
                     dev->addr.pci.slot) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
     return addr;
@@ -1852,7 +1852,7 @@ qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def)
     return addrs;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 error:
     qemuDomainPCIAddressSetFree(addrs);
     return NULL;
@@ -2341,7 +2341,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     }
 
     if (virBufferError(&opt)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2397,7 +2397,7 @@ qemuBuildDriveDevStr(virConnectPtr conn,
     virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
 
     if (virBufferError(&opt)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2430,7 +2430,7 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def)
         goto error;
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2443,7 +2443,7 @@ error:
 
 
 char *
-qemuBuildNicStr(virConnectPtr conn,
+qemuBuildNicStr(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                 virDomainNetDefPtr net,
                 const char *prefix,
                 int vlan)
@@ -2460,7 +2460,7 @@ qemuBuildNicStr(virConnectPtr conn,
                     (net->model ? net->model : ""),
                     (net->info.alias ? ",name=" : ""),
                     (net->info.alias ? net->info.alias : "")) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2496,7 +2496,7 @@ qemuBuildNicDevStr(virDomainNetDefPtr net, int vlan)
         goto error;
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2509,7 +2509,7 @@ error:
 
 
 char *
-qemuBuildHostNetStr(virConnectPtr conn,
+qemuBuildHostNetStr(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                     virDomainNetDefPtr net,
                     char type_sep,
                     int vlan,
@@ -2583,7 +2583,7 @@ qemuBuildHostNetStr(virConnectPtr conn,
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2609,7 +2609,7 @@ qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev)
         goto error;
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2632,7 +2632,7 @@ qemuBuildUSBInputDevStr(virDomainInputDefPtr dev)
     virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2668,7 +2668,7 @@ qemuBuildSoundDevStr(virDomainSoundDefPtr sound)
         goto error;
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2695,7 +2695,7 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev)
         goto error;
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2716,7 +2716,7 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev)
                     dev->source.subsys.u.pci.bus,
                     dev->source.subsys.u.pci.slot,
                     dev->source.subsys.u.pci.function) < 0)
-        virReportOOMError(NULL);
+        virReportOOMError();
 
     return ret;
 }
@@ -2738,7 +2738,7 @@ qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev)
                     dev->source.subsys.u.usb.bus,
                     dev->source.subsys.u.usb.device,
                     dev->info.alias) < 0)
-        virReportOOMError(NULL);
+        virReportOOMError();
 
     return ret;
 }
@@ -2759,7 +2759,7 @@ qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev)
     if (virAsprintf(&ret, "host:%.3d.%.3d",
                     dev->source.subsys.u.usb.bus,
                     dev->source.subsys.u.usb.device) < 0)
-        virReportOOMError(NULL);
+        virReportOOMError();
 
     return ret;
 }
@@ -2834,7 +2834,7 @@ qemuBuildChrChardevStr(virDomainChrDefPtr dev)
     }
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -2913,7 +2913,7 @@ qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix)
     }
 
     if (virBufferError(&buf)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -3012,13 +3012,12 @@ cleanup:
     return ret;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     goto cleanup;
 }
 
 static char *
-qemuBuildSmpArgStr(virConnectPtr conn,
-                   const virDomainDefPtr def,
+qemuBuildSmpArgStr(const virDomainDefPtr def,
                    int qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3042,7 +3041,7 @@ qemuBuildSmpArgStr(virConnectPtr conn,
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -3285,7 +3284,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     ADD_ARG_LIT("-smp");
-    if (!(smp = qemuBuildSmpArgStr(conn, def, qemuCmdFlags)))
+    if (!(smp = qemuBuildSmpArgStr(def, qemuCmdFlags)))
         goto error;
     ADD_ARG(smp);
 
@@ -4095,7 +4094,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     return 0;
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  error:
     if (tapfds &&
         *tapfds) {
@@ -4229,7 +4228,7 @@ no_memory:
     for (i = 0 ; i < argcount ; i++)
         VIR_FREE(arglist[i]);
     VIR_FREE(arglist);
-    virReportOOMError(NULL);
+    virReportOOMError();
     return -1;
 }
 
@@ -4331,7 +4330,7 @@ qemuParseCommandLineKeywords(virConnectPtr conn,
     return keywordCount;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     for (i = 0 ; i < keywordCount ; i++) {
         VIR_FREE(keywords[i]);
@@ -4369,7 +4368,7 @@ qemuParseCommandLineDisk(virConnectPtr conn,
         return NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4409,7 +4408,7 @@ qemuParseCommandLineDisk(virConnectPtr conn,
             if (!def->driverName) {
                 virDomainDiskDefFree(def);
                 def = NULL;
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             def->driverType = values[i];
@@ -4505,7 +4504,7 @@ qemuParseCommandLineDisk(virConnectPtr conn,
     if (!def->dst) {
         virDomainDiskDefFree(def);
         def = NULL;
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     if (STREQ(def->dst, "xvda"))
@@ -4598,7 +4597,7 @@ qemuParseCommandLineNet(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4746,7 +4745,7 @@ qemuParseCommandLinePCI(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4813,7 +4812,7 @@ qemuParseCommandLineUSB(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4966,7 +4965,7 @@ qemuParseCommandLineChr(virConnectPtr conn,
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainChrDefFree(def);
     return NULL;
@@ -4974,14 +4973,13 @@ error:
 
 
 static virCPUDefPtr
-qemuInitGuestCPU(virConnectPtr conn,
-                 virDomainDefPtr dom)
+qemuInitGuestCPU(virDomainDefPtr dom)
 {
     if (!dom->cpu) {
         virCPUDefPtr cpu;
 
         if (VIR_ALLOC(cpu) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return NULL;
         }
 
@@ -5003,7 +5001,7 @@ qemuParseCommandLineCPU(virConnectPtr conn,
     const char *p = val;
     const char *next;
 
-    if (!(cpu = qemuInitGuestCPU(conn, dom)))
+    if (!(cpu = qemuInitGuestCPU(dom)))
         goto error;
 
     do {
@@ -5056,7 +5054,7 @@ syntax:
     goto error;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     return -1;
 }
@@ -5107,7 +5105,7 @@ qemuParseCommandLineSmp(virConnectPtr conn,
     if (sockets && cores && threads) {
         virCPUDefPtr cpu;
 
-        if (!(cpu = qemuInitGuestCPU(conn, dom)))
+        if (!(cpu = qemuInitGuestCPU(dom)))
             goto error;
         cpu->sockets = sockets;
         cpu->cores = cores;
@@ -5655,7 +5653,7 @@ virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainDefFree(def);
     VIR_FREE(nics);

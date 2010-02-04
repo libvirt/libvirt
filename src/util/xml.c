@@ -71,7 +71,7 @@ virXPathString(virConnectPtr conn,
     ret = strdup((char *) obj->stringval);
     xmlXPathFreeObject(obj);
     if (ret == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
     }
     return (ret);
 }
@@ -504,7 +504,7 @@ virXPathNodeSet(virConnectPtr conn,
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
         if (VIR_ALLOC_N(*list, ret) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             ret = -1;
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,

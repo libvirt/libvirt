@@ -85,7 +85,7 @@ static int update_driver_name(virConnectPtr conn,
     VIR_FREE(dev->def->driver);
 
     if (virAsprintf(&driver_link, "%s/driver", dev->def->sysfs_path) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -106,7 +106,7 @@ static int update_driver_name(virConnectPtr conn,
     if (p) {
         dev->def->driver = strdup(p+1);
         if (!dev->def->driver) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -174,7 +174,7 @@ nodeListDevices(virConnectPtr conn,
             virNodeDeviceHasCap(driver->devs.objs[i], cap)) {
             if ((names[ndevs++] = strdup(driver->devs.objs[i]->def->name)) == NULL) {
                 virNodeDeviceObjUnlock(driver->devs.objs[i]);
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto failure;
             }
         }
@@ -314,7 +314,7 @@ static char *nodeDeviceGetParent(virNodeDevicePtr dev)
     if (obj->def->parent) {
         ret = strdup(obj->def->parent);
         if (!ret)
-            virReportOOMError(dev->conn);
+            virReportOOMError();
     } else {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("no parent for this device"));
@@ -380,7 +380,7 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
         names[ncaps] = strdup(virNodeDevCapTypeToString(caps->type));
         if (names[ncaps++] == NULL) {
-            virReportOOMError(dev->conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -430,7 +430,7 @@ nodeDeviceVportCreateDelete(virConnectPtr conn,
                     parent_host,
                     operation_file) < 0) {
 
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto cleanup;
     }
@@ -442,7 +442,7 @@ nodeDeviceVportCreateDelete(virConnectPtr conn,
                     wwpn,
                     wwnn) < 0) {
 
-        virReportOOMError(conn);
+        virReportOOMError();
         retval = -1;
         goto cleanup;
     }
@@ -618,7 +618,7 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     obj = NULL;
 
     if (parent_name == NULL) {
-        virReportOOMError(dev->conn);
+        virReportOOMError();
         goto out;
     }
 

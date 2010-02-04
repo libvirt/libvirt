@@ -80,7 +80,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     char *uuidstr = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -137,7 +137,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
     int format, i, n;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -165,7 +165,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
         goto cleanup;
     }
     if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     ret->nsecrets = n;
@@ -200,7 +200,7 @@ virStorageEncryptionParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 

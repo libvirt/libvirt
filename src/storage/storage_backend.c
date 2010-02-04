@@ -139,7 +139,7 @@ virStorageBackendCopyToFD(virConnectPtr conn,
     bzero(&zerobuf, sizeof(zerobuf));
 
     if (VIR_ALLOC_N(buf, bytes) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -434,7 +434,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
 
     if (VIR_ALLOC(enc_secret) < 0 || VIR_REALLOC_N(enc->secrets, 1) < 0 ||
         VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -446,7 +446,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
     def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
     def->usage.volume = strdup(vol->target.path);
     if (def->usage.volume == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     xml = virSecretDefFormat(conn, def);
@@ -1012,7 +1012,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
     } else {
         target->perms.label = strdup(filecon);
         if (target->perms.label == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
         freecon(filecon);
@@ -1164,7 +1164,7 @@ virStorageBackendStablePath(virConnectPtr conn,
         if (virAsprintf(&stablepath, "%s/%s",
                         pool->def->target.path,
                         dent->d_name) == -1) {
-            virReportOOMError(conn);
+            virReportOOMError();
             closedir(dh);
             return NULL;
         }
@@ -1187,7 +1187,7 @@ virStorageBackendStablePath(virConnectPtr conn,
     stablepath = strdup(devpath);
 
     if (stablepath == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
 
     return stablepath;
 }
@@ -1224,7 +1224,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
     /* Compile all regular expressions */
     if (VIR_ALLOC_N(reg, nregex) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -1249,11 +1249,11 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
     /* Storage for matched variables */
     if (VIR_ALLOC_N(groups, totgroups) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     if (VIR_ALLOC_N(vars, maxvars+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1289,7 +1289,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                     line[vars[j+1].rm_eo] = '\0';
                     if ((groups[ngroup++] =
                          strdup(line + vars[j+1].rm_so)) == NULL) {
-                        virReportOOMError(conn);
+                        virReportOOMError();
                         goto cleanup;
                     }
                 }
@@ -1388,7 +1388,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
         return -1;
 
     if (VIR_ALLOC_N(v, n_columns) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
     for (i = 0; i < n_columns; i++)

@@ -140,17 +140,17 @@ xenDomainUsedCpus(virDomainPtr dom)
         return(NULL);
 
     if (VIR_ALLOC_N(cpulist, priv->nbNodeCpus) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto done;
     }
     if (VIR_ALLOC_N(cpuinfo, nb_vcpu) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto done;
     }
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if (xalloc_oversized(nb_vcpu, cpumaplen) ||
         VIR_ALLOC_N(cpumap, nb_vcpu * cpumaplen) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto done;
     }
 
@@ -246,7 +246,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
         conn->uri = xmlParseURI("xen:///");
         if (!conn->uri) {
-            virReportOOMError (NULL);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else {
@@ -292,7 +292,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Allocate per-connection private data. */
     if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError (NULL);
+        virReportOOMError();
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&priv->lock) < 0) {
@@ -304,7 +304,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
 
     /* Allocate callback list */
     if (VIR_ALLOC(cbList) < 0) {
-        virReportOOMError (NULL);
+        virReportOOMError();
         virMutexDestroy(&priv->lock);
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
@@ -546,7 +546,7 @@ xenUnifiedGetCapabilities (virConnectPtr conn)
     char *xml;
 
     if (!(xml = virCapabilitiesFormatXML(priv->caps))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -816,7 +816,7 @@ xenUnifiedDomainisPersistent(virDomainPtr dom)
 
                     virUUIDFormat(dom->uuid, uuidstr);
                     if (virAsprintf(&path, "%s/%s", XEND_DOMAINS_DIR, uuidstr) < 0) {
-                        virReportOOMError(NULL);
+                        virReportOOMError();
                         goto done;
                     }
                     if (access(path, R_OK) == 0)
@@ -1237,7 +1237,7 @@ xenUnifiedDomainXMLToNative(virConnectPtr conn,
             goto cleanup;
 
         if (VIR_ALLOC_N(ret, len) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -1988,7 +1988,7 @@ xenUnifiedAddDomainInfo(xenUnifiedDomainInfoListPtr list,
     list->count++;
     return 0;
 memory_error:
-    virReportOOMError (NULL);
+    virReportOOMError();
     if (info)
         VIR_FREE(info->name);
     VIR_FREE(info);

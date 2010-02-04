@@ -172,7 +172,7 @@ esxCapsInit(esxPrivate *priv)
     }
 
     if (caps == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -292,7 +292,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
     /* Allocate per-connection private data */
     if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -341,7 +341,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->transport,
                     conn->uri->server, conn->uri->port) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -349,7 +349,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         username = strdup(conn->uri->user);
 
         if (username == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     } else {
@@ -448,7 +448,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                     vCenter = strdup(dynamicProperty->val->string);
 
                     if (vCenter == NULL) {
-                        virReportOOMError(NULL);
+                        virReportOOMError();
                         goto failure;
                     }
 
@@ -482,7 +482,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
         if (virAsprintf(&url, "%s://%s/sdk", priv->transport,
                         vCenter) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
 
@@ -777,12 +777,12 @@ esxGetHostname(virConnectPtr conn)
         complete = strdup(hostName);
 
         if (complete == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     } else {
         if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -962,7 +962,7 @@ esxGetCapabilities(virConnectPtr conn)
     char *xml = virCapabilitiesFormatXML(priv->caps);
 
     if (xml == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1547,7 +1547,7 @@ esxDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
     char *osType = strdup("hvm");
 
     if (osType == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2168,7 +2168,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     virBufferURIEncodeString(&buffer, datastoreName);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2322,7 +2322,7 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
                 names[count] = strdup(dynamicProperty->val->string);
 
                 if (names[count] == NULL) {
-                    virReportOOMError(NULL);
+                    virReportOOMError();
                     goto failure;
                 }
 
@@ -2546,7 +2546,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     virBufferURIEncodeString(&buffer, datastoreName);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2555,13 +2555,13 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     if (directoryName != NULL) {
         if (virAsprintf(&datastoreRelatedPath, "[%s] %s/%s.vmx", datastoreName,
                         directoryName, def->name) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     } else {
         if (virAsprintf(&datastoreRelatedPath, "[%s] %s.vmx", datastoreName,
                         def->name) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -2724,7 +2724,7 @@ esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
     char *type = strdup("allocation");
 
     if (type == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -3012,7 +3012,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
 
         if (virAsprintf(uri_out, "%s://%s:%d/sdk", transport,
                         dconn->uri->server, dconn->uri->port) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -3071,7 +3071,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     xmlUri = xmlParseURI(uri);
 
     if (xmlUri == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 

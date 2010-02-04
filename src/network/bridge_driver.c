@@ -152,7 +152,7 @@ networkFindActiveConfigs(struct network_driver *driver) {
                 char *pidpath;
 
                 if (virAsprintf(&pidpath, "/proc/%d/exe", obj->dnsmasqPid) < 0) {
-                    virReportOOMError(NULL);
+                    virReportOOMError();
                     goto cleanup;
                 }
                 if (virFileLinkPointsTo(pidpath, DNSMASQ) == 0)
@@ -267,7 +267,7 @@ networkStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 
 error:
     if (driverState)
@@ -362,8 +362,7 @@ networkShutdown(void) {
 
 
 static int
-networkBuildDnsmasqArgv(virConnectPtr conn,
-                        virNetworkObjPtr network,
+networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         const char *pidfile,
                         const char ***argv) {
     int i, len, r;
@@ -518,7 +517,7 @@ networkBuildDnsmasqArgv(virConnectPtr conn,
             VIR_FREE((*argv)[i]);
         VIR_FREE(*argv);
     }
-    virReportOOMError(conn);
+    virReportOOMError();
     return -1;
 }
 
@@ -553,12 +552,12 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     }
 
     if (!(pidfile = virFilePid(NETWORK_PID_DIR, network->def->name))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
     argv = NULL;
-    if (networkBuildDnsmasqArgv(conn, network, pidfile, &argv) < 0) {
+    if (networkBuildDnsmasqArgv(network, pidfile, &argv) < 0) {
         VIR_FREE(pidfile);
         return -1;
     }
@@ -844,7 +843,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     int ret = -1;
 
     if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/disable_ipv6", network->def->bridge) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -862,7 +861,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     VIR_FREE(field);
 
     if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/accept_ra", network->def->bridge) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -874,7 +873,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     VIR_FREE(field);
 
     if (virAsprintf(&field, SYSCTL_PATH "/net/ipv6/conf/%s/autoconf", network->def->bridge) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1131,7 +1130,7 @@ static int networkListNetworks(virConnectPtr conn, char **const names, int nname
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -1175,7 +1174,7 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
         if (!virNetworkObjIsActive(driver->networks.objs[i])) {
             if (!(names[got] = strdup(driver->networks.objs[i]->def->name))) {
                 virNetworkObjUnlock(driver->networks.objs[i]);
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -1456,7 +1455,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
 
     bridge = strdup(network->def->bridge);
     if (!bridge)
-        virReportOOMError(net->conn);
+        virReportOOMError();
 
 cleanup:
     if (network)

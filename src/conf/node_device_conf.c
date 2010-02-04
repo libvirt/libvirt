@@ -187,7 +187,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(device) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -204,7 +204,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
         device->def = NULL;
         virNodeDeviceObjUnlock(device);
         virNodeDeviceObjFree(device);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     devs->objs[devs->count++] = device;
@@ -241,7 +241,7 @@ void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
     }
 }
 
-char *virNodeDeviceDefFormat(virConnectPtr conn,
+char *virNodeDeviceDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                              const virNodeDeviceDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -492,7 +492,7 @@ char *virNodeDeviceDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -1083,7 +1083,7 @@ virNodeDevCapsDefParseXML(virConnectPtr conn,
     int val, ret;
 
     if (VIR_ALLOC(caps) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1157,7 +1157,7 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt, int create
     int n, i;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1173,7 +1173,7 @@ virNodeDeviceDefParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt, int create
         def->name = strdup("new device");
 
         if (!def->name) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
     }
@@ -1226,7 +1226,7 @@ virNodeDeviceDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1360,7 +1360,7 @@ virNodeDeviceGetWWNs(virConnectPtr conn,
         VIR_FREE(wwnn);
         VIR_FREE(wwpn);
         ret = -1;
-        virReportOOMError(conn);
+        virReportOOMError();
     }
 
     return ret;

@@ -1250,7 +1250,6 @@ void virReportSystemErrorFull(virConnectPtr conn,
 
 /**
  * virReportOOMErrorFull:
- * @conn: the hyperisor connection
  * @domcode: the virErrorDomain indicating where it's coming from
  * @filename: filename where error was raised
  * @funcname: function name where error was raised
@@ -1259,8 +1258,7 @@ void virReportSystemErrorFull(virConnectPtr conn,
  * Convenience internal routine called when an out of memory error is
  * detected
  */
-void virReportOOMErrorFull(virConnectPtr conn,
-                           int domcode,
+void virReportOOMErrorFull(int domcode,
                            const char *filename,
                            const char *funcname,
                            size_t linenr)
@@ -1268,7 +1266,7 @@ void virReportOOMErrorFull(virConnectPtr conn,
     const char *virerr;
 
     virerr = virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
-    virRaiseErrorFull(conn, filename, funcname, linenr,
+    virRaiseErrorFull(NULL, filename, funcname, linenr,
                       domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
                       virerr, NULL, NULL, -1, -1, virerr, NULL);
 }

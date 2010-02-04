@@ -622,7 +622,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         (*anyType)->value = strdup("");
 
         if ((*anyType)->value == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -713,7 +713,7 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
     string->value = strdup(value);
 
     if (string->value == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -799,7 +799,7 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
     *dest = strdup(src);
 
     if (*dest == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -858,7 +858,7 @@ esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string)
         (*string)->value = strdup("");
 
         if ((*string)->value == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -888,7 +888,7 @@ esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
         *value = strdup("");
 
         if (*value == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
     }

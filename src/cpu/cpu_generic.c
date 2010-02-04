@@ -68,7 +68,7 @@ genericCompare(virCPUDefPtr host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
 
     if ((hash = genericHashFeatures(host)) == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 

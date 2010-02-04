@@ -431,7 +431,7 @@ virStoragePoolDefParseSource(virConnectPtr conn,
     if (nsource > 0) {
         if (VIR_ALLOC_N(source->devices, nsource) < 0) {
             VIR_FREE(nodeset);
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -501,12 +501,12 @@ virStoragePoolDefParseSourceString(virConnectPtr conn,
 
     xpath_ctxt = xmlXPathNewContext(doc);
     if (xpath_ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -612,7 +612,7 @@ virStoragePoolDefParseXML(virConnectPtr conn,
     char *uuid = NULL;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -684,7 +684,7 @@ virStoragePoolDefParseXML(virConnectPtr conn,
             /* source name defaults to pool name */
             ret->source.name = strdup(ret->name);
             if (ret->source.name == NULL) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
         }
@@ -753,7 +753,7 @@ virStoragePoolDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -957,7 +957,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -1046,7 +1046,7 @@ virStorageVolDefParseXML(virConnectPtr conn,
         return NULL;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1161,7 +1161,7 @@ virStorageVolDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1353,7 +1353,7 @@ virStorageVolDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -1456,7 +1456,7 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(pool) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1474,7 +1474,7 @@ virStoragePoolObjAssignDef(virConnectPtr conn,
         pool->def = NULL;
         virStoragePoolObjUnlock(pool);
         virStoragePoolObjFree(pool);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     pools->objs[pools->count++] = pool;
@@ -1510,13 +1510,13 @@ virStoragePoolObjLoad(virConnectPtr conn,
 
     pool->configFile = strdup(path);
     if (pool->configFile == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         virStoragePoolDefFree(def);
         return NULL;
     }
     pool->autostartLink = strdup(autostartLink);
     if (pool->autostartLink == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         virStoragePoolDefFree(def);
         return NULL;
     }
@@ -1609,7 +1609,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
             return -1;
         }
         if (!(pool->configFile = strdup(path))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
 
@@ -1622,7 +1622,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
             return -1;
         }
         if (!(pool->autostartLink = strdup(path))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             VIR_FREE(pool->configFile);
             return -1;
         }
@@ -1689,13 +1689,13 @@ virStoragePoolObjDeleteDef(virConnectPtr conn,
 }
 
 virStoragePoolSourcePtr
-virStoragePoolSourceListNewSource(virConnectPtr conn,
+virStoragePoolSourceListNewSource(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                                   virStoragePoolSourceListPtr list)
 {
     virStoragePoolSourcePtr source;
 
     if (VIR_REALLOC_N(list->sources, list->nsources+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1738,7 +1738,7 @@ char *virStoragePoolSourceListFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;

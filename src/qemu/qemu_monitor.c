@@ -575,7 +575,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     }
 
     if (VIR_ALLOC(mon) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 

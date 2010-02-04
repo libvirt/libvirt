@@ -141,7 +141,7 @@ index b84729f..4f73baf 100644
 +                    parent_host,
 +                    operation_file) < 0) {
 +
-+        virReportOOMError(conn);
++        virReportOOMError();
 +        retval = -1;
 +        goto cleanup;
 +    }
@@ -163,7 +163,7 @@ index b84729f..4f73baf 100644
 +                    wwpn,
 +                    wwnn) < 0) {
 +
-+        virReportOOMError(conn);
++        virReportOOMError();
 +        retval = -1;
 +        goto cleanup;
 +    }
@@ -223,7 +223,7 @@ index b84729f..4f73baf 100644
 +        VIR_FREE(wwnn);
 +        VIR_FREE(wwpn);
 +        ret = -1;
-+        virReportOOMError(conn);
++        virReportOOMError();
 +    }
 +
 +    return ret;
@@ -431,7 +431,7 @@ index b84729f..4f73baf 100644
 +    obj = NULL;
 +
 +    if (parent_name == NULL) {
-+        virReportOOMError(dev->conn);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -964,7 +964,7 @@ index 0000000..1deb6d2
 +    if (virAsprintf(&sysfs_path, "%s/host%d",
 +                    LINUX_SYSFS_FC_HOST_PREFIX,
 +                    d->scsi_host.host) < 0) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -977,7 +977,7 @@ index 0000000..1deb6d2
 +
 +    if (virAsprintf(&wwnn_path, "%s/node_name",
 +                    sysfs_path) < 0) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -1002,7 +1002,7 @@ index 0000000..1deb6d2
 +
 +    d->scsi_host.wwnn = strndup(p, sizeof(buf));
 +    if (d->scsi_host.wwnn == NULL) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -1013,7 +1013,7 @@ index 0000000..1deb6d2
 +
 +    if (virAsprintf(&wwpn_path, "%s/port_name",
 +                    sysfs_path) < 0) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -1038,7 +1038,7 @@ index 0000000..1deb6d2
 +
 +    d->scsi_host.wwpn = strndup(p, sizeof(buf));
 +    if (d->scsi_host.wwpn == NULL) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +
@@ -1066,7 +1066,7 @@ index 0000000..1deb6d2
 +    if (virAsprintf(&sysfs_path, "%s/host%d/vport_create",
 +                    LINUX_SYSFS_FC_HOST_PREFIX,
 +                    d->scsi_host.host) < 0) {
-+        virReportOOMError(NULL);
++        virReportOOMError();
 +        goto out;
 +    }
 +

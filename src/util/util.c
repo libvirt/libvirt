@@ -625,14 +625,14 @@ virExecWithHook(virConnectPtr conn,
     char *envp_str;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
     if (envp) {
         if ((envp_str = virArgvToString(envp)) == NULL) {
             VIR_FREE(argv_str);
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
         VIR_DEBUG("%s %s", envp_str, argv_str);
@@ -775,7 +775,7 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
             buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
             size = (*buf ? strlen(*buf) : 0);
             if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto error;
             }
             memmove(*buf+size, data, got);
@@ -827,7 +827,7 @@ virRunWithHook(virConnectPtr conn,
     char *argv_str = NULL;
 
     if ((argv_str = virArgvToString(argv)) == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
     DEBUG0(argv_str);
@@ -2188,7 +2188,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
     offset = strlen(prefix);
 
     if (VIR_ALLOC_N(name, offset + i + 1)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2240,7 +2240,7 @@ char *virGetHostname(virConnectPtr conn)
     /* Caller frees this string. */
     result = strdup (info->ai_canonname);
     if (!result)
-        virReportOOMError(conn);
+        virReportOOMError();
 
     freeaddrinfo(info);
     return result;
@@ -2356,7 +2356,7 @@ static char *virGetUserEnt(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2382,7 +2382,7 @@ static char *virGetUserEnt(virConnectPtr conn,
 
     VIR_FREE(strbuf);
     if (!ret)
-        virReportOOMError(conn);
+        virReportOOMError();
 
     return ret;
 }
@@ -2416,7 +2416,7 @@ int virGetUserID(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -2459,7 +2459,7 @@ int virGetGroupID(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(strbuf, strbuflen) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 

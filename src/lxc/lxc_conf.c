@@ -132,6 +132,6 @@ done:
     return 0;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     return -1;
 }

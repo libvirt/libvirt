@@ -90,7 +90,7 @@ virStorageBackendISCSITargetIP(virConnectPtr conn,
 }
 
 static int
-virStorageBackendISCSIExtractSession(virConnectPtr conn,
+virStorageBackendISCSIExtractSession(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virStoragePoolObjPtr pool,
                                      char **const groups,
                                      void *data)
@@ -99,7 +99,7 @@ virStorageBackendISCSIExtractSession(virConnectPtr conn,
 
     if (STREQ(groups[1], pool->def->source.devices[0].path)) {
         if ((*session = strdup(groups[0])) == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
     }
@@ -223,7 +223,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
             *ifacename = strdup(token);
             if (*ifacename == NULL) {
                 ret = IQN_ERROR;
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto out;
             }
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
@@ -487,7 +487,7 @@ virStorageBackendISCSIPortal(virConnectPtr conn,
         return NULL;
 
     if (VIR_ALLOC_N(portal, strlen(ipaddr) + 1 + 4 + 2 + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 

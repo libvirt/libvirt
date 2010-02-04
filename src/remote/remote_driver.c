@@ -557,7 +557,7 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     if (!name) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failed;
     }
 
@@ -873,18 +873,18 @@ doRemoteOpen (virConnectPtr conn,
         conn->uri = xmlParseURI(uriret.uri);
         VIR_FREE(uriret.uri);
         if (!conn->uri) {
-            virReportOOMError (conn);
+            virReportOOMError();
             goto failed;
         }
     }
 
     if(VIR_ALLOC(priv->callbackList)<0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failed;
     }
 
     if(VIR_ALLOC(priv->domainEvents)<0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failed;
     }
 
@@ -932,7 +932,7 @@ doRemoteOpen (virConnectPtr conn,
     return retcode;
 
  out_of_memory:
-    virReportOOMError (conn);
+    virReportOOMError();
 
  failed:
     /* Close the socket if we failed. */
@@ -969,7 +969,7 @@ remoteAllocPrivateData(virConnectPtr conn)
 {
     struct private_data *priv;
     if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2907,7 +2907,7 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -3296,7 +3296,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
     /* Serialise the scheduler parameters. */
     args.params.params_len = nparams;
     if (VIR_ALLOC_N(args.params.params_val, nparams) < 0) {
-        virReportOOMError(domain->conn);
+        virReportOOMError();
         goto done;
     }
 
@@ -3305,7 +3305,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
         // call() will free this:
         args.params.params_val[i].field = strdup (params[i].field);
         if (args.params.params_val[i].field == NULL) {
-            virReportOOMError (domain->conn);
+            virReportOOMError();
             do_error = 1;
         }
         args.params.params_val[i].value.type = params[i].type;
@@ -3692,7 +3692,7 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -3774,7 +3774,7 @@ remoteListDefinedNetworks (virConnectPtr conn,
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -4247,7 +4247,7 @@ remoteListInterfaces (virConnectPtr conn, char **const names, int maxnames)
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -4328,7 +4328,7 @@ remoteListDefinedInterfaces (virConnectPtr conn, char **const names, int maxname
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -4684,7 +4684,7 @@ remoteListStoragePools (virConnectPtr conn, char **const names, int maxnames)
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -4762,7 +4762,7 @@ remoteListDefinedStoragePools (virConnectPtr conn,
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -5327,7 +5327,7 @@ remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int ma
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(pool->conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -5736,7 +5736,7 @@ static int remoteNodeListDevices(virConnectPtr conn,
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -5898,7 +5898,7 @@ static int remoteNodeDeviceListCaps(virNodeDevicePtr dev,
             for (--i; i >= 0; --i)
                 VIR_FREE(names[i]);
 
-            virReportOOMError(dev->conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -6163,7 +6163,7 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
     }
 
     if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -6961,7 +6961,7 @@ remoteSecretListSecrets (virConnectPtr conn, char **uuids, int maxuuids)
             for (--i; i >= 0; --i)
                 VIR_FREE(uuids[i]);
 
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -7175,7 +7175,7 @@ remoteStreamOpen(virStreamPtr st,
     struct private_stream_data *stpriv;
 
     if (VIR_ALLOC(stpriv) < 0) {
-        virReportOOMError(st->conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -7206,7 +7206,7 @@ remoteStreamPacket(virStreamPtr st,
     memset(&hdr, 0, sizeof hdr);
 
     if (VIR_ALLOC(thiscall) < 0) {
-        virReportOOMError(st->conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -7385,7 +7385,7 @@ remoteStreamRecv(virStreamPtr st,
         struct remote_thread_call *thiscall;
 
         if (VIR_ALLOC(thiscall) < 0) {
-            virReportOOMError(st->conn);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -7603,7 +7603,7 @@ prepareCall(virConnectPtr conn,
     struct remote_thread_call *rv;
 
     if (VIR_ALLOC(rv) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -8644,7 +8644,7 @@ call (virConnectPtr conn, struct private_data *priv,
                            ret_filter, ret);
 
     if (!thiscall) {
-        virReportOOMError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn);
+        virReportOOMError();
         return -1;
     }
 

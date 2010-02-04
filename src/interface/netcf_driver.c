@@ -120,7 +120,7 @@ static virDrvOpenStatus interfaceOpenInterface(virConnectPtr conn,
 
     if (VIR_ALLOC(driverState) < 0)
     {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto alloc_error;
     }
 

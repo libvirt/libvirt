@@ -56,7 +56,7 @@ realloc:
     mask = CPU_ALLOC(numcpus);
 
     if (!mask) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -122,7 +122,7 @@ realloc:
     mask = CPU_ALLOC(numcpus);
 
     if (!mask) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 

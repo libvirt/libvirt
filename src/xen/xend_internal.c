@@ -527,7 +527,7 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -709,7 +709,7 @@ urlencode(const char *string)
     size_t i;
 
     if (VIR_ALLOC_N(buffer, len * 3 + 1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return (NULL);
     }
     ptr = buffer;
@@ -1061,7 +1061,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     if (domname) {
       *domname = strdup(name);
       if (*domname == NULL) {
-          virReportOOMError(xend);
+          virReportOOMError();
           goto error;
       }
     }
@@ -1210,7 +1210,7 @@ xenDaemonParseSxprOS(virConnectPtr xend,
     return 0;
 
 no_memory:
-    virReportOOMError(xend);
+    virReportOOMError();
     return -1;
 }
 
@@ -1421,7 +1421,7 @@ xend_parse_sexp_desc_char(virConnectPtr conn,
 
     if (ret == -1) {
 no_memory:
-        virReportOOMError(conn);
+        virReportOOMError();
     }
 
 error:
@@ -1445,7 +1445,7 @@ xenDaemonParseSxprChar(virConnectPtr conn,
     virDomainChrDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1573,7 +1573,7 @@ xenDaemonParseSxprChar(virConnectPtr conn,
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainChrDefFree(def);
     return NULL;
@@ -1752,7 +1752,7 @@ xenDaemonParseSxprDisks(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 
 error:
     virDomainDiskDefFree(disk);
@@ -1861,7 +1861,7 @@ xenDaemonParseSxprNets(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 cleanup:
     virDomainNetDefFree(net);
     return -1;
@@ -1941,15 +1941,14 @@ xenDaemonParseSxprSound(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     return -1;
 }
 
 
 static int
-xenDaemonParseSxprUSB(virConnectPtr conn,
-                      virDomainDefPtr def,
+xenDaemonParseSxprUSB(virDomainDefPtr def,
                       const struct sexpr *root)
 {
     struct sexpr *cur, *node;
@@ -1985,7 +1984,7 @@ xenDaemonParseSxprUSB(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     return -1;
 }
 
@@ -2076,7 +2075,7 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
@@ -2179,7 +2178,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virDomainGraphicsDefFree(graphics);
     return -1;
@@ -2303,7 +2302,7 @@ xenDaemonParseSxprPCI(virConnectPtr conn,
     return 0;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 
 error:
     virDomainHostdevDefFree(dev);
@@ -2407,7 +2406,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     if (cpus != NULL) {
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -2567,7 +2566,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
 
     /* in case of HVM we have USB device emulation */
     if (hvm &&
-        xenDaemonParseSxprUSB(conn, def, root) < 0)
+        xenDaemonParseSxprUSB(def, root) < 0)
         goto error;
 
     /* Character device config */
@@ -2620,7 +2619,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     VIR_FREE(tty);
     virDomainDefFree(def);
@@ -2841,7 +2840,7 @@ sexpr_to_xend_topology(virConnectPtr conn,
   memory_error:
     VIR_FREE(cpuNums);
     VIR_FREE(cpuset);
-    virReportOOMError(conn);
+    virReportOOMError();
     return (-1);
 }
 
@@ -2962,7 +2961,7 @@ xenDaemonOpen(virConnectPtr conn,
     } else if (STRCASEEQ (conn->uri->scheme, "http")) {
         if (conn->uri->port &&
             virAsprintf(&port, "%d", conn->uri->port) == -1) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto failed;
         }
 
@@ -3182,7 +3181,7 @@ xenDaemonDomainGetOSType(virDomainPtr domain)
     }
 
     if (type == NULL)
-        virReportOOMError(domain->conn);
+        virReportOOMError();
 
     sexpr_free(root);
 
@@ -3984,7 +3983,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
                     name = strdup(*tmp);
 
                     if (name == NULL)
-                        virReportOOMError(conn);
+                        virReportOOMError();
 
                     break;
                 }
@@ -4011,7 +4010,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             name = strdup(domname);
 
             if (name == NULL)
-                virReportOOMError(conn);
+                virReportOOMError();
         }
 
         sexpr_free(root);
@@ -4426,7 +4425,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
         autonode->u.s.car->u.value = (autostart ? strdup("start")
                                                 : strdup("ignore"));
         if (!(autonode->u.s.car->u.value)) {
-            virReportOOMError(domain->conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -4578,7 +4577,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         }
         hostname = strdup (uriptr->server);
         if (!hostname) {
-            virReportOOMError (conn);
+            virReportOOMError();
             xmlFreeURI (uriptr);
             return -1;
         }
@@ -4600,7 +4599,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         n = p - uri; /* n = Length of hostname in bytes. */
         hostname = strdup (uri);
         if (!hostname) {
-            virReportOOMError (conn);
+            virReportOOMError();
             return -1;
         }
         hostname[n] = '\0';
@@ -4608,7 +4607,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     else {                      /* "hostname" (or IP address) */
         hostname = strdup (uri);
         if (!hostname) {
-            virReportOOMError (conn);
+            virReportOOMError();
             return -1;
         }
     }
@@ -4802,7 +4801,7 @@ xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
             continue;
 
         if ((names[ret++] = strdup(node->u.value)) == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -4870,14 +4869,14 @@ xenDaemonGetSchedulerType(virDomainPtr domain, int *nparams)
     if (STREQ (ret, "credit")) {
         schedulertype = strdup("credit");
         if (schedulertype == NULL){
-            virReportOOMError(domain->conn);
+            virReportOOMError();
             goto error;
         }
         *nparams = XEN_SCHED_CRED_NPARAM;
     } else if (STREQ (ret, "sedf")) {
         schedulertype = strdup("sedf");
         if (schedulertype == NULL){
-            virReportOOMError(domain->conn);
+            virReportOOMError();
             goto error;
         }
         *nparams = XEN_SCHED_SEDF_NPARAM;
@@ -5399,7 +5398,7 @@ xenDaemonFormatSxprChr(virConnectPtr conn,
     }
 
     if (virBufferError(buf)) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -5746,7 +5745,7 @@ xenDaemonFormatSxprSound(virConnectPtr conn,
     }
 
     if (virBufferError(buf)) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -6022,7 +6021,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferAddLit(&buf, ")"); /* closes (vm */
 
     if (virBufferError(&buf)) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -6112,7 +6111,7 @@ virDomainXMLDevID(virDomainPtr domain,
                         def->source.subsys.u.pci.bus,
                         def->source.subsys.u.pci.slot,
                         def->source.subsys.u.pci.function) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
 

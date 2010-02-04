@@ -207,12 +207,12 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     xmlNodePtr *nodes = NULL;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
     if (!(priv->monConfig->info.alias = strdup("monitor"))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -257,7 +257,7 @@ static int qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
     if (n) {
         priv->nvcpupids = n;
         if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto error;
         }
 
@@ -506,7 +506,7 @@ qemudLogFD(virConnectPtr conn, struct qemud_driver *driver, const char* name)
     if ((ret = snprintf(logfile, sizeof(logfile), "%s/%s.log",
                         driver->logDir, name))
         < 0 || ret >= sizeof(logfile)) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -635,15 +635,14 @@ qemudAutostartConfigs(struct qemud_driver *driver) {
  * Returns 0 on success
  */
 static int
-qemudRemoveDomainStatus(virConnectPtr conn,
-                        struct qemud_driver *driver,
+qemudRemoveDomainStatus(struct qemud_driver *driver,
                         virDomainObjPtr vm)
 {
     char ebuf[1024];
     char *file = NULL;
 
     if (virAsprintf(&file, "%s/%s.xml", driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return(-1);
     }
 
@@ -792,7 +791,7 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (VIR_ALLOC_N(passphrase, size + 1) < 0) {
         memset(data, 0, size);
         VIR_FREE(data);
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     memcpy(passphrase, data, size);
@@ -940,7 +939,7 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
 
     /* Basic host arch / guest machine capabilities */
     if (!(caps = qemudCapsInit(oldcaps))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 
@@ -970,7 +969,7 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
     return caps;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -1186,7 +1185,7 @@ qemudStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 error:
     if (qemu_driver)
         qemuDriverUnlock(qemu_driver);
@@ -1393,8 +1392,7 @@ qemudReadLogOutput(virConnectPtr conn,
  * Returns -1 for error, 0 success, 1 continue reading
  */
 static int
-qemudExtractTTYPath(virConnectPtr conn,
-                    const char *haystack,
+qemudExtractTTYPath(const char *haystack,
                     size_t *offset,
                     char **path)
 {
@@ -1417,7 +1415,7 @@ qemudExtractTTYPath(virConnectPtr conn,
         if (c_isspace(*tmp)) {
             *path = strndup(dev, tmp-dev);
             if (*path == NULL) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 return -1;
             }
 
@@ -1472,7 +1470,7 @@ qemudFindCharDevicePTYsMonitor(virConnectPtr conn,
             chr->data.file.path = strdup(path);                           \
                                                                           \
             if (chr->data.file.path == NULL) {                            \
-                virReportOOMError(conn);                                  \
+                virReportOOMError();                                      \
                 return -1;                                                \
             }                                                             \
         }                                                                 \
@@ -1487,7 +1485,7 @@ qemudFindCharDevicePTYsMonitor(virConnectPtr conn,
 }
 
 static int
-qemudFindCharDevicePTYs(virConnectPtr conn,
+qemudFindCharDevicePTYs(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                         virDomainObjPtr vm,
                         const char *output,
                         int fd ATTRIBUTE_UNUSED)
@@ -1503,7 +1501,7 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nserials ; i++) {
         virDomainChrDefPtr chr = vm->def->serials[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+            if ((ret = qemudExtractTTYPath(output, &offset,
                                            &chr->data.file.path)) != 0)
                 return ret;
         }
@@ -1513,7 +1511,7 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nparallels ; i++) {
         virDomainChrDefPtr chr = vm->def->parallels[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+            if ((ret = qemudExtractTTYPath(output, &offset,
                                            &chr->data.file.path)) != 0)
                 return ret;
         }
@@ -1523,7 +1521,7 @@ qemudFindCharDevicePTYs(virConnectPtr conn,
     for (i = 0 ; i < vm->def->nchannels ; i++) {
         virDomainChrDefPtr chr = vm->def->channels[i];
         if (chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemudExtractTTYPath(conn, output, &offset,
+            if ((ret = qemudExtractTTYPath(output, &offset,
                                            &chr->data.file.path)) != 0)
                 return ret;
         }
@@ -1576,7 +1574,7 @@ qemudWaitForMonitor(virConnectPtr conn,
      * log output method. */
     virHashTablePtr paths = virHashCreate(0);
     if (paths == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1609,7 +1607,7 @@ qemuDetectVcpuPIDs(virConnectPtr conn,
     if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM) {
         priv->nvcpupids = 1;
         if (VIR_ALLOC_N(priv->vcpupids, priv->nvcpupids) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return -1;
         }
         priv->vcpupids[0] = vm->pid;
@@ -1662,7 +1660,7 @@ qemudInitCpuAffinity(virConnectPtr conn,
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
     if (VIR_ALLOC_N(cpumap, cpumaplen) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -2499,8 +2497,7 @@ static int qemudSecurityHook(void *data) {
 }
 
 static int
-qemuPrepareMonitorChr(virConnectPtr conn,
-                      struct qemud_driver *driver,
+qemuPrepareMonitorChr(struct qemud_driver *driver,
                       virDomainChrDefPtr monConfig,
                       const char *vm)
 {
@@ -2510,13 +2507,13 @@ qemuPrepareMonitorChr(virConnectPtr conn,
     monConfig->data.nix.listen = 1;
 
     if (!(monConfig->info.alias = strdup("monitor"))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
     if (virAsprintf(&monConfig->data.nix.path, "%s/%s.monitor",
                     driver->libDir, vm) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -2619,11 +2616,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
-    if (qemuPrepareMonitorChr(conn, driver, priv->monConfig, vm->def->name) < 0)
+    if (qemuPrepareMonitorChr(driver, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
 #if HAVE_YAJL
@@ -2905,7 +2902,7 @@ retry:
                  vm->def->name);
     }
 
-    qemudRemoveDomainStatus(conn, driver, vm);
+    qemudRemoveDomainStatus(driver, vm);
 
     vm->pid = -1;
     vm->def->id = -1;
@@ -2938,7 +2935,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                 "qemu:///system" :
                                 "qemu:///session");
         if (!conn->uri) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else {
@@ -3088,7 +3085,7 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     qemu_driver->caps = caps;
 
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -3605,7 +3602,7 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     }
 
     if (!(type = strdup(vm->def->os.type)))
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     if (vm)
@@ -4512,7 +4509,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(xml, header.xml_len) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4798,7 +4795,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuPrepareMonitorChr(conn, driver, &monConfig, def->name) < 0)
+    if (qemuPrepareMonitorChr(driver, &monConfig, def->name) < 0)
         goto cleanup;
 
     if (qemudBuildCommandLine(conn, driver, def,
@@ -4824,7 +4821,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4932,7 +4929,7 @@ qemudCanonicalizeMachineFromInfo(virDomainDefPtr def,
             continue;
 
         if (!(*canonical = strdup(machine->canonical))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
 
@@ -4949,7 +4946,7 @@ qemudCanonicalizeMachineDirect(virDomainDefPtr def, char **canonical)
     int i, nmachines = 0;
 
     if (qemudProbeMachineTypes(def->emulator, &machines, &nmachines) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -5253,7 +5250,7 @@ static int qemudDomainAttachPciDiskDevice(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -5334,12 +5331,12 @@ static int qemudDomainAttachPciControllerDevice(virConnectPtr conn,
     }
 
     if (!(devstr = qemuBuildControllerDevStr(controller))) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -5392,7 +5389,7 @@ qemuDomainFindOrCreateSCSIDiskController(virConnectPtr conn,
     /* No SCSI controller present, for back compatability we
      * now hotplug a controller */
     if (VIR_ALLOC(cont) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
@@ -5466,7 +5463,7 @@ static int qemudDomainAttachSCSIDisk(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -5556,7 +5553,7 @@ static int qemudDomainAttachUsbMassstorageDevice(virConnectPtr conn,
     }
 
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -5738,7 +5735,7 @@ try_tapfd_close:
     goto cleanup;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     goto cleanup;
 }
 
@@ -5756,7 +5753,7 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
     char *devstr = NULL;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -5820,8 +5817,7 @@ error:
 }
 
 
-static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
-                                          struct qemud_driver *driver,
+static int qemudDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainHostdevDefPtr hostdev,
                                           int qemuCmdFlags)
@@ -5835,7 +5831,7 @@ static int qemudDomainAttachHostUsbDevice(virConnectPtr conn,
         goto error;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -5888,7 +5884,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (qemudDomainAttachHostUsbDevice(conn, driver, vm,
+        if (qemudDomainAttachHostUsbDevice(driver, vm,
                                            hostdev, qemuCmdFlags) < 0)
             goto error;
         break;
@@ -6237,7 +6233,7 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     }
 
     if (virAsprintf(&hostnet_name, "host%s", detach->info.alias) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -6604,7 +6600,7 @@ static char *qemuGetSchedulerType(virDomainPtr dom,
 
     ret = strdup("posix");
     if (!ret)
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     qemuDriverUnlock(driver);
@@ -7021,7 +7017,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
     }
 
     if (virAsprintf(&tmp, driver->cacheDir,  "/qemu.mem.XXXXXX") < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto endjob;
     }
 
@@ -7337,7 +7333,7 @@ static struct qemuStreamMigFile *qemuStreamMigOpen(virStreamPtr st,
     int ret;
 
     if (VIR_ALLOC(qemust) < 0) {
-        virReportOOMError(st->conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -7508,7 +7504,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.dest.%s",
                     driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError (dconn);
+        virReportOOMError();
         goto endjob;
     }
     unlink(unixfile);
@@ -7530,7 +7526,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto endjob;
     }
     if (internalret < 0) {
-        virReportOOMError(dconn);
+        virReportOOMError();
         goto endjob;
     }
     /* Start the QEMU daemon, with the same command-line arguments plus
@@ -7661,7 +7657,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         internalret = virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port);
         VIR_FREE(hostname);
         if (internalret < 0) {
-            virReportOOMError (dconn);
+            virReportOOMError();
             goto cleanup;
         }
     } else {
@@ -7685,7 +7681,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
             /* Caller frees */
             if (virAsprintf(uri_out, "%s:%d", uri_in, this_port) < 0) {
-                virReportOOMError (dconn);
+                virReportOOMError();
                 goto cleanup;
             }
 
@@ -7796,7 +7792,7 @@ static int doNativeMigrate(virDomainPtr dom,
         /* HACK: source host generates bogus URIs, so fix them up */
         char *tmpuri;
         if (virAsprintf(&tmpuri, "tcp://%s", uri + strlen("tcp:")) < 0) {
-            virReportOOMError(dom->conn);
+            virReportOOMError();
             goto cleanup;
         }
         uribits = xmlParseURI(tmpuri);
@@ -7922,7 +7918,7 @@ static int doTunnelMigrate(virDomainPtr dom,
 
     if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
                     driver->stateDir, vm->def->name) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto cleanup;
     }
 

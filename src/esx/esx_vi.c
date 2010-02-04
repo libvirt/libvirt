@@ -376,7 +376,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     ctx->password = strdup(password);
 
     if (ctx->username == NULL || ctx->password == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -543,7 +543,7 @@ esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url, char **content)
     }
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -629,7 +629,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     }
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -701,7 +701,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
             if (virAsprintf(&xpathExpression,
                             "/soapenv:Envelope/soapenv:Body/vim:%sResponse",
                             methodName) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
 
@@ -1128,7 +1128,7 @@ esxVI_Alloc(void **ptrptr, size_t size)
     }
 
     if (virAllocN(ptrptr, size, 1) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -1655,7 +1655,7 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                 *name = strdup(dynamicProperty->val->string);
 
                 if (*name == NULL) {
-                    virReportOOMError(NULL);
+                    virReportOOMError();
                     goto failure;
                 }
 
@@ -2277,7 +2277,7 @@ esxVI_StartVirtualMachineTask(esxVI_Context *ctx, const char *name,
     esxVI_Response *response = NULL;
 
     if (virAsprintf(&methodName, "%s_Task", name) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2328,7 +2328,7 @@ esxVI_StartSimpleVirtualMachineTask
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2383,7 +2383,7 @@ esxVI_SimpleVirtualMachineMethod(esxVI_Context *ctx, const char *name,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2443,7 +2443,7 @@ esxVI_HandleVirtualMachineQuestion
         }
 
         if (virBufferError(&buffer)) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
 
@@ -2532,7 +2532,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
     version = strdup("");
 
     if (version == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -2602,7 +2602,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
         version = strdup(updateSet->version);
 
         if (version == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
 

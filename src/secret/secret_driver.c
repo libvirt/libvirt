@@ -162,7 +162,7 @@ replaceFile(virConnectPtr conn, const char *filename, void *data, size_t size)
     int fd = -1, ret = -1;
 
     if (virAsprintf(&tmp_path, "%sXXXXXX", filename) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     fd = mkstemp (tmp_path);
@@ -206,7 +206,7 @@ cleanup:
 }
 
 static char *
-secretComputePath(virConnectPtr conn, virSecretDriverStatePtr driver,
+secretComputePath(virSecretDriverStatePtr driver,
                   const virSecretEntry *secret, const char *suffix)
 {
     char *ret;
@@ -216,23 +216,25 @@ secretComputePath(virConnectPtr conn, virSecretDriverStatePtr driver,
 
     if (virAsprintf(&ret, "%s/%s%s", driver->directory, uuidstr, suffix) < 0)
         /* ret is NULL */
-        virReportOOMError(conn);
+        virReportOOMError();
 
     return ret;
 }
 
 static char *
-secretXMLPath(virConnectPtr conn, virSecretDriverStatePtr driver,
+secretXMLPath(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
+              virSecretDriverStatePtr driver,
               const virSecretEntry *secret)
 {
-    return secretComputePath(conn, driver, secret, ".xml");
+    return secretComputePath(driver, secret, ".xml");
 }
 
 static char *
-secretBase64Path(virConnectPtr conn, virSecretDriverStatePtr driver,
+secretBase64Path(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
+                 virSecretDriverStatePtr driver,
                  const virSecretEntry *secret)
 {
-    return secretComputePath(conn, driver, secret, ".base64");
+    return secretComputePath(driver, secret, ".base64");
 }
 
 static int
@@ -293,7 +295,7 @@ secretSaveValue(virConnectPtr conn, virSecretDriverStatePtr driver,
     base64_encode_alloc((const char *)secret->value, secret->value_size,
                         &base64);
     if (base64 == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -387,7 +389,7 @@ secretLoadValue(virConnectPtr conn, virSecretDriverStatePtr driver,
     }
 
     if (VIR_ALLOC_N(contents, st.st_size) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     if (saferead(fd, contents, st.st_size) != st.st_size) {
@@ -403,7 +405,7 @@ secretLoadValue(virConnectPtr conn, virSecretDriverStatePtr driver,
         goto cleanup;
     }
     if (value == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -438,7 +440,7 @@ secretLoad(virConnectPtr conn, virSecretDriverStatePtr driver,
 
     if (virAsprintf(&xml_filename, "%s/%s", driver->directory,
                     xml_basename) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     def = virSecretDefParseFile(conn, xml_filename);
@@ -450,7 +452,7 @@ secretLoad(virConnectPtr conn, virSecretDriverStatePtr driver,
         goto cleanup;
 
     if (VIR_ALLOC(secret) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     secret->def = def;
@@ -581,7 +583,7 @@ secretListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
         if (i == maxuuids)
             break;
         if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
         virUUIDFormat(secret->def->uuid, uuidstr);
@@ -705,7 +707,7 @@ secretDefineXML(virConnectPtr conn, const char *xml,
 
         /* No existing secret at all, create one */
         if (VIR_ALLOC(secret) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
 
@@ -822,7 +824,7 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
     virSecretEntryPtr secret;
 
     if (VIR_ALLOC_N(new_value, value_size) < 0) {
-        virReportOOMError(obj->conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -905,7 +907,7 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags)
     }
 
     if (VIR_ALLOC_N(ret, secret->value_size) < 0) {
-        virReportOOMError(obj->conn);
+        virReportOOMError();
         goto cleanup;
     }
     memcpy(ret, secret->value, secret->value_size);

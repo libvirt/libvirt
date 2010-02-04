@@ -204,7 +204,7 @@ SELinuxGenSecurityLabel(virConnectPtr conn,
     }
     vm->def->seclabel.model = strdup(SECURITY_SELINUX_NAME);
     if (!vm->def->seclabel.model) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 

@@ -131,7 +131,7 @@ esxVI_Login(esxVI_Context *ctx, const char *userName, const char *password,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -185,7 +185,7 @@ esxVI_Logout(esxVI_Context *ctx)
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -248,7 +248,7 @@ esxVI_SessionIsActive(esxVI_Context *ctx, const char *sessionID,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -312,7 +312,7 @@ esxVI_RetrieveProperties(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -409,7 +409,7 @@ esxVI_MigrateVM_Task(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -463,7 +463,7 @@ esxVI_ReconfigVM_Task(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -528,7 +528,7 @@ esxVI_RegisterVM_Task(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -578,7 +578,7 @@ esxVI_CancelTask(esxVI_Context *ctx, esxVI_ManagedObjectReference *task)
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -628,7 +628,7 @@ esxVI_UnregisterVM(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -681,7 +681,7 @@ esxVI_AnswerVM(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -748,7 +748,7 @@ esxVI_CreateFilter(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -803,7 +803,7 @@ esxVI_DestroyPropertyFilter(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -864,7 +864,7 @@ esxVI_WaitForUpdates(esxVI_Context *ctx, const char *version,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -961,7 +961,7 @@ esxVI_ValidateMigration(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1030,7 +1030,7 @@ esxVI_FindByIp(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1105,7 +1105,7 @@ esxVI_FindByUuid(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1186,7 +1186,7 @@ esxVI_QueryAvailablePerfMetric(esxVI_Context *ctx,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1249,7 +1249,7 @@ esxVI_QueryPerfCounter(esxVI_Context *ctx, esxVI_Int *counterIdList,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 
@@ -1312,7 +1312,7 @@ esxVI_QueryPerf(esxVI_Context *ctx, esxVI_PerfQuerySpec *querySpecList,
     virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
     if (virBufferError(&buffer)) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto failure;
     }
 

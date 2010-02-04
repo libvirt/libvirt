@@ -142,7 +142,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
 };
 
 static int
-cowGetBackingStore(virConnectPtr conn,
+cowGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                    char **res,
                    const unsigned char *buf,
                    size_t buf_size)
@@ -156,14 +156,14 @@ cowGetBackingStore(virConnectPtr conn,
 
     *res = strndup ((const char*)buf + 4+4, COW_FILENAME_MAXLEN);
     if (*res == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return BACKING_STORE_ERROR;
     }
     return BACKING_STORE_OK;
 }
 
 static int
-qcowXGetBackingStore(virConnectPtr conn,
+qcowXGetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                      char **res,
                      const unsigned char *buf,
                      size_t buf_size)
@@ -195,7 +195,7 @@ qcowXGetBackingStore(virConnectPtr conn,
     if (size + 1 == 0)
         return BACKING_STORE_INVALID;
     if (VIR_ALLOC_N(*res, size + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return BACKING_STORE_ERROR;
     }
     memcpy(*res, buf + offset, size);
@@ -205,7 +205,7 @@ qcowXGetBackingStore(virConnectPtr conn,
 
 
 static int
-vmdk4GetBackingStore(virConnectPtr conn,
+vmdk4GetBackingStore(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                      char **res,
                      const unsigned char *buf,
                      size_t buf_size)
@@ -236,7 +236,7 @@ vmdk4GetBackingStore(virConnectPtr conn,
     *end = '\0';
     *res = strdup(start);
     if (*res == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return BACKING_STORE_ERROR;
     }
     return BACKING_STORE_OK;
@@ -376,7 +376,7 @@ virStorageFileGetMetadataFromFD(virConnectPtr conn,
                 meta->backingStore = absolutePathFromBaseFile(path, base);
                 VIR_FREE(base);
                 if (meta->backingStore == NULL) {
-                    virReportOOMError(conn);
+                    virReportOOMError();
                     return -1;
                 }
             }

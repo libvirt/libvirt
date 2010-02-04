@@ -69,7 +69,7 @@ static int usbSysReadFile(virConnectPtr conn,
 
     tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
     if (tmp < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -169,7 +169,7 @@ usbGetDevice(virConnectPtr conn,
     usbDevice *dev;
 
     if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 

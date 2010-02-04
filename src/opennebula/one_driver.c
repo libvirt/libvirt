@@ -69,7 +69,7 @@ static virDrvOpenStatus oneOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         conn->uri = xmlParseURI("one:///");
         if (!conn->uri) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else if (conn->uri->scheme == NULL ||
@@ -392,7 +392,7 @@ static char *oneGetOSType(virDomainPtr dom)
 
     ret = strdup(vm->def->os.type);
     if (!ret)
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     if (vm)
@@ -641,7 +641,7 @@ static int oneStartup(int privileged ATTRIBUTE_UNUSED){
 
     one_driver->nextid=1;
     if ((one_driver->caps = oneCapsInit()) == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
     oneDriverUnlock(one_driver);
@@ -702,7 +702,7 @@ static char*  oneGetCapabilities(virConnectPtr conn){
     char *xml;
     oneDriverLock(privconn);
     if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
     oneDriverUnlock(privconn);
     return xml;
 }

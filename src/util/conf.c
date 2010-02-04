@@ -164,7 +164,7 @@ virConfNew(void)
     virConfPtr ret;
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return(NULL);
     }
     ret->filename = NULL;
@@ -216,7 +216,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
         return(NULL);
 
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return(NULL);
     }
 
@@ -389,7 +389,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         }
         ret = strndup(base, ctxt->cur - base);
         if (ret == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return NULL;
         }
         NEXT;
@@ -409,7 +409,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         }
         ret = strndup(base, ctxt->cur - base);
         if (ret == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return NULL;
         }
         ctxt->cur += 3;
@@ -424,7 +424,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         }
         ret = strndup(base, ctxt->cur - base);
         if (ret == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return NULL;
         }
         NEXT;
@@ -517,7 +517,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
         return(NULL);
     }
     if (VIR_ALLOC(ret) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         virConfFreeList(lst);
         VIR_FREE(str);
         return(NULL);
@@ -558,7 +558,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return(NULL);
     }
     return(ret);
@@ -585,7 +585,7 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
     comm = strndup(base, ctxt->cur - base);
     if (comm == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return(-1);
     }
     virConfAddEntry(ctxt->conf, NULL, NULL, comm);
@@ -660,7 +660,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
         comm = strndup(base, ctxt->cur - base);
         if (comm == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             VIR_FREE(name);
             virConfFreeValue(value);
             return(-1);
@@ -872,13 +872,13 @@ virConfSetValue (virConfPtr conf,
 
     if (!cur) {
         if (VIR_ALLOC(cur) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFreeValue(value);
             return (-1);
         }
         cur->comment = NULL;
         if (!(cur->name = strdup(setting))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             virConfFreeValue(value);
             VIR_FREE(cur);
             return (-1);
@@ -931,7 +931,7 @@ virConfWriteFile(const char *filename, virConfPtr conf)
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -987,7 +987,7 @@ virConfWriteMem(char *memory, int *len, virConfPtr conf)
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 

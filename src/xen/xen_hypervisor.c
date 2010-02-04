@@ -1173,14 +1173,14 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
             case XEN_SCHEDULER_SEDF:
                 schedulertype = strdup("sedf");
                 if (schedulertype == NULL)
-                    virReportOOMError(domain->conn);
+                    virReportOOMError();
                 if (nparams)
                     *nparams = 6;
                 break;
             case XEN_SCHEDULER_CREDIT:
                 schedulertype = strdup("credit");
                 if (schedulertype == NULL)
-                    virReportOOMError(domain->conn);
+                    virReportOOMError();
                 if (nparams)
                     *nparams = 2;
                 break;
@@ -1727,7 +1727,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
          * for Xen, and also nr_cpus must be 'sizeof(uint64_t) * 8'       */
         if (maplen < 8) {
             if (VIR_ALLOC_N(new, sizeof(uint64_t)) < 0) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 return (-1);
             }
             memcpy(new, cpumap, maplen);
@@ -2052,7 +2052,7 @@ xenHypervisorInit(void)
     hypervisor_version = 2;
 
     if (VIR_ALLOC(ipt) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return(-1);
     }
     /* Currently consider RHEL5.0 Fedora7, xen-3.1, and xen-unstable */
@@ -2460,7 +2460,7 @@ xenHypervisorMakeCapabilitiesSunOS(virConnectPtr conn)
                                                utsname.machine,
                                                pae, hvm,
                                                guest_arches, i)) == NULL)
-        virReportOOMError(NULL);
+        virReportOOMError();
 
     return caps;
 }
@@ -2623,7 +2623,7 @@ xenHypervisorMakeCapabilitiesInternal(virConnectPtr conn,
     return caps;
 
  no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -2696,7 +2696,7 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     char *xml;
 
     if (!(xml = virCapabilitiesFormatXML(priv->caps))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2729,7 +2729,7 @@ xenHypervisorNumOfDomains(virConnectPtr conn)
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return(-1);
     }
 
@@ -2790,7 +2790,7 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
         return(0);
 
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return(-1);
     }
 
@@ -2862,7 +2862,7 @@ xenHypervisorDomainGetOSType (virDomainPtr dom)
         ostype = strdup("linux");
 
     if (ostype == NULL)
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
     return ostype;
 }
@@ -2940,7 +2940,7 @@ xenHypervisorLookupDomainByUUID(virConnectPtr conn,
 
  retry:
     if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return(NULL);
     }
 

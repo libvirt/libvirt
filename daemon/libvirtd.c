@@ -747,7 +747,7 @@ static int qemudInitPaths(struct qemud_server *server,
         if (server->privileged) {
             dir_prefix = strdup (LOCAL_STATE_DIR);
             if (dir_prefix == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto cleanup;
             }
             if (snprintf (sock_dir, maxlen, "%s/run/libvirt",
@@ -768,7 +768,7 @@ static int qemudInitPaths(struct qemud_server *server,
 
     sock_dir_prefix = strdup (sock_dir);
     if (!sock_dir_prefix) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -788,10 +788,10 @@ static int qemudInitPaths(struct qemud_server *server,
 
     if (server->privileged) {
         if (!(server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt")))
-            virReportOOMError(NULL);
+            virReportOOMError();
     } else {
         if (virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix) < 0)
-            virReportOOMError(NULL);
+            virReportOOMError();
     }
 
     if (server->logDir == NULL)

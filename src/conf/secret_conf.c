@@ -120,13 +120,13 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     ctxt->node = root;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -325,7 +325,7 @@ virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  error:
     virBufferFreeAndReset(&buf);
     return NULL;

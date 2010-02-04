@@ -171,7 +171,7 @@ routines, use the macros from memory.h
       virDomainPtr domain;
 
       if (VIR_ALLOC(domain) < 0) {
-          virReportOOMError(NULL);
+          virReportOOMError();
           return NULL;
       }
 
@@ -182,7 +182,7 @@ routines, use the macros from memory.h
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) < 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 
@@ -192,7 +192,7 @@ routines, use the macros from memory.h
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) < 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 
@@ -201,7 +201,7 @@ routines, use the macros from memory.h
        ndomains = 20
 
        if (VIR_REALLOC_N(domains, ndomains) < 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 
@@ -297,7 +297,7 @@ eg typical usage is as follows:
 
      if (virBufferError(&buf)) {
          virBufferFreeAndReset(&buf);
-         virReportOOMError(NULL);
+         virReportOOMError();
          return NULL;
      }
 

@@ -321,7 +321,7 @@ static char *openvzGetOSType(virDomainPtr dom)
     }
 
     if (!(ret = strdup(vm->def->os.type)))
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     if (vm)
@@ -812,7 +812,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (vmdef->os.init == NULL) {
         if (!(vmdef->os.init = strdup("/sbin/init"))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -892,7 +892,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     if (vmdef->os.init == NULL) {
         if (!(vmdef->os.init = strdup("/sbin/init"))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -1192,7 +1192,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
 
         conn->uri = xmlParseURI("openvz:///system");
         if (conn->uri == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else {
@@ -1231,7 +1231,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
      * here, don't return DECLINED, always use ERROR */
 
     if (VIR_ALLOC(driver) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -1372,7 +1372,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     return got;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for ( ; got >= 0 ; got--)
         VIR_FREE(names[got]);
     return -1;

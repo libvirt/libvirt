@@ -295,7 +295,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
         retval = virAsprintf(&mod_path, "/dev/%s", path);
 
     if (retval < 0) {
-        virReportOOMError (conn);
+        virReportOOMError();
         return -1;
     }
 

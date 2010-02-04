@@ -189,8 +189,7 @@ umlAutostartConfigs(struct uml_driver *driver) {
 
 
 static int
-umlIdentifyOneChrPTY(virConnectPtr conn,
-                     struct uml_driver *driver,
+umlIdentifyOneChrPTY(struct uml_driver *driver,
                      virDomainObjPtr dom,
                      virDomainChrDefPtr def,
                      const char *dev)
@@ -199,7 +198,7 @@ umlIdentifyOneChrPTY(virConnectPtr conn,
     char *res = NULL;
     int retries = 0;
     if (virAsprintf(&cmd, "config %s%d", dev, def->target.port) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 requery:
@@ -209,7 +208,7 @@ requery:
     if (res && STRPREFIX(res, "pts:")) {
         VIR_FREE(def->data.file.path);
         if ((def->data.file.path = strdup(res + 4)) == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             VIR_FREE(res);
             VIR_FREE(cmd);
             return -1;
@@ -231,21 +230,20 @@ requery:
 }
 
 static int
-umlIdentifyChrPTY(virConnectPtr conn,
-                  struct uml_driver *driver,
+umlIdentifyChrPTY(struct uml_driver *driver,
                   virDomainObjPtr dom)
 {
     int i;
 
     if (dom->def->console &&
         dom->def->console->type == VIR_DOMAIN_CHR_TYPE_PTY)
-        if (umlIdentifyOneChrPTY(conn, driver, dom,
+        if (umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->console, "con") < 0)
             return -1;
 
     for (i = 0 ; i < dom->def->nserials; i++)
         if (dom->def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_PTY &&
-            umlIdentifyOneChrPTY(conn, driver, dom,
+            umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->serials[i], "ssl") < 0)
             return -1;
 
@@ -326,7 +324,7 @@ reread:
             if (umlOpenMonitor(NULL, driver, dom) < 0) {
                 VIR_WARN0("Could not open monitor for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
-            } else if (umlIdentifyChrPTY(NULL, driver, dom) < 0) {
+            } else if (umlIdentifyChrPTY(driver, dom) < 0) {
                 VIR_WARN0("Could not identify charater devices for new domain");
                 umlShutdownVMDaemon(NULL, driver, dom);
             }
@@ -573,7 +571,7 @@ static int umlReadPidFile(virConnectPtr conn,
     vm->pid = -1;
     if (virAsprintf(&pidfile, "%s/%s/pid",
                     driver->monitorDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -616,7 +614,7 @@ static int umlMonitorAddress(virConnectPtr conn,
 
     if (virAsprintf(&sockname, "%s/%s/mconsole",
                     driver->monitorDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -749,7 +747,7 @@ static int umlMonitorCommand(virConnectPtr conn,
         }
 
         if (VIR_REALLOC_N(retdata, retlen + res.length) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         memcpy(retdata + retlen, res.data, res.length);
@@ -849,7 +847,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     driver->logDir, vm->def->name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -976,7 +974,7 @@ static virDrvOpenStatus umlOpen(virConnectPtr conn,
                                 "uml:///system" :
                                 "uml:///session");
         if (!conn->uri) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return VIR_DRV_OPEN_ERROR;
         }
     } else {
@@ -1053,7 +1051,7 @@ static char *umlGetCapabilities(virConnectPtr conn) {
 
     umlDriverLock(driver);
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
     umlDriverUnlock(driver);
 
     return xml;
@@ -1376,7 +1374,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     }
 
     if (!(type = strdup(vm->def->os.type)))
-        virReportOOMError(dom->conn);
+        virReportOOMError();
 
 cleanup:
     if (vm)

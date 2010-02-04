@@ -98,19 +98,19 @@ virStorageBackendMpathNewVol(virConnectPtr conn,
     int ret = -1;
 
     if (VIR_ALLOC(vol) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     if (virAsprintf(&(vol->name), "dm-%u", devnum) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&vol->target.path, "/dev/%s", dev) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -128,13 +128,13 @@ virStorageBackendMpathNewVol(virConnectPtr conn,
     /* XXX should use logical unit's UUID instead */
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count + 1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     pool->volumes.objs[pool->volumes.count++] = vol;
@@ -253,7 +253,7 @@ virStorageBackendCreateVols(virConnectPtr conn,
         if (is_mpath == 1) {
 
             if (virAsprintf(&map_device, "mapper/%s", names->name) < 0) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 retval = -1;
                 goto out;
             }

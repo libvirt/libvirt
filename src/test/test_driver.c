@@ -208,7 +208,7 @@ testBuildCapabilities(virConnectPtr conn) {
     return caps;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     virCapabilitiesFree(caps);
     return NULL;
 }
@@ -301,8 +301,7 @@ static const char *defaultNodeXML =
 static const unsigned long long defaultPoolCap = (100 * 1024 * 1024 * 1024ull);
 static const unsigned long long defaultPoolAlloc = 0;
 
-static int testStoragePoolObjSetDefaults(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool);
+static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool);
 static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 
 static char *
@@ -316,7 +315,7 @@ testDomainGenerateIfname(virConnectPtr conn,
         int found = 0;
 
         if (virAsprintf(&ifname, "testnet%d", ifctr) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             return NULL;
         }
 
@@ -423,12 +422,12 @@ testDomainUpdateVCPUs(virConnectPtr conn,
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
     if (VIR_REALLOC_N(privdata->vcpu_infos, nvcpus) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (VIR_REALLOC_N(privdata->cpumaps, nvcpus * cpumaplen) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -501,7 +500,7 @@ static int testOpenDefault(virConnectPtr conn) {
     virNodeDeviceObjPtr nodeobj = NULL;
 
     if (VIR_ALLOC(privconn) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&privconn->lock) < 0) {
@@ -587,7 +586,7 @@ static int testOpenDefault(virConnectPtr conn) {
         goto error;
     }
 
-    if (testStoragePoolObjSetDefaults(conn, poolobj) == -1) {
+    if (testStoragePoolObjSetDefaults(poolobj) == -1) {
         virStoragePoolObjUnlock(poolobj);
         goto error;
     }
@@ -662,7 +661,7 @@ static int testOpenVolumesForPool(virConnectPtr conn,
 
     /* Find storage volumes */
     if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", poolidx) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto error;
     }
 
@@ -698,20 +697,20 @@ static int testOpenVolumesForPool(virConnectPtr conn,
 
         if (VIR_REALLOC_N(pool->volumes.objs,
                           pool->volumes.count+1) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
         if (virAsprintf(&def->target.path, "%s/%s",
                         pool->def->target.path,
                         def->name) == -1) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
         def->key = strdup(def->target.path);
         if (def->key == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
 
@@ -746,7 +745,7 @@ static int testOpenFromFile(virConnectPtr conn,
     virDomainObjPtr dom;
     testConnPtr privconn;
     if (VIR_ALLOC(privconn) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return VIR_DRV_OPEN_ERROR;
     }
     if (virMutexInit(&privconn->lock) < 0) {
@@ -1026,7 +1025,7 @@ static int testOpenFromFile(virConnectPtr conn,
             goto error;
         }
 
-        if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
+        if (testStoragePoolObjSetDefaults(pool) == -1) {
             virStoragePoolObjUnlock(pool);
             goto error;
         }
@@ -1142,7 +1141,7 @@ static virDrvOpenStatus testOpen(virConnectPtr conn,
         /* Init callback list */
         if (VIR_ALLOC(privconn->domainEventCallbacks) < 0 ||
             !(privconn->domainEventQueue = virDomainEventQueueNew())) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             testDriverUnlock(privconn);
             testClose(conn);
             return VIR_DRV_OPEN_ERROR;
@@ -1222,7 +1221,7 @@ static char *testGetCapabilities (virConnectPtr conn)
     char *xml;
     testDriverLock(privconn);
     if ((xml = virCapabilitiesFormatXML(privconn->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
     testDriverUnlock(privconn);
     return xml;
 }
@@ -1826,7 +1825,7 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
     if (VIR_ALLOC_N(xml, len+1) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
     if (saferead(fd, xml, len) != len) {
@@ -1935,10 +1934,10 @@ cleanup:
     return ret;
 }
 
-static char *testGetOSType(virDomainPtr dom) {
+static char *testGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
     char *ret = strdup("linux");
     if (!ret)
-        virReportOOMError(dom->conn);
+        virReportOOMError();
     return ret;
 }
 
@@ -2481,7 +2480,7 @@ cleanup:
     return ret;
 }
 
-static char *testDomainGetSchedulerType(virDomainPtr domain,
+static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
                                         int *nparams)
 {
     char *type = NULL;
@@ -2489,7 +2488,7 @@ static char *testDomainGetSchedulerType(virDomainPtr domain,
     *nparams = 1;
     type = strdup("fair");
     if (!type)
-        virReportOOMError(domain->conn);
+        virReportOOMError();
 
     return type;
 }
@@ -2783,7 +2782,7 @@ static int testListNetworks(virConnectPtr conn, char **const names, int nnames) 
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -2826,7 +2825,7 @@ static int testListDefinedNetworks(virConnectPtr conn, char **const names, int n
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3064,7 +3063,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
     }
 
     if (!(bridge = strdup(privnet->def->bridge))) {
-        virReportOOMError(network->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -3186,7 +3185,7 @@ static int testListInterfaces(virConnectPtr conn, char **const names, int nnames
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3232,7 +3231,7 @@ static int testListDefinedInterfaces(virConnectPtr conn, char **const names, int
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3460,8 +3459,7 @@ cleanup:
  */
 
 
-static int testStoragePoolObjSetDefaults(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool) {
+static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr pool) {
 
     pool->def->capacity = defaultPoolCap;
     pool->def->allocation = defaultPoolAlloc;
@@ -3469,7 +3467,7 @@ static int testStoragePoolObjSetDefaults(virConnectPtr conn,
 
     pool->configFile = strdup("\0");
     if (!pool->configFile) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return -1;
     }
 
@@ -3582,7 +3580,7 @@ testStorageListPools(virConnectPtr conn,
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3629,7 +3627,7 @@ testStorageListDefinedPools(virConnectPtr conn,
     return n;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     for (n = 0 ; n < nnames ; n++)
         VIR_FREE(names[n]);
     testDriverUnlock(privconn);
@@ -3741,7 +3739,7 @@ testStorageFindPoolSources(virConnectPtr conn,
     case VIR_STORAGE_POOL_LOGICAL:
         ret = strdup(defaultPoolSourcesLogicalXML);
         if (!ret)
-            virReportOOMError(conn);
+            virReportOOMError();
         break;
 
     case VIR_STORAGE_POOL_NETFS:
@@ -3753,7 +3751,7 @@ testStorageFindPoolSources(virConnectPtr conn,
 
         if (virAsprintf(&ret, defaultPoolSourcesNetFSXML,
                         source->host.name) < 0)
-            virReportOOMError(conn);
+            virReportOOMError();
         break;
 
     default:
@@ -3793,7 +3791,7 @@ testStoragePoolCreate(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
+    if (testStoragePoolObjSetDefaults(pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         pool = NULL;
         goto cleanup;
@@ -3831,7 +3829,7 @@ testStoragePoolDefine(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (testStoragePoolObjSetDefaults(conn, pool) == -1) {
+    if (testStoragePoolObjSetDefaults(pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
         pool = NULL;
         goto cleanup;
@@ -4190,7 +4188,7 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
 
     for (i = 0 ; i < privpool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(privpool->volumes.objs[i]->name)) == NULL) {
-            virReportOOMError(pool->conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -4366,20 +4364,20 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
                       privpool->volumes.count+1) < 0) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     privpool->def->target.path,
                     privvol->name) == -1) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4457,20 +4455,20 @@ testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
 
     if (VIR_REALLOC_N(privpool->volumes.objs,
                       privpool->volumes.count+1) < 0) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     if (virAsprintf(&privvol->target.path, "%s/%s",
                     privpool->def->target.path,
                     privvol->name) == -1) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
     privvol->key = strdup(privvol->target.path);
     if (privvol->key == NULL) {
-        virReportOOMError(pool->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4691,7 +4689,7 @@ testStorageVolumeGetPath(virStorageVolPtr vol) {
 
     ret = strdup(privvol->target.path);
     if (ret == NULL)
-        virReportOOMError(vol->conn);
+        virReportOOMError();
 
 cleanup:
     if (privpool)
@@ -4842,7 +4840,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
     if (obj->def->parent) {
         ret = strdup(obj->def->parent);
         if (!ret)
-            virReportOOMError(dev->conn);
+            virReportOOMError();
     } else {
         virNodeDeviceReportError(dev->conn, VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("no parent for this device"));
@@ -4961,7 +4959,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
      * we don't have. Use WWPN instead. */
     VIR_FREE(def->name);
     if (!(def->name = strdup(wwpn))) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -5017,7 +5015,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
 
     parent_name = strdup(obj->def->parent);
     if (parent_name == NULL) {
-        virReportOOMError(dev->conn);
+        virReportOOMError();
         goto out;
     }
 

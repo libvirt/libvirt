@@ -125,7 +125,7 @@ static int udevGetDeviceProperty(struct udev_device *udev_device,
         VIR_ERROR("Failed to allocate memory for property value for "
                   "property key '%s' on device with sysname '%s'",
                   property_key, udev_device_get_sysname(udev_device));
-        virReportOOMError(NULL);
+        virReportOOMError();
         ret = PROPERTY_ERROR;
         goto out;
     }
@@ -214,7 +214,7 @@ static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
         VIR_ERROR("Failed to allocate memory for sysfs attribute value for "
                   "sysfs attribute '%s' on device with sysname '%s'",
                   attr_name, udev_device_get_sysname(udev_device));
-        virReportOOMError(NULL);
+        virReportOOMError();
         ret = PROPERTY_ERROR;
         goto out;
     }
@@ -390,7 +390,7 @@ static int udevTranslatePCIIds(unsigned int vendor,
     if (vendor_name != NULL) {
         *vendor_string = strdup(vendor_name);
         if (*vendor_string == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto out;
         }
     }
@@ -398,7 +398,7 @@ static int udevTranslatePCIIds(unsigned int vendor,
     if (device_name != NULL) {
         *product_string = strdup(device_name);
         if (*product_string == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto out;
         }
     }
@@ -678,7 +678,7 @@ static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
 
     data->scsi_target.name = strdup(sysname);
     if (data->scsi_target.name == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -737,7 +737,7 @@ static int udevGetSCSIType(unsigned int type, char **typestring)
     if (*typestring == NULL) {
         if (foundtype == 1) {
             ret = -1;
-            virReportOOMError(NULL);
+            virReportOOMError();
         } else {
             VIR_ERROR("Failed to find SCSI device type %d", type);
         }
@@ -819,7 +819,7 @@ static int udevProcessDisk(struct udev_device *device,
 
     data->storage.drive_type = strdup("disk");
     if (data->storage.drive_type == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         ret = -1;
         goto out;
     }
@@ -906,7 +906,7 @@ static int udevProcessCDROM(struct udev_device *device,
     VIR_FREE(def->caps->data.storage.drive_type);
     def->caps->data.storage.drive_type = strdup("cdrom");
     if (def->caps->data.storage.drive_type == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1232,7 +1232,7 @@ static int udevSetParent(struct udev_device *device,
 
     def->parent_sysfs_path = strdup(parent_sysfs_path);
     if (def->parent_sysfs_path == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1245,7 +1245,7 @@ static int udevSetParent(struct udev_device *device,
     }
 
     if (def->parent == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1263,7 +1263,7 @@ static int udevAddOneDevice(struct udev_device *device)
     int ret = -1;
 
     if (VIR_ALLOC(def) != 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1275,7 +1275,7 @@ static int udevAddOneDevice(struct udev_device *device)
     }
 
     if (VIR_ALLOC(def->caps) != 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1453,18 +1453,18 @@ static int udevSetupSystemDev(void)
     int ret = -1;
 
     if (VIR_ALLOC(def) != 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
     def->name = strdup("computer");
     if (def->name == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
     if (VIR_ALLOC(def->caps) != 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto out;
     }
 
@@ -1556,7 +1556,7 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     int ret = 0;
 
     if (VIR_ALLOC(priv) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         ret = -1;
         goto out;
     }
@@ -1564,7 +1564,7 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     priv->watch = -1;
 
     if (VIR_ALLOC(driverState) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         VIR_FREE(priv);
         ret = -1;
         goto out;

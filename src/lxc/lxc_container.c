@@ -314,7 +314,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     if (virAsprintf(&oldroot, "%s/.oldroot", root->src) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto err;
     }
 
@@ -336,7 +336,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 
     /* Create a directory called 'new' in tmpfs */
     if (virAsprintf(&newroot, "%s/new", oldroot) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto err;
     }
 
@@ -403,7 +403,7 @@ static int lxcContainerMountBasicFS(virDomainFSDefPtr root)
     char *devpts;
 
     if (virAsprintf(&devpts, "/.oldroot%s/dev/pts", root->src) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return rc;
     }
 
@@ -507,7 +507,7 @@ static int lxcContainerMountNewFS(virDomainDefPtr vmDef)
             continue;
 
         if (virAsprintf(&src, "/.oldroot/%s", vmDef->fss[i]->src) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
 
@@ -553,12 +553,12 @@ static int lxcContainerUnmountOldFS(void)
 
         if (VIR_REALLOC_N(mounts, nmounts+1) < 0) {
             endmntent(procmnt);
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
         if (!(mounts[nmounts++] = strdup(mntent.mnt_dir))) {
             endmntent(procmnt);
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
     }
@@ -738,12 +738,12 @@ static int lxcContainerChild( void *data )
 
     if (root) {
         if (virAsprintf(&ttyPath, "%s%s", root->src, argv->ttyPath) < 0) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
     } else {
         if (!(ttyPath = strdup(argv->ttyPath))) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             return -1;
         }
     }
@@ -815,7 +815,7 @@ int lxcContainerStart(virDomainDefPtr def,
 
     /* allocate a stack for the container */
     if (VIR_ALLOC_N(stack, stacksize) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     stacktop = stack + stacksize;

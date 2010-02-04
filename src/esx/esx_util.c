@@ -177,7 +177,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
             *transport = strdup(queryParam->value);
 
             if (*transport == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
 
@@ -195,7 +195,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
             *vCenter = strdup(queryParam->value);
 
             if (*vCenter == NULL) {
-                virReportOOMError(NULL);
+                virReportOOMError();
                 goto failure;
             }
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {
@@ -232,7 +232,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
         *transport = strdup("https");
 
         if (*transport == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     }
@@ -340,7 +340,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
         *fileName = strdup(separator);
 
         if (*fileName == NULL) {
-            virReportOOMError(NULL);
+            virReportOOMError();
             goto failure;
         }
     } else {
@@ -452,7 +452,7 @@ esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
     *string = strdup(value->str);
 
     if (*string == NULL) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 

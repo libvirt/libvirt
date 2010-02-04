@@ -142,7 +142,7 @@ int oneSubmitVM(virConnectPtr    conn,
     char* templ;
     int   oneid;
 
-    if ((templ = xmlOneTemplate(conn,vm->def)) == NULL)
+    if ((templ = xmlOneTemplate(vm->def)) == NULL)
         return -1;
 
     if ((oneid = c_oneAllocateTemplate(templ)) < 0) {
@@ -166,7 +166,7 @@ int oneSubmitVM(virConnectPtr    conn,
  * @return OpenNebula VM template.
  */
 
-char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def)
+char* xmlOneTemplate(virDomainDefPtr def)
 {
     int i;
     virBuffer buf= VIR_BUFFER_INITIALIZER;
@@ -277,7 +277,7 @@ char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def)
     return virBufferContentAndReset(&buf);
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     virBufferFreeAndReset(&buf);
     return NULL;
 };

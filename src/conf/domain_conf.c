@@ -232,7 +232,7 @@ int virDomainObjListInit(virDomainObjListPtr doms)
 {
     doms->objs = virHashCreate(50);
     if (!doms->objs) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     return 0;
@@ -692,13 +692,13 @@ static virDomainObjPtr virDomainObjNew(virConnectPtr conn,
     virDomainObjPtr domain;
 
     if (VIR_ALLOC(domain) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
     if (caps->privateDataAllocFunc &&
         !(domain->privateData = (caps->privateDataAllocFunc)())) {
-        virReportOOMError(conn);
+        virReportOOMError();
         VIR_FREE(domain);
         return NULL;
     }
@@ -749,7 +749,7 @@ virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
     virUUIDFormat(def->uuid, uuidstr);
     if (virHashAddEntry(doms->objs, uuidstr, domain) < 0) {
         VIR_FREE(domain);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1233,7 +1233,7 @@ virDomainDiskDefParseXML(virConnectPtr conn,
     char *serial = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1476,7 +1476,7 @@ virDomainControllerDefParseXML(virConnectPtr conn,
     char *idx = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1534,7 +1534,7 @@ virDomainFSDefParseXML(virConnectPtr conn,
     char *target = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1633,7 +1633,7 @@ virDomainNetDefParseXML(virConnectPtr conn,
     char *devaddr = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -1930,7 +1930,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
     virDomainChrDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2050,7 +2050,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
                         goto error;
                     }
                     if (VIR_ALLOC(def->target.addr) < 0) {
-                        virReportOOMError(conn);
+                        virReportOOMError();
                         goto error;
                     }
                     if (virSocketParseAddr(addrStr, def->target.addr, 0) < 0)
@@ -2243,7 +2243,7 @@ virDomainInputDefParseXML(virConnectPtr conn,
     char *bus = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2331,7 +2331,7 @@ virDomainGraphicsDefParseXML(virConnectPtr conn,
     char *type = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2488,7 +2488,7 @@ virDomainSoundDefParseXML(virConnectPtr conn,
     virDomainSoundDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2525,7 +2525,7 @@ virDomainWatchdogDefParseXML(virConnectPtr conn,
     virDomainWatchdogDefPtr def;
 
     if (VIR_ALLOC (def) < 0) {
-        virReportOOMError (conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2625,7 +2625,7 @@ virDomainVideoDefaultType(virDomainDefPtr def)
 }
 
 static virDomainVideoAccelDefPtr
-virDomainVideoAccelDefParseXML(virConnectPtr conn, const xmlNodePtr node) {
+virDomainVideoAccelDefParseXML(const xmlNodePtr node) {
     xmlNodePtr cur;
     virDomainVideoAccelDefPtr def;
     char *support3d = NULL;
@@ -2647,7 +2647,7 @@ virDomainVideoAccelDefParseXML(virConnectPtr conn, const xmlNodePtr node) {
         return(NULL);
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2682,7 +2682,7 @@ virDomainVideoDefParseXML(virConnectPtr conn,
     char *vram = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -2694,7 +2694,7 @@ virDomainVideoDefParseXML(virConnectPtr conn,
                 type = virXMLPropString(cur, "type");
                 vram = virXMLPropString(cur, "vram");
                 heads = virXMLPropString(cur, "heads");
-                def->accel = virDomainVideoAccelDefParseXML(conn, cur);
+                def->accel = virDomainVideoAccelDefParseXML(cur);
             }
         }
         cur = cur->next;
@@ -2934,7 +2934,7 @@ virDomainHostdevDefParseXML(virConnectPtr conn,
     char *mode, *type = NULL, *managed = NULL;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     def->target = NULL;
@@ -3142,7 +3142,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(dev) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -3337,7 +3337,7 @@ static char *virDomainDefDefaultEmulator(virConnectPtr conn,
 
     retemu = strdup(emulator);
     if (!retemu)
-        virReportOOMError(conn);
+        virReportOOMError();
 
     return retemu;
 }
@@ -3353,7 +3353,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     virDomainDefPtr def;
 
     if (VIR_ALLOC(def) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -3424,7 +3424,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         char *set = tmp;
         def->cpumasklen = VIR_DOMAIN_CPUMASK_LEN;
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         if (virDomainCpuSetParse(conn, (const char **)&set,
@@ -3477,7 +3477,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         if (def->os.bootloader) {
             def->os.type = strdup("xen");
             if (!def->os.type) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto error;
             }
         } else {
@@ -3495,7 +3495,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         def->virtType == VIR_DOMAIN_VIRT_XEN) {
         VIR_FREE(def->os.type);
         if (!(def->os.type = strdup("xen"))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
     }
@@ -3523,7 +3523,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
             goto error;
         }
         if (!(def->os.arch = strdup(defaultArch))) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
     }
@@ -3536,7 +3536,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
                                                                         virDomainVirtTypeToString(def->virtType));
         if (defaultMachine != NULL) {
             if (!(def->os.machine = strdup(defaultMachine))) {
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto error;
             }
         }
@@ -3837,7 +3837,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
         virDomainInputDefPtr input;
 
         if (VIR_ALLOC(input) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto error;
         }
         if (STREQ(def->os.type, "hvm")) {
@@ -3975,7 +3975,7 @@ static virDomainDefPtr virDomainDefParseXML(virConnectPtr conn,
     return def;
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
     /* fallthrough */
 
  error:
@@ -4166,7 +4166,7 @@ virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4237,7 +4237,7 @@ virDomainObjPtr virDomainObjParseNode(virConnectPtr conn,
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -4267,7 +4267,7 @@ static int virDomainDefMaybeAddDiskController(virDomainDefPtr def,
         return 0;
 
     if (VIR_ALLOC(cont) < 0) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
 
@@ -4276,7 +4276,7 @@ static int virDomainDefMaybeAddDiskController(virDomainDefPtr def,
 
     if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
         VIR_FREE(cont);
-        virReportOOMError(NULL);
+        virReportOOMError();
         return -1;
     }
     def->controllers[def->ncontrollers] = cont;
@@ -4387,7 +4387,7 @@ virDomainCpuNumberParse(const char **str, int maxcpu)
  *         freed by the caller.
  */
 char *
-virDomainCpuSetFormat(virConnectPtr conn, char *cpuset, int maxcpu)
+virDomainCpuSetFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/, char *cpuset, int maxcpu)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int start, cur;
@@ -4426,7 +4426,7 @@ virDomainCpuSetFormat(virConnectPtr conn, char *cpuset, int maxcpu)
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -5539,7 +5539,7 @@ char *virDomainDefFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
  no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
  cleanup:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -5576,7 +5576,7 @@ char *virDomainObjFormat(virConnectPtr conn,
     return virBufferContentAndReset(&buf);
 
 no_memory:
-    virReportOOMError(conn);
+    virReportOOMError();
 error:
     virBufferFreeAndReset(&buf);
     return NULL;
@@ -5759,7 +5759,7 @@ static virDomainObjPtr virDomainLoadStatus(virConnectPtr conn,
     }
 
     if (virHashAddEntry(doms->objs, uuidstr, obj) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto error;
     }
 
@@ -5872,14 +5872,14 @@ cleanup:
     return ret;
 }
 
-char *virDomainConfigFile(virConnectPtr conn,
+char *virDomainConfigFile(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                           const char *dir,
                           const char *name)
 {
     char *ret = NULL;
 
     if (virAsprintf(&ret, "%s/%s.xml", dir, name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
 
@@ -6103,7 +6103,7 @@ int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
     int i;
     virHashForEach(doms->objs, virDomainObjListCopyInactiveNames, &data);
     if (data.oom) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         goto cleanup;
     }
 

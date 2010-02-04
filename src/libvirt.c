@@ -1646,7 +1646,7 @@ virConnectGetURI (virConnectPtr conn)
 
     name = (char *)xmlSaveUri(conn->uri);
     if (!name) {
-        virReportOOMError (conn);
+        virReportOOMError();
         goto error;
     }
     return name;
@@ -10360,7 +10360,7 @@ int virStreamSendAll(virStreamPtr stream,
     }
 
     if (VIR_ALLOC_N(bytes, want) < 0) {
-        virReportOOMError(stream->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -10458,7 +10458,7 @@ int virStreamRecvAll(virStreamPtr stream,
 
 
     if (VIR_ALLOC_N(bytes, want) < 0) {
-        virReportOOMError(stream->conn);
+        virReportOOMError();
         goto cleanup;
     }
 

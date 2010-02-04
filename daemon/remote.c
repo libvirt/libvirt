@@ -2877,7 +2877,7 @@ static char *addrToString(remote_error *rerr,
     }
 
     if (virAsprintf(&addr, "%s;%s", host, port) == -1) {
-        virReportOOMError(NULL);
+        virReportOOMError();
         return NULL;
     }
 

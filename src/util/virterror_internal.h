@@ -79,15 +79,13 @@ void virReportSystemErrorFull(virConnectPtr conn,
                              __FILE__, __FUNCTION__, __LINE__,    \
                              (fmt), __VA_ARGS__)
 
-void virReportOOMErrorFull(virConnectPtr conn,
-                           int domcode,
+void virReportOOMErrorFull(int domcode,
                            const char *filename,
                            const char *funcname,
                            size_t linenr);
 
-#define virReportOOMError(conn)                         \
-    virReportOOMErrorFull((conn), VIR_FROM_THIS,        \
-                     __FILE__, __FUNCTION__, __LINE__)
+#define virReportOOMError() \
+    virReportOOMErrorFull(VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 
 
 int virSetError(virErrorPtr newerr);

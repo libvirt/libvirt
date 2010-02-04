@@ -192,7 +192,7 @@
       virDomainPtr domain;
 
       if (VIR_ALLOC(domain) &lt; 0) {
-          virReportOOMError(NULL);
+          virReportOOMError();
           return NULL;
       }
 </pre></li>
@@ -204,7 +204,7 @@
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 </pre></li>
@@ -216,7 +216,7 @@
        int ndomains = 10;
 
        if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 </pre></li>
@@ -227,7 +227,7 @@
        ndomains = 20
 
        if (VIR_REALLOC_N(domains, ndomains) &lt; 0) {
-           virReportOOMError(NULL);
+           virReportOOMError();
            return NULL;
        }
 </pre></li>
@@ -314,7 +314,7 @@
 
      if (virBufferError(&amp;buf)) {
          virBufferFreeAndReset(&amp;buf);
-         virReportOOMError(NULL);
+         virReportOOMError();
          return NULL;
      }
 

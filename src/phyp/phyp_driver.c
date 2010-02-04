@@ -108,24 +108,24 @@ phypOpen(virConnectPtr conn,
     }
 
     if (VIR_ALLOC(phyp_driver) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
     if (VIR_ALLOC(uuid_table) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
     if (VIR_ALLOC(connection_data) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
     len = strlen(conn->uri->path) + 1;
 
     if (VIR_ALLOC_N(string, len) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
@@ -136,7 +136,7 @@ phypOpen(virConnectPtr conn,
         managed_system = strdup(conn->uri->path);
 
     if (!managed_system) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
@@ -169,7 +169,7 @@ phypOpen(virConnectPtr conn,
     phyp_driver->managed_system = managed_system;
     phyp_driver->uuid_table = uuid_table;
     if ((phyp_driver->caps = phypCapsInit()) == NULL) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto failure;
     }
 
@@ -260,12 +260,12 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         goto err;
 
     if (virAsprintf(&pubkey, "%s/.ssh/id_rsa.pub", userhome) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
     if (virAsprintf(&pvtkey, "%s/.ssh/id_rsa", userhome) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -492,7 +492,7 @@ phypExec(LIBSSH2_SESSION * session, char *cmd, int *exit_status,
   exit:
     if (virBufferError(&tex_ret)) {
         virBufferFreeAndReset(&tex_ret);
-        virReportOOMError(conn);
+        virReportOOMError();
         return NULL;
     }
     return virBufferContentAndReset(&tex_ret);
@@ -512,7 +512,7 @@ phypGetLparID(LIBSSH2_SESSION * session, const char *managed_system,
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s --filter lpar_names=%s -F lpar_id",
                     managed_system, name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -546,7 +546,7 @@ phypGetLparNAME(LIBSSH2_SESSION * session, const char *managed_system,
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s --filter lpar_ids=%d -F name",
                     managed_system, lpar_id) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -619,7 +619,7 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
                         "lshwres -m %s -r mem --level lpar -F curr_mem "
                         "--filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
     } else {
@@ -627,7 +627,7 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
                         "lshwres -m %s -r mem --level lpar -F "
                         "curr_max_mem --filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
     }
@@ -688,7 +688,7 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
                         "lshwres -m %s -r proc --level lpar -F "
                         "curr_max_procs --filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
     } else {
@@ -696,7 +696,7 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
                         "lshwres -m %s -r proc --level lpar -F "
                         "curr_procs --filter lpar_ids=%d",
                         managed_system, lpar_id) < 0) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
     }
@@ -739,7 +739,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
                     "lshwres -m %s -r virtualio --rsubtype scsi -F "
                     "remote_slot_num --filter lpar_names=%s",
                     managed_system, lpar_name) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
     ret = phypExec(session, cmd, &exit_status, conn);
@@ -786,7 +786,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
                     "lshwres -m %s -r virtualio --rsubtype scsi -F "
                     "backing_devices --filter slots=%d",
                     managed_system, remote_slot) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -814,7 +814,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
         backing_device = strdup(char_ptr);
 
         if (backing_device == NULL) {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
     } else {
@@ -854,7 +854,7 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s -F state --filter lpar_ids=%d",
                     managed_system, lpar_id) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -897,7 +897,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
     if (virAsprintf(&cmd,
                     "lssyscfg -m %s -r lpar -F lpar_id,lpar_env|grep "
                     "vioserver|sed -s 's/,.*$//g'", managed_system) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -937,7 +937,7 @@ phypDiskType(virConnectPtr conn, char *backing_device)
                     "viosvrcmd -m %s -p %d -c \"lssp -field name type "
                     "-fmt , -all|grep %s|sed -e 's/^.*,//g'\"",
                     managed_system, vios_id, backing_device) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -994,7 +994,7 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s -F lpar_id,state %s |grep -c "
                     "^[0-9]*", managed_system, state) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1063,7 +1063,7 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
         (&cmd,
          "lssyscfg -r lpar -m %s -F lpar_id,state %s | sed -e 's/,.*$//g'",
          managed_system, state) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
     ret = phypExec(session, cmd, &exit_status, conn);
@@ -1126,7 +1126,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
         (&cmd,
          "lssyscfg -r lpar -m %s -F name,state | grep \"Not Activated\" | "
          "sed -e 's/,.*$//g'", managed_system) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1144,7 +1144,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
             if (char_ptr2) {
                 *char_ptr2 = '\0';
                 if ((names[got++] = strdup(domains)) == NULL) {
-                    virReportOOMError(conn);
+                    virReportOOMError();
                     goto err;
                 }
                 char_ptr2++;
@@ -1291,7 +1291,7 @@ phypDomainResume(virDomainPtr dom)
         (&cmd,
          "chsysstate -m %s -r lpar -o on --id %d -f %s",
          managed_system, dom->id, dom->name) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1325,7 +1325,7 @@ phypDomainShutdown(virDomainPtr dom)
         (&cmd,
          "chsysstate -m %s -r lpar -o shutdown --id %d",
          managed_system, dom->id) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1381,7 +1381,7 @@ phypDomainDestroy(virDomainPtr dom)
     if (virAsprintf
         (&cmd,
          "rmsyscfg -m %s -r lpar --id %d", managed_system, dom->id) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1463,7 +1463,7 @@ phypConnectGetCapabilities(virConnectPtr conn)
     char *xml;
 
     if ((xml = virCapabilitiesFormatXML(phyp_driver->caps)) == NULL)
-        virReportOOMError(conn);
+        virReportOOMError();
 
     return xml;
 }
@@ -1550,7 +1550,7 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
          "chhwres -r proc -m %s --id %d -o %c --procunits %d 2>&1 |sed"
          "-e 's/^.*\\([0-9]\\+.[0-9]\\+\\).*$/\\1/g'",
          managed_system, dom->id, operation, amount) < 0) {
-        virReportOOMError(dom->conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1673,7 +1673,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
          managed_system, def->name, (int) def->memory,
          (int) def->memory, (int) def->maxmem, (int) def->vcpus,
          def->disks[0]->src) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1736,12 +1736,12 @@ phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id)
     i--;
 
     if (VIR_REALLOC_N(uuid_table->lpars, uuid_table->nlpars) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
     if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1783,7 +1783,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
             rc = read(fd, &id, sizeof(int));
             if (rc == sizeof(int)) {
                 if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-                    virReportOOMError(conn);
+                    virReportOOMError();
                     goto err;
                 }
                 uuid_table->lpars[i]->id = id;
@@ -1801,7 +1801,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
             }
         }
     } else
-        virReportOOMError(conn);
+        virReportOOMError();
 
     close(fd);
     return 0;
@@ -1863,7 +1863,7 @@ phypUUIDTable_Init(virConnectPtr conn)
         return 0;
 
     if (VIR_ALLOC_N(ids, nids) < 0) {
-        virReportOOMError(conn);
+        virReportOOMError();
         goto err;
     }
 
@@ -1893,7 +1893,7 @@ phypUUIDTable_Init(virConnectPtr conn)
         if (VIR_ALLOC_N(uuid_table->lpars, uuid_table->nlpars) >= 0) {
             for (i = 0; i < uuid_table->nlpars; i++) {
                 if (VIR_ALLOC(uuid_table->lpars[i]) < 0) {
-                    virReportOOMError(conn);
+                    virReportOOMError();
                     goto err;
                 }
                 uuid_table->lpars[i]->id = ids[i];
@@ -1903,7 +1903,7 @@ phypUUIDTable_Init(virConnectPtr conn)
                              ids[i]);
             }
         } else {
-            virReportOOMError(conn);
+            virReportOOMError();
             goto err;
         }
 

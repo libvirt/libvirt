@@ -43,7 +43,7 @@ virCapsPtr oneCapsInit(void);
 
 int oneSubmitVM(virConnectPtr conn ,one_driver_t* driver, virDomainObjPtr  vm);
 
-char* xmlOneTemplate(virConnectPtr conn,virDomainDefPtr def);
+char* xmlOneTemplate(virDomainDefPtr def);
 
 #define oneError(conn, dom, code, fmt...)                               \
     virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,            \

@@ -124,6 +124,6 @@ cleanup:
     return ret;
 
 no_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
     goto cleanup;
 }

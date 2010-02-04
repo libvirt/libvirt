@@ -172,7 +172,7 @@ storageDriverStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    virReportOOMError(NULL);
+    virReportOOMError();
 error:
     VIR_FREE(base);
     storageDriverUnlock(driverState);
@@ -358,7 +358,7 @@ storageListPools(virConnectPtr conn,
         if (virStoragePoolObjIsActive(driver->pools.objs[i])) {
             if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -406,7 +406,7 @@ storageListDefinedPools(virConnectPtr conn,
         if (!virStoragePoolObjIsActive(driver->pools.objs[i])) {
             if (!(names[got] = strdup(driver->pools.objs[i]->def->name))) {
                 virStoragePoolObjUnlock(driver->pools.objs[i]);
-                virReportOOMError(conn);
+                virReportOOMError();
                 goto cleanup;
             }
             got++;
@@ -1104,7 +1104,7 @@ storagePoolListVolumes(virStoragePoolPtr obj,
 
     for (i = 0 ; i < pool->volumes.count && n < maxnames ; i++) {
         if ((names[n++] = strdup(pool->volumes.objs[i]->name)) == NULL) {
-            virReportOOMError(obj->conn);
+            virReportOOMError();
             goto cleanup;
         }
     }
@@ -1288,7 +1288,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count+1) < 0) {
-        virReportOOMError(obj->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1312,7 +1312,7 @@ storageVolumeCreateXML(virStoragePoolPtr obj,
         virStorageVolDefPtr buildvoldef = NULL;
 
         if (VIR_ALLOC(buildvoldef) < 0) {
-            virReportOOMError(obj->conn);
+            virReportOOMError();
             voldef = NULL;
             goto cleanup;
         }
@@ -1457,7 +1457,7 @@ storageVolumeCreateXMLFrom(virStoragePoolPtr obj,
 
     if (VIR_REALLOC_N(pool->volumes.objs,
                       pool->volumes.count+1) < 0) {
-        virReportOOMError(obj->conn);
+        virReportOOMError();
         goto cleanup;
     }
 
@@ -1737,7 +1737,7 @@ storageVolumeGetPath(virStorageVolPtr obj) {
 
     ret = strdup(vol->target.path);
     if (ret == NULL)
-        virReportOOMError(obj->conn);
+        virReportOOMError();
 
 cleanup:
     if (pool)
