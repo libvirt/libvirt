@@ -25,7 +25,7 @@ echo Found $CERTOOL
 #
 # Check the directory structure
 #
-PKI="$(SYSCONFDIR)/pki"
+PKI="@SYSCONFDIR@/pki"
 if [ ! -d $PKI ]
 then
     echo the $PKI directory is missing, it is usually
