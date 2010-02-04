@@ -3000,6 +3000,15 @@ xdr_remote_domain_get_job_info_ret (XDR *xdrs, remote_domain_get_job_info_ret *o
 }
 
 bool_t
+xdr_remote_domain_abort_job_args (XDR *xdrs, remote_domain_abort_job_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

@@ -1699,6 +1699,11 @@ struct remote_domain_get_job_info_ret {
         uint64_t fileRemaining;
 };
 typedef struct remote_domain_get_job_info_ret remote_domain_get_job_info_ret;
+
+struct remote_domain_abort_job_args {
+        remote_nonnull_domain dom;
+};
+typedef struct remote_domain_abort_job_args remote_domain_abort_job_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1866,6 +1871,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
         REMOTE_PROC_CPU_BASELINE = 162,
         REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
+        REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2174,6 +2180,7 @@ extern  bool_t xdr_remote_cpu_baseline_args (XDR *, remote_cpu_baseline_args*);
 extern  bool_t xdr_remote_cpu_baseline_ret (XDR *, remote_cpu_baseline_ret*);
 extern  bool_t xdr_remote_domain_get_job_info_args (XDR *, remote_domain_get_job_info_args*);
 extern  bool_t xdr_remote_domain_get_job_info_ret (XDR *, remote_domain_get_job_info_ret*);
+extern  bool_t xdr_remote_domain_abort_job_args (XDR *, remote_domain_abort_job_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2456,6 +2463,7 @@ extern bool_t xdr_remote_cpu_baseline_args ();
 extern bool_t xdr_remote_cpu_baseline_ret ();
 extern bool_t xdr_remote_domain_get_job_info_args ();
 extern bool_t xdr_remote_domain_get_job_info_ret ();
+extern bool_t xdr_remote_domain_abort_job_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

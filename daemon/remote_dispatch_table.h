@@ -822,3 +822,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_get_job_info_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_job_info_ret,
 },
+{   /* DomainAbortJob => 164 */
+    .fn = (dispatch_fn) remoteDispatchDomainAbortJob,
+    .args_filter = (xdrproc_t) xdr_remote_domain_abort_job_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

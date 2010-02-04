@@ -7683,6 +7683,30 @@ done:
 }
 
 
+static int
+remoteDomainAbortJob (virDomainPtr domain)
+{
+    int rv = -1;
+    remote_domain_abort_job_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_ABORT_JOB,
+              (xdrproc_t) xdr_remote_domain_abort_job_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /*----------------------------------------------------------------------*/
 
 
@@ -9101,7 +9125,7 @@ static virDriver remote_driver = {
     remoteCPUCompare, /* cpuCompare */
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
-    NULL, /* domainFinishJob */
+    remoteDomainAbortJob, /* domainFinishJob */
 };
 
 static virNetworkDriver network_driver = {

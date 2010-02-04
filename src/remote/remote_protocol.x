@@ -1512,6 +1512,11 @@ struct remote_domain_get_job_info_ret {
 };
 
 
+struct remote_domain_abort_job_args {
+    remote_nonnull_domain dom;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1697,7 +1702,8 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
     REMOTE_PROC_CPU_BASELINE = 162,
-    REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163
+    REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
+    REMOTE_PROC_DOMAIN_ABORT_JOB = 164
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

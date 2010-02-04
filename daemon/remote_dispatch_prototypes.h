@@ -66,6 +66,14 @@ static int remoteDispatchCpuCompare(
     remote_error *err,
     remote_cpu_compare_args *args,
     remote_cpu_compare_ret *ret);
+static int remoteDispatchDomainAbortJob(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_abort_job_args *args,
+    void *ret);
 static int remoteDispatchDomainAttachDevice(
     struct qemud_server *server,
     struct qemud_client *client,
