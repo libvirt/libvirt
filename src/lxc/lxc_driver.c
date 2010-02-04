@@ -2048,7 +2048,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     }
 
     if (ret == 0)
-        ret = linuxDomainInterfaceStats(dom->conn, path, stats);
+        ret = linuxDomainInterfaceStats(path, stats);
     else
         lxcError(dom->conn, dom, VIR_ERR_INVALID_ARG,
                  _("Invalid path, '%s' is not a known interface"), path);

@@ -6845,7 +6845,7 @@ qemudDomainInterfaceStats (virDomainPtr dom,
     }
 
     if (ret == 0)
-        ret = linuxDomainInterfaceStats (dom->conn, path, stats);
+        ret = linuxDomainInterfaceStats(path, stats);
     else
         qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
                           _("invalid path, '%s' is not a known interface"), path);

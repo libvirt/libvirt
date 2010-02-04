@@ -15,8 +15,8 @@
 
 #include "internal.h"
 
-extern int linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
-                                      struct _virDomainInterfaceStats *stats);
+extern int linuxDomainInterfaceStats(const char *path,
+                                     struct _virDomainInterfaceStats *stats);
 
 #endif /* __linux__ */
 

@@ -28,35 +28,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
-/**
- * statsErrorFunc:
- * @conn: the connection
- * @error: the error number
- * @func: the function failing
- * @info: extra information string
- * @value: extra information number
- *
- * Handle a stats error.
- */
-static void
-statsErrorFunc (virConnectPtr conn,
-                virErrorNumber error, const char *func, const char *info,
-                int value)
-{
-    char fullinfo[1000];
-    const char *errmsg;
-
-    errmsg = virErrorMsg(error, info);
-    if (func != NULL) {
-        snprintf(fullinfo, sizeof (fullinfo) - 1, "%s: %s", func, info);
-        fullinfo[sizeof (fullinfo) - 1] = 0;
-        info = fullinfo;
-    }
-    virRaiseError(conn, NULL, NULL, VIR_FROM_STATS_LINUX, error,
-                    VIR_ERR_ERROR,
-                    errmsg, info, NULL, value, 0, errmsg, info,
-                    value);
-}
+#define virStatsError(code, fmt...)                            \
+    virReportErrorHelper(NULL, VIR_FROM_THIS, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, fmt)
 
 
 /*-------------------- interface stats --------------------*/
@@ -66,8 +40,8 @@ statsErrorFunc (virConnectPtr conn,
  */
 
 int
-linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
-                           struct _virDomainInterfaceStats *stats)
+linuxDomainInterfaceStats(const char *path,
+                          struct _virDomainInterfaceStats *stats)
 {
     int path_len;
     FILE *fp;
@@ -75,8 +49,8 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
 
     fp = fopen ("/proc/net/dev", "r");
     if (!fp) {
-        statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                        "/proc/net/dev", errno);
+        virReportSystemError(errno, "%s",
+                             _("Could not open /proc/net/dev"));
         return -1;
     }
 
@@ -131,8 +105,8 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
     }
     fclose (fp);
 
-    statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
-                    "/proc/net/dev: Interface not found", 0);
+    virStatsError(VIR_ERR_INTERNAL_ERROR,
+                  "/proc/net/dev: Interface not found");
     return -1;
 }
 

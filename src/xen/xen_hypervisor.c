@@ -1477,7 +1477,7 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
         return -1;
     }
 
-    return linuxDomainInterfaceStats (dom->conn, path, stats);
+    return linuxDomainInterfaceStats(path, stats);
 #else
     virXenErrorFunc (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                      "/proc/net/dev: Interface not found", 0);
