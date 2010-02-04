@@ -1,7 +1,7 @@
 /*
  * storage_file.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include "dirname.h"
 #include "memory.h"
 #include "virterror_internal.h"
 
@@ -246,26 +247,15 @@ vmdk4GetBackingStore(virConnectPtr conn,
 static char *
 absolutePathFromBaseFile(const char *base_file, const char *path)
 {
-    size_t base_size, path_size;
-    char *res, *p;
+    char *res;
+    size_t d_len = dir_len (base_file);
 
-    if (*path == '/')
+    /* If path is already absolute, or if dirname(base_file) is ".",
+       just return a copy of path.  */
+    if (*path == '/' || d_len == 0)
         return strdup(path);
 
-    base_size = strlen(base_file) + 1;
-    path_size = strlen(path) + 1;
-    if (VIR_ALLOC_N(res, base_size - 1 + path_size) < 0)
-        return NULL;
-    memcpy(res, base_file, base_size);
-    p = strrchr(res, '/');
-    if (p != NULL)
-        p++;
-    else
-        p = res;
-    memcpy(p, path, path_size);
-    if (VIR_REALLOC_N(res, (p + path_size) - res) < 0) {
-        /* Ignore failure */
-    }
+    virAsprintf(&res, "%.*s/%s", base_file, d_len, path);
     return res;
 }
 

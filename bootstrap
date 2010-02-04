@@ -71,6 +71,7 @@ c-ctype
 canonicalize-lgpl
 close
 connect
+dirname-lgpl
 getaddrinfo
 gethostname
 getpass
