@@ -54,12 +54,11 @@ struct _usbDevice {
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define usbReportError(conn, code, fmt...)                     \
-    virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,  \
+#define usbReportError(code, fmt...)                           \
+    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,  \
                          __FUNCTION__, __LINE__, fmt)
 
-static int usbSysReadFile(virConnectPtr conn,
-                          const char *f_name, const char *d_name,
+static int usbSysReadFile(const char *f_name, const char *d_name,
                           int base, unsigned *value)
 {
     int ret = -1, tmp;
@@ -77,7 +76,7 @@ static int usbSysReadFile(virConnectPtr conn,
         goto cleanup;
 
     if (virStrToLong_ui(buf, &ignore, base, value) < 0) {
-        usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        usbReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse usb file %s"), filename);
         goto cleanup;
     }
@@ -89,8 +88,7 @@ cleanup:
     return ret;
 }
 
-static int usbFindBusByVendor(virConnectPtr conn,
-                              unsigned vendor, unsigned product,
+static int usbFindBusByVendor(unsigned vendor, unsigned product,
                               unsigned *bus, unsigned *devno)
 {
     DIR *dir = NULL;
@@ -111,10 +109,10 @@ static int usbFindBusByVendor(virConnectPtr conn,
         if (de->d_name[0] == '.' || strchr(de->d_name, ':'))
             continue;
 
-        if (usbSysReadFile(conn, "idVendor", de->d_name,
+        if (usbSysReadFile("idVendor", de->d_name,
                            16, &found_vend) < 0)
             goto cleanup;
-        if (usbSysReadFile(conn, "idProduct", de->d_name,
+        if (usbSysReadFile("idProduct", de->d_name,
                            16, &found_prod) < 0)
             goto cleanup;
 
@@ -127,13 +125,13 @@ static int usbFindBusByVendor(virConnectPtr conn,
                 tmpstr += 3;
 
             if (virStrToLong_ui(tmpstr, &ignore, 10, &found_bus) < 0) {
-                usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                usbReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to parse dir name '%s'"),
                                de->d_name);
                 goto cleanup;
             }
 
-            if (usbSysReadFile(conn, "devnum", de->d_name,
+            if (usbSysReadFile("devnum", de->d_name,
                                10, &found_addr) < 0)
                 goto cleanup;
 
@@ -145,7 +143,7 @@ static int usbFindBusByVendor(virConnectPtr conn,
     }
 
     if (!found)
-        usbReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        usbReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Did not find USB device %x:%x"), vendor, product);
     else
         ret = 0;
@@ -160,8 +158,7 @@ cleanup:
 }
 
 usbDevice *
-usbGetDevice(virConnectPtr conn,
-             unsigned bus,
+usbGetDevice(unsigned bus,
              unsigned devno,
              unsigned vendor,
              unsigned product)
@@ -175,7 +172,7 @@ usbGetDevice(virConnectPtr conn,
 
     if (vendor) {
         /* Look up bus.dev by vendor:product */
-        if (usbFindBusByVendor(conn, vendor, product, &bus, &devno) < 0) {
+        if (usbFindBusByVendor(vendor, product, &bus, &devno) < 0) {
             VIR_FREE(dev);
             return NULL;
         }
@@ -198,7 +195,7 @@ usbGetDevice(virConnectPtr conn,
 }
 
 void
-usbFreeDevice(virConnectPtr conn ATTRIBUTE_UNUSED, usbDevice *dev)
+usbFreeDevice(usbDevice *dev)
 {
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev);

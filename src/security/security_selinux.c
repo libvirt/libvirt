@@ -498,8 +498,7 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(conn,
-                                      dev->source.subsys.u.usb.bus,
+        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
                                       dev->source.subsys.u.usb.device,
                                       dev->source.subsys.u.usb.vendor,
                                       dev->source.subsys.u.usb.product);
@@ -508,7 +507,7 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = usbDeviceFileIterate(conn, usb, SELinuxSetSecurityUSBLabel, vm);
-        usbFreeDevice(conn, usb);
+        usbFreeDevice(usb);
         break;
     }
 
@@ -572,8 +571,7 @@ SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(conn,
-                                      dev->source.subsys.u.usb.bus,
+        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
                                       dev->source.subsys.u.usb.device,
                                       dev->source.subsys.u.usb.vendor,
                                       dev->source.subsys.u.usb.product);
@@ -582,7 +580,7 @@ SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = usbDeviceFileIterate(conn, usb, SELinuxRestoreSecurityUSBLabel, NULL);
-        usbFreeDevice(conn, usb);
+        usbFreeDevice(usb);
 
         break;
     }

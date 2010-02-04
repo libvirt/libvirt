@@ -210,8 +210,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(conn,
-                                      dev->source.subsys.u.usb.bus,
+        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
                                       dev->source.subsys.u.usb.device,
                                       dev->source.subsys.u.usb.vendor,
                                       dev->source.subsys.u.usb.product);
@@ -220,7 +219,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = usbDeviceFileIterate(conn, usb, qemuSecurityDACSetSecurityUSBLabel, vm);
-        usbFreeDevice(conn, usb);
+        usbFreeDevice(usb);
         break;
     }
 
@@ -285,8 +284,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-        usbDevice *usb = usbGetDevice(conn,
-                                      dev->source.subsys.u.usb.bus,
+        usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
                                       dev->source.subsys.u.usb.device,
                                       dev->source.subsys.u.usb.vendor,
                                       dev->source.subsys.u.usb.product);
@@ -295,7 +293,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = usbDeviceFileIterate(conn, usb, qemuSecurityDACRestoreSecurityUSBLabel, NULL);
-        usbFreeDevice(conn, usb);
+        usbFreeDevice(usb);
 
         break;
     }

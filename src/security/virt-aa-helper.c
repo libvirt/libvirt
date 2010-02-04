@@ -836,25 +836,24 @@ get_files(vahControl * ctl)
             virDomainHostdevDefPtr dev = ctl->def->hostdevs[i];
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                usbDevice *usb = usbGetDevice(NULL,
-                                          dev->source.subsys.u.usb.bus,
-                                          dev->source.subsys.u.usb.device,
-                                          dev->source.subsys.u.usb.vendor,
-                                          dev->source.subsys.u.usb.product);
+                usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
+                                              dev->source.subsys.u.usb.device,
+                                              dev->source.subsys.u.usb.vendor,
+                                              dev->source.subsys.u.usb.product);
 
                 if (usb == NULL)
                     continue;
 
                 rc = usbDeviceFileIterate(NULL, usb,
                                           file_iterate_cb, &buf);
-                usbFreeDevice(NULL, usb);
+                usbFreeDevice(usb);
                 if (rc != 0)
                     goto clean;
                 break;
             }
 /* TODO: update so files in /sys are readonly
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-                pciDevice *pci = pciGetDevice(NULL,
+                pciDevice *pci = pciGetDevice(
                            dev->source.subsys.u.pci.domain,
                            dev->source.subsys.u.pci.bus,
                            dev->source.subsys.u.pci.slot,
@@ -864,7 +863,7 @@ get_files(vahControl * ctl)
                     continue;
 
                 rc = pciDeviceFileIterate(NULL, pci, file_iterate_cb, &buf);
-                pciFreeDevice(NULL, pci);
+                pciFreeDevice(pci);
 
                 break;
             }
