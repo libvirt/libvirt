@@ -28,11 +28,11 @@
 
     <h3><a name="elementsMetadata">General metadata</a></h3>
 
-    <pre>
-      &lt;domain type='xen' id='3'&gt;
-        &lt;name&gt;fv0&lt;/name&gt;
-        &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
-        ...</pre>
+<pre>
+&lt;domain type='xen' id='3'&gt;
+  &lt;name&gt;fv0&lt;/name&gt;
+  &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  ...</pre>
 
     <dl>
       <dt><code>name</code></dt>
@@ -66,14 +66,14 @@
       to obtain/find the boot image.
     </p>
 
-    <pre>
-        ...
-        &lt;os&gt;
-          &lt;type&gt;hvm&lt;/type&gt;
-          &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
-          &lt;boot dev='hd'/&gt;
-        &lt;/os&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;os&gt;
+    &lt;type&gt;hvm&lt;/type&gt;
+    &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  ...</pre>
 
     <dl>
       <dt><code>type</code></dt>
@@ -109,11 +109,11 @@
       An example is <code>pygrub</code> with Xen.
     </p>
 
-    <pre>
-        ...
-        &lt;bootloader&gt;/usr/bin/pygrub&lt;/bootloader&gt;
-        &lt;bootloader_args&gt;--append single&lt;/bootloader_args&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;bootloader&gt;/usr/bin/pygrub&lt;/bootloader&gt;
+  &lt;bootloader_args&gt;--append single&lt;/bootloader_args&gt;
+  ...</pre>
 
     <dl>
       <dt><code>bootloader</code></dt>
@@ -139,16 +139,16 @@
       is usually available for both para and full virtualized guests.
     </p>
 
-    <pre>
-        ...
-        &lt;os&gt;
-          &lt;type&gt;hvm&lt;/type&gt;
-          &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
-          &lt;kernel&gt;/root/f8-i386-vmlinuz&lt;/kernel&gt;
-          &lt;initrd&gt;/root/f8-i386-initrd&lt;/initrd&gt;
-          &lt;cmdline&gt;console=ttyS0 ks=http://example.com/f8-i386/os/&lt;/cmdline&gt;
-        &lt;/os&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;os&gt;
+    &lt;type&gt;hvm&lt;/type&gt;
+    &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;kernel&gt;/root/f8-i386-vmlinuz&lt;/kernel&gt;
+    &lt;initrd&gt;/root/f8-i386-initrd&lt;/initrd&gt;
+    &lt;cmdline&gt;console=ttyS0 ks=http://example.com/f8-i386/os/&lt;/cmdline&gt;
+  &lt;/os&gt;
+  ...</pre>
 
     <dl>
       <dt><code>type</code></dt>
@@ -172,15 +172,15 @@
 
     <h3><a name="elementsResources">Basic resources</a></h3>
 
-    <pre>
-        ...
-        &lt;memory&gt;524288&lt;/memory&gt;
-        &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
-        &lt;memoryBacking&gt;
-          &lt;hugepages/&gt;
-        &lt;/memoryBacking&gt;
-        &lt;vcpu&gt;1&lt;/vcpu&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;memory&gt;524288&lt;/memory&gt;
+  &lt;currentMemory&gt;524288&lt;/currentMemory&gt;
+  &lt;memoryBacking&gt;
+    &lt;hugepages/&gt;
+  &lt;/memoryBacking&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  ...</pre>
 
     <dl>
       <dt><code>memory</code></dt>
@@ -209,14 +209,14 @@
       <span class="since">Since 0.7.5</span>
     </p>
 
-    <pre>
-        ...
-        &lt;cpu match='exact'&gt;
-          &lt;model&gt;core2duo&lt;/model&gt;
-          &lt;topology sockets='1' cores='2' threads='1'/&gt;
-          &lt;feature policy='disable' name='lahf_lm'/&gt;
-        &lt;/cpu&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;cpu match='exact'&gt;
+    &lt;model&gt;core2duo&lt;/model&gt;
+    &lt;topology sockets='1' cores='2' threads='1'/&gt;
+    &lt;feature policy='disable' name='lahf_lm'/&gt;
+  &lt;/cpu&gt;
+  ...</pre>
 
     <p>
       In case no restrictions need to be put on CPU model and its features, a
@@ -224,12 +224,12 @@
       <span class="since">Since 0.7.6</span>
     </p>
 
-    <pre>
-        ...
-        &lt;cpu&gt;
-          &lt;topology sockets='1' cores='2' threads='1'/&gt;
-        &lt;/cpu&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;cpu&gt;
+    &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;/cpu&gt;
+  ...</pre>
 
     <dl>
       <dt><code>cpu</code></dt>
@@ -305,12 +305,12 @@
       re-configured for the first post-install bootup.
     </p>
 
-    <pre>
-        ...
-        &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
-        &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
-        &lt;on_crash&gt;restart&lt;/on_crash&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  ...</pre>
 
     <dl>
       <dt><code>on_poweroff</code></dt>
@@ -350,14 +350,14 @@
       toggled on/off.
     </p>
 
-    <pre>
-        ...
-        &lt;features&gt;
-          &lt;pae/&gt;
-          &lt;acpi/&gt;
-          &lt;apic/&gt;
-        &lt;/features&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;features&gt;
+    &lt;pae/&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+  &lt;/features&gt;
+  ...</pre>
 
     <p>
       All features are listed within the <code>features</code>
@@ -386,10 +386,10 @@
       it to be in so called 'localtime'.
     </p>
 
-    <pre>
-        ...
-        &lt;clock offset="localtime"/&gt;
-        ...</pre>
+<pre>
+  ...
+  &lt;clock offset="localtime"/&gt;
+  ...</pre>
 
     <dl>
       <dt><code>clock</code></dt>
@@ -408,11 +408,12 @@
       <span class="since">Since 0.1.3</span>
     </p>
 
-    <pre>
-        ...
-        &lt;devices&gt;
-          &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>emulator</code></dt>
@@ -433,18 +434,20 @@
       element.
     </p>
 
-    <pre>
-          ...
-          &lt;disk type='file'&gt;
-            &lt;driver name="tap" type="aio" cache="default"&gt;
-            &lt;source file='/var/lib/xen/images/fv0'/&gt;
-            &lt;target dev='hda' bus='ide'/&gt;
-            &lt;encryption type='...'&gt;
-              ...
-            &lt;/encryption&gt;
-            &lt;shareable/&gt;
-          &lt;/disk&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;disk type='file'&gt;
+      &lt;driver name="tap" type="aio" cache="default"&gt;
+      &lt;source file='/var/lib/xen/images/fv0'/&gt;
+      &lt;target dev='hda' bus='ide'/&gt;
+      &lt;encryption type='...'&gt;
+        ...
+      &lt;/encryption&gt;
+      &lt;shareable/&gt;
+    &lt;/disk&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>disk</code></dt>
@@ -500,24 +503,30 @@
       0.4.4 for USB and 0.6.0 for PCI (KVM only)</span>:
     </p>
 
-    <pre>
-          ...
-          &lt;hostdev mode='subsystem' type='usb'&gt;
-            &lt;source&gt;
-              &lt;vendor id='0x1234'/&gt;
-              &lt;product id='0xbeef'/&gt;
-            &lt;/source&gt;
-          &lt;/hostdev&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='usb'&gt;
+      &lt;source&gt;
+        &lt;vendor id='0x1234'/&gt;
+        &lt;product id='0xbeef'/&gt;
+      &lt;/source&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <p>or:</p>
-    <pre>
-          ...
-          &lt;hostdev mode='subsystem' type='pci'&gt;
-            &lt;source&gt;
-              &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
-            &lt;/source&gt;
-          &lt;/hostdev&gt;
-          ...</pre>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='pci'&gt;
+      &lt;source&gt;
+        &lt;address bus='0x06' slot='0x02' function='0x0'/&gt;
+      &lt;/source&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>hostdev</code></dt>
@@ -556,14 +565,16 @@
 
     <h4><a name="elementsNICS">Network interfaces</a></h4>
 
-    <pre>
-          ...
-          &lt;interface type='bridge'&gt;
-            &lt;source bridge='xenbr0'/&gt;
-            &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-            &lt;script path='vif-bridge'/&gt;
-          &lt;/interface&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;script path='vif-bridge'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSVirtual">Virtual network</a></h5>
 
@@ -589,18 +600,20 @@
       <a href="#elementsNICSTargetOverride">overriding the target element</a>).
     </p>
 
-    <pre>
-      ...
-      &lt;interface type='network'&gt;
-        &lt;source network='default'/&gt;
-      &lt;/interface&gt;
-      ...
-      &lt;interface type='network'&gt;
-        &lt;source network='default'/&gt;
-        &lt;target dev='vnet7'/&gt;
-        &lt;mac address="11:22:33:44:55:66"/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+    &lt;/interface&gt;
+    ...
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet7'/&gt;
+      &lt;mac address="11:22:33:44:55:66"/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSBridge">Bridge to LAN</a></h5>
 
@@ -623,18 +636,20 @@
       full incoming &amp; outgoing net access just like a physical machine.
     </p>
 
-    <pre>
-      ...
-      &lt;interface type='bridge'&gt;
-        &lt;source bridge='br0'/&gt;
-      &lt;/interface&gt;
-
-      &lt;interface type='bridge'&gt;
-        &lt;source bridge='br0'/&gt;
-        &lt;target dev='vnet7'/&gt;
-        &lt;mac address="11:22:33:44:55:66"/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='br0'/&gt;
+    &lt;/interface&gt;
+    ...
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='br0'/&gt;
+      &lt;target dev='vnet7'/&gt;
+      &lt;mac address="11:22:33:44:55:66"/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSSlirp">Userspace SLIRP stack</a></h5>
 
@@ -647,14 +662,16 @@
       VMs to have outgoing access.
     </p>
 
-    <pre>
-      ...
-      &lt;interface type='user'/&gt;
-      ...
-      &lt;interface type='user'&gt;
-        &lt;mac address="11:22:33:44:55:66"/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='user'/&gt;
+    ...
+    &lt;interface type='user'&gt;
+      &lt;mac address="11:22:33:44:55:66"/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
 
     <h5><a name="elementsNICSEthernet">Generic ethernet connection</a></h5>
@@ -669,15 +686,17 @@
       overridden.
     </p>
 
-    <pre>
-      ...
-      &lt;interface type='ethernet'/&gt;
-      ...
-      &lt;interface type='ethernet'&gt;
-        &lt;target dev='vnet7'/&gt;
-        &lt;script path='/etc/qemu-ifup-mynet'/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='ethernet'/&gt;
+    ...
+    &lt;interface type='ethernet'&gt;
+      &lt;target dev='vnet7'/&gt;
+      &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSMulticast">Multicast tunnel</a></h5>
 
@@ -693,12 +712,14 @@
       multicast address block.
     </p>
 
-    <pre>
-      ...
-      &lt;interface type='mcast'&gt;
-        &lt;source address='230.0.0.1' port='5558'/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='mcast'&gt;
+      &lt;source address='230.0.0.1' port='5558'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSTCP">TCP tunnel</a></h5>
 
@@ -711,27 +732,31 @@
       network access, one of the VMs should have a 2nd NIC which is connected
       to one of the first 4 network types and do the appropriate routing.</p>
 
-    <pre>
-      ...
-      &lt;interface type='server'&gt;
-        &lt;source address='192.168.0.1' port='5558'/&gt;
-      &lt;/interface&gt;
-      ...
-      &lt;interface type='client'&gt;
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='server'&gt;
       &lt;source address='192.168.0.1' port='5558'/&gt;
-      &lt;/interface&gt;
-      ...</pre>
+    &lt;/interface&gt;
+    ...
+    &lt;interface type='client'&gt;
+    &lt;source address='192.168.0.1' port='5558'/&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h5><a name="elementsNICSModel">Setting the NIC model</a></h5>
 
-    <pre>
-      ...
-      &lt;interface type='network'&gt;
-        &lt;source network='default'/&gt;
-        &lt;target dev='vnet1'/&gt;
-        <b>&lt;model type='ne2k_pci'/&gt;</b>
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      &lt;target dev='vnet1'/&gt;
+      <b>&lt;model type='ne2k_pci'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       For hypervisors which support this, you can set the model of
@@ -757,13 +782,15 @@ qemu-kvm -net nic,model=? /dev/null
 
     <h5><a name="elementsNICSTargetOverride">Overriding the target element</a></h5>
 
-    <pre>
-      ...
-      &lt;interface type='network'&gt;
-        &lt;source network='default'/&gt;
-        <b>&lt;target dev='vnet1'/&gt;</b>
-      &lt;/interface&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='network'&gt;
+      &lt;source network='default'/&gt;
+      <b>&lt;target dev='vnet1'/&gt;</b>
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
         If no target is specified, certain hypervisors will automatically
@@ -783,10 +810,12 @@ qemu-kvm -net nic,model=? /dev/null
       to provide a graphics tablet for absolute cursor movement.
     </p>
 
-    <pre>
-          ...
-          &lt;input type='mouse' bus='usb'/&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;input type='mouse' bus='usb'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>input</code></dt>
@@ -807,13 +836,15 @@ qemu-kvm -net nic,model=? /dev/null
       admin.
     </p>
 
-    <pre>
-          ...
-          &lt;graphics type='sdl' display=':0.0'/&gt;
-          &lt;graphics type='vnc' port='5904'/&gt;
-          &lt;graphics type='rdp' autoport='yes' multiUser='yes' /&gt;
-          &lt;graphics type='desktop' fullscreen='yes'/&gt;
-          ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;graphics type='sdl' display=':0.0'/&gt;
+    &lt;graphics type='vnc' port='5904'/&gt;
+    &lt;graphics type='rdp' autoport='yes' multiUser='yes' /&gt;
+    &lt;graphics type='desktop' fullscreen='yes'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>graphics</code></dt>
@@ -867,14 +898,16 @@ qemu-kvm -net nic,model=? /dev/null
       A video device.
     </p>
 
-    <pre>
-      ...
-      &lt;video&gt;
-        &lt;model type='vga' vram='8192' heads='1'&gt;
-          &lt;acceleration accel3d='yes' accel3d='yes'/&gt;
-        &lt;/model&gt;
-      &lt;/video&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;video&gt;
+      &lt;model type='vga' vram='8192' heads='1'&gt;
+        &lt;acceleration accel3d='yes' accel3d='yes'/&gt;
+      &lt;/model&gt;
+    &lt;/video&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>video</code></dt>
@@ -907,26 +940,27 @@ qemu-kvm -net nic,model=? /dev/null
       all classed as character devices and so represented using the same syntax.
     </p>
 
-    <pre>
-        ...
-        &lt;parallel type='pty'&gt;
-          &lt;source path='/dev/pts/2'/&gt;
-          &lt;target port='0'/&gt;
-        &lt;/parallel&gt;
-        &lt;serial type='pty'&gt;
-          &lt;source path='/dev/pts/3'/&gt;
-          &lt;target port='0'/&gt;
-        &lt;/serial&gt;
-        &lt;console type='pty'&gt;
-          &lt;source path='/dev/pts/4'/&gt;
-          &lt;target port='0'/&gt;
-        &lt;/console&gt;
-        &lt;channel type='unix'&gt;
-          &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
-          &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
-        &lt;/channel&gt;
-        &lt;/devices&gt;
-      &lt;/domain&gt;</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;parallel type='pty'&gt;
+      &lt;source path='/dev/pts/2'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/parallel&gt;
+    &lt;serial type='pty'&gt;
+      &lt;source path='/dev/pts/3'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/serial&gt;
+    &lt;console type='pty'&gt;
+      &lt;source path='/dev/pts/4'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/console&gt;
+    &lt;channel type='unix'&gt;
+      &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
+      &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
+    &lt;/channel&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       In each of these directives, the top-level element name (parallel, serial,
@@ -949,13 +983,15 @@ qemu-kvm -net nic,model=? /dev/null
 
     <h6><a name="elementCharParallel">Parallel port</a></h6>
 
-    <pre>
-      ...
-      &lt;parallel type='pty'&gt;
-        &lt;source path='/dev/pts/2'/&gt;
-        &lt;target port='0'/&gt;
-      &lt;/parallel&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;parallel type='pty'&gt;
+      &lt;source path='/dev/pts/2'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/parallel&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       <code>target</code> can have a <code>port</code> attribute, which
@@ -965,13 +1001,15 @@ qemu-kvm -net nic,model=? /dev/null
 
     <h6><a name="elementCharSerial">Serial port</a></h6>
 
-    <pre>
-      ...
-      &lt;serial type='pty'&gt;
-        &lt;source path='/dev/pts/3'/&gt;
-        &lt;target port='0'/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type='pty'&gt;
+      &lt;source path='/dev/pts/3'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       <code>target</code> can have a <code>port</code> attribute, which
@@ -987,13 +1025,15 @@ qemu-kvm -net nic,model=? /dev/null
       virtualized guests without a paravirtualized console.
     </p>
 
-    <pre>
-      ...
-      &lt;console type='pty'&gt;
-        &lt;source path='/dev/pts/4'/&gt;
-        &lt;target port='0'/&gt;
-      &lt;/console&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;console type='pty'&gt;
+      &lt;source path='/dev/pts/4'/&gt;
+      &lt;target port='0'/&gt;
+    &lt;/console&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       If the console is presented as a serial port, the <code>target</code>
@@ -1008,13 +1048,15 @@ qemu-kvm -net nic,model=? /dev/null
       guest.
     </p>
 
-    <pre>
-      ...
-      &lt;channel type='unix'&gt;
-        &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
-        &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
-      &lt;/channel&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;channel type='unix'&gt;
+      &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
+      &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
+    &lt;/channel&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       This can be implemented in a variety of ways. The specific type of
@@ -1045,12 +1087,14 @@ qemu-kvm -net nic,model=? /dev/null
       into the virtual machine's logfile
     </p>
 
-    <pre>
-      ...
-      &lt;console type='stdio'&gt;
-        &lt;target port='1'&gt;
-      &lt;/console&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;console type='stdio'&gt;
+      &lt;target port='1'&gt;
+    &lt;/console&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
 
     <h6><a name="elementsCharFle">Device logfile</a></h6>
@@ -1060,13 +1104,15 @@ qemu-kvm -net nic,model=? /dev/null
       device is written to the file.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="file"&gt;
-        &lt;source path="/var/log/vm/vm-serial.log"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="file"&gt;
+      &lt;source path="/var/log/vm/vm-serial.log"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharVC">Virtual console</a></h6>
 
@@ -1076,12 +1122,14 @@ qemu-kvm -net nic,model=? /dev/null
       hotkey sequence such as "ctrl+alt+3"
     </p>
 
-    <pre>
-      ...
-      &lt;serial type='vc'&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type='vc'&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharNull">Null device</a></h6>
 
@@ -1090,12 +1138,14 @@ qemu-kvm -net nic,model=? /dev/null
       provided to the input. All data written is discarded.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type='null'&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type='null'&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharPTY">Pseudo TTY</a></h6>
 
@@ -1105,13 +1155,15 @@ qemu-kvm -net nic,model=? /dev/null
       serial port locally.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="pty"&gt;
-        &lt;source path="/dev/pts/3"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="pty"&gt;
+      &lt;source path="/dev/pts/3"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       NB special case if &lt;console type='pty'&gt;, then the TTY
@@ -1130,13 +1182,15 @@ qemu-kvm -net nic,model=? /dev/null
       port.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="dev"&gt;
-        &lt;source path="/dev/ttyS0"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="dev"&gt;
+      &lt;source path="/dev/ttyS0"/&gt;
+      &lt;target port="1"/&gt;
+  &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharPipe">Named pipe</a></h6>
 
@@ -1145,13 +1199,15 @@ qemu-kvm -net nic,model=? /dev/null
       more info.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="pipe"&gt;
-        &lt;source path="/tmp/mypipe"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="pipe"&gt;
+      &lt;source path="/tmp/mypipe"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharTCP">TCP client/server</a></h6>
 
@@ -1160,46 +1216,52 @@ qemu-kvm -net nic,model=? /dev/null
       remote server.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="tcp"&gt;
-        &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
-        &lt;protocol type="raw"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="tcp"&gt;
+      &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
+      &lt;protocol type="raw"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+   ...</pre>
 
     <p>
       Or as a TCP server waiting for a client connection.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="tcp"&gt;
-        &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
-        &lt;protocol type="raw"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="tcp"&gt;
+      &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
+      &lt;protocol type="raw"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <p>
       Alternatively you can use telnet instead of raw TCP.
     <p>
 
-    <pre>
-      ...
-      &lt;serial type="tcp"&gt;
-        &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
-        &lt;protocol type="telnet"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...
-      &lt;serial type="tcp"&gt;
-        &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
-        &lt;protocol type="telnet"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="tcp"&gt;
+      &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
+      &lt;protocol type="telnet"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+    ...
+    &lt;serial type="tcp"&gt;
+      &lt;source mode="bind" host="127.0.0.1" service="2445"/&gt;
+      &lt;protocol type="telnet"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharUDP">UDP network console</a></h6>
 
@@ -1208,14 +1270,16 @@ qemu-kvm -net nic,model=? /dev/null
       sending and receiving packets. This is a lossy service.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="udp"&gt;
-        &lt;source mode="bind" host="0.0.0.0" service="2445"/&gt;
-        &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="udp"&gt;
+      &lt;source mode="bind" host="0.0.0.0" service="2445"/&gt;
+      &lt;source mode="connect" host="0.0.0.0" service="2445"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <h6><a name="elementsCharUNIX">UNIX domain socket client/server</a></h6>
 
@@ -1224,13 +1288,15 @@ qemu-kvm -net nic,model=? /dev/null
       accepting connections from local clients.
     </p>
 
-    <pre>
-      ...
-      &lt;serial type="unix"&gt;
-        &lt;source mode="bind" path="/tmp/foo"/&gt;
-        &lt;target port="1"/&gt;
-      &lt;/serial&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;serial type="unix"&gt;
+      &lt;source mode="bind" path="/tmp/foo"/&gt;
+      &lt;target port="1"/&gt;
+    &lt;/serial&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
 
     <h4><a name="elementsSound">Sound devices</a></h4>
@@ -1240,10 +1306,12 @@ qemu-kvm -net nic,model=? /dev/null
       <code>sound</code> element. <span class="since">Since 0.4.3</span>
     </p>
 
-    <pre>
-      ...
-      &lt;sound model='es1370'/&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;sound model='es1370'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
     <dl>
       <dt><code>sound</code></dt>
@@ -1276,15 +1344,19 @@ qemu-kvm -net nic,model=? /dev/null
       libvirt.
     </p>
 
-    <pre>
-      ...
-      &lt;watchdog model='i6300esb'/&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;watchdog model='i6300esb'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
 
-    <pre>
-      ...
-      &lt;watchdog model='i6300esb' action='poweroff'/&gt;
-      ...</pre>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;watchdog model='i6300esb' action='poweroff'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
 
     <dl>
       <dt><code>model</code></dt>
