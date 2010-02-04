@@ -4221,6 +4221,16 @@ static int qemudDomainSave(virDomainPtr dom,
     }
 
 endjob:
+    if (ret != 0 && header.was_running) {
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
+        rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        if (rc < 0)
+            VIR_WARN0("Unable to resume guest CPUs after save failure");
+        else
+            vm->state = VIR_DOMAIN_RUNNING;
+    }
+
     if (vm &&
         qemuDomainObjEndJob(vm) == 0)
             vm = NULL;
