@@ -183,6 +183,7 @@ static int virCgroupDetectPlacement(virCgroupPtr group)
     return 0;
 
 no_memory:
+    fclose(mapping);
     return -ENOMEM;
 
 }
