@@ -225,8 +225,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(conn,
-                                      dev->source.subsys.u.pci.domain,
+        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
                                       dev->source.subsys.u.pci.bus,
                                       dev->source.subsys.u.pci.slot,
                                       dev->source.subsys.u.pci.function);
@@ -235,7 +234,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = pciDeviceFileIterate(conn, pci, qemuSecurityDACSetSecurityPCILabel, vm);
-        pciFreeDevice(conn, pci);
+        pciFreeDevice(pci);
 
         break;
     }
@@ -302,8 +301,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(conn,
-                                      dev->source.subsys.u.pci.domain,
+        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
                                       dev->source.subsys.u.pci.bus,
                                       dev->source.subsys.u.pci.slot,
                                       dev->source.subsys.u.pci.function);
@@ -312,7 +310,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = pciDeviceFileIterate(conn, pci, qemuSecurityDACRestoreSecurityPCILabel, NULL);
-        pciFreeDevice(conn, pci);
+        pciFreeDevice(pci);
 
         break;
     }

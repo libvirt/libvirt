@@ -1105,7 +1105,7 @@ qemudStartup(int privileged) {
                                                     qemu_driver->securityDriver)) == NULL)
         goto error;
 
-    if ((qemu_driver->activePciHostdevs = pciDeviceListNew(NULL)) == NULL)
+    if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
         goto error;
 
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
@@ -1268,7 +1268,7 @@ qemudShutdown(void) {
         return -1;
 
     qemuDriverLock(qemu_driver);
-    pciDeviceListFree(NULL, qemu_driver->activePciHostdevs);
+    pciDeviceListFree(qemu_driver->activePciHostdevs);
     virCapabilitiesFree(qemu_driver->caps);
 
     virDomainObjListDeinit(&qemu_driver->domains);
@@ -2111,13 +2111,12 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
 }
 
 static pciDeviceList *
-qemuGetPciHostDeviceList(virConnectPtr conn,
-                         virDomainDefPtr def)
+qemuGetPciHostDeviceList(virDomainDefPtr def)
 {
     pciDeviceList *list;
     int i;
 
-    if (!(list = pciDeviceListNew(conn)))
+    if (!(list = pciDeviceListNew()))
         return NULL;
 
     for (i = 0 ; i < def->nhostdevs ; i++) {
@@ -2129,19 +2128,18 @@ qemuGetPciHostDeviceList(virConnectPtr conn,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = pciGetDevice(conn,
-                           hostdev->source.subsys.u.pci.domain,
+        dev = pciGetDevice(hostdev->source.subsys.u.pci.domain,
                            hostdev->source.subsys.u.pci.bus,
                            hostdev->source.subsys.u.pci.slot,
                            hostdev->source.subsys.u.pci.function);
         if (!dev) {
-            pciDeviceListFree(conn, list);
+            pciDeviceListFree(list);
             return NULL;
         }
 
-        if (pciDeviceListAdd(conn, list, dev) < 0) {
-            pciFreeDevice(conn, dev);
-            pciDeviceListFree(conn, list);
+        if (pciDeviceListAdd(list, dev) < 0) {
+            pciFreeDevice(dev);
+            pciDeviceListFree(list);
             return NULL;
         }
 
@@ -2162,16 +2160,14 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     if (!def->nhostdevs)
         return 0;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(NULL, def)))
+    if (!(pcidevs = qemuGetPciHostDeviceList(def)))
         return -1;
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciDeviceListSteal(NULL, pcidevs, dev);
-        if (pciDeviceListAdd(NULL,
-                             driver->activePciHostdevs,
-                             dev) < 0) {
-            pciFreeDevice(NULL, dev);
+        pciDeviceListSteal(pcidevs, dev);
+        if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
+            pciFreeDevice(dev);
             goto cleanup;
         }
     }
@@ -2179,13 +2175,12 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
-    pciDeviceListFree(NULL, pcidevs);
+    pciDeviceListFree(pcidevs);
     return ret;
 }
 
 static int
-qemuPrepareHostDevices(virConnectPtr conn,
-                       struct qemud_driver *driver,
+qemuPrepareHostDevices(struct qemud_driver *driver,
                        virDomainDefPtr def)
 {
     pciDeviceList *pcidevs;
@@ -2195,7 +2190,7 @@ qemuPrepareHostDevices(virConnectPtr conn,
     if (!def->nhostdevs)
         return 0;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(conn, def)))
+    if (!(pcidevs = qemuGetPciHostDeviceList(def)))
         return -1;
 
     /* We have to use 3 loops here. *All* devices must
@@ -2212,11 +2207,11 @@ qemuPrepareHostDevices(virConnectPtr conn,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (!pciDeviceIsAssignable(conn, dev, !driver->relaxedACS))
+        if (!pciDeviceIsAssignable(dev, !driver->relaxedACS))
             goto cleanup;
 
         if (pciDeviceGetManaged(dev) &&
-            pciDettachDevice(conn, dev) < 0)
+            pciDettachDevice(dev) < 0)
             goto cleanup;
     }
 
@@ -2224,19 +2219,16 @@ qemuPrepareHostDevices(virConnectPtr conn,
      * reset them */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(conn, dev,
-                           driver->activePciHostdevs) < 0)
+        if (pciResetDevice(dev, driver->activePciHostdevs) < 0)
             goto cleanup;
     }
 
     /* Now mark all the devices as active */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciDeviceListSteal(NULL, pcidevs, dev);
-        if (pciDeviceListAdd(conn,
-                             driver->activePciHostdevs,
-                             dev) < 0) {
-            pciFreeDevice(NULL, dev);
+        pciDeviceListSteal(pcidevs, dev);
+        if (pciDeviceListAdd(driver->activePciHostdevs, dev) < 0) {
+            pciFreeDevice(dev);
             goto cleanup;
         }
     }
@@ -2244,7 +2236,7 @@ qemuPrepareHostDevices(virConnectPtr conn,
     ret = 0;
 
 cleanup:
-    pciDeviceListFree(conn, pcidevs);
+    pciDeviceListFree(pcidevs);
     return ret;
 }
 
@@ -2259,7 +2251,7 @@ qemudReattachManagedDevice(pciDevice *dev)
             usleep(100*1000);
             retries--;
         }
-        if (pciReAttachDevice(NULL, dev) < 0) {
+        if (pciReAttachDevice(dev) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to re-attach PCI device: %s"),
                       err ? err->message : "");
@@ -2269,8 +2261,7 @@ qemudReattachManagedDevice(pciDevice *dev)
 }
 
 static void
-qemuDomainReAttachHostDevices(virConnectPtr conn,
-                              struct qemud_driver *driver,
+qemuDomainReAttachHostDevices(struct qemud_driver *driver,
                               virDomainDefPtr def)
 {
     pciDeviceList *pcidevs;
@@ -2279,7 +2270,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
     if (!def->nhostdevs)
         return;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(conn, def))) {
+    if (!(pcidevs = qemuGetPciHostDeviceList(def))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : "");
@@ -2292,13 +2283,12 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        pciDeviceListDel(conn, driver->activePciHostdevs, dev);
+        pciDeviceListDel(driver->activePciHostdevs, dev);
     }
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(conn, dev,
-                           driver->activePciHostdevs) < 0) {
+        if (pciResetDevice(dev, driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s"),
                       err ? err->message : "");
@@ -2311,7 +2301,7 @@ qemuDomainReAttachHostDevices(virConnectPtr conn,
         qemudReattachManagedDevice(dev);
     }
 
-    pciDeviceListFree(conn, pcidevs);
+    pciDeviceListFree(pcidevs);
 }
 
 static const char *const defaultDeviceACL[] = {
@@ -2611,7 +2601,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemuSetupCgroup(driver, vm) < 0)
         goto cleanup;
 
-    if (qemuPrepareHostDevices(conn, driver, vm->def) < 0)
+    if (qemuPrepareHostDevices(driver, vm->def) < 0)
         goto cleanup;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
@@ -2784,7 +2774,7 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
-    qemuDomainReAttachHostDevices(conn, driver, vm->def);
+    qemuDomainReAttachHostDevices(driver, vm->def);
 
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityAllLabel)
@@ -2889,7 +2879,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
     qemuDomainPCIAddressSetFree(priv->pciaddrs);
     priv->pciaddrs = NULL;
 
-    qemuDomainReAttachHostDevices(conn, driver, vm->def);
+    qemuDomainReAttachHostDevices(driver, vm->def);
 
 retry:
     if ((ret = qemuRemoveCgroup(conn, driver, vm, 0)) < 0) {
@@ -5739,8 +5729,7 @@ no_memory:
 }
 
 
-static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
-                                          struct qemud_driver *driver,
+static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainHostdevDefPtr hostdev,
                                           int qemuCmdFlags)
@@ -5756,23 +5745,22 @@ static int qemudDomainAttachHostPciDevice(virConnectPtr conn,
         return -1;
     }
 
-    pci = pciGetDevice(conn,
-                       hostdev->source.subsys.u.pci.domain,
+    pci = pciGetDevice(hostdev->source.subsys.u.pci.domain,
                        hostdev->source.subsys.u.pci.bus,
                        hostdev->source.subsys.u.pci.slot,
                        hostdev->source.subsys.u.pci.function);
     if (!pci)
         return -1;
 
-    if (!pciDeviceIsAssignable(conn, pci, !driver->relaxedACS) ||
-        (hostdev->managed && pciDettachDevice(conn, pci) < 0) ||
-        pciResetDevice(conn, pci, driver->activePciHostdevs) < 0) {
-        pciFreeDevice(conn, pci);
+    if (!pciDeviceIsAssignable(pci, !driver->relaxedACS) ||
+        (hostdev->managed && pciDettachDevice(pci) < 0) ||
+        pciResetDevice(pci, driver->activePciHostdevs) < 0) {
+        pciFreeDevice(pci);
         return -1;
     }
 
-    if (pciDeviceListAdd(conn, driver->activePciHostdevs, pci) < 0) {
-        pciFreeDevice(conn, pci);
+    if (pciDeviceListAdd(driver->activePciHostdevs, pci) < 0) {
+        pciFreeDevice(pci);
         return -1;
     }
 
@@ -5810,7 +5798,7 @@ error:
         VIR_WARN0("Unable to release PCI address on host device");
 
     VIR_FREE(devstr);
-    pciDeviceListDel(conn, driver->activePciHostdevs, pci);
+    pciDeviceListDel(driver->activePciHostdevs, pci);
 
     return -1;
 }
@@ -5877,7 +5865,7 @@ static int qemudDomainAttachHostDevice(virConnectPtr conn,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (qemudDomainAttachHostPciDevice(conn, driver, vm,
+        if (qemudDomainAttachHostPciDevice(driver, vm,
                                            hostdev, qemuCmdFlags) < 0)
             goto error;
         break;
@@ -6333,8 +6321,7 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
 
     ret = 0;
 
-    pci = pciGetDevice(conn,
-                       detach->source.subsys.u.pci.domain,
+    pci = pciGetDevice(detach->source.subsys.u.pci.domain,
                        detach->source.subsys.u.pci.bus,
                        detach->source.subsys.u.pci.slot,
                        detach->source.subsys.u.pci.function);
@@ -6342,11 +6329,11 @@ static int qemudDomainDetachHostPciDevice(virConnectPtr conn,
         ret = -1;
     else {
         pciDeviceSetManaged(pci, detach->managed);
-        pciDeviceListDel(conn, driver->activePciHostdevs, pci);
-        if (pciResetDevice(conn, pci, driver->activePciHostdevs) < 0)
+        pciDeviceListDel(driver->activePciHostdevs, pci);
+        if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
             ret = -1;
         qemudReattachManagedDevice(pci);
-        pciFreeDevice(conn, pci);
+        pciFreeDevice(pci);
     }
 
     if (vm->def->nhostdevs > 1) {
@@ -8463,16 +8450,16 @@ qemudNodeDeviceDettach (virNodeDevicePtr dev)
     if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciDettachDevice(dev->conn, pci) < 0)
+    if (pciDettachDevice(pci) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 
@@ -8486,16 +8473,16 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
     if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciReAttachDevice(dev->conn, pci) < 0)
+    if (pciReAttachDevice(pci) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 
@@ -8510,19 +8497,19 @@ qemudNodeDeviceReset (virNodeDevicePtr dev)
     if (qemudNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
     qemuDriverLock(driver);
 
-    if (pciResetDevice(dev->conn, pci, driver->activePciHostdevs) < 0)
+    if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
     qemuDriverUnlock(driver);
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 

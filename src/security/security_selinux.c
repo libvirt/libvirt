@@ -513,8 +513,7 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(conn,
-                                      dev->source.subsys.u.pci.domain,
+        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
                                       dev->source.subsys.u.pci.bus,
                                       dev->source.subsys.u.pci.slot,
                                       dev->source.subsys.u.pci.function);
@@ -523,7 +522,7 @@ SELinuxSetSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = pciDeviceFileIterate(conn, pci, SELinuxSetSecurityPCILabel, vm);
-        pciFreeDevice(conn, pci);
+        pciFreeDevice(pci);
 
         break;
     }
@@ -589,8 +588,7 @@ SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        pciDevice *pci = pciGetDevice(conn,
-                                      dev->source.subsys.u.pci.domain,
+        pciDevice *pci = pciGetDevice(dev->source.subsys.u.pci.domain,
                                       dev->source.subsys.u.pci.bus,
                                       dev->source.subsys.u.pci.slot,
                                       dev->source.subsys.u.pci.function);
@@ -599,7 +597,7 @@ SELinuxRestoreSecurityHostdevLabel(virConnectPtr conn,
             goto done;
 
         ret = pciDeviceFileIterate(conn, pci, SELinuxRestoreSecurityPCILabel, NULL);
-        pciFreeDevice(conn, pci);
+        pciFreeDevice(pci);
 
         break;
     }

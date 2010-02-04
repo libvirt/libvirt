@@ -27,38 +27,29 @@
 typedef struct _pciDevice pciDevice;
 typedef struct _pciDeviceList pciDeviceList;
 
-pciDevice *pciGetDevice      (virConnectPtr  conn,
-                              unsigned       domain,
+pciDevice *pciGetDevice      (unsigned       domain,
                               unsigned       bus,
                               unsigned       slot,
                               unsigned       function);
-void       pciFreeDevice     (virConnectPtr  conn,
-                              pciDevice     *dev);
-int        pciDettachDevice  (virConnectPtr  conn,
-                              pciDevice     *dev);
-int        pciReAttachDevice (virConnectPtr  conn,
-                              pciDevice     *dev);
-int        pciResetDevice    (virConnectPtr  conn,
-                              pciDevice     *dev,
+void       pciFreeDevice     (pciDevice     *dev);
+int        pciDettachDevice  (pciDevice     *dev);
+int        pciReAttachDevice (pciDevice     *dev);
+int        pciResetDevice    (pciDevice     *dev,
                               pciDeviceList *activeDevs);
 void      pciDeviceSetManaged(pciDevice     *dev,
                               unsigned       managed);
 unsigned  pciDeviceGetManaged(pciDevice     *dev);
 
-pciDeviceList *pciDeviceListNew  (virConnectPtr conn);
-void           pciDeviceListFree (virConnectPtr conn,
-                                  pciDeviceList *list);
-int            pciDeviceListAdd  (virConnectPtr conn,
-                                  pciDeviceList *list,
+pciDeviceList *pciDeviceListNew  (void);
+void           pciDeviceListFree (pciDeviceList *list);
+int            pciDeviceListAdd  (pciDeviceList *list,
                                   pciDevice *dev);
 pciDevice *    pciDeviceListGet (pciDeviceList *list,
                                  int idx);
 int            pciDeviceListCount (pciDeviceList *list);
-pciDevice *    pciDeviceListSteal (virConnectPtr conn,
-                                   pciDeviceList *list,
+pciDevice *    pciDeviceListSteal (pciDeviceList *list,
                                    pciDevice *dev);
-void           pciDeviceListDel  (virConnectPtr conn,
-                                  pciDeviceList *list,
+void           pciDeviceListDel  (pciDeviceList *list,
                                   pciDevice *dev);
 pciDevice *    pciDeviceListFind (pciDeviceList *list,
                                   pciDevice *dev);
@@ -78,8 +69,7 @@ int pciDeviceFileIterate(virConnectPtr conn,
                          pciDeviceFileActor actor,
                          void *opaque);
 
-int pciDeviceIsAssignable(virConnectPtr conn,
-                          pciDevice *dev,
+int pciDeviceIsAssignable(pciDevice *dev,
                           int strict_acs_check);
 int pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher);
 

@@ -1763,16 +1763,16 @@ xenUnifiedNodeDeviceDettach (virNodeDevicePtr dev)
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciDettachDevice(dev->conn, pci) < 0)
+    if (pciDettachDevice(pci) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 
@@ -1786,16 +1786,16 @@ xenUnifiedNodeDeviceReAttach (virNodeDevicePtr dev)
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciReAttachDevice(dev->conn, pci) < 0)
+    if (pciReAttachDevice(pci) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 
@@ -1809,16 +1809,16 @@ xenUnifiedNodeDeviceReset (virNodeDevicePtr dev)
     if (xenUnifiedNodeDeviceGetPciInfo(dev, &domain, &bus, &slot, &function) < 0)
         return -1;
 
-    pci = pciGetDevice(dev->conn, domain, bus, slot, function);
+    pci = pciGetDevice(domain, bus, slot, function);
     if (!pci)
         return -1;
 
-    if (pciResetDevice(dev->conn, pci, NULL) < 0)
+    if (pciResetDevice(pci, NULL) < 0)
         goto out;
 
     ret = 0;
 out:
-    pciFreeDevice(dev->conn, pci);
+    pciFreeDevice(pci);
     return ret;
 }
 
