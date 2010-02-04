@@ -1014,14 +1014,14 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(obj->conn, err,
+                virReportSystemError(err,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(pool->configFile, pool->autostartLink) < 0) {
-                virReportSystemError(obj->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to create symlink '%s' to '%s'"),
                                      pool->autostartLink, pool->configFile);
                 goto cleanup;
@@ -1029,7 +1029,7 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
         } else {
             if (unlink(pool->autostartLink) < 0 &&
                 errno != ENOENT && errno != ENOTDIR) {
-                virReportSystemError(obj->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      pool->autostartLink);
                 goto cleanup;
@@ -1210,8 +1210,7 @@ storageVolumeLookupByPath(virConnectPtr conn,
             virStorageVolDefPtr vol;
             const char *stable_path;
 
-            stable_path = virStorageBackendStablePath(conn,
-                                                      driver->pools.objs[i],
+            stable_path = virStorageBackendStablePath(driver->pools.objs[i],
                                                       path);
             /*
              * virStorageBackendStablePath already does

@@ -242,7 +242,7 @@ networkStartup(int privileged) {
     VIR_FREE(base);
 
     if ((err = brInit(&driverState->brctl))) {
-        virReportSystemError(NULL, err, "%s",
+        virReportSystemError(err, "%s",
                              _("cannot initialize bridge support"));
         goto error;
     }
@@ -539,13 +539,13 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     }
 
     if ((err = virFileMakePath(NETWORK_PID_DIR)) != 0) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot create directory %s"),
                              NETWORK_PID_DIR);
         return -1;
     }
     if ((err = virFileMakePath(NETWORK_STATE_DIR)) != 0) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot create directory %s"),
                              NETWORK_STATE_DIR);
         return -1;
@@ -589,16 +589,15 @@ cleanup:
 }
 
 static int
-networkAddMasqueradingIptablesRules(virConnectPtr conn,
-                      struct network_driver *driver,
-                      virNetworkObjPtr network) {
+networkAddMasqueradingIptablesRules(struct network_driver *driver,
+                                    virNetworkObjPtr network) {
     int err;
     /* allow forwarding packets from the bridge interface */
     if ((err = iptablesAddForwardAllowOut(driver->iptables,
                                           network->def->network,
                                           network->def->bridge,
                                           network->def->forwardDev))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow forwarding from '%s'"),
                              network->def->bridge);
         goto masqerr1;
@@ -609,7 +608,7 @@ networkAddMasqueradingIptablesRules(virConnectPtr conn,
                                          network->def->network,
                                          network->def->bridge,
                                          network->def->forwardDev))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow forwarding to '%s'"),
                              network->def->bridge);
         goto masqerr2;
@@ -619,7 +618,7 @@ networkAddMasqueradingIptablesRules(virConnectPtr conn,
     if ((err = iptablesAddForwardMasquerade(driver->iptables,
                                             network->def->network,
                                             network->def->forwardDev))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to enable masquerading to '%s'\n"),
                              network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr3;
@@ -642,16 +641,15 @@ networkAddMasqueradingIptablesRules(virConnectPtr conn,
 }
 
 static int
-networkAddRoutingIptablesRules(virConnectPtr conn,
-                      struct network_driver *driver,
-                      virNetworkObjPtr network) {
+networkAddRoutingIptablesRules(struct network_driver *driver,
+                               virNetworkObjPtr network) {
     int err;
     /* allow routing packets from the bridge interface */
     if ((err = iptablesAddForwardAllowOut(driver->iptables,
                                           network->def->network,
                                           network->def->bridge,
                                           network->def->forwardDev))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow routing from '%s'"),
                              network->def->bridge);
         goto routeerr1;
@@ -662,7 +660,7 @@ networkAddRoutingIptablesRules(virConnectPtr conn,
                                          network->def->network,
                                          network->def->bridge,
                                          network->def->forwardDev))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow routing to '%s'"),
                              network->def->bridge);
         goto routeerr2;
@@ -681,21 +679,20 @@ networkAddRoutingIptablesRules(virConnectPtr conn,
 }
 
 static int
-networkAddIptablesRules(virConnectPtr conn,
-                      struct network_driver *driver,
-                      virNetworkObjPtr network) {
+networkAddIptablesRules(struct network_driver *driver,
+                        virNetworkObjPtr network) {
     int err;
 
     /* allow DHCP requests through to dnsmasq */
     if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 67))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow DHCP requests from '%s'"),
                              network->def->bridge);
         goto err1;
     }
 
     if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 67))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow DHCP requests from '%s'"),
                              network->def->bridge);
         goto err2;
@@ -703,14 +700,14 @@ networkAddIptablesRules(virConnectPtr conn,
 
     /* allow DNS requests through to dnsmasq */
     if ((err = iptablesAddTcpInput(driver->iptables, network->def->bridge, 53))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow DNS requests from '%s'"),
                              network->def->bridge);
         goto err3;
     }
 
     if ((err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 53))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow DNS requests from '%s'"),
                              network->def->bridge);
         goto err4;
@@ -720,14 +717,14 @@ networkAddIptablesRules(virConnectPtr conn,
     /* Catch all rules to block forwarding to/from bridges */
 
     if ((err = iptablesAddForwardRejectOut(driver->iptables, network->def->bridge))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to block outbound traffic from '%s'"),
                              network->def->bridge);
         goto err5;
     }
 
     if ((err = iptablesAddForwardRejectIn(driver->iptables, network->def->bridge))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to block inbound traffic to '%s'"),
                              network->def->bridge);
         goto err6;
@@ -735,7 +732,7 @@ networkAddIptablesRules(virConnectPtr conn,
 
     /* Allow traffic between guests on the same bridge */
     if ((err = iptablesAddForwardAllowCross(driver->iptables, network->def->bridge))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to add iptables rule to allow cross bridge traffic on '%s'"),
                              network->def->bridge);
         goto err7;
@@ -744,11 +741,11 @@ networkAddIptablesRules(virConnectPtr conn,
 
     /* If masquerading is enabled, set up the rules*/
     if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT &&
-        !networkAddMasqueradingIptablesRules(conn, driver, network))
+        !networkAddMasqueradingIptablesRules(driver, network))
         goto err8;
     /* else if routing is enabled, set up the rules*/
     else if (network->def->forwardType == VIR_NETWORK_FORWARD_ROUTE &&
-             !networkAddRoutingIptablesRules(conn, driver, network))
+             !networkAddRoutingIptablesRules(driver, network))
         goto err8;
 
     return 1;
@@ -818,7 +815,7 @@ networkReloadIptablesRules(struct network_driver *driver)
 
         if (virNetworkObjIsActive(driver->networks.objs[i])) {
             networkRemoveIptablesRules(driver, driver->networks.objs[i]);
-            if (!networkAddIptablesRules(NULL, driver, driver->networks.objs[i])) {
+            if (!networkAddIptablesRules(driver, driver->networks.objs[i])) {
                 /* failed to add but already logged */
             }
         }
@@ -836,8 +833,7 @@ networkEnableIpForwarding(void)
 
 #define SYSCTL_PATH "/proc/sys"
 
-static int networkDisableIPV6(virConnectPtr conn,
-                              virNetworkObjPtr network)
+static int networkDisableIPV6(virNetworkObjPtr network)
 {
     char *field = NULL;
     int ret = -1;
@@ -854,7 +850,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     }
 
     if (virFileWriteStr(field, "1") < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot enable %s"), field);
         goto cleanup;
     }
@@ -866,7 +862,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     }
 
     if (virFileWriteStr(field, "0") < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot disable %s"), field);
         goto cleanup;
     }
@@ -878,7 +874,7 @@ static int networkDisableIPV6(virConnectPtr conn,
     }
 
     if (virFileWriteStr(field, "1") < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot enable %s"), field);
         goto cleanup;
     }
@@ -901,13 +897,13 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
     }
 
     if ((err = brAddBridge(driver->brctl, network->def->bridge))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot create bridge '%s'"),
                              network->def->bridge);
         return -1;
     }
 
-    if (networkDisableIPV6(conn, network) < 0)
+    if (networkDisableIPV6(network) < 0)
         goto err_delbr;
 
     if (brSetForwardDelay(driver->brctl, network->def->bridge, network->def->delay) < 0)
@@ -918,7 +914,7 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
 
     if (network->def->ipAddress &&
         (err = brSetInetAddress(driver->brctl, network->def->bridge, network->def->ipAddress))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot set IP address on bridge '%s' to '%s'"),
                              network->def->bridge, network->def->ipAddress);
         goto err_delbr;
@@ -926,25 +922,25 @@ static int networkStartNetworkDaemon(virConnectPtr conn,
 
     if (network->def->netmask &&
         (err = brSetInetNetmask(driver->brctl, network->def->bridge, network->def->netmask))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot set netmask on bridge '%s' to '%s'"),
                              network->def->bridge, network->def->netmask);
         goto err_delbr;
     }
 
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 1))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("failed to bring the bridge '%s' up"),
                              network->def->bridge);
         goto err_delbr;
     }
 
-    if (!networkAddIptablesRules(conn, driver, network))
+    if (!networkAddIptablesRules(driver, network))
         goto err_delbr1;
 
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE &&
         networkEnableIpForwarding() < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("failed to enable IP forwarding"));
         goto err_delbr2;
     }
@@ -1519,21 +1515,21 @@ static int networkSetAutostart(virNetworkPtr net,
 
         if (autostart) {
             if (virFileMakePath(driver->networkAutostartDir)) {
-                virReportSystemError(net->conn, errno,
+                virReportSystemError(errno,
                                      _("cannot create autostart directory '%s'"),
                                      driver->networkAutostartDir);
                 goto cleanup;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
-                virReportSystemError(net->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to create symlink '%s' to '%s'"),
                                      autostartLink, configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                virReportSystemError(net->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      autostartLink);
                 goto cleanup;

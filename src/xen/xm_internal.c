@@ -397,7 +397,7 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
 
     /* Get modified time */
     if ((stat(filename, &st) < 0)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot stat: %s"),
                              filename);
         return -1;
@@ -494,7 +494,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
     struct xenXMConfigReaperData args;
 
     if (now == ((time_t)-1)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot get time of day"));
         return (-1);
     }
@@ -507,7 +507,7 @@ int xenXMConfigCacheRefresh (virConnectPtr conn) {
 
     /* Process the files in the config dir */
     if (!(dh = opendir(priv->configDir))) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read directory %s"),
                              priv->configDir);
         return (-1);
@@ -3153,7 +3153,7 @@ int xenXMDomainGetAutostart(virDomainPtr dom, int *autostart)
 
     *autostart = virFileLinkPointsTo(linkname, config);
     if (*autostart < 0) {
-        virReportSystemError(dom->conn, errno,
+        virReportSystemError(errno,
                              _("cannot check link %s points to config %s"),
                              linkname, config);
         goto cleanup;
@@ -3182,7 +3182,7 @@ int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
     if (autostart) {
         if (symlink(config, linkname) < 0 &&
             errno != EEXIST) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("failed to create link %s to %s"),
                                  config, linkname);
             goto cleanup;
@@ -3190,7 +3190,7 @@ int xenXMDomainSetAutostart(virDomainPtr dom, int autostart)
     } else {
         if (unlink(linkname)  < 0 &&
             errno != ENOENT) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("failed to remove link %s"),
                                  linkname);
             goto cleanup;

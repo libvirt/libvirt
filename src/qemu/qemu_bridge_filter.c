@@ -39,7 +39,7 @@ networkAddEbtablesRules(struct qemud_driver *driver) {
 
     /* Set forward policy to DROP */
     if ((err = ebtablesAddForwardPolicyReject(driver->ebtables))) {
-        virReportSystemError(NULL, err,
+        virReportSystemError(err,
          _("failed to add ebtables rule to set default policy to drop on '%s'"),
                              __FILE__);
         return err;
@@ -55,7 +55,7 @@ networkDisableAllFrames(struct qemud_driver *driver) {
 
     /* add default rules */
     if ((err = networkAddEbtablesRules(driver))) {
-        virReportSystemError(NULL, err,
+        virReportSystemError(err,
                              _("cannot filter mac addresses on bridge '%s'"),
                              __FILE__);
         return err;
@@ -64,8 +64,7 @@ networkDisableAllFrames(struct qemud_driver *driver) {
 }
 
 int
-networkAllowMacOnPort(virConnectPtr conn,
-                      struct qemud_driver *driver,
+networkAllowMacOnPort(struct qemud_driver *driver,
                       const char * ifname,
                       const unsigned char * mac) {
 
@@ -76,7 +75,7 @@ networkAllowMacOnPort(virConnectPtr conn,
     if ((err = ebtablesAddForwardAllowIn(ebtablescontext,
                                          ifname,
                                          mac))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                      _("failed to add ebtables rule to allow routing to '%s'"),
                              ifname);
     }
@@ -86,8 +85,7 @@ networkAllowMacOnPort(virConnectPtr conn,
 
 
 int
-networkDisallowMacOnPort(virConnectPtr conn,
-                         struct qemud_driver *driver,
+networkDisallowMacOnPort(struct qemud_driver *driver,
                          const char * ifname,
                          const unsigned char * mac) {
 
@@ -98,7 +96,7 @@ networkDisallowMacOnPort(virConnectPtr conn,
     if ((err = ebtablesRemoveForwardAllowIn(ebtablescontext,
                                          ifname,
                                          mac))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                      _("failed to add ebtables rule to allow routing to '%s'"),
                              ifname);
     }

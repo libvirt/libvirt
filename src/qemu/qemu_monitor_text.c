@@ -250,7 +250,7 @@ qemuMonitorCommandWithHandler(qemuMonitorPtr mon,
     }
 
     if (ret < 0) {
-        virReportSystemError(NULL, msg.lastErrno,
+        virReportSystemError(msg.lastErrno,
                              _("cannot send monitor command '%s'"), cmd);
         VIR_FREE(*reply);
     }

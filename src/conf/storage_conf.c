@@ -1539,7 +1539,7 @@ virStoragePoolLoadAllConfigs(virConnectPtr conn,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        virReportSystemError(conn, errno, _("Failed to open dir '%s'"),
+        virReportSystemError(errno, _("Failed to open dir '%s'"),
                              configDir);
         return -1;
     }
@@ -1596,7 +1596,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
         char path[PATH_MAX];
 
         if ((err = virFileMakePath(driver->configDir))) {
-            virReportSystemError(conn, err,
+            virReportSystemError(err,
                                  _("cannot create config directory %s"),
                                  driver->configDir);
             return -1;
@@ -1637,7 +1637,7 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
     if ((fd = open(pool->configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot create config file %s"),
                              pool->configFile);
         goto cleanup;
@@ -1645,14 +1645,14 @@ virStoragePoolObjSaveDef(virConnectPtr conn,
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) != towrite) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot write config file %s"),
                              pool->configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot save config file %s"),
                              pool->configFile);
         goto cleanup;

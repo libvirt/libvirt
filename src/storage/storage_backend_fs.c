@@ -63,13 +63,13 @@ virStorageBackendProbeTarget(virConnectPtr conn,
         *encryption = NULL;
 
     if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              target->path);
         return -1;
     }
 
-    if ((ret = virStorageBackendUpdateVolTargetInfoFD(conn, target, fd,
+    if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
                                                       allocation,
                                                       capacity)) < 0) {
         close(fd);
@@ -254,14 +254,13 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn,
  * Return 0 if not mounted, 1 if mounted, -1 on error
  */
 static int
-virStorageBackendFileSystemIsMounted(virConnectPtr conn,
-                                     virStoragePoolObjPtr pool) {
+virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read mount list '%s'"),
                              _PATH_MOUNTED);
         return -1;
@@ -371,7 +370,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     }
 
     /* Short-circuit if already mounted */
-    if ((ret = virStorageBackendFileSystemIsMounted(conn, pool)) != 0) {
+    if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 0) {
         if (ret < 0)
             return -1;
         else
@@ -447,7 +446,7 @@ virStorageBackendFileSystemUnmount(virConnectPtr conn,
     }
 
     /* Short-circuit if already unmounted */
-    if ((ret = virStorageBackendFileSystemIsMounted(conn, pool)) != 1) {
+    if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 1) {
         if (ret < 0)
             return -1;
         else
@@ -525,7 +524,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn,
          * exist, with default uid/gid/mode. */
         *p = '\0';
         if ((err = virFileMakePath(parent)) != 0) {
-            virReportSystemError(conn, err, _("cannot create path '%s'"),
+            virReportSystemError(err, _("cannot create path '%s'"),
                                  parent);
             goto error;
         }
@@ -541,7 +540,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn,
                             VIR_FILE_CREATE_ALLOW_EXIST |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_FILE_CREATE_AS_UID : 0)) != 0)) {
-        virReportSystemError(conn, err, _("cannot create path '%s'"),
+        virReportSystemError(err, _("cannot create path '%s'"),
                              pool->def->target.path);
         goto error;
     }
@@ -566,7 +565,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
     virStorageVolDefPtr vol = NULL;
 
     if (!(dir = opendir(pool->def->target.path))) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              pool->def->target.path);
         goto cleanup;
@@ -625,8 +624,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
                         memmove(backingStore, path, strlen(path) + 1);
                         vol->backingStore.path = backingStore;
 
-                        if (virStorageBackendUpdateVolTargetInfo(conn,
-                                                                 &vol->backingStore,
+                        if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
                                                                  NULL,
                                                                  NULL) < 0)
                             VIR_FREE(vol->backingStore);
@@ -662,7 +660,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
 
 
     if (statvfs(pool->def->target.path, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot statvfs path '%s'"),
                              pool->def->target.path);
         return -1;
@@ -722,14 +720,14 @@ virStorageBackendFileSystemStop(virConnectPtr conn,
  * Returns 0 on success, -1 on error
  */
 static int
-virStorageBackendFileSystemDelete(virConnectPtr conn,
+virStorageBackendFileSystemDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   unsigned int flags ATTRIBUTE_UNUSED)
 {
     /* XXX delete all vols first ? */
 
     if (rmdir(pool->def->target.path) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to remove pool '%s'"),
                              pool->def->target.path);
         return -1;
@@ -789,7 +787,7 @@ static int createFileDir(virConnectPtr conn,
                             vol->target.perms.uid, vol->target.perms.gid,
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_FILE_CREATE_AS_UID : 0))) != 0) {
-        virReportSystemError(conn, err, _("cannot create path '%s'"),
+        virReportSystemError(err, _("cannot create path '%s'"),
                              vol->target.path);
         return -1;
     }
@@ -867,7 +865,7 @@ virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
  * Remove a volume - just unlinks for now
  */
 static int
-virStorageBackendFileSystemVolDelete(virConnectPtr conn,
+virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                      virStorageVolDefPtr vol,
                                      unsigned int flags ATTRIBUTE_UNUSED)
@@ -875,7 +873,7 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn,
     if (unlink(vol->target.path) < 0) {
         /* Silently ignore failures where the vol has already gone away */
         if (errno != ENOENT) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("cannot unlink file '%s'"),
                                  vol->target.path);
             return -1;
@@ -896,7 +894,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
     int ret;
 
     /* Refresh allocation / permissions info in case its changed */
-    ret = virStorageBackendUpdateVolInfo(conn, vol, 0);
+    ret = virStorageBackendUpdateVolInfo(vol, 0);
     if (ret < 0)
         return ret;
 

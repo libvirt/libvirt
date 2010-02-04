@@ -707,7 +707,7 @@ static int lxcVmCleanup(virConnectPtr conn,
         ; /* empty */
 
     if ((waitRc != vm->pid) && (errno != ECHILD)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("waitpid failed to wait for container %d: %d"),
                              vm->pid, waitRc);
     }
@@ -838,7 +838,7 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             char macaddr[VIR_MAC_STRING_BUFLEN];
             virFormatMacAddr(def->nets[i]->mac, macaddr);
             if (0 != (rc = setMacAddr(containerVeth, macaddr))) {
-                virReportSystemError(conn, rc,
+                virReportSystemError(rc,
                                      _("Failed to set %s to %s"),
                                      macaddr, containerVeth);
                 goto error_exit;
@@ -846,14 +846,14 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         if (0 != (rc = brAddInterface(brctl, bridge, parentVeth))) {
-            virReportSystemError(conn, rc,
+            virReportSystemError(rc,
                                  _("Failed to add %s device to %s"),
                                  parentVeth, bridge);
             goto error_exit;
         }
 
         if (0 != (rc = vethInterfaceUpOrDown(parentVeth, 1))) {
-            virReportSystemError(conn, rc,
+            virReportSystemError(rc,
                                  _("Failed to enable %s device"),
                                  parentVeth);
             goto error_exit;
@@ -884,7 +884,7 @@ static int lxcMonitorClient(virConnectPtr conn,
     }
 
     if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Failed to create client socket"));
         goto error;
     }
@@ -898,7 +898,7 @@ static int lxcMonitorClient(virConnectPtr conn,
     }
 
     if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Failed to connect to client socket"));
         goto error;
     }
@@ -930,7 +930,7 @@ static int lxcVmTerminate(virConnectPtr conn,
 
     if (kill(vm->pid, signum) < 0) {
         if (errno != ESRCH) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to kill pid %d"),
                                  vm->pid);
             return -1;
@@ -1131,7 +1131,7 @@ static int lxcControllerStart(virConnectPtr conn,
      */
     while ((rc = waitpid(child, &status, 0) == -1) && errno == EINTR);
     if (rc == -1) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot wait for '%s'"),
                              largv[0]);
         goto cleanup;
@@ -1194,7 +1194,7 @@ static int lxcVmStart(virConnectPtr conn,
     lxcDomainObjPrivatePtr priv = vm->privateData;
 
     if ((r = virFileMakePath(driver->logDir)) != 0) {
-        virReportSystemError(conn, r,
+        virReportSystemError(r,
                              _("Cannot create log directory '%s'"),
                              driver->logDir);
         return -1;
@@ -1208,7 +1208,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* open parent tty */
     if (virFileOpenTty(&parentTty, &parentTtyPath, 1) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Failed to allocate tty"));
         goto cleanup;
     }
@@ -1229,7 +1229,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to open '%s'"),
                              logfile);
         goto cleanup;
@@ -1249,7 +1249,7 @@ static int lxcVmStart(virConnectPtr conn,
 
     /* And get its pid */
     if ((r = virFileReadPid(driver->stateDir, vm->def->name, &vm->pid)) != 0) {
-        virReportSystemError(conn, r,
+        virReportSystemError(r,
                              _("Failed to read pid file %s/%s.pid"),
                              driver->stateDir, vm->def->name);
         goto cleanup;
@@ -2139,21 +2139,21 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         int err;
 
         if ((err = virFileMakePath(driver->autostartDir))) {
-            virReportSystemError(dom->conn, err,
+            virReportSystemError(err,
                                  _("Cannot create autostart directory %s"),
                                  driver->autostartDir);
             goto cleanup;
         }
 
         if (symlink(configFile, autostartLink) < 0) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to create symlink '%s to '%s'"),
                                  autostartLink, configFile);
             goto cleanup;
         }
     } else {
         if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to delete symlink '%s'"),
                                  autostartLink);
             goto cleanup;

@@ -222,7 +222,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
     }
 
     if (ret < 0)
-        virReportSystemError(NULL, msg.lastErrno,
+        virReportSystemError(msg.lastErrno,
                              _("cannot send monitor command '%s'"), cmdstr);
 
 cleanup:
@@ -331,7 +331,7 @@ qemuMonitorJSONCommandAddTimestamp(virJSONValuePtr obj)
     virJSONValuePtr timestamp = NULL;
 
     if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("cannot query time of day"));
         return -1;
     }

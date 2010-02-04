@@ -71,7 +71,7 @@ profile_status(const char *str, const int check_enforcing)
     }
 
     if (virFileReadAll(APPARMOR_PROFILES_PATH, MAX_FILE_LEN, &content) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("Failed to read AppArmor profiles list "
                              "\'%s\'"), APPARMOR_PROFILES_PATH);
         goto clean;
@@ -120,7 +120,7 @@ profile_status_file(const char *str)
         goto failed;
 
     if ((len = virFileReadAll(profile, MAX_FILE_LEN, &content)) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("Failed to read \'%s\'"), profile);
         goto failed;
     }
@@ -158,7 +158,7 @@ load_profile(virConnectPtr conn, const char *profile, virDomainObjPtr vm,
     pid_t child;
 
     if (pipe(pipefd) < -1) {
-        virReportSystemError(conn, errno, "%s", _("unable to create pipe"));
+        virReportSystemError(errno, "%s", _("unable to create pipe"));
         return rc;
     }
 
@@ -193,7 +193,7 @@ load_profile(virConnectPtr conn, const char *profile, virDomainObjPtr vm,
 
     /* parent continues here */
     if (safewrite(pipefd[1], xml, strlen(xml)) < 0) {
-        virReportSystemError(conn, errno, "%s", _("unable to write to pipe"));
+        virReportSystemError(errno, "%s", _("unable to write to pipe"));
         goto clean;
     }
     close(pipefd[1]);

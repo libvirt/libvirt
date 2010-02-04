@@ -2368,7 +2368,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
 
     if ((fd = open("/dev/cpu/self/cpuid", O_RDONLY)) == -1 ||
         pread(fd, &regs, sizeof(regs), 0) != sizeof(regs)) {
-        virReportSystemError(conn, errno, "%s", _("could not read CPU flags"));
+        virReportSystemError(errno, "%s", _("could not read CPU flags"));
         goto out;
     }
 
@@ -2649,7 +2649,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     cpuinfo = fopen ("/proc/cpuinfo", "r");
     if (cpuinfo == NULL) {
         if (errno != ENOENT) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("cannot read file %s"),
                                  "/proc/cpuinfo");
             return NULL;
@@ -2660,7 +2660,7 @@ xenHypervisorMakeCapabilities(virConnectPtr conn)
     if (capabilities == NULL) {
         if (errno != ENOENT) {
             fclose(cpuinfo);
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("cannot read file %s"),
                                  "/sys/hypervisor/properties/capabilities");
             return NULL;

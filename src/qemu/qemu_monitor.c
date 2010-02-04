@@ -232,7 +232,7 @@ qemuMonitorOpenUnix(const char *monitor)
     int ret, i = 0;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              "%s", _("failed to create socket"));
         return -1;
     }
@@ -257,14 +257,14 @@ qemuMonitorOpenUnix(const char *monitor)
             continue;
         }
 
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("failed to connect to monitor socket"));
         goto error;
 
     } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
 
     if (ret != 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("monitor socket did not show up."));
         goto error;
     }

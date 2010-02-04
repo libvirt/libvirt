@@ -110,7 +110,7 @@ umlConnectTapDevice(virConnectPtr conn,
     int err;
 
     if ((err = brInit(&brctl))) {
-        virReportSystemError(conn, err, "%s",
+        virReportSystemError(err, "%s",
                              _("cannot initialize bridge support"));
         goto error;
     }
@@ -133,11 +133,11 @@ umlConnectTapDevice(virConnectPtr conn,
                            _("Failed to add tap interface to bridge. "
                              "%s is not a bridge device"), bridge);
         } else if (template_ifname) {
-            virReportSystemError(conn, err,
+            virReportSystemError(err,
                                  _("Failed to add tap interface to bridge '%s'"),
                                  bridge);
         } else {
-            virReportSystemError(conn, err,
+            virReportSystemError(err,
                                  _("Failed to add tap interface '%s' to bridge '%s'"),
                                  net->ifname, bridge);
         }

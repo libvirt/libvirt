@@ -748,7 +748,7 @@ int virNetworkSaveXML(virConnectPtr conn,
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("cannot create config directory '%s'"),
                              configDir);
         goto cleanup;
@@ -757,7 +757,7 @@ int virNetworkSaveXML(virConnectPtr conn,
     if ((fd = open(configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot create config file '%s'"),
                              configFile);
         goto cleanup;
@@ -765,14 +765,14 @@ int virNetworkSaveXML(virConnectPtr conn,
 
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot write config file '%s'"),
                              configFile);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot save config file '%s'"),
                              configFile);
         goto cleanup;
@@ -874,7 +874,7 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to open dir '%s'"),
                              configDir);
         return -1;
@@ -923,7 +923,7 @@ int virNetworkDeleteConfig(virConnectPtr conn,
     unlink(autostartLink);
 
     if (unlink(configFile) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot remove config file '%s'"),
                              configFile);
         goto error;

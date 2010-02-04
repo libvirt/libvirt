@@ -345,13 +345,13 @@ __virExec(virConnectPtr conn,
      */
     sigfillset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot block signals"));
         return -1;
     }
 
     if ((null = open("/dev/null", O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open %s"),
                              "/dev/null");
         goto cleanup;
@@ -360,20 +360,20 @@ __virExec(virConnectPtr conn,
     if (outfd != NULL) {
         if (*outfd == -1) {
             if (pipe(pipeout) < 0) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("cannot create pipe"));
                 goto cleanup;
             }
 
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeout[0]) == -1) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
@@ -389,20 +389,20 @@ __virExec(virConnectPtr conn,
     if (errfd != NULL) {
         if (*errfd == -1) {
             if (pipe(pipeerr) < 0) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("Failed to create pipe"));
                 goto cleanup;
             }
 
             if ((flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("Failed to set non-blocking file descriptor flag"));
                 goto cleanup;
             }
 
             if (virSetCloseExec(pipeerr[0]) == -1) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("Failed to set close-on-exec file descriptor flag"));
                 goto cleanup;
             }
@@ -424,7 +424,7 @@ __virExec(virConnectPtr conn,
     virLogUnlock();
 
     if (pid < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot fork child process"));
         goto cleanup;
     }
@@ -443,7 +443,7 @@ __virExec(virConnectPtr conn,
         /* Restore our original signal mask now child is safely
            running */
         if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("cannot unblock signals"));
             return -1;
         }
@@ -487,7 +487,7 @@ __virExec(virConnectPtr conn,
        and don't want to propagate that to children */
     sigemptyset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot unblock signals"));
         _exit(1);
     }
@@ -503,19 +503,19 @@ __virExec(virConnectPtr conn,
             close(i);
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("failed to setup stdin file handle"));
         _exit(1);
     }
     if (childout > 0 &&
         dup2(childout, STDOUT_FILENO) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("failed to setup stdout file handle"));
         _exit(1);
     }
     if (childerr > 0 &&
         dup2(childerr, STDERR_FILENO) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("failed to setup stderr file handle"));
         _exit(1);
     }
@@ -533,20 +533,20 @@ __virExec(virConnectPtr conn,
      * the above errors with wait* */
     if (flags & VIR_EXEC_DAEMON) {
         if (setsid() < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("cannot become session leader"));
             _exit(1);
         }
 
         if (chdir("/") < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("cannot change to root directory: %s"));
             _exit(1);
         }
 
         pid = fork();
         if (pid < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("cannot fork child process"));
             _exit(1);
         }
@@ -556,7 +556,7 @@ __virExec(virConnectPtr conn,
                 kill(pid, SIGTERM);
                 usleep(500*1000);
                 kill(pid, SIGTERM);
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      _("could not write pidfile %s for %d"),
                                      pidfile, pid);
                 _exit(1);
@@ -583,7 +583,7 @@ __virExec(virConnectPtr conn,
     else
         execvp(argv[0], (char **) argv);
 
-    virReportSystemError(conn, errno,
+    virReportSystemError(errno,
                          _("cannot execute binary %s"),
                          argv[0]);
 
@@ -784,7 +784,7 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
         continue;
 
     pollerr:
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("poll error"));
         goto error;
     }
@@ -853,7 +853,7 @@ virRunWithHook(virConnectPtr conn,
     while ((waitret = waitpid(childpid, &exitstatus, 0) == -1) &&
             errno == EINTR);
     if (waitret == -1) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot wait for '%s'"),
                              argv[0]);
         goto error;
@@ -997,14 +997,14 @@ int virFileReadAll(const char *path, int maxlen, char **buf)
 {
     int fd = open(path, O_RDONLY);
     if (fd < 0) {
-        virReportSystemError(NULL, errno, _("Failed to open file '%s'"), path);
+        virReportSystemError(errno, _("Failed to open file '%s'"), path);
         return -1;
     }
 
     int len = virFileReadLimFD(fd, maxlen, buf);
     close(fd);
     if (len < 0) {
-        virReportSystemError(NULL, errno, _("Failed to read file '%s'"), path);
+        virReportSystemError(errno, _("Failed to read file '%s'"), path);
         return -1;
     }
 
@@ -1171,32 +1171,32 @@ static int virFileCreateSimple(const char *path, mode_t mode, uid_t uid, gid_t g
 
     if ((fd = open(path, open_flags, mode)) < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("failed to create file '%s'"),
+        virReportSystemError(errno, _("failed to create file '%s'"),
                              path);
         goto error;
     }
     if (fstat(fd, &st) == -1) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("stat of '%s' failed"), path);
+        virReportSystemError(errno, _("stat of '%s' failed"), path);
         goto error;
     }
     if (((st.st_uid != uid) || (st.st_gid != gid))
         && (fchown(fd, uid, gid) < 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("cannot chown '%s' to (%u, %u)"),
+        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
                              path, uid, gid);
         goto error;
     }
     if (fchmod(fd, mode) < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              path, mode);
         goto error;
     }
     if (close(fd) < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("failed to close new file '%s'"),
+        virReportSystemError(errno, _("failed to close new file '%s'"),
                              path);
         fd = -1;
         goto error;
@@ -1217,26 +1217,26 @@ static int virDirCreateSimple(const char *path, mode_t mode, uid_t uid, gid_t gi
         && !((errno == EEXIST) && (flags & VIR_FILE_CREATE_ALLOW_EXIST)))
        {
         ret = errno;
-        virReportSystemError(NULL, errno, _("failed to create directory '%s'"),
+        virReportSystemError(errno, _("failed to create directory '%s'"),
                              path);
         goto error;
     }
 
     if (stat(path, &st) == -1) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("stat of '%s' failed"), path);
+        virReportSystemError(errno, _("stat of '%s' failed"), path);
         goto error;
     }
     if (((st.st_uid != uid) || (st.st_gid != gid))
         && (chown(path, uid, gid) < 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("cannot chown '%s' to (%u, %u)"),
+        virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
                              path, uid, gid);
         goto error;
     }
     if (chmod(path, mode) < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              path, mode);
         goto error;
@@ -1271,7 +1271,7 @@ int virFileCreate(const char *path, mode_t mode,
 
     if (pid < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot fork o create file '%s'"), path);
         return ret;
     }
@@ -1282,7 +1282,7 @@ int virFileCreate(const char *path, mode_t mode,
                && (errno == EINTR));
         if (waitret == -1) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("failed to wait for child creating '%s'"),
                                  path);
             goto parenterror;
@@ -1301,21 +1301,21 @@ int virFileCreate(const char *path, mode_t mode,
          * setgid. If not, try doing it with chown */
         if (stat(path, &st) == -1) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("stat of '%s' failed"),
                                  path);
             goto parenterror;
         }
         if ((st.st_gid != gid) && (chown(path, -1, gid) < 0)) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("cannot chown '%s' to group %u"),
                                  path, gid);
             goto parenterror;
         }
         if (chmod(path, mode) < 0) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("cannot set mode of '%s' to %04o"),
                                  path, mode);
             goto parenterror;
@@ -1328,14 +1328,14 @@ parenterror:
 
     if ((gid != 0) && (setgid(gid) != 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set gid %u creating '%s'"),
                              gid, path);
         goto childerror;
     }
     if  ((uid != 0) && (setuid(uid) != 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set uid %u creating '%s'"),
                              uid, path);
         goto childerror;
@@ -1344,7 +1344,7 @@ parenterror:
         ret = errno;
         if (ret != EACCES) {
             /* in case of EACCES, the parent will retry */
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("child failed to create file '%s'"),
                                  path);
         }
@@ -1352,7 +1352,7 @@ parenterror:
     }
     if (close(fd) < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("child failed to close new file '%s'"),
+        virReportSystemError(errno, _("child failed to close new file '%s'"),
                              path);
         goto childerror;
     }
@@ -1381,7 +1381,7 @@ int virDirCreate(const char *path, mode_t mode,
 
     if (pid < 0) {
         ret = errno;
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot fork to create directory '%s'"),
                              path);
         return ret;
@@ -1392,7 +1392,7 @@ int virDirCreate(const char *path, mode_t mode,
         while ((waitret = waitpid(pid, &status, 0) == -1)  && (errno == EINTR));
         if (waitret == -1) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("failed to wait for child creating '%s'"),
                                  path);
             goto parenterror;
@@ -1411,20 +1411,20 @@ int virDirCreate(const char *path, mode_t mode,
          * setgid. If not, try doing it with chown */
         if (stat(path, &st) == -1) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("stat of '%s' failed"),
                                  path);
             goto parenterror;
         }
         if ((st.st_gid != gid) && (chown(path, -1, gid) < 0)) {
             ret = errno;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("cannot chown '%s' to group %u"),
                                  path, gid);
             goto parenterror;
         }
         if (chmod(path, mode) < 0) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("cannot set mode of '%s' to %04o"),
                                  path, mode);
             goto parenterror;
@@ -1437,13 +1437,13 @@ parenterror:
 
     if ((gid != 0) && (setgid(gid) != 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("cannot set gid %u creating '%s'"),
+        virReportSystemError(errno, _("cannot set gid %u creating '%s'"),
                              gid, path);
         goto childerror;
     }
     if  ((uid != 0) && (setuid(uid) != 0)) {
         ret = errno;
-        virReportSystemError(NULL, errno, _("cannot set uid %u creating '%s'"),
+        virReportSystemError(errno, _("cannot set uid %u creating '%s'"),
                              uid, path);
         goto childerror;
     }
@@ -1451,7 +1451,7 @@ parenterror:
         ret = errno;
         if (ret != EACCES) {
             /* in case of EACCES, the parent will retry */
-            virReportSystemError(NULL, errno, _("child failed to create directory '%s'"),
+            virReportSystemError(errno, _("child failed to create directory '%s'"),
                                  path);
         }
         goto childerror;
@@ -2214,8 +2214,8 @@ char *virGetHostname(virConnectPtr conn)
 
     r = gethostname (hostname, sizeof(hostname));
     if (r == -1) {
-        virReportSystemError (conn, errno,
-                              "%s", _("failed to determine host name"));
+        virReportSystemError(errno,
+                             "%s", _("failed to determine host name"));
         return NULL;
     }
     NUL_TERMINATE(hostname);
@@ -2339,8 +2339,7 @@ enum {
     VIR_USER_ENT_NAME,
 };
 
-static char *virGetUserEnt(virConnectPtr conn,
-                           uid_t uid,
+static char *virGetUserEnt(uid_t uid,
                            int field)
 {
     char *strbuf;
@@ -2351,7 +2350,7 @@ static char *virGetUserEnt(virConnectPtr conn,
     size_t strbuflen = val;
 
     if (val < 0) {
-        virReportSystemError(conn, errno, "%s", _("sysconf failed"));
+        virReportSystemError(errno, "%s", _("sysconf failed"));
         return NULL;
     }
 
@@ -2368,7 +2367,7 @@ static char *virGetUserEnt(virConnectPtr conn,
      *        The given name or uid was not found.
      */
     if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to find user record for uid '%d'"),
                              uid);
         VIR_FREE(strbuf);
@@ -2387,20 +2386,20 @@ static char *virGetUserEnt(virConnectPtr conn,
     return ret;
 }
 
-char *virGetUserDirectory(virConnectPtr conn,
+char *virGetUserDirectory(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                           uid_t uid)
 {
-    return virGetUserEnt(conn, uid, VIR_USER_ENT_DIRECTORY);
+    return virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
 }
 
-char *virGetUserName(virConnectPtr conn,
+char *virGetUserName(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                      uid_t uid)
 {
-    return virGetUserEnt(conn, uid, VIR_USER_ENT_NAME);
+    return virGetUserEnt(uid, VIR_USER_ENT_NAME);
 }
 
 
-int virGetUserID(virConnectPtr conn,
+int virGetUserID(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                  const char *name,
                  uid_t *uid)
 {
@@ -2411,7 +2410,7 @@ int virGetUserID(virConnectPtr conn,
     size_t strbuflen = val;
 
     if (val < 0) {
-        virReportSystemError(conn, errno, "%s", _("sysconf failed"));
+        virReportSystemError(errno, "%s", _("sysconf failed"));
         return -1;
     }
 
@@ -2428,7 +2427,7 @@ int virGetUserID(virConnectPtr conn,
      *        The given name or uid was not found.
      */
     if (getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to find user record for name '%s'"),
                              name);
         VIR_FREE(strbuf);
@@ -2443,7 +2442,7 @@ int virGetUserID(virConnectPtr conn,
 }
 
 
-int virGetGroupID(virConnectPtr conn,
+int virGetGroupID(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                   const char *name,
                   gid_t *gid)
 {
@@ -2454,7 +2453,7 @@ int virGetGroupID(virConnectPtr conn,
     size_t strbuflen = val;
 
     if (val < 0) {
-        virReportSystemError(conn, errno, "%s", _("sysconf failed"));
+        virReportSystemError(errno, "%s", _("sysconf failed"));
         return -1;
     }
 
@@ -2471,7 +2470,7 @@ int virGetGroupID(virConnectPtr conn,
      *        The given name or uid was not found.
      */
     if (getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr) != 0 || gr == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to find group record for name '%s'"),
                              name);
         VIR_FREE(strbuf);

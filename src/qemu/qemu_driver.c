@@ -307,7 +307,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
     unsigned long long then;
 
     if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("cannot get time of day"));
         return -1;
     }
@@ -323,7 +323,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
                 qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_TIMEOUT,
                                  "%s", _("cannot acquire state change lock"));
             else
-                virReportSystemError(NULL, errno,
+                virReportSystemError(errno,
                                      "%s", _("cannot acquire job mutex"));
             return -1;
         }
@@ -349,7 +349,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
     unsigned long long then;
 
     if (gettimeofday(&now, NULL) < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("cannot get time of day"));
         return -1;
     }
@@ -366,7 +366,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
                 qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_TIMEOUT,
                                  "%s", _("cannot acquire state change lock"));
             else
-                virReportSystemError(NULL, errno,
+                virReportSystemError(errno,
                                      "%s", _("cannot acquire job mutex"));
             qemuDriverLock(driver);
             return -1;
@@ -497,7 +497,7 @@ static int qemuCgroupControllerActive(struct qemud_driver *driver,
 }
 
 static int
-qemudLogFD(virConnectPtr conn, struct qemud_driver *driver, const char* name)
+qemudLogFD(struct qemud_driver *driver, const char* name)
 {
     char logfile[PATH_MAX];
     mode_t logmode;
@@ -518,13 +518,13 @@ qemudLogFD(virConnectPtr conn, struct qemud_driver *driver, const char* name)
         logmode |= O_TRUNC;
 
     if ((fd = open(logfile, logmode, S_IRUSR | S_IWUSR)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to create logfile %s"),
                              logfile);
         return -1;
     }
     if (virSetCloseExec(fd) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
         return -1;
@@ -550,19 +550,19 @@ qemudLogReadFD(virConnectPtr conn, const char* logDir, const char* name, off_t p
 
 
     if ((fd = open(logfile, logmode)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to create logfile %s"),
                              logfile);
         return -1;
     }
     if (virSetCloseExec(fd) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Unable to set VM logfile close-on-exec flag"));
         close(fd);
         return -1;
     }
     if (pos < 0 || lseek(fd, pos, SEEK_SET) < 0) {
-      virReportSystemError(conn, pos < 0 ? 0 : errno,
+      virReportSystemError(pos < 0 ? 0 : errno,
                              _("Unable to seek to %lld in %s"),
                              (long long) pos, logfile);
         close(fd);
@@ -1114,13 +1114,13 @@ qemudStartup(int privileged) {
 
     if (privileged) {
         if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to user %d:%d"),
                                  qemu_driver->libDir, qemu_driver->user, qemu_driver->group);
             goto error;
         }
         if (chown(qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group) < 0) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group);
             goto error;
@@ -1141,14 +1141,14 @@ qemudStartup(int privileged) {
             goto out_of_memory;
 
         if ((rc = virFileMakePath(mempath)) != 0) {
-            virReportSystemError(NULL, rc,
+            virReportSystemError(rc,
                                  _("unable to create hugepage path %s"), mempath);
             VIR_FREE(mempath);
             goto error;
         }
         if (qemu_driver->privileged &&
             chown(mempath, qemu_driver->user, qemu_driver->group) < 0) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("unable to set ownership on %s to %d:%d"),
                                  mempath, qemu_driver->user, qemu_driver->group);
             VIR_FREE(mempath);
@@ -1348,7 +1348,7 @@ qemudReadLogOutput(virConnectPtr conn,
          * always have something useful to report on failure. */
         ret = saferead(fd, buf+got, buflen-got-1);
         if (ret < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failure while reading %s log output"),
                                  what);
             return -1;
@@ -2324,8 +2324,7 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
-static int qemuSetupCgroup(virConnectPtr conn,
-                           struct qemud_driver *driver,
+static int qemuSetupCgroup(struct qemud_driver *driver,
                            virDomainObjPtr vm)
 {
     virCgroupPtr cgroup = NULL;
@@ -2341,7 +2340,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
 
     rc = virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 1);
     if (rc != 0) {
-        virReportSystemError(conn, -rc,
+        virReportSystemError(-rc,
                              _("Unable to create cgroup for %s"),
                              vm->def->name);
         goto cleanup;
@@ -2355,7 +2354,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
                 goto done;
             }
 
-            virReportSystemError(conn, -rc,
+            virReportSystemError(-rc,
                                  _("Unable to deny all devices for %s"), vm->def->name);
             goto cleanup;
         }
@@ -2368,7 +2367,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
             rc = virCgroupAllowDevicePath(cgroup,
                                           vm->def->disks[i]->src);
             if (rc != 0) {
-                virReportSystemError(conn, -rc,
+                virReportSystemError(-rc,
                                      _("Unable to allow device %s for %s"),
                                      vm->def->disks[i]->src, vm->def->name);
                 goto cleanup;
@@ -2377,7 +2376,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
 
         rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
         if (rc != 0) {
-            virReportSystemError(conn, -rc, "%s",
+            virReportSystemError(-rc, "%s",
                                  _("unable to allow /dev/pts/ devices"));
             goto cleanup;
         }
@@ -2385,7 +2384,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
         if (vm->def->nsounds) {
             rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_SND_MAJOR);
             if (rc != 0) {
-                virReportSystemError(conn, -rc, "%s",
+                virReportSystemError(-rc, "%s",
                                      _("unable to allow /dev/snd/ devices"));
                 goto cleanup;
             }
@@ -2396,7 +2395,7 @@ static int qemuSetupCgroup(virConnectPtr conn,
                                           deviceACL[i]);
             if (rc < 0 &&
                 rc != -ENOENT) {
-                virReportSystemError(conn, -rc,
+                virReportSystemError(-rc,
                                      _("unable to allow device %s"),
                                      deviceACL[i]);
                 goto cleanup;
@@ -2454,7 +2453,7 @@ static int qemuAddToCgroup(struct qemud_driver *driver,
 
     rc = virCgroupForDomain(driver->cgroup, def->name, &cgroup, 0);
     if (rc != 0) {
-        virReportSystemError(NULL, -rc,
+        virReportSystemError(-rc,
                              _("unable to find cgroup for domain %s"),
                              def->name);
         goto cleanup;
@@ -2462,7 +2461,7 @@ static int qemuAddToCgroup(struct qemud_driver *driver,
 
     rc = virCgroupAddTask(cgroup, getpid());
     if (rc != 0) {
-        virReportSystemError(NULL, -rc,
+        virReportSystemError(-rc,
                              _("unable to add domain %s task %d to cgroup"),
                              def->name, getpid());
         goto cleanup;
@@ -2582,13 +2581,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (virFileMakePath(driver->logDir) != 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              driver->logDir);
         goto cleanup;
     }
 
-    if ((logfile = qemudLogFD(conn, driver, vm->def->name)) < 0)
+    if ((logfile = qemudLogFD(driver, vm->def->name)) < 0)
         goto cleanup;
 
     emulator = vm->def->emulator;
@@ -2598,7 +2597,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
      * in a sub-process so its hard to feed back a useful error
      */
     if (stat(emulator, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot find QEMU binary %s"),
                              emulator);
         goto cleanup;
@@ -2609,7 +2608,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                                 &qemuCmdFlags) < 0)
         goto cleanup;
 
-    if (qemuSetupCgroup(conn, driver, vm) < 0)
+    if (qemuSetupCgroup(driver, vm) < 0)
         goto cleanup;
 
     if (qemuPrepareHostDevices(conn, driver, vm->def) < 0)
@@ -2631,14 +2630,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         priv->monJSON = 0;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
-        virReportSystemError(conn, ret,
+        virReportSystemError(ret,
                              _("Cannot remove stale PID file for %s"),
                              vm->def->name);
         goto cleanup;
     }
 
     if (!(pidfile = virFilePid(driver->stateDir, vm->def->name))) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("Failed to build pidfile path."));
         goto cleanup;
     }
@@ -2839,9 +2838,9 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
             virDomainNetDefPtr net = def->nets[i];
             if (net->ifname == NULL)
                 continue;
-            if ((errno = networkDisallowMacOnPort(conn, driver, net->ifname,
+            if ((errno = networkDisallowMacOnPort(driver, net->ifname,
                                                   net->mac))) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
              _("failed to remove ebtables rule to allow MAC address on  '%s'"),
                                      net->ifname);
             }
@@ -2850,7 +2849,7 @@ static void qemudShutdownVMDaemon(virConnectPtr conn,
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to send SIGTERM to %s (%d)"),
                              vm->def->name, vm->pid);
 
@@ -3036,7 +3035,7 @@ static int kvmGetMaxVCPUs(void) {
 
     fd = open(KVM_DEVICE, O_RDONLY);
     if (fd < 0) {
-        virReportSystemError(NULL, errno, _("Unable to open %s"), KVM_DEVICE);
+        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
         return -1;
     }
 
@@ -3282,7 +3281,7 @@ static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     int ret = -1;
 
     qemuDriverLock(driver);
-    if (qemudExtractVersion(conn, driver) < 0)
+    if (qemudExtractVersion(driver) < 0)
         goto cleanup;
 
     *version = qemu_driver->qemuVersion;
@@ -3925,7 +3924,7 @@ static int qemudDomainSave(virDomainPtr dom,
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(dom->conn, errno,
+        virReportSystemError(errno,
                              _("unable to save file %s"),
                              path);
         goto endjob;
@@ -4040,7 +4039,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(dom->conn, errno,
+        virReportSystemError(errno,
                              _("unable to save file %s"),
                              path);
         goto endjob;
@@ -4302,7 +4301,7 @@ qemudDomainGetVcpus(virDomainPtr dom,
                                         &(info[i].cpu),
                                         vm->pid,
                                         priv->vcpupids[i]) < 0) {
-                    virReportSystemError(dom->conn, errno, "%s",
+                    virReportSystemError(errno, "%s",
                                          _("cannot get vCPU placement & pCPU time"));
                     goto cleanup;
                 }
@@ -4780,7 +4779,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
      * in a sub-process so its hard to feed back a useful error
      */
     if (stat(emulator, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot find QEMU binary %s"),
                              emulator);
         goto cleanup;
@@ -6251,11 +6250,10 @@ qemudDomainDetachNetDevice(virConnectPtr conn,
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if ((driver->macFilter) && (detach->ifname != NULL)) {
-        if ((errno = networkDisallowMacOnPort(conn,
-                                              driver,
+        if ((errno = networkDisallowMacOnPort(driver,
                                               detach->ifname,
                                               detach->mac))) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
              _("failed to remove ebtables rule on  '%s'"),
                                  detach->ifname);
         }
@@ -6547,21 +6545,21 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(dom->conn, err,
+                virReportSystemError(err,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
-                virReportSystemError(dom->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to create symlink '%s to '%s'"),
                                      autostartLink, configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                virReportSystemError(dom->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      autostartLink);
                 goto cleanup;
@@ -6651,7 +6649,7 @@ static int qemuSetSchedulerParameters(virDomainPtr dom,
 
             rc = virCgroupSetCpuShares(group, params[i].value.ul);
             if (rc != 0) {
-                virReportSystemError(dom->conn, -rc, "%s",
+                virReportSystemError(-rc, "%s",
                                      _("unable to set cpu shares tunable"));
                 goto cleanup;
             }
@@ -6711,7 +6709,7 @@ static int qemuGetSchedulerParameters(virDomainPtr dom,
 
     rc = virCgroupGetCpuShares(group, &val);
     if (rc != 0) {
-        virReportSystemError(dom->conn, -rc, "%s",
+        virReportSystemError(-rc, "%s",
                              _("unable to get cpu shares tunable"));
         goto cleanup;
     }
@@ -6948,8 +6946,8 @@ qemudDomainBlockPeek (virDomainPtr dom,
         /* The path is correct, now try to open it and get its size. */
         fd = open (path, O_RDONLY);
         if (fd == -1) {
-            virReportSystemError (dom->conn, errno,
-                                  _("%s: failed to open"), path);
+            virReportSystemError(errno,
+                                 _("%s: failed to open"), path);
             goto cleanup;
         }
 
@@ -6959,8 +6957,8 @@ qemudDomainBlockPeek (virDomainPtr dom,
          */
         if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
             saferead (fd, buffer, size) == (ssize_t) -1) {
-            virReportSystemError (dom->conn, errno,
-                                  _("%s: failed to seek or read"), path);
+            virReportSystemError(errno,
+                                 _("%s: failed to seek or read"), path);
             goto cleanup;
         }
 
@@ -7023,8 +7021,8 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     /* Create a temporary filename. */
     if ((fd = mkstemp (tmp)) == -1) {
-        virReportSystemError (dom->conn, errno,
-                              _("mkstemp(\"%s\") failed"), tmp);
+        virReportSystemError(errno,
+                             _("mkstemp(\"%s\") failed"), tmp);
         goto endjob;
     }
 
@@ -7045,9 +7043,9 @@ qemudDomainMemoryPeek (virDomainPtr dom,
 
     /* Read the memory file into buffer. */
     if (saferead (fd, buffer, size) == (ssize_t) -1) {
-        virReportSystemError (dom->conn, errno,
-                              _("failed to read temporary file "
-                                "created with template %s"), tmp);
+        virReportSystemError(errno,
+                             _("failed to read temporary file "
+                               "created with template %s"), tmp);
         goto endjob;
     }
 
@@ -7413,7 +7411,7 @@ retry:
             goto retry;
         } else {
             ret = -1;
-            virReportSystemError(st->conn, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("cannot write to stream"));
         }
     }
@@ -7553,7 +7551,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
                 virDomainRemoveInactive(&driver->domains, vm);
             vm = NULL;
         }
-        virReportSystemError(dconn, errno,
+        virReportSystemError(errno,
                              _("cannot open unix socket '%s' for tunnelled migration"),
                              unixfile);
         goto endjob;
@@ -7857,7 +7855,7 @@ static int doTunnelSendAll(virDomainPtr dom,
         nbytes = saferead(sock, buffer, nbytes);
         if (nbytes < 0) {
             virStreamAbort(st);
-            virReportSystemError(dom->conn, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("tunnelled migration failed to read from qemu"));
             return -1;
         }
@@ -7924,7 +7922,7 @@ static int doTunnelMigrate(virDomainPtr dom,
 
     qemu_sock = socket(AF_UNIX, SOCK_STREAM, 0);
     if (qemu_sock < 0) {
-        virReportSystemError(dom->conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("cannot open tunnelled migration socket"));
         goto cleanup;
     }
@@ -7939,13 +7937,13 @@ static int doTunnelMigrate(virDomainPtr dom,
     }
     unlink(unixfile);
     if (bind(qemu_sock, (struct sockaddr *)&sa_qemu, sizeof(sa_qemu)) < 0) {
-        virReportSystemError(dom->conn, errno,
+        virReportSystemError(errno,
                              _("Cannot bind to unix socket '%s' for tunnelled migration"),
                              unixfile);
         goto cleanup;
     }
     if (listen(qemu_sock, 1) < 0) {
-        virReportSystemError(dom->conn, errno,
+        virReportSystemError(errno,
                              _("Cannot listen on unix socket '%s' for tunnelled migration"),
                              unixfile);
         goto cleanup;
@@ -8029,7 +8027,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     while ((client_sock = accept(qemu_sock, (struct sockaddr *)&sa_client, &addrlen)) < 0) {
         if (errno == EAGAIN || errno == EINTR)
             continue;
-        virReportSystemError(dom->conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("tunnelled migration failed to accept from qemu"));
         goto cancel;
     }

@@ -403,7 +403,7 @@ xenInotifyOpen(virConnectPtr conn,
 
         /* populate initial list */
         if (!(dh = opendir(priv->configDir))) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("cannot open directory: %s"),
                                  priv->configDir);
             return -1;
@@ -431,7 +431,7 @@ xenInotifyOpen(virConnectPtr conn,
     }
 
     if ((priv->inotifyFD = inotify_init()) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              "%s", _("initializing inotify"));
         return -1;
     }
@@ -442,7 +442,7 @@ xenInotifyOpen(virConnectPtr conn,
                           IN_CREATE |
                           IN_CLOSE_WRITE | IN_DELETE |
                           IN_MOVED_TO | IN_MOVED_FROM) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("adding watch on %s"),
                              priv->configDir);
         return -1;

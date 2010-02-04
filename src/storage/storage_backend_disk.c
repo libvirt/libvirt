@@ -82,7 +82,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
          * dir every time its run. Should figure out a more efficient
          * way of doing this...
          */
-        vol->target.path = virStorageBackendStablePath(conn, pool, devpath);
+        vol->target.path = virStorageBackendStablePath(pool, devpath);
         VIR_FREE(devpath);
         if (vol->target.path == NULL)
             return -1;
@@ -125,7 +125,7 @@ virStorageBackendDiskMakeDataVol(virConnectPtr conn,
     }
 
     /* Refresh allocation/capacity/perms */
-    if (virStorageBackendUpdateVolInfo(conn, vol, 1) < 0)
+    if (virStorageBackendUpdateVolInfo(vol, 1) < 0)
         return -1;
 
     /* set partition type */
@@ -626,7 +626,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
     int rc = -1;
 
     if ((err = virFileResolveLink(vol->target.path, &devpath)) < 0) {
-        virReportSystemError(conn, err,
+        virReportSystemError(err,
                              _("Couldn't read volume target path '%s'"),
                              vol->target.path);
         goto cleanup;

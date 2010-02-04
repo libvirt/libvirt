@@ -61,7 +61,7 @@ getDeviceType(virConnectPtr conn,
 
     typefile = fopen(type_path, "r");
     if (typefile == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Could not find typefile '%s'"),
                              type_path);
         /* there was no type file; that doesn't seem right */
@@ -73,7 +73,7 @@ getDeviceType(virConnectPtr conn,
     fclose(typefile);
 
     if (gottype == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Could not read typefile '%s'"),
                              type_path);
         /* we couldn't read the type file; have to give up */
@@ -132,8 +132,7 @@ static struct diskType const disk_types[] = {
 };
 
 static int
-virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
-                                         virStorageVolTargetPtr target,
+virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity)
 {
@@ -143,14 +142,13 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
     ssize_t bytes;
 
     if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              target->path);
         return -1;
     }
 
-    if (virStorageBackendUpdateVolTargetInfoFD(conn,
-                                               target,
+    if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,
                                                allocation,
                                                capacity) < 0)
@@ -161,14 +159,14 @@ virStorageBackendSCSIUpdateVolTargetInfo(virConnectPtr conn,
 
     start = lseek(fd, 0, SEEK_SET);
     if (start < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot seek to beginning of file '%s'"),
                              target->path);
         goto cleanup;
     }
     bytes = saferead(fd, buffer, sizeof(buffer));
     if (bytes < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read beginning of file '%s'"),
                              target->path);
         goto cleanup;
@@ -233,8 +231,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
      * dir every time its run. Should figure out a more efficient
      * way of doing this...
      */
-    if ((vol->target.path = virStorageBackendStablePath(conn,
-                                                        pool,
+    if ((vol->target.path = virStorageBackendStablePath(pool,
                                                         devpath)) == NULL) {
         retval = -1;
         goto free_vol;
@@ -251,8 +248,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
         goto free_vol;
     }
 
-    if (virStorageBackendSCSIUpdateVolTargetInfo(conn,
-                                                 &vol->target,
+    if (virStorageBackendSCSIUpdateVolTargetInfo(&vol->target,
                                                  &vol->allocation,
                                                  &vol->capacity) < 0) {
 
@@ -293,7 +289,7 @@ out:
 
 
 static int
-getNewStyleBlockDevice(virConnectPtr conn,
+getNewStyleBlockDevice(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                        const char *lun_path,
                        const char *block_name ATTRIBUTE_UNUSED,
                        char **block_device)
@@ -312,7 +308,7 @@ getNewStyleBlockDevice(virConnectPtr conn,
 
     block_dir = opendir(block_path);
     if (block_dir == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to opendir sysfs path '%s'"),
                              block_path);
         retval = -1;
@@ -403,7 +399,7 @@ getBlockDevice(virConnectPtr conn,
 
     lun_dir = opendir(lun_path);
     if (lun_dir == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to opendir sysfs path '%s'"),
                              lun_path);
         retval = -1;
@@ -519,7 +515,7 @@ virStorageBackendSCSIFindLUs(virConnectPtr conn,
     devicedir = opendir(device_path);
 
     if (devicedir == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to opendir path '%s'"), device_path);
         retval = -1;
         goto out;
@@ -562,7 +558,7 @@ virStorageBackendSCSIGetHostNumber(virConnectPtr conn,
     sysdir = opendir(sysfs_path);
 
     if (sysdir == NULL) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to opendir path '%s'"), sysfs_path);
         retval = -1;
         goto out;
@@ -586,8 +582,7 @@ out:
 
 
 static int
-virStorageBackendSCSITriggerRescan(virConnectPtr conn,
-                                   uint32_t host)
+virStorageBackendSCSITriggerRescan(uint32_t host)
 {
     int fd = -1;
     int retval = 0;
@@ -606,7 +601,7 @@ virStorageBackendSCSITriggerRescan(virConnectPtr conn,
     fd = open(path, O_WRONLY);
 
     if (fd < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Could not open '%s' to trigger host scan"),
                              path);
         retval = -1;
@@ -617,7 +612,7 @@ virStorageBackendSCSITriggerRescan(virConnectPtr conn,
                   LINUX_SYSFS_SCSI_HOST_SCAN_STRING,
                   sizeof(LINUX_SYSFS_SCSI_HOST_SCAN_STRING)) < 0) {
 
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Write to '%s' to trigger host scan failed"),
                              path);
         retval = -1;
@@ -650,7 +645,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn,
 
     VIR_DEBUG(_("Scanning host%u"), host);
 
-    if (virStorageBackendSCSITriggerRescan(conn, host) < 0) {
+    if (virStorageBackendSCSITriggerRescan(host) < 0) {
         retval = -1;
         goto out;
     }

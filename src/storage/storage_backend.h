@@ -83,26 +83,21 @@ struct _virStorageBackend {
 virStorageBackendPtr virStorageBackendForType(int type);
 
 
-int virStorageBackendUpdateVolInfo(virConnectPtr conn,
-                                   virStorageVolDefPtr vol,
+int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    int withCapacity);
 
-int virStorageBackendUpdateVolTargetInfo(virConnectPtr conn,
-                                         virStorageVolTargetPtr target,
+int virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity);
-int virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
-                                           virStorageVolTargetPtr target,
+int virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                            int fd,
                                            unsigned long long *allocation,
                                            unsigned long long *capacity);
 int
-virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
-                                         virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetFormatFD(virStorageVolTargetPtr target,
                                          int fd);
 
-char *virStorageBackendStablePath(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
+char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath);
 
 typedef int (*virStorageBackendListVolRegexFunc)(virConnectPtr conn,

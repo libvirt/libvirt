@@ -74,8 +74,7 @@ static int update_caps(virNodeDeviceObjPtr dev)
 /* Under libudev changes to the driver name should be picked up as
  * "change" events, so we don't call update driver name unless we're
  * using the HAL backend. */
-static int update_driver_name(virConnectPtr conn,
-                              virNodeDeviceObjPtr dev)
+static int update_driver_name(virNodeDeviceObjPtr dev)
 {
     char *driver_link = NULL;
     char *devpath = NULL;
@@ -97,7 +96,7 @@ static int update_driver_name(virConnectPtr conn,
     }
 
     if (virFileResolveLink(driver_link, &devpath) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot resolve driver link %s"), driver_link);
         goto cleanup;
     }
@@ -119,8 +118,7 @@ cleanup:
 }
 #else
 /* XXX: Implement me for non-linux */
-static int update_driver_name(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virNodeDeviceObjPtr dev ATTRIBUTE_UNUSED)
+static int update_driver_name(virNodeDeviceObjPtr dev ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -282,7 +280,7 @@ static char *nodeDeviceDumpXML(virNodeDevicePtr dev,
         goto cleanup;
     }
 
-    update_driver_name(dev->conn, obj);
+    update_driver_name(obj);
     update_caps(obj);
 
     ret = virNodeDeviceDefFormat(dev->conn, obj->def);
@@ -448,7 +446,7 @@ nodeDeviceVportCreateDelete(virConnectPtr conn,
     }
 
     if (virFileWriteStr(operation_path, vport_name) == -1) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Write of '%s' to '%s' during "
                                "vport create/delete failed"),
                              vport_name, operation_path);

@@ -156,7 +156,7 @@ secretFindByUsage(virSecretDriverStatePtr driver, int usageType, const char *usa
    "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
 
 static int
-replaceFile(virConnectPtr conn, const char *filename, void *data, size_t size)
+replaceFile(const char *filename, void *data, size_t size)
 {
     char *tmp_path = NULL;
     int fd = -1, ret = -1;
@@ -167,28 +167,28 @@ replaceFile(virConnectPtr conn, const char *filename, void *data, size_t size)
     }
     fd = mkstemp (tmp_path);
     if (fd == -1) {
-        virReportSystemError(conn, errno, _("mkstemp('%s') failed"), tmp_path);
+        virReportSystemError(errno, _("mkstemp('%s') failed"), tmp_path);
         goto cleanup;
     }
     if (fchmod(fd, S_IRUSR | S_IWUSR) != 0) {
-        virReportSystemError(conn, errno, _("fchmod('%s') failed"), tmp_path);
+        virReportSystemError(errno, _("fchmod('%s') failed"), tmp_path);
         goto cleanup;
     }
 
     ret = safewrite(fd, data, size);
     if (ret < 0) {
-        virReportSystemError(conn, errno, _("error writing to '%s'"),
+        virReportSystemError(errno, _("error writing to '%s'"),
                               tmp_path);
         goto cleanup;
     }
     if (close(fd) < 0) {
-        virReportSystemError(conn, errno, _("error closing '%s'"), tmp_path);
+        virReportSystemError(errno, _("error closing '%s'"), tmp_path);
         goto cleanup;
     }
     fd = -1;
 
     if (rename(tmp_path, filename) < 0) {
-        virReportSystemError(conn, errno, _("rename(%s, %s) failed"), tmp_path,
+        virReportSystemError(errno, _("rename(%s, %s) failed"), tmp_path,
                              filename);
         goto cleanup;
     }
@@ -238,10 +238,10 @@ secretBase64Path(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
 }
 
 static int
-secretEnsureDirectory(virConnectPtr conn, virSecretDriverStatePtr driver)
+secretEnsureDirectory(virSecretDriverStatePtr driver)
 {
     if (mkdir(driver->directory, S_IRWXU) < 0 && errno != EEXIST) {
-        virReportSystemError(conn, errno, _("cannot create '%s'"),
+        virReportSystemError(errno, _("cannot create '%s'"),
                              driver->directory);
         return -1;
     }
@@ -255,7 +255,7 @@ secretSaveDef(virConnectPtr conn, virSecretDriverStatePtr driver,
     char *filename = NULL, *xml = NULL;
     int ret = -1;
 
-    if (secretEnsureDirectory(conn, driver) < 0)
+    if (secretEnsureDirectory(driver) < 0)
         goto cleanup;
 
     filename = secretXMLPath(conn, driver, secret);
@@ -265,7 +265,7 @@ secretSaveDef(virConnectPtr conn, virSecretDriverStatePtr driver,
     if (xml == NULL)
         goto cleanup;
 
-    if (replaceFile(conn, filename, xml, strlen(xml)) < 0)
+    if (replaceFile(filename, xml, strlen(xml)) < 0)
         goto cleanup;
 
     ret = 0;
@@ -286,7 +286,7 @@ secretSaveValue(virConnectPtr conn, virSecretDriverStatePtr driver,
     if (secret->value == NULL)
         return 0;
 
-    if (secretEnsureDirectory(conn, driver) < 0)
+    if (secretEnsureDirectory(driver) < 0)
         goto cleanup;
 
     filename = secretBase64Path(conn, driver, secret);
@@ -299,7 +299,7 @@ secretSaveValue(virConnectPtr conn, virSecretDriverStatePtr driver,
         goto cleanup;
     }
 
-    if (replaceFile(conn, filename, base64, strlen(base64)) < 0)
+    if (replaceFile(filename, base64, strlen(base64)) < 0)
         goto cleanup;
 
     ret = 0;
@@ -375,11 +375,11 @@ secretLoadValue(virConnectPtr conn, virSecretDriverStatePtr driver,
             ret = 0;
             goto cleanup;
         }
-        virReportSystemError (conn, errno, _("cannot open '%s'"), filename);
+        virReportSystemError(errno, _("cannot open '%s'"), filename);
         goto cleanup;
     }
     if (fstat(fd, &st) < 0) {
-        virReportSystemError (conn, errno, _("cannot stat '%s'"), filename);
+        virReportSystemError(errno, _("cannot stat '%s'"), filename);
         goto cleanup;
     }
     if ((size_t)st.st_size != st.st_size) {
@@ -393,7 +393,7 @@ secretLoadValue(virConnectPtr conn, virSecretDriverStatePtr driver,
         goto cleanup;
     }
     if (saferead(fd, contents, st.st_size) != st.st_size) {
-        virReportSystemError (conn, errno, _("cannot read '%s'"), filename);
+        virReportSystemError(errno, _("cannot read '%s'"), filename);
         goto cleanup;
     }
     close(fd);
@@ -484,7 +484,7 @@ loadSecrets(virConnectPtr conn, virSecretDriverStatePtr driver,
     if (dir == NULL) {
         if (errno == ENOENT)
             return 0;
-        virReportSystemError(conn, errno, _("cannot open '%s'"),
+        virReportSystemError(errno, _("cannot open '%s'"),
                              driver->directory);
         goto cleanup;
     }

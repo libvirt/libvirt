@@ -63,18 +63,16 @@ void virReportErrorHelper(virConnectPtr conn, int domcode, int errcode,
                           const char *fmt, ...)
   ATTRIBUTE_FMT_PRINTF(7, 8);
 
-void virReportSystemErrorFull(virConnectPtr conn,
-                              int domcode,
+void virReportSystemErrorFull(int domcode,
                               int theerrno,
                               const char *filename,
                               const char *funcname,
                               size_t linenr,
                               const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(7, 8);
+    ATTRIBUTE_FMT_PRINTF(6, 7);
 
-#define virReportSystemError(conn, theerrno, fmt,...)             \
-    virReportSystemErrorFull((conn),                              \
-                             VIR_FROM_THIS,                       \
+#define virReportSystemError(theerrno, fmt,...)                   \
+    virReportSystemErrorFull(VIR_FROM_THIS,                       \
                              (theerrno),                          \
                              __FILE__, __FUNCTION__, __LINE__,    \
                              (fmt), __VA_ARGS__)

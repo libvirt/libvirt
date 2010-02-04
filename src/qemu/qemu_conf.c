@@ -119,7 +119,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (driver->privileged &&
         !(driver->hugetlbfs_mount = virFileFindMountPoint("hugetlbfs"))) {
         if (errno != ENOENT) {
-            virReportSystemError(NULL, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("unable to find hugetlbfs mountpoint"));
             return -1;
         }
@@ -333,13 +333,13 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         driver->macFilter = p->l;
         if (!(driver->ebtables = ebtablesContextNew("qemu"))) {
             driver->macFilter = 0;
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                                  _("failed to enable mac filter in in '%s'"),
                                  __FILE__);
         }
 
         if ((errno = networkDisableAllFrames(driver))) {
-            virReportSystemError(NULL, errno,
+            virReportSystemError(errno,
                          _("failed to add rule to drop all frames in '%s'"),
                                  __FILE__);
         }
@@ -491,7 +491,7 @@ qemudProbeMachineTypes(const char *binary,
 
     len = virFileReadLimFD(newstdout, MAX_MACHINES_OUTPUT_SIZE, &output);
     if (len < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Unable to read 'qemu -M ?' output"));
         goto cleanup;
     }
@@ -725,7 +725,7 @@ qemudProbeCPUModels(const char *qemu,
 
     len = virFileReadLimFD(newstdout, MAX_MACHINES_OUTPUT_SIZE, &output);
     if (len < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Unable to read QEMU supported CPU models"));
         goto cleanup;
     }
@@ -1338,7 +1338,7 @@ int qemudExtractVersionInfo(const char *qemu,
     enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
     int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
     if (len < 0) {
-        virReportSystemError(NULL, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("Unable to read QEMU help output"));
         goto cleanup2;
     }
@@ -1392,8 +1392,7 @@ uname_normalize (struct utsname *ut)
         ut->machine[1] = '6';
 }
 
-int qemudExtractVersion(virConnectPtr conn,
-                        struct qemud_driver *driver) {
+int qemudExtractVersion(struct qemud_driver *driver) {
     const char *binary;
     struct stat sb;
     struct utsname ut;
@@ -1409,7 +1408,7 @@ int qemudExtractVersion(virConnectPtr conn,
         return -1;
 
     if (stat(binary, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot find QEMU binary %s"), binary);
         return -1;
     }
@@ -1458,7 +1457,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     if (!driver->brctl && (err = brInit(&driver->brctl))) {
-        virReportSystemError(conn, err, "%s",
+        virReportSystemError(err, "%s",
                              _("cannot initialize bridge support"));
         goto cleanup;
     }
@@ -1487,11 +1486,11 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                              _("Failed to add tap interface to bridge. "
                                "%s is not a bridge device"), brname);
         } else if (template_ifname) {
-            virReportSystemError(conn, err,
+            virReportSystemError(err,
                                  _("Failed to add tap interface to bridge '%s'"),
                                  brname);
         } else {
-            virReportSystemError(conn, err,
+            virReportSystemError(err,
                                  _("Failed to add tap interface '%s' to bridge '%s'"),
                                  net->ifname, brname);
         }
@@ -1501,8 +1500,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     if (driver->macFilter) {
-        if ((err = networkAllowMacOnPort(conn, driver, net->ifname, net->mac))) {
-            virReportSystemError(conn, err,
+        if ((err = networkAllowMacOnPort(driver, net->ifname, net->mac))) {
+            virReportSystemError(err,
                  _("failed to add ebtables rule to allow MAC address on  '%s'"),
                                  net->ifname);
         }

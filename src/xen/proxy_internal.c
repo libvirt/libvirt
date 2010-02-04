@@ -377,7 +377,7 @@ xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
                                      request->len);
     if (ret < 0) {
         if (!quiet)
-            virReportSystemError(conn, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("failed to write proxy request"));
         goto error;
     }
@@ -388,7 +388,7 @@ retry:
                                         sizeof(virProxyPacket));
         if (ret < 0) {
             if (!quiet)
-                virReportSystemError(conn, errno, "%s",
+                virReportSystemError(errno, "%s",
                                      _("failed to read proxy reply"));
             goto error;
         }
@@ -411,7 +411,7 @@ retry:
                                         sizeof(virProxyPacket));
         if (ret < 0) {
             if (!quiet)
-                virReportSystemError(conn, errno, "%s",
+                virReportSystemError(errno, "%s",
                                      _("failed to read proxy reply"));
             goto error;
         }

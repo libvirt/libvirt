@@ -73,7 +73,7 @@ realloc:
             numcpus = numcpus << 2;
             goto realloc;
         }
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
@@ -89,7 +89,7 @@ realloc:
     }
 
     if (sched_setaffinity(pid, sizeof(mask), &mask) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
@@ -134,7 +134,7 @@ realloc:
             numcpus = numcpus << 2;
             goto realloc;
         }
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
@@ -148,7 +148,7 @@ realloc:
 
     CPU_ZERO(&mask);
     if (sched_getaffinity(pid, sizeof(mask), &mask) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
@@ -168,7 +168,7 @@ int virProcessInfoSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
                               size_t maplen ATTRIBUTE_UNUSED,
                               int maxcpu ATTRIBUTE_UNUSED)
 {
-    virReportSystemError(NULL, ENOSYS, "%s",
+    virReportSystemError(ENOSYS, "%s",
                          _("Process CPU affinity is not supported on this platform"));
     return -1;
 }
@@ -178,7 +178,7 @@ int virProcessInfoGetAffinity(pid_t pid ATTRIBUTE_UNUSED,
                               size_t maplen ATTRIBUTE_UNUSED,
                               int maxcpu ATTRIBUTE_UNUSED)
 {
-    virReportSystemError(NULL, ENOSYS, "%s",
+    virReportSystemError(ENOSYS, "%s",
                          _("Process CPU affinity is not supported on this platform"));
     return -1;
 }

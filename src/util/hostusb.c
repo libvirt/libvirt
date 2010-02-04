@@ -100,7 +100,7 @@ static int usbFindBusByVendor(virConnectPtr conn,
 
     dir = opendir(USB_SYSFS "/devices");
     if (!dir) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Could not open directory %s"),
                              USB_SYSFS "/devices");
         goto cleanup;

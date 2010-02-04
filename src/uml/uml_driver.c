@@ -109,8 +109,7 @@ static void umlDriverUnlock(struct uml_driver *driver)
 static int umlOpenMonitor(virConnectPtr conn,
                           struct uml_driver *driver,
                           virDomainObjPtr vm);
-static int umlReadPidFile(virConnectPtr conn,
-                          struct uml_driver *driver,
+static int umlReadPidFile(struct uml_driver *driver,
                           virDomainObjPtr vm);
 
 static int umlSetCloseExec(int fd) {
@@ -313,7 +312,7 @@ reread:
                 continue;
             }
 
-            if (umlReadPidFile(NULL, driver, dom) < 0) {
+            if (umlReadPidFile(driver, dom) < 0) {
                 virDomainObjUnlock(dom);
                 continue;
             }
@@ -559,8 +558,7 @@ umlShutdown(void) {
 }
 
 
-static int umlReadPidFile(virConnectPtr conn,
-                          struct uml_driver *driver,
+static int umlReadPidFile(struct uml_driver *driver,
                           virDomainObjPtr vm)
 {
     int rc = -1;
@@ -598,7 +596,7 @@ reopen:
 
  cleanup:
     if (rc != 0)
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to read pid: %s"),
                              pidfile);
     VIR_FREE(pidfile);
@@ -652,7 +650,7 @@ restat:
     }
 
     if ((priv->monitor = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot open socket"));
         return -1;
     }
@@ -661,7 +659,7 @@ restat:
     sprintf(addr.sun_path + 1, "libvirt-uml-%u", vm->pid);
     VIR_DEBUG("Reply address for monitor is '%s'", addr.sun_path+1);
     if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("cannot bind socket"));
         close(priv->monitor);
         priv->monitor = -1;
@@ -717,7 +715,7 @@ static int umlMonitorCommand(virConnectPtr conn,
     req.version = MONITOR_VERSION;
     req.length = strlen(cmd);
     if (req.length > (MONITOR_BUFLEN-1)) {
-        virReportSystemError(conn, EINVAL,
+        virReportSystemError(EINVAL,
                              _("cannot send too long command %s (%d bytes)"),
                              cmd, req.length);
         return -1;
@@ -730,7 +728,7 @@ static int umlMonitorCommand(virConnectPtr conn,
 
     if (sendto(priv->monitor, &req, sizeof req, 0,
                (struct sockaddr *)&addr, sizeof addr) != (sizeof req)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot send command %s"),
                              cmd);
         return -1;
@@ -740,7 +738,7 @@ static int umlMonitorCommand(virConnectPtr conn,
         addrlen = sizeof(addr);
         if (recvfrom(priv->monitor, &res, sizeof res, 0,
                      (struct sockaddr *)&addr, &addrlen) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("cannot read reply %s"),
                                  cmd);
             goto error;
@@ -832,14 +830,14 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * in a sub-process so its hard to feed back a useful error
      */
     if (stat(vm->def->os.kernel, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot find UML kernel %s"),
                              vm->def->os.kernel);
         return -1;
     }
 
     if (virFileMakePath(driver->logDir) != 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              driver->logDir);
         return -1;
@@ -853,7 +851,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     if ((logfd = open(logfile, O_CREAT | O_TRUNC | O_WRONLY,
                       S_IRUSR | S_IWUSR)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to create logfile %s"),
                              logfile);
         VIR_FREE(logfile);
@@ -862,7 +860,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     VIR_FREE(logfile);
 
     if (umlSetCloseExec(logfd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("Unable to set VM logfile close-on-exec flag"));
         close(logfd);
         return -1;
@@ -1739,21 +1737,21 @@ static int umlDomainSetAutostart(virDomainPtr dom,
             int err;
 
             if ((err = virFileMakePath(driver->autostartDir))) {
-                virReportSystemError(dom->conn, err,
+                virReportSystemError(err,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);
                 goto cleanup;
             }
 
             if (symlink(configFile, autostartLink) < 0) {
-                virReportSystemError(dom->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to create symlink '%s to '%s'"),
                                      autostartLink, configFile);
                 goto cleanup;
             }
         } else {
             if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
-                virReportSystemError(dom->conn, errno,
+                virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
                                      autostartLink);
                 goto cleanup;
@@ -1815,7 +1813,7 @@ umlDomainBlockPeek (virDomainPtr dom,
         /* The path is correct, now try to open it and get its size. */
         fd = open (path, O_RDONLY);
         if (fd == -1) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("cannot open %s"), path);
             goto cleanup;
         }
@@ -1826,7 +1824,7 @@ umlDomainBlockPeek (virDomainPtr dom,
          */
         if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
             saferead (fd, buffer, size) == (ssize_t) -1) {
-            virReportSystemError(dom->conn, errno,
+            virReportSystemError(errno,
                                  _("cannot read %s"), path);
             goto cleanup;
         }

@@ -48,15 +48,14 @@ virStorageBackendMpathUpdateVolTargetInfo(virConnectPtr conn,
     int fd = -1;
 
     if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              target->path);
         ret = -1;
         goto out;
     }
 
-    if (virStorageBackendUpdateVolTargetInfoFD(conn,
-                                               target,
+    if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,
                                                allocation,
                                                capacity) < 0) {
@@ -69,9 +68,7 @@ virStorageBackendMpathUpdateVolTargetInfo(virConnectPtr conn,
         goto out;
     }
 
-    if (virStorageBackendUpdateVolTargetFormatFD(conn,
-                                                 target,
-                                                 fd) < 0) {
+    if (virStorageBackendUpdateVolTargetFormatFD(target, fd) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                           _("Failed to update volume target format for '%s'"),
                           target->path);

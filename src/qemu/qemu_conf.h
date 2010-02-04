@@ -167,8 +167,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
 virCapsPtr  qemudCapsInit               (virCapsPtr old_caps);
 
-int         qemudExtractVersion         (virConnectPtr conn,
-                                         struct qemud_driver *driver);
+int         qemudExtractVersion         (struct qemud_driver *driver);
 int         qemudExtractVersionInfo     (const char *qemu,
                                          unsigned int *version,
                                          unsigned int *flags);

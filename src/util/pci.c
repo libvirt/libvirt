@@ -617,10 +617,10 @@ pciTryPowerManagementReset(virConnectPtr conn ATTRIBUTE_UNUSED, pciDevice *dev)
 }
 
 static int
-pciInitDevice(virConnectPtr conn, pciDevice *dev)
+pciInitDevice(pciDevice *dev)
 {
     if (pciOpenConfig(dev) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to open config space file '%s'"),
                              dev->path);
         return -1;
@@ -647,7 +647,7 @@ pciResetDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (!dev->initted && pciInitDevice(conn, dev) < 0)
+    if (!dev->initted && pciInitDevice(dev) < 0)
         return -1;
 
     /* KVM will perform FLR when starting and stopping
@@ -739,7 +739,7 @@ recheck:
 
 
 static int
-pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
+pciBindDeviceToStub(pciDevice *dev, const char *driver)
 {
     char drvdir[PATH_MAX];
     char path[PATH_MAX];
@@ -754,7 +754,7 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
      */
     pciDriverFile(path, sizeof(path), driver, "new_id");
     if (virFileWriteStr(path, dev->id) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to add PCI device ID '%s' to %s"),
                              dev->id, driver);
         return -1;
@@ -767,7 +767,7 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
      */
     pciDeviceFile(path, sizeof(path), dev->name, "driver/unbind");
     if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to unbind PCI device '%s'"), dev->name);
         return -1;
     }
@@ -780,7 +780,7 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
         /* Xen's pciback.ko wants you to use new_slot first */
         pciDriverFile(path, sizeof(path), driver, "new_slot");
         if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to add slot for PCI device '%s' to %s"),
                                  dev->name, driver);
             return -1;
@@ -788,7 +788,7 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
 
         pciDriverFile(path, sizeof(path), driver, "bind");
         if (virFileWriteStr(path, dev->name) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to bind PCI device '%s' to %s"),
                                  dev->name, driver);
             return -1;
@@ -800,7 +800,7 @@ pciBindDeviceToStub(virConnectPtr conn, pciDevice *dev, const char *driver)
      */
     pciDriverFile(path, sizeof(path), driver, "remove_id");
     if (virFileExists(path) && virFileWriteStr(path, dev->id) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to remove PCI ID '%s' from %s"),
                              dev->id, driver);
         return -1;
@@ -819,11 +819,11 @@ pciDettachDevice(virConnectPtr conn, pciDevice *dev)
         return -1;
     }
 
-    return pciBindDeviceToStub(conn, dev, driver);
+    return pciBindDeviceToStub(dev, driver);
 }
 
 static int
-pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *driver)
+pciUnBindDeviceFromStub(pciDevice *dev, const char *driver)
 {
     char drvdir[PATH_MAX];
     char path[PATH_MAX];
@@ -835,7 +835,7 @@ pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *driver)
     if (virFileExists(drvdir) && virFileLinkPointsTo(path, drvdir)) {
         pciDriverFile(path, sizeof(path), driver, "unbind");
         if (virFileWriteStr(path, dev->name) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to bind PCI device '%s' to %s"),
                                  dev->name, driver);
             return -1;
@@ -845,7 +845,7 @@ pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *driver)
     /* Xen's pciback.ko wants you to use remove_slot on the specific device */
     pciDriverFile(path, sizeof(path), driver, "remove_slot");
     if (virFileExists(path) && virFileWriteStr(path, dev->name) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to remove slot for PCI device '%s' to %s"),
                              dev->name, driver);
         return -1;
@@ -860,7 +860,7 @@ pciUnBindDeviceFromStub(virConnectPtr conn, pciDevice *dev, const char *driver)
     pciDriverFile(path, sizeof(path), driver, "remove_id");
     if (!virFileExists(drvdir) || virFileExists(path)) {
         if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Failed to trigger a re-probe for PCI device '%s'"),
                                  dev->name);
             return -1;
@@ -880,7 +880,7 @@ pciReAttachDevice(virConnectPtr conn, pciDevice *dev)
         return -1;
     }
 
-    return pciUnBindDeviceFromStub(conn, dev, driver);
+    return pciUnBindDeviceFromStub(dev, driver);
 }
 
 /* Certain hypervisors (like qemu/kvm) map the PCI bar(s) on
@@ -1221,7 +1221,7 @@ int pciDeviceFileIterate(virConnectPtr conn,
     }
 
     if (!(dir = opendir(pcidir))) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open %s"), pcidir);
         goto cleanup;
     }
@@ -1255,14 +1255,13 @@ cleanup:
 }
 
 static int
-pciDeviceDownstreamLacksACS(virConnectPtr conn,
-                            pciDevice *dev)
+pciDeviceDownstreamLacksACS(pciDevice *dev)
 {
     uint16_t flags;
     uint16_t ctrl;
     unsigned int pos;
 
-    if (!dev->initted && pciInitDevice(conn, dev) < 0)
+    if (!dev->initted && pciInitDevice(dev) < 0)
         return -1;
 
     pos = dev->pcie_cap_pos;
@@ -1319,7 +1318,7 @@ pciDeviceIsBehindSwitchLackingACS(virConnectPtr conn,
         pciDevice *tmp;
         int acs;
 
-        acs = pciDeviceDownstreamLacksACS(conn, parent);
+        acs = pciDeviceDownstreamLacksACS(parent);
 
         if (acs) {
             pciFreeDevice(conn, parent);

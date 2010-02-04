@@ -155,7 +155,7 @@ int nodeGetInfo(virConnectPtr conn,
     int ret;
     FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
     if (!cpuinfo) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open %s"), CPUINFO_PATH);
         return -1;
     }

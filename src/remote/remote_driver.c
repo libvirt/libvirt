@@ -639,7 +639,7 @@ doRemoteOpen (virConnectPtr conn,
         }
 
         freeaddrinfo (res);
-        virReportSystemError(conn, saved_errno,
+        virReportSystemError(saved_errno,
                              _("unable to connect to libvirtd at '%s'"),
                              priv->hostname);
         goto failed;
@@ -696,7 +696,7 @@ doRemoteOpen (virConnectPtr conn,
         priv->is_secure = 1;
         priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv->sock == -1) {
-            virReportSystemError(conn, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("unable to create socket"));
             goto failed;
         }
@@ -720,7 +720,7 @@ doRemoteOpen (virConnectPtr conn,
                     goto autostart_retry;
                 }
             }
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("unable to connect to '%s'"),
                                  sockname);
             goto failed;
@@ -788,7 +788,7 @@ doRemoteOpen (virConnectPtr conn,
          * to faff around with two file descriptors (a la 'pipe(2)').
          */
         if (socketpair (PF_UNIX, SOCK_STREAM, 0, sv) == -1) {
-            virReportSystemError(conn, errno, "%s",
+            virReportSystemError(errno, "%s",
                                  _("unable to create socket pair"));
             goto failed;
         }
@@ -821,13 +821,13 @@ doRemoteOpen (virConnectPtr conn,
     } /* switch (transport) */
 
     if (virSetNonBlock(priv->sock) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("unable to make socket non-blocking"));
         goto failed;
     }
 
     if (pipe(wakeupFD) < 0) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("unable to make pipe"));
         goto failed;
     }
@@ -1099,11 +1099,11 @@ static gnutls_certificate_credentials_t x509_cred;
 
 
 static int
-check_cert_file (virConnectPtr conn, const char *type, const char *file)
+check_cert_file(const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Cannot access %s '%s'"),
                              type, file);
         return -1;
@@ -1132,11 +1132,11 @@ initialise_gnutls (virConnectPtr conn)
     }
 
 
-    if (check_cert_file(conn, "CA certificate", LIBVIRT_CACERT) < 0)
+    if (check_cert_file("CA certificate", LIBVIRT_CACERT) < 0)
         return -1;
-    if (check_cert_file(conn, "client key", LIBVIRT_CLIENTKEY) < 0)
+    if (check_cert_file("client key", LIBVIRT_CLIENTKEY) < 0)
         return -1;
-    if (check_cert_file(conn, "client certificate", LIBVIRT_CLIENTCERT) < 0)
+    if (check_cert_file("client certificate", LIBVIRT_CLIENTCERT) < 0)
         return -1;
 
     /* Set the trusted CA cert. */
@@ -1292,7 +1292,7 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if ((now = time(NULL)) == ((time_t)-1)) {
-        virReportSystemError(conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("cannot get current time"));
         return -1;
     }
@@ -6377,7 +6377,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* Get local address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getsockname(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
-        virReportSystemError(in_open ? NULL : conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("failed to get sock address"));
         goto cleanup;
     }
@@ -6387,7 +6387,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* Get remote address in form  IPADDR:PORT */
     salen = sizeof(sa);
     if (getpeername(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
-        virReportSystemError(in_open ? NULL : conn, errno, "%s",
+        virReportSystemError(errno, "%s",
                              _("failed to get peer address"));
         goto cleanup;
     }
@@ -7701,7 +7701,7 @@ remoteIOWriteBuffer(virConnectPtr conn,
             if (errno == EWOULDBLOCK)
                 return 0;
 
-            virReportSystemError(in_open ? NULL : conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("cannot send data"));
             return -1;
 
@@ -7751,7 +7751,7 @@ remoteIOReadBuffer(virConnectPtr conn,
                 if (errno == EWOULDBLOCK)
                     return 0;
 
-                virReportSystemError(in_open ? NULL : conn, errno,
+                virReportSystemError(errno,
                                      "%s", _("cannot recv data"));
             } else {
                 errorf (in_open ? NULL : conn,
@@ -8355,7 +8355,7 @@ remoteIOEventLoop(virConnectPtr conn,
         if (ret < 0) {
             if (errno == EWOULDBLOCK)
                 continue;
-            virReportSystemError(in_open ? NULL : conn, errno,
+            virReportSystemError(errno,
                                  "%s", _("poll on socket failed"));
             goto error;
         }

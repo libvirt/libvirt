@@ -514,7 +514,7 @@ static int testOpenDefault(virConnectPtr conn) {
     conn->privateData = privconn;
 
     if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              "%s", _("getting time of day"));
         goto error;
     }
@@ -765,7 +765,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("loading host definition file '%s'"),
                              file);
         goto error;
@@ -1712,40 +1712,40 @@ static int testDomainSave(virDomainPtr domain,
                              VIR_DOMAIN_XML_SECURE);
 
     if (xml == NULL) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' failed to allocate space for metadata"),
                              domain->name);
         goto cleanup;
     }
 
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' to '%s': open failed"),
                              domain->name, path);
         goto cleanup;
     }
     len = strlen(xml);
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' to '%s': write failed"),
                              domain->name, path);
         goto cleanup;
     }
     if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' to '%s': write failed"),
                              domain->name, path);
         goto cleanup;
     }
     if (safewrite(fd, xml, len) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' to '%s': write failed"),
                              domain->name, path);
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("saving domain '%s' to '%s': write failed"),
                              domain->name, path);
         goto cleanup;
@@ -1797,13 +1797,13 @@ static int testDomainRestore(virConnectPtr conn,
     int ret = -1;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read domain image '%s'"),
                              path);
         goto cleanup;
     }
     if (saferead(fd, magic, sizeof(magic)) != sizeof(magic)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("incomplete save header in '%s'"),
                              path);
         goto cleanup;
@@ -1814,7 +1814,7 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
     if (saferead(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to read metadata length in '%s'"),
                              path);
         goto cleanup;
@@ -1829,7 +1829,7 @@ static int testDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
     if (saferead(fd, xml, len) != len) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("incomplete metdata in '%s'"), path);
         goto cleanup;
     }
@@ -1892,19 +1892,19 @@ static int testDomainCoreDump(virDomainPtr domain,
     }
 
     if ((fd = open(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("domain '%s' coredump: failed to open %s"),
                              domain->name, to);
         goto cleanup;
     }
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("domain '%s' coredump: failed to write header to %s"),
                              domain->name, to);
         goto cleanup;
     }
     if (close(fd) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("domain '%s' coredump: write failed: %s"),
                              domain->name, to);
         goto cleanup;
@@ -2108,7 +2108,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     privdomdata = privdom->privateData;
 
     if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              "%s", _("getting time of day"));
         goto cleanup;
     }
@@ -2603,7 +2603,7 @@ static int testDomainBlockStats(virDomainPtr domain,
     }
 
     if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              "%s", _("getting time of day"));
         goto error;
     }
@@ -2658,7 +2658,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
     }
 
     if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              "%s", _("getting time of day"));
         goto error;
     }

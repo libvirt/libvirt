@@ -1197,7 +1197,6 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 
 /**
  * virReportSystemErrorFull:
- * @conn: the hyperisor connection
  * @domcode: the virErrorDomain indicating where it's coming from
  * @theerrno: an errno number
  * @filename: filename where error was raised
@@ -1208,8 +1207,7 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
  *
  * Convenience internal routine called when a system error is detected.
  */
-void virReportSystemErrorFull(virConnectPtr conn,
-                              int domcode,
+void virReportSystemErrorFull(int domcode,
                               int theerrno,
                               const char *filename,
                               const char *funcname,
@@ -1243,7 +1241,7 @@ void virReportSystemErrorFull(virConnectPtr conn,
     if (!msgDetail)
         msgDetail = errnoDetail;
 
-    virRaiseErrorFull(conn, filename, funcname, linenr,
+    virRaiseErrorFull(NULL, filename, funcname, linenr,
                       domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
                       msg, msgDetail, NULL, -1, -1, msg, msgDetail);
 }

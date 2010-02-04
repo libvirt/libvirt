@@ -418,7 +418,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
              "/sys/class/iscsi_session/session%s/device", session);
 
     if (virStorageBackendSCSIGetHostNumber(conn, sysfs_path, &host) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to get host number for iSCSI session "
                                "with path '%s'"),
                              sysfs_path);
@@ -426,7 +426,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
     }
 
     if (virStorageBackendSCSIFindLUs(conn, pool, host) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("Failed to find LUs on host %u"), host);
         retval = -1;
     }

@@ -281,7 +281,7 @@ virStorageFileGetMetadataFromFD(virConnectPtr conn,
     meta->format = VIR_STORAGE_FILE_RAW;
 
     if ((len = read(fd, head, sizeof(head))) < 0) {
-        virReportSystemError(conn, errno, _("cannot read header '%s'"), path);
+        virReportSystemError(errno, _("cannot read header '%s'"), path);
         return -1;
     }
 
@@ -407,7 +407,7 @@ virStorageFileGetMetadata(virConnectPtr conn,
     int fd, ret;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno, _("cannot open file '%s'"), path);
+        virReportSystemError(errno, _("cannot open file '%s'"), path);
         return -1;
     }
 

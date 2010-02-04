@@ -151,7 +151,7 @@ index b84729f..4f73baf 100644
 +    fd = open(operation_path, O_WRONLY);
 +
 +    if (fd < 0) {
-+        virReportSystemError(conn, errno,
++        virReportSystemError(errno,
 +                             _("Could not open '%s' for vport operation"),
 +                             operation_path);
 +        retval = -1;
@@ -171,7 +171,7 @@ index b84729f..4f73baf 100644
 +    towrite = strlen(vport_name);
 +    written = safewrite(fd, vport_name, towrite);
 +    if (written != towrite) {
-+        virReportSystemError(conn, errno,
++        virReportSystemError(errno,
 +                             _("Write of '%s' to '%s' during "
 +                               "vport create/delete failed "
 +                               "(towrite: %lu written: %d)"),

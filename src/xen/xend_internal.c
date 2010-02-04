@@ -845,7 +845,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, const char *port)
     if (!priv->addrlen) {
         /* Don't raise error when unprivileged, since proxy takes over */
         if (xenHavePrivilege())
-            virReportSystemError(conn, saved_errno,
+            virReportSystemError(saved_errno,
                                  _("unable to connect to '%s:%s'"),
                                  host, port);
         return -1;
@@ -5168,7 +5168,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);
     if (fd == -1) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("failed to open for reading: %s"),
                              path);
         goto cleanup;
@@ -5180,7 +5180,7 @@ xenDaemonDomainBlockPeek (virDomainPtr domain, const char *path,
      */
     if (lseek (fd, offset, SEEK_SET) == (off_t) -1 ||
         saferead (fd, buffer, size) == (ssize_t) -1) {
-        virReportSystemError(domain->conn, errno,
+        virReportSystemError(errno,
                              _("failed to lseek or read from file: %s"),
                              path);
         goto cleanup;

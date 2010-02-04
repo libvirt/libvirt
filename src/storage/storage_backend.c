@@ -113,9 +113,8 @@ enum {
     TOOL_QCOW_CREATE,
 };
 
-static int ATTRIBUTE_NONNULL (3)
-virStorageBackendCopyToFD(virConnectPtr conn,
-                          virStorageVolDefPtr vol,
+static int ATTRIBUTE_NONNULL (2)
+virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
                           int fd,
                           unsigned long long *total,
@@ -130,7 +129,7 @@ virStorageBackendCopyToFD(virConnectPtr conn,
     char *buf = NULL;
 
     if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("could not open input path '%s'"),
                              inputvol->target.path);
         goto cleanup;
@@ -152,7 +151,7 @@ virStorageBackendCopyToFD(virConnectPtr conn,
             bytes = remain;
 
         if ((amtread = saferead(inputfd, buf, bytes)) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("failed reading from file '%s'"),
                                  inputvol->target.path);
             goto cleanup;
@@ -168,13 +167,13 @@ virStorageBackendCopyToFD(virConnectPtr conn,
 
             if (is_dest_file && memcmp(buf+offset, zerobuf, interval) == 0) {
                 if (lseek(fd, interval, SEEK_CUR) < 0) {
-                    virReportSystemError(conn, errno,
+                    virReportSystemError(errno,
                                          _("cannot extend file '%s'"),
                                          vol->target.path);
                     goto cleanup;
                 }
             } else if (safewrite(fd, buf+offset, interval) < 0) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      _("failed writing to file '%s'"),
                                      vol->target.path);
                 goto cleanup;
@@ -184,7 +183,7 @@ virStorageBackendCopyToFD(virConnectPtr conn,
     }
 
     if (inputfd != -1 && close(inputfd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              inputvol->target.path);
         goto cleanup;
@@ -204,7 +203,7 @@ cleanup:
 }
 
 static int
-virStorageBackendCreateBlockFrom(virConnectPtr conn,
+virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  virStorageVolDefPtr vol,
                                  virStorageVolDefPtr inputvol,
@@ -218,7 +217,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
     uid_t uid;
 
     if ((fd = open(vol->target.path, O_RDWR)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot create path '%s'"),
                              vol->target.path);
         goto cleanup;
@@ -227,7 +226,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
     remain = vol->allocation;
 
     if (inputvol) {
-        int res = virStorageBackendCopyToFD(conn, vol, inputvol,
+        int res = virStorageBackendCopyToFD(vol, inputvol,
                                             fd, &remain, 0);
         if (res < 0)
             goto cleanup;
@@ -235,7 +234,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
 
     if (fstat(fd, &st) == -1) {
         ret = errno;
-        virReportSystemError(conn, errno, _("stat of '%s' failed"),
+        virReportSystemError(errno, _("stat of '%s' failed"),
                              vol->target.path);
         goto cleanup;
     }
@@ -243,20 +242,20 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn,
     gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
     if (((uid != -1) || (gid != -1))
         && (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot chown '%s' to (%u, %u)"),
                              vol->target.path, vol->target.perms.uid,
                              vol->target.perms.gid);
         goto cleanup;
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              vol->target.path, vol->target.perms.mode);
         goto cleanup;
     }
     if (close(fd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              vol->target.path);
         goto cleanup;
@@ -295,14 +294,14 @@ virStorageBackendCreateRaw(virConnectPtr conn,
                                     vol->target.perms.uid, vol->target.perms.gid,
                                     (pool->def->type == VIR_STORAGE_POOL_NETFS
                                      ? VIR_FILE_CREATE_AS_UID : 0))) < 0) {
-        virReportSystemError(conn, createstat,
+        virReportSystemError(createstat,
                              _("cannot create path '%s'"),
                              vol->target.path);
         goto cleanup;
     }
 
     if ((fd = open(vol->target.path, O_RDWR | O_EXCL)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open new path '%s'"),
                              vol->target.path);
         goto cleanup;
@@ -311,7 +310,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
     if (ftruncate(fd, vol->capacity) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot extend file '%s'"),
                              vol->target.path);
         goto cleanup;
@@ -320,7 +319,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     remain = vol->allocation;
 
     if (inputvol) {
-        int res = virStorageBackendCopyToFD(conn, vol, inputvol,
+        int res = virStorageBackendCopyToFD(vol, inputvol,
                                             fd, &remain, 1);
         if (res < 0)
             goto cleanup;
@@ -341,7 +340,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
                     bytes = remain;
                 if ((r = safezero(fd, 0, vol->allocation - remain,
                                   bytes)) != 0) {
-                    virReportSystemError(conn, r,
+                    virReportSystemError(r,
                                          _("cannot fill file '%s'"),
                                          vol->target.path);
                     goto cleanup;
@@ -352,7 +351,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
             int r;
 
             if ((r = safezero(fd, 0, 0, remain)) != 0) {
-                virReportSystemError(conn, r,
+                virReportSystemError(r,
                                      _("cannot fill file '%s'"),
                                      vol->target.path);
                 goto cleanup;
@@ -361,7 +360,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
     }
 
     if (close(fd) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              vol->target.path);
         goto cleanup;
@@ -495,14 +494,14 @@ static int virStorageBuildSetUIDHook(void *data) {
 
     if ((vol->target.perms.gid != 0)
         && (setgid(vol->target.perms.gid) != 0)) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("Cannot set gid to %u before creating %s"),
                              vol->target.perms.gid, vol->target.path);
         return -1;
     }
     if ((vol->target.perms.uid != 0)
         && (setuid(vol->target.perms.uid) != 0)) {
-        virReportSystemError(NULL, errno,
+        virReportSystemError(errno,
                              _("Cannot set uid to %u before creating %s"),
                              vol->target.perms.uid, vol->target.path);
         return -1;
@@ -531,13 +530,13 @@ static int virStorageBackendCreateExecCommand(virConnectPtr conn,
     }
     if (!filecreated) {
         if (virRun(conn, cmdargv, NULL) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("Cannot run %s to create %s"),
                                  cmdargv[0], vol->target.path);
             return -1;
         }
         if (stat(vol->target.path, &st) < 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("%s failed to create %s"),
                                  cmdargv[0], vol->target.path);
             return -1;
@@ -548,14 +547,14 @@ static int virStorageBackendCreateExecCommand(virConnectPtr conn,
     gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
     if (((uid != -1) || (gid != -1))
         && (chown(vol->target.path, uid, gid) < 0)) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot chown %s to (%u, %u)"),
                              vol->target.path, vol->target.perms.uid,
                              vol->target.perms.gid);
         return -1;
     }
     if (chmod(vol->target.path, vol->target.perms.mode) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              vol->target.path, vol->target.perms.mode);
         return -1;
@@ -655,7 +654,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
             return -1;
         }
         if (access(vol->backingStore.path, R_OK) != 0) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("inaccessible backing store volume %s"),
                                  vol->backingStore.path);
             return -1;
@@ -877,22 +876,20 @@ virStorageBackendForType(int type) {
 
 
 int
-virStorageBackendUpdateVolTargetInfo(virConnectPtr conn,
-                                     virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned long long *allocation,
                                      unsigned long long *capacity)
 {
     int ret, fd;
 
     if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              target->path);
         return -1;
     }
 
-    ret = virStorageBackendUpdateVolTargetInfoFD(conn,
-                                                 target,
+    ret = virStorageBackendUpdateVolTargetInfoFD(target,
                                                  fd,
                                                  allocation,
                                                  capacity);
@@ -903,21 +900,18 @@ virStorageBackendUpdateVolTargetInfo(virConnectPtr conn,
 }
 
 int
-virStorageBackendUpdateVolInfo(virConnectPtr conn,
-                               virStorageVolDefPtr vol,
+virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                int withCapacity)
 {
     int ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfo(conn,
-                                                    &vol->target,
+    if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
                                                     &vol->allocation,
                                                     withCapacity ? &vol->capacity : NULL)) < 0)
         return ret;
 
     if (vol->backingStore.path &&
-        (ret = virStorageBackendUpdateVolTargetInfo(conn,
-                                                    &vol->backingStore,
+        (ret = virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
                                                     NULL, NULL)) < 0)
         return ret;
 
@@ -936,8 +930,7 @@ virStorageBackendUpdateVolInfo(virConnectPtr conn,
  *    -2 if passed FD isn't a regular, char, or block file.
  */
 int
-virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
-                                       virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                        int fd,
                                        unsigned long long *allocation,
                                        unsigned long long *capacity)
@@ -948,7 +941,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
 #endif
 
     if (fstat(fd, &sb) < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot stat file '%s'"),
                              target->path);
         return -1;
@@ -981,7 +974,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
              */
             end = lseek(fd, 0, SEEK_END);
             if (end == (off_t)-1) {
-                virReportSystemError(conn, errno,
+                virReportSystemError(errno,
                                      _("cannot seek to end of file '%s'"),
                                      target->path);
                 return -1;
@@ -1002,7 +995,7 @@ virStorageBackendUpdateVolTargetInfoFD(virConnectPtr conn,
     /* XXX: make this a security driver call */
     if (fgetfilecon(fd, &filecon) == -1) {
         if (errno != ENODATA && errno != ENOTSUP) {
-            virReportSystemError(conn, errno,
+            virReportSystemError(errno,
                                  _("cannot get file context of '%s'"),
                                  target->path);
             return -1;
@@ -1059,8 +1052,7 @@ static struct diskType const disk_types[] = {
 
 
 int
-virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
-                                         virStorageVolTargetPtr target,
+virStorageBackendUpdateVolTargetFormatFD(virStorageVolTargetPtr target,
                                          int fd)
 {
     int i;
@@ -1073,14 +1065,14 @@ virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
 
     start = lseek(fd, 0, SEEK_SET);
     if (start < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot seek to beginning of file '%s'"),
                              target->path);
         return -1;
     }
     bytes = saferead(fd, buffer, sizeof(buffer));
     if (bytes < 0) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read beginning of file '%s'"),
                              target->path);
         return -1;
@@ -1114,8 +1106,7 @@ virStorageBackendUpdateVolTargetFormatFD(virConnectPtr conn,
  * with stable paths.
  */
 char *
-virStorageBackendStablePath(virConnectPtr conn,
-                            virStoragePoolObjPtr pool,
+virStorageBackendStablePath(virStoragePoolObjPtr pool,
                             const char *devpath)
 {
     DIR *dh;
@@ -1146,7 +1137,7 @@ virStorageBackendStablePath(virConnectPtr conn,
             usleep(100 * 1000);
             goto reopen;
         }
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("cannot read dir '%s'"),
                              pool->def->target.path);
         return NULL;
@@ -1338,7 +1329,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
         return -1;
 
     if (err == -1) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to wait for command '%s'"),
                              prog[0]);
         return -1;
@@ -1434,7 +1425,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
     if (feof (fp))
         err = 0;
     else
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("read error on pipe to '%s'"), prog[0]);
 
  cleanup:
@@ -1455,7 +1446,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
         return -1;
 
     if (w_err == -1) {
-        virReportSystemError(conn, errno,
+        virReportSystemError(errno,
                              _("failed to wait for command '%s'"),
                              prog[0]);
         return -1;
