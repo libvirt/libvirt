@@ -432,6 +432,7 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
                                   VIR_CGROUP_CONTROLLER_CPUSET,
                                   inherit_values[i],
                                   value);
+        VIR_FREE(value);
 
         if (rc != 0) {
             VIR_ERROR("Failed to set %s %d", inherit_values[i], rc);
