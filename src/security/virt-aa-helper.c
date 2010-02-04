@@ -203,7 +203,7 @@ parserCommand(const char *profile_name, const char cmd)
         const char * const argv[] = {
             "/sbin/apparmor_parser", flag, profile, NULL
         };
-        if (virRun(NULL, argv, NULL) != 0) {
+        if (virRun(argv, NULL) != 0) {
             vah_error(NULL, 0, "failed to run apparmor_parser");
             return -1;
         }

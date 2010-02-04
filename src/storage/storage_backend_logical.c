@@ -44,8 +44,7 @@
 
 
 static int
-virStorageBackendLogicalSetActive(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
                                   int on)
 {
     const char *cmdargv[4];
@@ -55,7 +54,7 @@ virStorageBackendLogicalSetActive(virConnectPtr conn,
     cmdargv[2] = pool->def->source.name;
     cmdargv[3] = NULL;
 
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -337,7 +336,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
      * that might be hanging around, so if this fails for some reason, the
      * worst that happens is that scanning doesn't pick everything up
      */
-    if (virRun(conn, scanprog, &exitstatus) < 0) {
+    if (virRun(scanprog, &exitstatus) < 0) {
         VIR_WARN0("Failure when running vgscan to refresh physical volumes");
     }
 
@@ -367,10 +366,10 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn,
 
 
 static int
-virStorageBackendLogicalStartPool(virConnectPtr conn,
+virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
-    if (virStorageBackendLogicalSetActive(conn, pool, 1) < 0)
+    if (virStorageBackendLogicalSetActive(pool, 1) < 0)
         return -1;
 
     return 0;
@@ -378,7 +377,7 @@ virStorageBackendLogicalStartPool(virConnectPtr conn,
 
 
 static int
-virStorageBackendLogicalBuildPool(virConnectPtr conn,
+virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -431,14 +430,14 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
          */
         vgargv[n++] = pool->def->source.devices[i].path;
         pvargv[1] = pool->def->source.devices[i].path;
-        if (virRun(conn, pvargv, NULL) < 0)
+        if (virRun(pvargv, NULL) < 0)
             goto cleanup;
     }
 
     vgargv[n] = NULL;
 
     /* Now create the volume group itself */
-    if (virRun(conn, vgargv, NULL) < 0)
+    if (virRun(vgargv, NULL) < 0)
         goto cleanup;
 
     VIR_FREE(vgargv);
@@ -476,7 +475,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
     };
     int exitstatus;
 
-    virFileWaitForDevices(conn);
+    virFileWaitForDevices();
 
     /* Get list of all logical volumes */
     if (virStorageBackendLogicalFindLVs(conn, pool, NULL) < 0) {
@@ -512,17 +511,17 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn,
  * "Can't deactivate volume group "VolGroup00" with 3 open logical volume(s)"
  */
 static int
-virStorageBackendLogicalStopPool(virConnectPtr conn,
+virStorageBackendLogicalStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
-    if (virStorageBackendLogicalSetActive(conn, pool, 0) < 0)
+    if (virStorageBackendLogicalSetActive(pool, 0) < 0)
         return -1;
 
     return 0;
 }
 
 static int
-virStorageBackendLogicalDeletePool(virConnectPtr conn,
+virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool,
                                    unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -533,7 +532,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
     int i, error;
 
     /* first remove the volume group */
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     /* now remove the pv devices and clear them out */
@@ -542,7 +541,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn,
     pvargv[2] = NULL;
     for (i = 0 ; i < pool->def->source.ndevice ; i++) {
         pvargv[1] = pool->def->source.devices[i].path;
-        if (virRun(conn, pvargv, NULL) < 0) {
+        if (virRun(pvargv, NULL) < 0) {
             error = -1;
             virReportSystemError(errno,
                                  _("cannot remove PV device '%s'"),
@@ -607,7 +606,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         return -1;
     }
 
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
@@ -675,7 +674,7 @@ virStorageBackendLogicalBuildVolFrom(virConnectPtr conn,
 }
 
 static int
-virStorageBackendLogicalDeleteVol(virConnectPtr conn,
+virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags ATTRIBUTE_UNUSED)
@@ -684,7 +683,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn,
         LVREMOVE, "-f", vol->target.path, NULL
     };
 
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     return 0;

@@ -146,7 +146,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (virRun(NULL, argv, NULL) < 0) {
+    if (virRun(argv, NULL) < 0) {
         retval = errno;
         goto error;
     }

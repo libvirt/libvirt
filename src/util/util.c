@@ -84,9 +84,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define ReportError(conn, code, fmt...)                                      \
-        virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,          \
-                               __FUNCTION__, __LINE__, fmt)
+#define virUtilError(code, fmt...)                                         \
+        virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,          \
+                             __FUNCTION__, __LINE__, fmt)
 
 /* Like read(), but restarts after EINTR */
 int saferead(int fd, void *buf, size_t count)
@@ -297,7 +297,6 @@ static int virClearCapabilities(void)
 #endif
 
 /*
- * @conn Connection to report errors against
  * @argv argv to exec
  * @envp optional environment to use for exec
  * @keepfd options fd_ret to keep open for child process
@@ -318,8 +317,7 @@ static int virClearCapabilities(void)
  * @pidfile path to use as pidfile for daemonized process (needs DAEMON flag)
  */
 static int
-__virExec(virConnectPtr conn,
-          const char *const*argv,
+__virExec(const char *const*argv,
           const char *const*envp,
           const fd_set *keepfd,
           pid_t *retpid,
@@ -454,9 +452,6 @@ __virExec(virConnectPtr conn,
 
     /* child */
 
-    /* Don't want to report errors against this accidentally, so
-       just discard it */
-    conn = NULL;
     /* Remove any error callback too, so errors in child now
        get sent to stderr where they stand a fighting chance
        of being seen / logged */
@@ -593,7 +588,7 @@ __virExec(virConnectPtr conn,
     /* This is cleanup of parent process only - child
        should never jump here on error */
 
-    /* NB we don't ReportError() on any failures here
+    /* NB we don't virUtilError() on any failures here
        because the code which jumped hre already raised
        an error condition which we must not overwrite */
     if (pipeerr[0] > 0)
@@ -610,8 +605,7 @@ __virExec(virConnectPtr conn,
 }
 
 int
-virExecWithHook(virConnectPtr conn,
-                const char *const*argv,
+virExecWithHook(const char *const*argv,
                 const char *const*envp,
                 const fd_set *keepfd,
                 pid_t *retpid,
@@ -642,7 +636,7 @@ virExecWithHook(virConnectPtr conn,
     }
     VIR_FREE(argv_str);
 
-    return __virExec(conn, argv, envp, keepfd, retpid, infd, outfd, errfd,
+    return __virExec(argv, envp, keepfd, retpid, infd, outfd, errfd,
                      flags, hook, data, pidfile);
 }
 
@@ -654,15 +648,14 @@ virExecWithHook(virConnectPtr conn,
  * list.
  */
 int
-virExec(virConnectPtr conn,
-        const char *const*argv,
+virExec(const char *const*argv,
         const char *const*envp,
         const fd_set *keepfd,
         pid_t *retpid,
         int infd, int *outfd, int *errfd,
         int flags)
 {
-    return virExecWithHook(conn, argv, envp, keepfd, retpid,
+    return virExecWithHook(argv, envp, keepfd, retpid,
                            infd, outfd, errfd,
                            flags, NULL, NULL, NULL);
 }
@@ -681,8 +674,7 @@ virExec(virConnectPtr conn,
  *          occured and when in the process occured, the error output
  *          could have gone to stderr or the passed errfd).
  */
-int virExecDaemonize(virConnectPtr conn,
-                     const char *const*argv,
+int virExecDaemonize(const char *const*argv,
                      const char *const*envp,
                      const fd_set *keepfd,
                      pid_t *retpid,
@@ -694,7 +686,7 @@ int virExecDaemonize(virConnectPtr conn,
     int ret;
     int childstat = 0;
 
-    ret = virExecWithHook(conn, argv, envp, keepfd, retpid,
+    ret = virExecWithHook(argv, envp, keepfd, retpid,
                           infd, outfd, errfd,
                           flags | VIR_EXEC_DAEMON,
                           hook, data, pidfile);
@@ -708,9 +700,9 @@ int virExecDaemonize(virConnectPtr conn,
                    errno == EINTR);
 
     if (childstat != 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("Intermediate daemon process exited with status %d."),
-                    WEXITSTATUS(childstat));
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     _("Intermediate daemon process exited with status %d."),
+                     WEXITSTATUS(childstat));
         ret = -2;
     }
 
@@ -718,7 +710,7 @@ int virExecDaemonize(virConnectPtr conn,
 }
 
 static int
-virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
+virPipeReadUntilEOF(int outfd, int errfd,
                     char **outbuf, char **errbuf) {
 
     struct pollfd fds[2];
@@ -753,8 +745,8 @@ virPipeReadUntilEOF(virConnectPtr conn, int outfd, int errfd,
                 if (fds[i].revents & POLLHUP)
                     continue;
 
-                ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Unknown poll response."));
+                virUtilError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Unknown poll response."));
                 goto error;
             }
 
@@ -798,7 +790,6 @@ error:
 }
 
 /**
- * @conn connection to report errors against
  * @argv NULL terminated argv to run
  * @status optional variable to return exit status in
  *
@@ -813,8 +804,7 @@ error:
  * only if the command could not be run.
  */
 int
-virRunWithHook(virConnectPtr conn,
-               const char *const*argv,
+virRunWithHook(const char *const*argv,
                virExecHook hook,
                void *data,
                int *status) {
@@ -832,14 +822,14 @@ virRunWithHook(virConnectPtr conn,
     }
     DEBUG0(argv_str);
 
-    if ((execret = __virExec(conn, argv, NULL, NULL,
+    if ((execret = __virExec(argv, NULL, NULL,
                              &childpid, -1, &outfd, &errfd,
                              VIR_EXEC_NONE, hook, data, NULL)) < 0) {
         ret = execret;
         goto error;
     }
 
-    if (virPipeReadUntilEOF(conn, outfd, errfd, &outbuf, &errbuf) < 0) {
+    if (virPipeReadUntilEOF(outfd, errfd, &outbuf, &errbuf) < 0) {
         while (waitpid(childpid, &exitstatus, 0) == -1 && errno == EINTR)
             ;
         goto error;
@@ -862,12 +852,12 @@ virRunWithHook(virConnectPtr conn,
     if (status == NULL) {
         errno = EINVAL;
         if (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) != 0) {
-            ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                        _("'%s' exited with non-zero status %d and "
-                          "signal %d: %s"), argv_str,
-                        WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
-                        WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0,
-                        (errbuf ? errbuf : ""));
+            virUtilError(VIR_ERR_INTERNAL_ERROR,
+                         _("'%s' exited with non-zero status %d and "
+                           "signal %d: %s"), argv_str,
+                         WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus) : 0,
+                         WIFSIGNALED(exitstatus) ? WTERMSIG(exitstatus) : 0,
+                         (errbuf ? errbuf : ""));
             goto error;
         }
     } else {
@@ -890,8 +880,7 @@ virRunWithHook(virConnectPtr conn,
 #else /* __MINGW32__ */
 
 int
-virRunWithHook(virConnectPtr conn,
-               const char *const *argv ATTRIBUTE_UNUSED,
+virRunWithHook(const char *const *argv ATTRIBUTE_UNUSED,
                virExecHook hook ATTRIBUTE_UNUSED,
                void *data ATTRIBUTE_UNUSED,
                int *status)
@@ -899,13 +888,12 @@ virRunWithHook(virConnectPtr conn,
     if (status)
         *status = ENOTSUP;
     else
-        ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virUtilError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
     return -1;
 }
 
 int
-virExec(virConnectPtr conn,
-        const char *const*argv ATTRIBUTE_UNUSED,
+virExec(const char *const*argv ATTRIBUTE_UNUSED,
         const char *const*envp ATTRIBUTE_UNUSED,
         const fd_set *keepfd ATTRIBUTE_UNUSED,
         int *retpid ATTRIBUTE_UNUSED,
@@ -914,17 +902,16 @@ virExec(virConnectPtr conn,
         int *errfd ATTRIBUTE_UNUSED,
         int flags ATTRIBUTE_UNUSED)
 {
-    ReportError (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    virUtilError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
     return -1;
 }
 
 #endif /* __MINGW32__ */
 
 int
-virRun(virConnectPtr conn,
-       const char *const*argv,
+virRun(const char *const*argv,
        int *status) {
-    return virRunWithHook(conn, argv, NULL, NULL, status);
+    return virRunWithHook(argv, NULL, NULL, status);
 }
 
 /* Like gnulib's fread_file, but read no more than the specified maximum
@@ -2178,8 +2165,8 @@ char *virIndexToDiskName(int idx, const char *prefix)
     int i, k, offset;
 
     if (idx < 0) {
-        ReportError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    _("Disk index %d is negative"), idx);
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     _("Disk index %d is negative"), idx);
         return NULL;
     }
 
@@ -2206,7 +2193,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
 #define AI_CANONIDN 0
 #endif
 
-char *virGetHostname(virConnectPtr conn)
+char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result;
@@ -2225,14 +2212,14 @@ char *virGetHostname(virConnectPtr conn)
     hints.ai_family = AF_UNSPEC;
     r = getaddrinfo(hostname, NULL, &hints, &info);
     if (r != 0) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    _("getaddrinfo failed for '%s': %s"),
-                    hostname, gai_strerror(r));
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     _("getaddrinfo failed for '%s': %s"),
+                     hostname, gai_strerror(r));
         return NULL;
     }
     if (info->ai_canonname == NULL) {
-        ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("could not determine canonical host name"));
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     "%s", _("could not determine canonical host name"));
         freeaddrinfo(info);
         return NULL;
     }
@@ -2386,21 +2373,18 @@ static char *virGetUserEnt(uid_t uid,
     return ret;
 }
 
-char *virGetUserDirectory(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                          uid_t uid)
+char *virGetUserDirectory(uid_t uid)
 {
     return virGetUserEnt(uid, VIR_USER_ENT_DIRECTORY);
 }
 
-char *virGetUserName(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                     uid_t uid)
+char *virGetUserName(uid_t uid)
 {
     return virGetUserEnt(uid, VIR_USER_ENT_NAME);
 }
 
 
-int virGetUserID(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                 const char *name,
+int virGetUserID(const char *name,
                  uid_t *uid)
 {
     char *strbuf;
@@ -2442,8 +2426,7 @@ int virGetUserID(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
 }
 
 
-int virGetGroupID(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                  const char *name,
+int virGetGroupID(const char *name,
                   gid_t *gid)
 {
     char *strbuf;
@@ -2521,7 +2504,7 @@ cleanup:
 
 #ifndef PROXY
 #if defined(UDEVADM) || defined(UDEVSETTLE)
-void virFileWaitForDevices(virConnectPtr conn)
+void virFileWaitForDevices(void)
 {
 #ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
@@ -2539,11 +2522,11 @@ void virFileWaitForDevices(virConnectPtr conn)
      * If this fails for any reason, we still have the backup of polling for
      * 5 seconds for device nodes.
      */
-    if (virRun(conn, settleprog, &exitstatus) < 0)
+    if (virRun(settleprog, &exitstatus) < 0)
     {}
 }
 #else
-void virFileWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
+void virFileWaitForDevices(void) {}
 #endif
 #endif
 

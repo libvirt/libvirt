@@ -182,7 +182,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
 
     memset(line, 0, LINE_SIZE);
 
-    if (virExec(conn, prog, NULL, NULL, &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
+    if (virExec(prog, NULL, NULL, &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run '%s' when looking for existing interface with IQN '%s'"),
                               prog[0], pool->def->source.initiator.iqn);
@@ -279,7 +279,7 @@ virStorageBackendCreateIfaceIQN(virConnectPtr conn,
      * tools returned an exit status of > 0, even if they succeeded.
      * We will just rely on whether the interface got created
      * properly. */
-    if (virRun(conn, cmdargv1, &exitstatus) < 0) {
+    if (virRun(cmdargv1, &exitstatus) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to create new iscsi interface"),
                               cmdargv1[0]);
@@ -295,7 +295,7 @@ virStorageBackendCreateIfaceIQN(virConnectPtr conn,
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether iface file got updated properly. */
-    if (virRun(conn, cmdargv2, &exitstatus) < 0) {
+    if (virRun(cmdargv2, &exitstatus) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
                               cmdargv1[0], pool->def->source.initiator.iqn);
@@ -348,7 +348,7 @@ virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
     const char *const sendtargets[] = {
         ISCSIADM, "--mode", "discovery", "--type", "sendtargets", "--portal", portal, NULL
     };
-    if (virRun(conn, sendtargets, NULL) < 0) {
+    if (virRun(sendtargets, NULL) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run %s to get target list"),
                               sendtargets[0]);
@@ -361,7 +361,7 @@ virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
         ifacename, action, NULL
     };
 
-    if (virRun(conn, cmdargv, NULL) < 0) {
+    if (virRun(cmdargv, NULL) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' with action '%s'"),
                               cmdargv[0], action);
@@ -395,7 +395,7 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
             "--targetname", pool->def->source.devices[0].path, action, NULL
         };
 
-        if (virRun(conn, cmdargv, NULL) < 0) {
+        if (virRun(cmdargv, NULL) < 0) {
             ret = -1;
         }
 
@@ -417,7 +417,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
     snprintf(sysfs_path, PATH_MAX,
              "/sys/class/iscsi_session/session%s/device", session);
 
-    if (virStorageBackendSCSIGetHostNumber(conn, sysfs_path, &host) < 0) {
+    if (virStorageBackendSCSIGetHostNumber(sysfs_path, &host) < 0) {
         virReportSystemError(errno,
                              _("Failed to get host number for iSCSI session "
                                "with path '%s'"),
@@ -435,7 +435,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
 }
 
 static int
-virStorageBackendISCSIRescanLUNs(virConnectPtr conn,
+virStorageBackendISCSIRescanLUNs(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  const char *session)
 {
@@ -443,7 +443,7 @@ virStorageBackendISCSIRescanLUNs(virConnectPtr conn,
         ISCSIADM, "--mode", "session", "-r", session, "-R", NULL,
     };
 
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -460,7 +460,7 @@ virStorageBackendISCSILogin(virConnectPtr conn,
         "--portal", portal, NULL
     };
 
-    if (virRun(conn, cmdsendtarget, NULL) < 0)
+    if (virRun(cmdsendtarget, NULL) < 0)
         return -1;
 
     return virStorageBackendISCSIConnection(conn, pool, portal, "--login");

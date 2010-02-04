@@ -228,7 +228,7 @@ ebtablesAddRemoveRule(ebtRules *rules, int action, const char *arg, ...)
             goto error;
     }
 
-    if (virRun(NULL, argv, NULL) < 0) {
+    if (virRun(argv, NULL) < 0) {
         retval = errno;
         goto error;
     }

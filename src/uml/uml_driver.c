@@ -365,7 +365,7 @@ umlStartup(int privileged) {
     if (virDomainObjListInit(&uml_driver->domains) < 0)
         goto error;
 
-    userdir = virGetUserDirectory(NULL, uid);
+    userdir = virGetUserDirectory(uid);
     if (!userdir)
         goto error;
 
@@ -899,7 +899,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
 
     priv->monitor = -1;
 
-    ret = virExecDaemonize(conn, argv, progenv, &keepfd, &pid,
+    ret = virExecDaemonize(argv, progenv, &keepfd, &pid,
                            -1, &logfd, &logfd,
                            VIR_EXEC_CLEAR_CAPS,
                            NULL, NULL, NULL);

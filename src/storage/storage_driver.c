@@ -124,7 +124,7 @@ storageDriverStartup(int privileged) {
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();
-        char *userdir = virGetUserDirectory(NULL, uid);
+        char *userdir = virGetUserDirectory(uid);
 
         if (!userdir)
             goto error;

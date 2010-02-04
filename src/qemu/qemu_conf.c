@@ -217,7 +217,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virConfFree(conf);
         return -1;
     }
-    if (virGetUserID(NULL, user, &driver->user) < 0) {
+    if (virGetUserID(user, &driver->user) < 0) {
         VIR_FREE(user);
         virConfFree(conf);
         return -1;
@@ -232,7 +232,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         virConfFree(conf);
         return -1;
     }
-    if (virGetGroupID(NULL, group, &driver->group) < 0) {
+    if (virGetGroupID(group, &driver->group) < 0) {
         VIR_FREE(group);
         virConfFree(conf);
         return -1;
@@ -485,7 +485,7 @@ qemudProbeMachineTypes(const char *binary,
     int newstdout = -1, len;
     int ret = -1, status;
 
-    if (virExec(NULL, qemuarg, qemuenv, NULL,
+    if (virExec(qemuarg, qemuenv, NULL,
                 &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
         return -1;
 
@@ -719,7 +719,7 @@ qemudProbeCPUModels(const char *qemu,
         return 0;
     }
 
-    if (virExec(NULL, qemuarg, qemuenv, NULL,
+    if (virExec(qemuarg, qemuenv, NULL,
                 &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
         return -1;
 
@@ -1330,7 +1330,7 @@ int qemudExtractVersionInfo(const char *qemu,
     if (retversion)
         *retversion = 0;
 
-    if (virExec(NULL, qemuarg, qemuenv, NULL,
+    if (virExec(qemuarg, qemuenv, NULL,
                 &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
         return -1;
 

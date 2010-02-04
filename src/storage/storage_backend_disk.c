@@ -323,7 +323,7 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn,
     VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
 
-    virFileWaitForDevices(conn);
+    virFileWaitForDevices();
 
     if (virStorageBackendDiskReadGeometry(conn, pool) != 0) {
         return -1;
@@ -337,7 +337,7 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn,
  * Write a new partition table header
  */
 static int
-virStorageBackendDiskBuildPool(virConnectPtr conn,
+virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
@@ -352,7 +352,7 @@ virStorageBackendDiskBuildPool(virConnectPtr conn,
         NULL,
     };
 
-    if (virRun(conn, prog, NULL) < 0)
+    if (virRun(prog, NULL) < 0)
         return -1;
 
     return 0;
@@ -577,11 +577,11 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
     snprintf(end, sizeof(end)-1, "%lluB", endOffset);
     end[sizeof(end)-1] = '\0';
 
-    if (virRun(conn, cmdargv, NULL) < 0)
+    if (virRun(cmdargv, NULL) < 0)
         return -1;
 
     /* wait for device node to show up */
-    virFileWaitForDevices(conn);
+    virFileWaitForDevices();
 
     /* Blow away free extent info, as we're about to re-populate it */
     VIR_FREE(pool->def->source.devices[0].freeExtents);
@@ -662,7 +662,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
         NULL,
     };
 
-    if (virRun(conn, prog, NULL) < 0)
+    if (virRun(prog, NULL) < 0)
         goto cleanup;
 
     rc = 0;

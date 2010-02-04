@@ -84,7 +84,7 @@ openvzExtractVersionInfo(const char *cmd, int *retversion)
     if (retversion)
         *retversion = 0;
 
-    if (virExec(NULL, vzarg, vzenv, NULL,
+    if (virExec(vzarg, vzenv, NULL,
                 &child, -1, &newstdout, NULL, VIR_EXEC_NONE) < 0)
         return -1;
 

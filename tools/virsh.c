@@ -7172,7 +7172,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     dir = vshCommandOptString(cmd, "dir", &found);
     if (!found) {
         uid_t uid = geteuid();
-        dir = virGetUserDirectory(NULL, uid);
+        dir = virGetUserDirectory(uid);
     }
     if (!dir)
         dir = "/";
@@ -8773,7 +8773,7 @@ vshReadlineInit(vshControl *ctl)
     stifle_history(500);
 
     /* Prepare to read/write history from/to the ~/.virsh/history file */
-    userdir = virGetUserDirectory(NULL, getuid());
+    userdir = virGetUserDirectory(getuid());
 
     if (userdir == NULL)
         return -1;

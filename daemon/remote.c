@@ -3423,7 +3423,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authfail;
     }
 
-    if (virRun(NULL, pkcheck, &status) < 0) {
+    if (virRun(pkcheck, &status) < 0) {
         VIR_ERROR(_("Cannot invoke %s"), PKCHECK_PATH);
         goto authfail;
     }

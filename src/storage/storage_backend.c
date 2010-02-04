@@ -509,8 +509,7 @@ static int virStorageBuildSetUIDHook(void *data) {
     return 0;
 }
 
-static int virStorageBackendCreateExecCommand(virConnectPtr conn,
-                                              virStoragePoolObjPtr pool,
+static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                                               virStorageVolDefPtr vol,
                                               const char **cmdargv) {
     struct stat st;
@@ -521,7 +520,7 @@ static int virStorageBackendCreateExecCommand(virConnectPtr conn,
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (getuid() == 0)
         && ((vol->target.perms.uid != 0) || (vol->target.perms.gid != 0))) {
-        if (virRunWithHook(conn, cmdargv,
+        if (virRunWithHook(cmdargv,
                            virStorageBuildSetUIDHook, vol, NULL) == 0) {
             /* command was successfully run, check if the file was created */
             if (stat(vol->target.path, &st) >=0)
@@ -529,7 +528,7 @@ static int virStorageBackendCreateExecCommand(virConnectPtr conn,
         }
     }
     if (!filecreated) {
-        if (virRun(conn, cmdargv, NULL) < 0) {
+        if (virRun(cmdargv, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Cannot run %s to create %s"),
                                  cmdargv[0], vol->target.path);
@@ -727,7 +726,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     /* Size in KB */
     snprintf(size, sizeof(size), "%lluK", vol->capacity/1024);
 
-    ret = virStorageBackendCreateExecCommand(conn, pool, vol, imgargv);
+    ret = virStorageBackendCreateExecCommand(pool, vol, imgargv);
     VIR_FREE(imgargv[0]);
 
     return ret;
@@ -781,7 +780,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn,
     imgargv[2] = vol->target.path;
     imgargv[3] = NULL;
 
-    ret = virStorageBackendCreateExecCommand(conn, pool, vol, imgargv);
+    ret = virStorageBackendCreateExecCommand(pool, vol, imgargv);
     VIR_FREE(imgargv[0]);
 
     return ret;
@@ -1250,7 +1249,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
 
     /* Run the program and capture its output */
-    if (virExec(conn, prog, NULL, NULL,
+    if (virExec(prog, NULL, NULL,
                 &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
         goto cleanup;
     }
@@ -1386,7 +1385,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
         v[i] = NULL;
 
     /* Run the program and capture its output */
-    if (virExec(conn, prog, NULL, NULL,
+    if (virExec(prog, NULL, NULL,
                 &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
         goto cleanup;
     }

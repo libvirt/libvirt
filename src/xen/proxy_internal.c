@@ -155,7 +155,7 @@ virProxyForkServer(void)
     proxyarg[0] = proxyPath;
     proxyarg[1] = NULL;
 
-    if (virExecDaemonize(NULL, proxyarg, NULL, NULL,
+    if (virExecDaemonize(proxyarg, NULL, NULL,
                          &pid, -1, NULL, NULL, 0,
                          NULL, NULL, NULL) < 0)
         VIR_ERROR0("Failed to fork libvirt_proxy");

@@ -1033,7 +1033,7 @@ qemudStartup(int privileged) {
             goto out_of_memory;
     } else {
         uid_t uid = geteuid();
-        char *userdir = virGetUserDirectory(NULL, uid);
+        char *userdir = virGetUserDirectory(uid);
         if (!userdir)
             goto error;
 
@@ -2691,7 +2691,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < ntapfds ; i++)
         FD_SET(tapfds[i], &keepfd);
 
-    ret = virExecDaemonize(conn, argv, progenv, &keepfd, &child,
+    ret = virExecDaemonize(argv, progenv, &keepfd, &child,
                            stdin_fd, &logfile, &logfile,
                            VIR_EXEC_NONBLOCK | VIR_EXEC_CLEAR_CAPS,
                            qemudSecurityHook, &hookData,
@@ -4556,7 +4556,7 @@ static int qemudDomainRestore(virConnectPtr conn,
             intermediate_argv[0] = prog;
             intermediatefd = fd;
             fd = -1;
-            if (virExec(conn, intermediate_argv, NULL, NULL,
+            if (virExec(intermediate_argv, NULL, NULL,
                         &intermediate_pid, intermediatefd, &fd, NULL, 0) < 0) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                                  _("Failed to start decompression binary %s"),

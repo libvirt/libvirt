@@ -699,7 +699,7 @@ pciDeviceFile(char *buf, size_t buflen, const char *device, const char *file)
 
 
 static const char *
-pciFindStubDriver(virConnectPtr conn)
+pciFindStubDriver(void)
 {
     char drvpath[PATH_MAX];
     int probed = 0;
@@ -723,8 +723,8 @@ recheck:
          * On Xen though, we want to prefer pciback, so probe
          * for that first, because that will only work on Xen
          */
-        if (virRun(conn, backprobe, NULL) < 0 &&
-            virRun(conn, stubprobe, NULL) < 0) {
+        if (virRun(backprobe, NULL) < 0 &&
+            virRun(stubprobe, NULL) < 0) {
             char ebuf[1024];
             VIR_WARN(_("failed to load pci-stub or pciback drivers: %s"),
                      virStrerror(errno, ebuf, sizeof ebuf));
@@ -812,7 +812,7 @@ pciBindDeviceToStub(pciDevice *dev, const char *driver)
 int
 pciDettachDevice(virConnectPtr conn, pciDevice *dev)
 {
-    const char *driver = pciFindStubDriver(conn);
+    const char *driver = pciFindStubDriver();
     if (!driver) {
         pciReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot find any PCI stub module"));
@@ -873,7 +873,7 @@ pciUnBindDeviceFromStub(pciDevice *dev, const char *driver)
 int
 pciReAttachDevice(virConnectPtr conn, pciDevice *dev)
 {
-    const char *driver = pciFindStubDriver(conn);
+    const char *driver = pciFindStubDriver();
     if (!driver) {
         pciReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot find any PCI stub module"));

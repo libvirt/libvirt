@@ -478,7 +478,7 @@ index b84729f..4f73baf 100644
 +     * If this fails for any reason, we still have the backup of polling for
 +     * 5 seconds for device nodes.
 +     */
-+    virRun(conn, settleprog, &exitstatus);
++    virRun(settleprog, &exitstatus);
 +}
 +#else
 +void virNodeDeviceWaitForDevices(virConnectPtr conn ATTRIBUTE_UNUSED) {}
@@ -1131,7 +1131,7 @@ index b154140..74759cf 100644
 -     * If this fails for any reason, we still have the backup of polling for
 -     * 5 seconds for device nodes.
 -     */
--    virRun(conn, settleprog, &exitstatus);
+-    virRun(settleprog, &exitstatus);
 +    virNodeDeviceWaitForDevices(conn);
 +    return;
  }

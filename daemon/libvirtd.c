@@ -755,7 +755,7 @@ static int qemudInitPaths(struct qemud_server *server,
                 goto snprintf_error;
         } else {
             uid_t uid = geteuid();
-            dir_prefix = virGetUserDirectory(NULL, uid);
+            dir_prefix = virGetUserDirectory(uid);
             if (dir_prefix == NULL) {
                 /* Do not diagnose here; virGetUserDirectory does that.  */
                 goto snprintf_error;

@@ -533,7 +533,7 @@ static int virCgroupAppRoot(int privileged,
     } else {
         char *rootname;
         char *username;
-        username = virGetUserName(NULL, getuid());
+        username = virGetUserName(getuid());
         if (!username) {
             rc = -ENOMEM;
             goto cleanup;

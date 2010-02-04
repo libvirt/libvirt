@@ -211,7 +211,7 @@ networkStartup(int privileged) {
         if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
-        char *userdir = virGetUserDirectory(NULL, uid);
+        char *userdir = virGetUserDirectory(uid);
 
         if (!userdir)
             goto error;
@@ -562,7 +562,7 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (virRun(conn, argv, NULL) < 0)
+    if (virRun(argv, NULL) < 0)
         goto cleanup;
 
     /*

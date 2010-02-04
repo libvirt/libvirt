@@ -403,7 +403,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         mntargv[option_index] = options;
     }
 
-    if (virRun(conn, mntargv, NULL) < 0) {
+    if (virRun(mntargv, NULL) < 0) {
         VIR_FREE(src);
         return -1;
     }
@@ -457,7 +457,7 @@ virStorageBackendFileSystemUnmount(virConnectPtr conn,
     mntargv[1] = pool->def->target.path;
     mntargv[2] = NULL;
 
-    if (virRun(conn, mntargv, NULL) < 0) {
+    if (virRun(mntargv, NULL) < 0) {
         return -1;
     }
     return 0;

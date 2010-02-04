@@ -49,8 +49,7 @@ int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
  * after fork() but before execve() */
 typedef int (*virExecHook)(void *data);
 
-int virExecDaemonize(virConnectPtr conn,
-                     const char *const*argv,
+int virExecDaemonize(const char *const*argv,
                      const char *const*envp,
                      const fd_set *keepfd,
                      pid_t *retpid,
@@ -59,8 +58,7 @@ int virExecDaemonize(virConnectPtr conn,
                      virExecHook hook,
                      void *data,
                      char *pidfile) ATTRIBUTE_RETURN_CHECK;
-int virExecWithHook(virConnectPtr conn,
-                    const char *const*argv,
+int virExecWithHook(const char *const*argv,
                     const char *const*envp,
                     const fd_set *keepfd,
                     int *retpid,
@@ -71,8 +69,7 @@ int virExecWithHook(virConnectPtr conn,
                     virExecHook hook,
                     void *data,
                     char *pidfile) ATTRIBUTE_RETURN_CHECK;
-int virExec(virConnectPtr conn,
-            const char *const*argv,
+int virExec(const char *const*argv,
             const char *const*envp,
             const fd_set *keepfd,
             pid_t *retpid,
@@ -80,8 +77,8 @@ int virExec(virConnectPtr conn,
             int *outfd,
             int *errfd,
             int flags) ATTRIBUTE_RETURN_CHECK;
-int virRun(virConnectPtr conn, const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
-int virRunWithHook(virConnectPtr conn, const char *const*argv,
+int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
+int virRunWithHook(const char *const*argv,
                    virExecHook hook, void *data,
                    int *status) ATTRIBUTE_RETURN_CHECK;
 
@@ -241,15 +238,11 @@ char *virGetHostname(virConnectPtr conn);
 int virKillProcess(pid_t pid, int sig);
 
 #ifdef HAVE_GETPWUID_R
-char *virGetUserDirectory(virConnectPtr conn,
-                          uid_t uid);
-char *virGetUserName(virConnectPtr conn,
-                     uid_t uid);
-int virGetUserID(virConnectPtr conn,
-                 const char *name,
+char *virGetUserDirectory(uid_t uid);
+char *virGetUserName(uid_t uid);
+int virGetUserID(const char *name,
                  uid_t *uid) ATTRIBUTE_RETURN_CHECK;
-int virGetGroupID(virConnectPtr conn,
-                  const char *name,
+int virGetGroupID(const char *name,
                   gid_t *gid) ATTRIBUTE_RETURN_CHECK;
 #endif
 
@@ -260,7 +253,7 @@ int virRandom(int max);
 char *virFileFindMountPoint(const char *type);
 #endif
 
-void virFileWaitForDevices(virConnectPtr conn);
+void virFileWaitForDevices(void);
 
 #define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;

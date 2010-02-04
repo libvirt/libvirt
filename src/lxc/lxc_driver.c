@@ -1120,7 +1120,7 @@ static int lxcControllerStart(virConnectPtr conn,
 
     FD_SET(appPty, &keepfd);
 
-    if (virExec(conn, largv, lenv, &keepfd, &child,
+    if (virExec(largv, lenv, &keepfd, &child,
                 -1, &logfd, &logfd,
                 VIR_EXEC_NONE) < 0)
         goto cleanup;
@@ -1575,7 +1575,7 @@ static int lxcCheckNetNsSupport(void)
     const char *argv[] = {"ip", "link", "set", "lo", "netns", "-1", NULL};
     int ip_rc;
 
-    if (virRun(NULL, argv, &ip_rc) < 0 ||
+    if (virRun(argv, &ip_rc) < 0 ||
         !(WIFEXITED(ip_rc) && (WEXITSTATUS(ip_rc) != 255)))
         return 0;
 

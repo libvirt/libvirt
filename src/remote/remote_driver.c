@@ -330,7 +330,7 @@ remoteForkDaemon(virConnectPtr conn)
         return -1;
     }
 
-    if (virExecDaemonize(NULL, daemonargs, NULL, NULL,
+    if (virExecDaemonize(daemonargs, NULL, NULL,
                          &pid, -1, NULL, NULL,
                          VIR_EXEC_CLEAR_CAPS,
                          NULL, NULL, NULL) < 0)
@@ -656,7 +656,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_unix: {
         if (!sockname) {
             if (flags & VIR_DRV_OPEN_REMOTE_USER) {
-                char *userdir = virGetUserDirectory(conn, getuid());
+                char *userdir = virGetUserDirectory(getuid());
 
                 if (!userdir)
                     goto failed;
@@ -793,7 +793,7 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
         }
 
-        if (virExec(conn, (const char**)cmd_argv, NULL, NULL,
+        if (virExec((const char**)cmd_argv, NULL, NULL,
                     &pid, sv[1], &(sv[1]), NULL,
                     VIR_EXEC_CLEAR_CAPS) < 0)
             goto failed;

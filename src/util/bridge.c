@@ -792,7 +792,7 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
 
     snprintf(delayStr, sizeof(delayStr), "%d", delay);
 
-    if (virRun(NULL, progargv, NULL) < 0)
+    if (virRun(progargv, NULL) < 0)
         return -1;
 
     return 0;
@@ -819,7 +819,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
         BRCTL, "stp", bridge, setting, NULL
     };
 
-    if (virRun(NULL, progargv, NULL) < 0)
+    if (virRun(progargv, NULL) < 0)
         return -1;
 
     return 0;

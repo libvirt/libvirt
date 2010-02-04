@@ -102,7 +102,7 @@ int vethCreate(char* veth1, int veth1MaxLen,
     }
 
     DEBUG("veth1: %s veth2: %s", veth1, veth2);
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -135,7 +135,7 @@ int vethDelete(const char *veth)
 
     DEBUG("veth: %s", veth);
 
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -170,7 +170,7 @@ int vethInterfaceUpOrDown(const char* veth, int upOrDown)
     else
         argv[2] = "up";
 
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
 
     if (0 == rc) {
        rc = cmdResult;
@@ -208,7 +208,7 @@ int moveInterfaceToNetNs(const char* iface, int pidInNs)
         goto error_out;
 
     argv[5] = pid;
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
     if (0 == rc)
         rc = cmdResult;
 
@@ -240,7 +240,7 @@ int setMacAddr(const char* iface, const char* macaddr)
         goto error_out;
     }
 
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
     if (0 == rc)
         rc = cmdResult;
 
@@ -271,7 +271,7 @@ int setInterfaceName(const char* iface, const char* new)
         goto error_out;
     }
 
-    rc = virRun(NULL, argv, &cmdResult);
+    rc = virRun(argv, &cmdResult);
     if (0 == rc)
         rc = cmdResult;
 
