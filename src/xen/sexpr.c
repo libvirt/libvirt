@@ -119,6 +119,7 @@ sexpr_string(const char *str, ssize_t len)
     }
 
     if (ret->u.value == NULL) {
+        VIR_FREE(ret);
         return NULL;
     }
 
