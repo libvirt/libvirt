@@ -1947,6 +1947,7 @@ virDomainChrDefParseXML(virConnectPtr conn,
             virDomainReportError(conn, VIR_ERR_XML_ERROR,
                               _("unknown target type for character device: %s"),
                                  nodeName);
+            VIR_FREE(def);
             return NULL;
         }
         def->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_NULL;
