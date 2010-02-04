@@ -631,6 +631,7 @@ virExecWithHook(virConnectPtr conn,
 
     if (envp) {
         if ((envp_str = virArgvToString(envp)) == NULL) {
+            VIR_FREE(argv_str);
             virReportOOMError(conn);
             return -1;
         }
