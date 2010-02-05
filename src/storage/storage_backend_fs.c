@@ -172,8 +172,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(virStoragePoolObjPtr pool ATTR
     src = NULL;
     ret = 0;
 cleanup:
-    if (src)
-        virStoragePoolSourceFree(src);
+    virStoragePoolSourceFree(src);
+    VIR_FREE(src);
     return ret;
 }
 
@@ -234,8 +234,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     for (i = 0; i < state.list.nsources; i++)
         virStoragePoolSourceFree(&state.list.sources[i]);
 
-    if (source)
-        virStoragePoolSourceFree(source);
+    virStoragePoolSourceFree(source);
+    VIR_FREE(source);
 
     VIR_FREE(state.list.sources);
 

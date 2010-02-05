@@ -517,8 +517,8 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
     ret = def;
     def = NULL;
 cleanup:
-    if (def)
-        virStoragePoolSourceFree(def);
+    virStoragePoolSourceFree(def);
+    VIR_FREE(def);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(xpath_ctxt);
 
