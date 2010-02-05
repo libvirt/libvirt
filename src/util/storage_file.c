@@ -26,7 +26,9 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <assert.h>
 #include "dirname.h"
+#include "ignore-value.h"
 #include "memory.h"
 #include "virterror_internal.h"
 
@@ -255,7 +257,10 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
     if (*path == '/' || d_len == 0)
         return strdup(path);
 
-    virAsprintf(&res, "%.*s/%s", base_file, d_len, path);
+    /* Ensure that the following cast-to-int is valid.  */
+    assert (d_len <= INT_MAX);
+
+    ignore_value(virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path));
     return res;
 }
 
