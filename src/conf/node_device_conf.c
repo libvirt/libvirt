@@ -372,19 +372,21 @@ char *virNodeDeviceDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
             virBufferVSprintf(&buf, "    <protocol>%d</protocol>\n",
                               data->usb_if.protocol);
             if (data->usb_if.description)
-                virBufferVSprintf(&buf, "    <description>%s</description>\n",
+                virBufferEscapeString(&buf,
+                                  "    <description>%s</description>\n",
                                   data->usb_if.description);
             break;
         case VIR_NODE_DEV_CAP_NET:
-            virBufferVSprintf(&buf, "    <interface>%s</interface>\n",
+            virBufferEscapeString(&buf, "    <interface>%s</interface>\n",
                               data->net.ifname);
             if (data->net.address)
-                virBufferVSprintf(&buf, "    <address>%s</address>\n",
+                virBufferEscapeString(&buf, "    <address>%s</address>\n",
                                   data->net.address);
             if (data->net.subtype != VIR_NODE_DEV_CAP_NET_LAST) {
                 const char *subtyp =
                     virNodeDevNetCapTypeToString(data->net.subtype);
-                virBufferVSprintf(&buf, "    <capability type='%s'/>\n", subtyp);
+                virBufferEscapeString(&buf, "    <capability type='%s'/>\n",
+                                      subtyp);
             }
             break;
         case VIR_NODE_DEV_CAP_SCSI_HOST:
@@ -392,10 +394,10 @@ char *virNodeDeviceDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                               data->scsi_host.host);
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
                 virBufferAddLit(&buf, "    <capability type='fc_host'>\n");
-                virBufferVSprintf(&buf,
-                                  "      <wwnn>%s</wwnn>\n", data->scsi_host.wwnn);
-                virBufferVSprintf(&buf,
-                                  "      <wwpn>%s</wwpn>\n", data->scsi_host.wwpn);
+                virBufferEscapeString(&buf, "      <wwnn>%s</wwnn>\n",
+                                      data->scsi_host.wwnn);
+                virBufferEscapeString(&buf, "      <wwpn>%s</wwpn>\n",
+                                      data->scsi_host.wwpn);
                 virBufferAddLit(&buf, "    </capability>\n");
             }
             if (data->scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
@@ -405,8 +407,8 @@ char *virNodeDeviceDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
             break;
 
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
-            virBufferVSprintf(&buf, "    <target>%s</target>\n",
-                              data->scsi_target.name);
+            virBufferEscapeString(&buf, "    <target>%s</target>\n",
+                                  data->scsi_target.name);
             break;
 
         case VIR_NODE_DEV_CAP_SCSI:
@@ -416,23 +418,23 @@ char *virNodeDeviceDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
                               data->scsi.target);
             virBufferVSprintf(&buf, "    <lun>%d</lun>\n", data->scsi.lun);
             if (data->scsi.type)
-                virBufferVSprintf(&buf, "    <type>%s</type>\n",
-                                  data->scsi.type);
+                virBufferEscapeString(&buf, "    <type>%s</type>\n",
+                                      data->scsi.type);
             break;
         case VIR_NODE_DEV_CAP_STORAGE:
-            virBufferVSprintf(&buf, "    <block>%s</block>\n",
+            virBufferEscapeString(&buf, "    <block>%s</block>\n",
                               data->storage.block);
             if (data->storage.bus)
-                virBufferVSprintf(&buf, "    <bus>%s</bus>\n",
+                virBufferEscapeString(&buf, "    <bus>%s</bus>\n",
                                   data->storage.bus);
             if (data->storage.drive_type)
-                virBufferVSprintf(&buf, "    <drive_type>%s</drive_type>\n",
+                virBufferEscapeString(&buf, "    <drive_type>%s</drive_type>\n",
                                   data->storage.drive_type);
             if (data->storage.model)
-                virBufferVSprintf(&buf, "    <model>%s</model>\n",
+                virBufferEscapeString(&buf, "    <model>%s</model>\n",
                                   data->storage.model);
             if (data->storage.vendor)
-                virBufferVSprintf(&buf, "    <vendor>%s</vendor>\n",
+                virBufferEscapeString(&buf, "    <vendor>%s</vendor>\n",
                                   data->storage.vendor);
             if (data->storage.serial)
                 virBufferVSprintf(&buf, "    <serial>%s</serial>\n",
