@@ -300,7 +300,7 @@ virStorageBackendCreateRaw(virConnectPtr conn,
         goto cleanup;
     }
 
-    if ((fd = open(vol->target.path, O_RDWR | O_EXCL)) < 0) {
+    if ((fd = open(vol->target.path, O_RDWR | O_EXCL | O_DSYNC)) < 0) {
         virReportSystemError(errno,
                              _("cannot open new path '%s'"),
                              vol->target.path);
