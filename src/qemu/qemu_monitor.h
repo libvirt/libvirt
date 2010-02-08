@@ -146,6 +146,8 @@ int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
                               const char *password);
 int qemuMonitorSetBalloon(qemuMonitorPtr mon,
                           unsigned long newmem);
+int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online);
+
 
 /* XXX should we pass the virDomainDiskDefPtr instead
  * and hide devname details inside monitor. Reconsider

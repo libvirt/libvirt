@@ -61,6 +61,7 @@ int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);
 int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
                               unsigned long newmem);
+int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online);
 
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
                               const char *devname);

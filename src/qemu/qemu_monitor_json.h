@@ -59,6 +59,7 @@ int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);
 int qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
                               unsigned long newmem);
+int qemuMonitorJSONSetCPU(qemuMonitorPtr mon, int cpu, int online);
 
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
                               const char *devname);

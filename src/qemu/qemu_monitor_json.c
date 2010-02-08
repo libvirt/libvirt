@@ -914,6 +914,50 @@ cleanup:
 }
 
 
+/*
+ * Returns: 0 if CPU hotplug not supported, +1 if CPU hotplug worked
+ * or -1 on failure
+ */
+int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
+                          int cpu, int online)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("balloon",
+                                                     "U:cpu", (unsigned long long)cpu,
+                                                     "s:state", online ? "online" : "offline",
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        /* XXX See if CPU soft-failed due to lack of ACPI */
+#if 0
+        if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
+            qemuMonitorJSONHasError(reply, "KVMMissingCap"))
+            goto cleanup;
+#endif
+
+        /* See if any other fatal error occurred */
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+        /* Real success */
+        if (ret == 0)
+            ret = 1;
+    }
+
+#if 0
+cleanup:
+#endif
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
                               const char *devname)
 {

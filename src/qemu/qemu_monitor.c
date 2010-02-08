@@ -925,6 +925,20 @@ int qemuMonitorSetBalloon(qemuMonitorPtr mon,
     return ret;
 }
 
+
+int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, int online)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d cpu=%d online=%d", mon, mon->fd, cpu, online);
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetCPU(mon, cpu, online);
+    else
+        ret = qemuMonitorTextSetCPU(mon, cpu, online);
+    return ret;
+}
+
+
 int qemuMonitorEjectMedia(qemuMonitorPtr mon,
                           const char *devname)
 {

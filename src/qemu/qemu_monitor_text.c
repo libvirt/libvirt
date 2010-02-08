@@ -797,6 +797,44 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
     return ret;
 }
 
+
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon adjust worked
+ * or -1 on failure
+ */
+int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "set_cpu %d %s", cpu, online ? "online" : "offline") < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("could nt change CPU online status"));
+        VIR_FREE(cmd);
+        return -1;
+    }
+    VIR_FREE(cmd);
+
+    /* If the command failed qemu prints: 'unknown command'
+     * No message is printed on success it seems */
+    if (strstr(reply, "\nunknown command:")) {
+        /* Don't set error - it is expected CPU onlining fails on many qemu - caller will handle */
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+
+    VIR_FREE(reply);
+    return ret;
+}
+
+
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
                               const char *devname)
 {
