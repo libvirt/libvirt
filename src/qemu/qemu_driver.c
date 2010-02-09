@@ -933,7 +933,7 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
 
 static virCapsPtr
 qemuCreateCapabilities(virCapsPtr oldcaps,
-                       virSecurityDriverPtr secDriver)
+                       struct qemud_driver *driver)
 {
     virCapsPtr caps;
 
@@ -951,11 +951,11 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
 
 
     /* Security driver data */
-    if (secDriver) {
+    if (driver->securityPrimaryDriver) {
         const char *doi, *model;
 
-        doi = virSecurityDriverGetDOI(secDriver);
-        model = virSecurityDriverGetModel(secDriver);
+        doi = virSecurityDriverGetDOI(driver->securityPrimaryDriver);
+        model = virSecurityDriverGetModel(driver->securityPrimaryDriver);
 
         if (!(caps->host.secModel.model = strdup(model)))
             goto no_memory;
@@ -1098,19 +1098,19 @@ qemudStartup(int privileged) {
                  virStrerror(-rc, buf, sizeof(buf)));
     }
 
+    if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
+        goto error;
+    }
+
     if (qemudSecurityInit(qemu_driver) < 0)
         goto error;
 
     if ((qemu_driver->caps = qemuCreateCapabilities(NULL,
-                                                    qemu_driver->securityDriver)) == NULL)
+                                                    qemu_driver)) == NULL)
         goto error;
 
     if ((qemu_driver->activePciHostdevs = pciDeviceListNew()) == NULL)
         goto error;
-
-    if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
-        goto error;
-    }
 
     if (privileged) {
         if (chown(qemu_driver->libDir, qemu_driver->user, qemu_driver->group) < 0) {
@@ -3065,7 +3065,7 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     qemuDriverLock(driver);
 
     if ((caps = qemuCreateCapabilities(qemu_driver->caps,
-                                       qemu_driver->securityDriver)) == NULL) {
+                                       qemu_driver)) == NULL) {
         virCapabilitiesFree(caps);
         goto cleanup;
     }
