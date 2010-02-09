@@ -718,11 +718,25 @@ struct remote_domain_attach_device_args {
 };
 typedef struct remote_domain_attach_device_args remote_domain_attach_device_args;
 
+struct remote_domain_attach_device_flags_args {
+        remote_nonnull_domain dom;
+        remote_nonnull_string xml;
+        u_int flags;
+};
+typedef struct remote_domain_attach_device_flags_args remote_domain_attach_device_flags_args;
+
 struct remote_domain_detach_device_args {
         remote_nonnull_domain dom;
         remote_nonnull_string xml;
 };
 typedef struct remote_domain_detach_device_args remote_domain_detach_device_args;
+
+struct remote_domain_detach_device_flags_args {
+        remote_nonnull_domain dom;
+        remote_nonnull_string xml;
+        u_int flags;
+};
+typedef struct remote_domain_detach_device_flags_args remote_domain_detach_device_flags_args;
 
 struct remote_domain_get_autostart_args {
         remote_nonnull_domain dom;
@@ -1812,6 +1826,8 @@ enum remote_procedure {
         REMOTE_PROC_GET_LIB_VERSION = 157,
         REMOTE_PROC_CPU_COMPARE = 158,
         REMOTE_PROC_DOMAIN_MEMORY_STATS = 159,
+        REMOTE_PROC_DOMAIN_ATTACH_DEVICE_FLAGS = 160,
+        REMOTE_PROC_DOMAIN_DETACH_DEVICE_FLAGS = 161,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1950,7 +1966,9 @@ extern  bool_t xdr_remote_domain_get_security_label_args (XDR *, remote_domain_g
 extern  bool_t xdr_remote_domain_get_security_label_ret (XDR *, remote_domain_get_security_label_ret*);
 extern  bool_t xdr_remote_node_get_security_model_ret (XDR *, remote_node_get_security_model_ret*);
 extern  bool_t xdr_remote_domain_attach_device_args (XDR *, remote_domain_attach_device_args*);
+extern  bool_t xdr_remote_domain_attach_device_flags_args (XDR *, remote_domain_attach_device_flags_args*);
 extern  bool_t xdr_remote_domain_detach_device_args (XDR *, remote_domain_detach_device_args*);
+extern  bool_t xdr_remote_domain_detach_device_flags_args (XDR *, remote_domain_detach_device_flags_args*);
 extern  bool_t xdr_remote_domain_get_autostart_args (XDR *, remote_domain_get_autostart_args*);
 extern  bool_t xdr_remote_domain_get_autostart_ret (XDR *, remote_domain_get_autostart_ret*);
 extern  bool_t xdr_remote_domain_set_autostart_args (XDR *, remote_domain_set_autostart_args*);
@@ -2226,7 +2244,9 @@ extern bool_t xdr_remote_domain_get_security_label_args ();
 extern bool_t xdr_remote_domain_get_security_label_ret ();
 extern bool_t xdr_remote_node_get_security_model_ret ();
 extern bool_t xdr_remote_domain_attach_device_args ();
+extern bool_t xdr_remote_domain_attach_device_flags_args ();
 extern bool_t xdr_remote_domain_detach_device_args ();
+extern bool_t xdr_remote_domain_detach_device_flags_args ();
 extern bool_t xdr_remote_domain_get_autostart_args ();
 extern bool_t xdr_remote_domain_get_autostart_ret ();
 extern bool_t xdr_remote_domain_set_autostart_args ();

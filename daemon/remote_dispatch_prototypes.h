@@ -66,6 +66,14 @@ static int remoteDispatchDomainAttachDevice(
     remote_error *err,
     remote_domain_attach_device_args *args,
     void *ret);
+static int remoteDispatchDomainAttachDeviceFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_attach_device_flags_args *args,
+    void *ret);
 static int remoteDispatchDomainBlockPeek(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -129,6 +137,14 @@ static int remoteDispatchDomainDetachDevice(
     remote_message_header *hdr,
     remote_error *err,
     remote_domain_detach_device_args *args,
+    void *ret);
+static int remoteDispatchDomainDetachDeviceFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_detach_device_flags_args *args,
     void *ret);
 static int remoteDispatchDomainDumpXml(
     struct qemud_server *server,

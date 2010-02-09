@@ -802,3 +802,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_memory_stats_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_memory_stats_ret,
 },
+{   /* DomainAttachDeviceFlags => 160 */
+    .fn = (dispatch_fn) remoteDispatchDomainAttachDeviceFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_attach_device_flags_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainDetachDeviceFlags => 161 */
+    .fn = (dispatch_fn) remoteDispatchDomainDetachDeviceFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_detach_device_flags_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
