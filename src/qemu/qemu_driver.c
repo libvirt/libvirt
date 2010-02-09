@@ -3764,14 +3764,21 @@ static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
         goto cleanup;
     }
 
-    if (newmax < vm->def->memory) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        "%s", _("cannot set max memory lower than current memory"));
-        goto cleanup;;
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
     }
 
-    vm->def->maxmem = newmax;
-    ret = 0;
+    if (newmax < vm->def->memory) {
+        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
+                        _("cannot set max memory lower than current memory"));
+        goto cleanup;
+    }
+
+    /* There isn't any way to change this value for a running qemu guest */
+    qemuReportError(VIR_ERR_NO_SUPPORT,
+                    "%s", _("cannot set max memory of an active domain"));
 
 cleanup:
     if (vm)
@@ -3782,8 +3789,9 @@ cleanup:
 
 static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     struct qemud_driver *driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    int ret = -1;
+    int ret = -1, r;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -3796,6 +3804,12 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     if (newmem > vm->def->maxmem) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         "%s", _("cannot set memory higher than max memory"));
@@ -3805,25 +3819,21 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     if (qemuDomainObjBeginJob(vm) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
-        qemuDomainObjEnterMonitor(vm);
-        int r = qemuMonitorSetBalloon(priv->mon, newmem);
-        qemuDomainObjExitMonitor(vm);
-        if (r < 0)
-            goto endjob;
+    priv = vm->privateData;
+    qemuDomainObjEnterMonitor(vm);
+    r = qemuMonitorSetBalloon(priv->mon, newmem);
+    qemuDomainObjExitMonitor(vm);
+    if (r < 0)
+        goto endjob;
 
-        /* Lack of balloon support is a fatal error */
-        if (r == 0) {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
-                            "%s", _("cannot set memory of an active domain"));
-            goto endjob;
-        }
-    } else {
-        vm->def->memory = newmem;
+    /* Lack of balloon support is a fatal error */
+    if (r == 0) {
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        "%s", _("cannot set memory of an active domain"));
+        goto endjob;
     }
-    ret = 0;
 
+    ret = 0;
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
