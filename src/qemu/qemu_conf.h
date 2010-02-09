@@ -157,9 +157,9 @@ typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 /* Config type for XML import/export conversions */
 #define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
-#define qemudReportError(conn, dom, net, code, fmt...)                       \
-        virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,          \
-                               __FUNCTION__, __LINE__, fmt)
+#define qemuReportError(code, fmt...)                                   \
+    virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
+                         __FUNCTION__, __LINE__, fmt)
 
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
@@ -191,15 +191,13 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          const char *migrateFrom);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
-char * qemuBuildHostNetStr(virConnectPtr conn,
-                           virDomainNetDefPtr net,
+char * qemuBuildHostNetStr(virDomainNetDefPtr net,
                            char type_sep,
                            int vlan,
                            const char *tapfd);
 
 /* Legacy, pre device support */
-char * qemuBuildNicStr(virConnectPtr conn,
-                       virDomainNetDefPtr net,
+char * qemuBuildNicStr(virDomainNetDefPtr net,
                        const char *prefix,
                        int vlan);
 
@@ -213,8 +211,7 @@ char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
                         int qemuCmdFlags);
 
 /* Current, best practice */
-char * qemuBuildDriveDevStr(virConnectPtr conn,
-                            virDomainDiskDefPtr disk);
+char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);
 
@@ -258,12 +255,10 @@ int         qemudProbeCPUModels         (const char *qemu,
 int         qemudCanonicalizeMachine    (struct qemud_driver *driver,
                                          virDomainDefPtr def);
 
-virDomainDefPtr qemuParseCommandLine(virConnectPtr conn,
-                                     virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                                      const char **progenv,
                                      const char **progargv);
-virDomainDefPtr qemuParseCommandLineString(virConnectPtr conn,
-                                           virCapsPtr caps,
+virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                            const char *args);
 
 qemuDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def);

@@ -240,8 +240,8 @@ qemuMonitorOpenUnix(const char *monitor)
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, monitor) == NULL) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Monitor path %s too big for destination"), monitor);
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Monitor path %s too big for destination"), monitor);
         goto error;
     }
 
@@ -282,8 +282,8 @@ qemuMonitorOpenPty(const char *monitor)
     int monfd;
 
     if ((monfd = open(monitor, O_RDWR)) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to open monitor path %s"), monitor);
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unable to open monitor path %s"), monitor);
         return -1;
     }
 
@@ -569,8 +569,8 @@ qemuMonitorOpen(virDomainObjPtr vm,
     qemuMonitorPtr mon;
 
     if (!cb || !cb->eofNotify) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("EOF notify callback must be supplied"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("EOF notify callback must be supplied"));
         return NULL;
     }
 
@@ -580,14 +580,14 @@ qemuMonitorOpen(virDomainObjPtr vm,
     }
 
     if (virMutexInit(&mon->lock) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("cannot initialize monitor mutex"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("cannot initialize monitor mutex"));
         VIR_FREE(mon);
         return NULL;
     }
     if (virCondInit(&mon->notify) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("cannot initialize monitor condition"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("cannot initialize monitor condition"));
         virMutexDestroy(&mon->lock);
         VIR_FREE(mon);
         return NULL;
@@ -610,22 +610,22 @@ qemuMonitorOpen(virDomainObjPtr vm,
         break;
 
     default:
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("unable to handle monitor type: %s"),
-                         virDomainChrTypeToString(config->type));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unable to handle monitor type: %s"),
+                        virDomainChrTypeToString(config->type));
         goto cleanup;
     }
 
     if (mon->fd == -1) goto cleanup;
 
     if (virSetCloseExec(mon->fd) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to set monitor close-on-exec flag"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Unable to set monitor close-on-exec flag"));
         goto cleanup;
     }
     if (virSetNonBlock(mon->fd) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "%s", _("Unable to put monitor into non-blocking mode"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("Unable to put monitor into non-blocking mode"));
         goto cleanup;
     }
 
@@ -636,8 +636,8 @@ qemuMonitorOpen(virDomainObjPtr vm,
                                         VIR_EVENT_HANDLE_READABLE,
                                         qemuMonitorIO,
                                         mon, NULL)) < 0) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("unable to register monitor events"));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("unable to register monitor events"));
         goto cleanup;
     }
 
