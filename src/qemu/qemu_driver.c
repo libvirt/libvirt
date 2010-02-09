@@ -2508,7 +2508,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     struct stat sb;
     int *tapfds = NULL;
     int ntapfds = 0;
-    unsigned int qemuCmdFlags;
+    unsigned long long qemuCmdFlags;
     fd_set keepfd;
     const char *emulator;
     pid_t child;
@@ -4691,7 +4691,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainChrDef monConfig;
     const char *emulator;
-    unsigned int qemuCmdFlags;
+    unsigned long long qemuCmdFlags;
     struct stat sb;
     const char **retargv = NULL;
     const char **retenv = NULL;
@@ -5563,7 +5563,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
                                       struct qemud_driver *driver,
                                       virDomainObjPtr vm,
                                       virDomainNetDefPtr net,
-                                      unsigned int qemuCmdFlags)
+                                      unsigned long long qemuCmdFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tapfd_name = NULL;
@@ -5877,7 +5877,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainDeviceDefPtr dev = NULL;
-    unsigned int qemuCmdFlags;
+    unsigned long long qemuCmdFlags;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
 
@@ -7408,7 +7408,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     int ret = -1;
     int internalret;
     char *unixfile = NULL;
-    unsigned int qemuCmdFlags;
+    unsigned long long qemuCmdFlags;
     struct qemuStreamMigFile *qemust = NULL;
 
     qemuDriverLock(driver);
@@ -7851,7 +7851,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     virStreamPtr st = NULL;
     char *unixfile = NULL;
     int internalret;
-    unsigned int qemuCmdFlags;
+    unsigned long long qemuCmdFlags;
     int status;
     unsigned long long transferred, remaining, total;
 

@@ -24,7 +24,7 @@ static struct qemud_driver driver;
 
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmd,
-                                     int extraFlags,
+                                     unsigned long long extraFlags,
                                      const char *migrateFrom) {
     char argvData[MAX_FILE];
     char *expectargv = &(argvData[0]);
@@ -32,7 +32,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     const char **argv = NULL;
     const char **qenv = NULL;
     const char **tmp = NULL;
-    int ret = -1, len, flags;
+    int ret = -1, len;
+    unsigned long long flags;
     virDomainDefPtr vmdef = NULL;
     virDomainChrDef monitor_chr;
 
@@ -142,7 +143,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
-    int extraFlags;
+    unsigned long long extraFlags;
     const char *migrateFrom;
 };
 

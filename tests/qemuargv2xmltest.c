@@ -75,7 +75,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
-    int extraFlags;
+    unsigned long long extraFlags;
     const char *migrateFrom;
 };
 

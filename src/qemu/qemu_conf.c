@@ -1108,12 +1108,12 @@ virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
     return NULL;
 }
 
-static unsigned int qemudComputeCmdFlags(const char *help,
-                                         unsigned int version,
-                                         unsigned int is_kvm,
-                                         unsigned int kvm_version)
+static unsigned long long qemudComputeCmdFlags(const char *help,
+                                               unsigned int version,
+                                               unsigned int is_kvm,
+                                               unsigned int kvm_version)
 {
-    unsigned int flags = 0;
+    unsigned long long flags = 0;
 
     if (strstr(help, "-no-kqemu"))
         flags |= QEMUD_CMD_FLAG_KQEMU;
@@ -1236,7 +1236,7 @@ static unsigned int qemudComputeCmdFlags(const char *help,
 #define SKIP_BLANKS(p) do { while ((*(p) == ' ') || (*(p) == '\t')) (p)++; } while (0)
 
 int qemudParseHelpStr(const char *help,
-                      unsigned int *flags,
+                      unsigned long long *flags,
                       unsigned int *version,
                       unsigned int *is_kvm,
                       unsigned int *kvm_version)
@@ -1316,14 +1316,14 @@ fail:
 
 int qemudExtractVersionInfo(const char *qemu,
                             unsigned int *retversion,
-                            unsigned int *retflags) {
+                            unsigned long long *retflags) {
     const char *const qemuarg[] = { qemu, "-help", NULL };
     const char *const qemuenv[] = { "LC_ALL=C", NULL };
     pid_t child;
     int newstdout = -1;
     int ret = -1, status;
     unsigned int version, is_kvm, kvm_version;
-    unsigned int flags = 0;
+    unsigned long long flags = 0;
 
     if (retflags)
         *retflags = 0;
@@ -1425,7 +1425,7 @@ int
 qemudNetworkIfaceConnect(virConnectPtr conn,
                          struct qemud_driver *driver,
                          virDomainNetDefPtr net,
-                         int qemuCmdFlags)
+                         unsigned long long qemuCmdFlags)
 {
     char *brname = NULL;
     int err;
@@ -1637,7 +1637,7 @@ no_memory:
 
 
 int
-qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, int qemuCmdFlags)
+qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, unsigned long long qemuCmdFlags)
 {
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE) {
         if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
@@ -1720,7 +1720,7 @@ qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
 
 
 static int
-qemuAssignDeviceAliases(virDomainDefPtr def, int qemuCmdFlags)
+qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCmdFlags)
 {
     int i;
 
@@ -2188,7 +2188,7 @@ qemuSafeSerialParamValue(const char *value)
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   int bootable,
-                  int qemuCmdFlags)
+                  unsigned long long qemuCmdFlags)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
@@ -3012,7 +3012,7 @@ no_memory:
 
 static char *
 qemuBuildSmpArgStr(const virDomainDefPtr def,
-                   int qemuCmdFlags)
+                   unsigned long long qemuCmdFlags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -3055,7 +3055,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           virDomainDefPtr def,
                           virDomainChrDefPtr monitor_chr,
                           int monitor_json,
-                          unsigned int qemuCmdFlags,
+                          unsigned long long qemuCmdFlags,
                           const char ***retargv,
                           const char ***retenv,
                           int **tapfds,
