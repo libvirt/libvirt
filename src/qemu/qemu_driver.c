@@ -1351,15 +1351,15 @@ qemudReadLogOutput(virDomainObjPtr vm,
         buf[got] = '\0';
         if (got == buflen-1) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Out of space while reading %s log output"),
-                            what);
+                            _("Out of space while reading %s log output: %s"),
+                            what, buf);
             return -1;
         }
 
         if (isdead) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("Process exited while reading %s log output"),
-                            what);
+                            _("Process exited while reading %s log output: %s"),
+                            what, buf);
             return -1;
         }
 
@@ -1371,7 +1371,8 @@ qemudReadLogOutput(virDomainObjPtr vm,
     }
 
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("Timed out while reading %s log output"), what);
+                    _("Timed out while reading %s log output: %s"),
+                    what, buf);
     return -1;
 }
 
@@ -1547,12 +1548,8 @@ qemudWaitForMonitor(struct qemud_driver* driver,
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
-    if (ret < 0) {
-        /* Unexpected end of file - inform user of QEMU log data */
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unable to start guest: %s"), buf);
+    if (ret < 0)
         return -1;
-    }
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
     if (qemuConnectMonitor(vm) < 0)
