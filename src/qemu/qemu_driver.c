@@ -1541,7 +1541,7 @@ qemudWaitForMonitor(struct qemud_driver* driver,
 
     ret = qemudReadLogOutput(vm, logfd, buf, sizeof(buf),
                              qemudFindCharDevicePTYs,
-                             "console", 3);
+                             "console", 30);
     if (close(logfd) < 0) {
         char ebuf[4096];
         VIR_WARN(_("Unable to close logfile: %s"),
