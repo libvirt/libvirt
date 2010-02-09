@@ -684,13 +684,13 @@ static int lxcContainerDropCapabilities(void)
                              CAP_AUDIT_CONTROL, /* No messing with auditing status */
                              CAP_MAC_ADMIN, /* No messing with LSM config */
                              -1 /* sentinal */)) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("Failed to remove capabilities: %d"), ret);
         return -1;
     }
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("Failed to apply capabilities: %d"), ret);
         return -1;
     }
@@ -729,7 +729,7 @@ static int lxcContainerChild( void *data )
     virDomainFSDefPtr root;
 
     if (NULL == vmDef) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_INTERNAL_ERROR,
                  "%s", _("lxcChild() passed invalid vm definition"));
         return -1;
     }

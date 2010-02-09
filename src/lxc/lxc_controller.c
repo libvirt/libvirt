@@ -179,7 +179,7 @@ static int lxcMonitorServer(const char *sockpath)
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     if (virStrcpyStatic(addr.sun_path, sockpath) == NULL) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("Socket path %s too long for destination"), sockpath);
         goto error;
     }
@@ -253,7 +253,7 @@ static int lxcControllerClearCapabilities(void)
     capng_clear(CAPNG_SELECT_BOTH);
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        lxcError(VIR_ERR_INTERNAL_ERROR,
                  _("failed to apply capabilities: %d"), ret);
         return -1;
     }
@@ -380,7 +380,7 @@ static int lxcControllerMain(int monitor,
                     DEBUG("EPOLLHUP from fd %d", epollEvent.data.fd);
                     continue;
                 } else {
-                    lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                    lxcError(VIR_ERR_INTERNAL_ERROR,
                              _("error event %d"), epollEvent.events);
                     goto cleanup;
                 }
@@ -451,7 +451,7 @@ static int lxcControllerMoveInterfaces(unsigned int nveths,
     unsigned int i;
     for (i = 0 ; i < nveths ; i++)
         if (moveInterfaceToNetNs(veths[i], container) < 0) {
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("Failed to move interface %s to ns %d"),
                      veths[i], container);
             return -1;
@@ -476,7 +476,7 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
     unsigned int i;
     for (i = 0 ; i < nveths ; i++)
         if (vethDelete(veths[i]) < 0)
-            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("Failed to delete veth: %s"), veths[i]);
             /* will continue to try to cleanup any other interfaces */
 
