@@ -435,8 +435,7 @@ umlStartup(int privileged) {
                            umlInotifyEvent, uml_driver, NULL)) < 0)
         goto error;
 
-    if (virDomainLoadAllConfigs(NULL,
-                                uml_driver->caps,
+    if (virDomainLoadAllConfigs(uml_driver->caps,
                                 &uml_driver->domains,
                                 uml_driver->configDir,
                                 uml_driver->autostartDir,
@@ -473,8 +472,7 @@ umlReload(void) {
         return 0;
 
     umlDriverLock(uml_driver);
-    virDomainLoadAllConfigs(NULL,
-                            uml_driver->caps,
+    virDomainLoadAllConfigs(uml_driver->caps,
                             &uml_driver->domains,
                             uml_driver->configDir,
                             uml_driver->autostartDir,
@@ -1263,15 +1261,14 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(conn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def)))
         goto cleanup;
@@ -1534,8 +1531,7 @@ static char *umlDomainDumpXML(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(dom->conn,
-                             (flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
+    ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
                              vm->newDef : vm->def,
                              flags);
 
@@ -1601,23 +1597,21 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 0) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(conn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(conn,
-                            driver->configDir,
+    if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -1661,7 +1655,7 @@ static int umlDomainUndefine(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm) < 0)
+    if (virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm) < 0)
         goto cleanup;
 
     virDomainRemoveInactive(&driver->domains,
@@ -1728,9 +1722,9 @@ static int umlDomainSetAutostart(virDomainPtr dom,
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
-        if ((configFile = virDomainConfigFile(dom->conn, driver->configDir, vm->def->name)) == NULL)
+        if ((configFile = virDomainConfigFile(driver->configDir, vm->def->name)) == NULL)
             goto cleanup;
-        if ((autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir, vm->def->name)) == NULL)
+        if ((autostartLink = virDomainConfigFile(driver->autostartDir, vm->def->name)) == NULL)
             goto cleanup;
 
         if (autostart) {

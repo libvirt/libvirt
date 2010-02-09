@@ -83,7 +83,7 @@ testCompareFiles(const char *xml, const char *vmx, esxVI_APIVersion apiVersion)
         goto failure;
     }
 
-    def = virDomainDefParseString(NULL, caps, xmlData, VIR_DOMAIN_XML_INACTIVE);
+    def = virDomainDefParseString(caps, xmlData, VIR_DOMAIN_XML_INACTIVE);
 
     if (def == NULL) {
         goto failure;

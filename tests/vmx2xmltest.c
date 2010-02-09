@@ -42,7 +42,7 @@ testCompareFiles(const char *vmx, const char *xml, esxVI_APIVersion apiVersion)
         goto failure;
     }
 
-    formatted = virDomainDefFormat(NULL, def, VIR_DOMAIN_XML_SECURE);
+    formatted = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
 
     if (formatted == NULL) {
         goto failure;

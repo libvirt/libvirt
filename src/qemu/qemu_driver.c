@@ -1158,8 +1158,7 @@ qemudStartup(int privileged) {
     }
 
     /* Get all the running persistent or transient configs first */
-    if (virDomainLoadAllConfigs(NULL,
-                                qemu_driver->caps,
+    if (virDomainLoadAllConfigs(qemu_driver->caps,
                                 &qemu_driver->domains,
                                 qemu_driver->stateDir,
                                 NULL,
@@ -1169,8 +1168,7 @@ qemudStartup(int privileged) {
     qemuReconnectDomains(qemu_driver);
 
     /* Then inactive persistent configs */
-    if (virDomainLoadAllConfigs(NULL,
-                                qemu_driver->caps,
+    if (virDomainLoadAllConfigs(qemu_driver->caps,
                                 &qemu_driver->domains,
                                 qemu_driver->configDir,
                                 qemu_driver->autostartDir,
@@ -1219,8 +1217,7 @@ qemudReload(void) {
         return 0;
 
     qemuDriverLock(qemu_driver);
-    virDomainLoadAllConfigs(NULL,
-                            qemu_driver->caps,
+    virDomainLoadAllConfigs(qemu_driver->caps,
                             &qemu_driver->domains,
                             qemu_driver->configDir,
                             qemu_driver->autostartDir,
@@ -2757,7 +2754,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 
-    if (virDomainSaveStatus(conn, driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto abort;
 
     return 0;
@@ -3305,7 +3302,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -3315,8 +3312,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(conn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def)))
         goto cleanup;
@@ -3394,7 +3390,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
-    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto endjob;
     ret = 0;
 
@@ -3454,7 +3450,7 @@ static int qemudDomainResume(virDomainPtr dom) {
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
-    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto endjob;
     ret = 0;
 
@@ -3878,7 +3874,7 @@ static int qemudDomainSave(virDomainPtr dom,
     }
 
     /* Get XML for the domain */
-    xml = virDomainDefFormat(dom->conn, vm->def, VIR_DOMAIN_XML_SECURE);
+    xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
     if (!xml) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to get domain xml"));
@@ -4501,7 +4497,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     }
 
     /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to parse XML"));
@@ -4511,8 +4507,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(conn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -4585,7 +4580,7 @@ static int qemudDomainRestore(virConnectPtr conn,
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         vm->state = VIR_DOMAIN_RUNNING;
-        virDomainSaveStatus(conn, driver->caps, driver->stateDir, vm);
+        virDomainSaveStatus(driver->caps, driver->stateDir, vm);
     }
     ret = 0;
 
@@ -4652,8 +4647,7 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
         }
     }
 
-    ret = virDomainDefFormat(dom->conn,
-                             (flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
+    ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
                              vm->newDef : vm->def,
                              flags);
 
@@ -4684,7 +4678,7 @@ static char *qemuDomainXMLFromNative(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
+    xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
 
 cleanup:
     virDomainDefFree(def);
@@ -4716,7 +4710,7 @@ static char *qemuDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virDomainDefParseString(conn, driver->caps, xmlData, 0);
+    def = virDomainDefParseString(driver->caps, xmlData, 0);
     if (!def)
         goto cleanup;
 
@@ -5002,7 +4996,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     int dupVM;
 
     qemuDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -5015,8 +5009,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     if (qemudCanonicalizeMachine(driver, def) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(conn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def))) {
         goto cleanup;
@@ -5024,8 +5017,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(conn,
-                            driver->configDir,
+    if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainRemoveInactive(&driver->domains,
                                 vm);
@@ -5081,7 +5073,7 @@ static int qemudDomainUndefine(virDomainPtr dom) {
         goto cleanup;
     }
 
-    if (virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm) < 0)
+    if (virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm) < 0)
         goto cleanup;
 
     event = virDomainEventNewFromObj(vm,
@@ -5912,7 +5904,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto endjob;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
+    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto endjob;
@@ -6010,7 +6002,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!ret && virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (!ret && virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         ret = -1;
 
 endjob:
@@ -6397,7 +6389,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         goto endjob;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, driver->caps, vm->def, xml,
+    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto endjob;
@@ -6425,7 +6417,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
                         "%s", _("This type of device cannot be hot unplugged"));
     }
 
-    if (!ret && virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (!ret && virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         ret = -1;
 
 endjob:
@@ -6506,9 +6498,9 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     autostart = (autostart != 0);
 
     if (vm->autostart != autostart) {
-        if ((configFile = virDomainConfigFile(dom->conn, driver->configDir, vm->def->name)) == NULL)
+        if ((configFile = virDomainConfigFile(driver->configDir, vm->def->name)) == NULL)
             goto cleanup;
-        if ((autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir, vm->def->name)) == NULL)
+        if ((autostartLink = virDomainConfigFile(driver->autostartDir, vm->def->name)) == NULL)
             goto cleanup;
 
         if (autostart) {
@@ -7441,7 +7433,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     }
 
     /* Parse the domain XML. */
-    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml,
+    if (!(def = virDomainDefParseString(driver->caps, dom_xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to parse XML"));
@@ -7454,8 +7446,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(dconn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -7668,7 +7659,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         VIR_DEBUG("Generated uri_out=%s", *uri_out);
 
     /* Parse the domain XML. */
-    if (!(def = virDomainDefParseString(dconn, driver->caps, dom_xml,
+    if (!(def = virDomainDefParseString(driver->caps, dom_xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to parse XML"));
@@ -7681,8 +7672,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainAssignDef(dconn,
-                                  driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
                                   def))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
@@ -8117,7 +8107,7 @@ static int doPeer2PeerMigrate(virDomainPtr dom,
         goto cleanup;
     }
 
-    dom_xml = virDomainDefFormat(dom->conn, vm->def, VIR_DOMAIN_XML_SECURE);
+    dom_xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
     if (!dom_xml) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to get domain xml"));
@@ -8210,7 +8200,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
-        virDomainDeleteConfig(dom->conn, driver->configDir, driver->autostartDir, vm);
+        virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm);
         if (qemuDomainObjEndJob(vm) > 0)
             virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -8290,7 +8280,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                 newVM = 0;
             vm->persistent = 1;
 
-            if (virDomainSaveConfig(dconn, driver->configDir, vm->def) < 0) {
+            if (virDomainSaveConfig(driver->configDir, vm->def) < 0) {
                 /* Hmpf.  Migration was successful, but making it persistent
                  * was not.  If we report successful, then when this domain
                  * shuts down, management tools are in for a surprise.  On the
@@ -8344,7 +8334,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
         }
-        virDomainSaveStatus(dconn, driver->caps, driver->stateDir, vm);
+        virDomainSaveStatus(driver->caps, driver->stateDir, vm);
     } else {
         qemudShutdownVMDaemon (dconn, driver, vm);
         event = virDomainEventNewFromObj(vm,

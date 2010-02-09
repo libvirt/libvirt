@@ -1270,7 +1270,7 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
         goto err;
     }
 
-    return virDomainDefFormat(dom->conn, &def, flags);
+    return virDomainDefFormat(&def, flags);
 
   err:
     return NULL;
@@ -1420,7 +1420,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
     unsigned int i = 0;
     char *managed_system = phyp_driver->managed_system;
 
-    if (!(def = virDomainDefParseString(conn, phyp_driver->caps, xml,
+    if (!(def = virDomainDefParseString(phyp_driver->caps, xml,
                                         VIR_DOMAIN_XML_SECURE)))
         goto err;
 

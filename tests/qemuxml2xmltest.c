@@ -32,11 +32,11 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
         goto fail;
 
-    if (!(vmdef = virDomainDefParseString(NULL, driver.caps, xmlData,
+    if (!(vmdef = virDomainDefParseString(driver.caps, xmlData,
                                           VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
-    if (!(actual = virDomainDefFormat(NULL, vmdef, 0)))
+    if (!(actual = virDomainDefFormat(vmdef, 0)))
         goto fail;
 
     if (STRNEQ(xmlData, actual)) {

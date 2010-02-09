@@ -246,11 +246,11 @@ static virDomainPtr oneDomainDefine(virConnectPtr conn, const char *xml)
     virDomainPtr dom=NULL;
 
     oneDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto return_point;
 
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, def))) {
         virDomainDefFree(def);
         goto return_point;
@@ -443,7 +443,7 @@ oneDomainCreateAndStart(virConnectPtr conn,
     int oneid;
 
     oneDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto return_point;
 
@@ -455,7 +455,7 @@ oneDomainCreateAndStart(virConnectPtr conn,
         goto return_point;
     }
 
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, def))) {
         virDomainDefFree(def);
         goto return_point;

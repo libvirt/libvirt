@@ -35,7 +35,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
       goto fail;
 
-  if (!(def = virDomainDefParseString(NULL, caps, xmlData,
+  if (!(def = virDomainDefParseString(caps, xmlData,
                                       VIR_DOMAIN_XML_INACTIVE)))
       goto fail;
 

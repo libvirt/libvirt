@@ -366,7 +366,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     int dupVM;
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -379,14 +379,13 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, def)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(conn,
-                            driver->configDir,
+    if (virDomainSaveConfig(driver->configDir,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm = NULL;
@@ -440,8 +439,7 @@ static int lxcDomainUndefine(virDomainPtr dom)
         goto cleanup;
     }
 
-    if (virDomainDeleteConfig(dom->conn,
-                              driver->configDir,
+    if (virDomainDeleteConfig(driver->configDir,
                               driver->autostartDir,
                               vm) < 0)
         goto cleanup;
@@ -667,8 +665,7 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(dom->conn,
-                             (flags & VIR_DOMAIN_XML_INACTIVE) &&
+    ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) &&
                              vm->newDef ? vm->newDef : vm->def,
                              flags);
 
@@ -722,7 +719,7 @@ static int lxcVmCleanup(lxc_driver_t *driver,
     close(priv->monitor);
 
     virFileDeletePid(driver->stateDir, vm->def->name);
-    virDomainDeleteConfig(NULL, driver->stateDir, NULL, vm);
+    virDomainDeleteConfig(driver->stateDir, NULL, vm);
 
     vm->state = VIR_DOMAIN_SHUTOFF;
     vm->pid = -1;
@@ -1220,7 +1217,7 @@ static int lxcVmStart(virConnectPtr conn,
         goto cleanup;
 
     /* Persist the live configuration now we have veth & tty info */
-    if (virDomainSaveConfig(conn, driver->stateDir, vm->def) < 0)
+    if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
         goto cleanup;
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
@@ -1349,7 +1346,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     virDomainEventPtr event = NULL;
 
     lxcDriverLock(driver);
-    if (!(def = virDomainDefParseString(conn, driver->caps, xml,
+    if (!(def = virDomainDefParseString(driver->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -1363,7 +1360,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
     }
 
 
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, def)))
         goto cleanup;
     def = NULL;
@@ -1657,13 +1654,12 @@ lxcReconnectVM(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
         goto cleanup;
     }
 
-    if ((config = virDomainConfigFile(NULL,
-                                      driver->stateDir,
+    if ((config = virDomainConfigFile(driver->stateDir,
                                       vm->def->name)) == NULL)
         goto cleanup;
 
     /* Try and load the live config */
-    tmp = virDomainDefParseFile(NULL, driver->caps, config, 0);
+    tmp = virDomainDefParseFile(driver->caps, config, 0);
     VIR_FREE(config);
     if (tmp) {
         vm->newDef = vm->def;
@@ -1761,8 +1757,7 @@ static int lxcStartup(int privileged)
     lxc_driver->caps->privateDataAllocFunc = lxcDomainObjPrivateAlloc;
     lxc_driver->caps->privateDataFreeFunc = lxcDomainObjPrivateFree;
 
-    if (virDomainLoadAllConfigs(NULL,
-                                lxc_driver->caps,
+    if (virDomainLoadAllConfigs(lxc_driver->caps,
                                 &lxc_driver->domains,
                                 lxc_driver->configDir,
                                 lxc_driver->autostartDir,
@@ -1806,8 +1801,7 @@ lxcReload(void) {
         return 0;
 
     lxcDriverLock(lxc_driver);
-    virDomainLoadAllConfigs(NULL,
-                            lxc_driver->caps,
+    virDomainLoadAllConfigs(lxc_driver->caps,
                             &lxc_driver->domains,
                             lxc_driver->configDir,
                             lxc_driver->autostartDir,
@@ -2122,11 +2116,11 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         goto cleanup;
     }
 
-    configFile = virDomainConfigFile(dom->conn, driver->configDir,
+    configFile = virDomainConfigFile(driver->configDir,
                                      vm->def->name);
     if (configFile == NULL)
         goto cleanup;
-    autostartLink = virDomainConfigFile(dom->conn, driver->autostartDir,
+    autostartLink = virDomainConfigFile(driver->autostartDir,
                                         vm->def->name);
     if (autostartLink == NULL)
         goto cleanup;
@@ -2297,7 +2291,7 @@ static int lxcDomainSuspend(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 
@@ -2362,7 +2356,7 @@ static int lxcDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
-    if (virDomainSaveStatus(dom->conn, driver->caps, driver->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto cleanup;
     ret = 0;
 

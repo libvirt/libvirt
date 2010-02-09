@@ -479,7 +479,7 @@ static char *openvzDomainDumpXML(virDomainPtr dom, int flags) {
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(dom->conn, vm->def, flags);
+    ret = virDomainDefFormat(vm->def, flags);
 
 cleanup:
     if (vm)
@@ -806,7 +806,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr dom = NULL;
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(conn, driver->caps, xml,
+    if ((vmdef = virDomainDefParseString(driver->caps, xml,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -824,7 +824,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
                   vmdef->name);
         goto cleanup;
     }
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;
@@ -886,7 +886,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL};
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(conn, driver->caps, xml,
+    if ((vmdef = virDomainDefParseString(driver->caps, xml,
                                          VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -904,7 +904,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                   vmdef->name);
         goto cleanup;
     }
-    if (!(vm = virDomainAssignDef(conn, driver->caps,
+    if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains, vmdef)))
         goto cleanup;
     vmdef = NULL;

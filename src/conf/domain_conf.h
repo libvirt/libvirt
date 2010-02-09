@@ -751,59 +751,48 @@ void virDomainObjRef(virDomainObjPtr vm);
 /* Returns 1 if the object was freed, 0 if more refs exist */
 int virDomainObjUnref(virDomainObjPtr vm);
 
-virDomainObjPtr virDomainAssignDef(virConnectPtr conn,
-                                   virCapsPtr caps,
+virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
                                    virDomainObjListPtr doms,
                                    const virDomainDefPtr def);
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
 #ifndef PROXY
-virDomainDeviceDefPtr virDomainDeviceDefParse(virConnectPtr conn,
-                                              virCapsPtr caps,
+virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr,
                                               int flags);
-virDomainDefPtr virDomainDefParseString(virConnectPtr conn,
-                                        virCapsPtr caps,
+virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
                                         const char *xmlStr,
                                         int flags);
-virDomainDefPtr virDomainDefParseFile(virConnectPtr conn,
-                                      virCapsPtr caps,
+virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
                                       const char *filename,
                                       int flags);
-virDomainDefPtr virDomainDefParseNode(virConnectPtr conn,
-                                      virCapsPtr caps,
+virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
                                       xmlDocPtr doc,
                                       xmlNodePtr root,
                                       int flags);
 
-virDomainObjPtr virDomainObjParseFile(virConnectPtr conn,
-                                      virCapsPtr caps,
+virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
                                       const char *filename);
-virDomainObjPtr virDomainObjParseNode(virConnectPtr conn,
-                                      virCapsPtr caps,
+virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
                                       xmlDocPtr xml,
                                       xmlNodePtr root);
 
 int virDomainDefAddDiskControllers(virDomainDefPtr def);
 
 #endif
-char *virDomainDefFormat(virConnectPtr conn,
-                         virDomainDefPtr def,
+char *virDomainDefFormat(virDomainDefPtr def,
                          int flags);
-char *virDomainObjFormat(virConnectPtr conn,
-                         virCapsPtr caps,
+char *virDomainObjFormat(virCapsPtr caps,
                          virDomainObjPtr obj,
                          int flags);
 
-int virDomainCpuSetParse(virConnectPtr conn,
-                         const char **str,
+int virDomainCpuSetParse(const char **str,
                          char sep,
                          char *cpuset,
                          int maxcpu);
-char *virDomainCpuSetFormat(virConnectPtr conn,
-                            char *cpuset,
+char *virDomainCpuSetFormat(char *cpuset,
                             int maxcpu);
 
 int virDomainDiskInsert(virDomainDefPtr def,
@@ -817,16 +806,13 @@ int virDomainControllerInsert(virDomainDefPtr def,
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
 
-int virDomainSaveXML(virConnectPtr conn,
-                     const char *configDir,
+int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
                      const char *xml);
 
-int virDomainSaveConfig(virConnectPtr conn,
-                        const char *configDir,
+int virDomainSaveConfig(const char *configDir,
                         virDomainDefPtr def);
-int virDomainSaveStatus(virConnectPtr conn,
-                        virCapsPtr caps,
+int virDomainSaveStatus(virCapsPtr caps,
                         const char *statusDir,
                         virDomainObjPtr obj);
 
@@ -834,8 +820,7 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
                                           void *opaque);
 
-virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
-                                    virCapsPtr caps,
+virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
                                     virDomainObjListPtr doms,
                                     const char *configDir,
                                     const char *autostartDir,
@@ -843,8 +828,7 @@ virDomainObjPtr virDomainLoadConfig(virConnectPtr conn,
                                     virDomainLoadConfigNotify notify,
                                     void *opaque);
 
-int virDomainLoadAllConfigs(virConnectPtr conn,
-                            virCapsPtr caps,
+int virDomainLoadAllConfigs(virCapsPtr caps,
                             virDomainObjListPtr doms,
                             const char *configDir,
                             const char *autostartDir,
@@ -852,13 +836,11 @@ int virDomainLoadAllConfigs(virConnectPtr conn,
                             virDomainLoadConfigNotify notify,
                             void *opaque);
 
-int virDomainDeleteConfig(virConnectPtr conn,
-                          const char *configDir,
+int virDomainDeleteConfig(const char *configDir,
                           const char *autostartDir,
                           virDomainObjPtr dom);
 
-char *virDomainConfigFile(virConnectPtr conn,
-                          const char *dir,
+char *virDomainConfigFile(const char *dir,
                           const char *name);
 
 int virDiskNameToBusDeviceIndex(virDomainDiskDefPtr disk,

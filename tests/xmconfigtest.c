@@ -70,7 +70,7 @@ static int testCompareParseXML(const char *xmcfg, const char *xml,
     priv.caps = caps;
     conn->privateData = &priv;
 
-    if (!(def = virDomainDefParseString(NULL, caps, xmlPtr,
+    if (!(def = virDomainDefParseString(caps, xmlPtr,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
@@ -130,7 +130,7 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml,
     if (!(def = xenXMDomainConfigParse(conn, conf)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_SECURE)))
+    if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE)))
         goto fail;
 
     if (STRNEQ(xmlData, gotxml)) {

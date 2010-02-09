@@ -2182,7 +2182,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
                              priv->host->apiVersion);
 
     if (def != NULL) {
-        xml = virDomainDefFormat(domain->conn, def, flags);
+        xml = virDomainDefFormat(def, flags);
     }
 
   cleanup:
@@ -2225,7 +2225,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
                              priv->host->apiVersion);
 
     if (def != NULL) {
-        xml = virDomainDefFormat(conn, def, VIR_DOMAIN_XML_INACTIVE);
+        xml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE);
     }
 
     virDomainDefFree(def);
@@ -2250,7 +2250,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    def = virDomainDefParseString(conn, priv->caps, domainXml, 0);
+    def = virDomainDefParseString(priv->caps, domainXml, 0);
 
     if (def == NULL) {
         return NULL;
@@ -2454,7 +2454,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     /* Parse domain XML */
-    def = virDomainDefParseString(conn, priv->caps, xml,
+    def = virDomainDefParseString(priv->caps, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
 
     if (def == NULL) {

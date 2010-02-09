@@ -3019,7 +3019,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
     }
 
     if (gotAllABoutDef == 0)
-        ret = virDomainDefFormat(dom->conn, def, flags);
+        ret = virDomainDefFormat(def, flags);
 
 cleanup:
     vboxIIDFree(iid);
@@ -3355,7 +3355,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     PRUnichar *machineNameUtf16 = NULL;
     nsresult rc;
 
-    if (!(def = virDomainDefParseString(conn, data->caps, xml,
+    if (!(def = virDomainDefParseString(data->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         goto cleanup;
     }
@@ -4658,7 +4658,7 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, data->caps, def, xml,
+    dev = virDomainDeviceDefParse(data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL) {
         virReportOOMError();
@@ -4867,7 +4867,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
         goto cleanup;
     }
 
-    dev = virDomainDeviceDefParse(dom->conn, data->caps, def, xml,
+    dev = virDomainDeviceDefParse(data->caps, def, xml,
                                   VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL) {
         virReportOOMError();

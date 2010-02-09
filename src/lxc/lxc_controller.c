@@ -742,12 +742,11 @@ int main(int argc, char *argv[])
     if ((caps = lxcCapsInit()) == NULL)
         goto cleanup;
 
-    if ((configFile = virDomainConfigFile(NULL,
-                                          LXC_STATE_DIR,
+    if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
                                           name)) == NULL)
         goto cleanup;
 
-    if ((def = virDomainDefParseFile(NULL, caps, configFile,
+    if ((def = virDomainDefParseFile(caps, configFile,
                                      VIR_DOMAIN_XML_INACTIVE)) == NULL)
         goto cleanup;
 

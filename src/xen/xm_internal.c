@@ -784,7 +784,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         if (VIR_ALLOC_N(def->cpumask, def->cpumasklen) < 0)
             goto no_memory;
 
-        if (virDomainCpuSetParse(conn, &str, 0,
+        if (virDomainCpuSetParse(&str, 0,
                                  def->cpumask, def->cpumasklen) < 0)
             goto cleanup;
     }
@@ -1504,7 +1504,7 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags) {
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = virDomainDefFormat(domain->conn, entry->def, flags);
+    ret = virDomainDefFormat(entry->def, flags);
 
 cleanup:
     xenUnifiedUnlock(priv);
@@ -1758,8 +1758,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
         virReportOOMError();
         goto cleanup;
     }
-    if (virDomainCpuSetParse(domain->conn,
-                             (const char **)&mapstr, 0,
+    if (virDomainCpuSetParse((const char **)&mapstr, 0,
                              cpuset, maxcpu) < 0)
         goto cleanup;
 
@@ -2261,7 +2260,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         goto no_memory;
 
     if ((def->cpumask != NULL) &&
-        ((cpus = virDomainCpuSetFormat(conn, def->cpumask,
+        ((cpus = virDomainCpuSetFormat(def->cpumask,
                                        def->cpumasklen)) == NULL))
         goto cleanup;
 
@@ -2651,7 +2650,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         return (NULL);
     }
 
-    if (!(def = virDomainDefParseString(conn, priv->caps, xml,
+    if (!(def = virDomainDefParseString(priv->caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         xenUnifiedUnlock(priv);
         return (NULL);
@@ -2957,8 +2956,7 @@ xenXMDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
         goto cleanup;
     def = entry->def;
 
-    if (!(dev = virDomainDeviceDefParse(domain->conn,
-                                        priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps,
                                         entry->def,
                                         xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -3050,8 +3048,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
         goto cleanup;
     def = entry->def;
 
-    if (!(dev = virDomainDeviceDefParse(domain->conn,
-                                        priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps,
                                         entry->def,
                                         xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;

@@ -51,7 +51,7 @@ static int testCompareFiles(const char *xml, const char *sexpr,
   if (!(def = xenDaemonParseSxprString(conn, sexprData, xendConfigVersion)))
       goto fail;
 
-  if (!(gotxml = virDomainDefFormat(NULL, def, 0)))
+  if (!(gotxml = virDomainDefFormat(def, 0)))
       goto fail;
 
   if (STRNEQ(xmlData, gotxml)) {

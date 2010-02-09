@@ -2410,7 +2410,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
             goto error;
         }
 
-        if (virDomainCpuSetParse(conn, &cpus,
+        if (virDomainCpuSetParse(&cpus,
                                  0, def->cpumask,
                                  def->cpumasklen) < 0) {
             virXendError(conn, VIR_ERR_INTERNAL_ERROR,
@@ -2810,7 +2810,7 @@ sexpr_to_xend_topology(virConnectPtr conn,
             for (cpu = 0; cpu < numCpus; cpu++)
                 cpuset[cpu] = 0;
         } else {
-            nb_cpus = virDomainCpuSetParse(conn, &cur, 'n', cpuset, numCpus);
+            nb_cpus = virDomainCpuSetParse(&cur, 'n', cpuset, numCpus);
             if (nb_cpus < 0)
                 goto error;
         }
@@ -3468,7 +3468,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
                                      cpus)))
         return(NULL);
 
-    xml = virDomainDefFormat(domain->conn, def, flags);
+    xml = virDomainDefFormat(def, flags);
 
     virDomainDefFree(def);
 
@@ -4053,8 +4053,7 @@ xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    if (!(def = virDomainDefParseString(conn,
-                                        priv->caps,
+    if (!(def = virDomainDefParseString(priv->caps,
                                         xmlDesc,
                                         VIR_DOMAIN_XML_INACTIVE)))
         return (NULL);
@@ -4167,8 +4166,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(domain->conn,
-                                        priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps,
                                         def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -4304,8 +4302,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
                                      NULL)))
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(domain->conn,
-                                        priv->caps,
+    if (!(dev = virDomainDeviceDefParse(priv->caps,
                                         def, xml, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -4652,7 +4649,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     if (priv->xendConfigVersion < 3)
         return(NULL);
 
-    if (!(def = virDomainDefParseString(conn, priv->caps, xmlDesc,
+    if (!(def = virDomainDefParseString(priv->caps, xmlDesc,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         virXendError(conn, VIR_ERR_XML_ERROR,
                      "%s", _("failed to parse domain description"));
@@ -5804,7 +5801,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     virBufferVSprintf(&buf, "(vcpus %lu)", def->vcpus);
 
     if (def->cpumask) {
-        char *ranges = virDomainCpuSetFormat(conn, def->cpumask, def->cpumasklen);
+        char *ranges = virDomainCpuSetFormat(def->cpumask, def->cpumasklen);
         if (ranges == NULL)
             goto error;
         virBufferVSprintf(&buf, "(cpus '%s')", ranges);

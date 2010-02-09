@@ -169,7 +169,7 @@ xenDomainUsedCpus(virDomainPtr dom)
                 }
             }
         }
-        res = virDomainCpuSetFormat(dom->conn, cpulist, priv->nbNodeCpus);
+        res = virDomainCpuSetFormat(cpulist, priv->nbNodeCpus);
     }
 
 done:
@@ -1195,7 +1195,7 @@ xenUnifiedDomainXMLFromNative(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    ret = virDomainDefFormat(conn, def, 0);
+    ret = virDomainDefFormat(def, 0);
 
 cleanup:
     virDomainDefFree(def);
@@ -1224,8 +1224,7 @@ xenUnifiedDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(def = virDomainDefParseString(conn,
-                                        priv->caps,
+    if (!(def = virDomainDefParseString(priv->caps,
                                         xmlData,
                                         0)))
         goto cleanup;
