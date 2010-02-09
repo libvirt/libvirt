@@ -205,6 +205,14 @@ testBuildCapabilities(virConnectPtr conn) {
     caps->privateDataAllocFunc = testDomainObjPrivateAlloc;
     caps->privateDataFreeFunc = testDomainObjPrivateFree;
 
+    caps->host.secModel.model = strdup("testSecurity");
+    if (!caps->host.secModel.model)
+        goto no_memory;
+
+    caps->host.secModel.doi = strdup("");
+    if (!caps->host.secModel.doi)
+        goto no_memory;
+
     return caps;
 
 no_memory:
