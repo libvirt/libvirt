@@ -105,8 +105,7 @@ err:
 
 
 static int
-qemuSecurityDACSetSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                     virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuSecurityDACSetSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                      virDomainDiskDefPtr disk)
 
 {
@@ -149,8 +148,7 @@ qemuSecurityDACSetSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACRestoreSecurityImageLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                         virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuSecurityDACRestoreSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                          virDomainDiskDefPtr disk)
 {
     if (!driver->privileged || !driver->dynamicOwnership)
@@ -195,8 +193,7 @@ qemuSecurityDACSetSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
-                                       virDomainObjPtr vm,
+qemuSecurityDACSetSecurityHostdevLabel(virDomainObjPtr vm,
                                        virDomainHostdevDefPtr dev)
 
 {
@@ -218,7 +215,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(conn, usb, qemuSecurityDACSetSecurityUSBLabel, vm);
+        ret = usbDeviceFileIterate(NULL, usb, qemuSecurityDACSetSecurityUSBLabel, vm);
         usbFreeDevice(usb);
         break;
     }
@@ -232,7 +229,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virConnectPtr conn,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(conn, pci, qemuSecurityDACSetSecurityPCILabel, vm);
+        ret = pciDeviceFileIterate(NULL, pci, qemuSecurityDACSetSecurityPCILabel, vm);
         pciFreeDevice(pci);
 
         break;
@@ -269,8 +266,7 @@ qemuSecurityDACRestoreSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
-                                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuSecurityDACRestoreSecurityHostdevLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                            virDomainHostdevDefPtr dev)
 
 {
@@ -292,7 +288,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(conn, usb, qemuSecurityDACRestoreSecurityUSBLabel, NULL);
+        ret = usbDeviceFileIterate(NULL, usb, qemuSecurityDACRestoreSecurityUSBLabel, NULL);
         usbFreeDevice(usb);
 
         break;
@@ -307,7 +303,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virConnectPtr conn,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(conn, pci, qemuSecurityDACRestoreSecurityPCILabel, NULL);
+        ret = pciDeviceFileIterate(NULL, pci, qemuSecurityDACRestoreSecurityPCILabel, NULL);
         pciFreeDevice(pci);
 
         break;
@@ -324,8 +320,7 @@ done:
 
 
 static int
-qemuSecurityDACRestoreSecurityAllLabel(virConnectPtr conn,
-                                       virDomainObjPtr vm)
+qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm)
 {
     int i;
     int rc = 0;
@@ -336,12 +331,12 @@ qemuSecurityDACRestoreSecurityAllLabel(virConnectPtr conn,
     VIR_DEBUG("Restoring security label on %s", vm->def->name);
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
-        if (qemuSecurityDACRestoreSecurityHostdevLabel(conn, vm,
+        if (qemuSecurityDACRestoreSecurityHostdevLabel(vm,
                                                        vm->def->hostdevs[i]) < 0)
             rc = -1;
     }
     for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (qemuSecurityDACRestoreSecurityImageLabel(conn, vm,
+        if (qemuSecurityDACRestoreSecurityImageLabel(vm,
                                                      vm->def->disks[i]) < 0)
             rc = -1;
     }
@@ -350,8 +345,7 @@ qemuSecurityDACRestoreSecurityAllLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityDACSetSecurityAllLabel(virConnectPtr conn,
-                                   virDomainObjPtr vm)
+qemuSecurityDACSetSecurityAllLabel(virDomainObjPtr vm)
 {
     int i;
 
@@ -362,11 +356,11 @@ qemuSecurityDACSetSecurityAllLabel(virConnectPtr conn,
         /* XXX fixme - we need to recursively label the entriy tree :-( */
         if (vm->def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_DIR)
             continue;
-        if (qemuSecurityDACSetSecurityImageLabel(conn, vm, vm->def->disks[i]) < 0)
+        if (qemuSecurityDACSetSecurityImageLabel(vm, vm->def->disks[i]) < 0)
             return -1;
     }
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
-        if (qemuSecurityDACSetSecurityHostdevLabel(conn, vm, vm->def->hostdevs[i]) < 0)
+        if (qemuSecurityDACSetSecurityHostdevLabel(vm, vm->def->hostdevs[i]) < 0)
             return -1;
     }
 
@@ -375,8 +369,7 @@ qemuSecurityDACSetSecurityAllLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityDACSetSavedStateLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuSecurityDACSetSavedStateLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                   const char *savefile)
 {
     if (!driver->privileged || !driver->dynamicOwnership)
@@ -387,8 +380,7 @@ qemuSecurityDACSetSavedStateLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACRestoreSavedStateLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                      virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuSecurityDACRestoreSavedStateLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                       const char *savefile)
 {
     if (!driver->privileged || !driver->dynamicOwnership)
@@ -399,8 +391,7 @@ qemuSecurityDACRestoreSavedStateLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACSetProcessLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
+qemuSecurityDACSetProcessLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
                                virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
     DEBUG("Dropping privileges of VM to %d:%d", driver->user, driver->group);

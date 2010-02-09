@@ -38,19 +38,18 @@ void qemuSecurityStackedSetDriver(struct qemud_driver *newdriver)
 
 
 static int
-qemuSecurityStackedVerify(virConnectPtr conn,
-                          virDomainDefPtr def)
+qemuSecurityStackedVerify(virDomainDefPtr def)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSecurityVerify &&
-        driver->securitySecondaryDriver->domainSecurityVerify(conn, def) < 0)
+        driver->securitySecondaryDriver->domainSecurityVerify(def) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSecurityVerify &&
-        driver->securityPrimaryDriver->domainSecurityVerify(conn, def) < 0)
+        driver->securityPrimaryDriver->domainSecurityVerify(def) < 0)
         rc = -1;
 
     return rc;
@@ -58,19 +57,18 @@ qemuSecurityStackedVerify(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedGenLabel(virConnectPtr conn,
-                            virDomainObjPtr vm)
+qemuSecurityStackedGenLabel(virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainGenSecurityLabel &&
-        driver->securitySecondaryDriver->domainGenSecurityLabel(conn, vm) < 0)
+        driver->securitySecondaryDriver->domainGenSecurityLabel(vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainGenSecurityLabel &&
-        driver->securityPrimaryDriver->domainGenSecurityLabel(conn, vm) < 0)
+        driver->securityPrimaryDriver->domainGenSecurityLabel(vm) < 0)
         rc = -1;
 
     return rc;
@@ -78,19 +76,18 @@ qemuSecurityStackedGenLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedReleaseLabel(virConnectPtr conn,
-                                virDomainObjPtr vm)
+qemuSecurityStackedReleaseLabel(virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainReleaseSecurityLabel &&
-        driver->securitySecondaryDriver->domainReleaseSecurityLabel(conn, vm) < 0)
+        driver->securitySecondaryDriver->domainReleaseSecurityLabel(vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainReleaseSecurityLabel &&
-        driver->securityPrimaryDriver->domainReleaseSecurityLabel(conn, vm) < 0)
+        driver->securityPrimaryDriver->domainReleaseSecurityLabel(vm) < 0)
         rc = -1;
 
     return rc;
@@ -98,19 +95,18 @@ qemuSecurityStackedReleaseLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedReserveLabel(virConnectPtr conn,
-                                virDomainObjPtr vm)
+qemuSecurityStackedReserveLabel(virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainReserveSecurityLabel &&
-        driver->securitySecondaryDriver->domainReserveSecurityLabel(conn, vm) < 0)
+        driver->securitySecondaryDriver->domainReserveSecurityLabel(vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainReserveSecurityLabel &&
-        driver->securityPrimaryDriver->domainReserveSecurityLabel(conn, vm) < 0)
+        driver->securityPrimaryDriver->domainReserveSecurityLabel(vm) < 0)
         rc = -1;
 
     return rc;
@@ -118,20 +114,19 @@ qemuSecurityStackedReserveLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedSetSecurityImageLabel(virConnectPtr conn,
-                                         virDomainObjPtr vm,
+qemuSecurityStackedSetSecurityImageLabel(virDomainObjPtr vm,
                                          virDomainDiskDefPtr disk)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSecurityImageLabel &&
-        driver->securitySecondaryDriver->domainSetSecurityImageLabel(conn, vm, disk) < 0)
+        driver->securitySecondaryDriver->domainSetSecurityImageLabel(vm, disk) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSecurityImageLabel &&
-        driver->securityPrimaryDriver->domainSetSecurityImageLabel(conn, vm, disk) < 0)
+        driver->securityPrimaryDriver->domainSetSecurityImageLabel(vm, disk) < 0)
         rc = -1;
 
     return rc;
@@ -139,20 +134,19 @@ qemuSecurityStackedSetSecurityImageLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedRestoreSecurityImageLabel(virConnectPtr conn,
-                                             virDomainObjPtr vm,
+qemuSecurityStackedRestoreSecurityImageLabel(virDomainObjPtr vm,
                                              virDomainDiskDefPtr disk)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainRestoreSecurityImageLabel &&
-        driver->securitySecondaryDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
+        driver->securitySecondaryDriver->domainRestoreSecurityImageLabel(vm, disk) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainRestoreSecurityImageLabel &&
-        driver->securityPrimaryDriver->domainRestoreSecurityImageLabel(conn, vm, disk) < 0)
+        driver->securityPrimaryDriver->domainRestoreSecurityImageLabel(vm, disk) < 0)
         rc = -1;
 
     return rc;
@@ -160,8 +154,7 @@ qemuSecurityStackedRestoreSecurityImageLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedSetSecurityHostdevLabel(virConnectPtr conn,
-                                           virDomainObjPtr vm,
+qemuSecurityStackedSetSecurityHostdevLabel(virDomainObjPtr vm,
                                            virDomainHostdevDefPtr dev)
 
 {
@@ -169,12 +162,12 @@ qemuSecurityStackedSetSecurityHostdevLabel(virConnectPtr conn,
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSecurityHostdevLabel &&
-        driver->securitySecondaryDriver->domainSetSecurityHostdevLabel(conn, vm, dev) < 0)
+        driver->securitySecondaryDriver->domainSetSecurityHostdevLabel(vm, dev) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSecurityHostdevLabel &&
-        driver->securityPrimaryDriver->domainSetSecurityHostdevLabel(conn, vm, dev) < 0)
+        driver->securityPrimaryDriver->domainSetSecurityHostdevLabel(vm, dev) < 0)
         rc = -1;
 
     return rc;
@@ -182,8 +175,7 @@ qemuSecurityStackedSetSecurityHostdevLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedRestoreSecurityHostdevLabel(virConnectPtr conn,
-                                               virDomainObjPtr vm,
+qemuSecurityStackedRestoreSecurityHostdevLabel(virDomainObjPtr vm,
                                                virDomainHostdevDefPtr dev)
 
 {
@@ -191,12 +183,12 @@ qemuSecurityStackedRestoreSecurityHostdevLabel(virConnectPtr conn,
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainRestoreSecurityHostdevLabel &&
-        driver->securitySecondaryDriver->domainRestoreSecurityHostdevLabel(conn, vm, dev) < 0)
+        driver->securitySecondaryDriver->domainRestoreSecurityHostdevLabel(vm, dev) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainRestoreSecurityHostdevLabel &&
-        driver->securityPrimaryDriver->domainRestoreSecurityHostdevLabel(conn, vm, dev) < 0)
+        driver->securityPrimaryDriver->domainRestoreSecurityHostdevLabel(vm, dev) < 0)
         rc = -1;
 
     return rc;
@@ -204,19 +196,18 @@ qemuSecurityStackedRestoreSecurityHostdevLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedSetSecurityAllLabel(virConnectPtr conn,
-                                       virDomainObjPtr vm)
+qemuSecurityStackedSetSecurityAllLabel(virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSecurityAllLabel &&
-        driver->securitySecondaryDriver->domainSetSecurityAllLabel(conn, vm) < 0)
+        driver->securitySecondaryDriver->domainSetSecurityAllLabel(vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSecurityAllLabel &&
-        driver->securityPrimaryDriver->domainSetSecurityAllLabel(conn, vm) < 0)
+        driver->securityPrimaryDriver->domainSetSecurityAllLabel(vm) < 0)
         rc = -1;
 
     return rc;
@@ -224,19 +215,18 @@ qemuSecurityStackedSetSecurityAllLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedRestoreSecurityAllLabel(virConnectPtr conn,
-                                           virDomainObjPtr vm)
+qemuSecurityStackedRestoreSecurityAllLabel(virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainRestoreSecurityAllLabel &&
-        driver->securitySecondaryDriver->domainRestoreSecurityAllLabel(conn, vm) < 0)
+        driver->securitySecondaryDriver->domainRestoreSecurityAllLabel(vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainRestoreSecurityAllLabel &&
-        driver->securityPrimaryDriver->domainRestoreSecurityAllLabel(conn, vm) < 0)
+        driver->securityPrimaryDriver->domainRestoreSecurityAllLabel(vm) < 0)
         rc = -1;
 
     return rc;
@@ -244,20 +234,19 @@ qemuSecurityStackedRestoreSecurityAllLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedSetSavedStateLabel(virConnectPtr conn,
-                                      virDomainObjPtr vm,
+qemuSecurityStackedSetSavedStateLabel(virDomainObjPtr vm,
                                       const char *savefile)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSavedStateLabel &&
-        driver->securitySecondaryDriver->domainSetSavedStateLabel(conn, vm, savefile) < 0)
+        driver->securitySecondaryDriver->domainSetSavedStateLabel(vm, savefile) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSavedStateLabel &&
-        driver->securityPrimaryDriver->domainSetSavedStateLabel(conn, vm, savefile) < 0)
+        driver->securityPrimaryDriver->domainSetSavedStateLabel(vm, savefile) < 0)
         rc = -1;
 
     return rc;
@@ -265,20 +254,19 @@ qemuSecurityStackedSetSavedStateLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedRestoreSavedStateLabel(virConnectPtr conn,
-                                          virDomainObjPtr vm,
+qemuSecurityStackedRestoreSavedStateLabel(virDomainObjPtr vm,
                                           const char *savefile)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainRestoreSavedStateLabel &&
-        driver->securitySecondaryDriver->domainRestoreSavedStateLabel(conn, vm, savefile) < 0)
+        driver->securitySecondaryDriver->domainRestoreSavedStateLabel(vm, savefile) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainRestoreSavedStateLabel &&
-        driver->securityPrimaryDriver->domainRestoreSavedStateLabel(conn, vm, savefile) < 0)
+        driver->securityPrimaryDriver->domainRestoreSavedStateLabel(vm, savefile) < 0)
         rc = -1;
 
     return rc;
@@ -286,23 +274,20 @@ qemuSecurityStackedRestoreSavedStateLabel(virConnectPtr conn,
 
 
 static int
-qemuSecurityStackedSetProcessLabel(virConnectPtr conn,
-                                   virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
+qemuSecurityStackedSetProcessLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
                                    virDomainObjPtr vm)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSecurityProcessLabel &&
-        driver->securitySecondaryDriver->domainSetSecurityProcessLabel(conn,
-                                                                       driver->securitySecondaryDriver,
+        driver->securitySecondaryDriver->domainSetSecurityProcessLabel(driver->securitySecondaryDriver,
                                                                        vm) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSecurityProcessLabel &&
-        driver->securityPrimaryDriver->domainSetSecurityProcessLabel(conn,
-                                                                     driver->securityPrimaryDriver,
+        driver->securityPrimaryDriver->domainSetSecurityProcessLabel(driver->securityPrimaryDriver,
                                                                      vm) < 0)
         rc = -1;
 
@@ -310,16 +295,14 @@ qemuSecurityStackedSetProcessLabel(virConnectPtr conn,
 }
 
 static int
-qemuSecurityStackedGetProcessLabel(virConnectPtr conn,
-                                   virDomainObjPtr vm,
+qemuSecurityStackedGetProcessLabel(virDomainObjPtr vm,
                                    virSecurityLabelPtr seclabel)
 {
     int rc = 0;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainGetSecurityProcessLabel &&
-        driver->securityPrimaryDriver->domainGetSecurityProcessLabel(conn,
-                                                                     vm,
+        driver->securityPrimaryDriver->domainGetSecurityProcessLabel(vm,
                                                                      seclabel) < 0)
         rc = -1;
 
