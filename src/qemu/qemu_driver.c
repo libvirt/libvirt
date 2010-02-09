@@ -4239,12 +4239,11 @@ cleanup:
 }
 
 
-static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
+static int qemudDomainSetVcpus(virDomainPtr dom,
+                               ATTRIBUTE_UNUSED unsigned int nvcpus) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    int max;
     int ret = -1;
-    const char *type;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -4258,41 +4257,14 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
         goto cleanup;
     }
 
-    if (qemuDomainObjBeginJob(vm) < 0)
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                         "%s", _("domain is not running"));
         goto cleanup;
-
-    if (virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot change vcpu count of an active domain"));
-        goto endjob;
     }
 
-    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unknown virt type in domain definition '%d'"),
-                        vm->def->virtType);
-        goto endjob;
-    }
-
-    if ((max = qemudGetMaxVCPUs(NULL, type)) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("could not determine max vcpus for the domain"));
-        goto endjob;
-    }
-
-    if (nvcpus > max) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("requested vcpus is greater than max allowable"
-                          " vcpus for the domain: %d > %d"), nvcpus, max);
-        goto endjob;
-    }
-
-    vm->def->vcpus = nvcpus;
-    ret = 0;
-
-endjob:
-    if (qemuDomainObjEndJob(vm) == 0)
-        vm = NULL;
+    qemuReportError(VIR_ERR_NO_SUPPORT,
+                     "%s", _("cpu hotplug not yet supported"));
 
 cleanup:
     if (vm)
