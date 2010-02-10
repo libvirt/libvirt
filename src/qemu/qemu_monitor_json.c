@@ -754,6 +754,13 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
+        /* New QEMU has separate names for host & guest side of the disk
+         * and libvirt gives the host side a 'drive-' prefix. The passed
+         * in devname is the guest side though
+         */
+        if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
+            thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
+
         if (STRNEQ(thisdev, devname))
             continue;
 

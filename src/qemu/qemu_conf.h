@@ -157,6 +157,8 @@ typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 /* Config type for XML import/export conversions */
 #define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
+#define QEMU_DRIVE_HOST_PREFIX "drive-"
+
 #define qemuReportError(code, fmt...)                                   \
     virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
                          __FUNCTION__, __LINE__, fmt)

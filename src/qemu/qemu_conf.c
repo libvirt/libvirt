@@ -2301,7 +2301,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAddLit(&opt, ",media=cdrom");
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        virBufferVSprintf(&opt, ",id=drive-%s", disk->info.alias);
+        virBufferVSprintf(&opt, ",id=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     } else {
         if (busid == -1 && unitid == -1) {
             if (idx != -1)
@@ -2390,7 +2390,7 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk)
                         _("unsupported disk bus '%s' with device setup"), bus);
         goto error;
     }
-    virBufferVSprintf(&opt, ",drive=drive-%s", disk->info.alias);
+    virBufferVSprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
 
     if (virBufferError(&opt)) {
