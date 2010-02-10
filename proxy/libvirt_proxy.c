@@ -628,7 +628,7 @@ retry2:
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
             } else {
-                xml = virDomainDefFormat(conn, def, 0);
+                xml = virDomainDefFormat(def, 0);
                 if (!xml) {
                     req->data.arg = -1;
                     req->len = sizeof(virProxyPacket);
