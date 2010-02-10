@@ -3521,7 +3521,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     char *fdc;
                     ADD_ARG_LIT("-global");
 
-                    if (virAsprintf(&fdc, "isa-fdc,drive%c=drive-%s",
+                    if (virAsprintf(&fdc, "isa-fdc.drive%c=drive-%s",
                                     disk->info.addr.drive.unit ? 'B' : 'A',
                                     disk->info.alias) < 0)
                         goto no_memory;
