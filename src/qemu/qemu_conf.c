@@ -4125,7 +4125,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
 /*
  * This method takes a string representing a QEMU command line ARGV set
- * optionall prefixed by a list of environment variables. It then tries
+ * optionally prefixed by a list of environment variables. It then tries
  * to split it up into a NULL terminated list of env & argv, splitting
  * on space
  */
