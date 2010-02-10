@@ -27,7 +27,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "dirname.h"
-#include "ignore-value.h"
 #include "memory.h"
 #include "virterror_internal.h"
 
@@ -253,7 +252,7 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
     if (d_len > INT_MAX)
         return NULL;
 
-    ignore_value(virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path));
+    virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path);
     return res;
 }
 
