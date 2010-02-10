@@ -173,8 +173,7 @@ qemuSecurityDACRestoreSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACSetSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                   pciDevice *dev ATTRIBUTE_UNUSED,
+qemuSecurityDACSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
                                    const char *file,
                                    void *opaque ATTRIBUTE_UNUSED)
 {
@@ -183,8 +182,7 @@ qemuSecurityDACSetSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACSetSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                   usbDevice *dev ATTRIBUTE_UNUSED,
+qemuSecurityDACSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
                                    const char *file,
                                    void *opaque ATTRIBUTE_UNUSED)
 {
@@ -215,7 +213,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virDomainObjPtr vm,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(NULL, usb, qemuSecurityDACSetSecurityUSBLabel, vm);
+        ret = usbDeviceFileIterate(usb, qemuSecurityDACSetSecurityUSBLabel, vm);
         usbFreeDevice(usb);
         break;
     }
@@ -229,7 +227,7 @@ qemuSecurityDACSetSecurityHostdevLabel(virDomainObjPtr vm,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(NULL, pci, qemuSecurityDACSetSecurityPCILabel, vm);
+        ret = pciDeviceFileIterate(pci, qemuSecurityDACSetSecurityPCILabel, vm);
         pciFreeDevice(pci);
 
         break;
@@ -246,8 +244,7 @@ done:
 
 
 static int
-qemuSecurityDACRestoreSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                       pciDevice *dev ATTRIBUTE_UNUSED,
+qemuSecurityDACRestoreSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
                                        const char *file,
                                        void *opaque ATTRIBUTE_UNUSED)
 {
@@ -256,8 +253,7 @@ qemuSecurityDACRestoreSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACRestoreSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                       usbDevice *dev ATTRIBUTE_UNUSED,
+qemuSecurityDACRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
                                        const char *file,
                                        void *opaque ATTRIBUTE_UNUSED)
 {
@@ -288,7 +284,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(NULL, usb, qemuSecurityDACRestoreSecurityUSBLabel, NULL);
+        ret = usbDeviceFileIterate(usb, qemuSecurityDACRestoreSecurityUSBLabel, NULL);
         usbFreeDevice(usb);
 
         break;
@@ -303,7 +299,7 @@ qemuSecurityDACRestoreSecurityHostdevLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(NULL, pci, qemuSecurityDACRestoreSecurityPCILabel, NULL);
+        ret = pciDeviceFileIterate(pci, qemuSecurityDACRestoreSecurityPCILabel, NULL);
         pciFreeDevice(pci);
 
         break;

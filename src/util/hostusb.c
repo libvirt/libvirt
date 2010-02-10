@@ -202,10 +202,9 @@ usbFreeDevice(usbDevice *dev)
 }
 
 
-int usbDeviceFileIterate(virConnectPtr conn,
-                         usbDevice *dev,
+int usbDeviceFileIterate(usbDevice *dev,
                          usbDeviceFileActor actor,
                          void *opaque)
 {
-    return (actor)(conn, dev, dev->path, opaque);
+    return (actor)(dev, dev->path, opaque);
 }

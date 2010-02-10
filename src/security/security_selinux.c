@@ -455,8 +455,7 @@ SELinuxSetSecurityImageLabel(virDomainObjPtr vm,
 
 
 static int
-SELinuxSetSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           pciDevice *dev ATTRIBUTE_UNUSED,
+SELinuxSetSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
                            const char *file, void *opaque)
 {
     virDomainObjPtr vm = opaque;
@@ -466,8 +465,7 @@ SELinuxSetSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-SELinuxSetSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           usbDevice *dev ATTRIBUTE_UNUSED,
+SELinuxSetSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
                            const char *file, void *opaque)
 {
     virDomainObjPtr vm = opaque;
@@ -500,7 +498,7 @@ SELinuxSetSecurityHostdevLabel(virDomainObjPtr vm,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(NULL, usb, SELinuxSetSecurityUSBLabel, vm);
+        ret = usbDeviceFileIterate(usb, SELinuxSetSecurityUSBLabel, vm);
         usbFreeDevice(usb);
         break;
     }
@@ -514,7 +512,7 @@ SELinuxSetSecurityHostdevLabel(virDomainObjPtr vm,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(NULL, pci, SELinuxSetSecurityPCILabel, vm);
+        ret = pciDeviceFileIterate(pci, SELinuxSetSecurityPCILabel, vm);
         pciFreeDevice(pci);
 
         break;
@@ -531,8 +529,7 @@ done:
 
 
 static int
-SELinuxRestoreSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               pciDevice *dev ATTRIBUTE_UNUSED,
+SELinuxRestoreSecurityPCILabel(pciDevice *dev ATTRIBUTE_UNUSED,
                                const char *file,
                                void *opaque ATTRIBUTE_UNUSED)
 {
@@ -540,8 +537,7 @@ SELinuxRestoreSecurityPCILabel(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-SELinuxRestoreSecurityUSBLabel(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               usbDevice *dev ATTRIBUTE_UNUSED,
+SELinuxRestoreSecurityUSBLabel(usbDevice *dev ATTRIBUTE_UNUSED,
                                const char *file,
                                void *opaque ATTRIBUTE_UNUSED)
 {
@@ -572,7 +568,7 @@ SELinuxRestoreSecurityHostdevLabel(virDomainObjPtr vm,
         if (!usb)
             goto done;
 
-        ret = usbDeviceFileIterate(NULL, usb, SELinuxRestoreSecurityUSBLabel, NULL);
+        ret = usbDeviceFileIterate(usb, SELinuxRestoreSecurityUSBLabel, NULL);
         usbFreeDevice(usb);
 
         break;
@@ -587,7 +583,7 @@ SELinuxRestoreSecurityHostdevLabel(virDomainObjPtr vm,
         if (!pci)
             goto done;
 
-        ret = pciDeviceFileIterate(NULL, pci, SELinuxRestoreSecurityPCILabel, NULL);
+        ret = pciDeviceFileIterate(pci, SELinuxRestoreSecurityPCILabel, NULL);
         pciFreeDevice(pci);
 
         break;

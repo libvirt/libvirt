@@ -39,11 +39,10 @@ void       usbFreeDevice     (usbDevice     *dev);
  * Should return 0 if successfully processed, or
  * -1 to indicate error and abort iteration
  */
-typedef int (*usbDeviceFileActor)(virConnectPtr conn, usbDevice *dev,
+typedef int (*usbDeviceFileActor)(usbDevice *dev,
                                   const char *path, void *opaque);
 
-int usbDeviceFileIterate(virConnectPtr conn,
-                         usbDevice *dev,
+int usbDeviceFileIterate(usbDevice *dev,
                          usbDeviceFileActor actor,
                          void *opaque);
 

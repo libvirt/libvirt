@@ -61,11 +61,10 @@ pciDevice *    pciDeviceListFind (pciDeviceList *list,
  * Should return 0 if successfully processed, or
  * -1 to indicate error and abort iteration
  */
-typedef int (*pciDeviceFileActor)(virConnectPtr conn, pciDevice *dev,
+typedef int (*pciDeviceFileActor)(pciDevice *dev,
                                   const char *path, void *opaque);
 
-int pciDeviceFileIterate(virConnectPtr conn,
-                         pciDevice *dev,
+int pciDeviceFileIterate(pciDevice *dev,
                          pciDeviceFileActor actor,
                          void *opaque);
 

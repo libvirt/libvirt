@@ -1194,8 +1194,7 @@ pciDeviceListFind(pciDeviceList *list, pciDevice *dev)
 }
 
 
-int pciDeviceFileIterate(virConnectPtr conn,
-                         pciDevice *dev,
+int pciDeviceFileIterate(pciDevice *dev,
                          pciDeviceFileActor actor,
                          void *opaque)
 {
@@ -1228,7 +1227,7 @@ int pciDeviceFileIterate(virConnectPtr conn,
                 virReportOOMError();
                 goto cleanup;
             }
-            if ((actor)(conn, dev, file, opaque) < 0)
+            if ((actor)(dev, file, opaque) < 0)
                 goto cleanup;
 
             VIR_FREE(file);
