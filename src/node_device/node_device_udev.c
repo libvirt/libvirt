@@ -1292,7 +1292,7 @@ static int udevAddOneDevice(struct udev_device *device)
     }
 
     nodeDeviceLock(driverState);
-    dev = virNodeDeviceAssignDef(NULL, &driverState->devs, def);
+    dev = virNodeDeviceAssignDef(&driverState->devs, def);
     nodeDeviceUnlock(driverState);
 
     if (dev == NULL) {
@@ -1534,7 +1534,7 @@ static int udevSetupSystemDev(void)
 
     udev_device_unref(device);
 
-    dev = virNodeDeviceAssignDef(NULL, &driverState->devs, def);
+    dev = virNodeDeviceAssignDef(&driverState->devs, def);
     if (dev == NULL) {
         VIR_ERROR("Failed to create device for '%s'", def->name);
         virNodeDeviceDefFree(def);

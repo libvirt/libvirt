@@ -217,9 +217,9 @@ struct _virDeviceMonitorState {
     void *privateData;			/* driver-specific private data */
 };
 
-#define virNodeDeviceReportError(conn, code, fmt...)			\
-        virReportErrorHelper(conn, VIR_FROM_NODEDEV, code, __FILE__,	\
-                               __FUNCTION__, __LINE__, fmt)
+#define virNodeDeviceReportError(code, fmt...)                          \
+    virReportErrorHelper(NULL, VIR_FROM_NODEDEV, code, __FILE__,	\
+                         __FUNCTION__, __LINE__, fmt)
 
 int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
 
@@ -229,34 +229,27 @@ virNodeDeviceObjPtr
 virNodeDeviceFindBySysfsPath(const virNodeDeviceObjListPtr devs,
                              const char *sysfs_path);
 
-virNodeDeviceObjPtr virNodeDeviceAssignDef(virConnectPtr conn,
-                                           virNodeDeviceObjListPtr devs,
+virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
                                            const virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
                             const virNodeDeviceObjPtr dev);
 
-char *virNodeDeviceDefFormat(virConnectPtr conn,
-                             const virNodeDeviceDefPtr def);
+char *virNodeDeviceDefFormat(const virNodeDeviceDefPtr def);
 
-virNodeDeviceDefPtr virNodeDeviceDefParseString(virConnectPtr conn,
-                                                const char *str,
+virNodeDeviceDefPtr virNodeDeviceDefParseString(const char *str,
                                                 int create);
-virNodeDeviceDefPtr virNodeDeviceDefParseFile(virConnectPtr conn,
-                                              const char *filename,
+virNodeDeviceDefPtr virNodeDeviceDefParseFile(const char *filename,
                                               int create);
-virNodeDeviceDefPtr virNodeDeviceDefParseNode(virConnectPtr conn,
-                                              xmlDocPtr xml,
+virNodeDeviceDefPtr virNodeDeviceDefParseNode(xmlDocPtr xml,
                                               xmlNodePtr root,
                                               int create);
 
-int virNodeDeviceGetWWNs(virConnectPtr conn,
-                         virNodeDeviceDefPtr def,
+int virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
                          char **wwnn,
                          char **wwpn);
 
-int virNodeDeviceGetParentHost(virConnectPtr conn,
-                               const virNodeDeviceObjListPtr devs,
+int virNodeDeviceGetParentHost(const virNodeDeviceObjListPtr devs,
                                const char *dev_name,
                                const char *parent_name,
                                int *parent_host);

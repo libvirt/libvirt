@@ -594,9 +594,9 @@ static int testOpenDefault(virConnectPtr conn) {
     virStoragePoolObjUnlock(poolobj);
 
     /* Init default node device */
-    if (!(nodedef = virNodeDeviceDefParseString(conn, defaultNodeXML, 0)))
+    if (!(nodedef = virNodeDeviceDefParseString(defaultNodeXML, 0)))
         goto error;
-    if (!(nodeobj = virNodeDeviceAssignDef(conn, &privconn->devs,
+    if (!(nodeobj = virNodeDeviceAssignDef(&privconn->devs,
                                            nodedef))) {
         virNodeDeviceDefFree(nodedef);
         goto error;
@@ -1061,15 +1061,15 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
 
-            def = virNodeDeviceDefParseFile(conn, absFile, 0);
+            def = virNodeDeviceDefParseFile(absFile, 0);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virNodeDeviceDefParseNode(conn, xml, devs[i], 0)) == NULL)
+            if ((def = virNodeDeviceDefParseNode(xml, devs[i], 0)) == NULL)
                 goto error;
         }
-        if (!(dev = virNodeDeviceAssignDef(conn, &privconn->devs, def))) {
+        if (!(dev = virNodeDeviceAssignDef(&privconn->devs, def))) {
             virNodeDeviceDefFree(def);
             goto error;
         }
@@ -4778,7 +4778,7 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(conn, VIR_ERR_NO_NODE_DEVICE, NULL);
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
         goto cleanup;
     }
 
@@ -4803,13 +4803,13 @@ testNodeDeviceDumpXML(virNodeDevicePtr dev,
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
-                                _("no node device with matching name '%s'"),
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
+                                 _("no node device with matching name '%s'"),
                                  dev->name);
         goto cleanup;
     }
 
-    ret = virNodeDeviceDefFormat(dev->conn, obj->def);
+    ret = virNodeDeviceDefFormat(obj->def);
 
 cleanup:
     if (obj)
@@ -4829,7 +4829,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
                                 _("no node device with matching name '%s'"),
                                  dev->name);
         goto cleanup;
@@ -4840,7 +4840,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
         if (!ret)
             virReportOOMError();
     } else {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_INTERNAL_ERROR,
+        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("no parent for this device"));
     }
 
@@ -4865,8 +4865,8 @@ testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
-                                _("no node device with matching name '%s'"),
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
+                                 _("no node device with matching name '%s'"),
                                  dev->name);
         goto cleanup;
     }
@@ -4896,7 +4896,7 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE,
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE,
                                 _("no node device with matching name '%s'"),
                                  dev->name);
         goto cleanup;
@@ -4935,18 +4935,17 @@ testNodeDeviceCreateXML(virConnectPtr conn,
 
     testDriverLock(driver);
 
-    def = virNodeDeviceDefParseString(conn, xmlDesc, CREATE_DEVICE);
+    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE);
     if (def == NULL) {
         goto cleanup;
     }
 
     /* We run these next two simply for validation */
-    if (virNodeDeviceGetWWNs(conn, def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1) {
         goto cleanup;
     }
 
-    if (virNodeDeviceGetParentHost(conn,
-                                   &driver->devs,
+    if (virNodeDeviceGetParentHost(&driver->devs,
                                    def->name,
                                    def->parent,
                                    &parent_host) == -1) {
@@ -4973,7 +4972,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     }
 
 
-    if (!(obj = virNodeDeviceAssignDef(conn, &driver->devs, def))) {
+    if (!(obj = virNodeDeviceAssignDef(&driver->devs, def))) {
         goto cleanup;
     }
     virNodeDeviceObjUnlock(obj);
@@ -5003,11 +5002,11 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virNodeDeviceReportError(dev->conn, VIR_ERR_NO_NODE_DEVICE, NULL);
+        virNodeDeviceReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
         goto out;
     }
 
-    if (virNodeDeviceGetWWNs(dev->conn, obj->def, &wwnn, &wwpn) == -1) {
+    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1) {
         goto out;
     }
 
@@ -5024,8 +5023,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     virNodeDeviceObjUnlock(obj);
 
     /* We do this just for basic validation */
-    if (virNodeDeviceGetParentHost(dev->conn,
-                                   &driver->devs,
+    if (virNodeDeviceGetParentHost(&driver->devs,
                                    dev->name,
                                    parent_name,
                                    &parent_host) == -1) {

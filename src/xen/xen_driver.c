@@ -1722,7 +1722,7 @@ xenUnifiedNodeDeviceGetPciInfo (virNodeDevicePtr dev,
     if (!xml)
         goto out;
 
-    def = virNodeDeviceDefParseString(dev->conn, xml, EXISTING_DEVICE);
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE);
     if (!def)
         goto out;
 
