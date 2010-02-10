@@ -40,14 +40,13 @@ static struct cpuArchDriver *drivers[] = {
 
 
 static struct cpuArchDriver *
-cpuGetSubDriver(virConnectPtr conn,
-                const char *arch)
+cpuGetSubDriver(const char *arch)
 {
     unsigned int i;
     unsigned int j;
 
     if (arch == NULL) {
-        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                           "%s", _("undefined hardware architecture"));
         return NULL;
     }
@@ -65,8 +64,7 @@ cpuGetSubDriver(virConnectPtr conn,
 
 
 virCPUCompareResult
-cpuCompareXML(virConnectPtr conn,
-              virCPUDefPtr host,
+cpuCompareXML(virCPUDefPtr host,
               const char *xml)
 {
     xmlDocPtr doc = NULL;
@@ -83,11 +81,11 @@ cpuCompareXML(virConnectPtr conn,
 
     ctxt->node = xmlDocGetRootElement(doc);
 
-    cpu = virCPUDefParseXML(conn, ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
+    cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO);
     if (cpu == NULL)
         goto cleanup;
 
-    ret = cpuCompare(conn, host, cpu);
+    ret = cpuCompare(host, cpu);
 
 cleanup:
     virCPUDefFree(cpu);
@@ -99,17 +97,16 @@ cleanup:
 
 
 virCPUCompareResult
-cpuCompare(virConnectPtr conn,
-           virCPUDefPtr host,
+cpuCompare(virCPUDefPtr host,
            virCPUDefPtr cpu)
 {
     struct cpuArchDriver *driver;
 
-    if ((driver = cpuGetSubDriver(conn, host->arch)) == NULL)
+    if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
 
     if (driver->compare == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot compare CPUs of %s architecture"),
                 host->arch);
         return VIR_CPU_COMPARE_ERROR;
@@ -120,8 +117,7 @@ cpuCompare(virConnectPtr conn,
 
 
 int
-cpuDecode(virConnectPtr conn,
-          virCPUDefPtr cpu,
+cpuDecode(virCPUDefPtr cpu,
           const union cpuData *data,
           unsigned int nmodels,
           const char **models)
@@ -129,22 +125,22 @@ cpuDecode(virConnectPtr conn,
     struct cpuArchDriver *driver;
 
     if (models == NULL && nmodels != 0) {
-        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("nonzero nmodels doesn't match with NULL models"));
         return -1;
     }
 
     if (cpu == NULL) {
-        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                           "%s", _("invalid CPU definition"));
         return -1;
     }
 
-    if ((driver = cpuGetSubDriver(conn, cpu->arch)) == NULL)
+    if ((driver = cpuGetSubDriver(cpu->arch)) == NULL)
         return -1;
 
     if (driver->decode == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot decode CPU data for %s architecture"),
                 cpu->arch);
         return -1;
@@ -155,8 +151,7 @@ cpuDecode(virConnectPtr conn,
 
 
 int
-cpuEncode(virConnectPtr conn,
-          const char *arch,
+cpuEncode(const char *arch,
           const virCPUDefPtr cpu,
           union cpuData **forced,
           union cpuData **required,
@@ -166,11 +161,11 @@ cpuEncode(virConnectPtr conn,
 {
     struct cpuArchDriver *driver;
 
-    if ((driver = cpuGetSubDriver(conn, arch)) == NULL)
+    if ((driver = cpuGetSubDriver(arch)) == NULL)
         return -1;
 
     if (driver->encode == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot encode CPU data for %s architecture"),
                 arch);
         return -1;
@@ -182,8 +177,7 @@ cpuEncode(virConnectPtr conn,
 
 
 void
-cpuDataFree(virConnectPtr conn,
-            const char *arch,
+cpuDataFree(const char *arch,
             union cpuData *data)
 {
     struct cpuArchDriver *driver;
@@ -191,11 +185,11 @@ cpuDataFree(virConnectPtr conn,
     if (data == NULL)
         return;
 
-    if ((driver = cpuGetSubDriver(conn, arch)) == NULL)
+    if ((driver = cpuGetSubDriver(arch)) == NULL)
         return;
 
     if (driver->free == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot free CPU data for %s architecture"),
                 arch);
         return;
@@ -206,16 +200,15 @@ cpuDataFree(virConnectPtr conn,
 
 
 union cpuData *
-cpuNodeData(virConnectPtr conn,
-            const char *arch)
+cpuNodeData(const char *arch)
 {
     struct cpuArchDriver *driver;
 
-    if ((driver = cpuGetSubDriver(conn, arch)) == NULL)
+    if ((driver = cpuGetSubDriver(arch)) == NULL)
         return NULL;
 
     if (driver->nodeData == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot get node CPU data for %s architecture"),
                 arch);
         return NULL;
@@ -226,18 +219,17 @@ cpuNodeData(virConnectPtr conn,
 
 
 virCPUCompareResult
-cpuGuestData(virConnectPtr conn,
-             virCPUDefPtr host,
+cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
              union cpuData **data)
 {
     struct cpuArchDriver *driver;
 
-    if ((driver = cpuGetSubDriver(conn, host->arch)) == NULL)
+    if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
 
     if (driver->guestData == NULL) {
-        virCPUReportError(conn, VIR_ERR_NO_SUPPORT,
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
                 _("cannot compute guest CPU data for %s architecture"),
                 host->arch);
         return VIR_CPU_COMPARE_ERROR;

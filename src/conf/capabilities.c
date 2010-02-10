@@ -678,7 +678,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&xml, "      </features>\n");
     }
 
-    virCPUDefFormatBuf(NULL, &xml, caps->host.cpu, "    ",
+    virCPUDefFormatBuf(&xml, caps->host.cpu, "    ",
                        VIR_CPU_FORMAT_EMBEDED);
 
     virBufferAddLit(&xml, "    </cpu>\n");

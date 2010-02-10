@@ -31,9 +31,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-#define virCPUReportError(conn, code, fmt...)                           \
-        virReportErrorHelper(conn, VIR_FROM_CPU, code, __FILE__,        \
-                               __FUNCTION__, __LINE__, fmt)
+#define virCPUReportError(code, fmt...)                           \
+    virReportErrorHelper(NULL, VIR_FROM_CPU, code, __FILE__,      \
+                         __FUNCTION__, __LINE__, fmt)
 
 VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
               "minimum",
@@ -69,8 +69,7 @@ virCPUDefFree(virCPUDefPtr def)
 
 #ifndef PROXY
 virCPUDefPtr
-virCPUDefParseXML(virConnectPtr conn,
-                  const xmlNodePtr node,
+virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode)
 {
@@ -97,7 +96,7 @@ virCPUDefParseXML(virConnectPtr conn,
 
         if (!match) {
             if (virXPathBoolean("boolean(./model)", ctxt)) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Missing match attribute for CPU specification"));
                 goto error;
             }
@@ -107,7 +106,7 @@ virCPUDefParseXML(virConnectPtr conn,
             VIR_FREE(match);
 
             if (def->match < 0) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Invalid match attribute for CPU specification"));
                 goto error;
             }
@@ -117,7 +116,7 @@ virCPUDefParseXML(virConnectPtr conn,
     if (def->type == VIR_CPU_TYPE_HOST) {
         def->arch = virXPathString("string(./arch[1])", ctxt);
         if (!def->arch) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing CPU architecture"));
             goto error;
         }
@@ -125,7 +124,7 @@ virCPUDefParseXML(virConnectPtr conn,
 
     if (!(def->model = virXPathString("string(./model[1])", ctxt)) &&
         def->type == VIR_CPU_TYPE_HOST) {
-        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto error;
     }
@@ -137,7 +136,7 @@ virCPUDefParseXML(virConnectPtr conn,
         ret = virXPathULong("string(./topology[1]/@sockets)",
                             ctxt, &ul);
         if (ret < 0) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing 'sockets' attribute in CPU topology"));
             goto error;
         }
@@ -146,7 +145,7 @@ virCPUDefParseXML(virConnectPtr conn,
         ret = virXPathULong("string(./topology[1]/@cores)",
                             ctxt, &ul);
         if (ret < 0) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing 'cores' attribute in CPU topology"));
             goto error;
         }
@@ -155,14 +154,14 @@ virCPUDefParseXML(virConnectPtr conn,
         ret = virXPathULong("string(./topology[1]/@threads)",
                             ctxt, &ul);
         if (ret < 0) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing 'threads' attribute in CPU topology"));
             goto error;
         }
         def->threads = (unsigned int) ul;
 
         if (!def->sockets || !def->cores || !def->threads) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Invalid CPU topology"));
             goto error;
         }
@@ -174,7 +173,7 @@ virCPUDefParseXML(virConnectPtr conn,
 
     if (n > 0) {
         if (!def->model) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Non-empty feature list specified without CPU model"));
             goto error;
         }
@@ -197,7 +196,7 @@ virCPUDefParseXML(virConnectPtr conn,
             VIR_FREE(strpolicy);
 
             if (policy < 0) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("Invalid CPU feature policy"));
                 goto error;
             }
@@ -207,14 +206,14 @@ virCPUDefParseXML(virConnectPtr conn,
 
         if (!(name = virXMLPropString(nodes[i], "name")) || *name == 0) {
             VIR_FREE(name);
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Invalid CPU feature name"));
             goto error;
         }
 
         for (j = 0 ; j < i ; j++) {
             if (STREQ(name, def->features[j].name)) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         _("CPU feature `%s' specified more than once"),
                         name);
                 VIR_FREE(name);
@@ -243,14 +242,13 @@ error:
 
 
 char *
-virCPUDefFormat(virConnectPtr conn,
-                virCPUDefPtr def,
+virCPUDefFormat(virCPUDefPtr def,
                 const char *indent,
                 int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virCPUDefFormatBuf(conn, &buf, def, indent, flags) < 0)
+    if (virCPUDefFormatBuf(&buf, def, indent, flags) < 0)
         goto cleanup;
 
     if (virBufferError(&buf))
@@ -267,8 +265,7 @@ cleanup:
 
 
 int
-virCPUDefFormatBuf(virConnectPtr conn,
-                   virBufferPtr buf,
+virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
                    const char *indent,
                    int flags)
@@ -282,7 +279,7 @@ virCPUDefFormatBuf(virConnectPtr conn,
         indent = "";
 
     if (!def->model && def->nfeatures) {
-        virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Non-empty feature list specified without CPU model"));
         return -1;
     }
@@ -291,7 +288,7 @@ virCPUDefFormatBuf(virConnectPtr conn,
         if (def->type == VIR_CPU_TYPE_GUEST && def->model) {
             const char *match;
             if (!(match = virCPUMatchTypeToString(def->match))) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Unexpected CPU match policy %d"), def->match);
                 return -1;
             }
@@ -320,7 +317,7 @@ virCPUDefFormatBuf(virConnectPtr conn,
         virCPUFeatureDefPtr feature = def->features + i;
 
         if (!feature->name) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("Missing CPU feature name"));
             return -1;
         }
@@ -330,7 +327,7 @@ virCPUDefFormatBuf(virConnectPtr conn,
 
             policy = virCPUFeaturePolicyTypeToString(feature->policy);
             if (!policy) {
-                virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Unexpected CPU feature policy %d"), feature->policy);
                 return -1;
             }
@@ -351,8 +348,7 @@ virCPUDefFormatBuf(virConnectPtr conn,
 
 
 int
-virCPUDefAddFeature(virConnectPtr conn,
-                    virCPUDefPtr def,
+virCPUDefAddFeature(virCPUDefPtr def,
                     const char *name,
                     int policy)
 {
@@ -360,7 +356,7 @@ virCPUDefAddFeature(virConnectPtr conn,
 
     for (i = 0 ; i < def->nfeatures ; i++) {
         if (STREQ(name, def->features[i].name)) {
-            virCPUReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("CPU feature `%s' specified more than once"), name);
             return -1;
         }

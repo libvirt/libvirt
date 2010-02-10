@@ -1015,8 +1015,8 @@ qemudCapsInitCPU(virCapsPtr caps,
     cpu->cores = nodeinfo.cores;
     cpu->threads = nodeinfo.threads;
 
-    if (!(data = cpuNodeData(NULL, arch))
-        || cpuDecode(NULL, cpu, data, 0, NULL) < 0)
+    if (!(data = cpuNodeData(arch))
+        || cpuDecode(cpu, data, 0, NULL) < 0)
         goto error;
 
     caps->host.cpu = cpu;
@@ -1024,7 +1024,7 @@ qemudCapsInitCPU(virCapsPtr caps,
     ret = 0;
 
 cleanup:
-    cpuDataFree(NULL, arch, data);
+    cpuDataFree(arch, data);
 
     return ret;
 
@@ -2943,7 +2943,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     if (ncpus > 0 && host) {
         virCPUCompareResult cmp;
 
-        cmp = cpuGuestData(NULL, host, def->cpu, &data);
+        cmp = cpuGuestData(host, def->cpu, &data);
         switch (cmp) {
         case VIR_CPU_COMPARE_INCOMPATIBLE:
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2959,7 +2959,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(ut->machine)))
             goto no_memory;
 
-        if (cpuDecode(NULL, guest, data, ncpus, cpus) < 0)
+        if (cpuDecode(guest, data, ncpus, cpus) < 0)
             goto cleanup;
 
         virBufferVSprintf(&buf, "%s", guest->model);
@@ -2995,7 +2995,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
 cleanup:
     virCPUDefFree(guest);
-    cpuDataFree(NULL, ut->machine, data);
+    cpuDataFree(ut->machine, data);
 
     if (cpus) {
         for (i = 0; i < ncpus; i++)
@@ -5026,7 +5026,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             else
                 feature = strdup(p);
 
-            ret = virCPUDefAddFeature(NULL, cpu, feature, policy);
+            ret = virCPUDefAddFeature(cpu, feature, policy);
             VIR_FREE(feature);
             if (ret < 0)
                 goto error;

@@ -78,13 +78,13 @@ int cpuMapLoad(const char *arch,
     int ret = -1;
 
     if (arch == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                           "%s", _("undefined hardware architecture"));
         return -1;
     }
 
     if ((xml = xmlParseFile(CPUMAPFILE)) == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 _("cannot parse CPU map file: %s"),
                 CPUMAPFILE);
         goto cleanup;
@@ -102,14 +102,14 @@ int cpuMapLoad(const char *arch,
     ctxt->node = xmlDocGetRootElement(xml);
 
     if ((ctxt->node = virXPathNode(xpath, ctxt)) == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 _("cannot find CPU map for %s architecture"), arch);
         goto cleanup;
     }
 
     if ((feature_cb && load(ctxt, "feature", feature_cb, feature_data) < 0) ||
         (model_cb && load(ctxt, "model", model_cb, model_data) < 0)) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 _("cannot parse CPU map for %s architecture"), arch);
         goto cleanup;
     }

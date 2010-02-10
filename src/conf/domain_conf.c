@@ -3928,7 +3928,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
         xmlNodePtr oldnode = ctxt->node;
         ctxt->node = node;
-        def->cpu = virCPUDefParseXML(NULL, node, ctxt, VIR_CPU_TYPE_GUEST);
+        def->cpu = virCPUDefParseXML(node, ctxt, VIR_CPU_TYPE_GUEST);
         ctxt->node = oldnode;
 
         if (def->cpu == NULL)
@@ -5341,7 +5341,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
         virBufferAddLit(&buf, "  </features>\n");
     }
 
-    if (virCPUDefFormatBuf(NULL, &buf, def->cpu, "  ", 0) < 0)
+    if (virCPUDefFormatBuf(&buf, def->cpu, "  ", 0) < 0)
         goto cleanup;
 
     virBufferVSprintf(&buf, "  <clock offset='%s'/>\n",

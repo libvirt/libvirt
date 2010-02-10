@@ -265,7 +265,7 @@ x86DataToCPU(const union cpuData *data,
             if ((cpuid = x86DataCpuid(tmp, feature->cpuid[i].function))
                 && x86cpuidMatchMasked(cpuid, feature->cpuid + i)) {
                 x86cpuidClearBits(cpuid, feature->cpuid + i);
-                if (virCPUDefAddFeature(NULL, cpu, feature->name,
+                if (virCPUDefAddFeature(cpu, feature->name,
                                         VIR_CPU_FEATURE_REQUIRE) < 0)
                     goto error;
             }
@@ -334,13 +334,13 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 
     feature->name = virXPathString("string(@name)", ctxt);
     if (feature->name == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU feature name"));
         goto ignore;
     }
 
     if (x86FeatureFind(map, feature->name)) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 _("CPU feature %s already defined"), feature->name);
         goto ignore;
     }
@@ -370,7 +370,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 
         if (ret_fun < 0 || ret_eax == -2 || ret_ebx == -2
             || ret_ecx == -2 || ret_edx == -2) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Invalid cpuid[%d] in %s feature"), i, feature->name);
             goto ignore;
         }
@@ -539,7 +539,7 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
     if (cpu->type == VIR_CPU_TYPE_HOST
         || policy == VIR_CPU_FEATURE_REQUIRE) {
         if ((model = x86ModelFind(map, cpu->model)) == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Unknown CPU model %s"), cpu->model);
             goto error;
         }
@@ -558,7 +558,7 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
             continue;
 
         if ((feature = x86FeatureFind(map, cpu->features[i].name)) == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Unknown CPU feature %s"), cpu->features[i].name);
             goto error;
         }
@@ -647,7 +647,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
 
     model->name = virXPathString("string(@name)", ctxt);
     if (model->name == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
         goto ignore;
     }
@@ -658,14 +658,14 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
 
         name = virXPathString("string(./model/@name)", ctxt);
         if (name == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Missing ancestor's name in CPU model %s"),
                     model->name);
             goto ignore;
         }
 
         if ((ancestor = x86ModelFind(map, name)) == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Ancestor model %s not found for CPU model %s"),
                     name, model->name);
             VIR_FREE(name);
@@ -691,13 +691,13 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         char *name;
 
         if ((name = virXMLPropString(nodes[i], "name")) == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Missing feature name for CPU model %s"), model->name);
             goto ignore;
         }
 
         if ((feature = x86FeatureFind(map, name)) == NULL) {
-            virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Feature %s required by CPU model %s not found"),
                     name, model->name);
             VIR_FREE(name);
@@ -993,7 +993,7 @@ x86Decode(virCPUDefPtr cpu,
     }
 
     if (cpuModel == NULL) {
-        virCPUReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Cannot find suitable CPU model for given data"));
         goto out;
     }

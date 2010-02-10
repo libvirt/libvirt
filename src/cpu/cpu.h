@@ -30,9 +30,9 @@
 #include "cpu_x86_data.h"
 
 
-#define virCPUReportError(conn, code, fmt...)                           \
-        virReportErrorHelper(conn, VIR_FROM_CPU, code, __FILE__,        \
-                             __FUNCTION__, __LINE__, fmt)
+#define virCPUReportError(code, fmt...)                           \
+    virReportErrorHelper(NULL, VIR_FROM_CPU, code, __FILE__,      \
+                         __FUNCTION__, __LINE__, fmt)
 
 
 union cpuData {
@@ -85,25 +85,21 @@ struct cpuArchDriver {
 
 
 extern virCPUCompareResult
-cpuCompareXML(virConnectPtr conn,
-              virCPUDefPtr host,
+cpuCompareXML(virCPUDefPtr host,
               const char *xml);
 
 extern virCPUCompareResult
-cpuCompare  (virConnectPtr conn,
-             virCPUDefPtr host,
+cpuCompare  (virCPUDefPtr host,
              virCPUDefPtr cpu);
 
 extern int
-cpuDecode   (virConnectPtr conn,
-             virCPUDefPtr cpu,
+cpuDecode   (virCPUDefPtr cpu,
              const union cpuData *data,
              unsigned int nmodels,
              const char **models);
 
 extern int
-cpuEncode   (virConnectPtr conn,
-             const char *arch,
+cpuEncode   (const char *arch,
              const virCPUDefPtr cpu,
              union cpuData **forced,
              union cpuData **required,
@@ -112,17 +108,14 @@ cpuEncode   (virConnectPtr conn,
              union cpuData **forbidden);
 
 extern void
-cpuDataFree (virConnectPtr conn,
-             const char *arch,
+cpuDataFree (const char *arch,
              union cpuData *data);
 
 extern union cpuData *
-cpuNodeData (virConnectPtr conn,
-             const char *arch);
+cpuNodeData (const char *arch);
 
 extern virCPUCompareResult
-cpuGuestData(virConnectPtr conn,
-             virCPUDefPtr host,
+cpuGuestData(virCPUDefPtr host,
              virCPUDefPtr guest,
              union cpuData **data);
 

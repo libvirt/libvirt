@@ -85,8 +85,7 @@ virCPUDefFree(virCPUDefPtr def);
 
 #ifndef PROXY
 virCPUDefPtr
-virCPUDefParseXML(virConnectPtr conn,
-                  const xmlNodePtr node,
+virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode);
 #endif
@@ -98,21 +97,18 @@ enum virCPUFormatFlags {
 
 
 char *
-virCPUDefFormat(virConnectPtr conn,
-                virCPUDefPtr def,
+virCPUDefFormat(virCPUDefPtr def,
                 const char *indent,
                 int flags);
 
 int
-virCPUDefFormatBuf(virConnectPtr conn,
-                   virBufferPtr buf,
+virCPUDefFormatBuf(virBufferPtr buf,
                    virCPUDefPtr def,
                    const char *indent,
                    int flags);
 
 int
-virCPUDefAddFeature(virConnectPtr conn,
-                    virCPUDefPtr cpu,
+virCPUDefAddFeature(virCPUDefPtr cpu,
                     const char *name,
                     int policy);
 

@@ -8495,7 +8495,7 @@ qemuCPUCompare(virConnectPtr conn,
                         "%s", _("cannot get host CPU capabilities"));
     }
     else
-        ret = cpuCompareXML(conn, driver->caps->host.cpu, xmlDesc);
+        ret = cpuCompareXML(driver->caps->host.cpu, xmlDesc);
 
     qemuDriverUnlock(driver);
 
