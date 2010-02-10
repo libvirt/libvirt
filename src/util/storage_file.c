@@ -26,7 +26,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <assert.h>
 #include "dirname.h"
 #include "ignore-value.h"
 #include "memory.h"
@@ -251,7 +250,8 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
         return strdup(path);
 
     /* Ensure that the following cast-to-int is valid.  */
-    assert (d_len <= INT_MAX);
+    if (d_len > INT_MAX)
+        return NULL;
 
     ignore_value(virAsprintf(&res, "%.*s/%s", (int) d_len, base_file, path));
     return res;
