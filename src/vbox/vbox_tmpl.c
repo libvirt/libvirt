@@ -5722,7 +5722,7 @@ static virNetworkPtr vboxNetworkDefineCreateXML(virConnectPtr conn, const char *
     char      *networkInterfaceNameUtf8     = NULL;
     IHostNetworkInterface *networkInterface = NULL;
 
-    virNetworkDefPtr def = virNetworkDefParseString(conn, xml);
+    virNetworkDefPtr def = virNetworkDefParseString(xml);
 
     if (   (!def)
         || (def->forwardType != VIR_NETWORK_FORWARD_NONE))
@@ -6180,7 +6180,7 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
     VBOX_UTF16_FREE(networkInterfaceNameUtf16);
     VBOX_RELEASE(host);
 
-    ret = virNetworkDefFormat(network->conn, def);
+    ret = virNetworkDefFormat(def);
 
 cleanup:
     VIR_FREE(networkNameUtf8);

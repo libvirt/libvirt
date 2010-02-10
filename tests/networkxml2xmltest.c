@@ -33,10 +33,10 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
     if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
         goto fail;
 
-    if (!(dev = virNetworkDefParseString(NULL, inXmlData)))
+    if (!(dev = virNetworkDefParseString(inXmlData)))
         goto fail;
 
-    if (!(actual = virNetworkDefFormat(NULL, dev)))
+    if (!(actual = virNetworkDefFormat(dev)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {

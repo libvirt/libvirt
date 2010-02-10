@@ -53,9 +53,9 @@ VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route" )
 
-#define virNetworkReportError(conn, code, fmt...)                            \
-        virReportErrorHelper(conn, VIR_FROM_NETWORK, code, __FILE__,       \
-                               __FUNCTION__, __LINE__, fmt)
+#define virNetworkReportError(code, fmt...)                             \
+    virReportErrorHelper(NULL, VIR_FROM_NETWORK, code, __FILE__,        \
+                         __FUNCTION__, __LINE__, fmt)
 
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
                                       const unsigned char *uuid)
@@ -147,8 +147,7 @@ void virNetworkObjListFree(virNetworkObjListPtr nets)
     nets->count = 0;
 }
 
-virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
-                                     virNetworkObjListPtr nets,
+virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
                                      const virNetworkDefPtr def)
 {
     virNetworkObjPtr network;
@@ -171,7 +170,7 @@ virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
         return NULL;
     }
     if (virMutexInit(&network->lock) < 0) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot initialize mutex"));
         VIR_FREE(network);
         return NULL;
@@ -221,8 +220,7 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
 
 
 static int
-virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
-                               virNetworkDefPtr def,
+virNetworkDHCPRangeDefParseXML(virNetworkDefPtr def,
                                xmlNodePtr node) {
 
     xmlNodePtr cur;
@@ -246,7 +244,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             }
 
             if (virSocketParseAddr(start, &saddr, 0) < 0) {
-                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                virNetworkReportError(VIR_ERR_XML_ERROR,
                                       _("cannot parse dhcp start address '%s'"),
                                       start);
                 xmlFree(start);
@@ -255,7 +253,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
                 continue;
             }
             if (virSocketParseAddr(end, &eaddr, 0) < 0) {
-                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                virNetworkReportError(VIR_ERR_XML_ERROR,
                                       _("cannot parse dhcp end address '%s'"),
                                       end);
                 xmlFree(start);
@@ -266,7 +264,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
 
             range = virSocketGetRange(&saddr, &eaddr);
             if (range < 0) {
-                virNetworkReportError(conn, VIR_ERR_XML_ERROR,
+                virNetworkReportError(VIR_ERR_XML_ERROR,
                                       _("dhcp range '%s' to '%s' invalid"),
                                       start, end);
                 xmlFree(start);
@@ -294,14 +292,14 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             mac = xmlGetProp(cur, BAD_CAST "mac");
             if ((mac != NULL) &&
                 (virParseMacAddr((const char *) mac, &addr[0]) != 0)) {
-                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("cannot parse MAC address '%s'"),
                                       mac);
                 VIR_FREE(mac);
             }
             name = xmlGetProp(cur, BAD_CAST "name");
             if ((name != NULL) && (!c_isalpha(name[0]))) {
-                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("cannot use name address '%s'"),
                                       name);
                 VIR_FREE(name);
@@ -317,7 +315,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
             }
             ip = xmlGetProp(cur, BAD_CAST "ip");
             if (inet_pton(AF_INET, (const char *) ip, &inaddress) <= 0) {
-                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("cannot parse IP address '%s'"),
                                       ip);
                 VIR_FREE(ip);
@@ -358,8 +356,7 @@ virNetworkDHCPRangeDefParseXML(virConnectPtr conn,
 }
 
 static int
-virNetworkIPParseXML(virConnectPtr conn,
-                     virNetworkDefPtr def,
+virNetworkIPParseXML(virNetworkDefPtr def,
                      xmlNodePtr node) {
     xmlNodePtr cur;
 
@@ -367,7 +364,7 @@ virNetworkIPParseXML(virConnectPtr conn,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
-            int result = virNetworkDHCPRangeDefParseXML(conn, def, cur);
+            int result = virNetworkDHCPRangeDefParseXML(def, cur);
             if (result)
                 return result;
 
@@ -389,8 +386,7 @@ virNetworkIPParseXML(virConnectPtr conn,
 }
 
 static virNetworkDefPtr
-virNetworkDefParseXML(virConnectPtr conn,
-                      xmlXPathContextPtr ctxt)
+virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 {
     virNetworkDefPtr def;
     char *tmp;
@@ -403,7 +399,7 @@ virNetworkDefParseXML(virConnectPtr conn,
     /* Extract network name */
     def->name = virXPathString("string(./name[1])", ctxt);
     if (!def->name) {
-        virNetworkReportError(conn, VIR_ERR_NO_NAME, NULL);
+        virNetworkReportError(VIR_ERR_NO_NAME, NULL);
         goto error;
     }
 
@@ -411,14 +407,14 @@ virNetworkDefParseXML(virConnectPtr conn,
     tmp = virXPathString("string(./uuid[1])", ctxt);
     if (!tmp) {
         if (virUUIDGenerate(def->uuid)) {
-            virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("Failed to generate UUID"));
             goto error;
         }
     } else {
         if (virUUIDParse(tmp, def->uuid) < 0) {
             VIR_FREE(tmp);
-            virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("malformed uuid element"));
             goto error;
         }
@@ -447,13 +443,13 @@ virNetworkDefParseXML(virConnectPtr conn,
         xmlNodePtr ip;
 
         if (inet_pton(AF_INET, def->ipAddress, &inaddress) <= 0) {
-            virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                   _("cannot parse IP address '%s'"),
                                   def->ipAddress);
             goto error;
         }
         if (inet_pton(AF_INET, def->netmask, &innetmask) <= 0) {
-            virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                   _("cannot parse netmask '%s'"),
                                   def->netmask);
             goto error;
@@ -468,7 +464,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         }
 
         if ((ip = virXPathNode("./ip[1]", ctxt)) &&
-            virNetworkIPParseXML(conn, def, ip) < 0)
+            virNetworkIPParseXML(def, ip) < 0)
             goto error;
     }
 
@@ -477,7 +473,7 @@ virNetworkDefParseXML(virConnectPtr conn,
     if (virXPathBoolean("count(./forward) > 0", ctxt)) {
         if (!def->ipAddress ||
             !def->netmask) {
-            virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("Forwarding requested, but no IPv4 address/netmask provided"));
             goto error;
         }
@@ -485,7 +481,7 @@ virNetworkDefParseXML(virConnectPtr conn,
         tmp = virXPathString("string(./forward[1]/@mode)", ctxt);
         if (tmp) {
             if ((def->forwardType = virNetworkForwardTypeFromString(tmp)) < 0) {
-                virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                                       _("unknown forwarding type '%s'"), tmp);
                 VIR_FREE(tmp);
                 goto error;
@@ -515,22 +511,18 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
     if (ctxt) {
-        virConnectPtr conn = ctxt->_private;
-
-        if (conn &&
-            conn->err.code == VIR_ERR_NONE &&
+        if (virGetLastError() == NULL &&
             ctxt->lastError.level == XML_ERR_FATAL &&
             ctxt->lastError.message != NULL) {
-            virNetworkReportError (conn, VIR_ERR_XML_DETAIL,
-                                   _("at line %d: %s"),
-                                   ctxt->lastError.line,
-                                   ctxt->lastError.message);
+            virNetworkReportError(VIR_ERR_XML_DETAIL,
+                                  _("at line %d: %s"),
+                                  ctxt->lastError.line,
+                                  ctxt->lastError.message);
         }
     }
 }
 
-virNetworkDefPtr virNetworkDefParseString(virConnectPtr conn,
-                                          const char *xmlStr)
+virNetworkDefPtr virNetworkDefParseString(const char *xmlStr)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -542,26 +534,24 @@ virNetworkDefPtr virNetworkDefParseString(virConnectPtr conn,
     if (!pctxt || !pctxt->sax)
         goto cleanup;
     pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
 
-    if (conn) virResetError (&conn->err);
     xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "network.xml", NULL,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
-              virNetworkReportError(conn, VIR_ERR_XML_ERROR,
-                                    "%s", _("failed to parse xml document"));
+        if (virGetLastError() == NULL)
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                  "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
         goto cleanup;
     }
 
-    def = virNetworkDefParseNode(conn, xml, root);
+    def = virNetworkDefParseNode(xml, root);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -569,8 +559,7 @@ cleanup:
     return def;
 }
 
-virNetworkDefPtr virNetworkDefParseFile(virConnectPtr conn,
-                                        const char *filename)
+virNetworkDefPtr virNetworkDefParseFile(const char *filename)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -582,26 +571,24 @@ virNetworkDefPtr virNetworkDefParseFile(virConnectPtr conn,
     if (!pctxt || !pctxt->sax)
         goto cleanup;
     pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
 
-    if (conn) virResetError (&conn->err);
     xml = xmlCtxtReadFile (pctxt, filename, NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
                            XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
-              virNetworkReportError(conn, VIR_ERR_XML_ERROR,
-                                    "%s", _("failed to parse xml document"));
+        if (virGetLastError() == NULL)
+            virNetworkReportError(VIR_ERR_XML_ERROR,
+                                  "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
         goto cleanup;
     }
 
-    def = virNetworkDefParseNode(conn, xml, root);
+    def = virNetworkDefParseNode(xml, root);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -610,15 +597,14 @@ cleanup:
 }
 
 
-virNetworkDefPtr virNetworkDefParseNode(virConnectPtr conn,
-                                        xmlDocPtr xml,
+virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virNetworkDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "network")) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("incorrect root element"));
         return NULL;
     }
@@ -630,15 +616,14 @@ virNetworkDefPtr virNetworkDefParseNode(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    def = virNetworkDefParseXML(conn, ctxt);
+    def = virNetworkDefParseXML(ctxt);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
 }
 
-char *virNetworkDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                          const virNetworkDefPtr def)
+char *virNetworkDefFormat(const virNetworkDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
@@ -734,8 +719,7 @@ char *virNetworkDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
     return NULL;
 }
 
-int virNetworkSaveXML(virConnectPtr conn,
-                      const char *configDir,
+int virNetworkSaveXML(const char *configDir,
                       virNetworkDefPtr def,
                       const char *xml)
 {
@@ -744,7 +728,7 @@ int virNetworkSaveXML(virConnectPtr conn,
     size_t towrite;
     int err;
 
-    if ((configFile = virNetworkConfigFile(conn, configDir, def->name)) == NULL)
+    if ((configFile = virNetworkConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
@@ -789,17 +773,16 @@ int virNetworkSaveXML(virConnectPtr conn,
     return ret;
 }
 
-int virNetworkSaveConfig(virConnectPtr conn,
-                         const char *configDir,
+int virNetworkSaveConfig(const char *configDir,
                          virNetworkDefPtr def)
 {
     int ret = -1;
     char *xml;
 
-    if (!(xml = virNetworkDefFormat(conn, def)))
+    if (!(xml = virNetworkDefFormat(def)))
         goto cleanup;
 
-    if (virNetworkSaveXML(conn, configDir, def, xml))
+    if (virNetworkSaveXML(configDir, def, xml))
         goto cleanup;
 
     ret = 0;
@@ -809,8 +792,7 @@ cleanup:
 }
 
 
-virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
-                                      virNetworkObjListPtr nets,
+virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *configDir,
                                       const char *autostartDir,
                                       const char *name)
@@ -820,19 +802,19 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     virNetworkObjPtr net;
     int autostart;
 
-    if ((configFile = virNetworkConfigFile(conn, configDir, name)) == NULL)
+    if ((configFile = virNetworkConfigFile(configDir, name)) == NULL)
         goto error;
-    if ((autostartLink = virNetworkConfigFile(conn, autostartDir, name)) == NULL)
+    if ((autostartLink = virNetworkConfigFile(autostartDir, name)) == NULL)
         goto error;
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virNetworkDefParseFile(conn, configFile)))
+    if (!(def = virNetworkDefParseFile(configFile)))
         goto error;
 
     if (!STREQ(name, def->name)) {
-        virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Network config filename '%s'"
                                 " does not match network name '%s'"),
                               configFile, def->name);
@@ -842,10 +824,10 @@ virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
     /* Generate a bridge if none is specified, but don't check for collisions
      * if a bridge is hardcoded, so the network is at least defined
      */
-    if (virNetworkSetBridgeName(conn, nets, def, 0))
+    if (virNetworkSetBridgeName(nets, def, 0))
         goto error;
 
-    if (!(net = virNetworkAssignDef(conn, nets, def)))
+    if (!(net = virNetworkAssignDef(nets, def)))
         goto error;
 
     net->autostart = autostart;
@@ -863,8 +845,7 @@ error:
     return NULL;
 }
 
-int virNetworkLoadAllConfigs(virConnectPtr conn,
-                             virNetworkObjListPtr nets,
+int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                              const char *configDir,
                              const char *autostartDir)
 {
@@ -891,8 +872,7 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
 
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
-        net = virNetworkLoadConfig(conn,
-                                   nets,
+        net = virNetworkLoadConfig(nets,
                                    configDir,
                                    autostartDir,
                                    entry->d_name);
@@ -905,8 +885,7 @@ int virNetworkLoadAllConfigs(virConnectPtr conn,
     return 0;
 }
 
-int virNetworkDeleteConfig(virConnectPtr conn,
-                           const char *configDir,
+int virNetworkDeleteConfig(const char *configDir,
                            const char *autostartDir,
                            virNetworkObjPtr net)
 {
@@ -914,9 +893,9 @@ int virNetworkDeleteConfig(virConnectPtr conn,
     char *autostartLink = NULL;
     int ret = -1;
 
-    if ((configFile = virNetworkConfigFile(conn, configDir, net->def->name)) == NULL)
+    if ((configFile = virNetworkConfigFile(configDir, net->def->name)) == NULL)
         goto error;
-    if ((autostartLink = virNetworkConfigFile(conn, autostartDir, net->def->name)) == NULL)
+    if ((autostartLink = virNetworkConfigFile(autostartDir, net->def->name)) == NULL)
         goto error;
 
     /* Not fatal if this doesn't work */
@@ -937,8 +916,7 @@ error:
     return ret;
 }
 
-char *virNetworkConfigFile(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                           const char *dir,
+char *virNetworkConfigFile(const char *dir,
                            const char *name)
 {
     char *ret = NULL;
@@ -970,8 +948,7 @@ int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
     return ret;
 }
 
-char *virNetworkAllocateBridge(virConnectPtr conn,
-                               const virNetworkObjListPtr nets,
+char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
                                const char *template)
 {
 
@@ -997,14 +974,13 @@ char *virNetworkAllocateBridge(virConnectPtr conn,
         id++;
     } while (id <= MAX_BRIDGE_ID);
 
-    virNetworkReportError(conn, VIR_ERR_INTERNAL_ERROR,
+    virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
                           _("Bridge generation exceeded max id %d"),
                           MAX_BRIDGE_ID);
     return NULL;
 }
 
-int virNetworkSetBridgeName(virConnectPtr conn,
-                            const virNetworkObjListPtr nets,
+int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
                             virNetworkDefPtr def,
                             int check_collision) {
 
@@ -1016,14 +992,14 @@ int virNetworkSetBridgeName(virConnectPtr conn,
          * defined. */
         if (check_collision &&
             virNetworkBridgeInUse(nets, def->bridge, def->name)) {
-            networkReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                               _("bridge name '%s' already in use."),
-                               def->bridge);
+            virNetworkReportError(VIR_ERR_INTERNAL_ERROR,
+                                  _("bridge name '%s' already in use."),
+                                  def->bridge);
             goto error;
         }
     } else {
         /* Allocate a bridge name */
-        if (!(def->bridge = virNetworkAllocateBridge(conn, nets, def->bridge)))
+        if (!(def->bridge = virNetworkAllocateBridge(nets, def->bridge)))
             goto error;
     }
 

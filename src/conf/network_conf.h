@@ -112,11 +112,6 @@ virNetworkObjIsActive(const virNetworkObjPtr net)
     return net->active;
 }
 
-#define networkReportError(conn, dom, net, code, fmt...)                \
-    virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,         \
-                           __FUNCTION__, __LINE__, fmt)
-
-
 virNetworkObjPtr virNetworkFindByUUID(const virNetworkObjListPtr nets,
                                       const unsigned char *uuid);
 virNetworkObjPtr virNetworkFindByName(const virNetworkObjListPtr nets,
@@ -127,63 +122,50 @@ void virNetworkDefFree(virNetworkDefPtr def);
 void virNetworkObjFree(virNetworkObjPtr net);
 void virNetworkObjListFree(virNetworkObjListPtr vms);
 
-virNetworkObjPtr virNetworkAssignDef(virConnectPtr conn,
-                                     virNetworkObjListPtr nets,
+virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
                                      const virNetworkDefPtr def);
 void virNetworkRemoveInactive(virNetworkObjListPtr nets,
                               const virNetworkObjPtr net);
 
-virNetworkDefPtr virNetworkDefParseString(virConnectPtr conn,
-                                          const char *xmlStr);
-virNetworkDefPtr virNetworkDefParseFile(virConnectPtr conn,
-                                        const char *filename);
-virNetworkDefPtr virNetworkDefParseNode(virConnectPtr conn,
-                                        xmlDocPtr xml,
+virNetworkDefPtr virNetworkDefParseString(const char *xmlStr);
+virNetworkDefPtr virNetworkDefParseFile(const char *filename);
+virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
                                         xmlNodePtr root);
 
-char *virNetworkDefFormat(virConnectPtr conn,
-                          const virNetworkDefPtr def);
+char *virNetworkDefFormat(const virNetworkDefPtr def);
 
 
-int virNetworkSaveXML(virConnectPtr conn,
-                      const char *configDir,
+int virNetworkSaveXML(const char *configDir,
                       virNetworkDefPtr def,
                       const char *xml);
 
-int virNetworkSaveConfig(virConnectPtr conn,
-                         const char *configDir,
+int virNetworkSaveConfig(const char *configDir,
                          virNetworkDefPtr def);
 
-virNetworkObjPtr virNetworkLoadConfig(virConnectPtr conn,
-                                      virNetworkObjListPtr nets,
+virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
                                       const char *configDir,
                                       const char *autostartDir,
                                       const char *file);
 
-int virNetworkLoadAllConfigs(virConnectPtr conn,
-                             virNetworkObjListPtr nets,
+int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                              const char *configDir,
                              const char *autostartDir);
 
-int virNetworkDeleteConfig(virConnectPtr conn,
-                           const char *configDir,
+int virNetworkDeleteConfig(const char *configDir,
                            const char *autostartDir,
                            virNetworkObjPtr net);
 
-char *virNetworkConfigFile(virConnectPtr conn,
-                           const char *dir,
+char *virNetworkConfigFile(const char *dir,
                            const char *name);
 
 int virNetworkBridgeInUse(const virNetworkObjListPtr nets,
                           const char *bridge,
                           const char *skipname);
 
-char *virNetworkAllocateBridge(virConnectPtr conn,
-                               const virNetworkObjListPtr nets,
+char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
                                const char *template);
 
-int virNetworkSetBridgeName(virConnectPtr conn,
-                            const virNetworkObjListPtr nets,
+int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
                             virNetworkDefPtr def,
                             int check_collision);
 

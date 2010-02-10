@@ -558,9 +558,9 @@ static int testOpenDefault(virConnectPtr conn) {
     domobj->persistent = 1;
     virDomainObjUnlock(domobj);
 
-    if (!(netdef = virNetworkDefParseString(conn, defaultNetworkXML)))
+    if (!(netdef = virNetworkDefParseString(defaultNetworkXML)))
         goto error;
-    if (!(netobj = virNetworkAssignDef(conn, &privconn->networks, netdef))) {
+    if (!(netobj = virNetworkAssignDef(&privconn->networks, netdef))) {
         virNetworkDefFree(netdef);
         goto error;
     }
@@ -934,15 +934,15 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
 
-            def = virNetworkDefParseFile(conn, absFile);
+            def = virNetworkDefParseFile(absFile);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virNetworkDefParseNode(conn, xml, networks[i])) == NULL)
+            if ((def = virNetworkDefParseNode(xml, networks[i])) == NULL)
                 goto error;
         }
-        if (!(net = virNetworkAssignDef(conn, &privconn->networks,
+        if (!(net = virNetworkAssignDef(&privconn->networks,
                                         def))) {
             virNetworkDefFree(def);
             goto error;
@@ -2881,10 +2881,10 @@ static virNetworkPtr testNetworkCreate(virConnectPtr conn, const char *xml) {
     virNetworkPtr ret = NULL;
 
     testDriverLock(privconn);
-    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+    if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(conn, &privconn->networks, def)) == NULL)
+    if ((net = virNetworkAssignDef(&privconn->networks, def)) == NULL)
         goto cleanup;
     def = NULL;
     net->active = 1;
@@ -2906,10 +2906,10 @@ static virNetworkPtr testNetworkDefine(virConnectPtr conn, const char *xml) {
     virNetworkPtr ret = NULL;
 
     testDriverLock(privconn);
-    if ((def = virNetworkDefParseString(conn, xml)) == NULL)
+    if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if ((net = virNetworkAssignDef(conn, &privconn->networks, def)) == NULL)
+    if ((net = virNetworkAssignDef(&privconn->networks, def)) == NULL)
         goto cleanup;
     def = NULL;
     net->persistent = 1;
@@ -3030,7 +3030,7 @@ static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
         goto cleanup;
     }
 
-    ret = virNetworkDefFormat(network->conn, privnet->def);
+    ret = virNetworkDefFormat(privnet->def);
 
 cleanup:
     if (privnet)
