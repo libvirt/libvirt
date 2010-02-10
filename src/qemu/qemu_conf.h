@@ -188,7 +188,8 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          const char ***retenv,
                                          int **tapfds,
                                          int *ntapfds,
-                                         const char *migrateFrom);
+                                         const char *migrateFrom)
+    ATTRIBUTE_NONNULL(1);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
@@ -241,7 +242,8 @@ char * qemuBuildUSBHostdevDevStr(virDomainHostdevDefPtr dev);
 int         qemudNetworkIfaceConnect    (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          virDomainNetDefPtr net,
-                                         unsigned long long qemuCmdFlags);
+                                         unsigned long long qemuCmdFlags)
+    ATTRIBUTE_NONNULL(1);
 
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,

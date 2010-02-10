@@ -50,18 +50,23 @@ int virDomainEventCallbackListAdd(virConnectPtr conn,
                                   virDomainEventCallbackListPtr cbList,
                                   virConnectDomainEventCallback callback,
                                   void *opaque,
-                                  virFreeCallback freecb);
+                                  virFreeCallback freecb)
+    ATTRIBUTE_NONNULL(1);
 
 int virDomainEventCallbackListRemove(virConnectPtr conn,
                                      virDomainEventCallbackListPtr cbList,
-                                     virConnectDomainEventCallback callback);
+                                     virConnectDomainEventCallback callback)
+    ATTRIBUTE_NONNULL(1);
 
 int virDomainEventCallbackListRemoveConn(virConnectPtr conn,
-                                         virDomainEventCallbackListPtr cbList);
+                                         virDomainEventCallbackListPtr cbList)
+    ATTRIBUTE_NONNULL(1);
 
 int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
                                          virDomainEventCallbackListPtr cbList,
-                                         virConnectDomainEventCallback callback);
+                                         virConnectDomainEventCallback callback)
+    ATTRIBUTE_NONNULL(1);
+
 int virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList);
 
 /**

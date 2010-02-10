@@ -13,6 +13,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "qemu/qemu_conf.h"
+#include "datatypes.h"
 
 #include "testutilsqemu.h"
 
@@ -36,6 +37,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     unsigned long long flags;
     virDomainDefPtr vmdef = NULL;
     virDomainChrDef monitor_chr;
+    virConnectPtr conn;
+
+    if (!(conn = virGetConnect()))
+        goto fail;
 
     if (virtTestLoadFile(cmd, &expectargv, MAX_FILE) < 0)
         goto fail;
@@ -75,7 +80,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
 
-    if (qemudBuildCommandLine(NULL, &driver,
+    if (qemudBuildCommandLine(conn, &driver,
                               vmdef, &monitor_chr, 0, flags,
                               &argv, &qenv,
                               NULL, NULL, migrateFrom) < 0)
@@ -137,6 +142,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         free(qenv);
     }
     virDomainDefFree(vmdef);
+    virUnrefConnect(conn);
     return ret;
 }
 
