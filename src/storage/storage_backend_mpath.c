@@ -39,8 +39,7 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int
-virStorageBackendMpathUpdateVolTargetInfo(virConnectPtr conn,
-                                          virStorageVolTargetPtr target,
+virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                           unsigned long long *allocation,
                                           unsigned long long *capacity)
 {
@@ -60,7 +59,7 @@ virStorageBackendMpathUpdateVolTargetInfo(virConnectPtr conn,
                                                allocation,
                                                capacity) < 0) {
 
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                           _("Failed to update volume target info for '%s'"),
                           target->path);
 
@@ -69,7 +68,7 @@ virStorageBackendMpathUpdateVolTargetInfo(virConnectPtr conn,
     }
 
     if (virStorageBackendUpdateVolTargetFormatFD(target, fd) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                           _("Failed to update volume target format for '%s'"),
                           target->path);
 
@@ -86,8 +85,7 @@ out:
 
 
 static int
-virStorageBackendMpathNewVol(virConnectPtr conn,
-                             virStoragePoolObjPtr pool,
+virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const int devnum,
                              const char *dev)
 {
@@ -111,12 +109,11 @@ virStorageBackendMpathNewVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virStorageBackendMpathUpdateVolTargetInfo(conn,
-                                                  &vol->target,
+    if (virStorageBackendMpathUpdateVolTargetInfo(&vol->target,
                                                   &vol->allocation,
                                                   &vol->capacity) < 0) {
 
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to update volume for '%s'"),
                               vol->target.path);
         goto cleanup;
@@ -231,8 +228,7 @@ out:
 
 
 static int
-virStorageBackendCreateVols(virConnectPtr conn,
-                            virStoragePoolObjPtr pool,
+virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                             struct dm_names *names)
 {
     int retval = 0, is_mpath = 0;
@@ -260,8 +256,7 @@ virStorageBackendCreateVols(virConnectPtr conn,
                 goto out;
             }
 
-            virStorageBackendMpathNewVol(conn,
-                                         pool,
+            virStorageBackendMpathNewVol(pool,
                                          minor,
                                          map_device);
 
@@ -280,8 +275,7 @@ out:
 
 
 static int
-virStorageBackendGetMaps(virConnectPtr conn,
-                         virStoragePoolObjPtr pool)
+virStorageBackendGetMaps(virStoragePoolObjPtr pool)
 {
     int retval = 0;
     struct dm_task *dmt = NULL;
@@ -309,7 +303,7 @@ virStorageBackendGetMaps(virConnectPtr conn,
         goto out;
     }
 
-    virStorageBackendCreateVols(conn, pool, names);
+    virStorageBackendCreateVols(pool, names);
 
 out:
     if (dmt != NULL) {
@@ -320,7 +314,7 @@ out:
 
 
 static int
-virStorageBackendMpathRefreshPool(virConnectPtr conn,
+virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
     int retval = 0;
@@ -331,7 +325,7 @@ virStorageBackendMpathRefreshPool(virConnectPtr conn,
 
     virFileWaitForDevices();
 
-    virStorageBackendGetMaps(conn, pool);
+    virStorageBackendGetMaps(pool);
 
     return retval;
 }

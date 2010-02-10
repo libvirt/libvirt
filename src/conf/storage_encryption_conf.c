@@ -70,7 +70,7 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
 #ifndef PROXY
 
 static virStorageEncryptionSecretPtr
-virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
+virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node)
 {
     xmlNodePtr old_node;
@@ -89,13 +89,13 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
 
     type_str = virXPathString("string(./@type)", ctxt);
     if (type_str == NULL) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        virStorageReportError(VIR_ERR_XML_ERROR, "%s",
                               _("unknown volume encryption secret type"));
         goto cleanup;
     }
     type = virStorageEncryptionSecretTypeTypeFromString(type_str);
     if (type < 0) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR,
+        virStorageReportError(VIR_ERR_XML_ERROR,
                               _("unknown volume encryption secret type %s"),
                               type_str);
         VIR_FREE(type_str);
@@ -107,14 +107,14 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
     uuidstr = virXPathString("string(./@uuid)", ctxt);
     if (uuidstr) {
         if (virUUIDParse(uuidstr, ret->uuid) < 0) {
-            virStorageReportError(conn, VIR_ERR_XML_ERROR,
+            virStorageReportError(VIR_ERR_XML_ERROR,
                                   _("malformed volume encryption uuid '%s'"),
                                   uuidstr);
             goto cleanup;
         }
         VIR_FREE(uuidstr);
     } else {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        virStorageReportError(VIR_ERR_XML_ERROR, "%s",
                               _("missing volume encryption uuid"));
         goto cleanup;
     }
@@ -129,7 +129,7 @@ virStorageEncryptionSecretParse(virConnectPtr conn, xmlXPathContextPtr ctxt,
 }
 
 static virStorageEncryptionPtr
-virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
+virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virStorageEncryptionPtr ret;
@@ -143,13 +143,13 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
 
     format_str = virXPathString("string(./@format)", ctxt);
     if (format_str == NULL) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        virStorageReportError(VIR_ERR_XML_ERROR, "%s",
                               _("unknown volume encryption format"));
         goto cleanup;
     }
     format = virStorageEncryptionFormatTypeFromString(format_str);
     if (format < 0) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR,
+        virStorageReportError(VIR_ERR_XML_ERROR,
                               _("unknown volume encryption format type %s"),
                               format_str);
         VIR_FREE(format_str);
@@ -160,7 +160,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
 
     n = virXPathNodeSet("./secret", ctxt, &nodes);
     if (n < 0){
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("cannot extract volume encryption secrets"));
         goto cleanup;
     }
@@ -170,7 +170,7 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
     }
     ret->nsecrets = n;
     for (i = 0; i < n; i++) {
-        ret->secrets[i] = virStorageEncryptionSecretParse(conn, ctxt, nodes[i]);
+        ret->secrets[i] = virStorageEncryptionSecretParse(ctxt, nodes[i]);
         if (ret->secrets[i] == NULL)
             goto cleanup;
     }
@@ -185,14 +185,13 @@ virStorageEncryptionParseXML(virConnectPtr conn, xmlXPathContextPtr ctxt)
 }
 
 virStorageEncryptionPtr
-virStorageEncryptionParseNode(virConnectPtr conn,
-                              xmlDocPtr xml, xmlNodePtr root)
+virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virStorageEncryptionPtr enc = NULL;
 
     if (STRNEQ((const char *) root->name, "encryption")) {
-        virStorageReportError(conn, VIR_ERR_XML_ERROR,
+        virStorageReportError(VIR_ERR_XML_ERROR,
                               "%s", _("unknown root element for volume "
                                       "encryption information"));
         goto cleanup;
@@ -205,7 +204,7 @@ virStorageEncryptionParseNode(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    enc = virStorageEncryptionParseXML(conn, ctxt);
+    enc = virStorageEncryptionParseXML(ctxt);
 
   cleanup:
     xmlXPathFreeContext(ctxt);
@@ -215,8 +214,7 @@ virStorageEncryptionParseNode(virConnectPtr conn,
 
 
 static int
-virStorageEncryptionSecretFormat(virConnectPtr conn,
-                                 virBufferPtr buf,
+virStorageEncryptionSecretFormat(virBufferPtr buf,
                                  virStorageEncryptionSecretPtr secret)
 {
     const char *type;
@@ -224,7 +222,7 @@ virStorageEncryptionSecretFormat(virConnectPtr conn,
 
     type = virStorageEncryptionSecretTypeTypeToString(secret->type);
     if (!type) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("unexpected volume encryption secret type"));
         return -1;
     }
@@ -235,8 +233,7 @@ virStorageEncryptionSecretFormat(virConnectPtr conn,
 }
 
 int
-virStorageEncryptionFormat(virConnectPtr conn,
-                           virBufferPtr buf,
+virStorageEncryptionFormat(virBufferPtr buf,
                            virStorageEncryptionPtr enc)
 {
     const char *format;
@@ -244,14 +241,14 @@ virStorageEncryptionFormat(virConnectPtr conn,
 
     format = virStorageEncryptionFormatTypeToString(enc->format);
     if (!format) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("unexpected encryption format"));
         return -1;
     }
     virBufferVSprintf(buf, "    <encryption format='%s'>\n", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
-        if (virStorageEncryptionSecretFormat(conn, buf, enc->secrets[i]) < 0)
+        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i]) < 0)
             return -1;
     }
 
@@ -261,7 +258,7 @@ virStorageEncryptionFormat(virConnectPtr conn,
 }
 
 int
-virStorageGenerateQcowPassphrase(virConnectPtr conn, unsigned char *dest)
+virStorageGenerateQcowPassphrase(unsigned char *dest)
 {
     int fd;
     size_t i;
@@ -271,7 +268,7 @@ virStorageGenerateQcowPassphrase(virConnectPtr conn, unsigned char *dest)
        unpleasant surprises with the qemu monitor input mechanism. */
     fd = open("/dev/urandom", O_RDONLY);
     if (fd < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Cannot open /dev/urandom"));
         return -1;
     }
@@ -282,7 +279,7 @@ virStorageGenerateQcowPassphrase(virConnectPtr conn, unsigned char *dest)
         while ((r = read(fd, dest + i, 1)) == -1 && errno == EINTR)
             ;
         if (r <= 0) {
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                   _("Cannot read from /dev/urandom"));
             close(fd);
             return -1;

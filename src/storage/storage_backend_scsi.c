@@ -40,8 +40,7 @@
  * the device otherwise.
  */
 static int
-getDeviceType(virConnectPtr conn,
-              uint32_t host,
+getDeviceType(uint32_t host,
               uint32_t bus,
               uint32_t target,
               uint32_t lun,
@@ -85,7 +84,7 @@ getDeviceType(virConnectPtr conn,
      * character is not \0, virStrToLong_i complains
      */
     if (virStrToLong_i(typestr, &p, 10, type) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Device type '%s' is not an integer"),
                               typestr);
         /* Hm, type wasn't an integer; seems strange */
@@ -191,8 +190,7 @@ virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
 }
 
 static int
-virStorageBackendSCSINewLun(virConnectPtr conn,
-                            virStoragePoolObjPtr pool,
+virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             uint32_t host,
                             uint32_t bus,
                             uint32_t target,
@@ -252,7 +250,7 @@ virStorageBackendSCSINewLun(virConnectPtr conn,
                                                  &vol->allocation,
                                                  &vol->capacity) < 0) {
 
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to update volume for '%s'"),
                               devpath);
         retval = -1;
@@ -289,8 +287,7 @@ out:
 
 
 static int
-getNewStyleBlockDevice(virConnectPtr conn ATTRIBUTE_UNUSED /*TEMPORARY*/,
-                       const char *lun_path,
+getNewStyleBlockDevice(const char *lun_path,
                        const char *block_name ATTRIBUTE_UNUSED,
                        char **block_device)
 {
@@ -344,8 +341,7 @@ out:
 
 
 static int
-getOldStyleBlockDevice(virConnectPtr conn,
-                       const char *lun_path ATTRIBUTE_UNUSED,
+getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
                        const char *block_name,
                        char **block_device)
 {
@@ -356,7 +352,7 @@ getOldStyleBlockDevice(virConnectPtr conn,
     blockp = strrchr(block_name, ':');
     if (blockp == NULL) {
         /* Hm, wasn't what we were expecting; have to give up */
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to parse block name %s"),
                               block_name);
         retval = -1;
@@ -379,8 +375,7 @@ out:
 
 
 static int
-getBlockDevice(virConnectPtr conn,
-               uint32_t host,
+getBlockDevice(uint32_t host,
                uint32_t bus,
                uint32_t target,
                uint32_t lun,
@@ -409,13 +404,11 @@ getBlockDevice(virConnectPtr conn,
     while ((lun_dirent = readdir(lun_dir))) {
         if (STREQLEN(lun_dirent->d_name, "block", 5)) {
             if (strlen(lun_dirent->d_name) == 5) {
-                retval = getNewStyleBlockDevice(conn,
-                                                lun_path,
+                retval = getNewStyleBlockDevice(lun_path,
                                                 lun_dirent->d_name,
                                                 block_device);
             } else {
-                retval = getOldStyleBlockDevice(conn,
-                                                lun_path,
+                retval = getOldStyleBlockDevice(lun_path,
                                                 lun_dirent->d_name,
                                                 block_device);
             }
@@ -432,8 +425,7 @@ out:
 
 
 static int
-processLU(virConnectPtr conn,
-          virStoragePoolObjPtr pool,
+processLU(virStoragePoolObjPtr pool,
           uint32_t host,
           uint32_t bus,
           uint32_t target,
@@ -447,8 +439,8 @@ processLU(virConnectPtr conn,
     VIR_DEBUG(_("Processing LU %u:%u:%u:%u"),
               host, bus, target, lun);
 
-    if (getDeviceType(conn, host, bus, target, lun, &device_type) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+    if (getDeviceType(host, bus, target, lun, &device_type) < 0) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
                               host, bus, target, lun);
         retval = -1;
@@ -468,11 +460,11 @@ processLU(virConnectPtr conn,
     VIR_DEBUG(_("%u:%u:%u:%u is a Direct-Access LUN"),
               host, bus, target, lun);
 
-    if (getBlockDevice(conn, host, bus, target, lun, &block_device) < 0) {
+    if (getBlockDevice(host, bus, target, lun, &block_device) < 0) {
         goto out;
     }
 
-    if (virStorageBackendSCSINewLun(conn, pool,
+    if (virStorageBackendSCSINewLun(pool,
                                     host, bus, target, lun,
                                     block_device) < 0) {
         VIR_DEBUG(_("Failed to create new storage volume for %u:%u:%u:%u"),
@@ -492,8 +484,7 @@ out:
 
 
 int
-virStorageBackendSCSIFindLUs(virConnectPtr conn,
-                             virStoragePoolObjPtr pool,
+virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
                              uint32_t scanhost)
 {
     int retval = 0;
@@ -531,7 +522,7 @@ virStorageBackendSCSIFindLUs(virConnectPtr conn,
 
         VIR_DEBUG(_("Found LU '%s'"), lun_dirent->d_name);
 
-        processLU(conn, pool, scanhost, bus, target, lun);
+        processLU(pool, scanhost, bus, target, lun);
     }
 
     closedir(devicedir);
@@ -627,7 +618,7 @@ out:
 
 
 static int
-virStorageBackendSCSIRefreshPool(virConnectPtr conn,
+virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
     int retval = 0;
@@ -649,7 +640,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn,
         goto out;
     }
 
-    virStorageBackendSCSIFindLUs(conn, pool, host);
+    virStorageBackendSCSIFindLUs(pool, host);
 
 out:
     return retval;

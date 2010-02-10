@@ -1297,7 +1297,7 @@ virDomainDiskDefParseXML(xmlNodePtr node,
                 devaddr = virXMLPropString(cur, "devaddr");
             } else if (encryption == NULL &&
                        xmlStrEqual(cur->name, BAD_CAST "encryption")) {
-                encryption = virStorageEncryptionParseNode(NULL, node->doc,
+                encryption = virStorageEncryptionParseNode(node->doc,
                                                            cur);
                 if (encryption == NULL)
                     goto error;
@@ -4581,7 +4581,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "      <serial>%s</serial>\n",
                               def->serial);
     if (def->encryption != NULL &&
-        virStorageEncryptionFormat(NULL, buf, def->encryption) < 0)
+        virStorageEncryptionFormat(buf, def->encryption) < 0)
         return -1;
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)

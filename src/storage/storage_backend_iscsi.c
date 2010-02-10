@@ -45,8 +45,7 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int
-virStorageBackendISCSITargetIP(virConnectPtr conn,
-                               const char *hostname,
+virStorageBackendISCSITargetIP(const char *hostname,
                                char *ipaddr,
                                size_t ipaddrlen)
 {
@@ -62,14 +61,14 @@ virStorageBackendISCSITargetIP(virConnectPtr conn,
 
     ret = getaddrinfo(hostname, NULL, &hints, &result);
     if (ret != 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("host lookup failed %s"),
                               gai_strerror(ret));
         return -1;
     }
 
     if (result == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("no IP address for target %s"),
                               hostname);
         return -1;
@@ -78,7 +77,7 @@ virStorageBackendISCSITargetIP(virConnectPtr conn,
     if (getnameinfo(result->ai_addr, result->ai_addrlen,
                     ipaddr, ipaddrlen, NULL, 0,
                     NI_NUMERICHOST) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("cannot format ip addr for %s"),
                               hostname);
         freeaddrinfo(result);
@@ -90,8 +89,7 @@ virStorageBackendISCSITargetIP(virConnectPtr conn,
 }
 
 static int
-virStorageBackendISCSIExtractSession(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                     virStoragePoolObjPtr pool,
+virStorageBackendISCSIExtractSession(virStoragePoolObjPtr pool,
                                      char **const groups,
                                      void *data)
 {
@@ -108,8 +106,7 @@ virStorageBackendISCSIExtractSession(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static char *
-virStorageBackendISCSISession(virConnectPtr conn,
-                              virStoragePoolObjPtr pool,
+virStorageBackendISCSISession(virStoragePoolObjPtr pool,
                               int probe)
 {
     /*
@@ -134,7 +131,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether session got filled in properly.
      */
-    if (virStorageBackendRunProgRegex(conn, pool,
+    if (virStorageBackendRunProgRegex(pool,
                                       prog,
                                       1,
                                       regexes,
@@ -146,7 +143,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
 
     if (session == NULL &&
         !probe) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot find session"));
         return NULL;
     }
@@ -158,8 +155,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
 #define LINE_SIZE 4096
 
 static int
-virStorageBackendIQNFound(virConnectPtr conn,
-                          virStoragePoolObjPtr pool,
+virStorageBackendIQNFound(virStoragePoolObjPtr pool,
                           char **ifacename)
 {
     int ret = IQN_MISSING, fd = -1;
@@ -174,7 +170,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
 
     if (VIR_ALLOC_N(line, LINE_SIZE) != 0) {
         ret = IQN_ERROR;
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Could not allocate memory for output of '%s'"),
                               prog[0]);
         goto out;
@@ -183,7 +179,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
     memset(line, 0, LINE_SIZE);
 
     if (virExec(prog, NULL, NULL, &child, -1, &fd, NULL, VIR_EXEC_NONE) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run '%s' when looking for existing interface with IQN '%s'"),
                               prog[0], pool->def->source.initiator.iqn);
 
@@ -192,7 +188,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
     }
 
     if ((fp = fdopen(fd, "r")) == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to open stream for file descriptor "
                                 "when reading output from '%s': '%s'"),
                               prog[0], virStrerror(errno, ebuf, sizeof ebuf));
@@ -204,7 +200,7 @@ virStorageBackendIQNFound(virConnectPtr conn,
         newline = strrchr(line, '\n');
         if (newline == NULL) {
             ret = IQN_ERROR;
-            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                                   _("Unexpected line > %d characters "
                                     "when parsing output of '%s'"),
                                   LINE_SIZE, prog[0]);
@@ -251,15 +247,14 @@ out:
 
 
 static int
-virStorageBackendCreateIfaceIQN(virConnectPtr conn,
-                             virStoragePoolObjPtr pool,
-                             char **ifacename)
+virStorageBackendCreateIfaceIQN(virStoragePoolObjPtr pool,
+                                char **ifacename)
 {
     int ret = -1, exitstatus = -1;
     char temp_ifacename[32];
 
     if (virRandomInitialize(time(NULL) ^ getpid()) == -1) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("Failed to initialize random generator "
                                 "when creating iscsi interface"));
         goto out;
@@ -280,7 +275,7 @@ virStorageBackendCreateIfaceIQN(virConnectPtr conn,
      * We will just rely on whether the interface got created
      * properly. */
     if (virRun(cmdargv1, &exitstatus) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to create new iscsi interface"),
                               cmdargv1[0]);
         goto out;
@@ -296,14 +291,14 @@ virStorageBackendCreateIfaceIQN(virConnectPtr conn,
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether iface file got updated properly. */
     if (virRun(cmdargv2, &exitstatus) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
                               cmdargv1[0], pool->def->source.initiator.iqn);
         goto out;
     }
 
     /* Check again to make sure the interface was created. */
-    if (virStorageBackendIQNFound(conn, pool, ifacename) != IQN_FOUND) {
+    if (virStorageBackendIQNFound(pool, ifacename) != IQN_FOUND) {
         VIR_DEBUG("Failed to find interface '%s' with IQN '%s' "
                   "after attempting to create it",
                   &temp_ifacename[0], pool->def->source.initiator.iqn);
@@ -323,20 +318,19 @@ out:
 
 
 static int
-virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
-                                    virStoragePoolObjPtr pool,
+virStorageBackendISCSIConnectionIQN(virStoragePoolObjPtr pool,
                                     const char *portal,
                                     const char *action)
 {
     int ret = -1;
     char *ifacename = NULL;
 
-    switch (virStorageBackendIQNFound(conn, pool, &ifacename)) {
+    switch (virStorageBackendIQNFound(pool, &ifacename)) {
     case IQN_FOUND:
         VIR_DEBUG("ifacename: '%s'", ifacename);
         break;
     case IQN_MISSING:
-        if (virStorageBackendCreateIfaceIQN(conn, pool, &ifacename) != 0) {
+        if (virStorageBackendCreateIfaceIQN(pool, &ifacename) != 0) {
             goto out;
         }
         break;
@@ -349,7 +343,7 @@ virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
         ISCSIADM, "--mode", "discovery", "--type", "sendtargets", "--portal", portal, NULL
     };
     if (virRun(sendtargets, NULL) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run %s to get target list"),
                               sendtargets[0]);
         goto out;
@@ -362,7 +356,7 @@ virStorageBackendISCSIConnectionIQN(virConnectPtr conn,
     };
 
     if (virRun(cmdargv, NULL) < 0) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' with action '%s'"),
                               cmdargv[0], action);
         goto out;
@@ -377,8 +371,7 @@ out:
 
 
 static int
-virStorageBackendISCSIConnection(virConnectPtr conn,
-                                 virStoragePoolObjPtr pool,
+virStorageBackendISCSIConnection(virStoragePoolObjPtr pool,
                                  const char *portal,
                                  const char *action)
 {
@@ -386,7 +379,7 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
 
     if (pool->def->source.initiator.iqn != NULL) {
 
-        ret = virStorageBackendISCSIConnectionIQN(conn, pool, portal, action);
+        ret = virStorageBackendISCSIConnectionIQN(pool, portal, action);
 
     } else {
 
@@ -406,8 +399,7 @@ virStorageBackendISCSIConnection(virConnectPtr conn,
 
 
 static int
-virStorageBackendISCSIFindLUs(virConnectPtr conn,
-                              virStoragePoolObjPtr pool,
+virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
                               const char *session)
 {
     char sysfs_path[PATH_MAX];
@@ -425,7 +417,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
         retval = -1;
     }
 
-    if (virStorageBackendSCSIFindLUs(conn, pool, host) < 0) {
+    if (virStorageBackendSCSIFindLUs(pool, host) < 0) {
         virReportSystemError(errno,
                              _("Failed to find LUs on host %u"), host);
         retval = -1;
@@ -435,8 +427,7 @@ virStorageBackendISCSIFindLUs(virConnectPtr conn,
 }
 
 static int
-virStorageBackendISCSIRescanLUNs(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendISCSIRescanLUNs(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                  const char *session)
 {
     const char *const cmdargv[] = {
@@ -451,8 +442,7 @@ virStorageBackendISCSIRescanLUNs(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendISCSILogin(virConnectPtr conn,
-                            virStoragePoolObjPtr pool,
+virStorageBackendISCSILogin(virStoragePoolObjPtr pool,
                             const char *portal)
 {
     const char *const cmdsendtarget[] = {
@@ -463,26 +453,23 @@ virStorageBackendISCSILogin(virConnectPtr conn,
     if (virRun(cmdsendtarget, NULL) < 0)
         return -1;
 
-    return virStorageBackendISCSIConnection(conn, pool, portal, "--login");
+    return virStorageBackendISCSIConnection(pool, portal, "--login");
 }
 
 static int
-virStorageBackendISCSILogout(virConnectPtr conn,
-                             virStoragePoolObjPtr pool,
+virStorageBackendISCSILogout(virStoragePoolObjPtr pool,
                              const char *portal)
 {
-    return virStorageBackendISCSIConnection(conn, pool, portal, "--logout");
+    return virStorageBackendISCSIConnection(pool, portal, "--logout");
 }
 
 static char *
-virStorageBackendISCSIPortal(virConnectPtr conn,
-                             virStoragePoolObjPtr pool)
+virStorageBackendISCSIPortal(virStoragePoolObjPtr pool)
 {
     char ipaddr[NI_MAXHOST];
     char *portal;
 
-    if (virStorageBackendISCSITargetIP(conn,
-                                       pool->def->source.host.name,
+    if (virStorageBackendISCSITargetIP(pool->def->source.host.name,
                                        ipaddr, sizeof(ipaddr)) < 0)
         return NULL;
 
@@ -499,29 +486,29 @@ virStorageBackendISCSIPortal(virConnectPtr conn,
 
 
 static int
-virStorageBackendISCSIStartPool(virConnectPtr conn,
+virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
 {
     char *portal = NULL;
     char *session;
 
     if (pool->def->source.host.name == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing source host"));
         return -1;
     }
 
     if (pool->def->source.ndevice != 1 ||
         pool->def->source.devices[0].path == NULL) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing source device"));
         return -1;
     }
 
-    if ((session = virStorageBackendISCSISession(conn, pool, 1)) == NULL) {
-        if ((portal = virStorageBackendISCSIPortal(conn, pool)) == NULL)
+    if ((session = virStorageBackendISCSISession(pool, 1)) == NULL) {
+        if ((portal = virStorageBackendISCSIPortal(pool)) == NULL)
             return -1;
-        if (virStorageBackendISCSILogin(conn, pool, portal) < 0) {
+        if (virStorageBackendISCSILogin(pool, portal) < 0) {
             VIR_FREE(portal);
             return -1;
         }
@@ -533,18 +520,18 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
 }
 
 static int
-virStorageBackendISCSIRefreshPool(virConnectPtr conn,
+virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
     char *session = NULL;
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    if ((session = virStorageBackendISCSISession(conn, pool, 0)) == NULL)
+    if ((session = virStorageBackendISCSISession(pool, 0)) == NULL)
         goto cleanup;
-    if (virStorageBackendISCSIRescanLUNs(conn, pool, session) < 0)
+    if (virStorageBackendISCSIRescanLUNs(pool, session) < 0)
         goto cleanup;
-    if (virStorageBackendISCSIFindLUs(conn, pool, session) < 0)
+    if (virStorageBackendISCSIFindLUs(pool, session) < 0)
         goto cleanup;
     VIR_FREE(session);
 
@@ -557,15 +544,15 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn,
 
 
 static int
-virStorageBackendISCSIStopPool(virConnectPtr conn,
+virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
     char *portal;
 
-    if ((portal = virStorageBackendISCSIPortal(conn, pool)) == NULL)
+    if ((portal = virStorageBackendISCSIPortal(pool)) == NULL)
         return -1;
 
-    if (virStorageBackendISCSILogout(conn, pool, portal) < 0) {
+    if (virStorageBackendISCSILogout(pool, portal) < 0) {
         VIR_FREE(portal);
         return -1;
     }

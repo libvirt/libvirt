@@ -577,10 +577,10 @@ static int testOpenDefault(virConnectPtr conn) {
     interfaceobj->active = 1;
     virInterfaceObjUnlock(interfaceobj);
 
-    if (!(pooldef = virStoragePoolDefParseString(conn, defaultPoolXML)))
+    if (!(pooldef = virStoragePoolDefParseString(defaultPoolXML)))
         goto error;
 
-    if (!(poolobj = virStoragePoolObjAssignDef(conn, &privconn->pools,
+    if (!(poolobj = virStoragePoolObjAssignDef(&privconn->pools,
                                                pooldef))) {
         virStoragePoolDefFree(pooldef);
         goto error;
@@ -648,8 +648,7 @@ static char *testBuildFilename(const char *relativeTo,
     }
 }
 
-static int testOpenVolumesForPool(virConnectPtr conn,
-                                  xmlDocPtr xml,
+static int testOpenVolumesForPool(xmlDocPtr xml,
                                   xmlXPathContextPtr ctxt,
                                   const char *file,
                                   virStoragePoolObjPtr pool,
@@ -684,12 +683,12 @@ static int testOpenVolumesForPool(virConnectPtr conn,
                 goto error;
             }
 
-            def = virStorageVolDefParseFile(conn, pool->def, absFile);
+            def = virStorageVolDefParseFile(pool->def, absFile);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virStorageVolDefParseNode(conn, pool->def, xml,
+            if ((def = virStorageVolDefParseNode(pool->def, xml,
                                                  vols[i])) == NULL) {
                 goto error;
             }
@@ -1008,18 +1007,18 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
 
-            def = virStoragePoolDefParseFile(conn, absFile);
+            def = virStoragePoolDefParseFile(absFile);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virStoragePoolDefParseNode(conn, xml,
+            if ((def = virStoragePoolDefParseNode(xml,
                                                   pools[i])) == NULL) {
                 goto error;
             }
         }
 
-        if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools,
+        if (!(pool = virStoragePoolObjAssignDef(&privconn->pools,
                                                 def))) {
             virStoragePoolDefFree(def);
             goto error;
@@ -1032,7 +1031,7 @@ static int testOpenFromFile(virConnectPtr conn,
         pool->active = 1;
 
         /* Find storage volumes */
-        if (testOpenVolumesForPool(conn, xml, ctxt, file, pool, i+1) < 0) {
+        if (testOpenVolumesForPool(xml, ctxt, file, pool, i+1) < 0) {
             virStoragePoolObjUnlock(pool);
             goto error;
         }
@@ -3727,7 +3726,7 @@ testStorageFindPoolSources(virConnectPtr conn,
     }
 
     if (srcSpec) {
-        source = virStoragePoolDefParseSourceString(conn, srcSpec, pool_type);
+        source = virStoragePoolDefParseSourceString(srcSpec, pool_type);
         if (!source)
             goto cleanup;
     }
@@ -3773,7 +3772,7 @@ testStoragePoolCreate(virConnectPtr conn,
     virStoragePoolPtr ret = NULL;
 
     testDriverLock(privconn);
-    if (!(def = virStoragePoolDefParseString(conn, xml)))
+    if (!(def = virStoragePoolDefParseString(xml)))
         goto cleanup;
 
     pool = virStoragePoolObjFindByUUID(&privconn->pools, def->uuid);
@@ -3785,7 +3784,7 @@ testStoragePoolCreate(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def)))
+    if (!(pool = virStoragePoolObjAssignDef(&privconn->pools, def)))
         goto cleanup;
     def = NULL;
 
@@ -3816,14 +3815,14 @@ testStoragePoolDefine(virConnectPtr conn,
     virStoragePoolPtr ret = NULL;
 
     testDriverLock(privconn);
-    if (!(def = virStoragePoolDefParseString(conn, xml)))
+    if (!(def = virStoragePoolDefParseString(xml)))
         goto cleanup;
 
     def->capacity = defaultPoolCap;
     def->allocation = defaultPoolAlloc;
     def->available = defaultPoolCap - defaultPoolAlloc;
 
-    if (!(pool = virStoragePoolObjAssignDef(conn, &privconn->pools, def)))
+    if (!(pool = virStoragePoolObjAssignDef(&privconn->pools, def)))
         goto cleanup;
     def = NULL;
 
@@ -4055,7 +4054,7 @@ testStoragePoolDumpXML(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    ret = virStoragePoolDefFormat(pool->conn, privpool->def);
+    ret = virStoragePoolDefFormat(privpool->def);
 
 cleanup:
     if (privpool)
@@ -4341,7 +4340,7 @@ testStorageVolumeCreateXML(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    privvol = virStorageVolDefParseString(pool->conn, privpool->def, xmldesc);
+    privvol = virStorageVolDefParseString(privpool->def, xmldesc);
     if (privvol == NULL)
         goto cleanup;
 
@@ -4422,7 +4421,7 @@ testStorageVolumeCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    privvol = virStorageVolDefParseString(pool->conn, privpool->def, xmldesc);
+    privvol = virStorageVolDefParseString(privpool->def, xmldesc);
     if (privvol == NULL)
         goto cleanup;
 
@@ -4645,7 +4644,7 @@ testStorageVolumeGetXMLDesc(virStorageVolPtr vol,
         goto cleanup;
     }
 
-    ret = virStorageVolDefFormat(vol->conn, privpool->def, privvol);
+    ret = virStorageVolDefFormat(privpool->def, privvol);
 
 cleanup:
     if (privpool)

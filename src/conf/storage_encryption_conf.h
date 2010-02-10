@@ -64,10 +64,9 @@ struct _virStorageEncryption {
 
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
 
-virStorageEncryptionPtr virStorageEncryptionParseNode(virConnectPtr conn,
-                                                      xmlDocPtr xml,
+virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root);
-int virStorageEncryptionFormat(virConnectPtr conn, virBufferPtr buf,
+int virStorageEncryptionFormat(virBufferPtr buf,
                                virStorageEncryptionPtr enc);
 
 /* A helper for VIR_STORAGE_ENCRYPTION_FORMAT_QCOW */
@@ -75,6 +74,6 @@ enum {
   VIR_STORAGE_QCOW_PASSPHRASE_SIZE = 16
 };
 
-int virStorageGenerateQcowPassphrase(virConnectPtr conn, unsigned char *dest);
+int virStorageGenerateQcowPassphrase(unsigned char *dest);
 
 #endif /* __VIR_STORAGE_ENCRYPTION_H__ */

@@ -6578,7 +6578,7 @@ static virStorageVolPtr vboxStorageVolCreateXML(virStoragePoolPtr pool,
     memset(&poolDef, 0, sizeof(poolDef));
     poolDef.type = VIR_STORAGE_POOL_DIR;
 
-    if ((def = virStorageVolDefParseString(pool->conn, &poolDef, xml)) == NULL)
+    if ((def = virStorageVolDefParseString(&poolDef, xml)) == NULL)
         goto cleanup;
 
     if (   !def->name
@@ -6922,7 +6922,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags A
     vboxIIDUtf16Free(hddIID);
 
     if (defOk)
-        ret = virStorageVolDefFormat(vol->conn, &pool, &def);
+        ret = virStorageVolDefFormat(&pool, &def);
 
     return ret;
 }

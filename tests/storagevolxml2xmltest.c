@@ -40,13 +40,13 @@ static int testCompareXMLToXMLFiles(const char *poolxml,
     if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
         goto fail;
 
-    if (!(pool = virStoragePoolDefParseString(NULL, poolXmlData)))
+    if (!(pool = virStoragePoolDefParseString(poolXmlData)))
         goto fail;
 
-    if (!(dev = virStorageVolDefParseString(NULL, pool, inXmlData)))
+    if (!(dev = virStorageVolDefParseString(pool, inXmlData)))
         goto fail;
 
-    if (!(actual = virStorageVolDefFormat(NULL, pool, dev)))
+    if (!(actual = virStorageVolDefFormat(pool, dev)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {
