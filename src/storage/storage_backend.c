@@ -385,8 +385,8 @@ virStorageGenerateSecretUUID(virConnectPtr conn,
     for (attempt = 0; attempt < 65536; attempt++) {
         virSecretPtr tmp;
         if (virUUIDGenerate(uuid) < 0) {
-            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("unable to generate uuid"));
+            virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                  _("unable to generate uuid"));
             return -1;
         }
         tmp = conn->secretDriver->lookupByUUID(conn, uuid);
@@ -396,8 +396,8 @@ virStorageGenerateSecretUUID(virConnectPtr conn,
         virSecretFree(tmp);
     }
 
-    virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("too many conflicts when generating an uuid"));
+    virStorageReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("too many conflicts when generating an uuid"));
 
     return -1;
 }
@@ -448,7 +448,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         virReportOOMError();
         goto cleanup;
     }
-    xml = virSecretDefFormat(conn, def);
+    xml = virSecretDefFormat(def);
     virSecretDefFree(def);
     def = NULL;
     if (xml == NULL)

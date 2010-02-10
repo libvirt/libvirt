@@ -26,8 +26,8 @@
 #include "internal.h"
 #include "util.h"
 
-#define virSecretReportError(conn, code, fmt...)                \
-    virReportErrorHelper(conn, VIR_FROM_SECRET, code, __FILE__, \
+#define virSecretReportError(code, fmt...)                      \
+    virReportErrorHelper(NULL, VIR_FROM_SECRET, code, __FILE__, \
                          __FUNCTION__, __LINE__, fmt)
 
 VIR_ENUM_DECL(virSecretUsageType)
@@ -46,8 +46,8 @@ struct _virSecretDef {
 };
 
 void virSecretDefFree(virSecretDefPtr def);
-virSecretDefPtr virSecretDefParseString(virConnectPtr conn, const char *xml);
-virSecretDefPtr virSecretDefParseFile(virConnectPtr conn, const char *filename);
-char *virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def);
+virSecretDefPtr virSecretDefParseString(const char *xml);
+virSecretDefPtr virSecretDefParseFile(const char *filename);
+char *virSecretDefFormat(const virSecretDefPtr def);
 
 #endif

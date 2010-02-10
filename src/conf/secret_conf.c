@@ -60,7 +60,7 @@ virSecretDefFree(virSecretDefPtr def)
 }
 
 static int
-virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
+virSecretDefParseUsage(xmlXPathContextPtr ctxt,
                        virSecretDefPtr def)
 {
     char *type_str;
@@ -68,13 +68,13 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
 
     type_str = virXPathString("string(./usage/@type)", ctxt);
     if (type_str == NULL) {
-        virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        virSecretReportError(VIR_ERR_XML_ERROR, "%s",
                              _("unknown secret usage type"));
         return -1;
     }
     type = virSecretUsageTypeTypeFromString(type_str);
     if (type < 0) {
-        virSecretReportError(conn, VIR_ERR_XML_ERROR,
+        virSecretReportError(VIR_ERR_XML_ERROR,
                              _("unknown secret usage type %s"), type_str);
         VIR_FREE(type_str);
         return -1;
@@ -88,14 +88,14 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
     case VIR_SECRET_USAGE_TYPE_VOLUME:
         def->usage.volume = virXPathString("string(./usage/volume)", ctxt);
         if (!def->usage.volume) {
-            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virSecretReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                  _("volume usage specified, but volume path is missing"));
             return -1;
         }
         break;
 
     default:
-        virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected secret usage type %d"),
                              def->usage_type);
         return -1;
@@ -104,7 +104,7 @@ virSecretDefParseUsage(virConnectPtr conn, xmlXPathContextPtr ctxt,
 }
 
 static virSecretDefPtr
-secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
+secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virSecretDefPtr def = NULL, ret = NULL;
@@ -112,7 +112,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
     char *uuidstr = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "secret")) {
-        virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        virSecretReportError(VIR_ERR_XML_ERROR, "%s",
                              _("incorrect root element"));
         goto cleanup;
     }
@@ -136,7 +136,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         else if (STREQ(prop, "no"))
             def->ephemeral = 0;
         else {
-            virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
+            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
                                  _("invalid value of 'ephemeral'"));
             goto cleanup;
         }
@@ -150,7 +150,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
         else if (STREQ(prop, "no"))
             def->private = 0;
         else {
-            virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
+            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
                                  _("invalid value of 'private'"));
             goto cleanup;
         }
@@ -160,13 +160,13 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
     uuidstr = virXPathString("string(./uuid)", ctxt);
     if (!uuidstr) {
         if (virUUIDGenerate(def->uuid)) {
-            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virSecretReportError(VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("Failed to generate UUID"));
             goto cleanup;
         }
     } else {
         if (virUUIDParse(uuidstr, def->uuid) < 0) {
-            virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virSecretReportError(VIR_ERR_INTERNAL_ERROR,
                                  "%s", _("malformed uuid element"));
             goto cleanup;
         }
@@ -175,7 +175,7 @@ secretXMLParseNode(virConnectPtr conn, xmlDocPtr xml, xmlNodePtr root)
 
     def->description = virXPathString("string(./description)", ctxt);
     if (virXPathNode("./usage", ctxt) != NULL
-        && virSecretDefParseUsage(conn, ctxt, def) < 0)
+        && virSecretDefParseUsage(ctxt, def) < 0)
         goto cleanup;
     ret = def;
     def = NULL;
@@ -194,19 +194,17 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
     if (ctxt) {
-        virConnectPtr conn = ctxt->_private;
-
         if (virGetLastError() == NULL &&
             ctxt->lastError.level == XML_ERR_FATAL &&
             ctxt->lastError.message != NULL) {
-            virSecretReportError(conn,  VIR_ERR_XML_DETAIL, _("at line %d: %s"),
+            virSecretReportError(VIR_ERR_XML_DETAIL, _("at line %d: %s"),
                                  ctxt->lastError.line, ctxt->lastError.message);
         }
     }
 }
 
 static virSecretDefPtr
-virSecretDefParse(virConnectPtr conn, const char *xmlStr, const char *filename)
+virSecretDefParse(const char *xmlStr, const char *filename)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -217,7 +215,6 @@ virSecretDefParse(virConnectPtr conn, const char *xmlStr, const char *filename)
     if (pctxt == NULL || pctxt->sax == NULL)
         goto cleanup;
     pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
 
     if (filename != NULL)
         xml = xmlCtxtReadFile(pctxt, filename, NULL,
@@ -228,20 +225,20 @@ virSecretDefParse(virConnectPtr conn, const char *xmlStr, const char *filename)
                              XML_PARSE_NOENT | XML_PARSE_NONET |
                              XML_PARSE_NOWARNING);
     if (xml == NULL) {
-        if (conn->err.code == VIR_ERR_NONE)
-            virSecretReportError(conn, VIR_ERR_XML_ERROR, "%s",
+        if (virGetLastError() == NULL)
+            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
                                  _("failed to parse xml document"));
         goto cleanup;
     }
 
     root = xmlDocGetRootElement(xml);
     if (root == NULL) {
-        virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+        virSecretReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("missing root element"));
         goto cleanup;
     }
 
-    ret = secretXMLParseNode(conn, xml, root);
+    ret = secretXMLParseNode(xml, root);
 
  cleanup:
     xmlFreeDoc(xml);
@@ -250,26 +247,26 @@ virSecretDefParse(virConnectPtr conn, const char *xmlStr, const char *filename)
 }
 
 virSecretDefPtr
-virSecretDefParseString(virConnectPtr conn, const char *xmlStr)
+virSecretDefParseString(const char *xmlStr)
 {
-    return virSecretDefParse(conn, xmlStr, NULL);
+    return virSecretDefParse(xmlStr, NULL);
 }
 
 virSecretDefPtr
-virSecretDefParseFile(virConnectPtr conn, const char *filename)
+virSecretDefParseFile(const char *filename)
 {
-    return virSecretDefParse(conn, NULL, filename);
+    return virSecretDefParse(NULL, filename);
 }
 
 static int
-virSecretDefFormatUsage(virConnectPtr conn, virBufferPtr buf,
+virSecretDefFormatUsage(virBufferPtr buf,
                         const virSecretDefPtr def)
 {
     const char *type;
 
     type = virSecretUsageTypeTypeToString(def->usage_type);
     if (type == NULL) {
-        virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected secret usage type %d"),
                              def->usage_type);
         return -1;
@@ -286,7 +283,7 @@ virSecretDefFormatUsage(virConnectPtr conn, virBufferPtr buf,
         break;
 
     default:
-        virSecretReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virSecretReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected secret usage type %d"),
                              def->usage_type);
         return -1;
@@ -297,7 +294,7 @@ virSecretDefFormatUsage(virConnectPtr conn, virBufferPtr buf,
 }
 
 char *
-virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
+virSecretDefFormat(const virSecretDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned char *uuid;
@@ -314,7 +311,7 @@ virSecretDefFormat(virConnectPtr conn, const virSecretDefPtr def)
         virBufferEscapeString(&buf, "  <description>%s</description>\n",
                               def->description);
     if (def->usage_type != VIR_SECRET_USAGE_TYPE_NONE &&
-        virSecretDefFormatUsage(conn, &buf, def) < 0)
+        virSecretDefFormatUsage(&buf, def) < 0)
         goto error;
     virBufferAddLit(&buf, "</secret>\n");
 
