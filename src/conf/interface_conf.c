@@ -40,15 +40,14 @@ VIR_ENUM_IMPL(virInterface,
               "ethernet", "bridge", "bond", "vlan" )
 
 static virInterfaceDefPtr
-virInterfaceDefParseXML(virConnectPtr conn,
-                        xmlXPathContextPtr ctxt, int parentIfType);
+virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType);
 static int
-virInterfaceDefDevFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceDefDevFormat(virBufferPtr buf,
                          const virInterfaceDefPtr def, int level);
 
-#define virInterfaceReportError(conn, code, fmt...)                            \
-        virReportErrorHelper(conn, VIR_FROM_INTERFACE, code, __FILE__,       \
-                               __FUNCTION__, __LINE__, fmt)
+#define virInterfaceReportError(code, fmt...)                           \
+    virReportErrorHelper(NULL, VIR_FROM_INTERFACE, code, __FILE__,      \
+                         __FUNCTION__, __LINE__, fmt)
 
 static
 void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {
@@ -118,14 +117,14 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
 }
 
 static int
-virInterfaceDefParseName(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseName(virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
     char *tmp;
 
     tmp = virXPathString("string(./@name)", ctxt);
     if (tmp == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
-                              "%s",  _("interface has no name"));
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
+                                "%s",  _("interface has no name"));
         return(-1);
     }
     def->name = tmp;
@@ -133,14 +132,14 @@ virInterfaceDefParseName(virConnectPtr conn, virInterfaceDefPtr def,
 }
 
 static int
-virInterfaceDefParseMtu(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseMtu(virInterfaceDefPtr def,
                         xmlXPathContextPtr ctxt) {
     unsigned long mtu;
     int ret;
 
     ret = virXPathULong("string(./mtu/@size)", ctxt, &mtu);
     if ((ret == -2) || ((ret == 0) && (mtu > 100000))) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                          "%s", _("interface mtu value is improper"));
         return(-1);
     } else if (ret == 0) {
@@ -150,7 +149,7 @@ virInterfaceDefParseMtu(virConnectPtr conn, virInterfaceDefPtr def,
 }
 
 static int
-virInterfaceDefParseStartMode(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseStartMode(virInterfaceDefPtr def,
                               xmlXPathContextPtr ctxt) {
     char *tmp;
 
@@ -164,7 +163,7 @@ virInterfaceDefParseStartMode(virConnectPtr conn, virInterfaceDefPtr def,
     else if (STREQ(tmp, "none"))
         def->startmode = VIR_INTERFACE_START_NONE;
     else {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("unknown interface startmode %s"), tmp);
         VIR_FREE(tmp);
         return(-1);
@@ -174,7 +173,7 @@ virInterfaceDefParseStartMode(virConnectPtr conn, virInterfaceDefPtr def,
 }
 
 static int
-virInterfaceDefParseBondMode(virConnectPtr conn, xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondMode(xmlXPathContextPtr ctxt) {
     char *tmp;
     int ret = 0;
 
@@ -196,7 +195,7 @@ virInterfaceDefParseBondMode(virConnectPtr conn, xmlXPathContextPtr ctxt) {
     else if (STREQ(tmp, "balance-alb"))
         ret = VIR_INTERFACE_BOND_BALALB;
     else {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("unknown bonding mode %s"), tmp);
         ret = -1;
     }
@@ -205,7 +204,7 @@ virInterfaceDefParseBondMode(virConnectPtr conn, xmlXPathContextPtr ctxt) {
 }
 
 static int
-virInterfaceDefParseBondMiiCarrier(virConnectPtr conn, xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondMiiCarrier(xmlXPathContextPtr ctxt) {
     char *tmp;
     int ret = 0;
 
@@ -217,7 +216,7 @@ virInterfaceDefParseBondMiiCarrier(virConnectPtr conn, xmlXPathContextPtr ctxt) 
     else if (STREQ(tmp, "netif"))
         ret = VIR_INTERFACE_BOND_MII_NETIF;
     else {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("unknown mii bonding carrier %s"), tmp);
         ret = -1;
     }
@@ -226,7 +225,7 @@ virInterfaceDefParseBondMiiCarrier(virConnectPtr conn, xmlXPathContextPtr ctxt) 
 }
 
 static int
-virInterfaceDefParseBondArpValid(virConnectPtr conn, xmlXPathContextPtr ctxt) {
+virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt) {
     char *tmp;
     int ret = 0;
 
@@ -240,7 +239,7 @@ virInterfaceDefParseBondArpValid(virConnectPtr conn, xmlXPathContextPtr ctxt) {
     else if (STREQ(tmp, "all"))
         ret = VIR_INTERFACE_BOND_ARP_ALL;
     else {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("unknown arp bonding validate %s"), tmp);
         ret = -1;
     }
@@ -249,7 +248,7 @@ virInterfaceDefParseBondArpValid(virConnectPtr conn, xmlXPathContextPtr ctxt) {
 }
 
 static int
-virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceProtocolDefPtr def,
+virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
                          xmlNodePtr dhcp, xmlXPathContextPtr ctxt) {
     xmlNodePtr save;
     char *tmp;
@@ -266,7 +265,7 @@ virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceProtocolDefPtr def,
         else if (STREQ(tmp, "no"))
             def->peerdns = 0;
         else {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                               _("unknown dhcp peerdns value %s"), tmp);
             ret = -1;
         }
@@ -279,7 +278,7 @@ virInterfaceDefParseDhcp(virConnectPtr conn, virInterfaceProtocolDefPtr def,
 }
 
 static int
-virInterfaceDefParseIp(virConnectPtr conn, virInterfaceIpDefPtr def,
+virInterfaceDefParseIp(virInterfaceIpDefPtr def,
                        xmlXPathContextPtr ctxt) {
     int ret = 0;
     char *tmp;
@@ -292,7 +291,7 @@ virInterfaceDefParseIp(virConnectPtr conn, virInterfaceIpDefPtr def,
         if (ret == 0)
             def->prefix = (int) l;
         else if (ret == -2) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                               "%s", _("Invalid ip address prefix value"));
             return(-1);
         }
@@ -302,7 +301,7 @@ virInterfaceDefParseIp(virConnectPtr conn, virInterfaceIpDefPtr def,
 }
 
 static int
-virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def,
+virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
                               xmlXPathContextPtr ctxt) {
     xmlNodePtr dhcp;
     xmlNodePtr *ipNodes = NULL;
@@ -314,7 +313,7 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
+        ret = virInterfaceDefParseDhcp(def, dhcp, ctxt);
         if (ret != 0)
            return(ret);
     }
@@ -341,7 +340,7 @@ virInterfaceDefParseProtoIPv4(virConnectPtr conn, virInterfaceProtocolDefPtr def
         }
 
         ctxt->node = ipNodes[ii];
-        ret = virInterfaceDefParseIp(conn, ip, ctxt);
+        ret = virInterfaceDefParseIp(ip, ctxt);
         if (ret != 0) {
             virInterfaceIpDefFree(ip);
             goto error;
@@ -357,7 +356,7 @@ error:
 }
 
 static int
-virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def,
+virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
                               xmlXPathContextPtr ctxt) {
     xmlNodePtr dhcp, autoconf;
     xmlNodePtr *ipNodes = NULL;
@@ -373,7 +372,7 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        ret = virInterfaceDefParseDhcp(conn, def, dhcp, ctxt);
+        ret = virInterfaceDefParseDhcp(def, dhcp, ctxt);
         if (ret != 0)
            return(ret);
     }
@@ -400,7 +399,7 @@ virInterfaceDefParseProtoIPv6(virConnectPtr conn, virInterfaceProtocolDefPtr def
         }
 
         ctxt->node = ipNodes[ii];
-        ret = virInterfaceDefParseIp(conn, ip, ctxt);
+        ret = virInterfaceDefParseIp(ip, ctxt);
         if (ret != 0) {
             virInterfaceIpDefFree(ip);
             goto error;
@@ -416,7 +415,7 @@ error:
 }
 
 static int
-virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseIfAdressing(virInterfaceDefPtr def,
                                 xmlXPathContextPtr ctxt) {
     xmlNodePtr save;
     xmlNodePtr *protoNodes = NULL;
@@ -449,26 +448,26 @@ virInterfaceDefParseIfAdressing(virConnectPtr conn, virInterfaceDefPtr def,
         ctxt->node = protoNodes[pp];
         tmp = virXPathString("string(./@family)", ctxt);
         if (tmp == NULL) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                                     "%s", _("protocol misses the family attribute"));
             virInterfaceProtocolDefFree(proto);
             goto error;
         }
         proto->family = tmp;
         if (STREQ(tmp, "ipv4")) {
-            ret = virInterfaceDefParseProtoIPv4(conn, proto, ctxt);
+            ret = virInterfaceDefParseProtoIPv4(proto, ctxt);
             if (ret != 0) {
                 virInterfaceProtocolDefFree(proto);
                 goto error;
             }
         } else if (STREQ(tmp, "ipv6")) {
-            ret = virInterfaceDefParseProtoIPv6(conn, proto, ctxt);
+            ret = virInterfaceDefParseProtoIPv6(proto, ctxt);
             if (ret != 0) {
                 virInterfaceProtocolDefFree(proto);
                 goto error;
             }
         } else {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                                     _("unsupported protocol family '%s'"), tmp);
             virInterfaceProtocolDefFree(proto);
             goto error;
@@ -486,7 +485,7 @@ error:
 }
 
 static int
-virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseBridge(virInterfaceDefPtr def,
                            xmlXPathContextPtr ctxt) {
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bridge;
@@ -497,7 +496,7 @@ virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
     bridge = ctxt->node;
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf < 0) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 "%s", _("bridge interfaces"));
         ret = -1;
         goto error;
@@ -512,7 +511,7 @@ virInterfaceDefParseBridge(virConnectPtr conn, virInterfaceDefPtr def,
 
         for (i = 0; i < nbItf;i++) {
             ctxt->node = interfaces[i];
-            itf = virInterfaceDefParseXML(conn, ctxt, VIR_INTERFACE_TYPE_BRIDGE);
+            itf = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_BRIDGE);
             if (itf == NULL) {
                 ret = -1;
                 def->data.bridge.nbItf = i;
@@ -529,7 +528,7 @@ error:
 }
 
 static int
-virInterfaceDefParseBondItfs(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
                              xmlXPathContextPtr ctxt) {
     xmlNodePtr *interfaces = NULL;
     xmlNodePtr bond = ctxt->node;
@@ -539,7 +538,7 @@ virInterfaceDefParseBondItfs(virConnectPtr conn, virInterfaceDefPtr def,
 
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
     if (nbItf <= 0) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 "%s", _("bond has no interfaces"));
         ret = -1;
         goto error;
@@ -553,7 +552,7 @@ virInterfaceDefParseBondItfs(virConnectPtr conn, virInterfaceDefPtr def,
 
     for (i = 0; i < nbItf;i++) {
         ctxt->node = interfaces[i];
-        itf = virInterfaceDefParseXML(conn, ctxt, VIR_INTERFACE_TYPE_BOND);
+        itf = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_BOND);
         if (itf == NULL) {
             ret = -1;
             def->data.bond.nbItf = i;
@@ -569,17 +568,17 @@ error:
 }
 
 static int
-virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseBond(virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
     xmlNodePtr node;
     int ret = -1;
     unsigned long tmp;
 
-    def->data.bond.mode = virInterfaceDefParseBondMode(conn, ctxt);
+    def->data.bond.mode = virInterfaceDefParseBondMode(ctxt);
     if (def->data.bond.mode < 0)
         goto error;
 
-    ret = virInterfaceDefParseBondItfs(conn, def, ctxt);
+    ret = virInterfaceDefParseBondItfs(def, ctxt);
     if (ret != 0)
        goto error;
 
@@ -589,7 +588,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
 
         ret = virXPathULong("string(./miimon/@freq)", ctxt, &tmp);
         if ((ret == -2) || (ret == -1)) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon freq missing or invalid"));
             goto error;
         }
@@ -597,7 +596,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
 
         ret = virXPathULong("string(./miimon/@downdelay)", ctxt, &tmp);
         if (ret == -2) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon downdelay invalid"));
             goto error;
         } else if (ret == 0) {
@@ -606,14 +605,14 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
 
         ret = virXPathULong("string(./miimon/@updelay)", ctxt, &tmp);
         if (ret == -2) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                      "%s", _("bond interface miimon updelay invalid"));
             goto error;
         } else if (ret == 0) {
             def->data.bond.updelay = (int) tmp;
         }
 
-        def->data.bond.carrier = virInterfaceDefParseBondMiiCarrier(conn, ctxt);
+        def->data.bond.carrier = virInterfaceDefParseBondMiiCarrier(ctxt);
         if (def->data.bond.carrier < 0) {
             ret = -1;
             goto error;
@@ -625,7 +624,7 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
 
         ret = virXPathULong("string(./arpmon/@interval)", ctxt, &tmp);
         if ((ret == -2) || (ret == -1)) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                  "%s", _("bond interface arpmon interval missing or invalid"));
             goto error;
         }
@@ -634,13 +633,13 @@ virInterfaceDefParseBond(virConnectPtr conn, virInterfaceDefPtr def,
         def->data.bond.target =
             virXPathString("string(./arpmon/@target)", ctxt);
         if (def->data.bond.target == NULL) {
-            virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                  "%s", _("bond interface arpmon target missing"));
             ret = -1;
             goto error;
         }
 
-        def->data.bond.validate = virInterfaceDefParseBondArpValid(conn, ctxt);
+        def->data.bond.validate = virInterfaceDefParseBondArpValid(ctxt);
         if (def->data.bond.validate < 0) {
             ret = -1;
             goto error;
@@ -651,11 +650,11 @@ error:
 }
 
 static int
-virInterfaceDefParseVlan(virConnectPtr conn, virInterfaceDefPtr def,
+virInterfaceDefParseVlan(virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
     def->data.vlan.tag = virXPathString("string(./@tag)", ctxt);
     if (def->data.vlan.tag == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                     "%s", _("vlan interface misses the tag attribute"));
         return(-1);
     }
@@ -663,7 +662,7 @@ virInterfaceDefParseVlan(virConnectPtr conn, virInterfaceDefPtr def,
     def->data.vlan.devname =
          virXPathString("string(./interface/@name)", ctxt);
     if (def->data.vlan.devname == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                     "%s", _("vlan interface misses name attribute"));
         return(-1);
     }
@@ -671,8 +670,7 @@ virInterfaceDefParseVlan(virConnectPtr conn, virInterfaceDefPtr def,
 }
 
 static virInterfaceDefPtr
-virInterfaceDefParseXML(virConnectPtr conn,
-                        xmlXPathContextPtr ctxt, int parentIfType) {
+virInterfaceDefParseXML(xmlXPathContextPtr ctxt, int parentIfType) {
     virInterfaceDefPtr def;
     int type;
     char *tmp;
@@ -681,13 +679,13 @@ virInterfaceDefParseXML(virConnectPtr conn,
     /* check @type */
     tmp = virXPathString("string(./@type)", ctxt);
     if (tmp == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 "%s", _("interface misses the type attribute"));
         return(NULL);
     }
     type = virInterfaceTypeFromString(tmp);
     if (type == -1) {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("unknown interface type %s"), tmp);
         VIR_FREE(tmp);
         return(NULL);
@@ -708,7 +706,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
         || (parentIfType == VIR_INTERFACE_TYPE_ETHERNET)
         || (parentIfType == VIR_INTERFACE_TYPE_VLAN))
         {
-        virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        virInterfaceReportError(VIR_ERR_XML_ERROR,
                                 _("interface has unsupported type '%s'"),
                                 virInterfaceTypeToString(type));
         goto error;
@@ -716,36 +714,36 @@ virInterfaceDefParseXML(virConnectPtr conn,
     def->type = type;
     switch (type) {
         case VIR_INTERFACE_TYPE_ETHERNET:
-            if (virInterfaceDefParseName(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseName(def, ctxt) < 0)
                 goto error;
             tmp = virXPathString("string(./mac/@address)", ctxt);
             if (tmp != NULL)
                 def->mac = tmp;
             if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
                 /* only recognize these in toplevel bond interfaces */
-                if (virInterfaceDefParseStartMode(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseStartMode(def, ctxt) < 0)
                     goto error;
-                if (virInterfaceDefParseMtu(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseMtu(def, ctxt) < 0)
                     goto error;
-                if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
                     goto error;
             }
             break;
         case VIR_INTERFACE_TYPE_BRIDGE: {
             xmlNodePtr bridge;
 
-            if (virInterfaceDefParseName(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseName(def, ctxt) < 0)
                 goto error;
-            if (virInterfaceDefParseStartMode(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseStartMode(def, ctxt) < 0)
                 goto error;
-            if (virInterfaceDefParseMtu(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseMtu(def, ctxt) < 0)
                 goto error;
-            if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
                 goto error;
 
             bridge = virXPathNode("./bridge[1]", ctxt);
             if (bridge == NULL) {
-                virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+                virInterfaceReportError(VIR_ERR_XML_ERROR,
                                         "%s", _("bridge interface misses the bridge element"));
                 goto error;
             }
@@ -757,7 +755,7 @@ virInterfaceDefParseXML(virConnectPtr conn,
                 } else if (STREQ(tmp, "off")) {
                     def->data.bridge.stp = 0;
                 } else {
-                    virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+                    virInterfaceReportError(VIR_ERR_XML_ERROR,
                           _("bridge interface stp should be on or off got %s"),
                                             tmp);
                     VIR_FREE(tmp);
@@ -767,32 +765,32 @@ virInterfaceDefParseXML(virConnectPtr conn,
             }
             def->data.bridge.delay = virXMLPropString(bridge, "delay");
             ctxt->node = bridge;
-            virInterfaceDefParseBridge(conn, def, ctxt);
+            virInterfaceDefParseBridge(def, ctxt);
             break;
         }
         case VIR_INTERFACE_TYPE_BOND: {
             xmlNodePtr bond;
 
-            if (virInterfaceDefParseName(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseName(def, ctxt) < 0)
                 goto error;
             if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
                 /* only recognize these in toplevel bond interfaces */
-                if (virInterfaceDefParseStartMode(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseStartMode(def, ctxt) < 0)
                     goto error;
-                if (virInterfaceDefParseMtu(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseMtu(def, ctxt) < 0)
                     goto error;
-                if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
+                if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
                     goto error;
             }
 
             bond = virXPathNode("./bond[1]", ctxt);
             if (bond == NULL) {
-                virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+                virInterfaceReportError(VIR_ERR_XML_ERROR,
                             "%s", _("bond interface misses the bond element"));
                 goto error;
             }
             ctxt->node = bond;
-            if (virInterfaceDefParseBond(conn, def, ctxt)  < 0)
+            if (virInterfaceDefParseBond(def, ctxt)  < 0)
                 goto error;
             break;
         }
@@ -802,18 +800,18 @@ virInterfaceDefParseXML(virConnectPtr conn,
             tmp = virXPathString("string(./@name)", ctxt);
             if (tmp != NULL)
                 def->name = tmp;
-            if (virInterfaceDefParseStartMode(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseStartMode(def, ctxt) < 0)
                 goto error;
-            if (virInterfaceDefParseIfAdressing(conn, def, ctxt) < 0)
+            if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
                 goto error;
             vlan = virXPathNode("./vlan[1]", ctxt);
             if (vlan == NULL) {
-                virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+                virInterfaceReportError(VIR_ERR_XML_ERROR,
                             "%s", _("vlan interface misses the vlan element"));
                 goto error;
             }
             ctxt->node = vlan;
-            if (virInterfaceDefParseVlan(conn, def, ctxt)  < 0)
+            if (virInterfaceDefParseVlan(def, ctxt)  < 0)
                 goto error;
             break;
         }
@@ -829,15 +827,14 @@ error:
     return NULL;
 }
 
-virInterfaceDefPtr virInterfaceDefParseNode(virConnectPtr conn,
-                                        xmlDocPtr xml,
-                                        xmlNodePtr root)
+virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
+                                            xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virInterfaceDefPtr def = NULL;
 
     if (!xmlStrEqual(root->name, BAD_CAST "interface")) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("incorrect root element"));
         return NULL;
     }
@@ -849,7 +846,7 @@ virInterfaceDefPtr virInterfaceDefParseNode(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    def = virInterfaceDefParseXML(conn, ctxt, VIR_INTERFACE_TYPE_LAST);
+    def = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -863,13 +860,10 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
     if (ctxt) {
-        virConnectPtr conn = ctxt->_private;
-
-        if (conn &&
-            conn->err.code == VIR_ERR_NONE &&
+        if (virGetLastError() == NULL &&
             ctxt->lastError.level == XML_ERR_FATAL &&
             ctxt->lastError.message != NULL) {
-            virInterfaceReportError (conn, VIR_ERR_XML_DETAIL,
+            virInterfaceReportError (VIR_ERR_XML_DETAIL,
                                      _("at line %d: %s"),
                                      ctxt->lastError.line,
                                      ctxt->lastError.message);
@@ -877,8 +871,7 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     }
 }
 
-virInterfaceDefPtr virInterfaceDefParseString(virConnectPtr conn,
-                                          const char *xmlStr)
+virInterfaceDefPtr virInterfaceDefParseString(const char *xmlStr)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -890,26 +883,24 @@ virInterfaceDefPtr virInterfaceDefParseString(virConnectPtr conn,
     if (!pctxt || !pctxt->sax)
         goto cleanup;
     pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
 
-    if (conn) virResetError (&conn->err);
     xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "interface.xml", NULL,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
-              virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        if (virGetLastError() == NULL)
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                                     "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
         goto cleanup;
     }
 
-    def = virInterfaceDefParseNode(conn, xml, root);
+    def = virInterfaceDefParseNode(xml, root);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -917,8 +908,7 @@ cleanup:
     return def;
 }
 
-virInterfaceDefPtr virInterfaceDefParseFile(virConnectPtr conn,
-                                        const char *filename)
+virInterfaceDefPtr virInterfaceDefParseFile(const char *filename)
 {
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -930,26 +920,24 @@ virInterfaceDefPtr virInterfaceDefParseFile(virConnectPtr conn,
     if (!pctxt || !pctxt->sax)
         goto cleanup;
     pctxt->sax->error = catchXMLError;
-    pctxt->_private = conn;
 
-    if (conn) virResetError (&conn->err);
     xml = xmlCtxtReadFile (pctxt, filename, NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
                            XML_PARSE_NOWARNING);
     if (!xml) {
-        if (conn && conn->err.code == VIR_ERR_NONE)
-              virInterfaceReportError(conn, VIR_ERR_XML_ERROR,
+        if (virGetLastError() == NULL)
+            virInterfaceReportError(VIR_ERR_XML_ERROR,
                                     "%s", _("failed to parse xml document"));
         goto cleanup;
     }
 
     if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
         goto cleanup;
     }
 
-    def = virInterfaceDefParseNode(conn, xml, root);
+    def = virInterfaceDefParseNode(xml, root);
 
 cleanup:
     xmlFreeParserCtxt (pctxt);
@@ -958,7 +946,7 @@ cleanup:
 }
 
 static int
-virInterfaceBridgeDefFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceBridgeDefFormat(virBufferPtr buf,
                             const virInterfaceDefPtr def, int level) {
     int i;
     int ret = 0;
@@ -973,7 +961,7 @@ virInterfaceBridgeDefFormat(virConnectPtr conn, virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
 
     for (i = 0;i < def->data.bridge.nbItf;i++) {
-        if (virInterfaceDefDevFormat(conn, buf,
+        if (virInterfaceDefDevFormat(buf,
                                      def->data.bridge.itf[i], level+2) < 0)
             ret = -1;
     }
@@ -983,7 +971,7 @@ virInterfaceBridgeDefFormat(virConnectPtr conn, virBufferPtr buf,
 }
 
 static int
-virInterfaceBondDefFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceBondDefFormat(virBufferPtr buf,
                           const virInterfaceDefPtr def, int level) {
     int i;
     int ret = 0;
@@ -1019,7 +1007,7 @@ virInterfaceBondDefFormat(virConnectPtr conn, virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     } else if (def->data.bond.monit == VIR_INTERFACE_BOND_MONIT_ARP) {
         if (def->data.bond.target == NULL) {
-            virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                           "%s", _("bond arp monitoring has no target"));
             return(-1);
         }
@@ -1035,7 +1023,7 @@ virInterfaceBondDefFormat(virConnectPtr conn, virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
     for (i = 0;i < def->data.bond.nbItf;i++) {
-        if (virInterfaceDefDevFormat(conn, buf, def->data.bond.itf[i], level+2) < 0)
+        if (virInterfaceDefDevFormat(buf, def->data.bond.itf[i], level+2) < 0)
             ret = -1;
     }
 
@@ -1044,10 +1032,10 @@ virInterfaceBondDefFormat(virConnectPtr conn, virBufferPtr buf,
 }
 
 static int
-virInterfaceVlanDefFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceVlanDefFormat(virBufferPtr buf,
                           const virInterfaceDefPtr def, int level) {
     if (def->data.vlan.tag == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("vlan misses the tag name"));
         return(-1);
     }
@@ -1065,8 +1053,7 @@ virInterfaceVlanDefFormat(virConnectPtr conn, virBufferPtr buf,
 }
 
 static int
-virInterfaceProtocolDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virBufferPtr buf, const virInterfaceDefPtr def,
+virInterfaceProtocolDefFormat(virBufferPtr buf, const virInterfaceDefPtr def,
                               int level) {
     int pp, ii;
 
@@ -1113,7 +1100,7 @@ virInterfaceProtocolDefFormat(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virInterfaceStartmodeDefFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceStartmodeDefFormat(virBufferPtr buf,
                                enum virInterfaceStartMode startmode,
                                int level) {
     const char *mode;
@@ -1130,7 +1117,7 @@ virInterfaceStartmodeDefFormat(virConnectPtr conn, virBufferPtr buf,
             mode = "hotplug";
             break;
         default:
-            virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("virInterfaceDefFormat unknown startmode"));
             return -1;
     }
@@ -1139,24 +1126,24 @@ virInterfaceStartmodeDefFormat(virConnectPtr conn, virBufferPtr buf,
 }
 
 static int
-virInterfaceDefDevFormat(virConnectPtr conn, virBufferPtr buf,
+virInterfaceDefDevFormat(virBufferPtr buf,
                          const virInterfaceDefPtr def, int level) {
     const char *type = NULL;
 
     if (def == NULL) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("virInterfaceDefFormat NULL def"));
         goto cleanup;
     }
 
     if ((def->name == NULL) && (def->type != VIR_INTERFACE_TYPE_VLAN)) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("virInterfaceDefFormat missing interface name"));
         goto cleanup;
     }
 
     if (!(type = virInterfaceTypeToString(def->type))) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unexpected interface type %d"), def->type);
         goto cleanup;
     }
@@ -1168,41 +1155,41 @@ virInterfaceDefDevFormat(virConnectPtr conn, virBufferPtr buf,
 
     switch (def->type) {
         case VIR_INTERFACE_TYPE_ETHERNET:
-            virInterfaceStartmodeDefFormat(conn, buf, def->startmode, level);
+            virInterfaceStartmodeDefFormat(buf, def->startmode, level);
             if (def->mac != NULL)
                 virBufferVSprintf(buf, "%*s  <mac address='%s'/>\n",
                                   level*2, "", def->mac);
             if (def->mtu != 0)
                 virBufferVSprintf(buf, "%*s  <mtu size='%d'/>\n",
                                   level*2, "", def->mtu);
-            virInterfaceProtocolDefFormat(conn, buf, def, level);
+            virInterfaceProtocolDefFormat(buf, def, level);
             break;
         case VIR_INTERFACE_TYPE_BRIDGE:
-            virInterfaceStartmodeDefFormat(conn, buf, def->startmode, level);
+            virInterfaceStartmodeDefFormat(buf, def->startmode, level);
             if (def->mtu != 0)
                 virBufferVSprintf(buf, "%*s  <mtu size='%d'/>\n",
                                   level*2, "", def->mtu);
-            virInterfaceProtocolDefFormat(conn, buf, def, level);
-            virInterfaceBridgeDefFormat(conn, buf, def, level);
+            virInterfaceProtocolDefFormat(buf, def, level);
+            virInterfaceBridgeDefFormat(buf, def, level);
             break;
         case VIR_INTERFACE_TYPE_BOND:
-            virInterfaceStartmodeDefFormat(conn, buf, def->startmode, level);
+            virInterfaceStartmodeDefFormat(buf, def->startmode, level);
             if (def->mtu != 0)
                 virBufferVSprintf(buf, "%*s  <mtu size='%d'/>\n",
                                   level*2, "", def->mtu);
-            virInterfaceProtocolDefFormat(conn, buf, def, level);
-            virInterfaceBondDefFormat(conn, buf, def, level);
+            virInterfaceProtocolDefFormat(buf, def, level);
+            virInterfaceBondDefFormat(buf, def, level);
             break;
         case VIR_INTERFACE_TYPE_VLAN:
-            virInterfaceStartmodeDefFormat(conn, buf, def->startmode, level);
+            virInterfaceStartmodeDefFormat(buf, def->startmode, level);
             if (def->mac != NULL)
                 virBufferVSprintf(buf, "%*s  <mac address='%s'/>\n",
                                   level*2, "", def->mac);
             if (def->mtu != 0)
                 virBufferVSprintf(buf, "%*s  <mtu size='%d'/>\n",
                                   level*2, "", def->mtu);
-            virInterfaceProtocolDefFormat(conn, buf, def, level);
-            virInterfaceVlanDefFormat(conn, buf, def, level);
+            virInterfaceProtocolDefFormat(buf, def, level);
+            virInterfaceVlanDefFormat(buf, def, level);
             break;
     }
 
@@ -1217,12 +1204,11 @@ cleanup:
     return -1;
 }
 
-char *virInterfaceDefFormat(virConnectPtr conn,
-                          const virInterfaceDefPtr def)
+char *virInterfaceDefFormat(const virInterfaceDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virInterfaceDefDevFormat(conn, &buf, def, 0) < 0) {
+    if (virInterfaceDefDevFormat(&buf, def, 0) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -1304,8 +1290,7 @@ void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
     interfaces->count = 0;
 }
 
-virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
-                                         virInterfaceObjListPtr interfaces,
+virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
                                          const virInterfaceDefPtr def)
 {
     virInterfaceObjPtr iface;
@@ -1323,7 +1308,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virConnectPtr conn,
         return NULL;
     }
     if (virMutexInit(&iface->lock) < 0) {
-        virInterfaceReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("cannot initialize mutex"));
         VIR_FREE(iface);
         return NULL;

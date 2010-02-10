@@ -29,10 +29,10 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
         goto fail;
 
-    if (!(dev = virInterfaceDefParseString(NULL, xmlData)))
+    if (!(dev = virInterfaceDefParseString(xmlData)))
         goto fail;
 
-    if (!(actual = virInterfaceDefFormat(NULL, dev)))
+    if (!(actual = virInterfaceDefFormat(dev)))
         goto fail;
 
     if (STRNEQ(xmlData, actual)) {

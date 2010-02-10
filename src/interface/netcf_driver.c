@@ -356,13 +356,13 @@ static char *interfaceGetXMLDesc(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-    ifacedef = virInterfaceDefParseString(ifinfo->conn, xmlstr);
+    ifacedef = virInterfaceDefParseString(xmlstr);
     if (!ifacedef) {
         /* error was already reported */
         goto cleanup;
     }
 
-    ret = virInterfaceDefFormat(ifinfo->conn, ifacedef);
+    ret = virInterfaceDefFormat(ifacedef);
     if (!ret) {
         /* error was already reported */
         goto cleanup;
@@ -388,13 +388,13 @@ static virInterfacePtr interfaceDefineXML(virConnectPtr conn,
 
     interfaceDriverLock(driver);
 
-    ifacedef = virInterfaceDefParseString(conn, xml);
+    ifacedef = virInterfaceDefParseString(xml);
     if (!ifacedef) {
         /* error was already reported */
         goto cleanup;
     }
 
-    xmlstr = virInterfaceDefFormat(conn, ifacedef);
+    xmlstr = virInterfaceDefFormat(ifacedef);
     if (!xmlstr) {
         /* error was already reported */
         goto cleanup;

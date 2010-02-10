@@ -568,9 +568,9 @@ static int testOpenDefault(virConnectPtr conn) {
     netobj->persistent = 1;
     virNetworkObjUnlock(netobj);
 
-    if (!(interfacedef = virInterfaceDefParseString(conn, defaultInterfaceXML)))
+    if (!(interfacedef = virInterfaceDefParseString(defaultInterfaceXML)))
         goto error;
-    if (!(interfaceobj = virInterfaceAssignDef(conn, &privconn->ifaces, interfacedef))) {
+    if (!(interfaceobj = virInterfaceAssignDef(&privconn->ifaces, interfacedef))) {
         virInterfaceDefFree(interfacedef);
         goto error;
     }
@@ -969,16 +969,16 @@ static int testOpenFromFile(virConnectPtr conn,
                 goto error;
             }
 
-            def = virInterfaceDefParseFile(conn, absFile);
+            def = virInterfaceDefParseFile(absFile);
             VIR_FREE(absFile);
             if (!def)
                 goto error;
         } else {
-            if ((def = virInterfaceDefParseNode(conn, xml, ifaces[i])) == NULL)
+            if ((def = virInterfaceDefParseNode(xml, ifaces[i])) == NULL)
                 goto error;
         }
 
-        if (!(iface = virInterfaceAssignDef(conn, &privconn->ifaces, def))) {
+        if (!(iface = virInterfaceAssignDef(&privconn->ifaces, def))) {
             virInterfaceDefFree(def);
             goto error;
         }
@@ -3328,7 +3328,7 @@ static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
         goto cleanup;
     }
 
-    ret = virInterfaceDefFormat(iface->conn, privinterface->def);
+    ret = virInterfaceDefFormat(privinterface->def);
 
 cleanup:
     if (privinterface)
@@ -3346,10 +3346,10 @@ static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xm
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    if ((def = virInterfaceDefParseString(conn, xmlStr)) == NULL)
+    if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
         goto cleanup;
 
-    if ((iface = virInterfaceAssignDef(conn, &privconn->ifaces, def)) == NULL)
+    if ((iface = virInterfaceAssignDef(&privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
 
