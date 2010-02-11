@@ -262,7 +262,7 @@ use_apparmor(void)
     char *libvirt_daemon = NULL;
 
     if (virFileResolveLink("/proc/self/exe", &libvirt_daemon) < 0) {
-        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("could not find libvirtd"));
         return rc;
     }
@@ -295,7 +295,7 @@ AppArmorSecurityDriverProbe(void)
     }
 
     if (!virFileExists(template)) {
-        virSecurityReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                _("template \'%s\' does not exist"), template);
         goto clean;
     }

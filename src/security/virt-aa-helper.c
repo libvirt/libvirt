@@ -690,7 +690,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
-    ctl->def = virDomainDefParseString(NULL, ctl->caps, xmlStr, 0);
+    ctl->def = virDomainDefParseString(ctl->caps, xmlStr, 0);
     if (ctl->def == NULL) {
         vah_error(ctl, 0, "could not parse XML");
         goto exit;
@@ -767,8 +767,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
 }
 
 static int
-file_iterate_cb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                usbDevice *dev ATTRIBUTE_UNUSED,
+file_iterate_cb(usbDevice *dev ATTRIBUTE_UNUSED,
                 const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;
@@ -844,8 +843,7 @@ get_files(vahControl * ctl)
                 if (usb == NULL)
                     continue;
 
-                rc = usbDeviceFileIterate(NULL, usb,
-                                          file_iterate_cb, &buf);
+                rc = usbDeviceFileIterate(usb, file_iterate_cb, &buf);
                 usbFreeDevice(usb);
                 if (rc != 0)
                     goto clean;
