@@ -2,7 +2,7 @@
  * remote_internal.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -370,6 +370,7 @@ doRemoteOpen (virConnectPtr conn,
               virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags)
 {
+    struct qparam_set *vars = NULL;
     int wakeupFD[2] = { -1, -1 };
     char *transport_str = NULL;
     enum {
@@ -458,7 +459,6 @@ doRemoteOpen (virConnectPtr conn,
      * feasibly it might contain variables needed by the real driver,
      * although that won't be the case for now).
      */
-    struct qparam_set *vars;
     struct qparam *var;
     int i;
     char *query;
@@ -551,6 +551,7 @@ doRemoteOpen (virConnectPtr conn,
         }
 
         free_qparam_set (vars);
+        vars = NULL;
     } else {
         /* Probe URI server side */
         name = strdup("");
@@ -933,6 +934,8 @@ doRemoteOpen (virConnectPtr conn,
 
  out_of_memory:
     virReportOOMError();
+    if (vars)
+        free_qparam_set (vars);
 
  failed:
     /* Close the socket if we failed. */
