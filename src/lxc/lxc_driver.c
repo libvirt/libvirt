@@ -126,7 +126,8 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
             return VIR_DRV_OPEN_DECLINED;
 
         /* If path isn't '/' then they typoed, tell them correct path */
-        if (STRNEQ(conn->uri->path, "/")) {
+        if (conn->uri->path != NULL &&
+            STRNEQ(conn->uri->path, "/")) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("Unexpected LXC URI path '%s', try lxc:///"),
                      conn->uri->path);
