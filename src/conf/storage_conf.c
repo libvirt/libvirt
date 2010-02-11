@@ -1464,7 +1464,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         virStorageReportError(VIR_ERR_INVALID_STORAGE_POOL,
-                              "Storage pool config filename '%s' does not match pool name '%s'",
+                              _("Storage pool config filename '%s' does not match pool name '%s'"),
                               path, def->name);
         virStoragePoolDefFree(def);
         return NULL;
@@ -1524,7 +1524,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         if (virFileBuildPath(configDir, entry->d_name,
                              NULL, path, PATH_MAX) < 0) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "Config filename '%s/%s' is too long",
+                                  _("Config filename '%s/%s' is too long"),
                                   configDir, entry->d_name);
             continue;
         }
@@ -1532,7 +1532,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         if (virFileBuildPath(autostartDir, entry->d_name,
                              NULL, autostartLink, PATH_MAX) < 0) {
             virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                                  "Autostart link path '%s/%s' is too long",
+                                  _("Autostart link path '%s/%s' is too long"),
                                   autostartDir, entry->d_name);
             continue;
         }
