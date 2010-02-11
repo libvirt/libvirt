@@ -184,7 +184,7 @@ usbGetDevice(unsigned bus,
     snprintf(dev->name, sizeof(dev->name), "%.3o:%.3o",
              dev->bus, dev->dev);
     snprintf(dev->path, sizeof(dev->path),
-             USB_DEVFS "%03o/%03o", dev->bus, dev->dev);
+             USB_DEVFS "%03d/%03d", dev->bus, dev->dev);
 
     /* XXX fixme. this should be product/vendor */
     snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus, dev->dev);
