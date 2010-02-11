@@ -12,6 +12,7 @@ src/conf/secret_conf.c
 src/conf/storage_conf.c
 src/conf/storage_encryption_conf.c
 src/cpu/cpu.c
+src/cpu/cpu_generic.c
 src/cpu/cpu_map.c
 src/cpu/cpu_x86.c
 src/datatypes.c
