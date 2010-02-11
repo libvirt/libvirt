@@ -90,24 +90,6 @@ virSecurityDriverStartup(virSecurityDriverPtr *drv,
     return -2;
 }
 
-void
-virSecurityReportError(int code, const char *fmt, ...)
-{
-    va_list args;
-    char errorMessage[1024];
-
-    if (fmt) {
-        va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage) - 1, fmt, args);
-        va_end(args);
-    } else
-        errorMessage[0] = '\0';
-
-    virRaiseError(NULL, NULL, NULL, VIR_FROM_SECURITY, code,
-                  VIR_ERR_ERROR, NULL, NULL, NULL, -1, -1, "%s",
-                  errorMessage);
-}
-
 /*
  * Helpers
  */

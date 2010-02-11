@@ -88,9 +88,9 @@ int virSecurityDriverStartup(virSecurityDriverPtr *drv,
 int
 virSecurityDriverVerify(virDomainDefPtr def);
 
-void
-virSecurityReportError(int code, const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(2, 3);
+#define virSecurityReportError(code, fmt...)                        \
+    virReportErrorHelper(NULL, VIR_FROM_SECURITY, code, __FILE__,   \
+                         __FUNCTION__, __LINE__, fmt)
 
 /* Helpers */
 void virSecurityDriverInit(virSecurityDriverPtr drv);
