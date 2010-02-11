@@ -1331,3 +1331,18 @@ int qemuMonitorAddDrive(qemuMonitorPtr mon,
         ret = qemuMonitorTextAddDrive(mon, drivestr);
     return ret;
 }
+
+
+int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
+                                  const char *alias,
+                                  const char *passphrase)
+{
+    DEBUG("mon=%p, fd=%d alias=%s passphrase=%p(value hidden)", mon, mon->fd, alias, passphrase);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetDrivePassphrase(mon, alias, passphrase);
+    else
+        ret = qemuMonitorTextSetDrivePassphrase(mon, alias, passphrase);
+    return ret;
+}

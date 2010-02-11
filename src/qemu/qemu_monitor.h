@@ -291,4 +291,8 @@ int qemuMonitorAddDevice(qemuMonitorPtr mon,
 int qemuMonitorAddDrive(qemuMonitorPtr mon,
                         const char *drivestr);
 
+int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
+                                  const char *alias,
+                                  const char *passphrase);
+
 #endif /* QEMU_MONITOR_H */

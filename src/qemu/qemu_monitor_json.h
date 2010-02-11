@@ -162,4 +162,8 @@ int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr);
 
+int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
+                                      const char *alias,
+                                      const char *passphrase);
+
 #endif /* QEMU_MONITOR_JSON_H */

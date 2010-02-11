@@ -694,51 +694,46 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
-static virStorageEncryptionPtr
-findDomainDiskEncryption(virDomainObjPtr vm,
-                         const char *path)
+static virDomainDiskDefPtr
+findDomainDiskByPath(virDomainObjPtr vm,
+                     const char *path)
 {
-    bool seen_volume;
     int i;
 
-    seen_volume = false;
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk;
 
         disk = vm->def->disks[i];
-        if (disk->src != NULL && STREQ(disk->src, path)) {
-            seen_volume = true;
-            if (disk->encryption != NULL)
-                return disk->encryption;
-        }
+        if (disk->src != NULL && STREQ(disk->src, path))
+            return disk;
     }
-    if (seen_volume)
-        qemuReportError(VIR_ERR_INVALID_DOMAIN,
-                        _("missing <encryption> for volume %s"), path);
-    else
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unexpected passphrase request for volume %s"),
-                        path);
+
+    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("no disk found with path %s"),
+                    path);
     return NULL;
 }
 
-
 static int
-findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                         virConnectPtr conn,
-                         virDomainObjPtr vm,
-                         const char *path,
-                         char **secretRet,
-                         size_t *secretLen)
+getVolumeQcowPassphrase(virConnectPtr conn,
+                        virDomainDiskDefPtr disk,
+                        char **secretRet,
+                        size_t *secretLen)
 {
-    virStorageEncryptionPtr enc;
     virSecretPtr secret;
     char *passphrase;
     unsigned char *data;
     size_t size;
     int ret = -1;
+    virStorageEncryptionPtr enc;
 
-    virDomainObjLock(vm);
+    if (!disk->encryption) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("disk %s does not have any encryption information"),
+                        disk->src);
+        return -1;
+    }
+    enc = disk->encryption;
 
     if (!conn) {
         qemuReportError(VIR_ERR_NO_SUPPORT,
@@ -754,16 +749,12 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    enc = findDomainDiskEncryption(vm, path);
-    if (enc == NULL)
-        return -1;
-
     if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
         enc->nsecrets != 1 ||
         enc->secrets[0]->type !=
         VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
         qemuReportError(VIR_ERR_INVALID_DOMAIN,
-                        _("invalid <encryption> for volume %s"), path);
+                        _("invalid <encryption> for volume %s"), disk->src);
         goto cleanup;
     }
 
@@ -782,7 +773,7 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         VIR_FREE(data);
         qemuReportError(VIR_ERR_INVALID_SECRET,
                         _("format='qcow' passphrase for %s must not contain a "
-                          "'\\0'"), path);
+                          "'\\0'"), disk->src);
         goto cleanup;
     }
 
@@ -804,8 +795,30 @@ findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     ret = 0;
 
 cleanup:
-    virDomainObjUnlock(vm);
+    return ret;
+}
 
+static int
+findVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virConnectPtr conn,
+                         virDomainObjPtr vm,
+                         const char *path,
+                         char **secretRet,
+                         size_t *secretLen)
+{
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+
+    virDomainObjLock(vm);
+    disk = findDomainDiskByPath(vm, path);
+
+    if (!disk)
+        goto cleanup;
+
+    ret = getVolumeQcowPassphrase(conn, disk, secretRet, secretLen);
+
+cleanup:
+    virDomainObjUnlock(vm);
     return ret;
 }
 
@@ -1681,8 +1694,10 @@ qemudInitCpuAffinity(virDomainObjPtr vm)
 
 
 static int
-qemuInitPasswords(struct qemud_driver *driver,
-                  virDomainObjPtr vm) {
+qemuInitPasswords(virConnectPtr conn,
+                  struct qemud_driver *driver,
+                  virDomainObjPtr vm,
+                  unsigned long long qemuCmdFlags) {
     int ret = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -1698,6 +1713,36 @@ qemuInitPasswords(struct qemud_driver *driver,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
+    if (ret < 0)
+        goto cleanup;
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        int i;
+
+        for (i = 0 ; i < vm->def->ndisks ; i++) {
+            char *secret;
+            size_t secretLen;
+
+            if (!vm->def->disks[i]->encryption ||
+                !vm->def->disks[i]->src)
+                continue;
+
+            if (getVolumeQcowPassphrase(conn,
+                                        vm->def->disks[i],
+                                        &secret, &secretLen) < 0)
+                goto cleanup;
+
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            ret = qemuMonitorSetDrivePassphrase(priv->mon,
+                                                vm->def->disks[i]->info.alias,
+                                                secret);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            if (ret < 0)
+                goto cleanup;
+        }
+    }
+
+cleanup:
     return ret;
 }
 
@@ -2721,7 +2766,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (qemudInitCpuAffinity(vm) < 0)
         goto abort;
 
-    if (qemuInitPasswords(driver, vm) < 0)
+    if (qemuInitPasswords(conn, driver, vm, qemuCmdFlags) < 0)
         goto abort;
 
     /* If we have -device, then addresses are assigned explicitly.
