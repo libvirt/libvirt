@@ -154,6 +154,7 @@ struct private_data {
     virMutex lock;
 
     int sock;                   /* Socket. */
+    int errfd;                /* File handle connected to remote stderr */
     int watch;                  /* File handle watch */
     pid_t pid;                  /* PID of tunnel process */
     int uses_tls;               /* TLS enabled on socket? */
@@ -783,6 +784,7 @@ doRemoteOpen (virConnectPtr conn,
     case trans_ext: {
         pid_t pid;
         int sv[2];
+        int errfd[2];
 
         /* Fork off the external process.  Use socketpair to create a private
          * (unnamed) Unix domain socket to the child process so we don't have
@@ -794,14 +796,22 @@ doRemoteOpen (virConnectPtr conn,
             goto failed;
         }
 
+        if (pipe(errfd) == -1) {
+            virReportSystemError(errno, "%s",
+                                 _("unable to create socket pair"));
+            goto failed;
+        }
+
         if (virExec((const char**)cmd_argv, NULL, NULL,
-                    &pid, sv[1], &(sv[1]), NULL,
+                    &pid, sv[1], &(sv[1]), &(errfd[1]),
                     VIR_EXEC_CLEAR_CAPS) < 0)
             goto failed;
 
         /* Parent continues here. */
         close (sv[1]);
+        close (errfd[1]);
         priv->sock = sv[0];
+        priv->errfd = errfd[0];
         priv->pid = pid;
 
         /* Do not set 'is_secure' flag since we can't guarentee
@@ -822,6 +832,12 @@ doRemoteOpen (virConnectPtr conn,
     } /* switch (transport) */
 
     if (virSetNonBlock(priv->sock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("unable to make socket non-blocking"));
+        goto failed;
+    }
+
+    if ((priv->errfd != -1) && virSetNonBlock(priv->errfd) < 0) {
         virReportSystemError(errno, "%s",
                              _("unable to make socket non-blocking"));
         goto failed;
@@ -939,6 +955,9 @@ doRemoteOpen (virConnectPtr conn,
 
  failed:
     /* Close the socket if we failed. */
+    if (priv->errfd >= 0)
+        close(priv->errfd);
+
     if (priv->sock >= 0) {
         if (priv->uses_tls && priv->session) {
             gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
@@ -986,6 +1005,7 @@ remoteAllocPrivateData(virConnectPtr conn)
     priv->localUses = 1;
     priv->watch = -1;
     priv->sock = -1;
+    priv->errfd = -1;
 
     return priv;
 }
@@ -1408,6 +1428,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
         sasl_dispose (&priv->saslconn);
 #endif
     close (priv->sock);
+    close (priv->errfd);
 
 #ifndef WIN32
     if (priv->pid > 0) {
@@ -7785,12 +7806,23 @@ remoteIOReadBuffer(virConnectPtr conn,
                 if (errno == EWOULDBLOCK)
                     return 0;
 
+                char errout[1024] = "\0";
+                if (priv->errfd != -1) {
+                    saferead(priv->errfd, errout, sizeof(errout));
+                }
+
                 virReportSystemError(errno,
-                                     "%s", _("cannot recv data"));
+                                     _("cannot recv data: %s"), errout);
+
             } else {
+                char errout[1024] = "\0";
+                if (priv->errfd != -1) {
+                    saferead(priv->errfd, errout, sizeof(errout));
+                }
+
                 errorf (in_open ? NULL : conn,
                         VIR_ERR_SYSTEM_ERROR,
-                        "%s", _("server closed connection"));
+                        _("server closed connection: %s"), errout);
             }
             return -1;
         }
