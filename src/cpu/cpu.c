@@ -119,8 +119,8 @@ cpuCompare(virCPUDefPtr host,
 int
 cpuDecode(virCPUDefPtr cpu,
           const union cpuData *data,
-          unsigned int nmodels,
-          const char **models)
+          const char **models,
+          unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
 
@@ -146,7 +146,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, nmodels, models);
+    return driver->decode(cpu, data, models, nmodels);
 }
 
 

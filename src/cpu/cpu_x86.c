@@ -940,8 +940,8 @@ x86GuestData(virCPUDefPtr host,
 static int
 x86Decode(virCPUDefPtr cpu,
           const union cpuData *data,
-          unsigned int nmodels,
-          const char **models)
+          const char **models,
+          unsigned int nmodels)
 {
     int ret = -1;
     struct x86_map *map;

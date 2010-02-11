@@ -48,8 +48,8 @@ typedef virCPUCompareResult
 typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
                      const union cpuData *data,
-                     unsigned int nmodels,
-                     const char **models);
+                     const char **models,
+                     unsigned int nmodels);
 
 typedef int
 (*cpuArchEncode)    (const virCPUDefPtr cpu,
@@ -95,8 +95,8 @@ cpuCompare  (virCPUDefPtr host,
 extern int
 cpuDecode   (virCPUDefPtr cpu,
              const union cpuData *data,
-             unsigned int nmodels,
-             const char **models);
+             const char **models,
+             unsigned int nmodels);
 
 extern int
 cpuEncode   (const char *arch,
