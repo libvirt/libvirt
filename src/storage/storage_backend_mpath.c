@@ -1,7 +1,7 @@
 /*
  * storage_backend_mpath.c: storage backend for multipath handling
  *
- * Copyright (C) 2009-2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  * Copyright (C) 2009-2008 Dave Allan
  *
  * This library is free software; you can redistribute it and/or
@@ -173,8 +173,7 @@ virStorageBackendIsMultipath(const char *devname)
         goto out;
     }
 
-    next = dm_get_next_target(dmt, next, &start, &length,
-                              &target_type, &params);
+    dm_get_next_target(dmt, next, &start, &length, &target_type, &params);
 
     if (target_type == NULL) {
         ret = -1;
