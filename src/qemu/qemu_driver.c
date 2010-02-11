@@ -95,6 +95,7 @@ struct _qemuDomainObjPrivate {
     int *vcpupids;
 
     qemuDomainPCIAddressSetPtr pciaddrs;
+    int persistentAddrs;
 };
 
 static int qemudShutdown(void);
@@ -857,6 +858,7 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     virDomainObjPtr obj = payload;
     struct qemud_driver *driver = opaque;
     qemuDomainObjPrivatePtr priv;
+    unsigned long long qemuCmdFlags;
 
     virDomainObjLock(obj);
 
@@ -871,6 +873,15 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
         goto error;
     }
+
+    /* XXX we should be persisting the original flags in the XML
+     * not re-detecting them, since the binary may have changed
+     * since launch time */
+    if (qemudExtractVersionInfo(obj->def->emulator,
+                                NULL,
+                                &qemuCmdFlags) >= 0 &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
+        priv->persistentAddrs = 1;
 
     if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)))
         goto error;
@@ -1976,7 +1987,7 @@ qemuGetPCIWatchdogVendorProduct(virDomainWatchdogDefPtr def,
  * some static addrs on CLI. Have to check that...
  */
 static int
-qemuAssignPCIAddresses(virDomainObjPtr vm,
+qemuDetectPCIAddresses(virDomainObjPtr vm,
                        qemuMonitorPCIAddress *addrs,
                        int naddrs)
 {
@@ -2098,7 +2109,7 @@ qemuInitPCIAddresses(struct qemud_driver *driver,
                                            &addrs);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    ret = qemuAssignPCIAddresses(vm, addrs, naddrs);
+    ret = qemuDetectPCIAddresses(vm, addrs, naddrs);
 
     VIR_FREE(addrs);
 
@@ -2140,6 +2151,44 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     }
     return -1;
 }
+
+
+static int
+qemuAssignPCIAddresses(virDomainDefPtr def)
+{
+    int ret = -1;
+    unsigned long long qemuCmdFlags = 0;
+    qemuDomainPCIAddressSetPtr addrs = NULL;
+    struct stat sb;
+
+    if (stat(def->emulator, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot find QEMU binary %s"),
+                             def->emulator);
+        goto cleanup;
+    }
+
+    if (qemudExtractVersionInfo(def->emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0)
+        goto cleanup;
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def)))
+            goto cleanup;
+
+        if (qemuAssignDevicePCISlots(def, addrs) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    qemuDomainPCIAddressSetFree(addrs);
+
+    return ret;
+}
+
 
 static pciDeviceList *
 qemuGetPciHostDeviceList(virDomainDefPtr def)
@@ -2662,7 +2711,15 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    /*
+     * Normally PCI addresses are assigned inhe virDomainCreate
+     * or virDomainDefine methods. We might still need to assign
+     * some here to cope with the question of upgrades. Regardless
+     * we also need to populate the PCi address set cache for later
+     * use in hotplug
+     */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        /* Populate cache with current addresses */
         if (priv->pciaddrs) {
             qemuDomainPCIAddressSetFree(priv->pciaddrs);
             priv->pciaddrs = NULL;
@@ -2670,8 +2727,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(vm->def)))
             goto cleanup;
 
+
+        /* Assign any remaining addresses */
         if (qemuAssignDevicePCISlots(vm->def, priv->pciaddrs) < 0)
             goto cleanup;
+
+        priv->persistentAddrs = 1;
+    } else {
+        priv->persistentAddrs = 0;
     }
 
     vm->def->id = driver->nextvmid++;
@@ -2903,10 +2966,12 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
         VIR_FREE(vm->def->seclabel.imagelabel);
     }
 
-    virDomainDefClearPCIAddresses(vm->def);
     virDomainDefClearDeviceAliases(vm->def);
-    qemuDomainPCIAddressSetFree(priv->pciaddrs);
-    priv->pciaddrs = NULL;
+    if (!priv->persistentAddrs) {
+        virDomainDefClearPCIAddresses(vm->def);
+        qemuDomainPCIAddressSetFree(priv->pciaddrs);
+        priv->pciaddrs = NULL;
+    }
 
     qemuDomainReAttachHostDevices(driver, vm->def);
 
@@ -3350,6 +3415,12 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
         goto cleanup;
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
+
+    if (qemudCanonicalizeMachine(driver, def) < 0)
+        goto cleanup;
+
+    if (qemuAssignPCIAddresses(def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(driver->caps,
@@ -5047,6 +5118,9 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
 
     if (qemudCanonicalizeMachine(driver, def) < 0)
+        goto cleanup;
+
+    if (qemuAssignPCIAddresses(def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainAssignDef(driver->caps,
