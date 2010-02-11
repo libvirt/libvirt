@@ -7434,7 +7434,12 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     }
 
     /* Target domain name, maybe renamed. */
-    dname = dname ? dname : def->name;
+    if (dname) {
+        VIR_FREE(def->name);
+        def->name = strdup(dname);
+        if (def->name == NULL)
+            goto cleanup;
+    }
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
@@ -7660,7 +7665,12 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     }
 
     /* Target domain name, maybe renamed. */
-    dname = dname ? dname : def->name;
+    if (dname) {
+        VIR_FREE(def->name);
+        def->name = strdup(dname);
+        if (def->name == NULL)
+            goto cleanup;
+    }
 
     if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
         goto cleanup;
