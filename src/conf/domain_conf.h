@@ -211,8 +211,19 @@ enum virDomainNetType {
     VIR_DOMAIN_NET_TYPE_NETWORK,
     VIR_DOMAIN_NET_TYPE_BRIDGE,
     VIR_DOMAIN_NET_TYPE_INTERNAL,
+    VIR_DOMAIN_NET_TYPE_DIRECT,
 
     VIR_DOMAIN_NET_TYPE_LAST,
+};
+
+
+/* the mode type for macvtap devices */
+enum virDomainNetdevMacvtapType {
+    VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA,
+    VIR_DOMAIN_NETDEV_MACVTAP_MODE_PRIVATE,
+    VIR_DOMAIN_NETDEV_MACVTAP_MODE_BRIDGE,
+
+    VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
 };
 
 
@@ -244,6 +255,10 @@ struct _virDomainNetDef {
         struct {
             char *name;
         } internal;
+        struct {
+            char *linkdev;
+            int mode;
+        } direct;
     } data;
     char *ifname;
     virDomainDeviceInfo info;
@@ -896,5 +911,7 @@ VIR_ENUM_DECL(virDomainGraphics)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainSeclabel)
+
+VIR_ENUM_DECL(virDomainNetdevMacvtap)
 
 #endif /* __DOMAIN_CONF_H */

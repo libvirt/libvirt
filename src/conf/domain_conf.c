@@ -41,6 +41,7 @@
 #include "c-ctype.h"
 #include "logging.h"
 #include "network.h"
+#include "macvtap.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -140,7 +141,8 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "mcast",
               "network",
               "bridge",
-              "internal")
+              "internal",
+              "direct")
 
 VIR_ENUM_IMPL(virDomainChrTarget, VIR_DOMAIN_CHR_TARGET_TYPE_LAST,
               "null",
@@ -221,6 +223,11 @@ VIR_ENUM_IMPL(virDomainState, VIR_DOMAIN_CRASHED+1,
 VIR_ENUM_IMPL(virDomainSeclabel, VIR_DOMAIN_SECLABEL_LAST,
               "dynamic",
               "static")
+
+VIR_ENUM_IMPL(virDomainNetdevMacvtap, VIR_DOMAIN_NETDEV_MACVTAP_MODE_LAST,
+              "vepa",
+              "private",
+              "bridge")
 
 #define virDomainReportError(code, fmt...)                           \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
@@ -429,6 +436,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
         VIR_FREE(def->data.internal.name);
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        VIR_FREE(def->data.direct.linkdev);
         break;
     }
 
@@ -1622,6 +1633,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *model = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
+    char *mode = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -1658,9 +1670,11 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
                 bridge = virXMLPropString(cur, "bridge");
             } else if ((dev == NULL) &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET) &&
+                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+                        def->type == VIR_DOMAIN_NET_TYPE_DIRECT) &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
-                dev = virXMLPropString(cur, "dev");
+                dev  = virXMLPropString(cur, "dev");
+                mode = virXMLPropString(cur, "mode");
             } else if ((network == NULL) &&
                        ((def->type == VIR_DOMAIN_NET_TYPE_SERVER) ||
                         (def->type == VIR_DOMAIN_NET_TYPE_CLIENT) ||
@@ -1813,6 +1827,29 @@ virDomainNetDefParseXML(virCapsPtr caps,
         }
         def->data.internal.name = internal;
         internal = NULL;
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        if (dev == NULL) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        _("No <source> 'dev' attribute specified with <interface type='direct'/>"));
+            goto error;
+        }
+
+        if (mode != NULL) {
+            int m;
+            if ((m = virDomainNetdevMacvtapTypeFromString(mode)) < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                     _("Unkown mode has been specified"));
+                goto error;
+            }
+            def->data.direct.mode = m;
+        } else
+            def->data.direct.mode = VIR_DOMAIN_NETDEV_MACVTAP_MODE_VEPA;
+
+        def->data.direct.linkdev = dev;
+        dev = NULL;
+
         break;
     }
 
@@ -4740,6 +4777,13 @@ virDomainNetDefFormat(virBufferPtr buf,
                               def->data.internal.name);
         break;
 
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        virBufferEscapeString(buf, "      <source dev='%s'",
+                              def->data.direct.linkdev);
+        virBufferVSprintf(buf, " mode='%s'",
+                   virDomainNetdevMacvtapTypeToString(def->data.direct.mode));
+        virBufferAddLit(buf, "/>\n");
+        break;
     }
 
     if (def->ifname)
