@@ -246,15 +246,33 @@ qemuMonitorJSONCommand(qemuMonitorPtr mon,
  *
  * XXX see qerror.h for different klasses & fill out useful params
  */
-static char *qemuMonitorJSONStringifyError(virJSONValuePtr error)
+static const char *
+qemuMonitorJSONStringifyError(virJSONValuePtr error)
 {
     const char *klass = virJSONValueObjectGetString(error, "class");
+    const char *detail = NULL;
 
-    if (klass) {
-        return strdup(klass);
-    } else {
-        return strdup(_("Missing QEMU error klass"));
-    }
+    /* The QMP 'desc' field is usually sufficient for our generic
+     * error reporting needs.
+     */
+    if (klass)
+        detail = virJSONValueObjectGetString(error, "desc");
+
+
+    if (!detail)
+        detail = "unknown QEMU command error";
+
+    return detail;
+}
+
+static const char *
+qemuMonitorJSONCommandName(virJSONValuePtr cmd)
+{
+    const char *name = virJSONValueObjectGetString(cmd, "execute");
+    if (name)
+        return name;
+    else
+        return "<unknown>";
 }
 
 static int
@@ -266,20 +284,21 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
         char *cmdstr = virJSONValueToString(cmd);
         char *replystr = virJSONValueToString(reply);
 
-        if (!error) {
-            VIR_DEBUG("Saw a JSON error, but value is null for %s: %s",
-                      cmdstr, replystr);
+        /* Log the full JSON formatted command & error */
+        VIR_DEBUG("unable to execute QEMU command %s: %s",
+                  cmdstr, replystr);
+
+        /* Only send the user the command name + friendly error */
+        if (!error)
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("error running QEMU command '%s': '%s'"),
-                            cmdstr, replystr);
-        } else {
-            VIR_DEBUG("Got a JSON error set for %s", cmdstr);
-            char *detail = qemuMonitorJSONStringifyError(error);
+                            _("unable to execute QEMU command '%s'"),
+                            qemuMonitorJSONCommandName(cmd));
+        else
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("error running QEMU command '%s': %s ('%s')"),
-                            cmdstr, detail, replystr);
-            VIR_FREE(detail);
-        }
+                            _("unable to execute QEMU command '%s': %s"),
+                            qemuMonitorJSONCommandName(cmd),
+                            qemuMonitorJSONStringifyError(error));
+
         VIR_FREE(cmdstr);
         VIR_FREE(replystr);
         return -1;
@@ -290,7 +309,8 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   cmdstr, replystr);
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("error running QEMU command '%s': '%s'"), cmdstr, replystr);
+                        _("unable to execute QEMU command '%s'"),
+                        qemuMonitorJSONCommandName(cmd));
         VIR_FREE(cmdstr);
         VIR_FREE(replystr);
         return -1;
