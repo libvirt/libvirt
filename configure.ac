@@ -1827,6 +1827,30 @@ AC_ARG_WITH([qemu-group],
 AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
 AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
 
+
+AC_ARG_WITH([macvtap],
+  AC_HELP_STRING([--with-macvtap],[enable macvtap device @<:@default=check@:>@]),
+  [with_macvtap=${withval}],
+  [with_macvtap=check])
+
+if test "$with_macvtap" != "no" ; then
+    AC_TRY_COMPILE([ #include <linux/if_link.h> ],
+                   [ int x = MACVLAN_MODE_BRIDGE; ],
+                   [ with_macvtap=yes ],
+                   [ if test "$with_macvtap" = "yes" ; then
+                         AC_MSG_ERROR([Installed linux headers don't show support for macvtap device.])
+                     fi
+                     with_macvtap=no ])
+    if test "$with_macvtap" = "yes" ; then
+        val=1
+    else
+        val=0
+    fi
+    AC_DEFINE_UNQUOTED([WITH_MACVTAP], $val, [whether macvtap support is enabled])
+fi
+AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
+
+
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.
 # Copy one to the other, but only if this is a srcdir-build.
@@ -1878,6 +1902,7 @@ AC_MSG_NOTICE([  Remote: $with_remote])
 AC_MSG_NOTICE([ Network: $with_network])
 AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([   netcf: $with_netcf])
+AC_MSG_NOTICE([ macvtap: $with_macvtap])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
