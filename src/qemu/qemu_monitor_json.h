@@ -34,6 +34,8 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              size_t len,
                              qemuMonitorMessagePtr msg);
 
+int qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon);
+
 int qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
                              virConnectPtr conn);
 int qemuMonitorJSONStopCPUs(qemuMonitorPtr mon);

@@ -791,6 +791,19 @@ int qemuMonitorEmitStop(qemuMonitorPtr mon)
 }
 
 
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetCapabilities(mon);
+    else
+        ret = 0;
+    return ret;
+}
+
+
 int
 qemuMonitorStartCPUs(qemuMonitorPtr mon,
                      virConnectPtr conn)

@@ -830,9 +830,10 @@ static qemuMonitorCallbacks monitorCallbacks = {
 };
 
 static int
-qemuConnectMonitor(virDomainObjPtr vm)
+qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the monitor is active */
@@ -846,7 +847,16 @@ qemuConnectMonitor(virDomainObjPtr vm)
         return -1;
     }
 
-    return 0;
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorSetCapabilities(priv->mon);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if (ret < 0) {
+        qemuMonitorClose(priv->mon);
+        priv->mon = NULL;
+    }
+
+    return ret;
 }
 
 /*
@@ -868,7 +878,7 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     priv = obj->privateData;
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(obj) < 0)
+    if (qemuConnectMonitor(driver, obj) < 0)
         goto error;
 
     if (qemuUpdateActivePciHostdevs(driver, obj->def) < 0) {
@@ -1577,7 +1587,7 @@ qemudWaitForMonitor(struct qemud_driver* driver,
         return -1;
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(vm) < 0)
+    if (qemuConnectMonitor(driver, vm) < 0)
         return -1;
 
     /* Try to get the pty path mappings again via the monitor. This is much more

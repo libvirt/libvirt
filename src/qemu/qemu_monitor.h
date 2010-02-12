@@ -99,6 +99,8 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
 
 int qemuMonitorClose(qemuMonitorPtr mon);
 
+int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
+
 void qemuMonitorLock(qemuMonitorPtr mon);
 void qemuMonitorUnlock(qemuMonitorPtr mon);
 
