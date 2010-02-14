@@ -139,7 +139,7 @@ static virDrvOpenStatus interfaceOpenInterface(virConnectPtr conn,
     }
 
     conn->interfacePrivateData = driverState;
-    return 0;
+    return VIR_DRV_OPEN_SUCCESS;
 
 netcf_error:
     if (driverState->netcf)
@@ -150,7 +150,7 @@ netcf_error:
 mutex_error:
     VIR_FREE(driverState);
 alloc_error:
-    return -1;
+    return VIR_DRV_OPEN_ERROR;
 }
 
 static int interfaceCloseInterface(virConnectPtr conn)
