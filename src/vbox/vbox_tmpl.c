@@ -5276,10 +5276,11 @@ static nsresult vboxCallbackQueryInterface(nsISupports *pThis, const nsID *iid, 
 static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
     IVirtualBoxCallback *vboxCallback = NULL;
 
-    /* Allocate, Initialize and return a validi
+    /* Allocate, Initialize and return a valid
      * IVirtualBoxCallback object here
      */
     if ((VIR_ALLOC(vboxCallback) < 0) || (VIR_ALLOC(vboxCallback->vtbl) < 0)) {
+        VIR_FREE(vboxCallback);
         virReportOOMError();
         return NULL;
     }
