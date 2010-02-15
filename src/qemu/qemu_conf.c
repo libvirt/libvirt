@@ -2133,10 +2133,10 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             def->controllers[i]->idx == 0) {
             if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-                if (def->videos[i]->info.addr.pci.domain != 0 ||
-                    def->videos[i]->info.addr.pci.bus != 0 ||
-                    def->videos[i]->info.addr.pci.slot != 2 ||
-                    def->videos[i]->info.addr.pci.function != 0) {
+                if (def->controllers[i]->info.addr.pci.domain != 0 ||
+                    def->controllers[i]->info.addr.pci.bus != 0 ||
+                    def->controllers[i]->info.addr.pci.slot != 1 ||
+                    def->controllers[i]->info.addr.pci.function != 1) {
                     qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                     _("Primary IDE controller must have PCI address 0:0:1.1"));
                     goto error;
