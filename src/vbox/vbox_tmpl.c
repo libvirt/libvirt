@@ -6183,6 +6183,7 @@ static char *vboxNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
     ret = virNetworkDefFormat(def);
 
 cleanup:
+    virNetworkDefFree(def);
     VIR_FREE(networkNameUtf8);
     return ret;
 }
