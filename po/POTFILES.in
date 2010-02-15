@@ -60,6 +60,7 @@ src/util/conf.c
 src/util/hostusb.c
 src/util/json.c
 src/util/logging.c
+src/util/macvtap.c
 src/util/pci.c
 src/util/processinfo.c
 src/util/stats_linux.c
