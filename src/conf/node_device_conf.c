@@ -797,6 +797,7 @@ virNodeDevCapScsiHostParseXML(xmlXPathContextPtr ctxt,
 out:
     VIR_FREE(type);
     ctxt->node = orignode;
+    VIR_FREE(nodes);
     return ret;
 }
 
