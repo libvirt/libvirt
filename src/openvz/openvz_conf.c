@@ -427,6 +427,7 @@ openvzFreeDriver(struct openvz_driver *driver)
 
     virDomainObjListDeinit(&driver->domains);
     virCapabilitiesFree(driver->caps);
+    VIR_FREE(driver);
 }
 
 
