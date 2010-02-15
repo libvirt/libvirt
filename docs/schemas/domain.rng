@@ -671,6 +671,25 @@
         </group>
         <group>
           <attribute name="type">
+            <value>direct</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="dev">
+                <ref name="deviceName"/>
+              </attribute>
+              <optional>
+                <attribute name="mode">
+                  <ref name="bridgeMode"/>
+                </attribute>
+              </optional>
+              <empty/>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
             <value>user</value>
           </attribute>
           <interleave>
@@ -1481,6 +1500,11 @@
   <define name="deviceName">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.\-:/]+</param>
+    </data>
+  </define>
+  <define name="bridgeMode">
+    <data type="string">
+      <param name="pattern">(vepa|bridge|private)</param>
     </data>
   </define>
   <define name="addrMAC">
