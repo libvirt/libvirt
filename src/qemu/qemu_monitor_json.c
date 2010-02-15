@@ -630,8 +630,9 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
         }
 
         if (virJSONValueObjectGetNumberInt(entry, "thread_id", &thread) < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("cpu information was missing thread ID"));
+            /* Only qemu-kvm tree includs thread_id, so treat this as
+               non-fatal, simply returning no data */
+            ret = 0;
             goto cleanup;
         }
 
