@@ -52,6 +52,7 @@
 #include "nodeinfo.h"
 #include "logging.h"
 #include "network.h"
+#include "macvtap.h"
 #include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -1420,6 +1421,53 @@ int qemudExtractVersion(struct qemud_driver *driver) {
     return 0;
 }
 
+/**
+ * qemudPhysIfaceConnect:
+ * @conn: pointer to virConnect object
+ * @net: pointer to he VM's interface description with direct device type
+ * @linkdev: The name of the physical interface to link the macvtap to
+ * @brmode: The mode to put the macvtap device into
+ *
+ * Returns a filedescriptor on success or -1 in case of error.
+ */
+int
+qemudPhysIfaceConnect(virConnectPtr conn,
+                      virDomainNetDefPtr net,
+                      char *linkdev,
+                      int brmode)
+{
+    int rc;
+#if WITH_MACVTAP
+    char *res_ifname = NULL;
+    int hasBusyDev = 0;
+
+    delMacvtapByMACAddress(net->mac, &hasBusyDev);
+
+    if (hasBusyDev) {
+        virReportSystemError(errno, "%s",
+                             _("A macvtap with the same MAC address is in use"));
+        return -1;
+    }
+
+    rc = openMacvtapTap(conn, net->ifname, net->mac, linkdev, brmode,
+                        &res_ifname);
+    if (rc >= 0) {
+        VIR_FREE(net->ifname);
+        net->ifname = res_ifname;
+    }
+#else
+    (void)conn;
+    (void)net;
+    (void)linkdev;
+    (void)brmode;
+    (void)conn;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("No support for macvtap device"));
+    rc = -1;
+#endif
+    return rc;
+}
+
 
 int
 qemudNetworkIfaceConnect(virConnectPtr conn,
@@ -2515,6 +2563,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     switch (net->type) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
         virBufferAddLit(&buf, "tap");
         virBufferVSprintf(&buf, "%cfd=%s", type_sep, tapfd);
         type_sep = ',';
@@ -3620,6 +3669,22 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
                 net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
                 int tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags);
+                if (tapfd < 0)
+                    goto error;
+
+                if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                    close(tapfd);
+                    goto no_memory;
+                }
+
+                (*tapfds)[(*ntapfds)++] = tapfd;
+
+                if (snprintf(tapfd_name, sizeof(tapfd_name), "%d", tapfd) >= sizeof(tapfd_name))
+                    goto no_memory;
+            } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+                int tapfd = qemudPhysIfaceConnect(conn, net,
+                                                  net->data.direct.linkdev,
+                                                  net->data.direct.mode);
                 if (tapfd < 0)
                     goto error;
 

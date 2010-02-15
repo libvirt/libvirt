@@ -75,6 +75,7 @@
 #include "libvirt_internal.h"
 #include "xml.h"
 #include "cpu/cpu.h"
+#include "macvtap.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -2903,6 +2904,8 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     int retries = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
+    virDomainDefPtr def;
+    int i;
 
     if (!virDomainObjIsActive(vm))
         return;
@@ -2914,8 +2917,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     orig_err = virSaveLastError();
 
     if (driver->macFilter) {
-        int i;
-        virDomainDefPtr def = vm->def;
+        def = vm->def;
         for (i = 0 ; i < def->nnets ; i++) {
             virDomainNetDefPtr net = def->nets[i];
             if (net->ifname == NULL)
@@ -2928,6 +2930,17 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
             }
         }
     }
+
+#if WITH_MACVTAP
+    def = vm->def;
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            int dummy;
+            delMacvtapByMACAddress(net->mac, &dummy);
+        }
+    }
+#endif
 
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
@@ -5708,6 +5721,19 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
         if ((tapfd = qemudNetworkIfaceConnect(conn, driver, net, qemuCmdFlags)) < 0)
             return -1;
+    } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("network device type '%s' cannot be attached: "
+                            "qemu is not using a unix socket monitor"),
+                            virDomainNetTypeToString(net->type));
+            return -1;
+        }
+
+        if ((tapfd = qemudPhysIfaceConnect(conn, net,
+                                           net->data.direct.linkdev,
+                                           net->data.direct.mode)) < 0)
+            return -1;
     }
 
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
@@ -6325,6 +6351,13 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
         goto cleanup;
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+#if WITH_MACVTAP
+    if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        int dummy;
+        delMacvtapByMACAddress(detach->mac, &dummy);
+    }
+#endif
 
     if ((driver->macFilter) && (detach->ifname != NULL)) {
         if ((errno = networkDisallowMacOnPort(driver,
