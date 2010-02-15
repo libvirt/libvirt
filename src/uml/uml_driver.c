@@ -1,7 +1,7 @@
 /*
  * uml_driver.c: core driver methods for managing UML guests
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -757,7 +757,10 @@ static int umlMonitorCommand(virConnectPtr conn,
 
     VIR_DEBUG("Command reply is '%s'", NULLSTR(retdata));
 
-    *reply = retdata;
+    if (ret < 0)
+        VIR_FREE(retdata);
+    else
+        *reply = retdata;
 
     return ret;
 
