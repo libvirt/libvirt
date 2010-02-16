@@ -2758,6 +2758,9 @@ error:
  * to Domain0 i.e. the domain where the application runs.
  * This function requires privileged access to the hypervisor.
  *
+ * This command only changes the runtime configuration of the domain,
+ * so can only be called on an active domain.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
@@ -2807,6 +2810,9 @@ error:
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
  * This function may requires privileged access to the hypervisor.
+ *
+ * This command only changes the runtime configuration of the domain,
+ * so can only be called on an active domain.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -4821,6 +4827,9 @@ error:
  * does not support it or if growing the number is arbitrary limited.
  * This function requires privileged access to the hypervisor.
  *
+ * This command only changes the runtime configuration of the domain,
+ * so can only be called on an active domain.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 
@@ -4878,6 +4887,9 @@ error:
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
  * This function requires privileged access to the hypervisor.
+ *
+ * This command only changes the runtime configuration of the domain,
+ * so can only be called on an active domain.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
