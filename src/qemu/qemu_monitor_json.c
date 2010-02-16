@@ -723,14 +723,14 @@ int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                 goto cleanup;
             }
 
-            if (virJSONValueObjectGetNumberUlong(data, "balloon", &mem) < 0) {
+            if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                 _("info balloon reply was missing balloon data"));
                 ret = -1;
                 goto cleanup;
             }
 
-            *currmem = mem;
+            *currmem = (mem/1024);
             ret = 1;
         }
     }
@@ -885,7 +885,7 @@ int qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("balloon",
-                                                     "U:value", (unsigned long long)newmem,
+                                                     "U:value", ((unsigned long long)newmem)*1024,
                                                      NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
