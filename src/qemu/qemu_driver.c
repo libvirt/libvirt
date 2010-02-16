@@ -1758,6 +1758,7 @@ qemuInitPasswords(virConnectPtr conn,
             ret = qemuMonitorSetDrivePassphrase(priv->mon,
                                                 vm->def->disks[i]->info.alias,
                                                 secret);
+            VIR_FREE(secret);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (ret < 0)
                 goto cleanup;
