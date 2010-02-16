@@ -4,7 +4,7 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
@@ -2046,8 +2046,10 @@ libvirt_virConnectBaselineCPU(PyObject *self ATTRIBUTE_UNUSED,
 
         for (i = 0; i < ncpus; i++) {
             xmlcpus[i] = PyString_AsString(PyList_GetItem(list, i));
-            if (xmlcpus[i] == NULL)
+            if (xmlcpus[i] == NULL) {
+                free(xmlcpus);
                 return VIR_PY_INT_FAIL;
+            }
         }
     }
 
