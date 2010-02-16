@@ -1229,6 +1229,7 @@ int qemuMonitorTextAddUSBDisk(qemuMonitorPtr mon,
 cleanup:
     VIR_FREE(cmd);
     VIR_FREE(safepath);
+    VIR_FREE(info);
     return ret;
 }
 
