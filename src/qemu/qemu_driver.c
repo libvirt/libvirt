@@ -909,6 +909,38 @@ qemuHandleDomainReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
+qemuHandleDomainStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                     virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event = NULL;
+
+    virDomainObjLock(vm);
+    if (vm->state == VIR_DOMAIN_RUNNING) {
+        VIR_DEBUG("Transitioned guest %s to paused state due to unknown event", vm->def->name);
+
+        vm->state = VIR_DOMAIN_PAUSED;
+        event = virDomainEventNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_SUSPENDED,
+                                         VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+    }
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        if (event)
+            qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuHandleDomainRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm,
                           long long offset)
@@ -943,15 +975,32 @@ qemuHandleDomainWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                          int action)
 {
     struct qemud_driver *driver = qemu_driver;
-    virDomainEventPtr event;
+    virDomainEventPtr watchdogEvent = NULL;
+    virDomainEventPtr lifecycleEvent = NULL;
 
     virDomainObjLock(vm);
-    event = virDomainEventWatchdogNewFromObj(vm, action);
+    watchdogEvent = virDomainEventWatchdogNewFromObj(vm, action);
+
+    if (action == VIR_DOMAIN_EVENT_WATCHDOG_PAUSE &&
+        vm->state == VIR_DOMAIN_RUNNING) {
+        VIR_DEBUG("Transitioned guest %s to paused state due to watchdog", vm->def->name);
+
+        vm->state = VIR_DOMAIN_PAUSED;
+        lifecycleEvent = virDomainEventNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+    }
     virDomainObjUnlock(vm);
 
-    if (event) {
+    if (watchdogEvent || lifecycleEvent) {
         qemuDriverLock(driver);
-        qemuDomainEventQueue(driver, event);
+        if (watchdogEvent)
+            qemuDomainEventQueue(driver, watchdogEvent);
+        if (lifecycleEvent)
+            qemuDomainEventQueue(driver, lifecycleEvent);
         qemuDriverUnlock(driver);
     }
 
@@ -966,7 +1015,8 @@ qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                         int action)
 {
     struct qemud_driver *driver = qemu_driver;
-    virDomainEventPtr event;
+    virDomainEventPtr ioErrorEvent = NULL;
+    virDomainEventPtr lifecycleEvent = NULL;
     const char *srcPath;
     const char *devAlias;
     virDomainDiskDefPtr disk;
@@ -982,12 +1032,28 @@ qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         devAlias = "";
     }
 
-    event = virDomainEventIOErrorNewFromObj(vm, srcPath, devAlias, action);
+    ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, srcPath, devAlias, action);
+
+    if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
+        vm->state == VIR_DOMAIN_RUNNING) {
+        VIR_DEBUG("Transitioned guest %s to paused state due to IO error", vm->def->name);
+
+        vm->state = VIR_DOMAIN_PAUSED;
+        lifecycleEvent = virDomainEventNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_IOERROR);
+
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+    }
     virDomainObjUnlock(vm);
 
-    if (event) {
+    if (ioErrorEvent || lifecycleEvent) {
         qemuDriverLock(driver);
-        qemuDomainEventQueue(driver, event);
+        if (ioErrorEvent)
+            qemuDomainEventQueue(driver, ioErrorEvent);
+        if (lifecycleEvent)
+            qemuDomainEventQueue(driver, lifecycleEvent);
         qemuDriverUnlock(driver);
     }
 
@@ -1090,6 +1156,7 @@ no_memory:
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
+    .domainStop = qemuHandleDomainStop,
     .domainReset = qemuHandleDomainReset,
     .domainRTCChange = qemuHandleDomainRTCChange,
     .domainWatchdog = qemuHandleDomainWatchdog,

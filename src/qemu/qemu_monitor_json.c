@@ -66,7 +66,7 @@ struct {
     { "STOP", qemuMonitorJSONHandleStop, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
     { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
-    { "DISK_IO_ERROR", qemuMonitorJSONHandleIOError, },
+    { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
     { "VNC_CONNECTED", qemuMonitorJSONHandleVNCConnect, },
     { "VNC_INITIALIZED", qemuMonitorJSONHandleVNCInitialize, },
     { "VNC_DISCONNECTED", qemuMonitorJSONHandleVNCDisconnect, },
