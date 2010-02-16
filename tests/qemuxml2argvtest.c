@@ -98,7 +98,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
         len += strlen(*tmp) + 1;
         tmp++;
     }
-    actualargv = malloc(sizeof(*actualargv)*len);
+    if ((actualargv = malloc(sizeof(*actualargv)*len)) == NULL)
+        goto fail;
     actualargv[0] = '\0';
     tmp = qenv;
     while (*tmp) {
