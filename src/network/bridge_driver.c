@@ -1188,7 +1188,7 @@ static int networkListDefinedNetworks(virConnectPtr conn, char **const names, in
 
 static int networkIsActive(virNetworkPtr net)
 {
-    struct network_driver *driver = net->conn->privateData;
+    struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -1209,7 +1209,7 @@ cleanup:
 
 static int networkIsPersistent(virNetworkPtr net)
 {
-    struct network_driver *driver = net->conn->privateData;
+    struct network_driver *driver = net->conn->networkPrivateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
