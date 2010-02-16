@@ -2087,6 +2087,7 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
 cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
+    VIR_FREE(safedev);
     return ret;
 }
 
