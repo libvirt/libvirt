@@ -304,7 +304,7 @@ int
 virSetError(virErrorPtr newerr)
 {
     virErrorPtr err;
-    err = virGetLastError();
+    err = virLastErrorObject();
     if (!err)
         return -1;
 
