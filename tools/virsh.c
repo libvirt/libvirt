@@ -8222,8 +8222,10 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
 
             str = end;
 
-            if (tk == VSH_TK_END)
+            if (tk == VSH_TK_END) {
+                VIR_FREE(tkdata);
                 break;
+            }
             if (tk == VSH_TK_ERROR)
                 goto syntaxError;
 
