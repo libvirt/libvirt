@@ -1472,17 +1472,39 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     int template_ifname = 0;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        int active, fail = 0;
+        virErrorPtr errobj;
         virNetworkPtr network = virNetworkLookupByName(conn,
-                                                      net->data.network.name);
+                                                       net->data.network.name);
         if (!network)
             return -1;
 
-        brname = virNetworkGetBridgeName(network);
+        active = virNetworkIsActive(network);
+        if (active != 1) {
+            fail = 1;
 
+            if (active == 0)
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Network '%s' is not active."),
+                                net->data.network.name);
+        }
+
+        if (!fail) {
+            brname = virNetworkGetBridgeName(network);
+            if (brname == NULL)
+                fail = 1;
+        }
+
+        /* Make sure any above failure is preserved */
+        errobj = virSaveLastError();
         virNetworkFree(network);
+        virSetError(errobj);
+        virFreeError(errobj);
 
-        if (brname == NULL)
+        errobj = virSaveLastError();
+        if (fail)
             return -1;
+
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         if (!(brname = strdup(net->data.bridge.brname))) {
             virReportOOMError();
