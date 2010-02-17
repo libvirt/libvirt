@@ -34,6 +34,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
+#include <libxml/xmlsave.h>
 
 #ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
@@ -7025,6 +7026,123 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "cpu-baseline" command
+ */
+static const vshCmdInfo info_cpu_baseline[] = {
+    {"help", gettext_noop("compute baseline CPU")},
+    {"desc", gettext_noop("Compute baseline CPU for a set of given CPUs.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_cpu_baseline[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing XML CPU descriptions")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
+{
+    char *from;
+    int found;
+    int ret = TRUE;
+    char *buffer;
+    char *p;
+    char *result = NULL;
+    const char **list = NULL;
+    unsigned int count = 0;
+    xmlDocPtr doc = NULL;
+    xmlNodePtr node_list, cur;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlSaveCtxtPtr sctxt = NULL;
+    xmlBufferPtr buf = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    int res, i;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
+
+    doc = xmlNewDoc(NULL);
+    if (doc == NULL)
+        goto no_memory;
+
+    res = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0, buffer, &node_list);
+    if (res != 0) {
+        vshError(ctl, _("Failed to parse XML fragment %s"), from);
+        ret = FALSE;
+        goto cleanup;
+    }
+
+    xmlAddChildList((xmlNodePtr) doc, node_list);
+
+    ctxt = xmlXPathNewContext(doc);
+    if (!ctxt)
+        goto no_memory;
+
+    obj = xmlXPathEval(BAD_CAST "//cpu[not(ancestor::cpu)]", ctxt);
+    if ((obj == NULL) || (obj->nodesetval == NULL) ||
+        (obj->nodesetval->nodeTab == NULL))
+        goto cleanup;
+
+    for (i = 0;i < obj->nodesetval->nodeNr;i++) {
+        buf = xmlBufferCreate();
+        if (buf == NULL)
+            goto no_memory;
+        sctxt = xmlSaveToBuffer(buf, NULL, 0);
+        if (sctxt == NULL) {
+            xmlBufferFree(buf);
+            goto no_memory;
+        }
+
+        xmlSaveTree(sctxt, obj->nodesetval->nodeTab[i]);
+        xmlSaveClose(sctxt);
+
+        list = vshRealloc(ctl, list, sizeof(char *) * (count + 1));
+        list[count++] = (char *) buf->content;
+        buf->content = NULL;
+        xmlBufferFree(buf);
+        buf = NULL;
+    }
+
+    if (count == 0) {
+        vshError(ctl, _("No host CPU specified in '%s'"), from);
+        ret = FALSE;
+        goto cleanup;
+    }
+
+    result = virConnectBaselineCPU(ctl->conn, list, count, 0);
+
+    if (result)
+        vshPrint(ctl, "%s", result);
+    else
+        ret = FALSE;
+
+cleanup:
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+    VIR_FREE(result);
+    if ((list != NULL) && (count > 0)) {
+        for (i = 0;i < count;i++)
+            VIR_FREE(list[i]);
+    }
+    VIR_FREE(list);
+    VIR_FREE(buffer);
+
+    return ret;
+
+no_memory:
+    vshError(ctl, "%s", _("Out of memory"));
+    ret = FALSE;
+}
+
 /* Common code for the edit / net-edit / pool-edit functions which follow. */
 static char *
 editWriteToTempFile (vshControl *ctl, const char *doc)
@@ -7396,6 +7514,7 @@ static const vshCmdDef commands[] = {
 #ifndef WIN32
     {"console", cmdConsole, opts_console, info_console},
 #endif
+    {"cpu-baseline", cmdCPUBaseline, opts_cpu_baseline, info_cpu_baseline},
     {"cpu-compare", cmdCPUCompare, opts_cpu_compare, info_cpu_compare},
     {"create", cmdCreate, opts_create, info_create},
     {"start", cmdStart, opts_start, info_start},
