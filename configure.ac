@@ -4,6 +4,7 @@ AC_INIT([libvirt], [0.7.6])
 AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms
 AM_INIT_AUTOMAKE([-Wno-portability])
 
