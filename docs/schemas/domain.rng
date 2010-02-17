@@ -537,7 +537,7 @@
         <ref name="unsignedInt"/>
       </attribute>
       <optional>
-	<ref name="address"/>
+        <ref name="address"/>
       </optional>
     </element>
   </define>
@@ -602,7 +602,7 @@
         </group>
       </choice>
       <optional>
-	<ref name="address"/>
+        <ref name="address"/>
       </optional>
     </element>
   </define>
@@ -761,7 +761,7 @@
         </element>
       </optional>
       <optional>
-	<ref name="address"/>
+        <ref name="address"/>
       </optional>
     </interleave>
   </define>
@@ -1014,7 +1014,7 @@
         </element>
       </optional>
       <optional>
-	<ref name="address"/>
+        <ref name="address"/>
       </optional>
     </interleave>
   </define>
@@ -1145,9 +1145,9 @@
       <interleave>
         <ref name="qemucdevSrcDef"/>
         <ref name="guestfwdTarget"/>
-	<optional>
-	  <ref name="address"/>
-	</optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -1169,7 +1169,7 @@
         </attribute>
       </optional>
       <optional>
-	<ref name="address"/>
+        <ref name="address"/>
       </optional>
     </element>
   </define>
@@ -1198,12 +1198,12 @@
       <group>
         <element name="source">
           <choice>
-	    <group>
+            <group>
               <ref name="usbproduct"/>
-	      <optional>
-		<ref name="usbaddress"/>
-	      </optional>
-	    </group>
+              <optional>
+                <ref name="usbaddress"/>
+              </optional>
+            </group>
             <ref name="usbaddress"/>
             <element name="address">
               <ref name="pciaddress"/>
@@ -1262,7 +1262,7 @@
     </optional>
     <optional>
       <attribute name="bus">
-	<ref name="driveBus"/>
+        <ref name="driveBus"/>
       </attribute>
     </optional>
     <attribute name="unit">
@@ -1401,18 +1401,18 @@
   <define name="address">
     <element name="address">
       <choice>
-	<group>
-	  <attribute name="type">
-	    <value>pci</value>
-	  </attribute>
-	  <ref name="pciaddress"/>
-	</group>
-	<group>
-	  <attribute name="type">
-	    <value>drive</value>
-	  </attribute>
-	  <ref name="driveaddress"/>
-	</group>
+        <group>
+          <attribute name="type">
+            <value>pci</value>
+          </attribute>
+          <ref name="pciaddress"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>drive</value>
+          </attribute>
+          <ref name="driveaddress"/>
+        </group>
       </choice>
     </element>
   </define>
