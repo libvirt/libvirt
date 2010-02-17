@@ -908,7 +908,11 @@ static int
 openvzSetUUID(int vpsid){
     unsigned char uuid[VIR_UUID_BUFLEN];
 
-    virUUIDGenerate(uuid);
+    if (virUUIDGenerate(uuid)) {
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Failed to generate UUID"));
+        return -1;
+    }
 
     return openvzSetDefinedUUID(vpsid, uuid);
 }
