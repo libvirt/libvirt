@@ -4383,7 +4383,6 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
                             int autostart)
 {
     struct sexpr *root, *autonode;
-    const char *autostr;
     char buf[4096];
     int ret = -1;
     xenUnifiedPrivatePtr priv;
@@ -4408,16 +4407,17 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
         return (-1);
     }
 
-    autostr = sexpr_node(root, "domain/on_xend_start");
-    if (autostr) {
-        if (!STREQ(autostr, "ignore") && !STREQ(autostr, "start")) {
+    autonode = sexpr_lookup(root, "domain/on_xend_start");
+    if (autonode) {
+        const char *val = (autonode->u.s.car->kind == SEXPR_VALUE
+                           ? autonode->u.s.car->u.value : NULL);
+        if (!STREQ(val, "ignore") && !STREQ(val, "start")) {
             virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("unexpected value from on_xend_start"));
             goto error;
         }
 
         // Change the autostart value in place, then define the new sexpr
-        autonode = sexpr_lookup(root, "domain/on_xend_start");
         VIR_FREE(autonode->u.s.car->u.value);
         autonode->u.s.car->u.value = (autostart ? strdup("start")
                                                 : strdup("ignore"));
