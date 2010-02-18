@@ -40,7 +40,6 @@
 #include <linux/rtnetlink.h>
 #include <linux/if_tun.h>
 
-#include "c-ctype.h"
 #include "util.h"
 #include "memory.h"
 #include "macvtap.h"
@@ -447,15 +446,14 @@ buffer_too_small:
 
 
 static int
-link_del(const char *type,
-         const char *name)
+link_del(const char *name)
 {
     int rc = 0;
     char nlmsgbuf[256];
     struct nlmsghdr *nlm = (struct nlmsghdr *)nlmsgbuf, *resp;
     struct nlmsgerr *err;
     char rtattbuf[64];
-    struct rtattr *rta, *rta1;
+    struct rtattr *rta;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     char *recvbuf = NULL;
     int recvbuflen;
@@ -466,23 +464,6 @@ link_del(const char *type,
 
     if (!nlAppend(nlm, sizeof(nlmsgbuf), &ifinfo, sizeof(ifinfo)))
         goto buffer_too_small;
-
-    rta = rtattrCreate(rtattbuf, sizeof(rtattbuf), IFLA_LINKINFO, NULL, 0);
-    if (!rta)
-        goto buffer_too_small;
-
-    if (!(rta1 = nlAppend(nlm, sizeof(nlmsgbuf), rtattbuf, rta->rta_len)))
-        goto buffer_too_small;
-
-    rta = rtattrCreate(rtattbuf, sizeof(rtattbuf), IFLA_INFO_KIND,
-                       type, strlen(type));
-    if (!rta)
-        goto buffer_too_small;
-
-    if (!nlAppend(nlm, sizeof(nlmsgbuf), rtattbuf, rta->rta_len))
-        goto buffer_too_small;
-
-    rta1->rta_len = (char *)nlm + nlm->nlmsg_len - (char *)rta1;
 
     rta = rtattrCreate(rtattbuf, sizeof(rtattbuf), IFLA_IFNAME,
                        name, strlen(name)+1);
@@ -633,7 +614,8 @@ macvtapModeFromInt(enum virDomainNetdevMacvtapType mode)
 }
 
 
-/* openMacvtapTap:
+/**
+ * openMacvtapTap:
  * Create an instance of a macvtap device and open its tap character
  * device.
  * @conn: Pointer to virConnect object
@@ -707,14 +689,17 @@ create_name:
     rc = ifUp(cr_ifname, 1);
     if (rc != 0) {
         virReportSystemError(errno,
-                             _("cannot 'up' interface %s"), cr_ifname);
+                             _("cannot 'up' interface %s -- another "
+                             "macvtap device may be 'up' and have the same "
+                             "MAC address"),
+                             cr_ifname);
         rc = -1;
         goto link_del_exit;
     }
 
     rc = openTap(cr_ifname, 10);
 
-    if (rc > 0)
+    if (rc >= 0)
         *res_ifname = strdup(cr_ifname);
     else
         goto link_del_exit;
@@ -722,79 +707,22 @@ create_name:
     return rc;
 
 link_del_exit:
-    link_del(type, ifname);
+    link_del(cr_ifname);
 
     return rc;
 }
 
 
-/* Delete a macvtap type of interface given the MAC address. This
- * function will delete all macvtap type of interfaces that have the
- * given MAC address.
- * @macaddress : Pointer to 6 bytes holding the MAC address of the
- *    macvtap device(s) to destroy
+/**
+ * delMacvtapByName:
+ * @ifname : The name of the macvtap interface
  *
- * Returns 0 in case of success, negative value in case of error.
+ * Delete an interface given its name.
  */
-int
-delMacvtapByMACAddress(const unsigned char *macaddress,
-                       int *hasBusyDev)
+void
+delMacvtap(const char *ifname)
 {
-    struct ifreq ifr;
-    FILE *file;
-    char *ifname, *pos;
-    char buffer[1024];
-    off_t oldpos = 0;
-    int tapfd;
-
-    *hasBusyDev = 0;
-
-    file = fopen("/proc/net/dev", "r");
-
-    if (!file) {
-        virReportSystemError(errno, "%s",
-                             _("cannot open file to read network interfaces "
-                             "from"));
-        return -1;
-    }
-
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot open socket"));
-        goto sock_err;
-    }
-
-    while (NULL != (ifname = fgets(buffer, sizeof(buffer), file))) {
-        if (c_isspace(ifname[0]))
-            ifname++;
-        if ((pos = strchr(ifname, ':')) != NULL) {
-            pos[0] = 0;
-            if (virStrncpy(ifr.ifr_name, ifname, strlen(ifname),
-                           sizeof(ifr.ifr_name)) == NULL)
-                continue;
-            if (ioctl(sock, SIOCGIFHWADDR, (char *)&ifr) >= 0) {
-                if (memcmp(&ifr.ifr_hwaddr.sa_data[0], macaddress, 6) == 0) {
-                    tapfd = openTap(ifname, 0);
-                    if (tapfd > 0) {
-                        close(tapfd);
-                        ifUp(ifname, 0);
-                        if (link_del("macvtap", ifname) == 0)
-                            fseeko(file, oldpos, SEEK_SET);
-                    } else {
-                        *hasBusyDev = 1;
-                    }
-                }
-            }
-        }
-        oldpos = ftello(file);
-    }
-
-    close(sock);
-sock_err:
-    fclose(file);
-
-    return 0;
+    link_del(ifname);
 }
 
 #endif

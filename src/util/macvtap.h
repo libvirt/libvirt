@@ -35,8 +35,7 @@ int openMacvtapTap(virConnectPtr conn,
                    int mode,
                    char **res_ifname);
 
-int delMacvtapByMACAddress(const unsigned char *macaddress,
-                           int *hasBusyDev);
+void delMacvtap(const char *name);
 
 #endif /* WITH_MACVTAP */
 

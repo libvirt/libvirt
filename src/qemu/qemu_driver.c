@@ -2942,17 +2942,6 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
         }
     }
 
-#if WITH_MACVTAP
-    def = vm->def;
-    for (i = 0; i < def->nnets; i++) {
-        virDomainNetDefPtr net = def->nets[i];
-        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            int dummy;
-            delMacvtapByMACAddress(net->mac, &dummy);
-        }
-    }
-#endif
-
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
         virReportSystemError(errno,
@@ -2998,6 +2987,17 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     }
 
     qemuDomainReAttachHostDevices(driver, vm->def);
+
+#if WITH_MACVTAP
+    def = vm->def;
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+            if (net->ifname)
+                delMacvtap(net->ifname);
+        }
+    }
+#endif
 
 retry:
     if ((ret = qemuRemoveCgroup(driver, vm, 0)) < 0) {
@@ -6347,8 +6347,8 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
 
 #if WITH_MACVTAP
     if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        int dummy;
-        delMacvtapByMACAddress(detach->mac, &dummy);
+        if (detach->ifname)
+            delMacvtap(detach->ifname);
     }
 #endif
 

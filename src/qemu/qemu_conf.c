@@ -1439,15 +1439,6 @@ qemudPhysIfaceConnect(virConnectPtr conn,
     int rc;
 #if WITH_MACVTAP
     char *res_ifname = NULL;
-    int hasBusyDev = 0;
-
-    delMacvtapByMACAddress(net->mac, &hasBusyDev);
-
-    if (hasBusyDev) {
-        virReportSystemError(errno, "%s",
-                             _("A macvtap with the same MAC address is in use"));
-        return -1;
-    }
 
     rc = openMacvtapTap(conn, net->ifname, net->mac, linkdev, brmode,
                         &res_ifname);
@@ -1460,7 +1451,6 @@ qemudPhysIfaceConnect(virConnectPtr conn,
     (void)net;
     (void)linkdev;
     (void)brmode;
-    (void)conn;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
     rc = -1;

@@ -2,4 +2,4 @@
 
 # macvtap.h
 openMacvtapTap;
-delMacvtapByMACAddress;
+delMacvtap;
