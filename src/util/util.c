@@ -451,20 +451,6 @@ __virExec(const char *const*argv,
     int pipeerr[2] = {-1,-1};
     int childout = -1;
     int childerr = -1;
-    int logprio;
-    sigset_t oldmask, newmask;
-    struct sigaction sig_action;
-
-    /*
-     * Need to block signals now, so that child process can safely
-     * kill off caller's signal handlers without a race.
-     */
-    sigfillset(&newmask);
-    if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot block signals"));
-        return -1;
-    }
 
     if ((null = open("/dev/null", O_RDONLY)) < 0) {
         virReportSystemError(errno,
@@ -531,17 +517,9 @@ __virExec(const char *const*argv,
         childerr = null;
     }
 
-    /* Ensure we hold the logging lock, to protect child processes
-     * from deadlocking on another threads inheirited mutex state */
-    virLogLock();
-    pid = fork();
-
-    /* Unlock for both parent and child process */
-    virLogUnlock();
+    int forkRet = virFork(&pid);
 
     if (pid < 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot fork child process"));
         goto cleanup;
     }
 
@@ -556,12 +534,8 @@ __virExec(const char *const*argv,
             *errfd = pipeerr[0];
         }
 
-        /* Restore our original signal mask now child is safely
-           running */
-        if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
-            virReportSystemError(errno,
-                                 "%s", _("cannot unblock signals"));
-            return -1;
+        if (forkRet < 0) {
+            goto cleanup;
         }
 
         *retpid = pid;
@@ -570,38 +544,10 @@ __virExec(const char *const*argv,
 
     /* child */
 
-    /* Remove any error callback too, so errors in child now
-       get sent to stderr where they stand a fighting chance
-       of being seen / logged */
-    virSetErrorFunc(NULL, NULL);
-
-    /* Make sure any hook logging is sent to stderr, since virExec will
-     * close any unknown FDs (including logging handlers) before launching
-     * the new process */
-    logprio = virLogGetDefaultPriority();
-    virLogReset();
-    virLogSetDefaultPriority(logprio);
-
-    /* Clear out all signal handlers from parent so nothing
-       unexpected can happen in our child once we unblock
-       signals */
-    sig_action.sa_handler = SIG_DFL;
-    sig_action.sa_flags = 0;
-    sigemptyset(&sig_action.sa_mask);
-
-    for (i = 1 ; i < NSIG ; i++)
-        /* Only possible errors are EFAULT or EINVAL
-           The former wont happen, the latter we
-           expect, so no need to check return value */
-        sigaction(i, &sig_action, NULL);
-
-    /* Unmask all signals in child, since we've no idea
-       what the caller's done with their signal mask
-       and don't want to propagate that to children */
-    sigemptyset(&newmask);
-    if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot unblock signals"));
+    if (forkRet < 0) {
+        /* The fork was sucessful, but after that there was an error
+         * in the child (which was already logged).
+        */
         _exit(1);
     }
 
@@ -1370,14 +1316,10 @@ int virFileCreate(const char *path, mode_t mode,
      * following dance avoids problems caused by root-squashing
      * NFS servers. */
 
-    virLogLock();
-    pid = fork();
-    virLogUnlock();
+    int forkRet = virFork(&pid);
 
     if (pid < 0) {
         ret = errno;
-        virReportSystemError(errno,
-                             _("cannot fork o create file '%s'"), path);
         return ret;
     }
 
@@ -1429,7 +1371,15 @@ parenterror:
         return ret;
     }
 
-    /* child - set desired uid/gid, then attempt to create the file */
+
+    /* child */
+
+    if (forkRet < 0) {
+        /* error encountered and logged in virFork() after the fork. */
+        goto childerror;
+    }
+
+    /* set desired uid/gid, then attempt to create the file */
 
     if ((gid != 0) && (setgid(gid) != 0)) {
         ret = errno;
@@ -1480,15 +1430,10 @@ int virDirCreate(const char *path, mode_t mode,
         return virDirCreateSimple(path, mode, uid, gid, flags);
     }
 
-    virLogLock();
-    pid = fork();
-    virLogUnlock();
+    int forkRet = virFork(&pid);
 
     if (pid < 0) {
         ret = errno;
-        virReportSystemError(errno,
-                             _("cannot fork to create directory '%s'"),
-                             path);
         return ret;
     }
 
@@ -1538,7 +1483,14 @@ parenterror:
         return ret;
     }
 
-    /* child - set desired uid/gid, then attempt to create the directory */
+    /* child */
+
+    if (forkRet < 0) {
+        /* error encountered and logged in virFork() after the fork. */
+        goto childerror;
+    }
+
+    /* set desired uid/gid, then attempt to create the directory */
 
     if ((gid != 0) && (setgid(gid) != 0)) {
         ret = errno;
