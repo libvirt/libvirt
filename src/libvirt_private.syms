@@ -179,7 +179,6 @@ virDomainObjListInit;
 virDomainObjListDeinit;
 virDomainObjRef;
 virDomainObjUnref;
-virDomainDevicePCIAddressEqual;
 virDomainDeviceAddressIsValid;
 virDomainDevicePCIAddressIsValid;
 virDomainDeviceInfoIsSet;

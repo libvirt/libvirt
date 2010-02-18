@@ -740,10 +740,6 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
-int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
-                                   virDomainDevicePCIAddressPtr b);
-int virDomainDeviceDriveAddressEqual(virDomainDeviceDriveAddressPtr a,
-                                     virDomainDeviceDriveAddressPtr b);
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);

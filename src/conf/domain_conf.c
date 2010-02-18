@@ -966,30 +966,6 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
 
 #ifndef PROXY
 
-int virDomainDevicePCIAddressEqual(virDomainDevicePCIAddressPtr a,
-                                   virDomainDevicePCIAddressPtr b)
-{
-    if (a->domain == b->domain &&
-        a->bus    == b->bus &&
-        a->slot   == b->slot &&
-        a->function == b->function)
-        return 1;
-
-    return 0;
-}
-
-
-int virDomainDeviceDriveAddressEqual(virDomainDeviceDriveAddressPtr a,
-                                     virDomainDeviceDriveAddressPtr b)
-{
-    if (a->controller == b->controller &&
-        a->bus == b->bus &&
-        a->unit == b->unit)
-        return 1;
-
-    return 0;
-}
-
 
 static int
 virDomainDevicePCIAddressParseXML(xmlNodePtr node,
