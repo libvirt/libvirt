@@ -375,7 +375,7 @@ out:
     if (dir)
         closedir(dir);
     VIR_FREE(device_link);
-    return 0;
+    return ret;
 }
 
 #endif /* __linux__ */
