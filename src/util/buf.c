@@ -1,7 +1,7 @@
 /*
  * buf.c: buffers for libvirt
  *
- * Copyright (C) 2005-2008 Red Hat, Inc.
+ * Copyright (C) 2005-2008, 2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -424,7 +424,7 @@ virBufferStrcat(virBufferPtr buf, ...)
 
         if (needSize > buf->size) {
             if (virBufferGrow(buf, needSize - buf->use) < 0)
-                return;
+                break;
         }
         memcpy(&buf->content[buf->use], str, len);
         buf->use += len;
