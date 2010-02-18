@@ -394,6 +394,7 @@ static const struct qemu_arch_info const arch_info_hvm[] = {
     {  "mipsel", 32, NULL, "qemu-system-mipsel", NULL, NULL, 0 },
     {  "sparc",  32, NULL, "qemu-system-sparc",  NULL, NULL, 0 },
     {  "ppc",    32, NULL, "qemu-system-ppc",    NULL, NULL, 0 },
+    {  "itanium", 64, NULL, "qemu-system-ia64",  NULL, NULL, 0 },
 };
 
 static const struct qemu_arch_info const arch_info_xen[] = {
