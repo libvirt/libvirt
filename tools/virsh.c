@@ -7141,6 +7141,7 @@ cleanup:
 no_memory:
     vshError(ctl, "%s", _("Out of memory"));
     ret = FALSE;
+    return ret;
 }
 
 /* Common code for the edit / net-edit / pool-edit functions which follow. */
