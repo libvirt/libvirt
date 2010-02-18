@@ -158,6 +158,7 @@ typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 #define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
 #define QEMU_DRIVE_HOST_PREFIX "drive-"
+#define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 
 #define qemuReportError(code, fmt...)                                   \
     virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
@@ -233,6 +234,8 @@ char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev);
 char * qemuBuildChrChardevStr(virDomainChrDefPtr dev);
 /* Legacy, pre device support */
 char * qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix);
+
+char * qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev);
 
 /* Legacy, pre device support */
 char * qemuBuildUSBHostdevUsbDevStr(virDomainHostdevDefPtr dev);

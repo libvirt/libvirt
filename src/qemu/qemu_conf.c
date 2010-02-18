@@ -2180,7 +2180,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     }
     for (i = 0; i < def->nchannels ; i++) {
         /* Nada - none are PCI based (yet) */
-        /* XXX virtio-serial will need one */
     }
     if (def->watchdog &&
         def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
@@ -2475,6 +2474,24 @@ qemuBuildControllerDevStr(virDomainControllerDefPtr def)
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         virBufferAddLit(&buf, "lsi");
         virBufferVSprintf(&buf, ",id=scsi%d", def->idx);
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+        if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virBufferAddLit(&buf, "virtio-serial-pci");
+        } else {
+            virBufferAddLit(&buf, "virtio-serial");
+        }
+        virBufferVSprintf(&buf, ",id=" QEMU_VIRTIO_SERIAL_PREFIX "%d",
+                          def->idx);
+        if (def->opts.vioserial.ports != -1) {
+            virBufferVSprintf(&buf, ",max_ports=%d",
+                              def->opts.vioserial.ports);
+        }
+        if (def->opts.vioserial.vectors != -1) {
+            virBufferVSprintf(&buf, ",vectors=%d",
+                              def->opts.vioserial.vectors);
+        }
         break;
 
     /* We always get an IDE controller, whether we want it or not. */
@@ -2968,6 +2985,45 @@ qemuBuildChrArgStr(virDomainChrDefPtr dev, const char *prefix)
         break;
     }
 
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+char *
+qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virBufferAddLit(&buf, "virtserialport");
+
+    if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        /* Check it's a virtio-serial address */
+        if (dev->info.type !=
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
+        {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("virtio serial device has invalid address type"));
+            goto error;
+        }
+
+        virBufferVSprintf(&buf,
+                          ",bus=" QEMU_VIRTIO_SERIAL_PREFIX "%d.%d",
+                          dev->info.addr.vioserial.controller,
+                          dev->info.addr.vioserial.bus);
+    }
+
+    virBufferVSprintf(&buf, ",chardev=%s", dev->info.alias);
+    if (dev->target.name) {
+        virBufferVSprintf(&buf, ",name=%s", dev->target.name);
+    }
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto error;
@@ -3842,6 +3898,25 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
             VIR_FREE(addr);
             ADD_ARG(devstr);
+            break;
+
+        case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                    _("virtio channel requires QEMU to support -device"));
+                goto error;
+            }
+
+            ADD_ARG_LIT("-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(channel)))
+                goto error;
+            ADD_ARG(devstr);
+
+            ADD_ARG_LIT("-device");
+            if (!(devstr = qemuBuildVirtioSerialPortDevStr(channel)))
+                goto error;
+            ADD_ARG(devstr);
+            break;
         }
     }
 
