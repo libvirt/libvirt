@@ -296,6 +296,124 @@ static int virClearCapabilities(void)
 }
 #endif
 
+
+/* virFork() - fork a new process while avoiding various race/deadlock conditions
+
+   @pid - a pointer to a pid_t that will receive the return value from
+          fork()
+
+   on return from virFork(), if *pid < 0, the fork failed and there is
+   no new process. Otherwise, just like fork(), if *pid == 0, it is the
+   child process returning, and if *pid > 0, it is the parent.
+
+   Even if *pid >= 0, if the return value from virFork() is < 0, it
+   indicates a failure that occurred in the parent or child process
+   after the fork. In this case, the child process should call
+   _exit(1) after doing any additional error reporting.
+
+ */
+int virFork(pid_t *pid) {
+    sigset_t oldmask, newmask;
+    struct sigaction sig_action;
+    int saved_errno, ret = -1;
+
+    *pid = -1;
+
+    /*
+     * Need to block signals now, so that child process can safely
+     * kill off caller's signal handlers without a race.
+     */
+    sigfillset(&newmask);
+    if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
+        saved_errno = errno;
+        virReportSystemError(errno,
+                             "%s", _("cannot block signals"));
+        goto cleanup;
+    }
+
+    /* Ensure we hold the logging lock, to protect child processes
+     * from deadlocking on another thread's inherited mutex state */
+    virLogLock();
+
+    *pid = fork();
+    saved_errno = errno; /* save for caller */
+
+    /* Unlock for both parent and child process */
+    virLogUnlock();
+
+    if (*pid < 0) {
+        /* attempt to restore signal mask, but ignore failure, to
+           avoid obscuring the fork failure */
+        pthread_sigmask(SIG_SETMASK, &oldmask, NULL);
+        virReportSystemError(saved_errno,
+                             "%s", _("cannot fork child process"));
+        goto cleanup;
+    }
+
+    if (*pid) {
+
+        /* parent process */
+
+        /* Restore our original signal mask now that the child is
+           safely running */
+        if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
+            saved_errno = errno; /* save for caller */
+            virReportSystemError(errno, "%s", _("cannot unblock signals"));
+            goto cleanup;
+        }
+        ret = 0;
+
+    } else {
+
+        /* child process */
+
+        int logprio;
+        int i;
+
+        /* Remove any error callback so errors in child now
+           get sent to stderr where they stand a fighting chance
+           of being seen / logged */
+        virSetErrorFunc(NULL, NULL);
+
+        /* Make sure any hook logging is sent to stderr, since child
+         * process may close the logfile FDs */
+        logprio = virLogGetDefaultPriority();
+        virLogReset();
+        virLogSetDefaultPriority(logprio);
+
+        /* Clear out all signal handlers from parent so nothing
+           unexpected can happen in our child once we unblock
+           signals */
+        sig_action.sa_handler = SIG_DFL;
+        sig_action.sa_flags = 0;
+        sigemptyset(&sig_action.sa_mask);
+
+        for (i = 1; i < NSIG; i++) {
+            /* Only possible errors are EFAULT or EINVAL
+               The former wont happen, the latter we
+               expect, so no need to check return value */
+
+            sigaction(i, &sig_action, NULL);
+        }
+
+        /* Unmask all signals in child, since we've no idea
+           what the caller's done with their signal mask
+           and don't want to propagate that to children */
+        sigemptyset(&newmask);
+        if (pthread_sigmask(SIG_SETMASK, &newmask, NULL) != 0) {
+            saved_errno = errno; /* save for caller */
+            virReportSystemError(errno, "%s", _("cannot unblock signals"));
+            goto cleanup;
+        }
+        ret = 0;
+    }
+
+cleanup:
+    if (ret < 0)
+        errno = saved_errno;
+    return ret;
+}
+
 /*
  * @argv argv to exec
  * @envp optional environment to use for exec
