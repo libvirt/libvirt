@@ -185,7 +185,7 @@ virDomainDeviceInfoIsSet;
 virDomainControllerTypeToString;
 virDomainControllerDefFree;
 virDomainDeviceAddressTypeToString;
-virDomainDefAddDiskControllers;
+virDomainDefAddImplicitControllers;
 virDomainDefClearPCIAddresses;
 virDomainDefClearDeviceAliases;
 virDomainDeviceInfoIterate;

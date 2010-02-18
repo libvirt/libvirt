@@ -523,16 +523,36 @@
   </define>
   <define name="controller">
     <element name="controller">
-      <optional>
-        <attribute name="type">
-          <choice>
-            <value>fdc</value>
-            <value>ide</value>
-            <value>scsi</value>
-            <value>sata</value>
-          </choice>
-        </attribute>
-      </optional>
+      <choice>
+        <group>
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>fdc</value>
+                <value>ide</value>
+                <value>scsi</value>
+                <value>sata</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+        <!-- virtio-serial can have 2 additional attributes -->
+        <group>
+          <attribute name="type">
+            <value>virtio-serial</value>
+          </attribute>
+          <optional>
+            <attribute name="ports">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="vectors">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+        </group>
+      </choice>
       <attribute name="index">
         <ref name="unsignedInt"/>
       </attribute>
@@ -1139,12 +1159,25 @@
       <attribute name="port"/>
     </element>
   </define>
+  <define name="virtioTarget">
+    <element name="target">
+      <attribute name="type">
+          <value>virtio</value>
+      </attribute>
+      <optional>
+        <attribute name="name"/>
+      </optional>
+    </element>
+  </define>
   <define name="channel">
     <element name="channel">
       <ref name="qemucdevSrcType"/>
       <interleave>
         <ref name="qemucdevSrcDef"/>
-        <ref name="guestfwdTarget"/>
+        <choice>
+          <ref name="guestfwdTarget"/>
+          <ref name="virtioTarget"/>
+        </choice>
         <optional>
           <ref name="address"/>
         </optional>
@@ -1268,6 +1301,16 @@
     <attribute name="unit">
       <ref name="driveUnit"/>
     </attribute>
+  </define>
+  <define name="virtioserialaddress">
+    <attribute name="controller">
+      <ref name="driveController"/>
+    </attribute>
+    <optional>
+      <attribute name="bus">
+        <ref name="driveBus"/>
+      </attribute>
+    </optional>
   </define>
   <!--
       Devices attached to a domain.
@@ -1412,6 +1455,12 @@
             <value>drive</value>
           </attribute>
           <ref name="driveaddress"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>virtio-serial</value>
+          </attribute>
+          <ref name="virtioserialaddress"/>
         </group>
       </choice>
     </element>

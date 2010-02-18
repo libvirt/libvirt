@@ -93,7 +93,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
               "pci",
-              "drive");
+              "drive",
+              "virtio-serial");
 
 VIR_ENUM_IMPL(virDomainDisk, VIR_DOMAIN_DISK_TYPE_LAST,
               "block",
@@ -125,7 +126,8 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
               "fdc",
               "scsi",
-              "sata")
+              "sata",
+              "virtio-serial")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
@@ -150,7 +152,8 @@ VIR_ENUM_IMPL(virDomainChrTarget, VIR_DOMAIN_CHR_TARGET_TYPE_LAST,
               "parallel",
               "serial",
               "console",
-              "guestfwd")
+              "guestfwd",
+              "virtio")
 
 VIR_ENUM_IMPL(virDomainChr, VIR_DOMAIN_CHR_TYPE_LAST,
               "null",
@@ -458,6 +461,10 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
     switch (def->targetType) {
     case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
         VIR_FREE(def->target.addr);
+        break;
+
+    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+        VIR_FREE(def->target.name);
         break;
     }
 
@@ -811,6 +818,13 @@ int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr ATTRI
     /*return addr->controller || addr->bus || addr->unit;*/
     return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
 }
+
+
+int virDomainDeviceVirtioSerialAddressIsValid(
+    virDomainDeviceVirtioSerialAddressPtr addr ATTRIBUTE_UNUSED)
+{
+    return 1; /* 0 is valid for all fields, so any successfully parsed addr is valid */
+}
 #endif /* !PROXY */
 
 
@@ -952,6 +966,12 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
                           info->addr.drive.unit);
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+        virBufferVSprintf(buf, " controller='%d' bus='%d'",
+                          info->addr.vioserial.controller,
+                          info->addr.vioserial.bus);
+        break;
+
     default:
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unknown address type '%d'"), info->type);
@@ -1075,6 +1095,50 @@ cleanup:
     return ret;
 }
 
+
+static int
+virDomainDeviceVirtioSerialAddressParseXML(
+    xmlNodePtr node,
+    virDomainDeviceVirtioSerialAddressPtr addr
+)
+{
+    char *controller, *bus;
+    int ret = -1;
+
+    memset(addr, 0, sizeof(*addr));
+
+    controller = virXMLPropString(node, "controller");
+    bus = virXMLPropString(node, "bus");
+
+    if (controller &&
+        virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'controller' attribute"));
+        goto cleanup;
+    }
+
+    if (bus &&
+        virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'bus' attribute"));
+        goto cleanup;
+    }
+
+    if (!virDomainDeviceVirtioSerialAddressIsValid(addr)) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Insufficient specification for "
+                               "virtio serial address"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(controller);
+    VIR_FREE(bus);
+    return ret;
+}
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -1134,6 +1198,12 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         if (virDomainDeviceDriveAddressParseXML(address, &info->addr.drive) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+        if (virDomainDeviceVirtioSerialAddressParseXML
+                (address, &info->addr.vioserial) < 0)
             goto cleanup;
         break;
 
@@ -1462,9 +1532,9 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     type = virXMLPropString(node, "type");
     if (type) {
-        if ((def->type = virDomainDiskBusTypeFromString(type)) < 0) {
+        if ((def->type = virDomainControllerTypeFromString(type)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("unknown disk controller type '%s'"), type);
+                                 _("Unknown controller type '%s'"), type);
             goto error;
         }
     }
@@ -1473,7 +1543,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (idx) {
         if (virStrToLong_i(idx, NULL, 10, &def->idx) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("cannot parse disk controller index %s"), idx);
+                                 _("Cannot parse controller index %s"), idx);
             goto error;
         }
     }
@@ -1481,10 +1551,48 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
         goto error;
 
+    switch (def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
+        char *ports = virXMLPropString(node, "ports");
+        if (ports) {
+            int r = virStrToLong_i(ports, NULL, 10,
+                                   &def->opts.vioserial.ports);
+            if (r != 0 || def->opts.vioserial.ports < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Invalid ports: %s"), ports);
+                VIR_FREE(ports);
+                goto error;
+            }
+        } else {
+            def->opts.vioserial.ports = -1;
+        }
+        VIR_FREE(ports);
+
+        char *vectors = virXMLPropString(node, "vectors");
+        if (vectors) {
+            int r = virStrToLong_i(vectors, NULL, 10,
+                                   &def->opts.vioserial.vectors);
+            if (r != 0 || def->opts.vioserial.vectors < 0) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("Invalid vectors: %s"), vectors);
+                VIR_FREE(vectors);
+                goto error;
+            }
+        } else {
+            def->opts.vioserial.vectors = -1;
+        }
+        VIR_FREE(vectors);
+        break;
+    }
+
+    default:
+        break;
+    }
+
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("Disk controllers must use the 'pci' address type"));
+                             _("Controllers must use the 'pci' address type"));
         goto error;
     }
 
@@ -2086,6 +2194,10 @@ virDomainChrDefParseXML(xmlNodePtr node,
                     virSocketSetPort(def->target.addr, port);
                     break;
 
+                case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+                    def->target.name = virXMLPropString(cur, "name");
+                    break;
+
                 default:
                     virDomainReportError(VIR_ERR_XML_ERROR,
                                          _("unexpected target type type %u"),
@@ -2095,7 +2207,6 @@ virDomainChrDefParseXML(xmlNodePtr node,
         }
         cur = cur->next;
     }
-
 
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -3629,12 +3740,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    /* Auto-add any further disk controllers implied by declared <disk>
-     * elements, but not present as <controller> elements
-     */
-    if (virDomainDefAddDiskControllers(def) < 0)
-        goto error;
-
     /* analysis of the filesystems */
     if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3948,6 +4053,11 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
     }
 
+    /* Auto-add any implied controllers which aren't present
+     */
+    if (virDomainDefAddImplicitControllers(def) < 0)
+        goto error;
+
     return def;
 
 no_memory:
@@ -4211,9 +4321,9 @@ cleanup:
     return obj;
 }
 
-static int virDomainDefMaybeAddDiskController(virDomainDefPtr def,
-                                              int type,
-                                              int idx)
+static int virDomainDefMaybeAddController(virDomainDefPtr def,
+                                          int type,
+                                          int idx)
 {
     int found = 0;
     int i;
@@ -4266,7 +4376,7 @@ static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
     }
 
     for (i = 0 ; i <= maxController ; i++) {
-        if (virDomainDefMaybeAddDiskController(def, controllerType, i) < 0)
+        if (virDomainDefMaybeAddController(def, controllerType, i) < 0)
             return -1;
     }
 
@@ -4274,13 +4384,33 @@ static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
 }
 
 
+static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
+{
+    /* Look for any virtio serial device */
+    int i;
+    for (i = 0 ; i < def->nchannels ; i++) {
+        virDomainChrDefPtr channel = def->channels[i];
+
+        if (channel->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO) {
+            /* Try to add a virtio serial controller with index 0 */
+            if (virDomainDefMaybeAddController(def,
+                    VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, 0) < 0)
+                return -1;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
- * Based on the declared <address type=drive> info for any disks,
+ * Based on the declared <address/> info for any devices,
  * add neccessary drive controllers which are not already present
  * in the XML. This is for compat with existing apps which will
  * not know/care about <controller> info in the XML
  */
-int virDomainDefAddDiskControllers(virDomainDefPtr def)
+int virDomainDefAddImplicitControllers(virDomainDefPtr def)
 {
     if (virDomainDefAddDiskControllersForType(def,
                                               VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
@@ -4295,6 +4425,9 @@ int virDomainDefAddDiskControllers(virDomainDefPtr def)
     if (virDomainDefAddDiskControllersForType(def,
                                               VIR_DOMAIN_CONTROLLER_TYPE_IDE,
                                               VIR_DOMAIN_DISK_BUS_IDE) < 0)
+        return -1;
+
+    if (virDomainDefMaybeAddVirtioSerialController(def) < 0)
         return -1;
 
     return 0;
@@ -4622,6 +4755,22 @@ virDomainControllerDefFormat(virBufferPtr buf,
                       "    <controller type='%s' index='%d'",
                       type, def->idx);
 
+    switch (def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+        if (def->opts.vioserial.ports != -1) {
+            virBufferVSprintf(buf, " ports='%d'",
+                              def->opts.vioserial.ports);
+        }
+        if (def->opts.vioserial.vectors != -1) {
+            virBufferVSprintf(buf, " vectors='%d'",
+                              def->opts.vioserial.vectors);
+        }
+        break;
+
+    default:
+        break;
+    }
+
     if (virDomainDeviceInfoIsSet(&def->info)) {
         virBufferAddLit(buf, ">\n");
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
@@ -4792,6 +4941,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     switch (def->targetType) {
     /* channel types are in a common channel element */
     case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
         elementName = "channel";
         break;
 
@@ -4905,11 +5055,18 @@ virDomainChrDefFormat(virBufferPtr buf,
             break;
         }
 
+    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+        virBufferAddLit(buf, "      <target type='virtio'");
+        if (def->target.name) {
+            virBufferEscapeString(buf, " name='%s'", def->target.name);
+        }
+        virBufferAddLit(buf, "/>\n");
+        break;
+
     case VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL:
     case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
     case VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE:
-        virBufferVSprintf(buf, "      <target port='%d'/>\n",
-                          def->target.port);
+        virBufferVSprintf(buf, "      <target port='%d'/>\n", def->target.port);
         break;
 
     default:
@@ -4919,8 +5076,10 @@ virDomainChrDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-        return -1;
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+    }
 
     virBufferVSprintf(buf, "    </%s>\n",
                       elementName);

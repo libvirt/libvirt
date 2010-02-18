@@ -5709,7 +5709,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             goto no_memory;
     }
 
-    if (virDomainDefAddDiskControllers(def) < 0)
+    if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
     return def;

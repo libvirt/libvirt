@@ -133,6 +133,7 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
     DO_TEST("channel-guestfwd");
+    DO_TEST("channel-virtio");
 
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");

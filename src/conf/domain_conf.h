@@ -68,6 +68,7 @@ enum virDomainDeviceAddressType {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
 
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 };
@@ -89,6 +90,13 @@ struct _virDomainDeviceDriveAddress {
     unsigned int unit;
 };
 
+typedef struct _virDomainDeviceVirtioSerialAddress virDomainDeviceVirtioSerialAddress;
+typedef virDomainDeviceVirtioSerialAddress *virDomainDeviceVirtioSerialAddressPtr;
+struct _virDomainDeviceVirtioSerialAddress {
+    unsigned int controller;
+    unsigned int bus;
+};
+
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
@@ -97,6 +105,7 @@ struct _virDomainDeviceInfo {
     union {
         virDomainDevicePCIAddress pci;
         virDomainDeviceDriveAddress drive;
+        virDomainDeviceVirtioSerialAddress vioserial;
     } addr;
 };
 
@@ -166,8 +175,16 @@ enum virDomainControllerType {
     VIR_DOMAIN_CONTROLLER_TYPE_FDC,
     VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
     VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+    VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
 
     VIR_DOMAIN_CONTROLLER_TYPE_LAST
+};
+
+typedef struct _virDomainVirtioSerialOpts virDomainVirtioSerialOpts;
+typedef virDomainVirtioSerialOpts *virDomainVirtioSerialOptsPtr;
+struct _virDomainVirtioSerialOpts {
+    int ports;   /* -1 == undef */
+    int vectors; /* -1 == undef */
 };
 
 /* Stores the virtual disk controller configuration */
@@ -176,6 +193,9 @@ typedef virDomainControllerDef *virDomainControllerDefPtr;
 struct _virDomainControllerDef {
     int type;
     int idx;
+    union {
+        virDomainVirtioSerialOpts vioserial;
+    } opts;
     virDomainDeviceInfo info;
 };
 
@@ -271,6 +291,7 @@ enum virDomainChrTargetType {
     VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL,
     VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE,
     VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD,
+    VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO,
 
     VIR_DOMAIN_CHR_TARGET_TYPE_LAST
 };
@@ -304,6 +325,7 @@ struct _virDomainChrDef {
     union {
         int port; /* parallel, serial, console */
         virSocketAddrPtr addr; /* guestfwd */
+        char *name; /* virtio */
     } target;
 
     int type;
@@ -744,6 +766,7 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 int virDomainDevicePCIAddressIsValid(virDomainDevicePCIAddressPtr addr);
 int virDomainDeviceDriveAddressIsValid(virDomainDeviceDriveAddressPtr addr);
+int virDomainDeviceVirtioSerialAddressIsValid(virDomainDeviceVirtioSerialAddressPtr addr);
 int virDomainDeviceInfoIsSet(virDomainDeviceInfoPtr info);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDefClearPCIAddresses(virDomainDefPtr def);
@@ -790,7 +813,7 @@ virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
                                       xmlDocPtr xml,
                                       xmlNodePtr root);
 
-int virDomainDefAddDiskControllers(virDomainDefPtr def);
+int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
 #endif
 char *virDomainDefFormat(virDomainDefPtr def,
