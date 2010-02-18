@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2009 Red Hat, Inc.
+/* Copyright (C) 2007, 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,8 @@ new_qparam_set (int init_alloc, ...)
 
         if (append_qparam (ps, pname, pvalue) == -1) {
             free_qparam_set (ps);
-            return NULL;
+            ps = NULL;
+            break;
         }
     }
     va_end (args);
@@ -75,17 +76,20 @@ append_qparams (struct qparam_set *ps, ...)
 {
     va_list args;
     const char *pname, *pvalue;
+    int ret = 0;
 
     va_start (args, ps);
     while ((pname = va_arg (args, char *)) != NULL) {
         pvalue = va_arg (args, char *);
 
-        if (append_qparam (ps, pname, pvalue) == -1)
-            return -1;
+        if (append_qparam (ps, pname, pvalue) == -1) {
+            ret = -1;
+            break;
+        }
     }
     va_end (args);
 
-    return 0;
+    return ret;
 }
 
 /* Ensure there is space to store at least one more parameter
