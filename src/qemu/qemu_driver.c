@@ -2724,7 +2724,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     /*
-     * Normally PCI addresses are assigned inhe virDomainCreate
+     * Normally PCI addresses are assigned in the virDomainCreate
      * or virDomainDefine methods. We might still need to assign
      * some here to cope with the question of upgrades. Regardless
      * we also need to populate the PCi address set cache for later
