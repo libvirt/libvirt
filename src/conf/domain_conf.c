@@ -5660,9 +5660,9 @@ char *virDomainDefFormat(virDomainDefPtr def,
     return NULL;
 }
 
-char *virDomainObjFormat(virCapsPtr caps,
-                         virDomainObjPtr obj,
-                         int flags)
+static char *virDomainObjFormat(virCapsPtr caps,
+                                virDomainObjPtr obj,
+                                int flags)
 {
     char *config_xml = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;

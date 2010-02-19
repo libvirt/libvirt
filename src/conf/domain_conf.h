@@ -818,9 +818,6 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 #endif
 char *virDomainDefFormat(virDomainDefPtr def,
                          int flags);
-char *virDomainObjFormat(virCapsPtr caps,
-                         virDomainObjPtr obj,
-                         int flags);
 
 int virDomainCpuSetParse(const char **str,
                          char sep,
