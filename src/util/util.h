@@ -233,6 +233,7 @@ static inline int getuid (void) { return 0; }
 static inline int getgid (void) { return 0; }
 #endif
 
+char *virGetHostnameLocalhost(int allow_localhost);
 char *virGetHostname(virConnectPtr conn);
 
 int virKillProcess(pid_t pid, int sig);

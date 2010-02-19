@@ -7748,7 +7748,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         if (port == QEMUD_MIGRATION_NUM_PORTS) port = 0;
 
         /* Get hostname */
-        if ((hostname = virGetHostname(dconn)) == NULL)
+        if ((hostname = virGetHostnameLocalhost(0)) == NULL)
             goto cleanup;
 
         /* XXX this really should have been a properly well-formed

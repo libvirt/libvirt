@@ -565,6 +565,7 @@ virExecDaemonize;
 virSetCloseExec;
 virSetNonBlock;
 virFormatMacAddr;
+virGetHostnameLocalhost;
 virGetHostname;
 virParseMacAddr;
 virFileDeletePid;

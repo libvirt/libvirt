@@ -2263,11 +2263,11 @@ char *virIndexToDiskName(int idx, const char *prefix)
 #define AI_CANONIDN 0
 #endif
 
-char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+char *virGetHostnameLocalhost(int allow_localhost)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result;
-    struct addrinfo hints, *info;
+    struct addrinfo hints, *info, *res;
 
     r = gethostname (hostname, sizeof(hostname));
     if (r == -1) {
@@ -2287,6 +2287,34 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
                      hostname, gai_strerror(r));
         return NULL;
     }
+
+    /* if we aren't allowing localhost, then we iterate through the
+     * list and make sure none of the IPv4 addresses are 127.0.0.1 and
+     * that none of the IPv6 addresses are ::1
+     */
+    if (!allow_localhost) {
+        res = info;
+        while (res) {
+            if (res->ai_family == AF_INET) {
+                if (htonl(((struct sockaddr_in *)res->ai_addr)->sin_addr.s_addr) == INADDR_LOOPBACK) {
+                    virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("canonical hostname pointed to localhost, but this is not allowed"));
+                    freeaddrinfo(info);
+                    return NULL;
+                }
+            }
+            else if (res->ai_family == AF_INET6) {
+                if (IN6_IS_ADDR_LOOPBACK(&((struct sockaddr_in6 *)res->ai_addr)->sin6_addr)) {
+                    virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("canonical hostname pointed to localhost, but this is not allowed"));
+                    freeaddrinfo(info);
+                    return NULL;
+                }
+            }
+            res = res->ai_next;
+        }
+    }
+
     if (info->ai_canonname == NULL) {
         virUtilError(VIR_ERR_INTERNAL_ERROR,
                      "%s", _("could not determine canonical host name"));
@@ -2301,6 +2329,11 @@ char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 
     freeaddrinfo(info);
     return result;
+}
+
+char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return virGetHostnameLocalhost(1);
 }
 
 /* send signal to a single process */
