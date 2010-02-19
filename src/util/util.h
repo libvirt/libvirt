@@ -110,13 +110,22 @@ char *virFindFileInPath(const char *file);
 int virFileExists(const char *path);
 
 enum {
-    VIR_FILE_CREATE_NONE        = 0,
-    VIR_FILE_CREATE_AS_UID      = (1 << 0),
-    VIR_FILE_CREATE_ALLOW_EXIST = (1 << 1),
+    VIR_FILE_OP_NONE        = 0,
+    VIR_FILE_OP_AS_UID      = (1 << 0),
+    VIR_FILE_OP_FORCE_PERMS = (1 << 1),
 };
+typedef int (*virFileOperationHook)(int fd, void *data);
+int virFileOperation(const char *path, int openflags, mode_t mode,
+                     uid_t uid, gid_t gid,
+                     virFileOperationHook hook, void *hookdata,
+                     unsigned int flags) ATTRIBUTE_RETURN_CHECK;
 
-int virFileCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
-                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
+enum {
+    VIR_DIR_CREATE_NONE        = 0,
+    VIR_DIR_CREATE_AS_UID      = (1 << 0),
+    VIR_DIR_CREATE_FORCE_PERMS = (1 << 1),
+    VIR_DIR_CREATE_ALLOW_EXIST = (1 << 2),
+};
 int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
