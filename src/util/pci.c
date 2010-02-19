@@ -539,7 +539,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
      */
     if (pciRead(dev, 0, config_space, PCI_CONF_LEN) < 0) {
         pciReportError(VIR_ERR_NO_SUPPORT,
-                       _("Failed to save PCI config space for %s"),
+                       _("Failed to read PCI config space for %s"),
                        dev->name);
         goto out;
     }
@@ -585,7 +585,7 @@ pciTryPowerManagementReset(pciDevice *dev)
     /* Save and restore the device's config space. */
     if (pciRead(dev, 0, &config_space[0], PCI_CONF_LEN) < 0) {
         pciReportError(VIR_ERR_NO_SUPPORT,
-                       _("Failed to save PCI config space for %s"),
+                       _("Failed to read PCI config space for %s"),
                        dev->name);
         return -1;
     }
