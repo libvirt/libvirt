@@ -251,6 +251,7 @@ int         qemudNetworkIfaceConnect    (virConnectPtr conn,
     ATTRIBUTE_NONNULL(1);
 
 int qemudPhysIfaceConnect(virConnectPtr conn,
+                          struct qemud_driver *driver,
                           virDomainNetDefPtr net,
                           char *linkdev,
                           int brmode,

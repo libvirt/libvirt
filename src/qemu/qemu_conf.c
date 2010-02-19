@@ -335,7 +335,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         if (!(driver->ebtables = ebtablesContextNew("qemu"))) {
             driver->macFilter = 0;
             virReportSystemError(errno,
-                                 _("failed to enable mac filter in in '%s'"),
+                                 _("failed to enable mac filter in '%s'"),
                                  __FILE__);
         }
 
@@ -1432,6 +1432,7 @@ int qemudExtractVersion(struct qemud_driver *driver) {
  */
 int
 qemudPhysIfaceConnect(virConnectPtr conn,
+                      struct qemud_driver *driver,
                       virDomainNetDefPtr net,
                       char *linkdev,
                       int brmode,
@@ -1441,6 +1442,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
 #if WITH_MACVTAP
     char *res_ifname = NULL;
     int vnet_hdr = 0;
+    int err;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
         net->model && STREQ(net->model, "virtio"))
@@ -1452,12 +1454,21 @@ qemudPhysIfaceConnect(virConnectPtr conn,
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
     }
+
+    if (rc >=0 && driver->macFilter) {
+        if ((err = networkAllowMacOnPort(driver, net->ifname, net->mac))) {
+            virReportSystemError(err,
+                 _("failed to add ebtables rule to allow MAC address on  '%s'"),
+                                 net->ifname);
+        }
+    }
 #else
     (void)conn;
     (void)net;
     (void)linkdev;
     (void)brmode;
     (void)qemuCmdFlags;
+    (void)driver;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
     rc = -1;
@@ -3757,7 +3768,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 if (snprintf(tapfd_name, sizeof(tapfd_name), "%d", tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
             } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-                int tapfd = qemudPhysIfaceConnect(conn, net,
+                int tapfd = qemudPhysIfaceConnect(conn, driver, net,
                                                   net->data.direct.linkdev,
                                                   net->data.direct.mode,
                                                   qemuCmdFlags);
