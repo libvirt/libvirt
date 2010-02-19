@@ -19,7 +19,7 @@ grep '^#define WITH_QEMU 1' "$CONFIG_HEADER" > /dev/null ||
 conf="$abs_top_srcdir/daemon/libvirtd.conf"
 
 # Ensure that each commented out PARAMETER = VALUE line has the expected form.
-grep '[a-z_]  *=  *[^ ]' "$conf" | grep -vE '^#[a-z_]+ = ' \
+grep -v '\"PARAMETER = VALUE\"' "$conf" | grep '[a-z_]  *=  *[^ ]' | grep -vE '^#[a-z_]+ = ' \
   && { echo "$0: found unexpected lines (above) in $conf" 1>&2; exit 1; }
 
 # Start with the sample libvirtd.conf file, uncommenting all real directives.
@@ -45,7 +45,7 @@ while :; do
   esac
 
   # Run libvirtd, expecting it to fail.
-  $abs_top_builddir/daemon/libvirtd --config=$f 2> err && fail=1
+  $abs_top_builddir/daemon/libvirtd --pid-file=pid-file --config=$f 2> err && fail=1
 
   case $rhs in
     # '"'*) msg='should be a string';;
