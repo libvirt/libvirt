@@ -667,7 +667,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         char *dev_name_ve;
-        int veid = strtoI(vpsid);
+        int veid = openvzGetVEID(vpsid);
 
         //--netif_add ifname[,mac,host_ifname,host_mac]
         ADD_ARG_LIT("--netif_add") ;

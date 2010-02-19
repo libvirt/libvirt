@@ -953,3 +953,44 @@ static int openvzAssignUUIDs(void)
     VIR_FREE(conf_dir);
     return 0;
 }
+
+
+/*
+ * Return CTID from name
+ *
+ */
+
+int openvzGetVEID(const char *name) {
+    char *cmd;
+    int veid;
+    FILE *fp;
+
+    if (virAsprintf(&cmd, "%s %s -ovpsid -H", VZLIST, name) < 0) {
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("virAsprintf failed"));
+        return -1;
+    }
+
+    fp = popen(cmd, "r");
+    VIR_FREE(cmd);
+
+    if (fp == NULL) {
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR, "%s", _("popen failed"));
+        return -1;
+    }
+
+    if (fscanf(fp, "%d\n", &veid ) != 1) {
+        if (feof(fp))
+            return -1;
+
+        openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                    "%s", _("Failed to parse vzlist output"));
+        goto cleanup;
+    }
+
+    return veid;
+
+ cleanup:
+    fclose(fp);
+    return -1;
+}
