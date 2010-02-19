@@ -7139,6 +7139,8 @@ cleanup:
     return ret;
 
 no_memory:
+    VIR_FREE(list);
+    VIR_FREE(buffer);
     vshError(ctl, "%s", _("Out of memory"));
     ret = FALSE;
     return ret;
