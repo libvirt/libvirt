@@ -4411,7 +4411,7 @@ xenDaemonDomainSetAutostart(virDomainPtr domain,
     if (autonode) {
         const char *val = (autonode->u.s.car->kind == SEXPR_VALUE
                            ? autonode->u.s.car->u.value : NULL);
-        if (!STREQ(val, "ignore") && !STREQ(val, "start")) {
+        if (!val || (!STREQ(val, "ignore") && !STREQ(val, "start"))) {
             virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
                          "%s", _("unexpected value from on_xend_start"));
             goto error;
