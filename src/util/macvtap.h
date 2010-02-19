@@ -33,9 +33,10 @@ int openMacvtapTap(virConnectPtr conn,
                    const unsigned char *macaddress,
                    const char *linkdev,
                    int mode,
-                   char **res_ifname);
+                   char **res_ifname,
+                   int vnet_hdr);
 
-void delMacvtap(const char *name);
+void delMacvtap(const char *ifname);
 
 #endif /* WITH_MACVTAP */
 

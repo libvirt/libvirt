@@ -1434,14 +1434,20 @@ int
 qemudPhysIfaceConnect(virConnectPtr conn,
                       virDomainNetDefPtr net,
                       char *linkdev,
-                      int brmode)
+                      int brmode,
+                      unsigned long long qemuCmdFlags)
 {
     int rc;
 #if WITH_MACVTAP
     char *res_ifname = NULL;
+    int vnet_hdr = 0;
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HDR &&
+        net->model && STREQ(net->model, "virtio"))
+        vnet_hdr = 1;
 
     rc = openMacvtapTap(conn, net->ifname, net->mac, linkdev, brmode,
-                        &res_ifname);
+                        &res_ifname, vnet_hdr);
     if (rc >= 0) {
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
@@ -1451,6 +1457,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
     (void)net;
     (void)linkdev;
     (void)brmode;
+    (void)qemuCmdFlags;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
     rc = -1;
@@ -3752,7 +3759,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 int tapfd = qemudPhysIfaceConnect(conn, net,
                                                   net->data.direct.linkdev,
-                                                  net->data.direct.mode);
+                                                  net->data.direct.mode,
+                                                  qemuCmdFlags);
                 if (tapfd < 0)
                     goto error;
 

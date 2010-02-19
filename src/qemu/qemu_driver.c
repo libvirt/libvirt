@@ -5725,7 +5725,8 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
 
         if ((tapfd = qemudPhysIfaceConnect(conn, net,
                                            net->data.direct.linkdev,
-                                           net->data.direct.mode)) < 0)
+                                           net->data.direct.mode,
+                                           qemuCmdFlags)) < 0)
             return -1;
     }
 

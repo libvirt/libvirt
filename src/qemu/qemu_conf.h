@@ -253,7 +253,8 @@ int         qemudNetworkIfaceConnect    (virConnectPtr conn,
 int qemudPhysIfaceConnect(virConnectPtr conn,
                           virDomainNetDefPtr net,
                           char *linkdev,
-                          int brmode);
+                          int brmode,
+                          unsigned long long qemuCmdFlags);
 
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,

@@ -615,6 +615,64 @@ macvtapModeFromInt(enum virDomainNetdevMacvtapType mode)
 
 
 /**
+ * configMacvtapTap:
+ * @tapfd: file descriptor of the macvtap tap
+ * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
+ *
+ * Returns 0 on success, -1 in case of fatal error, error code otherwise.
+ *
+ * Turn the IFF_VNET_HDR flag, if requested and available, make sure
+ * it's off in the other cases.
+ * A fatal error is defined as the VNET_HDR flag being set but it cannot
+ * be turned off for some reason. This is reported with -1. Other fatal
+ * error is not being able to read the interface flags. In that case the
+ * macvtap device should not be used.
+ */
+static int
+configMacvtapTap(int tapfd, int vnet_hdr)
+{
+    unsigned int features;
+    struct ifreq ifreq;
+    short new_flags = 0;
+    int rc_on_fail = 0;
+    const char *errmsg = NULL;
+
+    memset(&ifreq, 0, sizeof(ifreq));
+
+    if (ioctl(tapfd, TUNGETIFF, &ifreq) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get interface flags on macvtap tap"));
+        return -1;
+    }
+
+    new_flags = ifreq.ifr_flags;
+
+    if ((ifreq.ifr_flags & IFF_VNET_HDR) && !vnet_hdr) {
+        new_flags = ifreq.ifr_flags & ~IFF_VNET_HDR;
+        rc_on_fail = -1;
+        errmsg = _("cannot clean IFF_VNET_HDR flag on macvtap tap");
+    } else if ((ifreq.ifr_flags & IFF_VNET_HDR) == 0 && vnet_hdr) {
+        if (ioctl(tapfd, TUNGETFEATURES, &features) != 0)
+            return errno;
+        if ((features & IFF_VNET_HDR)) {
+            new_flags = ifreq.ifr_flags | IFF_VNET_HDR;
+            errmsg = _("cannot set IFF_VNET_HDR flag on macvtap tap");
+        }
+    }
+
+    if (new_flags != ifreq.ifr_flags) {
+        ifreq.ifr_flags = new_flags;
+        if (ioctl(tapfd, TUNSETIFF, &ifreq) < 0) {
+            virReportSystemError(errno, "%s", errmsg);
+            return rc_on_fail;
+        }
+    }
+
+    return 0;
+}
+
+
+/**
  * openMacvtapTap:
  * Create an instance of a macvtap device and open its tap character
  * device.
@@ -640,7 +698,8 @@ openMacvtapTap(virConnectPtr conn,
                const unsigned char *macaddress,
                const char *linkdev,
                int mode,
-               char **res_ifname)
+               char **res_ifname,
+               int vnet_hdr)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -699,9 +758,14 @@ create_name:
 
     rc = openTap(cr_ifname, 10);
 
-    if (rc >= 0)
+    if (rc >= 0) {
+        if (configMacvtapTap(rc, vnet_hdr) < 0) {
+            close(rc);
+            rc = -1;
+            goto link_del_exit;
+        }
         *res_ifname = strdup(cr_ifname);
-    else
+    } else
         goto link_del_exit;
 
     return rc;
