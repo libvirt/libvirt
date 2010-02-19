@@ -270,61 +270,33 @@ cleanup:
     return ret;
 }
 
-int
-virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           virStoragePoolObjPtr pool,
-                           virStorageVolDefPtr vol,
-                           virStorageVolDefPtr inputvol,
-                           unsigned int flags ATTRIBUTE_UNUSED)
-{
-    int fd = -1;
-    int ret = -1;
-    int createstat;
+struct createRawFileOpHookData {
+    virStorageVolDefPtr vol;
+    virStorageVolDefPtr inputvol;
+};
+
+static int createRawFileOpHook(int fd, void *data) {
+    struct createRawFileOpHookData *hdata = data;
+    int ret = 0;
     unsigned long long remain;
-    char *buf = NULL;
-
-    if (vol->target.encryption != NULL) {
-        virStorageReportError(VIR_ERR_NO_SUPPORT,
-                              "%s", _("storage pool does not support encrypted "
-                                      "volumes"));
-        return -1;
-    }
-
-    if ((createstat = virFileOperation(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
-                                       vol->target.perms.mode,
-                                       vol->target.perms.uid, vol->target.perms.gid,
-                                       NULL, NULL,
-                                       VIR_FILE_OP_FORCE_PERMS |
-                                       (pool->def->type == VIR_STORAGE_POOL_NETFS
-                                        ? VIR_FILE_OP_AS_UID : 0))) < 0) {
-        virReportSystemError(createstat,
-                             _("cannot create path '%s'"),
-                             vol->target.path);
-        goto cleanup;
-    }
-
-    if ((fd = open(vol->target.path, O_RDWR | O_EXCL | O_DSYNC)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open new path '%s'"),
-                             vol->target.path);
-        goto cleanup;
-    }
 
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
-    if (ftruncate(fd, vol->capacity) < 0) {
+    if (ftruncate(fd, hdata->vol->capacity) < 0) {
+        ret = errno;
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
-                             vol->target.path);
+                             hdata->vol->target.path);
         goto cleanup;
     }
 
-    remain = vol->allocation;
+    remain = hdata->vol->allocation;
 
-    if (inputvol) {
-        int res = virStorageBackendCopyToFD(vol, inputvol,
+    if (hdata->inputvol) {
+        int res = virStorageBackendCopyToFD(hdata->vol, hdata->inputvol,
                                             fd, &remain, 1);
         if (res < 0)
+            ret = -res;
             goto cleanup;
     }
 
@@ -341,11 +313,11 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                 if (bytes > remain)
                     bytes = remain;
-                if ((r = safezero(fd, 0, vol->allocation - remain,
+                if ((r = safezero(fd, 0, hdata->vol->allocation - remain,
                                   bytes)) != 0) {
-                    virReportSystemError(r,
-                                         _("cannot fill file '%s'"),
-                                         vol->target.path);
+                    ret = errno;
+                    virReportSystemError(r, _("cannot fill file '%s'"),
+                                         hdata->vol->target.path);
                     goto cleanup;
                 }
                 remain -= bytes;
@@ -354,28 +326,51 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
             int r;
 
             if ((r = safezero(fd, 0, 0, remain)) != 0) {
-                virReportSystemError(r,
-                                     _("cannot fill file '%s'"),
-                                     vol->target.path);
+                ret = errno;
+                virReportSystemError(r, _("cannot fill file '%s'"),
+                                     hdata->vol->target.path);
                 goto cleanup;
             }
         }
     }
 
-    if (close(fd) < 0) {
-        virReportSystemError(errno,
-                             _("cannot close file '%s'"),
-                             vol->target.path);
+cleanup:
+    return ret;
+}
+
+int
+virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virStoragePoolObjPtr pool,
+                           virStorageVolDefPtr vol,
+                           virStorageVolDefPtr inputvol,
+                           unsigned int flags ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    int createstat;
+    struct createRawFileOpHookData hdata = { vol, inputvol };
+
+    if (vol->target.encryption != NULL) {
+        virStorageReportError(VIR_ERR_NO_SUPPORT,
+                              "%s", _("storage pool does not support encrypted "
+                                      "volumes"));
         goto cleanup;
     }
-    fd = -1;
+
+    if ((createstat = virFileOperation(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
+                                       vol->target.perms.mode,
+                                       vol->target.perms.uid, vol->target.perms.gid,
+                                       createRawFileOpHook, &hdata,
+                                       VIR_FILE_OP_FORCE_PERMS |
+                                       (pool->def->type == VIR_STORAGE_POOL_NETFS
+                                        ? VIR_FILE_OP_AS_UID : 0))) < 0) {
+    virReportSystemError(createstat,
+                         _("cannot create path '%s'"),
+                         vol->target.path);
+    goto cleanup;
+    }
 
     ret = 0;
 cleanup:
-    if (fd != -1)
-        close(fd);
-    VIR_FREE(buf);
-
     return ret;
 }
 
