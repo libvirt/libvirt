@@ -83,7 +83,7 @@ drivers present in driver.h:</p>
       <li>xen_internal: provide the implementation of the functions possible via
     direct hypervisor access</li>
       <li>proxy_internal: provide read-only Xen access via a proxy, the proxy code
-    is in the <code>proxy/</code>directory.</li>
+    is in the <code>proxy/</code> directory.</li>
       <li>xm_internal: provide support for Xen defined but not running
     domains.</li>
       <li>qemu_internal: implement the driver functions for QEmu and
