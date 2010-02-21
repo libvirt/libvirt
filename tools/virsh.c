@@ -4036,8 +4036,9 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshError(ctl, _("Failed to build pool %s"), name);
         ret = FALSE;
-        virStoragePoolFree(pool);
     }
+
+    virStoragePoolFree(pool);
 
     return ret;
 }
