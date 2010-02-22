@@ -204,7 +204,7 @@
         This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
       <dt><code>key</code></dt>
       <dd>Providing an identifier for the volume which is globally unique.
-          This cannot be set when defining a pool: it is always generated.
+          This cannot be set when creating a volume: it is always generated.
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>allocation</code></dt>
       <dd>Providing the total storage allocation for the volume. This
@@ -300,7 +300,7 @@
         ...
         &lt;backingStore&gt;
           &lt;path&gt;/var/lib/virt/images/master.img&lt;/path&gt;
-          &lt;format&gt;raw&lt;/format&gt;
+          &lt;format type='raw'/&gt;
           &lt;permissions&gt;
             &lt;owner&gt;107&lt;/owner&gt;
             &lt;group&gt;107&lt;/group&gt;
@@ -320,7 +320,8 @@
       <dd>Provides information about the pool specific backing store format.
         For disk pools it will provide the partition type. For filesystem
         or directory pools it will provide the file format type, eg cow,
-        qcow, vmdk, raw. Consult the pool-specific docs for the list of valid
+        qcow, vmdk, raw. The actual format is specified via the type attribute.
+        Consult the pool-specific docs for the list of valid
         values. Most file formats require a backing store of the same format,
         however, the qcow2 format allows a different backing store format.
         <span class="since">Since 0.6.0</span></dd>
