@@ -28,6 +28,9 @@ libvirt.
       <li>
         <a href="#StorageBackendSCSI">SCSI backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendMultipath">Multipath backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir" id="StorageBackendDir">Directory pool</a></h2>
@@ -380,6 +383,41 @@ libvirt.
       The SCSI volume pool does not use the volume format type element.
     </p>
 
+    <h2><a name="StorageBackendMultipath" id="StorageBackendMultipath">Multipath pools</a></h2>
+    <p>
+      This provides a pool that contains all the multipath devices on the
+      host. Volume creating is not supported via the libvirt APIs.
+      The target element is actually ignored, but one is required to appease
+      the libvirt XML parser.<br/>
+      <br/>
+      Configuring multipathing is not currently supported, this just covers
+      the case where users want to discover all the available multipath
+      devices, and assign them to guests.
+      <span class="since">Since 0.7.1</span></dd>
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="mpath"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;target&gt;
+          &lt;path&gt;/dev/mapper&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The Multipath volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The Multipath volume pool does not use the volume format type element.
+    </p>
+
+
+  </body>
+</html>
 
   </body>
 </html>
