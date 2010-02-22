@@ -980,8 +980,8 @@ virStorageSize(const char *unit,
             mult = 1024ull * 1024ull * 1024ull * 1024ull * 1024ull;
             break;
 
-        case 'y':
-        case 'Y':
+        case 'e':
+        case 'E':
             mult = 1024ull * 1024ull * 1024ull * 1024ull * 1024ull *
                 1024ull;
             break;
