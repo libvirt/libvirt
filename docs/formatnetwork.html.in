@@ -58,6 +58,7 @@
     <pre>
         ...
         &lt;bridge name="virbr0" stp="on" delay="5"/&gt;
+        &lt;domain name="example"/&gt;
         &lt;forward mode="nat" dev="eth0"/&gt;
         ...</pre>
 
@@ -75,6 +76,12 @@
         'on' or 'off' (default is 'on'). Attribute <code>delay</code> sets
         the bridge's forward delay value in seconds (default is 0).
         <span class="since">Since 0.3.0</span>
+      </dd>
+      <dt><code>domain</code></dt>
+      <dd>
+        The <code>name</code> attribute on the <code>domain</code> element
+        defines the DNS domain of the DHCP server. This element is optional.
+        <span class="since">Since 0.4.5</span>
       </dd>
       <dt><code>forward</code></dt>
       <dd>Inclusion of the <code>forward</code> element indicates that
