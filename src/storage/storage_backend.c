@@ -356,7 +356,8 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((createstat = virFileOperation(vol->target.path, O_RDWR | O_CREAT | O_EXCL,
+    if ((createstat = virFileOperation(vol->target.path,
+                                       O_RDWR | O_CREAT | O_EXCL | O_DSYNC,
                                        vol->target.perms.mode,
                                        vol->target.perms.uid, vol->target.perms.gid,
                                        createRawFileOpHook, &hdata,
