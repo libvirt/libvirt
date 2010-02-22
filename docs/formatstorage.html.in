@@ -204,8 +204,8 @@
         This is mandatory when defining a volume.  <span class="since">Since 0.4.1</span></dd>
       <dt><code>key</code></dt>
       <dd>Providing an identifier for the volume which is globally unique.
-        This is optional when defining a volume, a key will be generated if
-        omitted. <span class="since">Since 0.4.1</span></dd>
+          This cannot be set when defining a pool: it is always generated.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>allocation</code></dt>
       <dd>Providing the total storage allocation for the volume. This
         may be smaller than the logical capacity if the volume is sparsely
