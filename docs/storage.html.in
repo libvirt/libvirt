@@ -25,6 +25,9 @@ libvirt.
       <li>
         <a href="#StorageBackendISCSI">iSCSI backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendSCSI">SCSI backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir" id="StorageBackendDir">Directory pool</a></h2>
@@ -344,5 +347,39 @@ libvirt.
     <p>
       The iSCSI volume pool does not use the volume format type element.
     </p>
+
+    <h2><a name="StorageBackendSCSI" id="StorageBackendSCSI">SCSI volume pools</a></h2>
+    <p>
+      This provides a pool based on a SCSI HBA. Volumes are preexisting SCSI
+      LUNs, and cannot be created via the libvirt APIs. Since /dev/XXX names
+      aren't generally stable, it is recommended to configure the pool
+      to use <code>/dev/disk/by-path</code> or <code>/dev/disk/by-id</code>
+      for the target path. These provide persistent stable naming for LUNs
+      <span class="since">Since 0.6.2</span></dd>
+    </p>
+
+    <h3>Example pool input</h3>
+    <pre>
+      &lt;pool type="scsi"&gt;
+        &lt;name&gt;virtimages&lt;/name&gt;
+        &lt;source&gt;
+          &lt;adapter name="host0"/&gt;
+        &lt;/source&gt;
+        &lt;target&gt;
+          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+        &lt;/target&gt;
+      &lt;/pool&gt;</pre>
+
+    <h3>Valid pool format types</h3>
+    <p>
+      The SCSI volume pool does not use the pool format type element.
+    </p>
+
+    <h3>Valid volume format types</h3>
+    <p>
+      The SCSI volume pool does not use the volume format type element.
+    </p>
+
+
   </body>
 </html>

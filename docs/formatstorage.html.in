@@ -84,6 +84,11 @@
         only occur once. Contains a single attribute <code>path</code>
         which is the fully qualified path to the block device node.
         <span class="since">Since 0.4.1</span></dd>
+      <dt><code>adapter</code></dt>
+      <dd>Provides the source for pools backed by SCSI adapters. May
+        only occur once. Contains a single attribute <code>name</code>
+        which is the SCSI adapter name (ex. "host1").
+        <span class="since">Since 0.6.2</span></dd>
       <dt><code>host</code></dt>
       <dd>Provides the source for pools backed by storage from a
         remote server. Will be used in combination with a <code>directory</code>
