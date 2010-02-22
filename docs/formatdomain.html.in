@@ -32,6 +32,7 @@
 &lt;domain type='xen' id='3'&gt;
   &lt;name&gt;fv0&lt;/name&gt;
   &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  &lt;description&gt;Some human readable description&lt;/description&gt;
   ...</pre>
 
     <dl>
@@ -48,6 +49,12 @@
         The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new machine, a random
         UUID is generated. <span class="since">Since 0.0.1</span></dd>
+
+      <dt><code>description</code></dt>
+      <dd>The content of the <code>description</code> element provides a
+      human readable description of the virtual machine. This data is not
+      used by libvirt in any way, it can contain any information the user
+      wants. <span class="since">Since 0.7.2</span></dd>
     </dl>
 
     <h3><a name="elementsOS">Operating system booting</a></h3>
