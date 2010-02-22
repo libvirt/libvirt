@@ -57,7 +57,7 @@
 
     <pre>
         ...
-        &lt;bridge name="virbr0" /&gt;
+        &lt;bridge name="virbr0" stp="on" delay="5"/&gt;
         &lt;forward mode="nat" dev="eth0"/&gt;
         ...</pre>
 
@@ -71,6 +71,9 @@
         device names started with the prefix <code>vir</code>, but the name
         <code>virbr0</code> is reserved for the "default" virtual network.
         This element should always be provided when defining a new network.
+        Attribute <code>stp</code> specifies if Spanning Tree Protocol is
+        'on' or 'off' (default is 'on'). Attribute <code>delay</code> sets
+        the bridge's forward delay value in seconds (default is 0).
         <span class="since">Since 0.3.0</span>
       </dd>
       <dt><code>forward</code></dt>
