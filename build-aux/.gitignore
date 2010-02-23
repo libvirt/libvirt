@@ -1,7 +1,15 @@
 *
-/link-warning.h
-/mktempd
 /arg-nonnull.h
 /gitlog-to-changelog
+/link-warning.h
+/mktempd
 /useless-if-before-free
 /vc-list-files
+arg-nonnull.h
+config.rpath
+gitlog-to-changelog
+mkinstalldirs
+mktempd
+useless-if-before-free
+vc-list-files
+warn-on-use.h
