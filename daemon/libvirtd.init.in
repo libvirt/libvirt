@@ -32,9 +32,6 @@
 # pidfile: @localstatedir@/run/libvirtd.pid
 #
 
-# Sanity checks.
-[ -x @sbindir@/libvirtd ] || exit 0
-
 # Source function library.
 . @sysconfdir@/rc.d/init.d/functions
 
