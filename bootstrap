@@ -20,6 +20,72 @@ Running without arguments will suffice in most cases.
 "
 }
 
+# Configuration.
+
+# List of gnulib modules needed.
+gnulib_modules=
+
+extract_package_name='
+  /^AC_INIT(/{
+     /.*,.*,.*, */{
+       s///
+       s/[][]//g
+       s/)$//
+       p
+       q
+     }
+     s/AC_INIT(\[*//
+     s/]*,.*//
+     s/^GNU //
+     y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/
+     s/[^A-Za-z0-9_]/-/g
+     p
+  }
+'
+package=`sed -n "$extract_package_name" configure.ac` || exit
+gnulib_name=lib$package
+
+build_aux=build-aux
+source_base=lib
+m4_base=m4
+doc_base=doc
+tests_base=tests
+
+# Extra files from gnulib, which override files from other sources.
+gnulib_extra_files="
+        $build_aux/install-sh
+        $build_aux/missing
+        $build_aux/mdate-sh
+        $build_aux/texinfo.tex
+        $build_aux/depcomp
+        $build_aux/config.guess
+        $build_aux/config.sub
+        doc/INSTALL
+"
+
+# Additional gnulib-tool options to use.  Use "\newline" to break lines.
+gnulib_tool_option_extras=
+
+# Other locale categories that need message catalogs.
+EXTRA_LOCALE_CATEGORIES=
+
+# Additional xgettext options to use.  Use "\\\newline" to break lines.
+XGETTEXT_OPTIONS='\\\
+ --flag=_:1:pass-c-format\\\
+ --flag=N_:1:pass-c-format\\\
+ --flag=error:3:c-format --flag=error_at_line:5:c-format\\\
+'
+
+# Override the default configuration, if necessary.
+# Make sure that bootstrap.conf is sourced from the current directory
+# if we were invoked as "sh bootstrap".
+case "$0" in
+  */*) test -r "$0.conf" && . "$0.conf" ;;
+  *) test -r "$0.conf" && . ./"$0.conf" ;;
+esac
+
+# Parse options.
+
 for option
 do
   case $option in
@@ -64,57 +130,16 @@ esac
 gnulib_tool=$GNULIB_SRCDIR/gnulib-tool
 <$gnulib_tool || exit
 
-modules='
-areadlink
-base64
-c-ctype
-canonicalize-lgpl
-close
-connect
-dirname-lgpl
-getaddrinfo
-gethostname
-getpass
-gettext
-gitlog-to-changelog
-gnumakefile
-ignore-value
-inet_pton
-ioctl
-maintainer-makefile
-mkstemp
-mktempd
-perror
-physmem
-poll
-posix-shell
-recv
-random_r
-send
-setsockopt
-socket
-stpcpy
-strchrnul
-strndup
-strerror
-strsep
-sys_stat
-time_r
-useless-if-before-free
-vasprintf
-verify
-vc-list-files
-'
-
-# Tell gnulib to:
-#   require LGPLv2+
-#   put *.m4 files in new gnulib/m4/ dir
-#   put *.[ch] files in new gnulib/lib/ dir.
-
-$gnulib_tool			\
-  --lgpl=2			\
-  --with-tests			\
-  --m4-base=gnulib/m4		\
-  --source-base=gnulib/lib	\
-  --tests-base=gnulib/tests	\
-  --import $modules
+gnulib_tool_options="\
+ --import\
+ --no-changelog\
+ --aux-dir $build_aux\
+ --doc-base $doc_base\
+ --lib $gnulib_name\
+ --m4-base $m4_base/\
+ --source-base $source_base/\
+ --tests-base $tests_base\
+ $gnulib_tool_option_extras\
+"
+echo "$0: $gnulib_tool $gnulib_tool_options --import ..."
+$gnulib_tool $gnulib_tool_options --import $gnulib_modules
