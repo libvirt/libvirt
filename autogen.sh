@@ -1,11 +1,11 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
-srcdir=`dirname $0`
+srcdir=`dirname "$0"`
 test -z "$srcdir" && srcdir=.
 
 THEDIR=`pwd`
-cd $srcdir
+cd "$srcdir"
 DIE=0
 
 (autopoint --version) < /dev/null > /dev/null 2>&1 || {
@@ -70,7 +70,10 @@ if test "$t" = "$(cat $curr_status 2>/dev/null)"; then
     : # good, it's up to date
 else
   echo running bootstrap...
-  ./bootstrap && echo "$t" > $curr_status
+  ./bootstrap && echo "$t" > $curr_status || {
+    echo "Failed to bootstrap gnulib, please investigate."
+    exit 1;
+  }
 fi
 
 # Automake requires that ChangeLog exist.
@@ -78,9 +81,9 @@ touch ChangeLog
 
 autoreconf -if
 
-cd $THEDIR
+cd "$THEDIR"
 
-if test x$OBJ_DIR != x; then
+if test "x$OBJ_DIR" != x; then
     mkdir -p "$OBJ_DIR"
     cd "$OBJ_DIR"
 fi
