@@ -358,7 +358,7 @@ libvirt.
       aren't generally stable, it is recommended to configure the pool
       to use <code>/dev/disk/by-path</code> or <code>/dev/disk/by-id</code>
       for the target path. These provide persistent stable naming for LUNs
-      <span class="since">Since 0.6.2</span></dd>
+      <span class="since">Since 0.6.2</span>
     </p>
 
     <h3>Example pool input</h3>
@@ -393,7 +393,7 @@ libvirt.
       Configuring multipathing is not currently supported, this just covers
       the case where users want to discover all the available multipath
       devices, and assign them to guests.
-      <span class="since">Since 0.7.1</span></dd>
+      <span class="since">Since 0.7.1</span>
     </p>
 
     <h3>Example pool input</h3>
@@ -415,9 +415,6 @@ libvirt.
       The Multipath volume pool does not use the volume format type element.
     </p>
 
-
-  </body>
-</html>
 
   </body>
 </html>
