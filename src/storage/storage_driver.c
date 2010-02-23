@@ -26,6 +26,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <fcntl.h>
+
 #if HAVE_PWD_H
 # include <pwd.h>
 #endif
@@ -1518,6 +1522,218 @@ cleanup:
     return ret;
 }
 
+
+/* If the volume we're wiping is already a sparse file, we simply
+ * truncate and extend it to its original size, filling it with
+ * zeroes.  This behavior is guaranteed by POSIX:
+ *
+ * http://www.opengroup.org/onlinepubs/9699919799/functions/ftruncate.html
+ *
+ * If fildes refers to a regular file, the ftruncate() function shall
+ * cause the size of the file to be truncated to length. If the size
+ * of the file previously exceeded length, the extra data shall no
+ * longer be available to reads on the file. If the file previously
+ * was smaller than this size, ftruncate() shall increase the size of
+ * the file. If the file size is increased, the extended area shall
+ * appear as if it were zero-filled.
+ */
+static int
+storageVolumeZeroSparseFile(virStorageVolDefPtr vol,
+                            off_t size,
+                            int fd)
+{
+    int ret = -1;
+
+    ret = ftruncate(fd, 0);
+    if (ret == -1) {
+        virReportSystemError(errno,
+                             _("Failed to truncate volume with "
+                               "path '%s' to 0 bytes"),
+                             vol->target.path);
+        goto out;
+    }
+
+    ret = ftruncate(fd, size);
+    if (ret == -1) {
+        virReportSystemError(errno,
+                             _("Failed to truncate volume with "
+                               "path '%s' to %ju bytes\n"),
+                             vol->target.path, (intmax_t)size);
+    }
+
+out:
+    return ret;
+}
+
+
+static int
+storageWipeExtent(virStorageVolDefPtr vol,
+                  int fd,
+                  off_t extent_start,
+                  off_t extent_length,
+                  char *writebuf,
+                  size_t writebuf_length,
+                  size_t *bytes_wiped)
+{
+    int ret = -1, written = 0;
+    off_t remaining = 0;
+    size_t write_size = 0;
+
+    VIR_DEBUG("extent logical start: %ju len: %ju",
+              (intmax_t)extent_start, (intmax_t)extent_length);
+
+    if ((ret = lseek(fd, extent_start, SEEK_SET)) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to seek to position %ju in volume "
+                               "with path '%s'"),
+                             (intmax_t)extent_start, vol->target.path);
+        goto out;
+    }
+
+    remaining = extent_length;
+    while (remaining > 0) {
+
+        write_size = (writebuf_length < remaining) ? writebuf_length : remaining;
+        written = safewrite(fd, writebuf, write_size);
+        if (written < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to write %zu bytes to "
+                                   "storage volume with path '%s'"),
+                                 write_size, vol->target.path);
+
+            goto out;
+        }
+
+        *bytes_wiped += written;
+        remaining -= written;
+    }
+
+    VIR_DEBUG("Wrote %zu bytes to volume with path '%s'",
+              *bytes_wiped, vol->target.path);
+
+    ret = 0;
+
+out:
+    return ret;
+}
+
+
+static int
+storageVolumeWipeInternal(virStorageVolDefPtr def)
+{
+    int ret = -1, fd = -1;
+    struct stat st;
+    char *writebuf = NULL;
+    size_t bytes_wiped = 0;
+
+    VIR_DEBUG("Wiping volume with path '%s'", def->target.path);
+
+    fd = open(def->target.path, O_RDWR);
+    if (fd == -1) {
+        virReportSystemError(errno,
+                             _("Failed to open storage volume with path '%s'"),
+                             def->target.path);
+        goto out;
+    }
+
+    if (fstat(fd, &st) == -1) {
+        virReportSystemError(errno,
+                             _("Failed to stat storage volume with path '%s'"),
+                             def->target.path);
+        goto out;
+    }
+
+    if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
+        ret = storageVolumeZeroSparseFile(def, st.st_size, fd);
+    } else {
+
+        if (VIR_ALLOC_N(writebuf, st.st_blksize) != 0) {
+            virReportOOMError();
+            goto out;
+        }
+
+        ret = storageWipeExtent(def,
+                                fd,
+                                0,
+                                def->allocation,
+                                writebuf,
+                                st.st_blksize,
+                                &bytes_wiped);
+    }
+
+out:
+    VIR_FREE(writebuf);
+
+    if (fd != -1) {
+        close(fd);
+    }
+
+    return ret;
+}
+
+
+static int
+storageVolumeWipe(virStorageVolPtr obj,
+                  unsigned int flags)
+{
+    virStorageDriverStatePtr driver = obj->conn->storagePrivateData;
+    virStoragePoolObjPtr pool = NULL;
+    virStorageVolDefPtr vol = NULL;
+    int ret = -1;
+
+    if (flags != 0) {
+        virStorageReportError(VIR_ERR_INVALID_ARG,
+                              _("Unsupported flags (0x%x) passed to '%s'"), flags, __FUNCTION__);
+        goto out;
+    }
+
+    storageDriverLock(driver);
+    pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
+    storageDriverUnlock(driver);
+
+    if (!pool) {
+        virStorageReportError(VIR_ERR_INVALID_STORAGE_POOL,
+                              "%s", _("no storage pool with matching uuid"));
+        goto out;
+    }
+
+    if (!virStoragePoolObjIsActive(pool)) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("storage pool is not active"));
+        goto out;
+    }
+
+    vol = virStorageVolDefFindByName(pool, obj->name);
+
+    if (vol == NULL) {
+        virStorageReportError(VIR_ERR_NO_STORAGE_VOL,
+                             _("no storage vol with matching name '%s'"),
+                              obj->name);
+        goto out;
+    }
+
+    if (vol->building) {
+        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                              _("volume '%s' is still being allocated."),
+                              vol->name);
+        goto out;
+    }
+
+    if (storageVolumeWipeInternal(vol) == -1) {
+        goto out;
+    }
+
+    ret = 0;
+
+out:
+    if (pool) {
+        virStoragePoolObjUnlock(pool);
+    }
+
+    return ret;
+
+}
+
 static int
 storageVolumeDelete(virStorageVolPtr obj,
                     unsigned int flags) {
@@ -1775,6 +1991,7 @@ static virStorageDriver storageDriver = {
     .volCreateXML = storageVolumeCreateXML,
     .volCreateXMLFrom = storageVolumeCreateXMLFrom,
     .volDelete = storageVolumeDelete,
+    .volWipe = storageVolumeWipe,
     .volGetInfo = storageVolumeGetInfo,
     .volGetXMLDesc = storageVolumeGetXMLDesc,
     .volGetPath = storageVolumeGetPath,
