@@ -844,8 +844,7 @@ esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
 
 int
 esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
-                            int value, const char *element,
-                            virBufferPtr output, esxVI_Boolean required)
+                            int value, const char *element, virBufferPtr output)
 {
     int i;
     const char *name = NULL;
@@ -856,7 +855,7 @@ esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
     }
 
     if (value == 0) { /* undefined */
-        return esxVI_CheckSerializationNecessity(element, required);
+        return 0;
     }
 
     for (i = 0; enumeration->values[i].name != NULL; ++i) {
@@ -1045,7 +1044,7 @@ esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
 
 int
 esxVI_List_Serialize(esxVI_List *list, const char *element,
-                     virBufferPtr output, esxVI_Boolean required,
+                     virBufferPtr output,
                      esxVI_List_SerializeFunc serializeFunc)
 {
     esxVI_List *item = NULL;
@@ -1056,11 +1055,11 @@ esxVI_List_Serialize(esxVI_List *list, const char *element,
     }
 
     if (list == NULL) {
-        return esxVI_CheckSerializationNecessity(element, required);
+        return 0;
     }
 
     for (item = list; item != NULL; item = item->_next) {
-        if (serializeFunc(item, element, output, esxVI_Boolean_True) < 0) {
+        if (serializeFunc(item, element, output) < 0) {
             return -1;
         }
     }
@@ -1133,27 +1132,6 @@ esxVI_Alloc(void **ptrptr, size_t size)
     }
 
     return 0;
-}
-
-
-
-int
-esxVI_CheckSerializationNecessity(const char *element,
-                                  esxVI_Boolean required)
-{
-    if (element == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    if (required == esxVI_Boolean_True) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "Required property missing while trying to serialize "
-                     "'%s'", element);
-        return -1;
-    } else {
-        return 0;
-    }
 }
 
 
@@ -1861,7 +1839,9 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
         return -1;
     }
 
-    if (esxVI_FindByUuid(ctx, ctx->datacenter, uuid, esxVI_Boolean_True,
+    virUUIDFormat(uuid, uuid_string);
+
+    if (esxVI_FindByUuid(ctx, ctx->datacenter, uuid_string, esxVI_Boolean_True,
                          &managedObjectReference) < 0) {
         goto failure;
     }
@@ -1870,8 +1850,6 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
         if (occurrence == esxVI_Occurrence_OptionalItem) {
             return 0;
         } else {
-            virUUIDFormat(uuid, uuid_string);
-
             ESX_VI_ERROR(VIR_ERR_NO_DOMAIN,
                          "Could not find domain with UUID '%s'", uuid_string);
             goto failure;
@@ -2260,149 +2238,6 @@ esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
     return result;
 
   failure:
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_StartVirtualMachineTask(esxVI_Context *ctx, const char *name,
-                              const char *request,
-                              esxVI_ManagedObjectReference **task)
-{
-    int result = 0;
-    char *methodName = NULL;
-    esxVI_Response *response = NULL;
-
-    if (virAsprintf(&methodName, "%s_Task", name) < 0) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    if (esxVI_Context_Execute(ctx, methodName, request, &response,
-                              esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(methodName);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_StartSimpleVirtualMachineTask
-  (esxVI_Context *ctx, const char *name,
-   esxVI_ManagedObjectReference *virtualMachine,
-   esxVI_ManagedObjectReference **task)
-{
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<");
-    virBufferAdd(&buffer, name, -1);
-    virBufferAddLit(&buffer, "_Task xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</");
-    virBufferAdd(&buffer, name, -1);
-    virBufferAddLit(&buffer, "_Task>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_StartVirtualMachineTask(ctx, name, request, task) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_SimpleVirtualMachineMethod(esxVI_Context *ctx, const char *name,
-                                 esxVI_ManagedObjectReference *virtualMachine)
-{
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<");
-    virBufferAdd(&buffer, name, -1);
-    virBufferAddLit(&buffer, " xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</");
-    virBufferAdd(&buffer, name, -1);
-    virBufferAddLit(&buffer, ">");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, name, request, &response,
-                              esxVI_Occurrence_None) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
     result = -1;
 
     goto cleanup;

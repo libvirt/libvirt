@@ -140,7 +140,7 @@ int esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
                                       esxVI_AnyType *anyType, int *value);
 int esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
                                 int value, const char *element,
-                                virBufferPtr output, esxVI_Boolean required);
+                                virBufferPtr output);
 int esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
                                   xmlNodePtr node, int *value);
 
@@ -159,8 +159,7 @@ typedef int (*esxVI_List_DeepCopyFunc) (esxVI_List **dest, esxVI_List *src);
 typedef int (*esxVI_List_CastFromAnyTypeFunc) (esxVI_AnyType *anyType,
                                                esxVI_List **item);
 typedef int (*esxVI_List_SerializeFunc) (esxVI_List *item, const char *element,
-                                         virBufferPtr output,
-                                         esxVI_Boolean required);
+                                         virBufferPtr output);
 typedef int (*esxVI_List_DeserializeFunc) (xmlNodePtr node, esxVI_List **item);
 
 int esxVI_List_Append(esxVI_List **list, esxVI_List *item);
@@ -171,7 +170,7 @@ int esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
                                esxVI_List_CastFromAnyTypeFunc castFromAnyTypeFunc,
                                esxVI_List_FreeFunc freeFunc);
 int esxVI_List_Serialize(esxVI_List *list, const char *element,
-                         virBufferPtr output, esxVI_Boolean required,
+                         virBufferPtr output,
                          esxVI_List_SerializeFunc serializeFunc);
 int esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
                            esxVI_List_DeserializeFunc deserializeFunc,
@@ -188,9 +187,6 @@ int esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
  */
 
 int esxVI_Alloc(void **ptrptr, size_t size);
-
-int esxVI_CheckSerializationNecessity(const char *element,
-                                      esxVI_Boolean required);
 
 int esxVI_BuildFullTraversalSpecItem
       (esxVI_SelectionSpec **fullTraversalSpecList, const char *name,
@@ -262,19 +258,6 @@ int esxVI_LookupPendingTaskInfoListByVirtualMachine
 int esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                                 const unsigned char *uuid,
                                                 esxVI_Boolean autoAnswer);
-
-int esxVI_StartVirtualMachineTask(esxVI_Context *ctx, const char *name,
-                                  const char *request,
-                                  esxVI_ManagedObjectReference **task);
-
-int esxVI_StartSimpleVirtualMachineTask
-      (esxVI_Context *ctx, const char *name,
-       esxVI_ManagedObjectReference *virtualMachine,
-       esxVI_ManagedObjectReference **task);
-
-int esxVI_SimpleVirtualMachineMethod
-      (esxVI_Context *ctx, const char *name,
-       esxVI_ManagedObjectReference *virtualMachine);
 
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,

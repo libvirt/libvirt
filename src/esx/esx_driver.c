@@ -3128,7 +3128,10 @@ esxDomainMigratePerform(virDomainPtr domain,
 
     /* Perform the purposed migration */
     if (esxVI_MigrateVM_Task(priv->vCenter, virtualMachine->obj, resourcePool,
-                             hostSystem->obj, &task) < 0 ||
+                             hostSystem->obj,
+                             esxVI_VirtualMachineMovePriority_DefaultPriority,
+                             esxVI_VirtualMachinePowerState_Undefined,
+                             &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->vCenter, task, domain->uuid,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto failure;

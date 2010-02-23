@@ -3,7 +3,7 @@
  * esx_vi_methods.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2010 Red Hat, Inc.
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,131 @@
 
 
 
+#define ESX_VI__METHOD(_name, _parameters, _occurrence, _prolog, _validate,   \
+                       _serialize, _deserialize)                              \
+    int                                                                       \
+    esxVI_##_name _parameters                                                 \
+    {                                                                         \
+        int result = 0;                                                       \
+        const char* method_name = #_name;                                     \
+        virBuffer buffer = VIR_BUFFER_INITIALIZER;                            \
+        char *request = NULL;                                                 \
+        esxVI_Response *response = NULL;                                      \
+                                                                              \
+        _prolog                                                               \
+                                                                              \
+        _validate                                                             \
+                                                                              \
+        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);               \
+        virBufferAddLit(&buffer, "<"#_name" xmlns=\"urn:vim25\">");           \
+                                                                              \
+        _serialize                                                            \
+                                                                              \
+        virBufferAddLit(&buffer, "</"#_name">");                              \
+        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);               \
+                                                                              \
+        if (virBufferError(&buffer)) {                                        \
+            virReportOOMError();                                              \
+            goto failure;                                                     \
+        }                                                                     \
+                                                                              \
+        request = virBufferContentAndReset(&buffer);                          \
+                                                                              \
+        if (esxVI_Context_Execute(ctx, #_name, request, &response,            \
+                                  esxVI_Occurrence_##_occurrence) < 0) {      \
+            goto failure;                                                     \
+        }                                                                     \
+                                                                              \
+        if (response->node != NULL) {                                         \
+            _deserialize                                                      \
+        }                                                                     \
+                                                                              \
+      cleanup:                                                                \
+        VIR_FREE(request);                                                    \
+        esxVI_Response_Free(&response);                                       \
+                                                                              \
+        return result;                                                        \
+                                                                              \
+      failure:                                                                \
+        virBufferFreeAndReset(&buffer);                                       \
+                                                                              \
+        result = -1;                                                          \
+                                                                              \
+        goto cleanup;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__CHECK_SERVICE()                                       \
+    if (ctx->service == NULL) {                                               \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");                 \
+        return -1;                                                            \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(_name)                        \
+    if (_name == NULL || *_name != NULL) {                                    \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");             \
+        return -1;                                                            \
+    }
+
+
+
+/*
+ * A required parameter must be != 0 (NULL for pointers, "undefined" == 0 for
+ * enumeration values).
+ *
+ * To be used as part of ESX_VI__METHOD.
+ */
+#define ESX_VI__METHOD__PARAMETER__REQUIRE(_name)                             \
+    if (_name == 0) {                                                         \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
+                     "Required parameter '%s' is missing for call to %s",     \
+                     #_name, method_name);                                    \
+        return -1;                                                            \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(_name)                        \
+    if (_name == 0) {                                                         \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
+                     "Required parameter '_this' is missing for call to %s",  \
+                     method_name);                                            \
+        return -1;                                                            \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE(_type, _name)                    \
+    if (esxVI_##_type##_Serialize(_name, #_name, &buffer) < 0) {              \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(_type, _name)               \
+    if (esxVI_##_type##_SerializeList(_name, #_name, &buffer) < 0) {          \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(_type, _name)              \
+    if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) {         \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(_type, _name)               \
+    if (esxVI_##_type##_Serialize(_name, "_this", &buffer) < 0) {             \
+        goto failure;                                                         \
+    }
+
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VI Methods
  */
@@ -96,1246 +221,650 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
 
 
 
-int
-esxVI_Login(esxVI_Context *ctx, const char *userName, const char *password,
-            esxVI_UserSession **userSession)
+/* esxVI_Login */
+ESX_VI__METHOD(Login,
+               (esxVI_Context *ctx,
+                const char *userName, const char *password,
+                esxVI_UserSession **userSession),
+               RequiredItem,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (userSession == NULL || *userSession != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<Login xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(userName, "userName", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(password, "password", &buffer,
-                                    esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</Login>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "Login", request, &response,
-                              esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_UserSession_Deserialize(response->node, userSession) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_Logout(esxVI_Context *ctx)
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(userSession)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<Logout xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</Logout>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "Logout", request, &response,
-                              esxVI_Occurrence_None) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_SessionIsActive(esxVI_Context *ctx, const char *sessionID,
-                      const char *userName, esxVI_Boolean *active)
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(userName)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(password)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->sessionManager)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, userName)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, password)
+},
+{
+    if (esxVI_UserSession_Deserialize(response->node, userSession) < 0) {
+        goto failure;
     }
+})
+
+
+
+/* esxVI_Logout */
+ESX_VI__METHOD(Logout, (esxVI_Context *ctx), None,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->sessionManager)
+},
+{
+})
+
+
+
+/* esxVI_SessionIsActive */
+ESX_VI__METHOD(SessionIsActive,
+               (esxVI_Context *ctx, const char *sessionID,
+                const char *userName, esxVI_Boolean *active),
+               RequiredItem,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
 
     if (active == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
         return -1;
     }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<SessionIsActive xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->sessionManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(sessionID, "sessionID", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(userName, "userName", &buffer,
-                                    esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</SessionIsActive>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "SessionIsActive", request, &response,
-                              esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_Boolean_Deserialize(response->node, active) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_RetrieveProperties(esxVI_Context *ctx,
-                         esxVI_PropertyFilterSpec *propertyFilterSpecList,
-                         esxVI_ObjectContent **objectContentList)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (objectContentList == NULL || *objectContentList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<RetrieveProperties xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_PropertyFilterSpec_SerializeList(propertyFilterSpecList,
-                                               "specSet", &buffer,
-                                               esxVI_Boolean_True) < 0) {
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(sessionID)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(userName)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->sessionManager)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, sessionID)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, userName)
+},
+{
+    if (esxVI_Boolean_Deserialize(response->node, active) < 0) {
         goto failure;
     }
+})
 
-    virBufferAddLit(&buffer, "</RetrieveProperties>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
 
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "RetrieveProperties", request, &response,
-                              esxVI_Occurrence_List) < 0 ||
-        esxVI_ObjectContent_DeserializeList(response->node,
+/* esxVI_RetrieveProperties */
+ESX_VI__METHOD(RetrieveProperties,
+               (esxVI_Context *ctx,
+                esxVI_PropertyFilterSpec *specSet, /* list */
+                esxVI_ObjectContent **objectContentList),
+               List,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(objectContentList)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(specSet)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(PropertyFilterSpec, specSet)
+},
+{
+    if (esxVI_ObjectContent_DeserializeList(response->node,
                                             objectContentList) < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_PowerOnVM_Task(esxVI_Context *ctx,
-                     esxVI_ManagedObjectReference *virtualMachine,
-                     esxVI_ManagedObjectReference **task)
+/* esxVI_PowerOnVM_Task */
+ESX_VI__METHOD(PowerOnVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
 {
-    return esxVI_StartSimpleVirtualMachineTask(ctx, "PowerOnVM",
-                                               virtualMachine, task);
-}
-
-
-
-int
-esxVI_PowerOffVM_Task(esxVI_Context *ctx,
-                      esxVI_ManagedObjectReference *virtualMachine,
-                      esxVI_ManagedObjectReference **task)
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
 {
-    return esxVI_StartSimpleVirtualMachineTask(ctx, "PowerOffVM",
-                                               virtualMachine, task);
-}
-
-
-
-int
-esxVI_SuspendVM_Task(esxVI_Context *ctx,
-                     esxVI_ManagedObjectReference *virtualMachine,
-                     esxVI_ManagedObjectReference **task)
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
 {
-    return esxVI_StartSimpleVirtualMachineTask(ctx, "SuspendVM",
-                                               virtualMachine, task);
-}
-
-
-
-int
-esxVI_MigrateVM_Task(esxVI_Context *ctx,
-                     esxVI_ManagedObjectReference *virtualMachine,
-                     esxVI_ManagedObjectReference *resourcePool,
-                     esxVI_ManagedObjectReference *hostSystem,
-                     esxVI_ManagedObjectReference **task)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-
-    if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<MigrateVM_Task xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_VirtualMachineMovePriority_Serialize
-          (esxVI_VirtualMachineMovePriority_DefaultPriority, "priority",
-           &buffer, esxVI_Boolean_True) < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
         goto failure;
     }
-
-    virBufferAddLit(&buffer, "</MigrateVM_Task>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_StartVirtualMachineTask(ctx, "MigrateVM", request, task) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_ReconfigVM_Task(esxVI_Context *ctx,
-                      esxVI_ManagedObjectReference *virtualMachine,
-                      esxVI_VirtualMachineConfigSpec *spec,
-                      esxVI_ManagedObjectReference **task)
+/* esxVI_PowerOffVM_Task */
+ESX_VI__METHOD(PowerOffVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-
-    if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<ReconfigVM_Task xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_VirtualMachineConfigSpec_Serialize(spec, "spec", &buffer,
-                                                 esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</ReconfigVM_Task>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_StartVirtualMachineTask(ctx, "ReconfigVM", request, task) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_RegisterVM_Task(esxVI_Context *ctx,
-                      esxVI_ManagedObjectReference *folder,
-                      const char *path, const char *name,
-                      esxVI_Boolean asTemplate,
-                      esxVI_ManagedObjectReference *resourcePool,
-                      esxVI_ManagedObjectReference *hostSystem,
-                      esxVI_ManagedObjectReference **task)
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-
-    if (task == NULL || *task != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<RegisterVM_Task xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(folder, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(path, "path", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(name, "name", &buffer,
-                                    esxVI_Boolean_False) < 0 ||
-        esxVI_Boolean_Serialize(asTemplate, "asTemplate", &buffer,
-                                esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
-                                               esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
-                                               esxVI_Boolean_False) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</RegisterVM_Task>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_StartVirtualMachineTask(ctx, "RegisterVM", request, task) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_CancelTask(esxVI_Context *ctx, esxVI_ManagedObjectReference *task)
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<CancelTask xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(task, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</CancelTask>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "CancelTask", request, &response,
-                              esxVI_Occurrence_None) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_UnregisterVM(esxVI_Context *ctx,
-                   esxVI_ManagedObjectReference *virtualMachine)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<UnregisterVM xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
         goto failure;
     }
-
-    virBufferAddLit(&buffer, "</UnregisterVM>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "UnregisterVM", request, &response,
-                              esxVI_Occurrence_None) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_AnswerVM(esxVI_Context *ctx,
-               esxVI_ManagedObjectReference *virtualMachine,
-               const char *questionId, const char *answerChoice)
+/* esxVI_SuspendVM_Task */
+ESX_VI__METHOD(SuspendVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<AnswerVM xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(virtualMachine, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(questionId, "questionId", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(answerChoice, "answerChoice", &buffer,
-                                    esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</AnswerVM>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, request, NULL, &response,
-                              esxVI_Boolean_False) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    if (request == NULL) {
-        request = virBufferContentAndReset(&buffer);
-    }
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_CreateFilter(esxVI_Context *ctx,
-                   esxVI_PropertyFilterSpec *propertyFilterSpec,
-                   esxVI_Boolean partialUpdates,
-                   esxVI_ManagedObjectReference **propertyFilter)
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (propertyFilter == NULL || *propertyFilter != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<CreateFilter xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_PropertyFilterSpec_Serialize(propertyFilterSpec, "spec", &buffer,
-                                           esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(partialUpdates, "partialUpdates", &buffer,
-                                esxVI_Boolean_True) < 0) {
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
         goto failure;
     }
+})
 
-    virBufferAddLit(&buffer, "</CreateFilter>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
+
+/* esxVI_MigrateVM_Task */
+ESX_VI__METHOD(MigrateVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                esxVI_ManagedObjectReference *pool,
+                esxVI_ManagedObjectReference *host,
+                esxVI_VirtualMachineMovePriority priority,
+                esxVI_VirtualMachinePowerState state,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(priority)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachineMovePriority, priority)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachinePowerState, state)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
         goto failure;
     }
+})
 
-    request = virBufferContentAndReset(&buffer);
 
-    if (esxVI_Context_Execute(ctx, "CreateFilter", request, &response,
-                              esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_ManagedObjectReference_Deserialize(response->node, propertyFilter,
+
+/* esxVI_ReconfigVM_Task */
+ESX_VI__METHOD(ReconfigVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                esxVI_VirtualMachineConfigSpec *spec,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(spec)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachineConfigSpec, spec)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
+        goto failure;
+    }
+})
+
+
+
+/* esxVI_RegisterVM_Task */
+ESX_VI__METHOD(RegisterVM_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *folder,
+                const char *path, const char *name,
+                esxVI_Boolean asTemplate,
+                esxVI_ManagedObjectReference *pool,
+                esxVI_ManagedObjectReference *host,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(folder)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(path)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference, folder)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, path)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, name)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, asTemplate)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
+                                                 "Task") < 0) {
+        goto failure;
+    }
+})
+
+
+
+/* esxVI_CancelTask */
+ESX_VI__METHOD(CancelTask,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *task),
+               None,
+{
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference, task)
+},
+{
+})
+
+
+
+/* esxVI_UnregisterVM */
+ESX_VI__METHOD(UnregisterVM,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine),
+               None,
+{
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
+{
+})
+
+
+
+/* esxVI_AnswerVM */
+ESX_VI__METHOD(AnswerVM,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                const char *questionId,
+                const char *answerChoice),
+               None,
+{
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(questionId)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(answerChoice)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, questionId)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, answerChoice)
+},
+{
+})
+
+
+
+/* esxVI_CreateFilter */
+ESX_VI__METHOD(CreateFilter,
+               (esxVI_Context *ctx,
+                esxVI_PropertyFilterSpec *spec,
+                esxVI_Boolean partialUpdates,
+                esxVI_ManagedObjectReference **propertyFilter),
+               RequiredItem,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(propertyFilter)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(spec)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(partialUpdates)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(PropertyFilterSpec, spec)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, partialUpdates)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, propertyFilter,
                                                  "PropertyFilter") < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_DestroyPropertyFilter(esxVI_Context *ctx,
-                            esxVI_ManagedObjectReference *propertyFilter)
+/* esxVI_DestroyPropertyFilter */
+ESX_VI__METHOD(DestroyPropertyFilter,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *propertyFilter),
+               None,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<DestroyPropertyFilter xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(propertyFilter, "_this", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</DestroyPropertyFilter>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "DestroyPropertyFilter", request,
-                              &response, esxVI_Occurrence_None) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_WaitForUpdates(esxVI_Context *ctx, const char *version,
-                     esxVI_UpdateSet **updateSet)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(propertyFilter)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              propertyFilter)
+},
+{
+})
 
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
 
-    if (updateSet == NULL || *updateSet != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
 
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<WaitForUpdates xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->propertyCollector,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_String_SerializeValue(version, "version", &buffer,
-                                    esxVI_Boolean_True) < 0) {
+/* esxVI_WaitForUpdates */
+ESX_VI__METHOD(WaitForUpdates,
+               (esxVI_Context *ctx,
+                const char *version,
+                esxVI_UpdateSet **updateSet),
+               RequiredItem,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(updateSet)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(version)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->propertyCollector)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, version)
+},
+{
+    if (esxVI_UpdateSet_Deserialize(response->node, updateSet) < 0) {
         goto failure;
     }
-
-    virBufferAddLit(&buffer, "</WaitForUpdates>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "WaitForUpdates", request,
-                              &response, esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_UpdateSet_Deserialize(response->node, updateSet) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_RebootGuest(esxVI_Context *ctx,
-                  esxVI_ManagedObjectReference *virtualMachine)
+/* esxVI_RebootGuest */
+ESX_VI__METHOD(RebootGuest,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine),
+               None,
 {
-    return esxVI_SimpleVirtualMachineMethod(ctx, "RebootGuest", virtualMachine);
-}
-
-
-
-int
-esxVI_ShutdownGuest(esxVI_Context *ctx,
-                    esxVI_ManagedObjectReference *virtualMachine)
+},
 {
-    return esxVI_SimpleVirtualMachineMethod(ctx, "ShutdownGuest",
-                                            virtualMachine);
-}
-
-
-
-int
-esxVI_ValidateMigration(esxVI_Context *ctx,
-                        esxVI_ManagedObjectReference *virtualMachineList,
-                        esxVI_VirtualMachinePowerState powerState,
-                        esxVI_String *testTypeList,
-                        esxVI_ManagedObjectReference *resourcePool,
-                        esxVI_ManagedObjectReference *hostSystem,
-                        esxVI_Event **eventList)
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
+{
+})
 
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
 
-    if (eventList == NULL || *eventList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
 
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<ValidateMigration xmlns=\"urn:vim25\">"
-                             "<_this xmlns=\"urn:vim25\" "
+/* esxVI_ShutdownGuest */
+ESX_VI__METHOD(ShutdownGuest,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine),
+               None,
+{
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+},
+{
+})
+
+
+
+/* esxVI_ValidateMigration */
+ESX_VI__METHOD(ValidateMigration,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *vm, /* list */
+                esxVI_VirtualMachinePowerState state,
+                esxVI_String *testType, /* list */
+                esxVI_ManagedObjectReference *pool,
+                esxVI_ManagedObjectReference *host,
+                esxVI_Event **eventList),
+               List,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(eventList)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE(vm)
+},
+{
+    virBufferAddLit(&buffer, "<_this xmlns=\"urn:vim25\" "
                                     "xsi:type=\"ManagedObjectReference\" "
                                     "type=\"ServiceInstance\">"
                                "ServiceInstance"
                              "</_this>");
-
-    if (esxVI_ManagedObjectReference_SerializeList(virtualMachineList, "vm",
-                                                   &buffer,
-                                                   esxVI_Boolean_True) < 0 ||
-        esxVI_VirtualMachinePowerState_Serialize(powerState, "state", &buffer,
-                                                 esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeList(testTypeList, "testType", &buffer,
-                                   esxVI_Boolean_False) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(resourcePool, "pool", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(hostSystem, "host", &buffer,
-                                               esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</ValidateMigration>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "ValidateMigration", request, &response,
-                              esxVI_Occurrence_List) < 0 ||
-        esxVI_Event_DeserializeList(response->node, eventList) < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
-
-
-
-int
-esxVI_FindByIp(esxVI_Context *ctx,
-                 esxVI_ManagedObjectReference *datacenter,
-                 const char *ip, esxVI_Boolean vmSearch,
-                 esxVI_ManagedObjectReference **managedObjectReference)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(ManagedObjectReference, vm)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachinePowerState, state)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(String, testType)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
+},
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (managedObjectReference == NULL || *managedObjectReference != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<FindByIp xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->searchIndex,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(datacenter, "datacenter",
-                                               &buffer,
-                                               esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeValue(ip, "ip", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(vmSearch, "vmSearch", &buffer,
-                                esxVI_Boolean_True) < 0) {
+    if (esxVI_Event_DeserializeList(response->node, eventList) < 0) {
         goto failure;
     }
-
-    virBufferAddLit(&buffer, "</FindByIp>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "FindByIp", request, &response,
-                              esxVI_Occurrence_OptionalItem) < 0 ||
-        esxVI_ManagedObjectReference_Deserialize
-          (response->node, managedObjectReference,
-           vmSearch == esxVI_Boolean_True ? "VirtualMachine"
-                                          : "HostSystem") < 0) {
-        goto failure;
-    }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_FindByUuid(esxVI_Context *ctx,
-                 esxVI_ManagedObjectReference *datacenter,
-                 const unsigned char *uuid, esxVI_Boolean vmSearch,
-                 esxVI_ManagedObjectReference **managedObjectReference)
+/* esxVI_FindByIp */
+ESX_VI__METHOD(FindByIp,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *datacenter,
+                const char *ip,
+                esxVI_Boolean vmSearch,
+                esxVI_ManagedObjectReference **managedObjectReference),
+               OptionalItem,
 {
-    int result = 0;
-    char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (managedObjectReference == NULL || *managedObjectReference != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virUUIDFormat(uuid, uuid_string);
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<FindByUuid xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->searchIndex,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(datacenter, "datacenter",
-                                               &buffer,
-                                               esxVI_Boolean_False) < 0 ||
-        esxVI_String_SerializeValue(uuid_string, "uuid", &buffer,
-                                    esxVI_Boolean_True) < 0 ||
-        esxVI_Boolean_Serialize(vmSearch, "vmSearch", &buffer,
-                                esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</FindByUuid>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "FindByUuid", request, &response,
-                              esxVI_Occurrence_OptionalItem) < 0) {
-        goto failure;
-    }
-
-    if (response->node == NULL) {
-        goto cleanup;
-    }
-
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(managedObjectReference)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->searchIndex)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(ip)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(vmSearch)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->searchIndex)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, datacenter)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, ip)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
+},
+{
     if (esxVI_ManagedObjectReference_Deserialize
           (response->node, managedObjectReference,
            vmSearch == esxVI_Boolean_True ? "VirtualMachine"
                                           : "HostSystem") < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_QueryAvailablePerfMetric(esxVI_Context *ctx,
-                               esxVI_ManagedObjectReference *entity,
-                               esxVI_DateTime *beginTime,
-                               esxVI_DateTime *endTime, esxVI_Int *intervalId,
-                               esxVI_PerfMetricId **perfMetricIdList)
+/* esxVI_FindByUuid */
+ESX_VI__METHOD(FindByUuid,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *datacenter,
+                const char *uuid, /* string */
+                esxVI_Boolean vmSearch,
+                esxVI_ManagedObjectReference **managedObjectReference),
+               OptionalItem,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (perfMetricIdList == NULL || *perfMetricIdList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<QueryAvailablePerfMetric xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_ManagedObjectReference_Serialize(entity, "entity", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_DateTime_Serialize(beginTime, "beginTime", &buffer,
-                                 esxVI_Boolean_False) < 0 ||
-        esxVI_DateTime_Serialize(endTime, "endTime", &buffer,
-                                 esxVI_Boolean_False) < 0 ||
-        esxVI_Int_Serialize(intervalId, "intervalId", &buffer,
-                            esxVI_Boolean_False) < 0) {
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(managedObjectReference)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->searchIndex)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(uuid)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(vmSearch)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->searchIndex)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, datacenter)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, uuid)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize
+          (response->node, managedObjectReference,
+           vmSearch == esxVI_Boolean_True ? "VirtualMachine"
+                                          : "HostSystem") < 0) {
         goto failure;
     }
+})
 
-    virBufferAddLit(&buffer, "</QueryAvailablePerfMetric>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
 
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
 
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "QueryAvailablePerfMetric", request,
-                              &response, esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfMetricId_DeserializeList(response->node,
+/* esxVI_QueryAvailablePerfMetric */
+ESX_VI__METHOD(QueryAvailablePerfMetric,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *entity,
+                esxVI_DateTime *beginTime,
+                esxVI_DateTime *endTime,
+                esxVI_Int *intervalId,
+                esxVI_PerfMetricId **perfMetricIdList),
+               List,
+{
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfMetricIdList)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(entity)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, entity)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(DateTime, beginTime)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(DateTime, endTime)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Int, intervalId)
+},
+{
+    if (esxVI_PerfMetricId_DeserializeList(response->node,
                                            perfMetricIdList) < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_QueryPerfCounter(esxVI_Context *ctx, esxVI_Int *counterIdList,
-                       esxVI_PerfCounterInfo **perfCounterInfoList)
+/* esxVI_QueryPerfCounter */
+ESX_VI__METHOD(QueryPerfCounter,
+               (esxVI_Context *ctx,
+                esxVI_Int *counterId, /* list */
+                esxVI_PerfCounterInfo **perfCounterInfoList),
+               List,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (perfCounterInfoList == NULL || *perfCounterInfoList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<QueryPerfCounter xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_Int_SerializeList(counterIdList, "counterId", &buffer,
-                                esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</QueryPerfCounter>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "QueryPerfCounter", request, &response,
-                              esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfCounterInfo_DeserializeList(response->node,
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfCounterInfoList)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(counterId)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(Int, counterId)
+},
+{
+    if (esxVI_PerfCounterInfo_DeserializeList(response->node,
                                               perfCounterInfoList) < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})
 
 
 
-int
-esxVI_QueryPerf(esxVI_Context *ctx, esxVI_PerfQuerySpec *querySpecList,
-                esxVI_PerfEntityMetric **perfEntityMetricList)
+/* esxVI_QueryPerf */
+ESX_VI__METHOD(QueryPerf,
+               (esxVI_Context *ctx,
+                esxVI_PerfQuerySpec *querySpec, /* list */
+                esxVI_PerfEntityMetric **perfEntityMetricList),
+               List,
 {
-    int result = 0;
-    virBuffer buffer = VIR_BUFFER_INITIALIZER;
-    char *request = NULL;
-    esxVI_Response *response = NULL;
-
-    if (ctx->service == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");
-        return -1;
-    }
-
-    if (perfEntityMetricList == NULL || *perfEntityMetricList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
-        return -1;
-    }
-
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);
-    virBufferAddLit(&buffer, "<QueryPerf xmlns=\"urn:vim25\">");
-
-    if (esxVI_ManagedObjectReference_Serialize(ctx->service->perfManager,
-                                               "_this", &buffer,
-                                               esxVI_Boolean_True) < 0 ||
-        esxVI_PerfQuerySpec_SerializeList(querySpecList, "querySpec", &buffer,
-                                          esxVI_Boolean_True) < 0) {
-        goto failure;
-    }
-
-    virBufferAddLit(&buffer, "</QueryPerf>");
-    virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);
-
-    if (virBufferError(&buffer)) {
-        virReportOOMError();
-        goto failure;
-    }
-
-    request = virBufferContentAndReset(&buffer);
-
-    if (esxVI_Context_Execute(ctx, "QueryPerf", request, &response,
-                              esxVI_Occurrence_List) < 0 ||
-        esxVI_PerfEntityMetric_DeserializeList(response->node,
+    ESX_VI__METHOD__CHECK_SERVICE()
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfEntityMetricList)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(querySpec)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              ctx->service->perfManager)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(PerfQuerySpec, querySpec)
+},
+{
+    if (esxVI_PerfEntityMetric_DeserializeList(response->node,
                                                perfEntityMetricList) < 0) {
         goto failure;
     }
-
-  cleanup:
-    VIR_FREE(request);
-    esxVI_Response_Free(&response);
-
-    return result;
-
-  failure:
-    virBufferFreeAndReset(&buffer);
-
-    result = -1;
-
-    goto cleanup;
-}
+})

@@ -3,7 +3,7 @@
  * esx_vi_types.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2010 Red Hat, Inc.
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -92,6 +92,28 @@
 
 
 
+#define ESX_VI__TEMPLATE__VALIDATE(_type, _require)                           \
+    int                                                                       \
+    esxVI_##_type##_Validate(esxVI_##_type *item)                             \
+    {                                                                         \
+        const char *type_name = #_type;                                       \
+                                                                              \
+        _require                                                              \
+                                                                              \
+        return 0;                                                             \
+    }
+
+
+
+#define ESX_VI__TEMPLATE__VALIDATE_NOOP(_type)                                \
+    int                                                                       \
+    esxVI_##_type##_Validate(esxVI_##_type *item ATTRIBUTE_UNUSED)            \
+    {                                                                         \
+        return 0;                                                             \
+    }
+
+
+
 #define ESX_VI__TEMPLATE__LIST__APPEND(_type)                                 \
     int                                                                       \
     esxVI_##_type##_AppendToList(esxVI_##_type **list,  esxVI_##_type *item)  \
@@ -131,11 +153,9 @@
 #define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type)                              \
     int                                                                       \
     esxVI_##_type##_SerializeList(esxVI_##_type *list, const char *element,   \
-                                  virBufferPtr output,                        \
-                                  esxVI_Boolean required)                     \
+                                  virBufferPtr output)                        \
     {                                                                         \
-        return esxVI_List_Serialize((esxVI_List *)list, element,              \
-                                    output, required,                         \
+        return esxVI_List_Serialize((esxVI_List *)list, element, output,      \
                                     (esxVI_List_SerializeFunc)                \
                                       esxVI_##_type##_Serialize);             \
     }
@@ -179,8 +199,7 @@
 #define ESX_VI__TEMPLATE__SERIALIZE_EXTRA(_type, _type_string, _serialize)    \
     int                                                                       \
     esxVI_##_type##_Serialize(esxVI_##_type *item,                            \
-                              const char *element, virBufferPtr output,       \
-                              esxVI_Boolean required)                         \
+                              const char *element, virBufferPtr output)       \
     {                                                                         \
         if (element == NULL || output == NULL ) {                             \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
@@ -188,7 +207,11 @@
         }                                                                     \
                                                                               \
         if (item == NULL) {                                                   \
-            return esxVI_CheckSerializationNecessity(element, required);      \
+            return 0;                                                         \
+        }                                                                     \
+                                                                              \
+        if (esxVI_##_type##_Validate(item) < 0) {                             \
+            return -1;                                                        \
         }                                                                     \
                                                                               \
         ESV_VI__XML_TAG__OPEN(output, element, _type_string);                 \
@@ -207,7 +230,7 @@
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize, _require)          \
+#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize)                    \
     int                                                                       \
     esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **ptrptr)      \
     {                                                                         \
@@ -235,7 +258,9 @@
             VIR_WARN("Unexpected '%s' property", childNode->name);            \
         }                                                                     \
                                                                               \
-        _require                                                              \
+        if (esxVI_##_type##_Validate(*ptrptr) < 0) {                          \
+            goto failure;                                                     \
+        }                                                                     \
                                                                               \
         return 0;                                                             \
                                                                               \
@@ -303,25 +328,22 @@
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(_type, _name, _required)        \
-    if (esxVI_##_type##_Serialize(item->_name, #_name, output,                \
-                                  esxVI_Boolean_##_required) < 0) {           \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(_type, _name)                   \
+    if (esxVI_##_type##_Serialize(item->_name, #_name, output) < 0) {         \
         return -1;                                                            \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(_type, _name, _required)  \
-    if (esxVI_##_type##_SerializeValue(item->_name, #_name, output,           \
-                                       esxVI_Boolean_##_required) < 0) {      \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(_type, _name)             \
+    if (esxVI_##_type##_SerializeValue(item->_name, #_name, output) < 0) {    \
         return -1;                                                            \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(_type, _name, _required)   \
-    if (esxVI_##_type##_SerializeList(item->_name, #_name, output,            \
-                                      esxVI_Boolean_##_required) < 0) {       \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(_type, _name)              \
+    if (esxVI_##_type##_SerializeList(item->_name, #_name, output) < 0) {     \
         return -1;                                                            \
     }
 
@@ -392,12 +414,15 @@
 /*
  * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
  * enumeration values).
+ *
+ * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
  */
-#define ESX_VI__TEMPLATE__PROPERTY__REQUIRED(_name)                           \
-    if ((*ptrptr)->_name == 0) {                                              \
+#define ESX_VI__TEMPLATE__PROPERTY__REQUIRE(_name)                            \
+    if (item->_name == 0) {                                                   \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
-                     "Missing required '%s' property", #_name);               \
-        goto failure;                                                         \
+                     "%s object is missing the required '%s' property",       \
+                     type_name, #_name);                                      \
+        return -1;                                                            \
     }
 
 
@@ -416,10 +441,10 @@
 #define ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(_type)                       \
     int                                                                       \
     esxVI_##_type##_Serialize(esxVI_##_type value, const char *element,       \
-                              virBufferPtr output, esxVI_Boolean required)    \
+                              virBufferPtr output)                            \
     {                                                                         \
         return esxVI_Enumeration_Serialize(&_esxVI_##_type##_Enumeration,     \
-                                           value, element, output, required); \
+                                           value, element, output);           \
     }
 
 
@@ -809,10 +834,10 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
 
 int
 esxVI_String_Serialize(esxVI_String *string, const char *element,
-                       virBufferPtr output, esxVI_Boolean required)
+                       virBufferPtr output)
 {
     return esxVI_String_SerializeValue(string != NULL ? string->value : NULL,
-                                       element, output, required);
+                                       element, output);
 }
 
 /* esxVI_String_SerializeList */
@@ -820,7 +845,7 @@ ESX_VI__TEMPLATE__LIST__SERIALIZE(String);
 
 int
 esxVI_String_SerializeValue(const char *value, const char *element,
-                            virBufferPtr output, esxVI_Boolean required)
+                            virBufferPtr output)
 {
     if (element == NULL || output == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -828,7 +853,7 @@ esxVI_String_SerializeValue(const char *value, const char *element,
     }
 
     if (value == NULL) {
-        return esxVI_CheckSerializationNecessity(element, required);
+        return 0;
     }
 
     ESV_VI__XML_TAG__OPEN(output, element, "xsd:string");
@@ -912,6 +937,9 @@ ESX_VI__TEMPLATE__FREE(Int,
     esxVI_Int_Free(&item->_next);
 });
 
+/* esxVI_Int_Validate */
+ESX_VI__TEMPLATE__VALIDATE_NOOP(Int);
+
 /* esxVI_Int_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(Int);
 
@@ -968,6 +996,9 @@ ESX_VI__TEMPLATE__FREE(Long,
     esxVI_Long_Free(&item->_next);
 });
 
+/* esxVI_Long_Validate */
+ESX_VI__TEMPLATE__VALIDATE_NOOP(Long);
+
 /* esxVI_Long_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(Long);
 
@@ -996,6 +1027,12 @@ ESX_VI__TEMPLATE__ALLOC(DateTime);
 ESX_VI__TEMPLATE__FREE(DateTime,
 {
     VIR_FREE(item->value);
+});
+
+/* esxVI_DateTime_Validate */
+ESX_VI__TEMPLATE__VALIDATE(DateTime,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(value);
 });
 
 /* esxVI_DateTime_Serialize */
@@ -1228,16 +1265,19 @@ ESX_VI__TEMPLATE__FREE(Fault,
     VIR_FREE(item->faultstring);
 });
 
+/* esxVI_Fault_Validate */
+ESX_VI__TEMPLATE__VALIDATE(Fault,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(faultcode);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(faultstring);
+});
+
 /* esxVI_Fault_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(Fault,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, faultcode);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, faultstring);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(detail); /* FIXME */
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(faultcode);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(faultstring);
 });
 
 
@@ -1384,7 +1424,7 @@ esxVI_ManagedObjectReference_CastListFromAnyType
 int
 esxVI_ManagedObjectReference_Serialize
   (esxVI_ManagedObjectReference *managedObjectReference,
-   const char *element, virBufferPtr output, esxVI_Boolean required)
+   const char *element, virBufferPtr output)
 {
     if (element == NULL || output == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -1392,7 +1432,7 @@ esxVI_ManagedObjectReference_Serialize
     }
 
     if (managedObjectReference == NULL) {
-        return esxVI_CheckSerializationNecessity(element, required);
+        return 0;
     }
 
     virBufferAddLit(output, "<");
@@ -1474,6 +1514,13 @@ ESX_VI__TEMPLATE__FREE(DynamicProperty,
     esxVI_AnyType_Free(&item->val);
 });
 
+/* esxVI_DynamicProperty_Validate */
+ESX_VI__TEMPLATE__VALIDATE(DynamicProperty,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(val);
+});
+
 int
 esxVI_DynamicProperty_DeepCopy(esxVI_DynamicProperty **dest,
                                esxVI_DynamicProperty *src)
@@ -1512,10 +1559,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(DynamicProperty,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, name);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(AnyType, val);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(name);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(val);
 });
 
 /* esxVI_DynamicProperty_DeserializeList */
@@ -1544,6 +1587,12 @@ ESX_VI__TEMPLATE__FREE(HostCpuIdInfo,
     VIR_FREE(item->edx);
 });
 
+/* esxVI_HostCpuIdInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(HostCpuIdInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(level);
+});
+
 /* esxVI_HostCpuIdInfo_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(HostCpuIdInfo);
 
@@ -1559,9 +1608,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(HostCpuIdInfo,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, ebx);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, ecx);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, edx);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(level);
 });
 
 /* esxVI_HostCpuIdInfo_DeserializeList */
@@ -1608,13 +1654,23 @@ esxVI_SelectionSpec_Free(esxVI_SelectionSpec **selectionSpec)
     }
 }
 
+/* esxVI_SelectionSpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(SelectionSpec,
+{
+    if (item->_super != NULL) {
+        return esxVI_TraversalSpec_Validate(item->_super);
+    }
+
+    /* All properties are optional */
+    (void)type_name;
+});
+
 /* esxVI_SelectionSpec_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(SelectionSpec);
 
 int
 esxVI_SelectionSpec_Serialize(esxVI_SelectionSpec *selectionSpec,
-                              const char *element, virBufferPtr output,
-                              esxVI_Boolean required)
+                              const char *element, virBufferPtr output)
 {
     if (element == NULL || output == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
@@ -1622,18 +1678,21 @@ esxVI_SelectionSpec_Serialize(esxVI_SelectionSpec *selectionSpec,
     }
 
     if (selectionSpec == NULL) {
-        return esxVI_CheckSerializationNecessity(element, required);
+        return 0;
     }
 
     if (selectionSpec->_super != NULL) {
         return esxVI_TraversalSpec_Serialize(selectionSpec->_super, element,
-                                             output, required);
+                                             output);
+    }
+
+    if (esxVI_SelectionSpec_Validate(selectionSpec) < 0) {
+        return -1;
     }
 
     ESV_VI__XML_TAG__OPEN(output, element, "SelectionSpec");
 
-    if (esxVI_String_SerializeValue(selectionSpec->name, "name", output,
-                                    esxVI_Boolean_False) < 0) {
+    if (esxVI_String_SerializeValue(selectionSpec->name, "name", output) < 0) {
         return -1;
     }
 
@@ -1708,18 +1767,24 @@ esxVI_TraversalSpec_Free(esxVI_TraversalSpec **traversalSpec)
     VIR_FREE(local);
 }
 
+/* esxVI_TraversalSpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(TraversalSpec,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(type);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(path);
+});
+
 /* esxVI_TraversalSpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(TraversalSpec,
 {
-    if (esxVI_String_SerializeValue(item->_base->name, "name", output,
-                                    esxVI_Boolean_False) < 0) {
+    if (esxVI_String_SerializeValue(item->_base->name, "name", output) < 0) {
         return -1;
     }
 
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, type, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, path, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, skip, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(SelectionSpec, selectSet, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, type);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, path);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, skip);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(SelectionSpec, selectSet);
 });
 
 
@@ -1740,15 +1805,21 @@ ESX_VI__TEMPLATE__FREE(ObjectSpec,
     esxVI_SelectionSpec_Free(&item->selectSet);
 });
 
+/* esxVI_ObjectSpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ObjectSpec,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(obj);
+});
+
 /* esxVI_ObjectSpec_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(ObjectSpec);
 
 /* esxVI_ObjectSpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(ObjectSpec,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ManagedObjectReference, obj, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, skip, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(SelectionSpec, selectSet, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ManagedObjectReference, obj);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, skip);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(SelectionSpec, selectSet);
 });
 
 /* esxVI_ObjectSpec_SerializeList */
@@ -1772,6 +1843,13 @@ ESX_VI__TEMPLATE__FREE(PropertyChange,
     esxVI_AnyType_Free(&item->val);
 });
 
+/* esxVI_PropertyChange_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PropertyChange,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(op);
+});
+
 /* esxVI_PropertyChange_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PropertyChange);
 
@@ -1781,10 +1859,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PropertyChange,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, name);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(PropertyChangeOp, op);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(AnyType, val);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(name);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(op);
 });
 
 /* esxVI_PropertyChange_DeserializeList */
@@ -1808,15 +1882,21 @@ ESX_VI__TEMPLATE__FREE(PropertySpec,
     esxVI_String_Free(&item->pathSet);
 });
 
+/* esxVI_PropertySpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PropertySpec,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(type);
+});
+
 /* esxVI_PropertySpec_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PropertySpec);
 
 /* esxVI_PropertySpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(PropertySpec,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, type, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, all, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(String, pathSet, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, type);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, all);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(String, pathSet);
 });
 
 /* esxVI_PropertySpec_SerializeList */
@@ -1840,14 +1920,21 @@ ESX_VI__TEMPLATE__FREE(PropertyFilterSpec,
     esxVI_ObjectSpec_Free(&item->objectSet);
 });
 
+/* esxVI_PropertyFilterSpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PropertyFilterSpec,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(propSet);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(objectSet);
+});
+
 /* esxVI_PropertyFilterSpec_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PropertyFilterSpec);
 
 /* esxVI_PropertyFilterSpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(PropertyFilterSpec,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(PropertySpec, propSet, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(ObjectSpec, objectSet, True);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(PropertySpec, propSet);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(ObjectSpec, objectSet);
 });
 
 /* esxVI_PropertyFilterSpec_SerializeList */
@@ -1870,6 +1957,12 @@ ESX_VI__TEMPLATE__FREE(ObjectContent,
     esxVI_ManagedObjectReference_Free(&item->obj);
     esxVI_DynamicProperty_Free(&item->propSet);
     /*esxVI_MissingProperty_Free(&item->missingSet);*//* FIXME */
+});
+
+/* esxVI_ObjectContent_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ObjectContent,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(obj);
 });
 
 /* esxVI_ObjectContent_AppendToList */
@@ -1917,9 +2010,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(ObjectContent,
                                                      NULL, obj);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(DynamicProperty, propSet);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(missingSet); /* FIXME */
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(obj);
 });
 
 /* esxVI_ObjectContent_DeserializeList */
@@ -1944,6 +2034,13 @@ ESX_VI__TEMPLATE__FREE(ObjectUpdate,
     /*esxVI_MissingProperty_Free(&item->missingSet);*//* FIXME */
 });
 
+/* esxVI_ObjectUpdate_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ObjectUpdate,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(kind);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(obj);
+});
+
 /* esxVI_ObjectUpdate_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(ObjectUpdate);
 
@@ -1955,10 +2052,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(ObjectUpdate,
                                                      NULL, obj);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(PropertyChange, changeSet);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(missingSet); /* FIXME */
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(kind);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(obj);
 });
 
 /* esxVI_ObjectUpdate_DeserializeList */
@@ -1983,6 +2076,12 @@ ESX_VI__TEMPLATE__FREE(PropertyFilterUpdate,
     /*esxVI_MissingProperty_Free(&item->missingSet);*//* FIXME */
 });
 
+/* esxVI_PropertyFilterUpdate_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PropertyFilterUpdate,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(filter);
+});
+
 /* esxVI_PropertyFilterUpdate_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PropertyFilterUpdate);
 
@@ -1993,9 +2092,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PropertyFilterUpdate,
                                                      NULL, filter);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(ObjectUpdate, objectSet);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(missingSet); /* FIXME */
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(filter);
 });
 
 /* esxVI_PropertyFilterUpdate_DeserializeList */
@@ -2026,6 +2122,22 @@ ESX_VI__TEMPLATE__FREE(AboutInfo,
     VIR_FREE(item->apiVersion);
 });
 
+/* esxVI_AboutInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(AboutInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(fullName);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(vendor);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(version);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(build);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(localeVersion);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(localeBuild);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(osType);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(productLineId);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(apiType);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(apiVersion);
+});
+
 /* esxVI_AboutInfo_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(AboutInfo,
 {
@@ -2040,19 +2152,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(AboutInfo,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, productLineId);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, apiType);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, apiVersion);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(name);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(fullName);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(vendor);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(version);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(build);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(localeVersion);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(localeBuild);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(osType);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(productLineId);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(apiType);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(apiVersion);
 });
 
 
@@ -2090,6 +2189,14 @@ ESX_VI__TEMPLATE__FREE(ServiceContent,
     esxVI_ManagedObjectReference_Free(&item->fileManager);
     esxVI_ManagedObjectReference_Free(&item->virtualDiskManager);
     esxVI_ManagedObjectReference_Free(&item->virtualizationManager);
+});
+
+/* esxVI_ServiceContent_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ServiceContent,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(rootFolder);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(propertyCollector);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(about);
 });
 
 /* esxVI_ServiceContent_Deserialize */
@@ -2160,11 +2267,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(ServiceContent,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_EXPECTED(ManagedObjectReference,
                                                      "VirtualizationManager",
                                                      virtualizationManager);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(rootFolder);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(propertyCollector);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(about);
 });
 
 
@@ -2183,15 +2285,18 @@ ESX_VI__TEMPLATE__FREE(UpdateSet,
     esxVI_PropertyFilterUpdate_Free(&item->filterSet);
 });
 
+/* esxVI_UpdateSet_Validate */
+ESX_VI__TEMPLATE__VALIDATE(UpdateSet,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(version);
+});
+
 /* esxVI_UpdateSet_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(UpdateSet,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, version);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(PropertyFilterUpdate,
                                                  filterSet);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(version);
 });
 
 
@@ -2209,6 +2314,13 @@ ESX_VI__TEMPLATE__FREE(SharesInfo,
     esxVI_Int_Free(&item->shares);
 });
 
+/* esxVI_SharesInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(SharesInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(shares);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(level);
+});
+
 /* esxVI_SharesInfo_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(SharesInfo);
 
@@ -2217,17 +2329,13 @@ ESX_VI__TEMPLATE__DESERIALIZE(SharesInfo,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, shares);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(SharesLevel, level);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(shares);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(level);
 });
 
 /* esxVI_SharesInfo_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(SharesInfo,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, shares, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(SharesLevel, level, True);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, shares);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(SharesLevel, level);
 });
 
 
@@ -2248,15 +2356,17 @@ ESX_VI__TEMPLATE__FREE(ResourceAllocationInfo,
     esxVI_Long_Free(&item->overheadLimit);
 });
 
+/* esxVI_ResourceAllocationInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE_NOOP(ResourceAllocationInfo);
+
 /* esxVI_ResourceAllocationInfo_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(ResourceAllocationInfo,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, reservation, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, expandableReservation,
-                                          False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, limit, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(SharesInfo, shares, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, overheadLimit, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, reservation);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Boolean, expandableReservation);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, limit);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(SharesInfo, shares);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, overheadLimit);
 });
 
 
@@ -2279,6 +2389,17 @@ ESX_VI__TEMPLATE__FREE(ResourcePoolResourceUsage,
     esxVI_Long_Free(&item->maxUsage);
 });
 
+/* esxVI_ResourcePoolResourceUsage_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ResourcePoolResourceUsage,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(reservationUsed);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(reservationUsedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(unreservedForPool);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(unreservedForVm);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(overallUsage);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(maxUsage);
+});
+
 /* esxVI_ResourcePoolResourceUsage_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ResourcePoolResourceUsage);
 
@@ -2291,14 +2412,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(ResourcePoolResourceUsage,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, unreservedForVm);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, overallUsage);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Long, maxUsage);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reservationUsed);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reservationUsedForVm);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(unreservedForPool);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(unreservedForVm);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(overallUsage);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(maxUsage);
 });
 
 
@@ -2336,36 +2449,34 @@ ESX_VI__TEMPLATE__FREE(VirtualMachineConfigSpec,
     /* FIXME: implement missing */
 });
 
+/* esxVI_VirtualMachineConfigSpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE_NOOP(VirtualMachineConfigSpec);
+
 /* esxVI_VirtualMachineConfigSpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(VirtualMachineConfigSpec,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, changeVersion, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, name, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, version, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, uuid, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(Long, npivNodeWorldWideName,
-                                               False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(Long, npivPortWorldWideName,
-                                               False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, npivWorldWideNameType,
-                                                False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, npivWorldWideNameOp,
-                                                False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, locationId, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, guestId, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, alternateGuestName,
-                                                False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, annotation, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, changeVersion);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, name);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, version);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, uuid);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(Long, npivNodeWorldWideName);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(Long, npivPortWorldWideName);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, npivWorldWideNameType);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, npivWorldWideNameOp);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, locationId);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, guestId);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, alternateGuestName);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, annotation);
     /* FIXME: implement missing */
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, numCPUs, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, memoryMB, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, numCPUs);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Long, memoryMB);
     /* FIXME: implement missing */
     ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ResourceAllocationInfo,
-                                          cpuAllocation, False);
+                                          cpuAllocation);
     ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ResourceAllocationInfo,
-                                          memoryAllocation, False);
+                                          memoryAllocation);
     /* FIXME: implement missing */
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, swapPlacement, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, swapPlacement);
     /* FIXME: implement missing */
 });
 
@@ -2391,6 +2502,15 @@ ESX_VI__TEMPLATE__FREE(Event,
     VIR_FREE(item->fullFormattedMessage);
 });
 
+/* esxVI_Event_Validate */
+ESX_VI__TEMPLATE__VALIDATE(Event,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(chainId);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(createdTime);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(userName);
+});
+
 /* esxVI_Event_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(Event,
 {
@@ -2403,12 +2523,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(Event,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(host); /* FIXME */
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(vm); /* FIXME */
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, fullFormattedMessage);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(chainId);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(createdTime);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(userName);
 });
 
 /* esxVI_Event_DeserializeList */
@@ -2435,6 +2549,18 @@ ESX_VI__TEMPLATE__FREE(UserSession,
     VIR_FREE(item->messageLocale);
 });
 
+/* esxVI_UserSession_Validate */
+ESX_VI__TEMPLATE__VALIDATE(UserSession,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(userName);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(fullName);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(loginTime);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(lastActiveTime);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(locale);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(messageLocale);
+});
+
 /* esxVI_UserSession_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(UserSession);
 
@@ -2448,15 +2574,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(UserSession,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, lastActiveTime);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, locale);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, messageLocale);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(userName);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(fullName);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(loginTime);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(lastActiveTime);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(locale);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(messageLocale);
 });
 
 
@@ -2477,6 +2594,14 @@ ESX_VI__TEMPLATE__FREE(VirtualMachineQuestionInfo,
     /*esxVI_VirtualMachineMessage_Free(&item->message);*//* FIXME */
 });
 
+/* esxVI_VirtualMachineQuestionInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(VirtualMachineQuestionInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(id);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(text);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(choice);
+});
+
 /* esxVI_VirtualMachineQuestionInfo_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(VirtualMachineQuestionInfo);
 
@@ -2487,11 +2612,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(VirtualMachineQuestionInfo,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, text);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(ChoiceOption, choice);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_NOOP(message); /* FIXME */
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(id);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(text);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(choice);
 });
 
 
@@ -2517,6 +2637,14 @@ ESX_VI__TEMPLATE__FREE(ElementDescription,
     VIR_FREE(item->key);
 });
 
+/* esxVI_ElementDescription_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ElementDescription,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(label);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(summary);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key);
+});
+
 /* esxVI_ElementDescription_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(ElementDescription);
 
@@ -2526,11 +2654,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(ElementDescription,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, label);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, summary);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, key);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(label);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(summary);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
 });
 
 
@@ -2553,15 +2676,18 @@ ESX_VI__TEMPLATE__FREE(ChoiceOption,
     esxVI_Int_Free(&item->defaultIndex);
 });
 
+/* esxVI_ChoiceOption_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ChoiceOption,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(choiceInfo);
+});
+
 /* esxVI_ChoiceOption_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(ChoiceOption,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Boolean, valueIsReadonly);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(ElementDescription, choiceInfo);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, defaultIndex);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(choiceInfo);
 });
 
 
@@ -2582,11 +2708,18 @@ ESX_VI__TEMPLATE__FREE(PerfMetricId,
     VIR_FREE(item->instance);
 });
 
+/* esxVI_PerfMetricId_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfMetricId,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(counterId);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(instance);
+});
+
 /* esxVI_PerfMetricId_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(PerfMetricId,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, counterId, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, instance, True);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, counterId);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, instance);
 });
 
 /* esxVI_PerfMetricId_SerializeList */
@@ -2597,10 +2730,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfMetricId,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, counterId);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, instance);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(counterId);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(instance);
 });
 
 /* esxVI_PerfMetricId_DeserializeList */
@@ -2628,6 +2757,17 @@ ESX_VI__TEMPLATE__FREE(PerfCounterInfo,
     esxVI_Int_Free(&item->associatedCounterId);
 });
 
+/* esxVI_PerfCounterInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfCounterInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(nameInfo);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(groupInfo);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(unitInfo);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(rollupType);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(statsType);
+});
+
 /* esxVI_PerfCounterInfo_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(PerfCounterInfo,
 {
@@ -2639,14 +2779,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfCounterInfo,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(PerfStatsType, statsType);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, level);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(Int, associatedCounterId);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(nameInfo);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(groupInfo);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(unitInfo);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(rollupType);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(statsType);
 });
 
 /* esxVI_PerfCounterInfo_DeserializeList */
@@ -2675,16 +2807,22 @@ ESX_VI__TEMPLATE__FREE(PerfQuerySpec,
     VIR_FREE(item->format);
 });
 
+/* esxVI_PerfQuerySpec_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfQuerySpec,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(entity);
+});
+
 /* esxVI_PerfQuerySpec_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(PerfQuerySpec,
 {
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ManagedObjectReference, entity, True);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(DateTime, startTime, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(DateTime, endTime, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, maxSample, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(PerfMetricId, metricId, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, intervalId, False);
-    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, format, False);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(ManagedObjectReference, entity);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(DateTime, startTime);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(DateTime, endTime);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, maxSample);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(PerfMetricId, metricId);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(Int, intervalId);
+    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, format);
 });
 
 /* esxVI_PerfQuerySpec_SerializeList */
@@ -2708,6 +2846,13 @@ ESX_VI__TEMPLATE__FREE(PerfSampleInfo,
     esxVI_Int_Free(&item->interval);
 });
 
+/* esxVI_PerfSampleInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfSampleInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(timestamp);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(interval);
+});
+
 /* esxVI_PerfSampleInfo_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PerfSampleInfo);
 
@@ -2716,10 +2861,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfSampleInfo,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, timestamp);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, interval);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(timestamp);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(interval);
 });
 
 /* esxVI_PerfSampleInfo_DeserializeList */
@@ -2748,6 +2889,12 @@ ESX_VI__TEMPLATE__FREE(PerfMetricIntSeries,
     esxVI_Long_Free(&item->value);
 });
 
+/* esxVI_PerfMetricIntSeries_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfMetricIntSeries,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(id);
+});
+
 /* esxVI_PerfMetricIntSeries_AppendToList */
 ESX_VI__TEMPLATE__LIST__APPEND(PerfMetricIntSeries);
 
@@ -2756,9 +2903,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfMetricIntSeries,
 {
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(PerfMetricId, id);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(Long, value);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(id);
 });
 
 
@@ -2789,6 +2933,12 @@ ESX_VI__TEMPLATE__FREE(PerfEntityMetric,
     esxVI_PerfMetricIntSeries_Free(&item->value);
 });
 
+/* esxVI_PerfEntityMetric_Validate */
+ESX_VI__TEMPLATE__VALIDATE(PerfEntityMetric,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(entity);
+});
+
 /* esxVI_PerfEntityMetric_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(PerfEntityMetric,
 {
@@ -2796,9 +2946,6 @@ ESX_VI__TEMPLATE__DESERIALIZE(PerfEntityMetric,
                                                      NULL, entity);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(PerfSampleInfo, sampleInfo);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(PerfMetricIntSeries, value);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(entity);
 });
 
 /* esxVI_PerfEntityMetric_DeserializeList */
@@ -2835,6 +2982,20 @@ ESX_VI__TEMPLATE__FREE(TaskInfo,
     esxVI_Int_Free(&item->eventChainId);
 });
 
+/* esxVI_TaskInfo_Validate */
+ESX_VI__TEMPLATE__VALIDATE(TaskInfo,
+{
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(key);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(task);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(descriptionId);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(state);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(cancelled);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(cancelable);
+    /*ESX_VI__TEMPLATE__PROPERTY__REQUIRE(reason);*//* FIXME */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(queueTime);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(eventChainId);
+});
+
 /* esxVI_TaskInfo_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(TaskInfo);
 
@@ -2864,15 +3025,4 @@ ESX_VI__TEMPLATE__DESERIALIZE(TaskInfo,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, startTime);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(DateTime, completeTime);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(Int, eventChainId);
-},
-{
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(key);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(task);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(descriptionId);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(state);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(cancelled);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(cancelable);
-    /*ESX_VI__TEMPLATE__PROPERTY__REQUIRED(reason);*//* FIXME */
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(queueTime);
-    ESX_VI__TEMPLATE__PROPERTY__REQUIRED(eventChainId);
 });
