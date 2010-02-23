@@ -67,7 +67,8 @@ fi
 curr_status=.git-module-status
 t=$(git submodule status)
 if test "$t" = "$(cat $curr_status 2>/dev/null)"; then
-    : # good, it's up to date
+    : # good, it's up to date, all we need is autoreconf
+    autoreconf -if
 else
   echo running bootstrap...
   ./bootstrap && echo "$t" > $curr_status || {
@@ -75,11 +76,6 @@ else
     exit 1;
   }
 fi
-
-# Automake requires that ChangeLog exist.
-touch ChangeLog
-
-autoreconf -if
 
 cd "$THEDIR"
 
