@@ -474,7 +474,10 @@ static int daemonForkIntoBackground(void) {
                 goto again;
 
             if (ret == 1 && status != 0) {
-                fprintf(stderr, "error: %s\n", virDaemonErrTypeToString(status));
+                fprintf(stderr,
+                        "error: %s. Check /var/log/messages or run without "
+                        "--daemon for more info.\n",
+                        virDaemonErrTypeToString(status));
             }
             _exit(ret == 1 && status == 0 ? 0 : 1);
         }
