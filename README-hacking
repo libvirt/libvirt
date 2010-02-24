@@ -12,8 +12,7 @@ requirements on anyone wishing to build from the just-checked-out sources.
 Note the requirements to build the released archive are much less and
 are just the requirements of the standard ./configure && make procedure.
 Specific development tools and versions will be checked for and listed by
-the bootstrap script.  See README-prereq for specific notes on obtaining
-these prerequisite tools.
+the bootstrap script.
 
 Valgrind <http://valgrind.org/> is also highly recommended, if
 Valgrind supports your architecture. See also README-valgrind.
@@ -27,6 +26,12 @@ You can get a copy of the source repository like this:
 
         $ git clone git://libvirt.org/libvirt
         $ cd libvirt
+
+As an optional step, if you already have a copy of the gnulib git
+repository on your hard drive, then you can use it as a reference to
+reduce download time and disk space requirements:
+
+        $ export GNULIB_SRCDIR=/path/to/gnulib
 
 The next step is to get all required pieces from gnulib,
 to run autoreconf, and to invoke ./configure:

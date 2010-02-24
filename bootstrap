@@ -1,4 +1,6 @@
 #! /bin/sh
+# Print a version string.
+scriptversion=2010-02-24.17; # UTC
 
 # Bootstrap this package from checked-out sources.
 
@@ -17,7 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Written by Paul Eggert.
+# Originally written by Paul Eggert.  The canonical version of this
+# script is maintained as build-aux/bootstrap in gnulib, however, to
+# be useful to your project, you should place a copy of it under
+# version control in the top-level directory of your project.  The
+# intent is that all customization can be done with a bootstrap.conf
+# file also maintained in your version control; gnulib comes with a
+# template build-aux/bootstrap.conf to get you started.
+
+# Please report bugs or propose patches to bug-gnulib@gnu.org.
 
 nl='
 '
@@ -161,7 +171,6 @@ vc_ignore=auto
 # die otherwise.
 find_tool ()
 {
-  # Find sha1sum, named gsha1sum on MacPorts.
   find_tool_envvar=$1
   shift
   find_tool_names=$@
@@ -424,12 +433,28 @@ case ${GNULIB_SRCDIR--} in
   GNULIB_SRCDIR=$gnulib_path
   ;;
 *)
-  # Use GNULIB_SRCDIR as a reference.  Assumes git 1.6.4 or newer.
+  # Use GNULIB_SRCDIR as a reference.
   if test -d "$GNULIB_SRCDIR"/.git && \
         git_modules_config submodule.gnulib.url >/dev/null; then
     echo "$0: getting gnulib files..."
-    git submodule update --init --reference "$GNULIB_SRCDIR" \
+    if git submodule --help|grep reference > /dev/null; then
+      # Prefer the one-liner available in git 1.6.4 or newer.
+      git submodule update --init --reference "$GNULIB_SRCDIR" \
         "$gnulib_path" || exit $?
+    else
+      # This fallback allows at least git 1.5.5.
+      if test -f "$gnulib_path"/gnulib-tool; then
+        # Since file already exists, assume submodule init already complete.
+        git submodule update || exit $?
+      else
+        # Older git can't clone into an empty directory.
+        rmdir "$gnulib_path" 2>/dev/null
+        git clone --reference "$GNULIB_SRCDIR" \
+          "$(git_modules_config submodule.gnulib.url)" "$gnulib_path" \
+          && git submodule init && git submodule update \
+          || exit $?
+      fi
+    fi
     GNULIB_SRCDIR=$gnulib_path
   fi
   ;;
@@ -819,6 +844,10 @@ bootstrap_epilogue
 
 echo "$0: done.  Now you can run './configure'."
 
-# Local Variables:
-# indent-tabs-mode: nil
+# Local variables:
+# eval: (add-hook 'write-file-hooks 'time-stamp)
+# time-stamp-start: "scriptversion="
+# time-stamp-format: "%:y-%02m-%02d.%02H"
+# time-stamp-time-zone: "UTC"
+# time-stamp-end: "; # UTC"
 # End:
