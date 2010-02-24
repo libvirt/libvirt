@@ -352,8 +352,16 @@ virshErrorHandler(void *unused ATTRIBUTE_UNUSED, virErrorPtr error)
 static void
 virshReportError(vshControl *ctl)
 {
-    if (last_error == NULL)
-        return;
+    if (last_error == NULL) {
+        /* Calling directly into libvirt util functions won't trigger the
+         * error callback (which sets last_error), so check it ourselves.
+         *
+         * If the returned error has CODE_OK, this most likely means that
+         * no error was ever raised, so just ignore */
+        last_error = virSaveLastError();
+        if (!last_error || last_error->code == VIR_ERR_OK)
+            return NULL;
+    }
 
     if (last_error->code == VIR_ERR_OK) {
         vshError(ctl, "%s", _("unknown error"));
