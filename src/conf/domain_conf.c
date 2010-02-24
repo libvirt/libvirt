@@ -5660,6 +5660,8 @@ char *virDomainDefFormat(virDomainDefPtr def,
     return NULL;
 }
 
+#ifndef PROXY
+
 static char *virDomainObjFormat(virCapsPtr caps,
                                 virDomainObjPtr obj,
                                 int flags)
@@ -5694,9 +5696,6 @@ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
-
-
-#ifndef PROXY
 
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
