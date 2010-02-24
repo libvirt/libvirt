@@ -76,6 +76,7 @@ EXTRA_DIST=					\
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(fig) $(png) \
   $(patches) \
+  sitemap.html.in \
   ChangeLog.awk
 
 CLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
