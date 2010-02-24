@@ -87,6 +87,7 @@
 #include "memory.h"
 #include "util.h"
 #include "event.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -8386,6 +8387,7 @@ remoteIOEventLoop(virConnectPtr conn,
         struct remote_thread_call *tmp = priv->waitDispatch;
         struct remote_thread_call *prev;
         char ignore;
+        sigset_t oldmask, blockedsigs;
 
         fds[0].events = fds[0].revents = 0;
         fds[1].events = fds[1].revents = 0;
@@ -8407,10 +8409,24 @@ remoteIOEventLoop(virConnectPtr conn,
          * can stuff themselves on the queue */
         remoteDriverUnlock(priv);
 
+        /* Block SIGWINCH from interrupting poll in curses programs,
+         * then restore the original signal mask again immediately
+         * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
+         * at the suggestion of Paolo Bonzini and Daniel Berrange.
+         */
+        sigemptyset (&blockedsigs);
+        sigaddset (&blockedsigs, SIGWINCH);
+        sigaddset (&blockedsigs, SIGCHLD);
+        sigaddset (&blockedsigs, SIGPIPE);
+        ignore_value (pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
+
+        ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+
         remoteDriverLock(priv);
 
         if (fds[1].revents) {
