@@ -1,2 +1,2 @@
-
-EXTRA_DIST = $(wildcard *.conf) $(wildcard *.out)
+EXTRA_DIST = \
+   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/*.out $(srcdir)/*.conf))
