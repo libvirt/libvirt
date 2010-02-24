@@ -1655,6 +1655,11 @@ AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
 dnl Check for gettext
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
+dnl Since we're using such an old version of gettext, we must also define
+dnl this symbol, in order to make the autopoint-supplied Makefile.in.in
+dnl work properly.
+AC_SUBST([MKINSTALLDIRS], ["\$(top_builddir)/$ac_aux_dir/mkinstalldirs"])
+
 ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 
 dnl Extra link-time flags for Cygwin.
