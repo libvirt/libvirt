@@ -1698,8 +1698,8 @@ AC_ARG_WITH([driver-modules],
   [],
   [with_driver_modules=no])
 
-DRIVER_MODULES_CFLAGS=
-DRIVER_MODULES_LIBS=
+DRIVER_MODULE_CFLAGS=
+DRIVER_MODULE_LIBS=
 if test "x$with_driver_modules" = "xyes" ; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
@@ -1713,13 +1713,13 @@ if test "x$with_driver_modules" = "xyes" ; then
   LIBS="$old_libs"
 fi
 if test "$with_driver_modules" = "yes"; then
-  DRIVER_MODULES_CFLAGS="-export-dynamic"
-  DRIVER_MODULES_LIBS="-ldl"
+  DRIVER_MODULE_CFLAGS="-export-dynamic"
+  DRIVER_MODULE_LIBS="-ldl"
   AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
 fi
 AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
-AC_SUBST([DRIVER_MODULES_CFLAGS])
-AC_SUBST([DRIVER_MODULES_LIBS])
+AC_SUBST([DRIVER_MODULE_CFLAGS])
+AC_SUBST([DRIVER_MODULE_LIBS])
 
 
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
@@ -1934,7 +1934,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])
 if test "$with_driver_modules" != "no" ; then
-AC_MSG_NOTICE([  dlopen: $DRIVER_MODULES_CFLAGS $DRIVER_MODULES_LIBS])
+AC_MSG_NOTICE([  dlopen: $DRIVER_MODULE_CFLAGS $DRIVER_MODULE_LIBS])
 else
 AC_MSG_NOTICE([  dlopen: no])
 fi
