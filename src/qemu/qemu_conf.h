@@ -175,7 +175,8 @@ int         qemudExtractVersionInfo     (const char *qemu,
                                          unsigned int *version,
                                          unsigned long long *qemuCmdFlags);
 
-int         qemudParseHelpStr           (const char *str,
+int         qemudParseHelpStr           (const char *qemu,
+                                         const char *str,
                                          unsigned long long *qemuCmdFlags,
                                          unsigned int *version,
                                          unsigned int *is_kvm,

@@ -1237,7 +1237,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
 
 #define SKIP_BLANKS(p) do { while ((*(p) == ' ') || (*(p) == '\t')) (p)++; } while (0)
 
-int qemudParseHelpStr(const char *help,
+int qemudParseHelpStr(const char *qemu,
+                      const char *help,
                       unsigned long long *flags,
                       unsigned int *version,
                       unsigned int *is_kvm,
@@ -1308,8 +1309,8 @@ fail:
         p = strndup(help, p - help);
 
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                    _("cannot parse QEMU version number in '%s'"),
-                    p ? p : help);
+                    _("cannot parse %s version number in '%s'"),
+                    qemu, p ? p : help);
 
     VIR_FREE(p);
 
@@ -1340,12 +1341,13 @@ int qemudExtractVersionInfo(const char *qemu,
     enum { MAX_HELP_OUTPUT_SIZE = 1024*64 };
     int len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help);
     if (len < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to read QEMU help output"));
+        virReportSystemError(errno,
+                             _("Unable to read %s help output"), qemu);
         goto cleanup2;
     }
 
-    if (qemudParseHelpStr(help, &flags, &version, &is_kvm, &kvm_version) == -1)
+    if (qemudParseHelpStr(qemu, help, &flags,
+                          &version, &is_kvm, &kvm_version) == -1)
         goto cleanup2;
 
     if (retversion)

@@ -49,7 +49,8 @@ static int testHelpStrParsing(const void *data)
     if (virtTestLoadFile(path, &help, MAX_HELP_OUTPUT_SIZE) < 0)
         return -1;
 
-    if (qemudParseHelpStr(help, &flags, &version, &is_kvm, &kvm_version) == -1)
+    if (qemudParseHelpStr("QEMU", help, &flags,
+                          &version, &is_kvm, &kvm_version) == -1)
         return -1;
 
     if (flags != info->flags) {
