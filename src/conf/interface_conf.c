@@ -851,96 +851,29 @@ cleanup:
     return def;
 }
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+static virInterfaceDefPtr
+virInterfaceDefParse(const char *xmlStr,
+                     const char *filename)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+    xmlDocPtr xml;
+    virInterfaceDefPtr def = NULL;
 
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virInterfaceReportError (VIR_ERR_XML_DETAIL,
-                                     _("at line %d: %s"),
-                                     ctxt->lastError.line,
-                                     ctxt->lastError.message);
-        }
+    if ((xml = virXMLParse(filename, xmlStr, "interface.xml"))) {
+        def = virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
+
+    return def;
 }
 
 virInterfaceDefPtr virInterfaceDefParseString(const char *xmlStr)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
-    virInterfaceDefPtr def = NULL;
-
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "interface.xml", NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            virInterfaceReportError(VIR_ERR_XML_ERROR,
-                                    "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    def = virInterfaceDefParseNode(xml, root);
-
-cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc (xml);
-    return def;
+    return virInterfaceDefParse(xmlStr, NULL);
 }
 
 virInterfaceDefPtr virInterfaceDefParseFile(const char *filename)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
-    virInterfaceDefPtr def = NULL;
-
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            virInterfaceReportError(VIR_ERR_XML_ERROR,
-                                    "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virInterfaceReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    def = virInterfaceDefParseNode(xml, root);
-
-cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc (xml);
-    return def;
+    return virInterfaceDefParse(NULL, filename);
 }
 
 static int

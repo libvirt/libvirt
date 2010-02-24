@@ -4168,99 +4168,35 @@ error:
 }
 
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+static virDomainDefPtr
+virDomainDefParse(const char *xmlStr,
+                  const char *filename,
+                  virCapsPtr caps,
+                  int flags)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+    xmlDocPtr xml;
+    virDomainDefPtr def = NULL;
 
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virDomainReportError(VIR_ERR_XML_DETAIL,
-                                 _("at line %d: %s"),
-                                 ctxt->lastError.line,
-                                 ctxt->lastError.message);
-        }
+    if ((xml = virXMLParse(filename, xmlStr, "domain.xml"))) {
+        def = virDomainDefParseNode(caps, xml, xmlDocGetRootElement(xml), flags);
+        xmlFreeDoc(xml);
     }
+
+    return def;
 }
 
 virDomainDefPtr virDomainDefParseString(virCapsPtr caps,
                                         const char *xmlStr,
                                         int flags)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
-    virDomainDefPtr def = NULL;
-
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr, "domain.xml", NULL,
-                          XML_PARSE_NOENT | XML_PARSE_NONET |
-                          XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-              virDomainReportError(VIR_ERR_XML_ERROR,
-                                   "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    def = virDomainDefParseNode(caps, xml, root, flags);
-
-cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc (xml);
-    return def;
+    return virDomainDefParse(xmlStr, NULL, caps, flags);
 }
 
 virDomainDefPtr virDomainDefParseFile(virCapsPtr caps,
-                                      const char *filename, int flags)
+                                      const char *filename,
+                                      int flags)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
-    virDomainDefPtr def = NULL;
-
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-              virDomainReportError(VIR_ERR_XML_ERROR,
-                                   "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    def = virDomainDefParseNode(caps, xml, root, flags);
-
-cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc (xml);
-    return def;
+    return virDomainDefParse(NULL, filename, caps, flags);
 }
 
 
@@ -4296,38 +4232,14 @@ cleanup:
 virDomainObjPtr virDomainObjParseFile(virCapsPtr caps,
                                       const char *filename)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
+    xmlDocPtr xml;
     virDomainObjPtr obj = NULL;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOWARNING);
-    if (!xml) {
-        if (virGetLastError() == NULL)
-              virDomainReportError(VIR_ERR_XML_ERROR,
-                                   "%s", _("failed to parse xml document"));
-        goto cleanup;
+    if ((xml = virXMLParseFile(filename))) {
+        obj = virDomainObjParseNode(caps, xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
 
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    obj = virDomainObjParseNode(caps, xml, root);
-
-cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc (xml);
     return obj;
 }
 

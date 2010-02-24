@@ -187,62 +187,18 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     return ret;
 }
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virSecretReportError(VIR_ERR_XML_DETAIL, _("at line %d: %s"),
-                                 ctxt->lastError.line, ctxt->lastError.message);
-        }
-    }
-}
-
 static virSecretDefPtr
-virSecretDefParse(const char *xmlStr, const char *filename)
+virSecretDefParse(const char *xmlStr,
+                  const char *filename)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
+    xmlDocPtr xml;
     virSecretDefPtr ret = NULL;
 
-    pctxt = xmlNewParserCtxt();
-    if (pctxt == NULL || pctxt->sax == NULL)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    if (filename != NULL)
-        xml = xmlCtxtReadFile(pctxt, filename, NULL,
-                              XML_PARSE_NOENT | XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
-    else
-        xml = xmlCtxtReadDoc(pctxt, BAD_CAST xmlStr, "secret.xml", NULL,
-                             XML_PARSE_NOENT | XML_PARSE_NONET |
-                             XML_PARSE_NOWARNING);
-    if (xml == NULL) {
-        if (virGetLastError() == NULL)
-            virSecretReportError(VIR_ERR_XML_ERROR, "%s",
-                                 _("failed to parse xml document"));
-        goto cleanup;
+    if ((xml = virXMLParse(filename, xmlStr, "secret.xml"))) {
+        ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
 
-    root = xmlDocGetRootElement(xml);
-    if (root == NULL) {
-        virSecretReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                             _("missing root element"));
-        goto cleanup;
-    }
-
-    ret = secretXMLParseNode(xml, root);
-
- cleanup:
-    xmlFreeDoc(xml);
-    xmlFreeParserCtxt(pctxt);
     return ret;
 }
 

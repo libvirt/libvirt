@@ -717,24 +717,6 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
     return NULL;
 }
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virStorageReportError (VIR_ERR_XML_DETAIL,
-                                   _("at line %d: %s"),
-                                   ctxt->lastError.line,
-                                   ctxt->lastError.message);
-        }
-    }
-}
-
 virStoragePoolDefPtr
 virStoragePoolDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root) {
@@ -764,52 +746,14 @@ static virStoragePoolDefPtr
 virStoragePoolDefParse(const char *xmlStr,
                        const char *filename) {
     virStoragePoolDefPtr ret = NULL;
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr node = NULL;
+    xmlDocPtr xml;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    if (filename) {
-        xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                               XML_PARSE_NOENT | XML_PARSE_NONET |
-                               XML_PARSE_NOWARNING);
-    } else {
-        xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr,
-                              "storage.xml", NULL,
-                              XML_PARSE_NOENT | XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
+    if ((xml = virXMLParse(filename, xmlStr, "storage.xml"))) {
+        ret = virStoragePoolDefParseNode(xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
-
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            virStorageReportError(VIR_ERR_XML_ERROR,
-                                  "%s",_("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    node = xmlDocGetRootElement(xml);
-    if (node == NULL) {
-        virStorageReportError(VIR_ERR_XML_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    ret = virStoragePoolDefParseNode(xml, node);
-
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
 
     return ret;
-
- cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
-    return NULL;
 }
 
 virStoragePoolDefPtr
@@ -1163,52 +1107,14 @@ virStorageVolDefParse(virStoragePoolDefPtr pool,
                       const char *xmlStr,
                       const char *filename) {
     virStorageVolDefPtr ret = NULL;
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr node = NULL;
+    xmlDocPtr xml;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    if (filename) {
-        xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                               XML_PARSE_NOENT | XML_PARSE_NONET |
-                               XML_PARSE_NOWARNING);
-    } else {
-        xml = xmlCtxtReadDoc (pctxt, BAD_CAST xmlStr,
-                              "storage.xml", NULL,
-                              XML_PARSE_NOENT | XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
+    if ((xml = virXMLParse(filename, xmlStr, "storage.xml"))) {
+        ret = virStorageVolDefParseNode(pool, xml, xmlDocGetRootElement(xml));
+        xmlFreeDoc(xml);
     }
-
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            virStorageReportError(VIR_ERR_XML_ERROR,
-                                  "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    node = xmlDocGetRootElement(xml);
-    if (node == NULL) {
-        virStorageReportError(VIR_ERR_XML_ERROR,
-                              "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    ret = virStorageVolDefParseNode(pool, xml, node);
-
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
 
     return ret;
-
- cleanup:
-    xmlFreeParserCtxt (pctxt);
-    xmlFreeDoc(xml);
-    return NULL;
 }
 
 virStorageVolDefPtr

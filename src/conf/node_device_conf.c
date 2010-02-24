@@ -1224,71 +1224,19 @@ cleanup:
     return def;
 }
 
-/* Called from SAX on parsing errors in the XML. */
-static void
-catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt) {
-        if (virGetLastError() == NULL &&
-            ctxt->lastError.level == XML_ERR_FATAL &&
-            ctxt->lastError.message != NULL) {
-            virNodeDeviceReportError(VIR_ERR_XML_DETAIL,
-                                     _("at line %d: %s"),
-                                     ctxt->lastError.line,
-                                     ctxt->lastError.message);
-        }
-    }
-}
-
-
-
 static virNodeDeviceDefPtr
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
                       int create)
 {
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr root;
+    xmlDocPtr xml;
     virNodeDeviceDefPtr def = NULL;
 
-    /* Set up a parser context so we can catch the details of XML errors. */
-    pctxt = xmlNewParserCtxt ();
-    if (!pctxt || !pctxt->sax)
-        goto cleanup;
-    pctxt->sax->error = catchXMLError;
-
-    if (filename) {
-        xml = xmlCtxtReadFile (pctxt, filename, NULL,
-                               XML_PARSE_NOENT | XML_PARSE_NONET |
-                               XML_PARSE_NOWARNING);
-    } else {
-        xml = xmlCtxtReadDoc (pctxt, BAD_CAST str,
-                              "device.xml", NULL,
-                              XML_PARSE_NOENT | XML_PARSE_NONET |
-                              XML_PARSE_NOWARNING);
+    if ((xml = virXMLParse(filename, str, "device.xml"))) {
+        def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml), create);
+        xmlFreeDoc(xml);
     }
 
-    if (!xml) {
-        if (virGetLastError() == NULL)
-            virNodeDeviceReportError(VIR_ERR_XML_ERROR,
-                                     "%s", _("failed to parse xml document"));
-        goto cleanup;
-    }
-
-    if ((root = xmlDocGetRootElement(xml)) == NULL) {
-        virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 "%s", _("missing root element"));
-        goto cleanup;
-    }
-
-    def = virNodeDeviceDefParseNode(xml, root, create);
-
-cleanup:
-    xmlFreeParserCtxt(pctxt);
-    xmlFreeDoc(xml);
     return def;
 }
 
