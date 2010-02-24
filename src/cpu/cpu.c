@@ -73,9 +73,10 @@ cpuCompareXML(virCPUDefPtr host,
     virCPUDefPtr cpu = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
 
-    doc = xmlParseMemory(xml, strlen(xml));
+    if (!(doc = virXMLParseString(xml, "cpu.xml")))
+        goto cleanup;
 
-    if (doc == NULL || (ctxt = xmlXPathNewContext(doc)) == NULL) {
+    if ((ctxt = xmlXPathNewContext(doc)) == NULL) {
         virReportOOMError();
         goto cleanup;
     }
@@ -268,8 +269,10 @@ cpuBaselineXML(const char **xmlCPUs,
         goto no_memory;
 
     for (i = 0; i < ncpus; i++) {
-        doc = xmlParseMemory(xmlCPUs[i], strlen(xmlCPUs[i]));
-        if (doc == NULL || (ctxt = xmlXPathNewContext(doc)) == NULL)
+        if (!(doc = virXMLParseString(xmlCPUs[i], "cpu.xml")))
+            goto error;
+
+        if ((ctxt = xmlXPathNewContext(doc)) == NULL)
             goto no_memory;
 
         ctxt->node = xmlDocGetRootElement(doc);
