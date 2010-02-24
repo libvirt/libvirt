@@ -724,8 +724,8 @@ doRemoteOpen (virConnectPtr conn,
                 }
             }
             virReportSystemError(errno,
-                                 _("unable to connect to '%s'"),
-                                 sockname);
+              _("unable to connect to '%s', libvirtd may need to be started"),
+              sockname);
             goto failed;
         }
 
