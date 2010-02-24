@@ -1252,12 +1252,15 @@ AM_CONDITIONAL([WITH_STORAGE_DIR], [test "$with_storage_dir" = "yes"])
 if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([MKFS], [mkfs], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_fs" = "yes" ; then
     if test -z "$MOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
     if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need umount for FS storage driver]) ; fi
+    if test -z "$MKFS" ; then AC_MSG_ERROR([We need mkfs for FS storage driver]) ; fi
   else
     if test -z "$MOUNT" ; then with_storage_fs=no ; fi
     if test -z "$UMOUNT" ; then with_storage_fs=no ; fi
+    if test -z "$MKFS" ; then with_storage_fs=no ; fi
 
     if test "$with_storage_fs" = "check" ; then with_storage_fs=yes ; fi
   fi
@@ -1268,6 +1271,8 @@ if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
         [Location or name of the mount program])
     AC_DEFINE_UNQUOTED([UMOUNT],["$UMOUNT"],
         [Location or name of the mount program])
+    AC_DEFINE_UNQUOTED([MKFS],["$MKFS"],
+        [Location or name of the mkfs program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_FS], [test "$with_storage_fs" = "yes"])
