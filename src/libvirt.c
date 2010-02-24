@@ -159,7 +159,7 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         case VIR_CRED_AUTHNAME:
         case VIR_CRED_ECHOPROMPT:
         case VIR_CRED_REALM:
-            if (printf("%s:", cred[i].prompt) < 0)
+            if (printf("%s: ", cred[i].prompt) < 0)
                 return -1;
             if (fflush(stdout) != 0)
                 return -1;
@@ -178,7 +178,7 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
 
         case VIR_CRED_PASSPHRASE:
         case VIR_CRED_NOECHOPROMPT:
-            if (printf("%s:", cred[i].prompt) < 0)
+            if (printf("%s: ", cred[i].prompt) < 0)
                 return -1;
             if (fflush(stdout) != 0)
                 return -1;
