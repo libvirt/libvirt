@@ -131,7 +131,7 @@ devhelp/index.html devhelp/libvirt.devhelp: libvirt-api.xml $(devhelpxsl)
 libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../include/libvirt/*.h \
 		$(srcdir)/../src/libvirt.c $(srcdir)/../src/util/virterror.c
-	-(./apibuild.py)
+	-$(srcdir)/apibuild.py
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
