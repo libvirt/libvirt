@@ -1,2 +1,2 @@
-
-EXTRA_DIST = $(wildcard *.xml) $(wildcard *.cfg)
+EXTRA_DIST = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/*.xml $(srcdir)/*.cfg))

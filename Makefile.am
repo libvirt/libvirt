@@ -9,7 +9,9 @@ SUBDIRS = gnulib/lib include src daemon tools proxy docs gnulib/tests \
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
-XML_EXAMPLES = $(wildcard examples/xml/test/*.xml) $(wildcard examples/xml/storage/*.xml)
+XML_EXAMPLES = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(addprefix $(srcdir)/examples/xml/, \
+					test/*.xml storage/*.xml)))
 
 EXTRA_DIST = \
   ChangeLog-old \

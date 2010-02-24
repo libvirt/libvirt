@@ -1,2 +1,3 @@
-
-EXTRA_DIST = $(wildcard *.xml) $(wildcard *.cpuinfo) $(wildcard *.caps)
+EXTRA_DIST = \
+  $(patsubst $(srcdir)/%,%,$(wildcard \
+    $(srcdir)/*.xml $(srcdir)/*.cpuinfo $(srcdir)/*.caps))
