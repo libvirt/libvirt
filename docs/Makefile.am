@@ -17,7 +17,7 @@ apipng =	\
   html/home.png	\
   html/right.png
 
-devhelphtml = 			\
+devhelphtml =			\
   devhelp/libvirt.devhelp	\
   devhelp/index.html		\
   devhelp/general.html		\
@@ -79,7 +79,7 @@ EXTRA_DIST=					\
   sitemap.html.in \
   ChangeLog.awk
 
-CLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
+MAINTAINERCLEANFILES = $(dot_html) $(apihtml) $(devhelphtml)
 
 all: web
 
