@@ -7048,12 +7048,11 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     int found;
     int ret = TRUE;
     char *buffer;
-    char *p;
     char *result = NULL;
     const char **list = NULL;
     unsigned int count = 0;
     xmlDocPtr doc = NULL;
-    xmlNodePtr node_list, cur;
+    xmlNodePtr node_list;
     xmlXPathContextPtr ctxt = NULL;
     xmlSaveCtxtPtr sctxt = NULL;
     xmlBufferPtr buf = NULL;
