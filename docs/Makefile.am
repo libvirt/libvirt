@@ -123,16 +123,19 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );
 
-devhelp/index.html devhelp/libvirt.devhelp: libvirt-api.xml $(devhelpxsl)
+$(devhelphtml): libvirt-api.xml $(devhelpxsl)
 	-@(echo Rebuilding devhelp files)
 	-@(if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp $(top_srcdir)/docs/devhelp/devhelp.xsl $(top_srcdir)/docs/libvirt-api.xml ; fi );
+	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp \
+          $(top_srcdir)/docs/devhelp/devhelp.xsl libvirt-api.xml ; fi );
 
-
-libvirt-api.xml libvirt-refs.xml: apibuild.py \
-		$(srcdir)/../include/libvirt/*.h \
-		$(srcdir)/../src/libvirt.c $(srcdir)/../src/util/virterror.c
+html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: $(srcdir)/apibuild.py
 	-srcdir=$(srcdir) $(srcdir)/apibuild.py
+
+html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: \
+		$(srcdir)/../include/%/*.h \
+		$(srcdir)/../src/%.c \
+		$(srcdir)/../src/util/virterror.c
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
