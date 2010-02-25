@@ -964,6 +964,7 @@ int openvzGetVEID(const char *name) {
     char *cmd;
     int veid;
     FILE *fp;
+    bool ok;
 
     if (virAsprintf(&cmd, "%s %s -ovpsid -H", VZLIST, name) < 0) {
         openvzError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
@@ -979,18 +980,12 @@ int openvzGetVEID(const char *name) {
         return -1;
     }
 
-    if (fscanf(fp, "%d\n", &veid ) != 1) {
-        if (feof(fp))
-            return -1;
-
-        openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "%s", _("Failed to parse vzlist output"));
-        goto cleanup;
-    }
-
-    return veid;
-
- cleanup:
+    ok = fscanf(fp, "%d\n", &veid ) == 1;
     fclose(fp);
+    if (ok && veid >= 0)
+        return veid;
+
+    openvzError(NULL, VIR_ERR_INTERNAL_ERROR,
+                "%s", _("Failed to parse vzlist output"));
     return -1;
 }
