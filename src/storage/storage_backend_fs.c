@@ -45,7 +45,6 @@
 #include "util.h"
 #include "memory.h"
 #include "xml.h"
-#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -501,7 +500,6 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags ATTRIBUTE_UNUSED)
 {
-    const char *mke2fsargv[5], *device = NULL, *format = NULL;
     int err, ret = -1;
     char *parent;
     char *p;
@@ -542,26 +540,6 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                              pool->def->target.path);
         goto error;
     }
-
-    device = pool->def->source.devices[0].path;
-    format = virStoragePoolFormatFileSystemTypeToString(pool->def->source.format);
-
-    VIR_DEBUG("source device: '%s' format: '%s'", device, format);
-
-    mke2fsargv[0] = MKFS;
-    mke2fsargv[1] = "-t";
-    mke2fsargv[2] = format;
-    mke2fsargv[3] = device;
-    mke2fsargv[4] = NULL;
-
-    if (virRun(mke2fsargv, NULL) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to make filesystem of "
-                               "type '%s' on device '%s'"),
-                               format, device);
-        goto error;
-    }
-
     ret = 0;
 error:
     VIR_FREE(parent);
