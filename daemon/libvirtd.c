@@ -560,8 +560,10 @@ static int qemudListenUnix(struct qemud_server *server,
 
     oldgrp = getgid();
     oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);
-    if (server->privileged)
-        setgid(unix_sock_gid);
+    if (server->privileged && setgid(unix_sock_gid)) {
+        VIR_ERROR(_("Failed to set group ID to %d"), unix_sock_gid);
+        goto cleanup;
+    }
 
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         VIR_ERROR(_("Failed to bind socket to '%s': %s"),
@@ -569,8 +571,10 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
     umask(oldmask);
-    if (server->privileged)
-        setgid(oldgrp);
+    if (server->privileged && setgid(oldgrp)) {
+        VIR_ERROR(_("Failed to restore group ID to %d"), oldgrp);
+        goto cleanup;
+    }
 
     if (listen(sock->fd, 30) < 0) {
         VIR_ERROR(_("Failed to listen for connections on '%s': %s"),
