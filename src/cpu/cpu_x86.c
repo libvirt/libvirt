@@ -998,7 +998,7 @@ x86Decode(virCPUDefPtr cpu,
         }
 
         for (i = 0; i < nmodels; i++) {
-            if (STREQ(models[i], candidate->name)) {
+            if (models && models[i] && STREQ(models[i], candidate->name)) {
                 allowed = true;
                 break;
             }
