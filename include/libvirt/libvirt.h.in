@@ -1224,6 +1224,8 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
                                                          unsigned int flags);
 int                     virStorageVolDelete             (virStorageVolPtr vol,
                                                          unsigned int flags);
+int                     virStorageVolWipe               (virStorageVolPtr vol,
+                                                         unsigned int flags);
 int                     virStorageVolRef                (virStorageVolPtr vol);
 int                     virStorageVolFree               (virStorageVolPtr vol);
 
