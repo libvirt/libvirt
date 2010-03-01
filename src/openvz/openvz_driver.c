@@ -166,7 +166,7 @@ openvzDomainDefineCmd(virConnectPtr conn,
         max_veid++;
     }
 
-    sprintf(str_id, "%d", max_veid++);
+    sprintf(str_id, "%d", max_veid);
     ADD_ARG_LIT(str_id);
 
     ADD_ARG_LIT("--name");
