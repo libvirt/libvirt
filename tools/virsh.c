@@ -4431,17 +4431,16 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
 static int
 cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
 {
-    char *type, *srcSpec, *srcSpecFile, *srcList;
+    char *type, *srcSpecFile, *srcList;
+    char *srcSpec = NULL;
     int found;
 
     type = vshCommandOptString(cmd, "type", &found);
     if (!found)
         return FALSE;
     srcSpecFile = vshCommandOptString(cmd, "srcSpec", &found);
-    if (!found) {
+    if (!found)
         srcSpecFile = NULL;
-        srcSpec = NULL;
-    }
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
