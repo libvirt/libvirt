@@ -86,9 +86,9 @@
         <attribute name="netmask"><text/></attribute>
       </optional>
       <optional>
-	<element name="tftp">
-	  <attribute name="root"><text/></attribute>
-	</element>
+        <element name="tftp">
+          <attribute name="root"><text/></attribute>
+        </element>
       </optional>
       <!-- Define the range(s) of IP addresses that the DHCP
            server should hand out -->
@@ -106,14 +106,14 @@
             <attribute name="ip"><text/></attribute>
           </element>
         </zeroOrMore>
-	<optional>
-	  <element name="bootp">
-	    <attribute name="file"><text/></attribute>
+        <optional>
+          <element name="bootp">
+            <attribute name="file"><text/></attribute>
             <optional>
               <attribute name="server"><text/></attribute>
             </optional>
-	  </element>
-	</optional>
+          </element>
+        </optional>
       </element>
     </element>
   </optional>

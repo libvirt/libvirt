@@ -15,7 +15,7 @@
       </optional>
 
       <zeroOrMore>
-	<ref name="capability"/>
+        <ref name="capability"/>
       </zeroOrMore>
     </element>
   </define>
@@ -23,14 +23,14 @@
   <define name='capability'>
     <element name="capability">
       <choice>
-	<ref name="capsystem"/>
-	<ref name="cappcidev"/>
-	<ref name="capusbdev"/>
-	<ref name="capusbinterface"/>
-	<ref name="capnet"/>
-	<ref name="capscsihost"/>
-	<ref name="capscsi"/>
-	<ref name="capstorage"/>
+        <ref name="capsystem"/>
+        <ref name="cappcidev"/>
+        <ref name="capusbdev"/>
+        <ref name="capusbinterface"/>
+        <ref name="capnet"/>
+        <ref name="capscsihost"/>
+        <ref name="capscsi"/>
+        <ref name="capstorage"/>
       </choice>
     </element>
   </define>
@@ -46,30 +46,30 @@
 
     <element name='hardware'>
       <optional>
-	<element name='vendor'><text/></element>
+        <element name='vendor'><text/></element>
       </optional>
       <optional>
-	<element name='version'><text/></element>
+        <element name='version'><text/></element>
       </optional>
       <optional>
-	<element name='serial'><text/></element>
+        <element name='serial'><text/></element>
       </optional>
 
       <element name='uuid'>
-	<ref name='uuid'/>
+        <ref name='uuid'/>
       </element>
     </element>
 
 
     <element name='firmware'>
       <optional>
-	<element name='vendor'><text/></element>
+        <element name='vendor'><text/></element>
       </optional>
       <optional>
-	<element name='version'><text/></element>
+        <element name='version'><text/></element>
       </optional>
       <optional>
-	<element name='release_date'><text/></element>
+        <element name='release_date'><text/></element>
       </optional>
     </element>
   </define>
@@ -94,23 +94,23 @@
 
     <element name='product'>
       <attribute name='id'>
-	<ref name='hexuint'/>
+        <ref name='hexuint'/>
       </attribute>
 
       <choice>
-	<text/>
-	<empty/>
+        <text/>
+        <empty/>
       </choice>
     </element>
 
     <element name='vendor'>
       <attribute name='id'>
-	<ref name='hexuint'/>
+        <ref name='hexuint'/>
       </attribute>
 
       <choice>
-	<text/>
-	<empty/>
+        <text/>
+        <empty/>
       </choice>
     </element>
 
@@ -130,23 +130,23 @@
 
     <element name='product'>
       <attribute name='id'>
-	<ref name='hexuint'/>
+        <ref name='hexuint'/>
       </attribute>
 
       <choice>
-	<text/>
-	<empty/>
+        <text/>
+        <empty/>
       </choice>
     </element>
 
     <element name='vendor'>
       <attribute name='id'>
-	<ref name='hexuint'/>
+        <ref name='hexuint'/>
       </attribute>
 
       <choice>
-	<text/>
-	<empty/>
+        <text/>
+        <empty/>
       </choice>
     </element>
   </define>
@@ -171,7 +171,7 @@
 
     <optional>
       <element name='description'>
-	<text/>
+        <text/>
       </element>
     </optional>
   </define>
@@ -186,7 +186,7 @@
     </element>
     <optional>
       <element name='address'>
-	<ref name='mac'/>
+        <ref name='mac'/>
       </element>
     </optional>
 
@@ -198,8 +198,8 @@
   <define name='subcapnet'>
     <element name='capability'>
       <choice>
-	<ref name='subcapnet80203'/>
-	<ref name='subcapnet80211'/>
+        <ref name='subcapnet80203'/>
+        <ref name='subcapnet80211'/>
       </choice>
     </element>
   </define>
@@ -261,27 +261,27 @@
 
     <optional>
       <element name='bus'>
-	<text/>
+        <text/>
       </element>
     </optional>
     <optional>
       <element name='drive_type'>
-	<text/>
+        <text/>
       </element>
     </optional>
     <optional>
       <element name='model'>
-	<text/>
-	</element>
+        <text/>
+        </element>
     </optional>
     <optional>
       <element name='vendor'>
-	<text/>
+        <text/>
       </element>
     </optional>
     <optional>
       <element name='serial'>
-	<text/>
+        <text/>
       </element>
     </optional>
 
@@ -292,9 +292,9 @@
 
     <optional>
       <element name='capability'>
-	<attribute name='type'>
-	  <value>hotpluggable</value>
-	</attribute>
+        <attribute name='type'>
+          <value>hotpluggable</value>
+        </attribute>
       </element>
     </optional>
   </define>
@@ -302,17 +302,17 @@
   <define name='capstorageremoveable'>
     <element name='capability'>
       <attribute name='type'>
-	<value>removable</value>
+        <value>removable</value>
       </attribute>
       <element name='media_available'>
-	<choice>
-	  <value>1</value>
-	  <value>0</value>
-	</choice>
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
       </element>
 
       <element name='media_size'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
       <optional>
         <element name='media_label'>

@@ -9,14 +9,14 @@
   <define name='pool'>
     <element name='pool'>
       <choice>
-	<ref name='pooldir'/>
-	<ref name='poolfs'/>
-	<ref name='poolnetfs'/>
-	<ref name='poollogical'/>
-	<ref name='pooldisk'/>
-	<ref name='pooliscsi'/>
-	<ref name='poolscsi'/>
-	<ref name='poolmpath'/>
+        <ref name='pooldir'/>
+        <ref name='poolfs'/>
+        <ref name='poolnetfs'/>
+        <ref name='poollogical'/>
+        <ref name='pooldisk'/>
+        <ref name='pooliscsi'/>
+        <ref name='poolscsi'/>
+        <ref name='poolmpath'/>
       </choice>
     </element>
   </define>
@@ -109,7 +109,7 @@
     </element>
     <optional>
       <element name='uuid'>
-	<ref name='uuid'/>
+        <ref name='uuid'/>
       </element>
     </optional>
   </define>
@@ -117,17 +117,17 @@
   <define name='sizing'>
     <optional>
       <element name='capacity'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
     </optional>
     <optional>
       <element name='allocation'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
     </optional>
     <optional>
       <element name='available'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
     </optional>
   </define>
@@ -135,20 +135,20 @@
   <define name='permissions'>
     <optional>
       <element name='permissions'>
-	<element name='mode'>
-	  <ref name='uint'/>
-	</element>
-	<element name='owner'>
-	  <ref name='uint'/>
-	</element>
-	<element name='group'>
-	  <ref name='uint'/>
-	</element>
-	<optional>
-	  <element name='label'>
-	    <text/>
-	</element>
-	</optional>
+        <element name='mode'>
+          <ref name='uint'/>
+        </element>
+        <element name='owner'>
+          <ref name='uint'/>
+        </element>
+        <element name='group'>
+          <ref name='uint'/>
+        </element>
+        <optional>
+          <element name='label'>
+            <text/>
+        </element>
+        </optional>
       </element>
     </optional>
   </define>
@@ -156,9 +156,9 @@
   <define name='target'>
     <element name='target'>
       <optional>
-	<element name='path'>
-	  <ref name='path'/>
-	</element>
+        <element name='path'>
+          <ref name='path'/>
+        </element>
       </optional>
       <ref name='permissions'/>
     </element>
@@ -167,7 +167,7 @@
   <define name='sourceinfohost'>
     <element name='host'>
       <attribute name='name'>
-	<text/>
+        <text/>
       </attribute>
       <empty/>
     </element>
@@ -176,14 +176,14 @@
   <define name='sourceinfodev'>
     <element name='device'>
       <attribute name='path'>
-	<choice>
-	  <ref name='path'/>
-	  <ref name='name'/>
-	</choice>
+        <choice>
+          <ref name='path'/>
+          <ref name='name'/>
+        </choice>
       </attribute>
       <choice>
-	<empty/>
-	<ref name='devextents'/>
+        <empty/>
+        <ref name='devextents'/>
       </choice>
     </element>
   </define>
@@ -191,7 +191,7 @@
   <define name='initiatorinfoiqn'>
     <element name='iqn'>
       <attribute name='name'>
-	<text/>
+        <text/>
       </attribute>
       <empty/>
     </element>
@@ -200,12 +200,12 @@
   <define name='devextents'>
     <oneOrMore>
       <element name='freeExtent'>
-	<attribute name='start'>
-	  <ref name='uint'/>
-	</attribute>
-	<attribute name='end'>
-	  <ref name='uint'/>
-	</attribute>
+        <attribute name='start'>
+          <ref name='uint'/>
+        </attribute>
+        <attribute name='end'>
+          <ref name='uint'/>
+        </attribute>
       </element>
     </oneOrMore>
   </define>
@@ -213,7 +213,7 @@
   <define name='sourceinfodir'>
     <element name='dir'>
       <attribute name='path'>
-	<ref name='path'/>
+        <ref name='path'/>
       </attribute>
       <empty/>
     </element>
@@ -222,7 +222,7 @@
   <define name='sourceinfoadapter'>
     <element name='adapter'>
       <attribute name='name'>
-	<text/>
+        <text/>
       </attribute>
       <empty/>
     </element>
@@ -253,23 +253,23 @@
   <define name='sourcefmtfs'>
     <optional>
       <element name='format'>
-	<attribute name='type'>
-	  <choice>
-	    <value>auto</value>
-	    <value>ext2</value>
-	    <value>ext3</value>
+        <attribute name='type'>
+          <choice>
+            <value>auto</value>
+            <value>ext2</value>
+            <value>ext3</value>
             <value>ext4</value>
-	    <value>ufs</value>
-	    <value>iso9660</value>
-	    <value>udf</value>
+            <value>ufs</value>
+            <value>iso9660</value>
+            <value>udf</value>
             <value>gfs</value>
-	    <value>gfs2</value>
-	    <value>vfat</value>
-	    <value>hfs+</value>
-	    <value>xfs</value>
-	    <value>ocfs2</value>
-	  </choice>
-	</attribute>
+            <value>gfs2</value>
+            <value>vfat</value>
+            <value>hfs+</value>
+            <value>xfs</value>
+            <value>ocfs2</value>
+          </choice>
+        </attribute>
       </element>
     </optional>
   </define>
@@ -278,12 +278,12 @@
   <define name='sourcefmtnetfs'>
     <optional>
       <element name='format'>
-	<attribute name='type'>
-	  <choice>
-	    <value>auto</value>
-	    <value>nfs</value>
-	  </choice>
-	</attribute>
+        <attribute name='type'>
+          <choice>
+            <value>auto</value>
+            <value>nfs</value>
+          </choice>
+        </attribute>
       </element>
     </optional>
   </define>
@@ -292,19 +292,19 @@
   <define name='sourcefmtdisk'>
     <optional>
       <element name='format'>
-	<attribute name='type'>
-	  <choice>
-	    <value>none</value>
-	    <value>dos</value>
-	    <value>dvh</value>
-	    <value>gpt</value>
-	    <value>mac</value>
-	    <value>bsd</value>
-	    <value>pc98</value>
-	    <value>sun</value>
-	    <value>lvm2</value>
-	  </choice>
-	</attribute>
+        <attribute name='type'>
+          <choice>
+            <value>none</value>
+            <value>dos</value>
+            <value>dvh</value>
+            <value>gpt</value>
+            <value>mac</value>
+            <value>bsd</value>
+            <value>pc98</value>
+            <value>sun</value>
+            <value>lvm2</value>
+          </choice>
+        </attribute>
       </element>
     </optional>
   </define>
@@ -313,12 +313,12 @@
   <define name='sourcefmtlogical'>
     <optional>
       <element name='format'>
-	<attribute name='type'>
-	  <choice>
-	    <value>auto</value>
-	    <value>lvm2</value>
-	  </choice>
-	</attribute>
+        <attribute name='type'>
+          <choice>
+            <value>auto</value>
+            <value>lvm2</value>
+          </choice>
+        </attribute>
       </element>
     </optional>
   </define>
@@ -327,7 +327,7 @@
   <define name='sourcedir'>
     <optional>
       <element name='source'>
-	<empty/>
+        <empty/>
       </element>
     </optional>
   </define>

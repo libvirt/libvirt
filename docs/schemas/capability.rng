@@ -11,7 +11,7 @@
       <ref name='hostcaps'/>
 
       <zeroOrMore>
-	<ref name='guestcaps'/>
+        <ref name='guestcaps'/>
       </zeroOrMore>
     </element>
   </define>
@@ -19,24 +19,24 @@
   <define name='hostcaps'>
     <element name='host'>
       <element name='cpu'>
-	<element name='arch'>
-	  <ref name='archnames'/>
-	</element>
-	<optional>
-	  <ref name='cpufeatures'/>
-	</optional>
-	<optional>
-	  <ref name='cpuspec'/>
-	</optional>
+        <element name='arch'>
+          <ref name='archnames'/>
+        </element>
+        <optional>
+          <ref name='cpufeatures'/>
+        </optional>
+        <optional>
+          <ref name='cpuspec'/>
+        </optional>
       </element>
       <optional>
-	<ref name='migration'/>
+        <ref name='migration'/>
       </optional>
       <optional>
-	<ref name='topology'/>
+        <ref name='topology'/>
       </optional>
       <optional>
-	<ref name='secmodel'/>
+        <ref name='secmodel'/>
       </optional>
     </element>
   </define>
@@ -56,16 +56,16 @@
   <define name='cpufeatures'>
     <element name='features'>
       <optional>
-	<element name='pae'><empty/></element>
+        <element name='pae'><empty/></element>
       </optional>
       <optional>
-	<element name='nonpae'><empty/></element>
+        <element name='nonpae'><empty/></element>
       </optional>
       <optional>
-	<element name='vmx'><empty/></element>
+        <element name='vmx'><empty/></element>
       </optional>
       <optional>
-	<element name='svm'><empty/></element>
+        <element name='svm'><empty/></element>
       </optional>
     </element>
   </define>
@@ -98,22 +98,22 @@
   <define name='migration'>
     <element name='migration_features'>
       <optional>
-	<element name='live'>
-	  <empty/>
-	</element>
+        <element name='live'>
+          <empty/>
+        </element>
       </optional>
       <optional>
-	<element name='uri_transports'>
-	  <oneOrMore>
-	    <element name='uri_transport'>
-	      <choice>
-		<value>esx</value>
-		<value>tcp</value>
-		<value>xenmigr</value>
-	      </choice>
-	    </element>
-	  </oneOrMore>
-	</element>
+        <element name='uri_transports'>
+          <oneOrMore>
+            <element name='uri_transport'>
+              <choice>
+                <value>esx</value>
+                <value>tcp</value>
+                <value>xenmigr</value>
+              </choice>
+            </element>
+          </oneOrMore>
+        </element>
       </optional>
     </element>
   </define>
@@ -121,12 +121,12 @@
   <define name='topology'>
     <element name='topology'>
       <element name='cells'>
-	<attribute name='num'>
-	  <ref name='uint'/>
-	</attribute>
-	<oneOrMore>
-	  <ref name='cell'/>
-	</oneOrMore>
+        <attribute name='num'>
+          <ref name='uint'/>
+        </attribute>
+        <oneOrMore>
+          <ref name='cell'/>
+        </oneOrMore>
       </element>
     </element>
   </define>
@@ -134,18 +134,18 @@
   <define name='cell'>
     <element name='cell'>
       <attribute name='id'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </attribute>
 
       <optional>
-	<element name='cpus'>
-	  <attribute name='num'>
-	    <ref name='uint'/>
-	  </attribute>
-	  <oneOrMore>
-	    <ref name='cpu'/>
-	  </oneOrMore>
-	</element>
+        <element name='cpus'>
+          <attribute name='num'>
+            <ref name='uint'/>
+          </attribute>
+          <oneOrMore>
+            <ref name='cpu'/>
+          </oneOrMore>
+        </element>
       </optional>
     </element>
   </define>
@@ -153,7 +153,7 @@
   <define name='cpu'>
     <element name='cpu'>
       <attribute name='id'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </attribute>
     </element>
   </define>
@@ -163,7 +163,7 @@
       <ref name='ostype'/>
       <ref name='arch'/>
       <optional>
-	<ref name='features'/>
+        <ref name='features'/>
       </optional>
     </element>
   </define>
@@ -171,11 +171,11 @@
   <define name='ostype'>
     <element name='os_type'>
       <choice>
-	<value>xen</value> <!-- Xen 3.0 pv -->
-	<value>linux</value> <!-- same as 'xen' - legacy -->
-	<value>hvm</value> <!-- unmodified OS -->
-	<value>exe</value> <!-- For container based virt -->
-	<value>uml</value> <!-- user mode linux -->
+        <value>xen</value> <!-- Xen 3.0 pv -->
+        <value>linux</value> <!-- same as 'xen' - legacy -->
+        <value>hvm</value> <!-- unmodified OS -->
+        <value>exe</value> <!-- For container based virt -->
+        <value>uml</value> <!-- user mode linux -->
       </choice>
     </element>
   </define>
@@ -183,20 +183,20 @@
   <define name='arch'>
     <element name='arch'>
       <attribute name='name'>
-	<ref name='archnames'/>
+        <ref name='archnames'/>
       </attribute>
       <ref name='wordsize'/>
       <optional>
-	<ref name='emulator'/>
+        <ref name='emulator'/>
       </optional>
       <optional>
-	<ref name='loader'/>
+        <ref name='loader'/>
       </optional>
       <zeroOrMore>
-	<ref name='machine'/>
+        <ref name='machine'/>
       </zeroOrMore>
       <oneOrMore>
-	<ref name='domain'/>
+        <ref name='domain'/>
       </oneOrMore>
     </element>
   </define>
@@ -216,9 +216,9 @@
   <define name='wordsize'>
     <element name='wordsize'>
       <choice>
-	<value>31</value>
-	<value>32</value>
-	<value>64</value>
+        <value>31</value>
+        <value>32</value>
+        <value>64</value>
       </choice>
     </element>
   </define>
@@ -237,23 +237,23 @@
   <define name='domain'>
     <element name='domain'>
       <attribute name='type'>
-	<choice>
-	  <value>qemu</value>
-	  <value>kqemu</value>
-	  <value>kvm</value>
-	  <value>xen</value>
-	  <value>uml</value>
-	  <value>lxc</value>
-	  <value>openvz</value>
-	  <value>test</value>
-	</choice>
+        <choice>
+          <value>qemu</value>
+          <value>kqemu</value>
+          <value>kvm</value>
+          <value>xen</value>
+          <value>uml</value>
+          <value>lxc</value>
+          <value>openvz</value>
+          <value>test</value>
+        </choice>
       </attribute>
 
       <optional>
-	<ref name='emulator'/>
+        <ref name='emulator'/>
       </optional>
       <zeroOrMore>
-	<ref name='machine'/>
+        <ref name='machine'/>
       </zeroOrMore>
     </element>
   </define>
@@ -261,31 +261,31 @@
   <define name='features'>
     <element name='features'>
       <optional>
-	<element name='pae'>
-	  <empty/>
-	</element>
+        <element name='pae'>
+          <empty/>
+        </element>
       </optional>
       <optional>
-	<element name='nonpae'>
-	  <empty/>
-	</element>
+        <element name='nonpae'>
+          <empty/>
+        </element>
       </optional>
       <optional>
-	<element name='ia64_be'>
-	  <empty/>
-	</element>
+        <element name='ia64_be'>
+          <empty/>
+        </element>
       </optional>
       <optional>
-	<element name='acpi'>
-	  <ref name='featuretoggle'/>
-	  <empty/>
-	</element>
+        <element name='acpi'>
+          <ref name='featuretoggle'/>
+          <empty/>
+        </element>
       </optional>
       <optional>
-	<element name='apic'>
-	  <ref name='featuretoggle'/>
-	  <empty/>
-	</element>
+        <element name='apic'>
+          <ref name='featuretoggle'/>
+          <empty/>
+        </element>
       </optional>
       <optional>
         <element name='cpuselection'>
@@ -298,14 +298,14 @@
   <define name='featuretoggle'>
     <attribute name='toggle'>
       <choice>
-	<value>yes</value>
-	<value>no</value>
+        <value>yes</value>
+        <value>no</value>
       </choice>
     </attribute>
     <attribute name='default'>
       <choice>
-	<value>on</value>
-	<value>off</value>
+        <value>on</value>
+        <value>off</value>
       </choice>
     </attribute>
   </define>

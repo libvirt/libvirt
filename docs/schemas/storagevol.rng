@@ -11,18 +11,18 @@
   <define name='vol'>
     <element name='volume'>
       <element name='name'>
-	<ref name='name'/>
+        <ref name='name'/>
       </element>
       <optional>
-	<element name='key'>
-	  <text/>
-	</element>
+        <element name='key'>
+          <text/>
+        </element>
       </optional>
       <ref name='source'/>
       <ref name='sizing'/>
       <ref name='target'/>
       <optional>
-	<ref name='backingStore'/>
+        <ref name='backingStore'/>
       </optional>
     </element>
   </define>
@@ -31,16 +31,16 @@
     <optional>
       <element name='capacity'>
         <optional>
-	  <attribute name='unit'>
-	    <ref name='unit'/>
-	  </attribute>
+          <attribute name='unit'>
+            <ref name='unit'/>
+          </attribute>
         </optional>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
     </optional>
     <optional>
       <element name='allocation'>
-	<ref name='uint'/>
+        <ref name='uint'/>
       </element>
     </optional>
   </define>
@@ -48,20 +48,20 @@
   <define name='permissions'>
     <optional>
       <element name='permissions'>
-	<element name='mode'>
-	  <ref name='uint'/>
-	</element>
-	<element name='owner'>
-	  <ref name='uint'/>
-	</element>
-	<element name='group'>
-	  <ref name='uint'/>
-	</element>
-	<optional>
-	  <element name='label'>
-	    <text/>
-	</element>
-	</optional>
+        <element name='mode'>
+          <ref name='uint'/>
+        </element>
+        <element name='owner'>
+          <ref name='uint'/>
+        </element>
+        <element name='group'>
+          <ref name='uint'/>
+        </element>
+        <optional>
+          <element name='label'>
+            <text/>
+        </element>
+        </optional>
       </element>
     </optional>
   </define>
@@ -69,9 +69,9 @@
   <define name='target'>
     <element name='target'>
       <optional>
-	<element name='path'>
-	  <ref name='path'/>
-	</element>
+        <element name='path'>
+          <ref name='path'/>
+        </element>
       </optional>
       <ref name='format'/>
       <ref name='permissions'/>
@@ -84,7 +84,7 @@
   <define name='backingStore'>
     <element name='backingStore'>
       <element name='path'>
-	<ref name='path'/>
+        <ref name='path'/>
       </element>
       <ref name='format'/>
       <ref name='permissions'/>
@@ -95,7 +95,7 @@
   <define name='source'>
     <element name='source'>
       <zeroOrMore>
-	<ref name='sourcedev'/>
+        <ref name='sourcedev'/>
       </zeroOrMore>
     </element>
   </define>
@@ -103,11 +103,11 @@
   <define name='sourcedev'>
     <element name='device'>
       <attribute name='path'>
-	<ref name='path'/>
+        <ref name='path'/>
       </attribute>
       <choice>
-	<empty/>
-	<ref name='devextents'/>
+        <empty/>
+        <ref name='devextents'/>
       </choice>
     </element>
   </define>
@@ -115,12 +115,12 @@
   <define name='devextents'>
     <oneOrMore>
       <element name='extent'>
-	<attribute name='start'>
-	  <ref name='uint'/>
-	</attribute>
-	<attribute name='end'>
-	  <ref name='uint'/>
-	</attribute>
+        <attribute name='start'>
+          <ref name='uint'/>
+        </attribute>
+        <attribute name='end'>
+          <ref name='uint'/>
+        </attribute>
       </element>
     </oneOrMore>
   </define>
@@ -164,12 +164,12 @@
   <define name='format'>
     <optional>
       <element name='format'>
-	<attribute name='type'>
-	  <choice>
-	    <ref name='formatfile'/>
-	    <ref name='formatdev'/>
-	  </choice>
-	</attribute>
+        <attribute name='type'>
+          <choice>
+            <ref name='formatfile'/>
+            <ref name='formatdev'/>
+          </choice>
+        </attribute>
       </element>
     </optional>
   </define>
