@@ -1502,16 +1502,15 @@ static void *qemudWorker(void *data)
         struct qemud_client_message *msg;
 
         virMutexLock(&server->lock);
-        while (((client = qemudPendingJob(server)) == NULL) &&
-               !worker->quitRequest) {
-            if (virCondWait(&server->job, &server->lock) < 0) {
+        while ((client = qemudPendingJob(server)) == NULL) {
+            if (worker->quitRequest ||
+                virCondWait(&server->job, &server->lock) < 0) {
                 virMutexUnlock(&server->lock);
                 return NULL;
             }
         }
         if (worker->quitRequest) {
-            if (client)
-                virMutexUnlock(&client->lock);
+            virMutexUnlock(&client->lock);
             virMutexUnlock(&server->lock);
             return NULL;
         }
