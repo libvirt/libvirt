@@ -989,6 +989,11 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
     if ((tmp = strstr(reply, MIGRATION_PREFIX)) != NULL) {
         tmp += strlen(MIGRATION_PREFIX);
         end = strchr(tmp, '\r');
+        if (end == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unexpected migration status in %s"), reply);
+            goto cleanup;
+        }
         *end = '\0';
 
         if ((*status = qemuMonitorMigrationStatusTypeFromString(tmp)) < 0) {
