@@ -2002,14 +2002,11 @@ phypUUIDTable_Push(virConnectPtr conn)
                 /* rc indicates how many bytes were written this time */
                 sent += rc;
             }
+            ptr += sent;
+            nread -= sent;
         } while (rc > 0 && sent < nread);
-        ptr += sent;
-        nread -= sent;
     } while (1);
 
-    goto exit;
-
-  exit:
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
