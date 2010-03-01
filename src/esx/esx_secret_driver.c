@@ -2,6 +2,7 @@
 /*
  * esx_secret_driver.c: secret driver methods for VMware ESX secret manipulation
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,9 +37,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_ERROR(conn, code, fmt...)                                         \
+#define ESX_ERROR(conn, code, ...)                                            \
     virReportErrorHelper(conn, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, fmt)
+                         __LINE__, __VA_ARGS__)
 
 
 

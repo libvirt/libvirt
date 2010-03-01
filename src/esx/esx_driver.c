@@ -47,9 +47,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_ERROR(code, fmt...)                                               \
+#define ESX_ERROR(code, ...)                                                  \
     virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, fmt)
+                         __LINE__, __VA_ARGS__)
 
 static int esxDomainGetMaxVcpus(virDomainPtr domain);
 

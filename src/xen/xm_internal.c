@@ -120,9 +120,9 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainSetSchedulerParameters */
 };
 
-#define xenXMError(conn, code, fmt...)                                       \
+#define xenXMError(conn, code, ...)                                        \
         virReportErrorHelper(conn, VIR_FROM_XENXM, code, __FILE__,         \
-                               __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifndef WITH_XEN_INOTIFY
 static int xenInotifyActive(virConnectPtr conn ATTRIBUTE_UNUSED)

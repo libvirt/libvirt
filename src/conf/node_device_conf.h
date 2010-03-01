@@ -1,6 +1,7 @@
 /*
  * node_device_conf.h: config handling for node devices
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -217,9 +218,9 @@ struct _virDeviceMonitorState {
     void *privateData;			/* driver-specific private data */
 };
 
-#define virNodeDeviceReportError(code, fmt...)                          \
+#define virNodeDeviceReportError(code, ...)                             \
     virReportErrorHelper(NULL, VIR_FROM_NODEDEV, code, __FILE__,	\
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int virNodeDeviceHasCap(const virNodeDeviceObjPtr dev, const char *cap);
 

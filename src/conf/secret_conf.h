@@ -1,7 +1,7 @@
 /*
  * secret_conf.h: internal <secret> XML handling API
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,9 +26,9 @@
 #include "internal.h"
 #include "util.h"
 
-#define virSecretReportError(code, fmt...)                      \
+#define virSecretReportError(code, ...)                         \
     virReportErrorHelper(NULL, VIR_FROM_SECRET, code, __FILE__, \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 VIR_ENUM_DECL(virSecretUsageType)
 

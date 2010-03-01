@@ -242,9 +242,9 @@ static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int 
 #define error(conn, code, info)                                 \
     virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,   \
                          __FUNCTION__, __LINE__, "%s", info)
-#define errorf(conn, code, fmt...)                              \
+#define errorf(conn, code, ...)                                 \
     virReportErrorHelper(conn, VIR_FROM_QEMU, code, __FILE__,   \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);

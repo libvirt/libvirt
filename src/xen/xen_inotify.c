@@ -4,6 +4,7 @@
  *                /etc/xen
  *                /var/lib/xend/domains
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008 VirtualIron
  *
  * This library is free software; you can redistribute it and/or
@@ -43,9 +44,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_XEN_INOTIFY
 
-#define virXenInotifyError(conn, code, fmt...)                                 \
+#define virXenInotifyError(conn, code, ...)                                   \
         virReportErrorHelper(NULL, VIR_FROM_XEN_INOTIFY, code, __FILE__,      \
-                               __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct xenUnifiedDriver xenInotifyDriver = {
     xenInotifyOpen, /* open */

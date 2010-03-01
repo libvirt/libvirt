@@ -45,9 +45,9 @@ static int
 virInterfaceDefDevFormat(virBufferPtr buf,
                          const virInterfaceDefPtr def, int level);
 
-#define virInterfaceReportError(code, fmt...)                           \
+#define virInterfaceReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_INTERFACE, code, __FILE__,      \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static
 void virInterfaceIpDefFree(virInterfaceIpDefPtr def) {

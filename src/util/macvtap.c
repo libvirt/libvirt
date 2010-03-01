@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -48,9 +49,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NET
 
-#define ReportError(conn, code, fmt...)                                      \
+#define ReportError(conn, code, ...)                                      \
         virReportErrorHelper(conn, VIR_FROM_NET, code, __FILE__,          \
-                               __FUNCTION__, __LINE__, fmt)
+                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define MACVTAP_NAME_PREFIX	"macvtap"
 #define MACVTAP_NAME_PATTERN	"macvtap%d"

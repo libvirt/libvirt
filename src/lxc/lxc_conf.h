@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_conf.h: header file for linux container config functions
@@ -63,8 +64,8 @@ struct __lxc_driver {
 int lxcLoadDriverConfig(lxc_driver_t *driver);
 virCapsPtr lxcCapsInit(void);
 
-#define lxcError(code, fmt...)                                          \
+#define lxcError(code, ...)                                             \
     virReportErrorHelper(NULL, VIR_FROM_LXC, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #endif /* LXC_CONF_H */

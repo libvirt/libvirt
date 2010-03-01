@@ -2,6 +2,7 @@
 /*
  * esx_vmx.c: VMX related methods for the VMware ESX driver
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -420,9 +421,9 @@ def->parallels[0]...
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_ERROR(code, fmt...)                                               \
+#define ESX_ERROR(code, ...)                                                  \
     virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, fmt)
+                         __LINE__, __VA_ARGS__)
 
 
 

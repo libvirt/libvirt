@@ -87,9 +87,9 @@ struct xenUnifiedDriver xenStoreDriver = {
 
 #endif /* ! PROXY */
 
-#define virXenStoreError(conn, code, fmt...)                                 \
+#define virXenStoreError(conn, code, ...)                                  \
         virReportErrorHelper(NULL, VIR_FROM_XENSTORE, code, __FILE__,      \
-                               __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /************************************************************************
  *									*

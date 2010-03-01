@@ -75,9 +75,9 @@ struct _pciDeviceList {
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define pciReportError(code, fmt...)                           \
+#define pciReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,  \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Specifications referenced in comments:
  *  PCI30  - PCI Local Bus Specification 3.0

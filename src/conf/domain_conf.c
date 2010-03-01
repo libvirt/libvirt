@@ -238,9 +238,9 @@ VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "variable",
               "timezone");
 
-#define virDomainReportError(code, fmt...)                           \
+#define virDomainReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifndef PROXY
 

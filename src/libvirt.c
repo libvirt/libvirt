@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005,2006,2008,2009 Red Hat, Inc.
+ * Copyright (C) 2005-2006, 2008-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -618,9 +618,9 @@ virLibNodeDeviceError(virNodeDevicePtr dev, virErrorNumber error,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
-#define virLibStreamError(conn, code, fmt...)                   \
+#define virLibStreamError(conn, code, ...)                      \
     virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,   \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * virLibSecretError:

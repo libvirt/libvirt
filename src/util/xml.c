@@ -1,7 +1,7 @@
 /*
  * xml.c: XML based interfaces for the libvir library
  *
- * Copyright (C) 2005, 2007-2009 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -25,9 +25,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_XML
 
-#define virXMLError(code, fmt...)                                          \
+#define virXMLError(code, ...)                                             \
         virReportErrorHelper(NULL, VIR_FROM_XML, code, __FILE__,           \
-                             __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 /************************************************************************

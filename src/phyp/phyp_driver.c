@@ -1,5 +1,6 @@
 
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -61,9 +62,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
-#define PHYP_ERROR(conn, code, fmt...)                                        \
+#define PHYP_ERROR(conn, code, ...)                                           \
     virReportErrorHelper(conn, VIR_FROM_PHYP, code, __FILE__, __FUNCTION__,   \
-                         __LINE__, fmt)
+                         __LINE__, __VA_ARGS__)
 
 /*
  * URI: phyp://user@[hmc|ivm]/managed_system

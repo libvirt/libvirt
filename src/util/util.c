@@ -85,9 +85,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virUtilError(code, fmt...)                                         \
+#define virUtilError(code, ...)                                            \
         virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,          \
-                             __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Like read(), but restarts after EINTR */
 int saferead(int fd, void *buf, size_t count)

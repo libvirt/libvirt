@@ -1,8 +1,8 @@
 /*
  * json.c: JSON object parsing/formatting
  *
- * Copyright (C) 2009 Daniel P. Berrange
  * Copyright (C) 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2009 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,9 +36,9 @@
 
 /* XXX fixme */
 #define VIR_FROM_THIS VIR_FROM_NONE
-#define virJSONError(code, fmt...)                                      \
+#define virJSONError(code, ...)                                         \
     virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 typedef struct _virJSONParserState virJSONParserState;

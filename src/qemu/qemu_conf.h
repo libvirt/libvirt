@@ -161,9 +161,9 @@ typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 #define QEMU_DRIVE_HOST_PREFIX "drive-"
 #define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 
-#define qemuReportError(code, fmt...)                                   \
+#define qemuReportError(code, ...)                                      \
     virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,

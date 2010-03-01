@@ -3,6 +3,7 @@
  */
 
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -57,9 +58,9 @@ static virDriver vboxDriverDummy;
 
 #define VIR_FROM_THIS VIR_FROM_VBOX
 
-#define vboxError(conn, code, fmt...) \
+#define vboxError(conn, code, ...) \
         virReportErrorHelper(conn, VIR_FROM_VBOX, code, __FILE__, \
-                            __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 int vboxRegister(void) {
     virDriverPtr        driver;

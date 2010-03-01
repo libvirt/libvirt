@@ -115,9 +115,9 @@ static const virNodeInfo defaultNodeInfo = {
 };
 
 
-#define testError(conn, code, fmt...)                               \
+#define testError(conn, code, ...)                                \
         virReportErrorHelper(conn, VIR_FROM_TEST, code, __FILE__, \
-                               __FUNCTION__, __LINE__, fmt)
+                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int testClose(virConnectPtr conn);
 static void testDomainEventFlush(int timer, void *opaque);

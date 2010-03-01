@@ -54,9 +54,9 @@ struct _usbDevice {
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define usbReportError(code, fmt...)                           \
+#define usbReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,  \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 static int usbSysReadFile(const char *f_name, const char *d_name,
                           int base, unsigned *value)

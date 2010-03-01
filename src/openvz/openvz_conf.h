@@ -1,6 +1,7 @@
 /*
  * openvz_config.h: config information for OpenVZ VPSs
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma.
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -34,9 +35,9 @@
 
 enum { OPENVZ_WARN, OPENVZ_ERR };
 
-#define openvzError(conn, code, fmt...)                                      \
+#define openvzError(conn, code, ...)                                       \
         virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
-                               __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 /* OpenVZ commands - Replace with wrapper scripts later? */

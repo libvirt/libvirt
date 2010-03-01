@@ -8,6 +8,7 @@
  */
 
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This file is part of a free software library; you can redistribute
@@ -123,9 +124,9 @@ typedef IMediumAttachment IHardDiskAttachment;
 
 #endif /* VBOX_API_VERSION >= 3001 */
 
-#define vboxError(conn, code, fmt...) \
+#define vboxError(conn, code, ...) \
         virReportErrorHelper(conn, VIR_FROM_VBOX, code, __FILE__, \
-                            __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define DEBUGPRUnichar(msg, strUtf16) \
 if (strUtf16) {\

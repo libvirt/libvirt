@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Red Hat, Inc.
+ * Copyright (C) 2008, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -88,9 +88,9 @@ int virSecurityDriverStartup(virSecurityDriverPtr *drv,
 int
 virSecurityDriverVerify(virDomainDefPtr def);
 
-#define virSecurityReportError(code, fmt...)                        \
+#define virSecurityReportError(code, ...)                           \
     virReportErrorHelper(NULL, VIR_FROM_SECURITY, code, __FILE__,   \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Helpers */
 void virSecurityDriverInit(virSecurityDriverPtr drv);

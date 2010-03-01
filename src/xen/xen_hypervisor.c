@@ -803,10 +803,10 @@ struct xenUnifiedDriver xenHypervisorDriver = {
 };
 #endif /* !PROXY */
 
-#define virXenError(conn, code, fmt...)                                      \
-        if (in_init == 0)                                                    \
+#define virXenError(conn, code, ...)                                       \
+        if (in_init == 0)                                                  \
             virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,       \
-                                   __FUNCTION__, __LINE__, fmt)
+                                 __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifndef PROXY
 

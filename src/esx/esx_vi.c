@@ -2,6 +2,7 @@
 /*
  * esx_vi.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -38,9 +39,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_VI_ERROR(code, fmt...)                                            \
+#define ESX_VI_ERROR(code, ...)                                               \
     virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, fmt)
+                         __LINE__, __VA_ARGS__)
 
 #define ESX_VI__SOAP__REQUEST_HEADER                                          \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \

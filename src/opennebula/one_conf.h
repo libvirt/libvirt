@@ -1,5 +1,7 @@
 /*----------------------------------------------------------------------------------*/
-/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
+/*
+ * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
  * Complutense de Madrid (dsa-research.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -45,8 +47,8 @@ int oneSubmitVM(virConnectPtr conn ,one_driver_t* driver, virDomainObjPtr  vm);
 
 char* xmlOneTemplate(virDomainDefPtr def);
 
-#define oneError(conn, dom, code, fmt...)                               \
+#define oneError(conn, dom, code, ...)                                  \
     virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #endif /* ONE_CONF_H */

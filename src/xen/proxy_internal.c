@@ -92,9 +92,9 @@ struct xenUnifiedDriver xenProxyDriver = {
  *									*
  ************************************************************************/
 
-#define virProxyError(conn, code, fmt...)                                    \
+#define virProxyError(conn, code, ...)                                     \
         virReportErrorHelper(conn, VIR_FROM_PROXY, code, __FILE__,         \
-                               __FUNCTION__, __LINE__, fmt)
+                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /************************************************************************
  *									*

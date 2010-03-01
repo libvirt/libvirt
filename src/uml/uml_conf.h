@@ -1,7 +1,7 @@
 /*
  * config.h: VM configuration management
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -62,9 +62,9 @@ struct uml_driver {
 };
 
 
-#define umlReportError(conn, dom, net, code, fmt...)                    \
+#define umlReportError(conn, dom, net, code, ...)                       \
     virReportErrorHelper(conn, VIR_FROM_UML, code, __FILE__,            \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 virCapsPtr  umlCapsInit               (void);
 

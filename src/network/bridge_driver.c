@@ -63,9 +63,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
-#define networkReportError(code, fmt...)                                \
+#define networkReportError(code, ...)                                   \
     virReportErrorHelper(NULL, VIR_FROM_NETWORK, code, __FILE__,        \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Main driver state */
 struct network_driver {

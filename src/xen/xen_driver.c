@@ -72,9 +72,9 @@ static struct xenUnifiedDriver const * const drivers[XEN_UNIFIED_NR_DRIVERS] = {
 
 static int inside_daemon;
 
-#define xenUnifiedError(conn, code, fmt...)                                  \
+#define xenUnifiedError(conn, code, ...)                                   \
         virReportErrorHelper(conn, VIR_FROM_XEN, code, __FILE__,           \
-                               __FUNCTION__, __LINE__, fmt)
+                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * xenNumaInit:

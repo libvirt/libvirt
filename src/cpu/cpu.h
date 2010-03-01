@@ -1,7 +1,7 @@
 /*
  * cpu.h: internal functions for CPU manipulation
  *
- * Copyright (C) 2009--2010 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,9 +30,9 @@
 #include "cpu_x86_data.h"
 
 
-#define virCPUReportError(code, fmt...)                           \
+#define virCPUReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_CPU, code, __FILE__,      \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 union cpuData {

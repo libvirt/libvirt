@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,9 +31,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define virLibConnError(conn, code, fmt...)                       \
+#define virLibConnError(conn, code, ...)                          \
     virReportErrorHelper(conn, VIR_FROM_THIS, code, __FILE__,     \
-                         __FUNCTION__, __LINE__, fmt)
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /************************************************************************
  *									*

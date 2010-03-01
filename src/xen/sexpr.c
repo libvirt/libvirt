@@ -1,9 +1,8 @@
 /*
  * sexpr.c : S-Expression routines to communicate with the Xen Daemon
  *
- * Copyright (C) 2005
- *
- *      Anthony Liguori <aliguori@us.ibm.com>
+ * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING.LIB in the main directory of this
@@ -25,9 +24,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_SEXPR
 
-#define virSexprError(code, fmt...)                                          \
+#define virSexprError(code, ...)                                           \
         virReportErrorHelper(NULL, VIR_FROM_SEXPR, code, __FILE__,         \
-                               __FUNCTION__, __LINE__, fmt)
+                               __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /**
  * sexpr_new:

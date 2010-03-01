@@ -1,9 +1,8 @@
 /*
  * xend_internal.c: access to Xen though the Xen Daemon interface
  *
- * Copyright (C) 2005
- *
- *      Anthony Liguori <aliguori@us.ibm.com>
+ * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING.LIB in the main directory of this
@@ -99,9 +98,9 @@ virDomainXMLDevID(virDomainPtr domain,
                   int ref_len);
 #endif
 
-#define virXendError(conn, code, fmt...)                                     \
+#define virXendError(conn, code, ...)                                      \
         virReportErrorHelper(conn, VIR_FROM_XEND, code, __FILE__,          \
-                               __FUNCTION__, __LINE__, fmt)
+                             __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define virXendErrorInt(conn, code, ival)                                    \
         virXendError(conn, code, "%d", ival)
