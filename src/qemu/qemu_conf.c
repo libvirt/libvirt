@@ -1522,7 +1522,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         virSetError(errobj);
         virFreeError(errobj);
 
-        errobj = virSaveLastError();
         if (fail)
             return -1;
 
