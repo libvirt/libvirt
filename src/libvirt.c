@@ -8479,6 +8479,53 @@ error:
 
 
 /**
+ * virStorageVolWipe:
+ * @vol: pointer to storage volume
+ * @flags: future flags, use 0 for now
+ *
+ * Ensure data previously on a volume is not accessible to future reads
+ *
+ * Returns 0 on success, or -1 on error
+ */
+int
+virStorageVolWipe(virStorageVolPtr vol,
+                  unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("vol=%p, flags=%u", vol, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_STORAGE_VOL(vol)) {
+        virLibStorageVolError(NULL, VIR_ERR_INVALID_STORAGE_VOL, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+
+    conn = vol->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibStorageVolError(vol, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->storageDriver && conn->storageDriver->volWipe) {
+        int ret;
+        ret = conn->storageDriver->volWipe(vol, flags);
+        if (ret < 0) {
+            goto error;
+        }
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(vol->conn);
+    return -1;
+}
+
+
+/**
  * virStorageVolFree:
  * @vol: pointer to storage volume
  *
