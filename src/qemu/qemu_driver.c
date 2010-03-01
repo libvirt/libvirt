@@ -5927,7 +5927,7 @@ static int qemudDomainAttachHostUsbDevice(struct qemud_driver *driver,
     char *devstr = NULL;
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-        !(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+        !(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
         goto error;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
