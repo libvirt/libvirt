@@ -1,7 +1,7 @@
 /*
  * node_device_udev.c: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009 Red Hat
+ * Copyright (C) 2009-2010 Red Hat
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1337,7 +1337,6 @@ static int udevEnumerateDevices(struct udev *udev)
 {
     struct udev_enumerate *udev_enumerate = NULL;
     struct udev_list_entry *list_entry = NULL;
-    const char *name = NULL;
     int ret = 0;
 
     udev_enumerate = udev_enumerate_new(udev);
@@ -1352,7 +1351,6 @@ static int udevEnumerateDevices(struct udev *udev)
                             udev_enumerate_get_list_entry(udev_enumerate)) {
 
         udevProcessDeviceListEntry(udev, list_entry);
-        name = udev_list_entry_get_name(list_entry);
     }
 
 out:
