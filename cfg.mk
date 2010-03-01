@@ -132,7 +132,7 @@ sc_prohibit_ctype_h:
 sc_TAB_in_indentation:
 	@grep -lE '^ *	' /dev/null					\
 	     $$($(VC_LIST_EXCEPT)					\
-		| grep -E '\.[ch](\.in)?$$'				\
+		| grep -E '\.(rng|[ch](\.in)?)$$'			\
 		| grep -v '^gnulib/') &&				\
 	  { echo '$(ME): found TAB(s) used for indentation in C sources;'\
 	      'use spaces' 1>&2; exit 1; } || :
