@@ -102,6 +102,7 @@ static virStorageDriver esxStorageDriver = {
     NULL,                                  /* volCreateXML */
     NULL,                                  /* volCreateXMLFrom */
     NULL,                                  /* volDelete */
+    NULL,                                  /* volWipe */
     NULL,                                  /* volGetInfo */
     NULL,                                  /* volGetXMLDesc */
     NULL,                                  /* volGetPath */

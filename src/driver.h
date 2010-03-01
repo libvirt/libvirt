@@ -723,6 +723,10 @@ typedef int
                                              unsigned int flags);
 
 typedef int
+    (*virDrvStorageVolWipe)                  (virStorageVolPtr vol,
+                                              unsigned int flags);
+
+typedef int
     (*virDrvStorageVolGetInfo)               (virStorageVolPtr vol,
                                               virStorageVolInfoPtr info);
 typedef char *
@@ -791,6 +795,7 @@ struct _virStorageDriver {
     virDrvStorageVolCreateXML volCreateXML;
     virDrvStorageVolCreateXMLFrom volCreateXMLFrom;
     virDrvStorageVolDelete volDelete;
+    virDrvStorageVolWipe volWipe;
     virDrvStorageVolGetInfo volGetInfo;
     virDrvStorageVolGetXMLDesc volGetXMLDesc;
     virDrvStorageVolGetPath volGetPath;
