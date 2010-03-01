@@ -6017,6 +6017,8 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
     }
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
+            goto error;
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
             goto error;
 
@@ -6065,9 +6067,12 @@ static int qemudDomainAttachHostUsbDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
 
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
-        !(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
-        goto error;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
+            goto error;
+        if (!(devstr = qemuBuildUSBHostdevDevStr(hostdev)))
+            goto error;
+    }
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
