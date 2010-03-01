@@ -827,3 +827,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_abort_job_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* StorageVolWipe => 165 */
+    .fn = (dispatch_fn) remoteDispatchStorageVolWipe,
+    .args_filter = (xdrproc_t) xdr_remote_storage_vol_wipe_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

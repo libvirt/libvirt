@@ -1298,6 +1298,14 @@ static int remoteDispatchStorageVolLookupByPath(
     remote_error *err,
     remote_storage_vol_lookup_by_path_args *args,
     remote_storage_vol_lookup_by_path_ret *ret);
+static int remoteDispatchStorageVolWipe(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_storage_vol_wipe_args *args,
+    void *ret);
 static int remoteDispatchSupportsFeature(
     struct qemud_server *server,
     struct qemud_client *client,

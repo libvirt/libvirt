@@ -2286,6 +2286,17 @@ xdr_remote_storage_vol_delete_args (XDR *xdrs, remote_storage_vol_delete_args *o
 }
 
 bool_t
+xdr_remote_storage_vol_wipe_args (XDR *xdrs, remote_storage_vol_wipe_args *objp)
+{
+
+         if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_storage_vol_dump_xml_args (XDR *xdrs, remote_storage_vol_dump_xml_args *objp)
 {
 

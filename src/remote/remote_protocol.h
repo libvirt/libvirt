@@ -1295,6 +1295,12 @@ struct remote_storage_vol_delete_args {
 };
 typedef struct remote_storage_vol_delete_args remote_storage_vol_delete_args;
 
+struct remote_storage_vol_wipe_args {
+        remote_nonnull_storage_vol vol;
+        u_int flags;
+};
+typedef struct remote_storage_vol_wipe_args remote_storage_vol_wipe_args;
+
 struct remote_storage_vol_dump_xml_args {
         remote_nonnull_storage_vol vol;
         u_int flags;
@@ -1872,6 +1878,7 @@ enum remote_procedure {
         REMOTE_PROC_CPU_BASELINE = 162,
         REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
         REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
+        REMOTE_PROC_STORAGE_VOL_WIPE = 165,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2110,6 +2117,7 @@ extern  bool_t xdr_remote_storage_vol_create_xml_ret (XDR *, remote_storage_vol_
 extern  bool_t xdr_remote_storage_vol_create_xml_from_args (XDR *, remote_storage_vol_create_xml_from_args*);
 extern  bool_t xdr_remote_storage_vol_create_xml_from_ret (XDR *, remote_storage_vol_create_xml_from_ret*);
 extern  bool_t xdr_remote_storage_vol_delete_args (XDR *, remote_storage_vol_delete_args*);
+extern  bool_t xdr_remote_storage_vol_wipe_args (XDR *, remote_storage_vol_wipe_args*);
 extern  bool_t xdr_remote_storage_vol_dump_xml_args (XDR *, remote_storage_vol_dump_xml_args*);
 extern  bool_t xdr_remote_storage_vol_dump_xml_ret (XDR *, remote_storage_vol_dump_xml_ret*);
 extern  bool_t xdr_remote_storage_vol_get_info_args (XDR *, remote_storage_vol_get_info_args*);
@@ -2393,6 +2401,7 @@ extern bool_t xdr_remote_storage_vol_create_xml_ret ();
 extern bool_t xdr_remote_storage_vol_create_xml_from_args ();
 extern bool_t xdr_remote_storage_vol_create_xml_from_ret ();
 extern bool_t xdr_remote_storage_vol_delete_args ();
+extern bool_t xdr_remote_storage_vol_wipe_args ();
 extern bool_t xdr_remote_storage_vol_dump_xml_args ();
 extern bool_t xdr_remote_storage_vol_dump_xml_ret ();
 extern bool_t xdr_remote_storage_vol_get_info_args ();

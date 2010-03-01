@@ -5538,6 +5538,32 @@ done:
 }
 
 static int
+remoteStorageVolWipe(virStorageVolPtr vol,
+                     unsigned int flags)
+{
+    int rv = -1;
+    remote_storage_vol_wipe_args args;
+    struct private_data *priv = vol->conn->storagePrivateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_vol(&args.vol, vol);
+    args.flags = flags;
+
+    if (call(vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_WIPE,
+             (xdrproc_t) xdr_remote_storage_vol_wipe_args, (char *) &args,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
 remoteStorageVolGetInfo (virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
     int rv = -1;
@@ -9202,6 +9228,7 @@ static virStorageDriver storage_driver = {
     .volCreateXML = remoteStorageVolCreateXML,
     .volCreateXMLFrom = remoteStorageVolCreateXMLFrom,
     .volDelete = remoteStorageVolDelete,
+    .volWipe = remoteStorageVolWipe,
     .volGetInfo = remoteStorageVolGetInfo,
     .volGetXMLDesc = remoteStorageVolDumpXML,
     .volGetPath = remoteStorageVolGetPath,

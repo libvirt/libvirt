@@ -4273,6 +4273,38 @@ remoteDispatchStorageVolDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchStorageVolWipe(struct qemud_server *server ATTRIBUTE_UNUSED,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
+                             remote_message_header *hdr ATTRIBUTE_UNUSED,
+                             remote_error *rerr,
+                             remote_storage_vol_wipe_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    int retval = -1;
+    virStorageVolPtr vol;
+
+    vol = get_nonnull_storage_vol(conn, args->vol);
+    if (vol == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        goto out;
+    }
+
+    if (virStorageVolWipe(vol, args->flags) == -1) {
+        remoteDispatchConnError(rerr, conn);
+        goto out;
+    }
+
+    retval = 0;
+
+out:
+    if (vol != NULL) {
+        virStorageVolFree(vol);
+    }
+    return retval;
+}
+
+static int
 remoteDispatchStorageVolGetInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
                                  struct qemud_client *client ATTRIBUTE_UNUSED,
                                  virConnectPtr conn,
