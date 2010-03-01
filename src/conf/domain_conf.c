@@ -1974,6 +1974,7 @@ cleanup:
     VIR_FREE(type);
     VIR_FREE(internal);
     VIR_FREE(devaddr);
+    VIR_FREE(mode);
 
     return def;
 
