@@ -5017,7 +5017,7 @@ qemuParseCommandLineUSB(const char *val)
 
     if (!STRPREFIX(val, "host:")) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("unknown PCI device syntax '%s'"), val);
+                        _("unknown USB device syntax '%s'"), val);
         VIR_FREE(def);
         goto cleanup;
     }
@@ -5033,21 +5033,21 @@ qemuParseCommandLineUSB(const char *val)
         start = end + 1;
         if (virStrToLong_i(start, NULL, 16, &second) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("cannot extract PCI device product '%s'"), val);
+                            _("cannot extract USB device product '%s'"), val);
             VIR_FREE(def);
             goto cleanup;
         }
     } else {
         if (virStrToLong_i(start, &end, 10, &first) < 0 || !end || *end != '.') {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                             _("cannot extract PCI device bus '%s'"), val);
+                             _("cannot extract USB device bus '%s'"), val);
             VIR_FREE(def);
             goto cleanup;
         }
         start = end + 1;
         if (virStrToLong_i(start, NULL, 10, &second) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("cannot extract PCI device address '%s'"), val);
+                            _("cannot extract USB device address '%s'"), val);
             VIR_FREE(def);
             goto cleanup;
         }
