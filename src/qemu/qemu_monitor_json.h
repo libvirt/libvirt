@@ -161,6 +161,9 @@ int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
 int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
                              const char *devicestr);
 
+int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
+                             const char *devicestr);
+
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr);
 

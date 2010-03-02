@@ -163,6 +163,9 @@ int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
 int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
                              const char *devicestr);
 
+int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
+                             const char *devicestr);
+
 int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
                              const char *drivestr);
 

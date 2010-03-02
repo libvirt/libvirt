@@ -6230,7 +6230,8 @@ cleanup:
 
 static int qemudDomainDetachPciControllerDevice(struct qemud_driver *driver,
                                                 virDomainObjPtr vm,
-                                                virDomainDeviceDefPtr dev)
+                                                virDomainDeviceDefPtr dev,
+                                                unsigned long long qemuCmdFlags)
 {
     int i, ret = -1;
     virDomainControllerDefPtr detach = NULL;
@@ -6259,11 +6260,23 @@ static int qemudDomainDetachPciControllerDevice(struct qemud_driver *driver,
         goto cleanup;
     }
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuAssignDeviceControllerAlias(detach) < 0)
+            goto cleanup;
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   &detach->info.addr.pci) < 0) {
-        qemuDomainObjExitMonitor(vm);
-        goto cleanup;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemovePCIDevice(priv->mon,
+                                       &detach->info.addr.pci) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -6513,6 +6526,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
                                    const char *xml) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
+    unsigned long long qemuCmdFlags;
     virDomainDeviceDefPtr dev = NULL;
     int ret = -1;
 
@@ -6540,6 +6554,10 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     if (dev == NULL)
         goto endjob;
 
+    if (qemudExtractVersionInfo(vm->def->emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0)
+        goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
@@ -6549,7 +6567,8 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         ret = qemudDomainDetachNetDevice(driver, vm, dev);
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            ret = qemudDomainDetachPciControllerDevice(driver, vm, dev);
+            ret = qemudDomainDetachPciControllerDevice(driver, vm, dev,
+                                                       qemuCmdFlags);
         } else {
             qemuReportError(VIR_ERR_NO_SUPPORT,
                             _("disk controller bus '%s' cannot be hotunplugged."),

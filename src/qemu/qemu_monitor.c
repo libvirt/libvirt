@@ -1318,6 +1318,19 @@ int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorDelDevice(qemuMonitorPtr mon,
+                         const char *devicestr)
+{
+    DEBUG("mon=%p, fd=%d device(del)=%s", mon, mon->fd, devicestr);
+    int ret;
+
+    if (mon->json)
+        ret = qemuMonitorJSONDelDevice(mon, devicestr);
+    else
+        ret = qemuMonitorTextDelDevice(mon, devicestr);
+    return ret;
+}
+
 
 int qemuMonitorAddDevice(qemuMonitorPtr mon,
                          const char *devicestr)

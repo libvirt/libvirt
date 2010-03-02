@@ -2058,6 +2058,46 @@ error:
 #undef SKIP_TO
 
 
+int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
+                             const char *devicestr)
+{
+    char *cmd = NULL;
+    char *reply = NULL;
+    char *safedev;
+    int ret = -1;
+
+    if (!(safedev = qemuMonitorEscapeArg(devicestr))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&cmd, "device_del %s", safedev) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot detach %s device"), devicestr);
+        goto cleanup;
+    }
+
+    if (STRNEQ(reply, "")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("detaching %s device failed: %s"), devicestr, reply);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    VIR_FREE(safedev);
+    return ret;
+}
+
+
 int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
                              const char *devicestr)
 {
