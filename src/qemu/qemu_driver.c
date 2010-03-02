@@ -5475,7 +5475,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
             return cont;
     }
 
-    /* No SCSI controller present, for back compatability we
+    /* No SCSI controller present, for backward compatibility we
      * now hotplug a controller */
     if (VIR_ALLOC(cont) < 0) {
         virReportOOMError();
