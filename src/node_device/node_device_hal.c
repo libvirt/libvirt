@@ -463,7 +463,7 @@ static void dev_create(const char *udi)
         goto cleanup;
 
     /* Some devices don't have a path in sysfs, so ignore failure */
-    get_str_prop(ctx, udi, "linux.sysfs_path", &devicePath);
+    (void)get_str_prop(ctx, udi, "linux.sysfs_path", &devicePath);
 
     dev = virNodeDeviceAssignDef(&driverState->devs,
                                  def);
