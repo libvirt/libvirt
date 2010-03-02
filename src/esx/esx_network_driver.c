@@ -1,6 +1,6 @@
 
 /*
- * esx_network_driver.c: network driver methods for managing VMware ESX
+ * esx_network_driver.c: network driver functions for managing VMware ESX
  *                       host networks
  *
  * Copyright (C) 2010 Red Hat, Inc.

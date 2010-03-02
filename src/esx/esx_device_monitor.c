@@ -1,6 +1,6 @@
 
 /*
- * esx_device_monitor.c: device monitor methods for managing VMware ESX
+ * esx_device_monitor.c: device monitor functions for managing VMware ESX
  *                       host devices
  *
  * Copyright (C) 2010 Red Hat, Inc.

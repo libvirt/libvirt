@@ -1,6 +1,6 @@
 
 /*
- * esx_util.c: utility methods for the VMware ESX driver
+ * esx_util.c: utility functions for the VMware ESX driver
  *
  * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>

@@ -1,8 +1,8 @@
 
 /*
- * esx_driver.h: core driver methods for managing VMware ESX hosts
+ * esx_driver.h: core driver functions for managing VMware ESX hosts
  *
- * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
  * This library is free software; you can redistribute it and/or

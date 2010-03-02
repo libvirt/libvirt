@@ -1,6 +1,6 @@
 
 /*
- * esx_vmx.c: VMX related methods for the VMware ESX driver
+ * esx_vmx.h: VMX related functions for the VMware ESX driver
  *
  * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
  *

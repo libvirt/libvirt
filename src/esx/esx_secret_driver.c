@@ -1,6 +1,6 @@
 
 /*
- * esx_secret_driver.c: secret driver methods for VMware ESX secret manipulation
+ * esx_secret_driver.c: secret driver functions for VMware ESX secret manipulation
  *
  * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>

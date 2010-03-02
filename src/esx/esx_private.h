@@ -2,7 +2,7 @@
 /*
  * esx_private.h: private driver struct for the VMware ESX driver
  *
- * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

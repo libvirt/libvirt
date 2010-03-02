@@ -1,6 +1,6 @@
 
 /*
- * esx_util.h: utility methods for the VMware ESX driver
+ * esx_util.h: utility functions for the VMware ESX driver
  *
  * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
  *

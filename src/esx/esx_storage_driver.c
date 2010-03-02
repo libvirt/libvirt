@@ -1,6 +1,6 @@
 
 /*
- * esx_storage_driver.c: storage driver methods for managing VMware ESX
+ * esx_storage_driver.c: storage driver functions for managing VMware ESX
  *                       host storage
  *
  * Copyright (C) 2010 Red Hat, Inc.

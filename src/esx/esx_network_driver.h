@@ -1,6 +1,6 @@
 
 /*
- * esx_network_driver.h: network driver methods for managing VMware ESX
+ * esx_network_driver.h: network driver functions for managing VMware ESX
  *                       host networks
  *
  * Copyright (C) 2010 Matthias Bolte <matthias.bolte@googlemail.com>
