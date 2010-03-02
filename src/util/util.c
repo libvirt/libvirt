@@ -146,11 +146,11 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
      */
     r = ftruncate(fd, offset + len);
     if (r < 0)
-        return -errno;
+        return -1;
 
     buf = mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
     if (buf == MAP_FAILED)
-        return -errno;
+        return -1;
 
     memset(buf, 0, len);
     munmap(buf, len);
@@ -167,24 +167,26 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
     unsigned long long remain, bytes;
 
     if (lseek(fd, offset, SEEK_SET) < 0)
-        return errno;
+        return -1;
 
     /* Split up the write in small chunks so as not to allocate lots of RAM */
     remain = len;
     bytes = 1024 * 1024;
 
     r = VIR_ALLOC_N(buf, bytes);
-    if (r < 0)
-        return -ENOMEM;
+    if (r < 0) {
+        errno = ENOMEM;
+        return -1;
+    }
 
     while (remain) {
         if (bytes > remain)
             bytes = remain;
 
-        r = safewrite(fd, buf, len);
+        r = safewrite(fd, buf, bytes);
         if (r < 0) {
             VIR_FREE(buf);
-            return r;
+            return -1;
         }
 
         /* safewrite() guarantees all data will be written */

@@ -316,7 +316,7 @@ static int createRawFileOpHook(int fd, void *data) {
                 if ((r = safezero(fd, 0, hdata->vol->allocation - remain,
                                   bytes)) != 0) {
                     ret = errno;
-                    virReportSystemError(r, _("cannot fill file '%s'"),
+                    virReportSystemError(errno, _("cannot fill file '%s'"),
                                          hdata->vol->target.path);
                     goto cleanup;
                 }
@@ -327,7 +327,7 @@ static int createRawFileOpHook(int fd, void *data) {
 
             if ((r = safezero(fd, 0, 0, remain)) != 0) {
                 ret = errno;
-                virReportSystemError(r, _("cannot fill file '%s'"),
+                virReportSystemError(errno, _("cannot fill file '%s'"),
                                      hdata->vol->target.path);
                 goto cleanup;
             }
