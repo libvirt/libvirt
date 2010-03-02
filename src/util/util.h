@@ -2,6 +2,7 @@
 /*
  * utils.h: common, generic utility functions
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  *
@@ -31,9 +32,11 @@
 # include <sys/select.h>
 # include <sys/types.h>
 
-int saferead(int fd, void *buf, size_t count);
-ssize_t safewrite(int fd, const void *buf, size_t count);
-int safezero(int fd, int flags, off_t offset, off_t len);
+int saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
+ssize_t safewrite(int fd, const void *buf, size_t count)
+    ATTRIBUTE_RETURN_CHECK;
+int safezero(int fd, int flags, off_t offset, off_t len)
+    ATTRIBUTE_RETURN_CHECK;
 
 enum {
     VIR_EXEC_NONE   = 0,

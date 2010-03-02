@@ -1,8 +1,8 @@
 /*
  * event.c: event loop for monitoring file handles
  *
+ * Copyright (C) 2007, 2010 Red Hat, Inc.
  * Copyright (C) 2007 Daniel P. Berrange
- * Copyright (C) 2007 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@
 #include "event.h"
 #include "memory.h"
 #include "util.h"
+#include "ignore-value.h"
 
 #define EVENT_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
 
@@ -630,7 +631,7 @@ static void virEventHandleWakeup(int watch ATTRIBUTE_UNUSED,
 {
     char c;
     virEventLock();
-    saferead(fd, &c, sizeof(c));
+    ignore_value(saferead(fd, &c, sizeof(c)));
     virEventUnlock();
 }
 

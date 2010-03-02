@@ -8877,7 +8877,11 @@ remoteIOReadBuffer(struct private_data *priv,
 
                 char errout[1024] = "\0";
                 if (priv->errfd != -1) {
-                    saferead(priv->errfd, errout, sizeof(errout));
+                    if (saferead(priv->errfd, errout, sizeof(errout)) < 0) {
+                        virReportSystemError(errno, "%s",
+                                             _("cannot recv data"));
+                        return -1;
+                    }
                 }
 
                 virReportSystemError(errno,
@@ -8886,7 +8890,12 @@ remoteIOReadBuffer(struct private_data *priv,
             } else {
                 char errout[1024] = "\0";
                 if (priv->errfd != -1) {
-                    saferead(priv->errfd, errout, sizeof(errout));
+                    if (saferead(priv->errfd, errout, sizeof(errout)) < 0) {
+                        remoteError(VIR_ERR_SYSTEM_ERROR,
+                                    _("server closed connection: %s"),
+                                    virStrerror(errno, errout, sizeof errout));
+                        return -1;
+                    }
                 }
 
                 remoteError(VIR_ERR_SYSTEM_ERROR,
@@ -9499,7 +9508,7 @@ remoteIOEventLoop(virConnectPtr conn,
         sigaddset (&blockedsigs, SIGWINCH);
         sigaddset (&blockedsigs, SIGCHLD);
         sigaddset (&blockedsigs, SIGPIPE);
-        ignore_value (pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+        ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
 #endif
 
     repoll:
@@ -9508,14 +9517,15 @@ remoteIOEventLoop(virConnectPtr conn,
             goto repoll;
 
 #ifdef HAVE_PTHREAD_H
-        ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+        ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 #endif
 
         remoteDriverLock(priv);
 
         if (fds[1].revents) {
             DEBUG0("Woken up from poll by other thread");
-            saferead(priv->wakeupReadFD, &ignore, sizeof(ignore));
+            ignore_value(saferead(priv->wakeupReadFD, &ignore,
+                                  sizeof(ignore)));
         }
 
         if (ret < 0) {
@@ -9659,7 +9669,7 @@ remoteIO(virConnectPtr conn,
             priv->waitDispatch = thiscall;
 
         /* Force other thread to wakup from poll */
-        safewrite(priv->wakeupSendFD, &ignore, sizeof(ignore));
+        ignore_value(safewrite(priv->wakeupSendFD, &ignore, sizeof(ignore)));
 
         DEBUG("Going to sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
