@@ -1206,12 +1206,10 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 {
     esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
-    int id_candidate = -1;
-    char *name_candidate = NULL;
-    unsigned char uuid_candidate[VIR_UUID_BUFLEN];
+    int id = -1;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainPtr domain = NULL;
 
     if (esxVI_EnsureSession(priv->host) < 0) {
@@ -1220,59 +1218,45 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "configStatus\0"
-                                           "name\0"
                                            "runtime.powerState\0"
                                            "config.uuid\0") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
+        esxVI_LookupVirtualMachineByName(priv->host, name, propertyNameList,
+                                         &virtualMachine,
+                                         esxVI_Occurrence_OptionalItem) < 0) {
         goto failure;
     }
 
-    for (virtualMachine = virtualMachineList; virtualMachine != NULL;
-         virtualMachine = virtualMachine->_next) {
-        VIR_FREE(name_candidate);
-
-        if (esxVI_GetVirtualMachineIdentity(virtualMachine,
-                                            &id_candidate, &name_candidate,
-                                            uuid_candidate) < 0) {
-            goto failure;
-        }
-
-        if (STRNEQ(name, name_candidate)) {
-            continue;
-        }
-
-        if (esxVI_GetVirtualMachinePowerState(virtualMachine,
-                                              &powerState) < 0) {
-            goto failure;
-        }
-
-        domain = virGetDomain(conn, name_candidate, uuid_candidate);
-
-        if (domain == NULL) {
-            goto failure;
-        }
-
-        /* Only running/suspended virtual machines have an ID != -1 */
-        if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-            domain->id = id_candidate;
-        } else {
-            domain->id = -1;
-        }
-
-        break;
+    if (virtualMachine == NULL) {
+        ESX_ERROR(VIR_ERR_NO_DOMAIN, "No domain with name '%s'", name);
+        goto failure;
     }
 
+
+    if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, uuid) < 0) {
+        goto failure;
+    }
+
+    if (esxVI_GetVirtualMachinePowerState(virtualMachine,
+                                          &powerState) < 0) {
+        goto failure;
+    }
+
+    domain = virGetDomain(conn, name, uuid);
+
     if (domain == NULL) {
-        ESX_ERROR(VIR_ERR_NO_DOMAIN, "No domain with name '%s'", name);
+        goto failure;
+    }
+
+    /* Only running/suspended virtual machines have an ID != -1 */
+    if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+        domain->id = id;
+    } else {
+        domain->id = -1;
     }
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_candidate);
+    esxVI_ObjectContent_Free(&virtualMachine);
 
     return domain;
 

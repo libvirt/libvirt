@@ -1877,6 +1877,78 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
 
 
 int
+esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
+                                 esxVI_String *propertyNameList,
+                                 esxVI_ObjectContent **virtualMachine,
+                                 esxVI_Occurrence occurrence)
+{
+    int result = 0;
+    esxVI_String *completePropertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachineList = NULL;
+    esxVI_ObjectContent *candidate = NULL;
+    char *name_candidate = NULL;
+
+    if (virtualMachine == NULL || *virtualMachine != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        return -1;
+    }
+
+    if (esxVI_String_DeepCopyList(&completePropertyNameList,
+                                  propertyNameList) < 0 ||
+        esxVI_String_AppendValueToList(&completePropertyNameList, "name") < 0 ||
+        esxVI_LookupObjectContentByType(ctx, ctx->vmFolder, "VirtualMachine",
+                                        completePropertyNameList,
+                                        esxVI_Boolean_True,
+                                        &virtualMachineList) < 0) {
+        goto failure;
+    }
+
+    for (candidate = virtualMachineList; candidate != NULL;
+         candidate = candidate->_next) {
+        VIR_FREE(name_candidate);
+
+        if (esxVI_GetVirtualMachineIdentity(candidate, NULL, &name_candidate,
+                                            NULL) < 0) {
+            goto failure;
+        }
+
+        if (STRNEQ(name, name_candidate)) {
+            continue;
+        }
+
+        if (esxVI_ObjectContent_DeepCopy(virtualMachine, candidate) < 0) {
+            goto failure;
+        }
+
+        break;
+    }
+
+    if (*virtualMachine == NULL) {
+        if (occurrence == esxVI_Occurrence_OptionalItem) {
+            return 0;
+        } else {
+            ESX_VI_ERROR(VIR_ERR_NO_DOMAIN,
+                         "Could not find domain with name '%s'", name);
+            goto failure;
+        }
+    }
+
+  cleanup:
+    esxVI_String_Free(&completePropertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachineList);
+    VIR_FREE(name_candidate);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_LookupVirtualMachineByUuidAndPrepareForTask
   (esxVI_Context *ctx, const unsigned char *uuid,
    esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,

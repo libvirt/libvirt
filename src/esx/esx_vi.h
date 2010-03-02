@@ -237,6 +237,11 @@ int esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx,
                                      esxVI_ObjectContent **virtualMachine,
                                      esxVI_Occurrence occurrence);
 
+int esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
+                                     esxVI_String *propertyNameList,
+                                     esxVI_ObjectContent **virtualMachine,
+                                     esxVI_Occurrence occurrence);
+
 int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
       (esxVI_Context *ctx, const unsigned char *uuid,
        esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
