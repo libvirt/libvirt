@@ -5271,6 +5271,47 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "vol-wipe" command
+ */
+static const vshCmdInfo info_vol_wipe[] = {
+    {"help", N_("wipe a vol")},
+    {"desc", N_("Ensure data previously on a volume is not accessible to future reads")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vol_wipe[] = {
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name, key or path")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
+{
+    virStorageVolPtr vol;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name))) {
+        return FALSE;
+    }
+
+    if (virStorageVolWipe(vol, 0) == 0) {
+        vshPrint(ctl, _("Vol %s wiped\n"), name);
+    } else {
+        vshError(ctl, _("Failed to wipe vol %s"), name);
+        ret = FALSE;
+    }
+
+    virStorageVolFree(vol);
+    return ret;
+}
+
+
+/*
  * "vol-info" command
  */
 static const vshCmdInfo info_vol_info[] = {
@@ -7809,6 +7850,7 @@ static const vshCmdDef commands[] = {
     {"vol-create-as", cmdVolCreateAs, opts_vol_create_as, info_vol_create_as},
     {"vol-clone", cmdVolClone, opts_vol_clone, info_vol_clone},
     {"vol-delete", cmdVolDelete, opts_vol_delete, info_vol_delete},
+    {"vol-wipe", cmdVolWipe, opts_vol_wipe, info_vol_wipe},
     {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml},
     {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info},
     {"vol-list", cmdVolList, opts_vol_list, info_vol_list},
