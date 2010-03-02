@@ -1163,8 +1163,6 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
         currentSelectSetName = selectSetNames;
 
         while (currentSelectSetName != NULL && *currentSelectSetName != '\0') {
-            selectionSpec = NULL;
-
             if (esxVI_SelectionSpec_Alloc(&selectionSpec) < 0 ||
                 esxVI_String_DeepCopyValue(&selectionSpec->name,
                                            currentSelectSetName) < 0 ||
@@ -1173,6 +1171,7 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
                 goto failure;
             }
 
+            selectionSpec = NULL;
             currentSelectSetName += strlen(currentSelectSetName) + 1;
         }
     }
@@ -1186,6 +1185,7 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
 
   failure:
     esxVI_TraversalSpec_Free(&traversalSpec);
+    esxVI_SelectionSpec_Free(&selectionSpec);
 
     return -1;
 }
