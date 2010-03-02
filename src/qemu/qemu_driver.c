@@ -6280,6 +6280,11 @@ static int qemudDomainDetachPciControllerDevice(struct qemud_driver *driver,
         VIR_FREE(vm->def->controllers);
         vm->def->ncontrollers = 0;
     }
+
+    if (qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0) {
+        VIR_WARN0("Unable to release PCI address on controller");
+    }
+
     virDomainControllerDefFree(detach);
 
     ret = 0;
