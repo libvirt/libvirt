@@ -6111,6 +6111,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             ret = qemudDomainAttachPciControllerDevice(driver, vm,
                                                        dev->data.controller, qemuCmdFlags);
+            if (ret == 0)
+                dev->data.controller = NULL;
         } else {
             qemuReportError(VIR_ERR_NO_SUPPORT,
                             _("disk controller bus '%s' cannot be hotplugged."),
