@@ -2123,9 +2123,11 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (STRNEQ(reply, "")) {
+    /* If the command failed qemu prints:
+     * Could not add ... */
+    if (strstr(reply, "Could not add ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("adding %s device failed: %s"), devicestr, reply);
+                        _("adding %s device failed"), devicestr);
         goto cleanup;
     }
 
