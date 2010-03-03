@@ -733,11 +733,21 @@ static int umlMonitorCommand(virConnectPtr conn,
     }
 
     do {
+        ssize_t nbytes;
         addrlen = sizeof(addr);
-        if (recvfrom(priv->monitor, &res, sizeof res, 0,
-                     (struct sockaddr *)&addr, &addrlen) < 0) {
+        nbytes = recvfrom(priv->monitor, &res, sizeof res, 0,
+                          (struct sockaddr *)&addr, &addrlen) < 0;
+        if (nbytes < 0) {
+            if (errno == EAGAIN || errno == EINTR)
+                continue;
             virReportSystemError(errno,
                                  _("cannot read reply %s"),
+                                 cmd);
+            goto error;
+        }
+        if (nbytes < sizeof res) {
+            virReportSystemError(errno,
+                                 _("incomplete reply %s"),
                                  cmd);
             goto error;
         }
