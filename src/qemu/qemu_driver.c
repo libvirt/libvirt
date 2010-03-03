@@ -47,6 +47,11 @@
 #include <sys/ioctl.h>
 #include <sys/un.h>
 
+#ifdef __linux__
+#include <sys/vfs.h>
+#include <linux/magic.h>
+#endif
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
@@ -4069,14 +4074,44 @@ struct qemud_save_header {
     int unused[15];
 };
 
+struct fileOpHookData {
+    virDomainPtr dom;
+    const char *path;
+    char *xml;
+    struct qemud_save_header *header;
+};
+
+static int qemudDomainSaveFileOpHook(int fd, void *data) {
+    struct fileOpHookData *hdata = data;
+    int ret = 0;
+
+    if (safewrite(fd, hdata->header, sizeof(*hdata->header)) != sizeof(*hdata->header)) {
+        ret = errno;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                         _("failed to write save header to '%s'"), hdata->path);
+        goto endjob;
+    }
+
+    if (safewrite(fd, hdata->xml, hdata->header->xml_len) != hdata->header->xml_len) {
+        ret = errno;
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                         _("failed to write xml to '%s'"), hdata->path);
+        goto endjob;
+    }
+endjob:
+    return ret;
+}
+
+
 static int qemudDomainSave(virDomainPtr dom,
                            const char *path)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    int fd = -1;
     char *xml = NULL;
     struct qemud_save_header header;
+    struct fileOpHookData hdata;
+    int bypassSecurityDriver = 0;
     int ret = -1;
     int rc;
     virDomainEventPtr event = NULL;
@@ -4144,34 +4179,113 @@ static int qemudDomainSave(virDomainPtr dom,
     }
     header.xml_len = strlen(xml) + 1;
 
+    /* Setup hook data needed by virFileOperation hook function */
+    hdata.dom = dom;
+    hdata.path = path;
+    hdata.xml = xml;
+    hdata.header = &header;
+
     /* Write header to file, followed by XML */
-    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to create '%s'"), path);
-        goto endjob;
+
+    /* First try creating the file as root */
+    if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+                               S_IRUSR|S_IWUSR,
+                               getuid(), getgid(),
+                               qemudDomainSaveFileOpHook, &hdata,
+                               0)) != 0) {
+
+        /* If we failed as root, and the error was permission-denied
+           (EACCES), assume it's on a network-connected share where
+           root access is restricted (eg, root-squashed NFS). If the
+           qemu user (driver->user) is non-root, just set a flag to
+           bypass security driver shenanigans, and retry the operation
+           after doing setuid to qemu user */
+
+        if ((rc != EACCES) ||
+            driver->user == getuid()) {
+            virReportSystemError(rc, _("Failed to create domain save file '%s'"),
+                                 path);
+            goto endjob;
+        }
+
+#ifdef __linux__
+        /* On Linux we can also verify the FS-type of the directory. */
+        char *dirpath, *p;
+        struct statfs st;
+        int statfs_ret;
+
+        if ((dirpath = strdup(path)) == NULL) {
+            virReportOOMError();
+            goto endjob;
+        }
+
+        do {
+            // Try less and less of the path until we get to a
+            // directory we can stat. Even if we don't have 'x'
+            // permission on any directory in the path on the NFS
+            // server (assuming it's NFS), we will be able to stat the
+            // mount point, and that will properly tell us if the
+            // fstype is NFS.
+
+            if ((p = strrchr(dirpath, '/')) == NULL) {
+                qemuReportError(VIR_ERR_INVALID_ARG,
+                                _("Invalid relative path '%s' for domain save file"),
+                                path);
+                VIR_FREE(dirpath);
+                goto endjob;
+            }
+
+            if (p == dirpath)
+                *(p+1) = '\0';
+            else
+                *p = '\0';
+
+            statfs_ret = statfs(dirpath, &st);
+
+        } while ((statfs_ret == -1) && (p != dirpath));
+
+        if (statfs_ret == -1) {
+            virReportSystemError(errno,
+                                 _("Failed to create domain save file '%s'"
+                                   " statfs of all elements of path failed."),
+                                 path);
+            VIR_FREE(dirpath);
+            goto endjob;
+        }
+
+        if (st.f_type != NFS_SUPER_MAGIC) {
+            virReportSystemError(rc,
+                                 _("Failed to create domain save file '%s'"
+                                   " (fstype of '%s' is 0x%X"),
+                                 path, dirpath, (unsigned int) st.f_type);
+            VIR_FREE(dirpath);
+            goto endjob;
+        }
+        VIR_FREE(dirpath);
+#endif
+
+        /* Retry creating the file as driver->user */
+
+        if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
+                                   driver->user, driver->group,
+                                   qemudDomainSaveFileOpHook, &hdata,
+                                   VIR_FILE_OP_AS_UID)) != 0) {
+            virReportSystemError(rc, _("Error from child process creating '%s'"),
+                                 path);
+            goto endjob;
+        }
+
+        /* Since we had to setuid to create the file, and the fstype
+           is NFS, we assume it's a root-squashing NFS share, and that
+           the security driver stuff would have failed anyway */
+
+        bypassSecurityDriver = 1;
     }
 
-    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("failed to write save header"));
-        goto endjob;
-    }
 
-    if (safewrite(fd, xml, header.xml_len) != header.xml_len) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                         "%s", _("failed to write xml"));
-        goto endjob;
-    }
-
-    if (close(fd) < 0) {
-        virReportSystemError(errno,
-                             _("unable to save file %s"),
-                             path);
-        goto endjob;
-    }
-    fd = -1;
-
-    if (driver->securityDriver &&
+    if ((!bypassSecurityDriver) &&
+        driver->securityDriver &&
         driver->securityDriver->domainSetSavedStateLabel &&
         driver->securityDriver->domainSetSavedStateLabel(vm, path) == -1)
         goto endjob;
@@ -4201,7 +4315,8 @@ static int qemudDomainSave(virDomainPtr dom,
     if (rc < 0)
         goto endjob;
 
-    if (driver->securityDriver &&
+    if ((!bypassSecurityDriver) &&
+        driver->securityDriver &&
         driver->securityDriver->domainRestoreSavedStateLabel &&
         driver->securityDriver->domainRestoreSavedStateLabel(vm, path) == -1)
         goto endjob;
@@ -4236,8 +4351,6 @@ endjob:
             vm = NULL;
 
 cleanup:
-    if (fd != -1)
-        close(fd);
     VIR_FREE(xml);
     if (ret != 0)
         unlink(path);
