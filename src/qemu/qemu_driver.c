@@ -5117,12 +5117,13 @@ static int qemudDomainRestore(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(xml, header.xml_len) < 0) {
-        virReportOOMError();
+    if (header.xml_len <= 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("invalid XML length: %d"), header.xml_len);
         goto cleanup;
     }
 
-    if (saferead(fd, xml, header.xml_len) != header.xml_len) {
+    if (virFileReadLimFD(fd, header.xml_len, &xml) != header.xml_len) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to read XML"));
         goto cleanup;
