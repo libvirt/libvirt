@@ -4699,6 +4699,138 @@ cleanup:
     return ret;
 }
 
+/* qemudOpenAsUID() - pipe/fork/setuid/open a file, and return the
+   pipe fd to caller, so that it can read from the file. Also return
+   the pid of the child process, so the caller can wait for it to exit
+   after it's finished reading (to avoid a zombie, if nothing
+   else). */
+
+static int qemudOpenAsUID(const char *path, uid_t uid, pid_t *child_pid) {
+    int pipefd[2];
+    int fd = -1;
+
+    *child_pid = -1;
+
+    if (pipe(pipefd) < 0) {
+        virReportSystemError(errno,
+                             _("failed to create pipe to read '%s'"),
+                             path);
+        pipefd[0] = pipefd[1] = -1;
+        goto parent_cleanup;
+    }
+
+    int forkRet = virFork(child_pid);
+
+    if (*child_pid < 0) {
+        virReportSystemError(errno,
+                             _("failed to fork child to read '%s'"),
+                             path);
+        goto parent_cleanup;
+    }
+
+    if (*child_pid > 0) {
+
+        /* parent */
+
+        /* parent doesn't need the write side of the pipe */
+        close(pipefd[1]);
+        pipefd[1] = -1;
+
+        if (forkRet < 0) {
+            virReportSystemError(errno,
+                                 _("failed in parent after forking child to read '%s'"),
+                                 path);
+            goto parent_cleanup;
+        }
+        /* caller gets the read side of the pipe */
+        fd = pipefd[0];
+        pipefd[0] = -1;
+parent_cleanup:
+        if (pipefd[0] != -1)
+            close(pipefd[0]);
+        if (pipefd[1] != -1)
+            close(pipefd[1]);
+        if ((fd < 0) && (*child_pid > 0)) {
+            /* a child process was started and subsequently an error
+               occurred in the parent, so we need to wait for it to
+               exit, but its status is inconsequential. */
+            while ((waitpid(*child_pid, NULL, 0) == -1)
+                   && (errno == EINTR)) {
+                /* empty */
+            }
+            *child_pid = -1;
+        }
+        return fd;
+    }
+
+    /* child */
+
+    /* setuid to the qemu user, then open the file, read it,
+       and stuff it into the pipe for the parent process to
+       read */
+    int exit_code;
+    char *buf = NULL;
+    size_t bufsize = 1024 * 1024;
+    int bytesread;
+
+    /* child doesn't need the read side of the pipe */
+    close(pipefd[0]);
+
+    if (forkRet < 0) {
+        exit_code = errno;
+        virReportSystemError(errno,
+                             _("failed in child after forking to read '%s'"),
+                             path);
+        goto child_cleanup;
+    }
+
+    if (setuid(uid) != 0) {
+        exit_code = errno;
+        virReportSystemError(errno,
+                             _("cannot setuid(%d) to read '%s'"),
+                             uid, path);
+        goto child_cleanup;
+    }
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        exit_code = errno;
+        virReportSystemError(errno,
+                             _("cannot open '%s' as uid %d"),
+                             path, uid);
+        goto child_cleanup;
+    }
+    if (VIR_ALLOC_N(buf, bufsize) < 0) {
+        exit_code = ENOMEM;
+        virReportOOMError();
+        goto child_cleanup;
+    }
+
+    /* read from fd and write to pipefd[1] until EOF */
+    do {
+        if ((bytesread = saferead(fd, buf, bufsize)) < 0) {
+            exit_code = errno;
+            virReportSystemError(errno,
+                                 _("child failed reading from '%s'"),
+                                 path);
+            goto child_cleanup;
+        }
+        if (safewrite(pipefd[1], buf, bytesread) != bytesread) {
+            exit_code = errno;
+            virReportSystemError(errno, "%s",
+                                 _("child failed writing to pipe"));
+            goto child_cleanup;
+        }
+    } while (bytesread > 0);
+    exit_code = 0;
+
+child_cleanup:
+    VIR_FREE(buf);
+    if (fd != -1)
+        close(fd);
+    if (pipefd[1] != -1)
+        close(pipefd[1]);
+    _exit(exit_code);
+}
+
 /* TODO: check seclabel restore */
 static int qemudDomainRestore(virConnectPtr conn,
                               const char *path) {
@@ -4706,6 +4838,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     int fd = -1;
+    pid_t read_pid = -1;
     int ret = -1;
     char *xml = NULL;
     struct qemud_save_header header;
@@ -4717,9 +4850,20 @@ static int qemudDomainRestore(virConnectPtr conn,
     qemuDriverLock(driver);
     /* Verify the header and read the XML */
     if ((fd = open(path, O_RDONLY)) < 0) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("cannot read domain image"));
-        goto cleanup;
+        if ((driver->user == 0) || (getuid() != 0)) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("cannot read domain image"));
+            goto cleanup;
+        }
+
+        /* Opening as root failed, but qemu runs as a different user
+           that might have better luck. Create a pipe, then fork a
+           child process to run as the qemu user, which will hopefully
+           have the necessary authority to read the file. */
+        if ((fd = qemudOpenAsUID(path, driver->user, &read_pid)) < 0) {
+            /* error already reported */
+            goto cleanup;
+        }
     }
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
@@ -4809,6 +4953,35 @@ static int qemudDomainRestore(virConnectPtr conn,
         close(intermediatefd);
     close(fd);
     fd = -1;
+    if (read_pid != -1) {
+        int wait_ret;
+        int status;
+        /* reap the process that read the file */
+        while (((wait_ret = waitpid(read_pid, &status, 0)) == -1)
+               && (errno == EINTR)) {
+            /* empty */
+        }
+        read_pid = -1;
+        if (wait_ret == -1) {
+            virReportSystemError(errno,
+                                 _("failed to wait for process reading '%s'"),
+                                 path);
+            ret = -1;
+        } else if (!WIFEXITED(status)) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            _("child process exited abnormally reading '%s'"),
+                            path);
+            ret = -1;
+        } else {
+            int exit_status = WEXITSTATUS(status);
+            if (exit_status != 0) {
+                virReportSystemError(exit_status,
+                                     _("child process returned error reading '%s'"),
+                                     path);
+                ret = -1;
+            }
+        }
+    }
     if (ret < 0) {
         if (!vm->persistent) {
             if (qemuDomainObjEndJob(vm) > 0)
@@ -4850,6 +5023,13 @@ cleanup:
     VIR_FREE(xml);
     if (fd != -1)
         close(fd);
+    if (read_pid != 0) {
+        /* reap the process that read the file */
+        while ((waitpid(read_pid, NULL, 0) == -1)
+               && (errno == EINTR)) {
+            /* empty */
+        }
+    }
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
