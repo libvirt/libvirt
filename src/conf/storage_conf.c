@@ -689,6 +689,15 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
         }
     }
 
+    /* If DEVICE is the only source type, then its required */
+    if (options->flags == VIR_STORAGE_POOL_SOURCE_DEVICE) {
+        if (!ret->source.ndevice) {
+            virStorageReportError(VIR_ERR_XML_ERROR,
+                                  "%s", _("missing storage pool source device name"));
+            goto cleanup;
+        }
+    }
+
     if ((ret->target.path = virXPathString("string(./target/path)", ctxt)) == NULL) {
         virStorageReportError(VIR_ERR_XML_ERROR,
                               "%s", _("missing storage pool target path"));
