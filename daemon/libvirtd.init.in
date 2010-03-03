@@ -106,8 +106,8 @@ case "$1" in
         [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
         ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
-	exit 1
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload|force-reload|try-restart}"
+	exit 2
         ;;
 esac
 exit $RETVAL
