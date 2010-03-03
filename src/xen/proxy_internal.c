@@ -932,7 +932,8 @@ xenProxyGetCapabilities (virConnectPtr conn)
     }
     if (ans.data.arg == -1)
         return NULL;
-    if (ans.len <= sizeof(virProxyPacket)) {
+    if (ans.len <= sizeof(virProxyPacket)
+        || ans.len > sizeof (ans) - sizeof(virProxyPacket)) {
         virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         return NULL;
     }
@@ -942,7 +943,7 @@ xenProxyGetCapabilities (virConnectPtr conn)
         virReportOOMError();
         return NULL;
     }
-    memmove (xml, ans.extra.str, xmllen);
+    memcpy (xml, ans.extra.str, xmllen);
     xml[xmllen] = '\0';
 
     return xml;
@@ -983,7 +984,8 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     if (ret < 0) {
         return(NULL);
     }
-    if (ans.len <= sizeof(virProxyPacket)) {
+    if (ans.len <= sizeof(virProxyPacket)
+        || ans.len > sizeof (ans) - sizeof(virProxyPacket)) {
         virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         return (NULL);
     }
@@ -992,7 +994,7 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
         virReportOOMError();
         return NULL;
     }
-    memmove(xml, &ans.extra.dinfo, xmllen);
+    memcpy(xml, &ans.extra.dinfo, xmllen);
     xml[xmllen] = '\0';
 
     return(xml);
@@ -1038,7 +1040,8 @@ xenProxyDomainGetOSType(virDomainPtr domain)
         return(NULL);
     }
 
-    if (ans.len <= sizeof(virProxyPacket)) {
+    if (ans.len <= sizeof(virProxyPacket)
+        || ans.len > sizeof (ans) - sizeof(virProxyPacket)) {
         virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         return (NULL);
     }
@@ -1047,7 +1050,7 @@ xenProxyDomainGetOSType(virDomainPtr domain)
         virReportOOMError();
         return NULL;
     }
-    memmove(ostype, &ans.extra.dinfo, oslen);
+    memcpy(ostype, &ans.extra.dinfo, oslen);
     ostype[oslen] = '\0';
 
     return(ostype);
