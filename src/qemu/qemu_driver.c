@@ -6854,6 +6854,10 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
     pciDevice *pci;
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+        if (vm->def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            vm->def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
         unsigned domain   = vm->def->hostdevs[i]->source.subsys.u.pci.domain;
         unsigned bus      = vm->def->hostdevs[i]->source.subsys.u.pci.bus;
         unsigned slot     = vm->def->hostdevs[i]->source.subsys.u.pci.slot;
