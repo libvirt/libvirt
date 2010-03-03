@@ -734,15 +734,15 @@ static int umlMonitorCommand(const struct uml_driver *driver,
         if (nbytes < 0) {
             if (errno == EAGAIN || errno == EINTR)
                 continue;
-            virReportSystemError(errno,
-                                 _("cannot read reply %s"),
-                                 cmd);
+            virReportSystemError(errno, _("cannot read reply %s"), cmd);
             goto error;
         }
         if (nbytes < sizeof res) {
-            virReportSystemError(errno,
-                                 _("incomplete reply %s"),
-                                 cmd);
+            virReportSystemError(0, _("incomplete reply %s"), cmd);
+            goto error;
+        }
+        if (sizeof res.data < res.length) {
+            virReportSystemError(0, _("invalid length in reply %s"), cmd);
             goto error;
         }
 
