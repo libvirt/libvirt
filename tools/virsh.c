@@ -1876,27 +1876,27 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"), info.timeRemaining);
         if (info.dataTotal || info.dataRemaining || info.dataProcessed) {
             val = prettyCapacity(info.dataProcessed, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data processed:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data processed:"), val, unit);
             val = prettyCapacity(info.dataRemaining, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data remaining:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data remaining:"), val, unit);
             val = prettyCapacity(info.dataTotal, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Data total:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Data total:"), val, unit);
         }
         if (info.memTotal || info.memRemaining || info.memProcessed) {
             val = prettyCapacity(info.memProcessed, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory processed:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory processed:"), val, unit);
             val = prettyCapacity(info.memRemaining, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory remaining:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory remaining:"), val, unit);
             val = prettyCapacity(info.memTotal, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("Memory total:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("Memory total:"), val, unit);
         }
         if (info.fileTotal || info.fileRemaining || info.fileProcessed) {
             val = prettyCapacity(info.fileProcessed, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File processed:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File processed:"), val, unit);
             val = prettyCapacity(info.fileRemaining, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File remaining:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File remaining:"), val, unit);
             val = prettyCapacity(info.fileTotal, &unit);
-            vshPrint(ctl, "%-17s %-0.3lf %s\n", _("File total:"), val, unit);
+            vshPrint(ctl, "%-17s %-.3lf %s\n", _("File total:"), val, unit);
         }
     } else {
         ret = FALSE;
