@@ -822,7 +822,7 @@ storagePoolDelete(virStoragePoolPtr obj,
 
     if (!backend->deletePool) {
         virStorageReportError(VIR_ERR_NO_SUPPORT,
-                              "%s", _("pool does not support volume delete"));
+                              "%s", _("pool does not support pool deletion"));
         goto cleanup;
     }
     if (backend->deletePool(obj->conn, pool, flags) < 0)
