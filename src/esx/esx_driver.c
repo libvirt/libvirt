@@ -2,6 +2,7 @@
 /*
  * esx_driver.c: core driver methods for managing VMware ESX hosts
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Maximilian Wilhelm <max@rfc2324.org>
  *
@@ -559,16 +560,19 @@ static int
 esxClose(virConnectPtr conn)
 {
     esxPrivate *priv = conn->privateData;
+    int result = 0;
 
-    esxVI_EnsureSession(priv->host);
-
-    esxVI_Logout(priv->host);
+    if (esxVI_EnsureSession(priv->host) < 0 ||
+        esxVI_Logout(priv->host) < 0) {
+        result = -1;
+    }
     esxVI_Context_Free(&priv->host);
 
     if (priv->vCenter != NULL) {
-        esxVI_EnsureSession(priv->vCenter);
-
-        esxVI_Logout(priv->vCenter);
+        if (esxVI_EnsureSession(priv->vCenter) < 0 ||
+            esxVI_Logout(priv->vCenter) < 0) {
+            result = -1;
+        }
         esxVI_Context_Free(&priv->vCenter);
     }
 
@@ -579,7 +583,7 @@ esxClose(virConnectPtr conn)
 
     conn->privateData = NULL;
 
-    return 0;
+    return result;
 }
 
 
