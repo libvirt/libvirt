@@ -49,8 +49,10 @@
 
 #ifdef __linux__
 #include <sys/vfs.h>
-#include <linux/magic.h>
-#endif
+#ifndef NFS_SUPER_MAGIC
+#define NFS_SUPER_MAGIC 0x6969
+#endif /* NFS_SUPER_MAGIC */
+#endif /* __linux__ */
 
 #include "virterror_internal.h"
 #include "logging.h"
