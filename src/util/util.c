@@ -1030,10 +1030,17 @@ saferead_lim (int fd, size_t max_len, size_t *length)
 
 /* A wrapper around saferead_lim that maps a failure due to
    exceeding the maximum size limitation to EOVERFLOW.  */
-int virFileReadLimFD(int fd, int maxlen, char **buf)
+int
+virFileReadLimFD(int fd, int maxlen, char **buf)
 {
     size_t len;
-    char *s = saferead_lim (fd, maxlen+1, &len);
+    char *s;
+
+    if (maxlen <= 0) {
+        errno = EINVAL;
+        return -1;
+    }
+    s = saferead_lim (fd, maxlen+1, &len);
     if (s == NULL)
         return -1;
     if (len > maxlen || (int)len != len) {
