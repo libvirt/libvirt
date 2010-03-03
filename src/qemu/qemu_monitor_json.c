@@ -1108,7 +1108,7 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
                                       unsigned long long *total)
 {
     int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-migration",
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-migrate",
                                                      NULL);
     virJSONValuePtr reply = NULL;
 
