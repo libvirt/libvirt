@@ -7001,9 +7001,81 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
     return ret;
 }
 
+static int qemudDomainDetachHostUsbDevice(struct qemud_driver *driver,
+                                          virDomainObjPtr vm,
+                                          virDomainDeviceDefPtr dev,
+                                          unsigned long long qemuCmdFlags)
+{
+    virDomainHostdevDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int i, ret;
+
+    for (i = 0 ; i < vm->def->nhostdevs ; i++) {
+        if (vm->def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            vm->def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+
+        unsigned bus = vm->def->hostdevs[i]->source.subsys.u.usb.bus;
+        unsigned device = vm->def->hostdevs[i]->source.subsys.u.usb.device;
+
+        if (dev->data.hostdev->source.subsys.u.usb.bus == bus &&
+            dev->data.hostdev->source.subsys.u.usb.device == device) {
+            detach = vm->def->hostdevs[i];
+            break;
+        }
+    }
+
+    if (!detach) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("host usb device %03d.%03d not found"),
+                        dev->data.hostdev->source.subsys.u.usb.bus,
+                        dev->data.hostdev->source.subsys.u.usb.device);
+        return -1;
+    }
+
+    if (!detach->info.alias) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("device cannot be detached without a device alias"));
+        return -1;
+    }
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("device cannot be detached with this QEMU version"));
+        return -1;
+    }
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+        return -1;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    ret = 0;
+
+    if (vm->def->nhostdevs > 1) {
+        memmove(vm->def->hostdevs + i,
+                vm->def->hostdevs + i + 1,
+                sizeof(*vm->def->hostdevs) *
+                (vm->def->nhostdevs - (i + 1)));
+        vm->def->nhostdevs--;
+        if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(vm->def->hostdevs);
+        vm->def->nhostdevs = 0;
+    }
+    virDomainHostdevDefFree(detach);
+
+    return ret;
+}
+
 static int qemudDomainDetachHostDevice(struct qemud_driver *driver,
                                        virDomainObjPtr vm,
-                                       virDomainDeviceDefPtr dev)
+                                       virDomainDeviceDefPtr dev,
+                                       unsigned long long qemuCmdFlags)
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     int ret;
@@ -7018,6 +7090,9 @@ static int qemudDomainDetachHostDevice(struct qemud_driver *driver,
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         ret = qemudDomainDetachHostPciDevice(driver, vm, dev);
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        ret = qemudDomainDetachHostUsbDevice(driver, vm, dev, qemuCmdFlags);
         break;
     default:
         qemuReportError(VIR_ERR_NO_SUPPORT,
@@ -7088,7 +7163,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             /* fallthrough */
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        ret = qemudDomainDetachHostDevice(driver, vm, dev);
+        ret = qemudDomainDetachHostDevice(driver, vm, dev, qemuCmdFlags);
     } else {
         qemuReportError(VIR_ERR_NO_SUPPORT,
                         "%s", _("This type of device cannot be hot unplugged"));
