@@ -6676,7 +6676,8 @@ static int qemudDomainAttachDeviceFlags(virDomainPtr dom,
 
 static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
-                                          virDomainDeviceDefPtr dev)
+                                          virDomainDeviceDefPtr dev,
+                                          unsigned long long qemuCmdFlags)
 {
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
@@ -6703,10 +6704,17 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   &detach->info.addr.pci) < 0) {
-        qemuDomainObjExitMonitor(vm);
-        goto cleanup;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemovePCIDevice(priv->mon,
+                                       &detach->info.addr.pci) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -6817,7 +6825,8 @@ cleanup:
 static int
 qemudDomainDetachNetDevice(struct qemud_driver *driver,
                            virDomainObjPtr vm,
-                           virDomainDeviceDefPtr dev)
+                           virDomainDeviceDefPtr dev,
+                           unsigned long long qemuCmdFlags)
 {
     int i, ret = -1;
     virDomainNetDefPtr detach = NULL;
@@ -6862,10 +6871,17 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   &detach->info.addr.pci) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto cleanup;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemovePCIDevice(priv->mon,
+                                       &detach->info.addr.pci) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto cleanup;
+        }
     }
 
     if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
@@ -6915,7 +6931,8 @@ cleanup:
 
 static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
-                                          virDomainDeviceDefPtr dev)
+                                          virDomainDeviceDefPtr dev,
+                                          unsigned long long qemuCmdFlags)
 {
     virDomainHostdevDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -6959,10 +6976,17 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorRemovePCIDevice(priv->mon,
-                                   &detach->info.addr.pci) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        return -1;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            return -1;
+        }
+    } else {
+        if (qemuMonitorRemovePCIDevice(priv->mon,
+                                       &detach->info.addr.pci) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            return -1;
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -7089,7 +7113,7 @@ static int qemudDomainDetachHostDevice(struct qemud_driver *driver,
 
     switch (hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        ret = qemudDomainDetachHostPciDevice(driver, vm, dev);
+        ret = qemudDomainDetachHostPciDevice(driver, vm, dev, qemuCmdFlags);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         ret = qemudDomainDetachHostUsbDevice(driver, vm, dev, qemuCmdFlags);
@@ -7149,9 +7173,9 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-        ret = qemudDomainDetachPciDiskDevice(driver, vm, dev);
+        ret = qemudDomainDetachPciDiskDevice(driver, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        ret = qemudDomainDetachNetDevice(driver, vm, dev);
+        ret = qemudDomainDetachNetDevice(driver, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             ret = qemudDomainDetachPciControllerDevice(driver, vm, dev,
