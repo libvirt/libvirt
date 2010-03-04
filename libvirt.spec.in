@@ -668,16 +668,20 @@ fi
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
-%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
 
 %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
 %endif
 %if %{with_lxc}
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
+%endif
+%if %{with_uml}
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
 %endif
 
 %dir %{_datadir}/libvirt/

@@ -1,4 +1,4 @@
-@localstatedir@/log/libvirt/qemu/*.log @localstatedir@/log/libvirt/uml/*.log @localstatedir@/log/libvirt/lxc/*.log {
+@localstatedir@/log/libvirt/uml/*.log {
         weekly
         missingok
         rotate 4

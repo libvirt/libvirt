@@ -25,7 +25,9 @@ EXTRA_DIST =						\
 	libvirtd.sasl					\
 	libvirtd.sysconf				\
 	libvirtd.aug                                    \
-	libvirtd.logrotate.in                           \
+	libvirtd.qemu.logrotate.in                      \
+	libvirtd.lxc.logrotate.in                       \
+	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug                               \
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
@@ -177,20 +179,37 @@ remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
 	perl -w $(srcdir)/remote_generate_stubs.pl -r $(REMOTE_PROTOCOL) > $@
 
-BUILT_SOURCES += libvirtd.logrotate
+LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
+                  libvirtd.uml.logrotate
 
-libvirtd.logrotate: libvirtd.logrotate.in
-	sed						\
-	    -e s!\@localstatedir\@!@localstatedir@!g	\
+BUILT_SOURCES += $(LOGROTATE_CONFS)
+
+libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
+	sed							\
+	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
 	    < $< > $@-t
 	mv $@-t $@
 
-install-logrotate: libvirtd.logrotate
+libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
+	sed							\
+	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    < $< > $@-t
+	mv $@-t $@
+
+libvirtd.uml.logrotate: libvirtd.uml.logrotate.in
+	sed							\
+	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
+	    < $< > $@-t
+	mv $@-t $@
+
+install-logrotate: $(LOGROTATE_CONFS)
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu/
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/lxc/
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/uml/
 	mkdir -p $(DESTDIR)$(sysconfdir)/logrotate.d/
-	$(INSTALL_DATA) $< $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd
+	$(INSTALL_DATA) libvirtd.qemu.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
+	$(INSTALL_DATA) libvirtd.lxc.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
+	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init: libvirtd.init
