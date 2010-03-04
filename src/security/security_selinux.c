@@ -491,9 +491,7 @@ SELinuxSetSecurityHostdevLabel(virDomainObjPtr vm,
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device,
-                                      dev->source.subsys.u.usb.vendor,
-                                      dev->source.subsys.u.usb.product);
+                                      dev->source.subsys.u.usb.device);
 
         if (!usb)
             goto done;
@@ -561,9 +559,7 @@ SELinuxRestoreSecurityHostdevLabel(virDomainObjPtr vm,
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         usbDevice *usb = usbGetDevice(dev->source.subsys.u.usb.bus,
-                                      dev->source.subsys.u.usb.device,
-                                      dev->source.subsys.u.usb.vendor,
-                                      dev->source.subsys.u.usb.product);
+                                      dev->source.subsys.u.usb.device);
 
         if (!usb)
             goto done;

@@ -26,11 +26,14 @@
 
 typedef struct _usbDevice usbDevice;
 
-usbDevice *usbGetDevice      (unsigned       bus,
-                              unsigned       devno,
-                              unsigned       vendor,
-                              unsigned       product);
-void       usbFreeDevice     (usbDevice     *dev);
+usbDevice *usbGetDevice(unsigned bus,
+                        unsigned devno);
+usbDevice *usbFindDevice(unsigned vendor,
+                         unsigned product);
+void       usbFreeDevice (usbDevice *dev);
+
+unsigned usbDeviceGetBus(usbDevice *dev);
+unsigned usbDeviceGetDevno(usbDevice *dev);
 
 /*
  * Callback that will be invoked once for each file

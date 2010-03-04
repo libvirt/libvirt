@@ -599,7 +599,10 @@ virArgvToString;
 
 # usb.h
 usbGetDevice;
+usbFindDevice;
 usbFreeDevice;
+usbDeviceGetBus;
+usbDeviceGetDevno;
 usbDeviceFileIterate;
 
 # uuid.h

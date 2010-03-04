@@ -2290,16 +2290,14 @@ cleanup:
     return ret;
 }
 
+
 static int
-qemuPrepareHostDevices(struct qemud_driver *driver,
-                       virDomainDefPtr def)
+qemuPrepareHostPCIDevices(struct qemud_driver *driver,
+                          virDomainDefPtr def)
 {
     pciDeviceList *pcidevs;
     int i;
     int ret = -1;
-
-    if (!def->nhostdevs)
-        return 0;
 
     if (!(pcidevs = qemuGetPciHostDeviceList(def)))
         return -1;
@@ -2350,6 +2348,56 @@ cleanup:
     pciDeviceListFree(pcidevs);
     return ret;
 }
+
+
+static int
+qemuPrepareHostUSBDevices(struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                          virDomainDefPtr def)
+{
+    int i;
+    for (i = 0 ; i < def->nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        /* Resolve a vendor/product to bus/device */
+        if (hostdev->source.subsys.u.usb.vendor) {
+            usbDevice *usb
+                = usbFindDevice(hostdev->source.subsys.u.usb.vendor,
+                                hostdev->source.subsys.u.usb.product);
+
+            if (!usb)
+                return -1;
+
+            hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
+            hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+
+            usbFreeDevice(usb);
+        }
+    }
+
+    return 0;
+}
+
+static int
+qemuPrepareHostDevices(struct qemud_driver *driver,
+                       virDomainDefPtr def)
+{
+    if (!def->nhostdevs)
+        return 0;
+
+    if (qemuPrepareHostPCIDevices(driver, def) < 0)
+        return -1;
+
+    if (qemuPrepareHostUSBDevices(driver, def) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 static void
 qemudReattachManagedDevice(pciDevice *dev)
@@ -6478,6 +6526,23 @@ static int qemudDomainAttachHostDevice(struct qemud_driver *driver,
         return -1;
     }
 
+    /* Resolve USB product/vendor to bus/device */
+    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+        hostdev->source.subsys.u.usb.vendor) {
+        usbDevice *usb
+            = usbFindDevice(hostdev->source.subsys.u.usb.vendor,
+                            hostdev->source.subsys.u.usb.product);
+
+        if (!usb)
+            return -1;
+
+        hostdev->source.subsys.u.usb.bus = usbDeviceGetBus(usb);
+        hostdev->source.subsys.u.usb.device = usbDeviceGetDevno(usb);
+
+        usbFreeDevice(usb);
+    }
+
+
     if (driver->securityDriver &&
         driver->securityDriver->domainSetSecurityHostdevLabel &&
         driver->securityDriver->domainSetSecurityHostdevLabel(vm, hostdev) < 0)
@@ -7041,11 +7106,22 @@ static int qemudDomainDetachHostUsbDevice(struct qemud_driver *driver,
 
         unsigned bus = vm->def->hostdevs[i]->source.subsys.u.usb.bus;
         unsigned device = vm->def->hostdevs[i]->source.subsys.u.usb.device;
+        unsigned product = vm->def->hostdevs[i]->source.subsys.u.usb.product;
+        unsigned vendor = vm->def->hostdevs[i]->source.subsys.u.usb.vendor;
 
-        if (dev->data.hostdev->source.subsys.u.usb.bus == bus &&
-            dev->data.hostdev->source.subsys.u.usb.device == device) {
-            detach = vm->def->hostdevs[i];
-            break;
+        if (dev->data.hostdev->source.subsys.u.usb.bus &&
+            dev->data.hostdev->source.subsys.u.usb.device) {
+            if (dev->data.hostdev->source.subsys.u.usb.bus == bus &&
+                dev->data.hostdev->source.subsys.u.usb.device == device) {
+                detach = vm->def->hostdevs[i];
+                break;
+            }
+        } else {
+            if (dev->data.hostdev->source.subsys.u.usb.product == product &&
+                dev->data.hostdev->source.subsys.u.usb.vendor == vendor) {
+                detach = vm->def->hostdevs[i];
+                break;
+            }
         }
     }
 

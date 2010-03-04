@@ -159,23 +159,13 @@ cleanup:
 
 usbDevice *
 usbGetDevice(unsigned bus,
-             unsigned devno,
-             unsigned vendor,
-             unsigned product)
+             unsigned devno)
 {
     usbDevice *dev;
 
     if (VIR_ALLOC(dev) < 0) {
         virReportOOMError();
         return NULL;
-    }
-
-    if (vendor) {
-        /* Look up bus.dev by vendor:product */
-        if (usbFindBusByVendor(vendor, product, &bus, &devno) < 0) {
-            VIR_FREE(dev);
-            return NULL;
-        }
     }
 
     dev->bus     = bus;
@@ -194,11 +184,38 @@ usbGetDevice(unsigned bus,
     return dev;
 }
 
+
+usbDevice *
+usbFindDevice(unsigned vendor,
+              unsigned product)
+{
+    unsigned bus = 0, devno = 0;
+
+    if (usbFindBusByVendor(vendor, product, &bus, &devno) < 0) {
+        return NULL;
+    }
+
+    return usbGetDevice(bus, devno);
+}
+
+
 void
 usbFreeDevice(usbDevice *dev)
 {
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev);
+}
+
+
+unsigned usbDeviceGetBus(usbDevice *dev)
+{
+    return dev->bus;
+}
+
+
+unsigned usbDeviceGetDevno(usbDevice *dev)
+{
+    return dev->dev;
 }
 
 
