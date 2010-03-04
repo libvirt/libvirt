@@ -1700,7 +1700,7 @@ if test "x$with_driver_modules" = "xyes" ; then
   old_libs="$LIBS"
   fail=0
   AC_CHECK_HEADER([dlfcn.h],[],[fail=1])
-  AC_CHECK_LIB([dl], [dlopen],[],[fail=1])
+  AC_SEARCH_LIBS([dlopen], [dl], [], [fail=1])
   test $fail = 1 &&
       AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
 
@@ -1709,7 +1709,10 @@ if test "x$with_driver_modules" = "xyes" ; then
 fi
 if test "$with_driver_modules" = "yes"; then
   DRIVER_MODULE_CFLAGS="-export-dynamic"
-  DRIVER_MODULE_LIBS="-ldl"
+  case $ac_cv_search_dlopen in
+    no*) DRIVER_MODULE_LIBS= ;;
+    *) DRIVER_MODULE_LIBS=$ac_cv_search_dlopen ;;
+  esac
   AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
 fi
 AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
