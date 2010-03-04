@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
+#include <dirent.h>
 
 #if HAVE_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
@@ -45,6 +46,7 @@
 #include "util.h"
 #include "logging.h"
 #include "virterror_internal.h"
+#include "count-one-bits.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -55,22 +57,109 @@
 
 #ifdef __linux__
 #define CPUINFO_PATH "/proc/cpuinfo"
+#define CPU_SYS_PATH "/sys/devices/system/cpu"
 
-/* NB, these are not static as we need to call them from testsuite */
+/* NB, this is not static as we need to call it from the testsuite */
 int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
                              virNodeInfoPtr nodeinfo);
 
-int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr nodeinfo) {
+static unsigned long count_thread_siblings(int cpu)
+{
+    unsigned long ret = 0;
+    char *path = NULL;
+    FILE *pathfp = NULL;
+    char str[1024];
+    int i;
+
+    if (virAsprintf(&path, "%s/cpu%d/topology/thread_siblings", CPU_SYS_PATH,
+                    cpu) < 0) {
+        virReportOOMError();
+        return 0;
+    }
+
+    pathfp = fopen(path, "r");
+    if (pathfp == NULL) {
+        virReportSystemError(errno, _("cannot open %s"), path);
+        VIR_FREE(path);
+        return 0;
+    }
+
+    if (fgets(str, sizeof(str), pathfp) == NULL) {
+        virReportSystemError(errno, _("cannot read from %s"), path);
+        goto cleanup;
+    }
+
+    i = 0;
+    while (str[i] != '\0') {
+        if (str[i] != '\n' && str[i] != ',')
+            ret += count_one_bits(str[i] - '0');
+        i++;
+    }
+
+cleanup:
+    fclose(pathfp);
+    VIR_FREE(path);
+
+    return ret;
+}
+
+static int parse_socket(int cpu)
+{
+    char *path = NULL;
+    FILE *pathfp;
+    char socket_str[1024];
+    char *tmp;
+    int socket;
+
+    if (virAsprintf(&path, "%s/cpu%d/topology/physical_package_id",
+                    CPU_SYS_PATH, cpu) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    pathfp = fopen(path, "r");
+    if (pathfp == NULL) {
+        virReportSystemError(errno, _("cannot open %s"), path);
+        goto cleanup;
+    }
+
+    if (fgets(socket_str, sizeof(socket_str), pathfp) == NULL) {
+        virReportSystemError(errno, _("cannot read from %s"), path);
+        goto cleanup;
+    }
+    if (virStrToLong_i(socket_str, &tmp, 10, &socket) < 0) {
+        nodeReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+                        _("could not convert '%s' to an integer"),
+                        socket_str);
+        goto cleanup;
+    }
+
+cleanup:
+    fclose(pathfp);
+    VIR_FREE(path);
+
+    return socket;
+}
+
+int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
+                             virNodeInfoPtr nodeinfo)
+{
     char line[1024];
+    DIR *cpudir = NULL;
+    struct dirent *cpudirent = NULL;
+    int cpu;
+    unsigned long cur_threads;
+    int socket;
+    unsigned long long socket_mask = 0;
 
     nodeinfo->cpus = 0;
     nodeinfo->mhz = 0;
-    nodeinfo->nodes = nodeinfo->sockets = nodeinfo->cores = nodeinfo->threads = 1;
+    nodeinfo->nodes = nodeinfo->cores = 1;
 
     /* NB: It is impossible to fill our nodes, since cpuinfo
      * has not knowledge of NUMA nodes */
 
-    /* XXX hyperthreads */
+    /* NOTE: hyperthreads are ignored here; they are parsed out of /sys */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
         char *buf = line;
         if (STRPREFIX(buf, "processor")) { /* aka a single logical CPU */
@@ -122,12 +211,38 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
         return -1;
     }
 
-    /*
-     * Can't reliably count sockets from proc metadata, so
-     * infer it based on total CPUs vs cores.
-     * XXX hyperthreads
+    /* OK, we've parsed what we can out of /proc/cpuinfo.  Get the socket
+     * and thread information from /sys
      */
-    nodeinfo->sockets = nodeinfo->cpus / nodeinfo->cores;
+    cpudir = opendir(CPU_SYS_PATH);
+    if (cpudir == NULL) {
+        virReportSystemError(errno, _("cannot opendir %s"), CPU_SYS_PATH);
+        return -1;
+    }
+    while ((cpudirent = readdir(cpudir))) {
+        if (sscanf(cpudirent->d_name, "cpu%d", &cpu) != 1)
+            continue;
+
+        socket = parse_socket(cpu);
+        if (socket < 0) {
+            closedir(cpudir);
+            return -1;
+        }
+        if (!(socket_mask & (1 << socket))) {
+            socket_mask |= (1 << socket);
+            nodeinfo->sockets++;
+        }
+
+        cur_threads = count_thread_siblings(cpu);
+        if (cur_threads == 0) {
+            closedir(cpudir);
+            return -1;
+        }
+        if (cur_threads > nodeinfo->threads)
+            nodeinfo->threads = cur_threads;
+    }
+
+    closedir(cpudir);
 
     return 0;
 }

@@ -1,1 +1,1 @@
-CPUs: 4, MHz: 1000, Nodes: 1, Sockets: 2, Cores: 2, Threads: 1
+CPUs: 4, MHz: 1000, Nodes: 1, Cores: 2

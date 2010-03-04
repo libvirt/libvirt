@@ -47,9 +47,8 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
     fclose(cpuinfo);
 
     snprintf(actualData, MAX_FILE,
-             "CPUs: %u, MHz: %u, Nodes: %u, Sockets: %u, Cores: %u, Threads: %u\n",
-             nodeinfo.cpus, nodeinfo.mhz, nodeinfo.nodes, nodeinfo.sockets,
-             nodeinfo.cores, nodeinfo.threads);
+             "CPUs: %u, MHz: %u, Nodes: %u, Cores: %u\n",
+             nodeinfo.cpus, nodeinfo.mhz, nodeinfo.nodes, nodeinfo.cores);
 
     if (STRNEQ(actualData, expectData)) {
         if (getenv("DEBUG_TESTS")) {

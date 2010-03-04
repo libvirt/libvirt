@@ -1,1 +1,1 @@
-CPUs: 2, MHz: 2800, Nodes: 1, Sockets: 1, Cores: 2, Threads: 1
+CPUs: 2, MHz: 2800, Nodes: 1, Cores: 2
