@@ -241,11 +241,10 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     uid = (vol->target.perms.uid != st.st_uid) ? vol->target.perms.uid : -1;
     gid = (vol->target.perms.gid != st.st_gid) ? vol->target.perms.gid : -1;
     if (((uid != -1) || (gid != -1))
-        && (fchown(fd, vol->target.perms.uid, vol->target.perms.gid) < 0)) {
+        && (fchown(fd, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown '%s' to (%u, %u)"),
-                             vol->target.path, vol->target.perms.uid,
-                             vol->target.perms.gid);
+                             vol->target.path, uid, gid);
         goto cleanup;
     }
     if (fchmod(fd, vol->target.perms.mode) < 0) {
@@ -356,10 +355,12 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
+    uid_t uid = (vol->target.perms.uid == -1) ? getuid() : vol->target.perms.uid;
+    gid_t gid = (vol->target.perms.gid == -1) ? getgid() : vol->target.perms.gid;
+
     if ((createstat = virFileOperation(vol->target.path,
                                        O_RDWR | O_CREAT | O_EXCL | O_DSYNC,
-                                       vol->target.perms.mode,
-                                       vol->target.perms.uid, vol->target.perms.gid,
+                                       vol->target.perms.mode, uid, gid,
                                        createRawFileOpHook, &hdata,
                                        VIR_FILE_OP_FORCE_PERMS |
                                        (pool->def->type == VIR_STORAGE_POOL_NETFS
@@ -491,14 +492,14 @@ cleanup:
 static int virStorageBuildSetUIDHook(void *data) {
     virStorageVolDefPtr vol = data;
 
-    if ((vol->target.perms.gid != 0)
+    if ((vol->target.perms.gid != -1)
         && (setgid(vol->target.perms.gid) != 0)) {
         virReportSystemError(errno,
                              _("Cannot set gid to %u before creating %s"),
                              vol->target.perms.gid, vol->target.path);
         return -1;
     }
-    if ((vol->target.perms.uid != 0)
+    if ((vol->target.perms.uid != -1)
         && (setuid(vol->target.perms.uid) != 0)) {
         virReportSystemError(errno,
                              _("Cannot set uid to %u before creating %s"),
@@ -517,8 +518,11 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     int filecreated = 0;
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
-        && (getuid() == 0)
-        && ((vol->target.perms.uid != 0) || (vol->target.perms.gid != 0))) {
+        && (((getuid() == 0)
+             && (vol->target.perms.uid != -1)
+             && (vol->target.perms.uid != 0))
+            || ((vol->target.perms.gid != -1)
+                && (vol->target.perms.gid != getgid())))) {
         if (virRunWithHook(cmdargv,
                            virStorageBuildSetUIDHook, vol, NULL) == 0) {
             /* command was successfully run, check if the file was created */
@@ -547,8 +551,7 @@ static int virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         && (chown(vol->target.path, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown %s to (%u, %u)"),
-                             vol->target.path, vol->target.perms.uid,
-                             vol->target.perms.gid);
+                             vol->target.path, uid, gid);
         return -1;
     }
     if (chmod(vol->target.path, vol->target.perms.mode) < 0) {

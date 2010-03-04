@@ -539,8 +539,8 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     if (node == NULL) {
         /* Set default values if there is not <permissions> element */
         perms->mode = defaultmode;
-        perms->uid = getuid();
-        perms->gid = getgid();
+        perms->uid = -1;
+        perms->gid = -1;
         perms->label = NULL;
         return 0;
     }
@@ -564,7 +564,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     }
 
     if (virXPathNode("./owner", ctxt) == NULL) {
-        perms->uid = getuid();
+        perms->uid = -1;
     } else {
         if (virXPathLong("number(./owner)", ctxt, &v) < 0) {
             virStorageReportError(VIR_ERR_XML_ERROR,
@@ -575,7 +575,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     }
 
     if (virXPathNode("./group", ctxt) == NULL) {
-        perms->gid = getgid();
+        perms->gid = -1;
     } else {
         if (virXPathLong("number(./group)", ctxt, &v) < 0) {
             virStorageReportError(VIR_ERR_XML_ERROR,
