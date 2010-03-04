@@ -519,7 +519,8 @@ err:
 }
 
 static int virCgroupAppRoot(int privileged,
-                            virCgroupPtr *group)
+                            virCgroupPtr *group,
+                            int create)
 {
     virCgroupPtr rootgrp = NULL;
     int rc;
@@ -551,7 +552,7 @@ static int virCgroupAppRoot(int privileged,
     if (rc != 0)
         goto cleanup;
 
-    rc = virCgroupMakeGroup(rootgrp, *group, 1);
+    rc = virCgroupMakeGroup(rootgrp, *group, create);
 
 cleanup:
     virCgroupFree(&rootgrp);
@@ -638,7 +639,7 @@ int virCgroupForDriver(const char *name,
     char *path = NULL;
     virCgroupPtr rootgrp = NULL;
 
-    rc = virCgroupAppRoot(privileged, &rootgrp);
+    rc = virCgroupAppRoot(privileged, &rootgrp, create);
     if (rc != 0)
         goto out;
 
