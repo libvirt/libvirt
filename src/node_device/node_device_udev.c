@@ -1440,33 +1440,15 @@ out:
 }
 
 
-static int udevSetupSystemDev(void)
+static void
+udevGetDMIData(union _virNodeDevCapData *data)
 {
-    virNodeDeviceDefPtr def = NULL;
-    virNodeDeviceObjPtr dev = NULL;
     struct udev *udev = NULL;
     struct udev_device *device = NULL;
-    union _virNodeDevCapData *data = NULL;
     char *tmp = NULL;
-    int ret = -1;
-
-    if (VIR_ALLOC(def) != 0) {
-        virReportOOMError();
-        goto out;
-    }
-
-    def->name = strdup("computer");
-    if (def->name == NULL) {
-        virReportOOMError();
-        goto out;
-    }
-
-    if (VIR_ALLOC(def->caps) != 0) {
-        virReportOOMError();
-        goto out;
-    }
 
     udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driverState));
+
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
     if (device == NULL) {
         device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
@@ -1476,8 +1458,6 @@ static int udevSetupSystemDev(void)
             goto out;
         }
     }
-
-    data = &def->caps->data;
 
     if (udevGetStringSysfsAttr(device,
                                "product_name",
@@ -1508,8 +1488,7 @@ static int udevSetupSystemDev(void)
                                &tmp) == PROPERTY_ERROR) {
         goto out;
     }
-    virUUIDParse(tmp, def->caps->data.system.hardware.uuid);
-    VIR_FREE(tmp);
+    virUUIDParse(tmp, data->system.hardware.uuid);
 
     if (udevGetStringSysfsAttr(device,
                                "bios_vendor",
@@ -1530,12 +1509,42 @@ static int udevSetupSystemDev(void)
         goto out;
     }
 
-    udev_device_unref(device);
+out:
+    VIR_FREE(tmp);
+    if (device != NULL) {
+        udev_device_unref(device);
+    }
+    return;
+}
+
+
+static int udevSetupSystemDev(void)
+{
+    virNodeDeviceDefPtr def = NULL;
+    virNodeDeviceObjPtr dev = NULL;
+    int ret = -1;
+
+    if (VIR_ALLOC(def) != 0) {
+        virReportOOMError();
+        goto out;
+    }
+
+    def->name = strdup("computer");
+    if (def->name == NULL) {
+        virReportOOMError();
+        goto out;
+    }
+
+    if (VIR_ALLOC(def->caps) != 0) {
+        virReportOOMError();
+        goto out;
+    }
+
+    udevGetDMIData(&def->caps->data);
 
     dev = virNodeDeviceAssignDef(&driverState->devs, def);
     if (dev == NULL) {
         VIR_ERROR("Failed to create device for '%s'", def->name);
-        virNodeDeviceDefFree(def);
         goto out;
     }
 
@@ -1544,6 +1553,10 @@ static int udevSetupSystemDev(void)
     ret = 0;
 
 out:
+    if (ret == -1) {
+        virNodeDeviceDefFree(def);
+    }
+
     return ret;
 }
 
