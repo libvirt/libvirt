@@ -463,6 +463,7 @@ libvirt_driver_vbox_la_CFLAGS = \
 if WITH_DRIVER_MODULES
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version
 endif
+libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS)
 libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif
 

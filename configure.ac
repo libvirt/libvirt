@@ -303,6 +303,12 @@ fi
 AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
 
 if test "x$with_vbox" = "xyes"; then
+    AC_SEARCH_LIBS([dlopen], [dl], [], [AC_MSG_ERROR([Unable to find dlopen()])])
+    case $ac_cv_search_dlopen in
+      no*) DLOPEN_LIBS= ;;
+      *) DLOPEN_LIBS=$ac_cv_search_dlopen ;;
+    esac
+    AC_SUBST([DLOPEN_LIBS])
     AC_DEFINE_UNQUOTED([WITH_VBOX], 1, [whether VirtualBox driver is enabled])
 fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
