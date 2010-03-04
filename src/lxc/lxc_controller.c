@@ -78,6 +78,7 @@ static int lxcSetContainerResources(virDomainDefPtr def)
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_FULL},
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_RANDOM},
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_URANDOM},
+        {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_TTY},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_CONSOLE},
         {'c', LXC_DEV_MAJ_TTY, LXC_DEV_MIN_PTMX},
         {0,   0, 0}};
@@ -301,7 +302,7 @@ static int lxcControllerMain(int monitor,
     fdArray[0].active = 0;
     fdArray[1].fd = contPty;
     fdArray[1].active = 0;
-
+    VIR_ERROR("monitor=%d client=%d appPty=%d contPty=%d", monitor,client, appPty, contPty);
     /* create the epoll fild descriptor */
     epollFd = epoll_create(2);
     if (0 > epollFd) {
@@ -516,6 +517,9 @@ lxcControllerRun(virDomainDefPtr def,
 
     root = virDomainGetRootFilesystem(def);
 
+    if (lxcSetContainerResources(def) < 0)
+        goto cleanup;
+
     /*
      * If doing a chroot style setup, we need to prepare
      * a private /dev/pts for the child now, which they
@@ -598,9 +602,6 @@ lxcControllerRun(virDomainDefPtr def,
         }
     }
 
-
-    if (lxcSetContainerResources(def) < 0)
-        goto cleanup;
 
     if ((container = lxcContainerStart(def,
                                        nveths,

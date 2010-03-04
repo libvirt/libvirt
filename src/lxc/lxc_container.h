@@ -39,6 +39,7 @@ enum {
 #define LXC_DEV_MIN_URANDOM 9
 
 #define LXC_DEV_MAJ_TTY     5
+#define LXC_DEV_MIN_TTY     0
 #define LXC_DEV_MIN_CONSOLE 1
 #define LXC_DEV_MIN_PTMX    2
 
