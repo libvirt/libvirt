@@ -105,8 +105,13 @@ static int lxcContainerExecInit(virDomainDefPtr vmDef)
         vmDef->os.init,
         NULL,
     };
+    const char *const envp[] = {
+        "PATH=/bin:/sbin",
+        "TERM=linux",
+        NULL,
+    };
 
-    return execve(argv[0], (char **)argv, NULL);
+    return execve(argv[0], (char **)argv,(char**)envp);
 }
 
 /**
@@ -488,6 +493,15 @@ static int lxcContainerPopulateDevices(void)
         }
     }
 
+    /* XXX we should allow multiple consoles per container
+     * for tty2, tty3, etc, but the domain XML does not
+     * handle this yet
+     */
+    if (symlink("/dev/pts/0", "/dev/tty1") < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to symlink /dev/pts/0 to /dev/tty1"));
+        return -1;
+    }
 
     return 0;
 }
@@ -822,15 +836,19 @@ int lxcContainerStart(virDomainDefPtr def,
 
     flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|SIGCHLD;
 
-    if (userns_supported())
+    if (userns_supported()) {
+        DEBUG0("Enable user namespaces");
         flags |= CLONE_NEWUSER;
+    }
 
-    if (def->nets != NULL)
+    if (def->nets != NULL) {
+        DEBUG0("Enable network namespaces");
         flags |= CLONE_NEWNET;
+    }
 
     pid = clone(lxcContainerChild, stacktop, flags, &args);
     VIR_FREE(stack);
-    DEBUG("clone() returned, %d", pid);
+    DEBUG("clone() completed, new container PID is %d", pid);
 
     if (pid < 0) {
         virReportSystemError(errno, "%s",
