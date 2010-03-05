@@ -20,6 +20,8 @@
       <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <controller type='ide' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1'/>
     <video>
       <model type='qxl' vram='65536' heads='1'/>
     </video>

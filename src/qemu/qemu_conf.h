@@ -99,6 +99,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_DRIVE_READONLY= (1LL << 43), /* -drive readonly=on|off */
     QEMUD_CMD_FLAG_SMBIOS_TYPE   = (1LL << 44), /* Is -smbios type= available */
     QEMUD_CMD_FLAG_VGA_QXL       = (1LL << 45), /* The 'qxl' arg for '-vga' */
+    QEMUD_CMD_FLAG_SPICE         = (1LL << 46), /* Is -spice avail */
 };
 
 /* Main driver state */

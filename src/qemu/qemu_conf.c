@@ -1208,6 +1208,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         if (strstr(help, "|qxl"))
             flags |= QEMUD_CMD_FLAG_VGA_QXL;
     }
+    if (strstr(help, "-spice"))
+        flags |= QEMUD_CMD_FLAG_SPICE;
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (strstr(help, "serial=s"))
@@ -5066,6 +5068,41 @@ int qemudBuildCommandLine(virConnectPtr conn,
          * default, since the default changes :-( */
         if (qemuCmdFlags & QEMUD_CMD_FLAG_SDL)
             ADD_ARG_LIT("-sdl");
+
+    } else if ((def->ngraphics == 1) &&
+               def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        virBuffer opt = VIR_BUFFER_INITIALIZER;
+        char *optstr;
+
+        if (!(qemuCmdFlags & QEMUD_CMD_FLAG_SPICE)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("spice graphics are not supported with this QEMU"));
+            goto error;
+        }
+
+        virBufferVSprintf(&opt, "port=%u", def->graphics[0]->data.spice.port);
+
+        if (def->graphics[0]->data.spice.tlsPort)
+            virBufferVSprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
+
+        if (def->graphics[0]->data.spice.listenAddr)
+            virBufferVSprintf(&opt, ",addr=%s", def->graphics[0]->data.spice.listenAddr);
+
+        if (virBufferError(&opt))
+            goto no_memory;
+
+        optstr = virBufferContentAndReset(&opt);
+
+        ADD_ARG_LIT("-spice");
+        ADD_ARG(optstr);
+        if (def->graphics[0]->data.spice.keymap) {
+            ADD_ARG_LIT("-k");
+            ADD_ARG_LIT(def->graphics[0]->data.spice.keymap);
+        }
+        /* SPICE includes native support for tunnelling audio, so we
+         * set the audio backend to point at SPICE's own driver
+         */
+        ADD_ENV_LIT("QEMU_AUDIO_DRV=spice");
 
     } else if ((def->ngraphics == 1)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
