@@ -2956,10 +2956,12 @@ qemuInitPCIAddresses(struct qemud_driver *driver,
     return ret;
 }
 
-static int qemudNextFreeVNCPort(struct qemud_driver *driver) {
+
+static int qemudNextFreePort(struct qemud_driver *driver,
+                             int startPort) {
     int i;
 
-    for (i = QEMU_VNC_PORT_MIN; i < QEMU_VNC_PORT_MAX; i++) {
+    for (i = startPort ; i < 65535 ; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
@@ -3927,17 +3929,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     DEBUG0("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(driver, vm, 1);
 
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport) {
-        DEBUG0("Determining VNC port");
-        int port = qemudNextFreeVNCPort(driver);
-        if (port < 0) {
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            "%s", _("Unable to find an unused VNC port"));
-            goto cleanup;
+    if (vm->def->ngraphics == 1) {
+        if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            vm->def->graphics[0]->data.vnc.autoport) {
+            int port = qemudNextFreePort(driver, 5900);
+            if (port < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Unable to find an unused VNC port"));
+                goto cleanup;
+            }
+            vm->def->graphics[0]->data.vnc.port = port;
+        } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+                   vm->def->graphics[0]->data.spice.autoport) {
+            int port = qemudNextFreePort(driver, 5900);
+            int tlsPort = port == -1 ? -1 : qemudNextFreePort(driver, port + 1);
+            if (port < 0 || tlsPort < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                "%s", _("Unable to find unused SPICE ports"));
+                goto cleanup;
+            }
+
+            vm->def->graphics[0]->data.spice.port = port;
+            vm->def->graphics[0]->data.spice.tlsPort = tlsPort;
         }
-        vm->def->graphics[0]->data.vnc.port = port;
     }
 
     if (virFileMakePath(driver->logDir) != 0) {
