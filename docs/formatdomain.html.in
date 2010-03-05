@@ -742,10 +742,33 @@
     <p>
       Provides direct attachment of the virtual machine's NIC to the given
       physial interface of the host. This setup requires the Linux macvtap
-      driver to be available. One of the modes 'vepa', 'bridge' or 'private'
+      driver to be available. One of the modes 'vepa'
+      ( <a href="http://www.ieee802.org/1/files/public/docs2009/new-evb-congdon-vepa-modular-0709-v01.pdf">
+      'Virtual  Ethernet Port Aggregator'</a>), 'bridge' or 'private'
       can be chosen for the operation mode of the macvtap device, 'vepa'
-      being the default mode.
+      being the default mode. The individual modes cause the delivery of
+      packets to behave as follows:
     </p>
+
+    <dl>
+      <dt><code>vepa</code></dt>
+      <dd>All VMs' packets are sent to the external bridge. Packets
+      whose destination is a VM on the same host as where the
+      packet originates from are sent back to the host by the VEPA
+      capable bridge (today's bridges are typically not VEPA capable).</dd>
+      <dt><code>bridge</code></dt>
+      <dd>Packets whose destination is on the same host as where they
+      originate from are directly delivered to the target macvtap device.
+      Both origin and destination devices need to be in bridge mode
+      for direct delivery. If either one of them is in <code>vepa</code> mode,
+      a VEPA capable bridge is required.
+      <dt><code>private</code></dt>
+      <dd>All packets are sent to the external bridge and will only be
+      delivered to a target VM on the same host if they are sent through an
+      external router or gateway and that device sends them back to the
+      host. This procedure is followed if either the source or destination
+      device is in <code>private</code> mode.</dd>
+    </dl>
 
 <pre>
   ...
