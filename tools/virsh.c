@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <inttypes.h>
+#include <signal.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -397,6 +398,60 @@ out:
     last_error = NULL;
 }
 
+/*
+ * Detection of disconnections and automatic reconnection support
+ */
+static int disconnected = 0; /* we may have been disconnected */
+
+/*
+ * vshCatchDisconnect:
+ *
+ * We get here when a SIGPIPE is being raised, we can't do much in the
+ * handler, just save the fact it was raised
+ */
+static void vshCatchDisconnect(int sig, siginfo_t * siginfo,
+                               void* context ATTRIBUTE_UNUSED) {
+    if ((sig == SIGPIPE) || (siginfo->si_signo == SIGPIPE))
+        disconnected++;
+}
+
+/*
+ * vshSetupSignals:
+ *
+ * Catch SIGPIPE signals which may arise when disconnection
+ * from libvirtd occurs
+ */
+static int
+vshSetupSignals(void) {
+    struct sigaction sig_action;
+
+    sig_action.sa_sigaction = vshCatchDisconnect;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+
+    sigaction(SIGPIPE, &sig_action, NULL);
+}
+
+/*
+ * vshReconnect:
+ *
+ * Reconnect after an
+ *
+ */
+static int
+vshReconnect(vshControl *ctl) {
+    if (ctl->conn != NULL)
+        virConnectClose(ctl->conn);
+
+    ctl->conn = virConnectOpenAuth(ctl->name,
+                                   virConnectAuthPtrDefault,
+                                   ctl->readonly ? VIR_CONNECT_RO : 0);
+    if (!ctl->conn)
+        vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
+    else
+        vshError(ctl, "%s", _("Reconnected to the hypervisor"));
+    disconnected = 0;
+}
 
 /* ---------------
  * Commands
@@ -8334,6 +8389,9 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
     while (cmd) {
         struct timeval before, after;
 
+        if ((ctl->conn == NULL) || (disconnected != 0))
+            vshReconnect(ctl);
+
         if (ctl->timing)
             GETTIMEOFDAY(&before);
 
@@ -8344,6 +8402,17 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 
         if (ret == FALSE)
             virshReportError(ctl);
+
+        /* try to automatically catch disconnections */
+        if ((ret == FALSE) &&
+            ((disconnected != 0) ||
+             ((last_error != NULL) &&
+              (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
+                (last_error->domain == VIR_FROM_REMOTE)) ||
+               (last_error->code == VIR_ERR_RPC) ||
+               (last_error->code == VIR_ERR_NO_CONNECT) ||
+               (last_error->code == VIR_ERR_INVALID_CONN)))))
+            vshReconnect(ctl);
 
         if (STREQ(cmd->def->name, "quit"))        /* hack ... */
             return ret;
@@ -8675,9 +8744,11 @@ vshError(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
 
-    va_start(ap, format);
-    vshOutputLogFile(ctl, VSH_ERR_ERROR, format, ap);
-    va_end(ap);
+    if (ctl != NULL) {
+        va_start(ap, format);
+        vshOutputLogFile(ctl, VSH_ERR_ERROR, format, ap);
+        va_end(ap);
+    }
 
     fputs(_("error: "), stderr);
 
@@ -8752,6 +8823,9 @@ vshInit(vshControl *ctl)
 
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
+
+    /* set up the signals handlers to catch disconnections */
+    vshSetupSignals();
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,
