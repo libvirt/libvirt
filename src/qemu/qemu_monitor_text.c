@@ -593,7 +593,8 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
     }
 
     if ((offset = strstr(reply, BALLOON_PREFIX)) != NULL) {
-        if ((offset = strchr(reply, ',')) != NULL) {
+        offset += strlen(BALLOON_PREFIX);
+        if ((offset = strchr(offset, ',')) != NULL) {
             ret = qemuMonitorParseExtraBalloonInfo(offset, stats, nr_stats);
         }
     }
