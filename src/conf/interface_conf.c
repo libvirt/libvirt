@@ -570,7 +570,6 @@ error:
 static int
 virInterfaceDefParseBond(virInterfaceDefPtr def,
                          xmlXPathContextPtr ctxt) {
-    xmlNodePtr node;
     int ret = -1;
     unsigned long tmp;
 
@@ -582,8 +581,7 @@ virInterfaceDefParseBond(virInterfaceDefPtr def,
     if (ret != 0)
        goto error;
 
-    node = virXPathNode("./miimon[1]", ctxt);
-    if (node != NULL) {
+    if (virXPathNode("./miimon[1]", ctxt) != NULL) {
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_MII;
 
         ret = virXPathULong("string(./miimon/@freq)", ctxt, &tmp);
@@ -618,7 +616,7 @@ virInterfaceDefParseBond(virInterfaceDefPtr def,
             goto error;
         }
 
-    } else if ((node = virXPathNode("./arpmon[1]", ctxt)) != NULL) {
+    } else if (virXPathNode("./arpmon[1]", ctxt) != NULL) {
 
         def->data.bond.monit = VIR_INTERFACE_BOND_MONIT_ARP;
 
