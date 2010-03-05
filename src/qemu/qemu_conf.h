@@ -141,6 +141,10 @@ struct qemud_driver {
     char *vncListen;
     char *vncPassword;
     char *vncSASLdir;
+    unsigned int spiceTLS : 1;
+    char *spiceTLSx509certdir;
+    char *spiceListen;
+    char *spicePassword;
     char *hugetlbfs_mount;
     char *hugepage_path;
 

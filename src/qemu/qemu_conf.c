@@ -116,6 +116,15 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         return -1;
     }
 
+    if (!(driver->spiceListen = strdup("127.0.0.1"))) {
+        virReportOOMError();
+        return -1;
+    }
+    if (!(driver->spiceTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-spice"))) {
+        virReportOOMError();
+        return -1;
+    }
+
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
     /* For privileged driver, try and find hugepage mount automatically.
      * Non-privileged driver requires admin to create a dir for the
@@ -213,6 +222,43 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     if (p && p->str) {
         VIR_FREE(driver->vncSASLdir);
         if (!(driver->vncSASLdir = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "spice_tls");
+    CHECK_TYPE ("spice_tls", VIR_CONF_LONG);
+    if (p) driver->spiceTLS = p->l;
+
+    p = virConfGetValue (conf, "spice_tls_x509_cert_dir");
+    CHECK_TYPE ("spice_tls_x509_cert_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->spiceTLSx509certdir);
+        if (!(driver->spiceTLSx509certdir = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "spice_listen");
+    CHECK_TYPE ("spice_listen", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->spiceListen);
+        if (!(driver->spiceListen = strdup(p->str))) {
+            virReportOOMError();
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "spice_password");
+    CHECK_TYPE ("spice_password", VIR_CONF_STRING);
+    if (p && p->str) {
+        VIR_FREE(driver->spicePassword);
+        if (!(driver->spicePassword = strdup(p->str))) {
             virReportOOMError();
             virConfFree(conf);
             return -1;
@@ -5082,11 +5128,25 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         virBufferVSprintf(&opt, "port=%u", def->graphics[0]->data.spice.port);
 
-        if (def->graphics[0]->data.spice.tlsPort)
+        if (driver->spiceTLS && def->graphics[0]->data.spice.tlsPort != -1)
             virBufferVSprintf(&opt, ",tls-port=%u", def->graphics[0]->data.spice.tlsPort);
 
         if (def->graphics[0]->data.spice.listenAddr)
             virBufferVSprintf(&opt, ",addr=%s", def->graphics[0]->data.spice.listenAddr);
+        else if (driver->spiceListen)
+            virBufferVSprintf(&opt, ",addr=%s", driver->spiceListen);
+
+        /* In the password case we set it via monitor command, to avoid
+         * making it visible on CLI, so there's no use of password=XXX
+         * in this bit of the code */
+        if (!def->graphics[0]->data.spice.passwd &&
+            !driver->spicePassword)
+            virBufferAddLit(&opt, ",disable-ticketing");
+
+        if (driver->spiceTLS)
+            virBufferVSprintf(&opt, ",x509-dir=%s",
+                              driver->spiceTLSx509certdir);
+
 
         if (virBufferError(&opt))
             goto no_memory;

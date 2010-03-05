@@ -214,6 +214,11 @@ mymain(int argc, char **argv)
         return EXIT_FAILURE;
     if ((driver.hugepage_path = strdup("/dev/hugepages/libvirt/qemu")) == NULL)
         return EXIT_FAILURE;
+    driver.spiceTLS = 1;
+    if (!(driver.spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")))
+        return EXIT_FAILURE;
+    if (!(driver.spicePassword = strdup("123456")))
+        return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, extraFlags, migrateFrom, expectError)       \
     do {                                                                \

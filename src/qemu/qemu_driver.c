@@ -3942,11 +3942,20 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         } else if (vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
                    vm->def->graphics[0]->data.spice.autoport) {
             int port = qemudNextFreePort(driver, 5900);
-            int tlsPort = port == -1 ? -1 : qemudNextFreePort(driver, port + 1);
-            if (port < 0 || tlsPort < 0) {
+            int tlsPort = -1;
+            if (port < 0) {
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                "%s", _("Unable to find unused SPICE ports"));
+                                "%s", _("Unable to find an unused SPICE port"));
                 goto cleanup;
+            }
+
+            if (driver->spiceTLS) {
+                tlsPort = qemudNextFreePort(driver, port + 1);
+                if (tlsPort < 0) {
+                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                    "%s", _("Unable to find an unused SPICE TLS port"));
+                    goto cleanup;
+                }
             }
 
             vm->def->graphics[0]->data.spice.port = port;
