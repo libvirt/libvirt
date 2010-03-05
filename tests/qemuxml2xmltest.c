@@ -149,6 +149,7 @@ mymain(int argc, char **argv)
     DO_TEST("graphics-vnc-tls");
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
+    DO_TEST("graphics-spice");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
     DO_TEST("input-xen");

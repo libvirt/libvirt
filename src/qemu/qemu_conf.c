@@ -93,7 +93,7 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vmware",
               "", /* no arg needed for xen */
               "", /* don't support vbox */
-              "", /* Not implemented QXL yet */);
+              "qxl");
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
                           const char *filename) {
@@ -1202,8 +1202,12 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         if (strstr(help, "readonly="))
             flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
     }
-    if (strstr(help, "-vga") && !strstr(help, "-std-vga"))
+    if (strstr(help, "-vga") && !strstr(help, "-std-vga")) {
         flags |= QEMUD_CMD_FLAG_VGA;
+
+        if (strstr(help, "|qxl"))
+            flags |= QEMUD_CMD_FLAG_VGA_QXL;
+    }
     if (strstr(help, "boot=on"))
         flags |= QEMUD_CMD_FLAG_DRIVE_BOOT;
     if (strstr(help, "serial=s"))
@@ -5081,6 +5085,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_XEN) {
                 /* nothing - vga has no effect on Xen pvfb */
             } else {
+                if ((def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
+                    !(qemuCmdFlags & QEMUD_CMD_FLAG_VGA_QXL)) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                    _("This QEMU does not support QXL graphics adapters"));
+                    goto error;
+                }
+
                 const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
                 if (!vgastr || STREQ(vgastr, "")) {
                     qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,

@@ -323,6 +323,10 @@ mymain(int argc, char **argv)
     DO_TEST("graphics-sdl", 0, false);
     DO_TEST("graphics-sdl-fullscreen", 0, false);
     DO_TEST("nographics-vga", QEMUD_CMD_FLAG_VGA, false);
+    DO_TEST("graphics-spice",
+            QEMUD_CMD_FLAG_VGA | QEMUD_CMD_FLAG_VGA_QXL |
+            QEMUD_CMD_FLAG_DEVICE, false);
+
     DO_TEST("input-usbmouse", 0, false);
     DO_TEST("input-usbtablet", 0, false);
     DO_TEST("input-xen", QEMUD_CMD_FLAG_DOMID, true);
