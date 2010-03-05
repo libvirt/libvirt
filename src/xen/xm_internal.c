@@ -1,7 +1,7 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006-2007, 2009 Red Hat
+ * Copyright (C) 2006-2007, 2009, 2010 Red Hat
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1367,7 +1367,6 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
 
             while (key) {
-                char *data;
                 char *nextkey = strchr(key, ',');
                 char *end = nextkey;
                 if (nextkey) {
@@ -1375,7 +1374,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                     nextkey++;
                 }
 
-                if (!(data = strchr(key, '=')))
+                if (!strchr(key, '='))
                     break;
 
                 if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
