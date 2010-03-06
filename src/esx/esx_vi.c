@@ -3,7 +3,7 @@
  * esx_vi.c: client for the VMware VI API 2.5 to manage ESX hosts
  *
  * Copyright (C) 2010 Red Hat, Inc.
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -480,12 +480,12 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "vmFolder")) {
             if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (dynamicProperty->val, &ctx->vmFolder, "Folder")) {
+                  (dynamicProperty->val, &ctx->vmFolder)) {
                 goto failure;
             }
         } else if (STREQ(dynamicProperty->name, "hostFolder")) {
             if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (dynamicProperty->val, &ctx->hostFolder, "Folder")) {
+                  (dynamicProperty->val, &ctx->hostFolder)) {
                 goto failure;
             }
         } else {
@@ -725,6 +725,21 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                                  "Call to '%s' returned an empty result, "
                                  "expecting a non-empty result", methodName);
                     goto failure;
+                } else if ((*response)->node->next != NULL) {
+                    ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                                 "Call to '%s' returned a list, expecting "
+                                 "exactly one item", methodName);
+                    goto failure;
+                }
+
+                break;
+
+              case esxVI_Occurrence_RequiredList:
+                if ((*response)->node == NULL) {
+                    ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                                 "Call to '%s' returned an empty result, "
+                                 "expecting a non-empty result", methodName);
+                    goto failure;
                 }
 
                 break;
@@ -740,7 +755,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
                 break;
 
-              case esxVI_Occurrence_List:
+              case esxVI_Occurrence_OptionalList:
                 /* Any amount of items is valid */
                 break;
 
@@ -821,10 +836,11 @@ esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
 
     *value = 0; /* undefined */
 
-    if (STRNEQ(anyType->other, enumeration->type)) {
+    if (anyType->type != enumeration->type) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "Expecting type '%s' but found '%s'", enumeration->type,
-                     anyType->other);
+                     "Expecting type '%s' but found '%s'",
+                     esxVI_Type_ToString(enumeration->type),
+                     esxVI_Type_ToString(anyType->type));
         return -1;
     }
 
@@ -837,7 +853,7 @@ esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
 
     ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                  "Unknown value '%s' for %s", anyType->value,
-                 enumeration->type);
+                 esxVI_Type_ToString(enumeration->type));
 
     return -1;
 }
@@ -870,7 +886,8 @@ esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
         return -1;
     }
 
-    ESV_VI__XML_TAG__OPEN(output, element, enumeration->type);
+    ESV_VI__XML_TAG__OPEN(output, element,
+                          esxVI_Type_ToString(enumeration->type));
 
     virBufferAdd(output, name, -1);
 
@@ -906,7 +923,7 @@ esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
     }
 
     ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Unknown value '%s' for %s",
-                 name, enumeration->type);
+                 name, esxVI_Type_ToString(enumeration->type));
 
   cleanup:
     VIR_FREE(name);
@@ -1009,7 +1026,7 @@ esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
         return -1;
     }
 
-    for (childNode = anyType->_node->children; childNode != NULL;
+    for (childNode = anyType->node->children; childNode != NULL;
          childNode = childNode->next) {
         if (childNode->type != XML_ELEMENT_NODE) {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1151,7 +1168,7 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
     }
 
     if (esxVI_TraversalSpec_Alloc(&traversalSpec) < 0 ||
-        esxVI_String_DeepCopyValue(&traversalSpec->_base->name, name) < 0 ||
+        esxVI_String_DeepCopyValue(&traversalSpec->name, name) < 0 ||
         esxVI_String_DeepCopyValue(&traversalSpec->type, type) < 0 ||
         esxVI_String_DeepCopyValue(&traversalSpec->path, path) < 0) {
         goto failure;
@@ -1177,7 +1194,8 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
     }
 
     if (esxVI_SelectionSpec_AppendToList(fullTraversalSpecList,
-                                         traversalSpec->_base) < 0) {
+                                         esxVI_SelectionSpec_DynamicCast
+                                           (traversalSpec)) < 0) {
         goto failure;
     }
 
@@ -1721,8 +1739,7 @@ esxVI_LookupResourcePoolByHostSystem
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "parent")) {
             if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (dynamicProperty->val, &managedObjectReference,
-                   "ComputeResource") < 0) {
+                  (dynamicProperty->val, &managedObjectReference) < 0) {
                 goto failure;
             }
 
@@ -1756,7 +1773,7 @@ esxVI_LookupResourcePoolByHostSystem
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "resourcePool")) {
             if (esxVI_ManagedObjectReference_CastFromAnyType
-                  (dynamicProperty->val, resourcePool, "ResourcePool") < 0) {
+                  (dynamicProperty->val, resourcePool) < 0) {
                 goto failure;
             }
 
@@ -2231,7 +2248,7 @@ esxVI_LookupPendingTaskInfoListByVirtualMachine
          dynamicProperty = dynamicProperty->_next) {
         if (STREQ(dynamicProperty->name, "recentTask")) {
             if (esxVI_ManagedObjectReference_CastListFromAnyType
-                  (dynamicProperty->val, &recentTaskList, "Task") < 0) {
+                  (dynamicProperty->val, &recentTaskList) < 0) {
                 goto failure;
             }
 

@@ -304,7 +304,7 @@ ESX_VI__METHOD(RetrieveProperties,
                (esxVI_Context *ctx,
                 esxVI_PropertyFilterSpec *specSet, /* list */
                 esxVI_ObjectContent **objectContentList),
-               List,
+               OptionalList,
 {
     ESX_VI__METHOD__CHECK_SERVICE()
     ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(objectContentList)
@@ -344,8 +344,7 @@ ESX_VI__METHOD(PowerOnVM_Task,
                                               virtualMachine)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -369,8 +368,7 @@ ESX_VI__METHOD(PowerOffVM_Task,
                                               virtualMachine)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -394,8 +392,7 @@ ESX_VI__METHOD(SuspendVM_Task,
                                               virtualMachine)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -428,8 +425,7 @@ ESX_VI__METHOD(MigrateVM_Task,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachinePowerState, state)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -456,8 +452,7 @@ ESX_VI__METHOD(ReconfigVM_Task,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachineConfigSpec, spec)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -490,8 +485,7 @@ ESX_VI__METHOD(RegisterVM_Task,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task,
-                                                 "Task") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
         goto failure;
     }
 })
@@ -583,8 +577,8 @@ ESX_VI__METHOD(CreateFilter,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, partialUpdates)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, propertyFilter,
-                                                 "PropertyFilter") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node,
+                                                 propertyFilter) < 0) {
         goto failure;
     }
 })
@@ -684,7 +678,7 @@ ESX_VI__METHOD(ValidateMigration,
                 esxVI_ManagedObjectReference *pool,
                 esxVI_ManagedObjectReference *host,
                 esxVI_Event **eventList),
-               List,
+               OptionalList,
 {
     ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(eventList)
 },
@@ -736,10 +730,8 @@ ESX_VI__METHOD(FindByIp,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize
-          (response->node, managedObjectReference,
-           vmSearch == esxVI_Boolean_True ? "VirtualMachine"
-                                          : "HostSystem") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node,
+                                                 managedObjectReference) < 0) {
         goto failure;
     }
 })
@@ -771,10 +763,8 @@ ESX_VI__METHOD(FindByUuid,
     ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
 },
 {
-    if (esxVI_ManagedObjectReference_Deserialize
-          (response->node, managedObjectReference,
-           vmSearch == esxVI_Boolean_True ? "VirtualMachine"
-                                          : "HostSystem") < 0) {
+    if (esxVI_ManagedObjectReference_Deserialize(response->node,
+                                                 managedObjectReference) < 0) {
         goto failure;
     }
 })
@@ -789,7 +779,7 @@ ESX_VI__METHOD(QueryAvailablePerfMetric,
                 esxVI_DateTime *endTime,
                 esxVI_Int *intervalId,
                 esxVI_PerfMetricId **perfMetricIdList),
-               List,
+               OptionalList,
 {
     ESX_VI__METHOD__CHECK_SERVICE()
     ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfMetricIdList)
@@ -820,7 +810,7 @@ ESX_VI__METHOD(QueryPerfCounter,
                (esxVI_Context *ctx,
                 esxVI_Int *counterId, /* list */
                 esxVI_PerfCounterInfo **perfCounterInfoList),
-               List,
+               OptionalList,
 {
     ESX_VI__METHOD__CHECK_SERVICE()
     ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfCounterInfoList)
@@ -848,7 +838,7 @@ ESX_VI__METHOD(QueryPerf,
                (esxVI_Context *ctx,
                 esxVI_PerfQuerySpec *querySpec, /* list */
                 esxVI_PerfEntityMetric **perfEntityMetricList),
-               List,
+               OptionalList,
 {
     ESX_VI__METHOD__CHECK_SERVICE()
     ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfEntityMetricList)

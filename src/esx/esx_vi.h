@@ -2,7 +2,7 @@
 /*
  * esx_vi.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,8 +61,9 @@ enum _esxVI_ProductVersion {
 enum _esxVI_Occurrence {
     esxVI_Occurrence_Undefined = 0,
     esxVI_Occurrence_RequiredItem,
+    esxVI_Occurrence_RequiredList,
     esxVI_Occurrence_OptionalItem,
-    esxVI_Occurrence_List,
+    esxVI_Occurrence_OptionalList,
     esxVI_Occurrence_None
 };
 
@@ -132,7 +133,7 @@ struct _esxVI_EnumerationValue {
 };
 
 struct _esxVI_Enumeration {
-    const char *type;
+    esxVI_Type type;
     esxVI_EnumerationValue values[10];
 };
 

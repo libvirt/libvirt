@@ -26,6 +26,8 @@ INCLUDES =							\
 
 EXTRA_DIST = $(conf_DATA)
 
+BUILT_SOURCES =
+
 if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
 endif
@@ -249,6 +251,20 @@ ESX_DRIVER_SOURCES =						\
 		esx/esx_vi_methods.c esx/esx_vi_methods.h	\
 		esx/esx_vi_types.c esx/esx_vi_types.h		\
 		esx/esx_vmx.c esx/esx_vmx.h
+
+ESX_DRIVER_GENERATED =							\
+		esx/esx_vi_types.generated.c				\
+		esx/esx_vi_types.generated.h				\
+		esx/esx_vi_types.generated.typedef			\
+		esx/esx_vi_types.generated.typeenum			\
+		esx/esx_vi_types.generated.typetostring			\
+		esx/esx_vi_types.generated.typefromstring
+
+ESX_DRIVER_EXTRA_DIST =						\
+		esx/README						\
+		esx/esx_vi_generator.input				\
+		esx/esx_vi_generator.py					\
+		$(ESX_DRIVER_GENERATED)
 
 NETWORK_DRIVER_SOURCES =					\
 		network/bridge_driver.h network/bridge_driver.c
@@ -594,7 +610,10 @@ libvirt_driver_one_la_SOURCES = $(ONE_DRIVER_SOURCES)
 endif
 
 
+BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
 
+$(ESX_DRIVER_GENERATED): $(srcdir)/esx/esx_vi_generator.input $(srcdir)/esx/esx_vi_generator.py
+	-srcdir=$(srcdir) $(srcdir)/esx/esx_vi_generator.py
 
 if WITH_ESX
 if WITH_DRIVER_MODULES
@@ -610,6 +629,7 @@ if WITH_DRIVER_MODULES
 libvirt_driver_esx_la_LDFLAGS += -module -avoid-version
 endif
 libvirt_driver_esx_la_SOURCES = $(ESX_DRIVER_SOURCES)
+libvirt_driver_esx_la_DEPENDENCIES = $(ESX_DRIVER_GENERATED)
 endif
 
 if WITH_NETWORK
@@ -784,6 +804,7 @@ EXTRA_DIST +=							\
 		$(VBOX_DRIVER_SOURCES)				\
 		$(XENAPI_DRIVER_SOURCES)			\
 		$(ESX_DRIVER_SOURCES)				\
+		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\
 		$(STORAGE_DRIVER_SOURCES)			\
@@ -867,7 +888,7 @@ EXTRA_DIST += \
   libvirt_macvtap.syms		\
   libvirt_daemon.syms
 
-BUILT_SOURCES = libvirt.syms
+BUILT_SOURCES += libvirt.syms
 
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	rm -f $@-tmp $@

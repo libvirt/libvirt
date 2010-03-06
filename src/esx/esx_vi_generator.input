@@ -1,0 +1,426 @@
+#
+# Definitions of vSphere API 2.5 enumeration and objects types used as input
+# for the esx_vi_generator.py script.
+#
+# This format is line-based, so end-of-line is important.
+#
+#
+# Enumeration definition:
+#
+# enum <name>
+#     <value>
+#     ...
+# end
+#
+#
+# Object definition:
+#
+# object <name> [extends <name>]
+#     <type> <name> <occurrence>
+#     ...
+# end
+#
+# Possible values for the <occurrence> field are:
+#
+#  - r  for a required item
+#  - rl for a required list
+#  - o  for an optional item
+#  - ol for an optional list
+#  - i  for an ignored item or list
+#
+# Object member sequence has to match the WSDL sequence
+#
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Enumerations
+#
+
+enum ManagedEntityStatus
+    gray
+    green
+    yellow
+    red
+end
+
+
+enum ObjectUpdateKind
+    modify
+    enter
+    leave
+end
+
+
+enum PerfStatsType
+    absolute
+    delta
+    rate
+end
+
+
+enum PerfSummaryType
+    average
+    maximum
+    minimum
+    latest
+    summation
+    none
+end
+
+
+enum PropertyChangeOp
+    add
+    remove
+    assign
+    indirectRemove
+end
+
+
+enum SharesLevel
+    low
+    normal
+    high
+    custom
+end
+
+
+enum TaskInfoState
+    queued
+    running
+    success
+    error
+end
+
+
+enum VirtualMachineMovePriority
+    lowPriority
+    highPriority
+    defaultPriority
+end
+
+
+enum VirtualMachinePowerState
+    poweredOff
+    poweredOn
+    suspended
+end
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Objects
+#
+
+object AboutInfo
+    String                                   name                           r
+    String                                   fullName                       r
+    String                                   vendor                         r
+    String                                   version                        r
+    String                                   build                          r
+    String                                   localeVersion                  o
+    String                                   localeBuild                    o
+    String                                   osType                         r
+    String                                   productLineId                  r
+    String                                   apiType                        r
+    String                                   apiVersion                     r
+end
+
+
+object ChoiceOption extends OptionType
+    ElementDescription                       choiceInfo                     rl
+    Int                                      defaultIndex                   o
+end
+
+
+object Description
+    String                                   label                          r
+    String                                   summary                        r
+end
+
+
+object DynamicProperty
+    String                                   name                           r
+    AnyType                                  val                            r
+end
+
+
+object ElementDescription extends Description
+    String                                   key                            r
+end
+
+
+object Event
+    Int                                      key                            r
+    Int                                      chainId                        r
+    DateTime                                 createdTime                    r
+    String                                   userName                       r
+    DatacenterEventArgument                  datacenter                     i
+    ComputeResourceEventArgument             computeResource                i
+    HostEventArgument                        host                           i
+    VmEventArgument                          vm                             i
+    String                                   fullFormattedMessage           o
+end
+
+
+object HostCpuIdInfo
+    Int                                      level                          r
+    String                                   vendor                         o
+    String                                   eax                            o
+    String                                   ebx                            o
+    String                                   ecx                            o
+    String                                   edx                            o
+end
+
+
+object ObjectContent
+    ManagedObjectReference                   obj                            r
+    DynamicProperty                          propSet                        ol
+    MissingProperty                          missingSet                     i
+end
+
+
+object ObjectSpec
+    ManagedObjectReference                   obj                            r
+    Boolean                                  skip                           o
+    SelectionSpec                            selectSet                      ol
+end
+
+
+object ObjectUpdate
+    ObjectUpdateKind                         kind                           r
+    ManagedObjectReference                   obj                            r
+    PropertyChange                           changeSet                      ol
+    MissingProperty                          missingSet                     i
+end
+
+
+object OptionType
+    Boolean                                  valueIsReadonly                o
+end
+
+
+object PerfCounterInfo
+    Int                                      key                            r
+    ElementDescription                       nameInfo                       r
+    ElementDescription                       groupInfo                      r
+    ElementDescription                       unitInfo                       r
+    PerfSummaryType                          rollupType                     r
+    PerfStatsType                            statsType                      r
+    Int                                      level                          o
+    Int                                      associatedCounterId            ol
+end
+
+
+object PerfEntityMetric extends PerfEntityMetricBase
+    PerfSampleInfo                           sampleInfo                     ol
+    PerfMetricSeries                         value                          ol
+end
+
+
+object PerfEntityMetricBase
+    ManagedObjectReference                   entity                         r
+end
+
+
+object PerfMetricId
+    Int                                      counterId                      r
+    String                                   instance                       r
+end
+
+
+object PerfMetricIntSeries extends PerfMetricSeries
+    Long                                     value                          ol
+end
+
+
+object PerfMetricSeries
+    PerfMetricId                             id                             r
+end
+
+
+object PerfQuerySpec
+    ManagedObjectReference                   entity                         r
+    DateTime                                 startTime                      o
+    DateTime                                 endTime                        o
+    Int                                      maxSample                      o
+    PerfMetricId                             metricId                       ol
+    Int                                      intervalId                     o
+    String                                   format                         o
+end
+
+
+object PerfSampleInfo
+    DateTime                                 timestamp                      r
+    Int                                      interval                       r
+end
+
+
+object PropertyChange
+    String                                   name                           r
+    PropertyChangeOp                         op                             r
+    AnyType                                  val                            o
+end
+
+
+object PropertyFilterSpec
+    PropertySpec                             propSet                        rl
+    ObjectSpec                               objectSet                      rl
+end
+
+
+object PropertyFilterUpdate
+    ManagedObjectReference                   filter                         r
+    ObjectUpdate                             objectSet                      ol
+    MissingObject                            missingSet                     i
+end
+
+
+object PropertySpec
+    String                                   type                           r
+    Boolean                                  all                            o
+    String                                   pathSet                        ol
+end
+
+
+object ResourceAllocationInfo
+    Long                                     reservation                    o
+    Boolean                                  expandableReservation          o
+    Long                                     limit                          o
+    SharesInfo                               shares                         o
+    Long                                     overheadLimit                  o
+end
+
+
+object ResourcePoolResourceUsage
+    Long                                     reservationUsed                r
+    Long                                     reservationUsedForVm           r
+    Long                                     unreservedForPool              r
+    Long                                     unreservedForVm                r
+    Long                                     overallUsage                   r
+    Long                                     maxUsage                       r
+end
+
+
+object SelectionSpec
+    String                                   name                           o
+end
+
+
+object ServiceContent
+    ManagedObjectReference                   rootFolder                     r
+    ManagedObjectReference                   propertyCollector              r
+    ManagedObjectReference                   viewManager                    o
+    AboutInfo                                about                          r
+    ManagedObjectReference                   setting                        o
+    ManagedObjectReference                   userDirectory                  o
+    ManagedObjectReference                   sessionManager                 o
+    ManagedObjectReference                   authorizationManager           o
+    ManagedObjectReference                   perfManager                    o
+    ManagedObjectReference                   scheduledTaskManager           o
+    ManagedObjectReference                   alarmManager                   o
+    ManagedObjectReference                   eventManager                   o
+    ManagedObjectReference                   taskManager                    o
+    ManagedObjectReference                   extensionManager               o
+    ManagedObjectReference                   customizationSpecManager       o
+    ManagedObjectReference                   customFieldsManager            o
+    ManagedObjectReference                   accountManager                 o
+    ManagedObjectReference                   diagnosticManager              o
+    ManagedObjectReference                   licenseManager                 o
+    ManagedObjectReference                   searchIndex                    o
+    ManagedObjectReference                   fileManager                    o
+    ManagedObjectReference                   virtualDiskManager             o
+    ManagedObjectReference                   virtualizationManager          o
+end
+
+
+object SharesInfo
+    Int                                      shares                         r
+    SharesLevel                              level                          r
+end
+
+
+object TaskInfo
+    String                                   key                            r
+    ManagedObjectReference                   task                           r
+    String                                   name                           o
+    String                                   descriptionId                  r
+    ManagedObjectReference                   entity                         o
+    String                                   entityName                     o
+    ManagedObjectReference                   locked                         ol
+    TaskInfoState                            state                          r
+    Boolean                                  cancelled                      r
+    Boolean                                  cancelable                     r
+    LocalizedMethodFault                     error                          i
+    AnyType                                  result                         o
+    Int                                      progress                       o
+    TaskReason                               reason                         i
+    DateTime                                 queueTime                      r
+    DateTime                                 startTime                      o
+    DateTime                                 completeTime                   o
+    Int                                      eventChainId                   r
+end
+
+
+object TraversalSpec extends SelectionSpec
+    String                                   type                           r
+    String                                   path                           r
+    Boolean                                  skip                           o
+    SelectionSpec                            selectSet                      ol
+end
+
+
+object UpdateSet
+    String                                   version                        r
+    PropertyFilterUpdate                     filterSet                      ol
+end
+
+
+object UserSession
+    String                                   key                            r
+    String                                   userName                       r
+    String                                   fullName                       r
+    DateTime                                 loginTime                      r
+    DateTime                                 lastActiveTime                 r
+    String                                   locale                         r
+    String                                   messageLocale                  r
+end
+
+
+object VirtualMachineConfigSpec
+    String                                   changeVersion                  o
+    String                                   name                           o
+    String                                   version                        o
+    String                                   uuid                           o
+    Long                                     npivNodeWorldWideName          ol
+    Long                                     npivPortWorldWideName          ol
+    String                                   npivWorldWideNameType          o
+    String                                   npivWorldWideNameOp            o
+    String                                   locationId                     o
+    String                                   guestId                        o
+    String                                   alternateGuestName             o
+    String                                   annotation                     o
+    VirtualMachineFileInfo                   files                          i
+    ToolsConfigInfo                          tools                          i
+    VirtualMachineFlagInfo                   flags                          i
+    VirtualMachineConsolePreferences         consolePreferences             i
+    VirtualMachineDefaultPowerOpInfo         powerOpInfo                    i
+    Int                                      numCPUs                        o
+    Long                                     memoryMB                       o
+    VirtualDeviceConfigSpec                  deviceChange                   i
+    ResourceAllocationInfo                   cpuAllocation                  o
+    ResourceAllocationInfo                   memoryAllocation               o
+    VirtualMachineAffinityInfo               cpuAffinity                    i
+    VirtualMachineAffinityInfo               memoryAffinity                 i
+    VirtualMachineNetworkShaperInfo          networkShaper                  i
+    VirtualMachineCpuIdInfoSpec              cpuFeatureMask                 i
+    OptionValue                              extraConfig                    i
+    String                                   swapPlacement                  o
+    VirtualMachineBootOptions                bootOptions                    i
+end
+
+
+object VirtualMachineQuestionInfo
+    String                                   id                             r
+    String                                   text                           r
+    ChoiceOption                             choice                         r
+    VirtualMachineMessage                    message                        i
+end
