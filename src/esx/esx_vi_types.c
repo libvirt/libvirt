@@ -682,10 +682,10 @@ static const esxVI_Enumeration _esxVI_Boolean_Enumeration = {
 };
 
 /* esxVI_Boolean_Serialize */
-ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(Boolean);
+ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(Boolean)
 
 /* esxVI_Boolean_Deserialize */
-ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(Boolean);
+ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(Boolean)
 
 
 
@@ -694,7 +694,7 @@ ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(Boolean);
  */
 
 /* esxVI_AnyType_Alloc */
-ESX_VI__TEMPLATE__ALLOC(AnyType);
+ESX_VI__TEMPLATE__ALLOC(AnyType)
 
 /* esxVI_AnyType_Free */
 ESX_VI__TEMPLATE__FREE(AnyType,
@@ -702,7 +702,7 @@ ESX_VI__TEMPLATE__FREE(AnyType,
     xmlFreeNode(item->node);
     VIR_FREE(item->other);
     VIR_FREE(item->value);
-});
+})
 
 int
 esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
@@ -908,7 +908,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
  */
 
 /* esxVI_String_Alloc */
-ESX_VI__TEMPLATE__ALLOC(String);
+ESX_VI__TEMPLATE__ALLOC(String)
 
 /* esxVI_String_Free */
 ESX_VI__TEMPLATE__FREE(String,
@@ -916,7 +916,7 @@ ESX_VI__TEMPLATE__FREE(String,
     esxVI_String_Free(&item->_next);
 
     VIR_FREE(item->value);
-});
+})
 
 /* esxVI_String_Validate */
 ESX_VI__TEMPLATE__VALIDATE(String,
@@ -925,7 +925,7 @@ ESX_VI__TEMPLATE__VALIDATE(String,
 })
 
 /* esxVI_String_AppendToList */
-ESX_VI__TEMPLATE__LIST__APPEND(String);
+ESX_VI__TEMPLATE__LIST__APPEND(String)
 
 int
 esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
@@ -989,7 +989,7 @@ ESX_VI__TEMPLATE__DEEP_COPY(String,
 })
 
 /* esxVI_String_DeepCopyList */
-ESX_VI__TEMPLATE__LIST__DEEP_COPY(String);
+ESX_VI__TEMPLATE__LIST__DEEP_COPY(String)
 
 int
 esxVI_String_DeepCopyValue(char **dest, const char *src)
@@ -1022,7 +1022,7 @@ esxVI_String_Serialize(esxVI_String *string, const char *element,
 }
 
 /* esxVI_String_SerializeList */
-ESX_VI__TEMPLATE__LIST__SERIALIZE(String);
+ESX_VI__TEMPLATE__LIST__SERIALIZE(String)
 
 int
 esxVI_String_SerializeValue(const char *value, const char *element,
@@ -1053,7 +1053,7 @@ ESX_VI__TEMPLATE__DESERIALIZE(String,
 })
 
 /* esxVI_String_DeserializeList */
-ESX_VI__TEMPLATE__LIST__DESERIALIZE(String);
+ESX_VI__TEMPLATE__LIST__DESERIALIZE(String)
 
 int
 esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
@@ -1084,13 +1084,13 @@ esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
  */
 
 /* esxVI_Int_Alloc */
-ESX_VI__TEMPLATE__ALLOC(Int);
+ESX_VI__TEMPLATE__ALLOC(Int)
 
 /* esxVI_Int_Free */
 ESX_VI__TEMPLATE__FREE(Int,
 {
     esxVI_Int_Free(&item->_next);
-});
+})
 
 /* esxVI_Int_Validate */
 ESX_VI__TEMPLATE__VALIDATE(Int,
@@ -1098,7 +1098,7 @@ ESX_VI__TEMPLATE__VALIDATE(Int,
 })
 
 /* esxVI_Int_AppendToList */
-ESX_VI__TEMPLATE__LIST__APPEND(Int);
+ESX_VI__TEMPLATE__LIST__APPEND(Int)
 
 /* esxVI_Int_DeepCopy */
 ESX_VI__TEMPLATE__DEEP_COPY(Int,
@@ -1110,13 +1110,13 @@ ESX_VI__TEMPLATE__DEEP_COPY(Int,
 ESX_VI__TEMPLATE__SERIALIZE(Int,
 {
     virBufferVSprintf(output, "%d", (int)item->value);
-});
+})
 
 /* esxVI_Int_SerializeList */
-ESX_VI__TEMPLATE__LIST__SERIALIZE(Int);
+ESX_VI__TEMPLATE__LIST__SERIALIZE(Int)
 
 /* esxVI_Int_Deserialize */
-ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Int, "xsd:int", INT32_MIN, INT32_MAX);
+ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Int, "xsd:int", INT32_MIN, INT32_MAX)
 
 
 
@@ -1125,13 +1125,13 @@ ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Int, "xsd:int", INT32_MIN, INT32_MAX);
  */
 
 /* esxVI_Long_Alloc */
-ESX_VI__TEMPLATE__ALLOC(Long);
+ESX_VI__TEMPLATE__ALLOC(Long)
 
 /* esxVI_Long_Free */
 ESX_VI__TEMPLATE__FREE(Long,
 {
     esxVI_Long_Free(&item->_next);
-});
+})
 
 /* esxVI_Long_Validate */
 ESX_VI__TEMPLATE__VALIDATE(Long,
@@ -1139,19 +1139,19 @@ ESX_VI__TEMPLATE__VALIDATE(Long,
 })
 
 /* esxVI_Long_AppendToList */
-ESX_VI__TEMPLATE__LIST__APPEND(Long);
+ESX_VI__TEMPLATE__LIST__APPEND(Long)
 
 /* esxVI_Long_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Long,
 {
     virBufferVSprintf(output, "%lld", (long long int)item->value);
-});
+})
 
 /* esxVI_Long_SerializeList */
-ESX_VI__TEMPLATE__LIST__SERIALIZE(Long);
+ESX_VI__TEMPLATE__LIST__SERIALIZE(Long)
 
 /* esxVI_Long_Deserialize */
-ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Long, "xsd:long", INT64_MIN, INT64_MAX);
+ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Long, "xsd:long", INT64_MIN, INT64_MAX)
 
 
 
@@ -1160,25 +1160,25 @@ ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(Long, "xsd:long", INT64_MIN, INT64_MAX);
  */
 
 /* esxVI_DateTime_Alloc */
-ESX_VI__TEMPLATE__ALLOC(DateTime);
+ESX_VI__TEMPLATE__ALLOC(DateTime)
 
 /* esxVI_DateTime_Free */
 ESX_VI__TEMPLATE__FREE(DateTime,
 {
     VIR_FREE(item->value);
-});
+})
 
 /* esxVI_DateTime_Validate */
 ESX_VI__TEMPLATE__VALIDATE(DateTime,
 {
     ESX_VI__TEMPLATE__PROPERTY__REQUIRE(value);
-});
+})
 
 /* esxVI_DateTime_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(DateTime,
 {
     virBufferAdd(output, item->value, -1);
-});
+})
 
 int
 esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
@@ -1224,14 +1224,14 @@ ESX_VI__TEMPLATE__FREE(Fault,
 {
     VIR_FREE(item->faultcode);
     VIR_FREE(item->faultstring);
-});
+})
 
 /* esxVI_Fault_Validate */
 ESX_VI__TEMPLATE__VALIDATE(Fault,
 {
     ESX_VI__TEMPLATE__PROPERTY__REQUIRE(faultcode);
     ESX_VI__TEMPLATE__PROPERTY__REQUIRE(faultstring);
-});
+})
 
 /* esxVI_Fault_Deserialize */
 ESX_VI__TEMPLATE__DESERIALIZE(Fault,
@@ -1239,7 +1239,7 @@ ESX_VI__TEMPLATE__DESERIALIZE(Fault,
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, faultcode);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, faultstring);
     ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(detail); /* FIXME */
-});
+})
 
 
 
@@ -1248,7 +1248,7 @@ ESX_VI__TEMPLATE__DESERIALIZE(Fault,
  */
 
 /* esxVI_ManagedObjectReference_Alloc */
-ESX_VI__TEMPLATE__ALLOC(ManagedObjectReference);
+ESX_VI__TEMPLATE__ALLOC(ManagedObjectReference)
 
 /* esxVI_ManagedObjectReference_Free */
 ESX_VI__TEMPLATE__FREE(ManagedObjectReference,
@@ -1257,7 +1257,7 @@ ESX_VI__TEMPLATE__FREE(ManagedObjectReference,
 
     VIR_FREE(item->type);
     VIR_FREE(item->value);
-});
+})
 
 /* esxVI_ManagedObjectReference_DeepCopy */
 ESX_VI__TEMPLATE__DEEP_COPY(ManagedObjectReference,
@@ -1267,7 +1267,7 @@ ESX_VI__TEMPLATE__DEEP_COPY(ManagedObjectReference,
 })
 
 /* esxVI_ManagedObjectReference_AppendToList */
-ESX_VI__TEMPLATE__LIST__APPEND(ManagedObjectReference);
+ESX_VI__TEMPLATE__LIST__APPEND(ManagedObjectReference)
 
 /* esxVI_ManagedObjectReference_CastFromAnyType */
 ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ManagedObjectReference)
@@ -1304,7 +1304,7 @@ esxVI_ManagedObjectReference_Serialize
 }
 
 /* esxVI_ManagedObjectReference_SerializeList */
-ESX_VI__TEMPLATE__LIST__SERIALIZE(ManagedObjectReference);
+ESX_VI__TEMPLATE__LIST__SERIALIZE(ManagedObjectReference)
 
 int
 esxVI_ManagedObjectReference_Deserialize
