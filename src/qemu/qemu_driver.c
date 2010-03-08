@@ -8654,19 +8654,28 @@ cleanup:
 }
 
 
+#define TUNNEL_SEND_BUF_SIZE 65536
+
 static int doTunnelSendAll(virStreamPtr st,
                            int sock)
 {
-    char buffer[65536];
-    int nbytes = sizeof(buffer);
+    char *buffer;
+    int nbytes = TUNNEL_SEND_BUF_SIZE;
+
+    if (VIR_ALLOC_N(buffer, TUNNEL_SEND_BUF_SIZE) < 0) {
+        virReportOOMError();
+        virStreamAbort(st);
+        return -1;
+    }
 
     /* XXX should honour the 'resource' parameter here */
     for (;;) {
         nbytes = saferead(sock, buffer, nbytes);
         if (nbytes < 0) {
-            virStreamAbort(st);
             virReportSystemError(errno, "%s",
                                  _("tunnelled migration failed to read from qemu"));
+            virStreamAbort(st);
+            VIR_FREE(buffer);
             return -1;
         }
         else if (nbytes == 0)
@@ -8676,9 +8685,12 @@ static int doTunnelSendAll(virStreamPtr st,
         if (virStreamSend(st, buffer, nbytes) < 0) {
             qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                             _("Failed to write migration data to remote libvirtd"));
+            VIR_FREE(buffer);
             return -1;
         }
     }
+
+    VIR_FREE(buffer);
 
     if (virStreamFinish(st) < 0)
         /* virStreamFinish set the error for us */
