@@ -7708,6 +7708,9 @@ qemudDomainMemoryStats (virDomainPtr dom,
         goto cleanup;
     }
 
+    if (qemuDomainObjBeginJob(vm) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitor(vm);
@@ -7717,6 +7720,9 @@ qemudDomainMemoryStats (virDomainPtr dom,
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not running"));
     }
+
+    if (qemuDomainObjEndJob(vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)
