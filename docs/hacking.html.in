@@ -43,6 +43,23 @@
           The latter test checks for memory leaks.
         </p>
 
+	<p>
+	  If you encounter any failing tests, the VIR_TEST_DEBUG
+	  environment variable may provide extra information to debug
+	  the failures. Larger values of VIR_TEST_DEBUG may provide
+	  larger amounts of information:
+	</p>
+
+	<pre>
+  VIR_TEST_DEBUG=1 make check    (or)
+  VIR_TEST_DEBUG=2 make check</pre>
+	<p>
+	  Also, individual tests can be run from inside the 'tests/'
+	  directory, like:
+	</p>
+	<pre>
+  ./qemuxml2xmltest</pre>
+
       <li>Update tests and/or documentation, particularly if you are adding
         a new feature or changing the output of a program.</li>
     </ol>
@@ -241,7 +258,7 @@
 
 
 
-    <h2><a name="string">String comparisons</a></h2>
+    <h2><a name="string_comparision">String comparisons</a></h2>
 
     <p>
       Do not use the strcmp, strncmp, etc functions directly. Instead use
@@ -287,6 +304,46 @@
       </li>
     </ul>
 
+
+    <h2><a name="string_copying">String copying</a></h2>
+
+    <p>
+      Do not use the strncpy function.  According to the man page, it
+      does <b>not</b> guarantee a NULL-terminated buffer, which makes
+      it extremely dangerous to use.  Instead, use one of the
+      functionally equivalent functions:
+    </p>
+    <pre>virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)</pre>
+    <p>
+      The first three arguments have the same meaning as for strncpy;
+      namely the destination, source, and number of bytes to copy,
+      respectively.  The last argument is the number of bytes
+      available in the destination string; if a copy of the source
+      string (including a \0) will not fit into the destination, no
+      bytes are copied and the routine returns NULL.  Otherwise, n
+      bytes from the source are copied into the destination and a
+      trailing \0 is appended.
+    </p>
+
+    <pre>virStrcpy(char *dest, const char *src, size_t destbytes)</pre>
+
+    <p>
+      Use this variant if you know you want to copy the entire src
+      string into dest.  Note that this is a macro, so arguments could
+      be evaluated more than once.  This is equivalent to
+      virStrncpy(dest, src, strlen(src), destbytes)
+      </p>
+
+    <pre>virStrcpyStatic(char *dest, const char *src)</pre>
+
+    <p>
+      Use this variant if you know you want to copy the entire src
+      string into dest *and* you know that your destination string is
+      a static string (i.e. that sizeof(dest) returns something
+      meaningful).  Note that this is a macro, so arguments could be
+      evaluated more than once.  This is equivalent to
+      virStrncpy(dest, src, strlen(src), sizeof(dest)).
+    </p>
 
     <h2><a name="strbuf">Variable length string buffer</a></h2>
 
@@ -388,6 +445,72 @@
       their jobs and cross-check format strings with the number and types
       of arguments.
     </p>
+
+    <h2><a name="goto">Use of goto</a></h2>
+
+    <p>
+      The use of goto is not forbidden, and goto is widely used
+      throughout libvirt.  While the uncontrolled use of goto will
+      quickly lead to unmaintainable code, there is a place for it in
+      well structured code where its use increases readability and
+      maintainability.  In general, if goto is used for error
+      recovery, it's likely to be ok, otherwise, be cautious or avoid
+      it all together.
+    </p>
+
+    <p>
+      The typical use of goto is to jump to cleanup code in the case
+      of a long list of actions, any of which may fail and cause the
+      entire operation to fail.  In this case, a function will have a
+      single label at the end of the function.  It's almost always ok
+      to use this style.  In particular, if the cleanup code only
+      involves free'ing memory, then having multiple labels is
+      overkill.  VIR_FREE() and every function named XXXFree() in
+      libvirt is required to handle NULL as its arg.  Thus you can
+      safely call free on all the variables even if they were not yet
+      allocated (yes they have to have been initialized to NULL).
+      This is much simpler and clearer than having multiple labels.
+    </p>
+
+    <p>
+      There are a couple of signs that a particular use of goto is not
+      ok:
+    </p>
+
+    <ul>
+      <li>You're using multiple labels.  If you find yourself using
+      multiple labels, you're strongly encouraged to rework your code
+      to eliminate all but one of them.</li>
+      <li>The goto jumps back up to a point above the current line of
+      code being executed.  Please use some combination of looping
+      constructs to re-execute code instead; it's almost certainly
+      going to be more understandable by others.  One well-known
+      exception to this rule is restarting an i/o operation following
+      EINTR.</li>
+      <li>The goto jumps down to an arbitrary place in the middle of a
+      function followed by further potentially failing calls.  You
+      should almost certainly be using a conditional and a block
+      instead of a goto.  Perhaps some of your function's logic would
+      be better pulled out into a helper function.</li>
+    </ul>
+
+    <p>
+      Although libvirt does not encourage the Linux kernel wind/unwind
+      style of multiple labels, there's a good general discussion of
+      the issue archived at
+      <a href=http://kerneltrap.org/node/553/2131>KernelTrap</a>
+    </p>
+
+    <p>
+      When using goto, please use one of these standard labels if it
+      makes sense:
+    </p>
+
+    <pre>
+      error: A path only taken upon return with an error code
+    cleanup: A path taken upon return with success code + optional error
+  no_memory: A path only taken upon return with an OOM error code
+      retry: If needing to jump upwards (eg retry on EINTR)</pre>
 
 
 
