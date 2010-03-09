@@ -135,7 +135,7 @@ realloc:
             goto realloc;
         }
         virReportSystemError(errno,
-                             _("cannot set CPU affinity on process %d"), pid);
+                             _("cannot get CPU affinity of process %d"), pid);
         return -1;
     }
 
@@ -149,7 +149,7 @@ realloc:
     CPU_ZERO(&mask);
     if (sched_getaffinity(pid, sizeof(mask), &mask) < 0) {
         virReportSystemError(errno,
-                             _("cannot set CPU affinity on process %d"), pid);
+                             _("cannot get CPU affinity of process %d"), pid);
         return -1;
     }
 
