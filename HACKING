@@ -369,8 +369,8 @@ of arguments.
 The AUTHORS files indicates the list of people with commit acces right
 who can actually merge the patches.
 
-The general rule for commiting patches is to make sure it has been reviewed
-properly in the mailing-list first, usually if a couple of persons gave an
+The general rule for commiting a patch is to make sure it has been reviewed
+properly in the mailing-list first, usually if a couple of people gave an
 ACK or +1 to a patch and nobody raised an objection on the list it should
 be good to go. If the patch touches a part of the code where you're not the
 main maintainer or not have a very clear idea of how things work, it's better
