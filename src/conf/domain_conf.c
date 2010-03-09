@@ -4718,8 +4718,10 @@ virDomainDiskDefFormat(virBufferPtr buf,
                       "    <disk type='%s' device='%s'>\n",
                       type, device);
 
-    if (def->driverName) {
-        virBufferVSprintf(buf, "      <driver name='%s'", def->driverName);
+    if (def->driverName || def->driverType || def->cachemode) {
+        virBufferVSprintf(buf, "      <driver");
+        if (def->driverName)
+            virBufferVSprintf(buf, " name='%s'", def->driverName);
         if (def->driverType)
             virBufferVSprintf(buf, " type='%s'", def->driverType);
         if (def->cachemode)
