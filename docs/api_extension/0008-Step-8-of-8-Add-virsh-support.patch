@@ -11,24 +11,23 @@ diff --git a/src/virsh.c b/src/virsh.c
 index cb32ede..ab2a2b7 100644
 --- a/src/virsh.c
 +++ b/src/virsh.c
-@@ -2962,6 +2962,107 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
+@@ -2962,6 +2962,106 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
  
  
  /*
 + * "nodedev-create" command
 + */
 +static const vshCmdInfo info_node_device_create[] = {
-+    {"help", gettext_noop("create a device defined "
-+                          "by an XML file on the node")},
-+    {"desc", gettext_noop("Create a device on the node.  Note that this "
-+                          "command creates devices on the physical host "
-+                          "that can then be assigned to a virtual machine.")},
++    {"help", N_("create a device defined by an XML file on the node")},
++    {"desc", N_("Create a device on the node.  Note that this "
++                "command creates devices on the physical host "
++                "that can then be assigned to a virtual machine.")},
 +    {NULL, NULL}
 +};
 +
 +static const vshCmdOptDef opts_node_device_create[] = {
 +    {"file", VSH_OT_DATA, VSH_OFLAG_REQ,
-+     gettext_noop("file containing an XML description of the device")},
++     N_("file containing an XML description of the device")},
 +    {NULL, 0, 0, NULL}
 +};
 +
@@ -72,15 +71,15 @@ index cb32ede..ab2a2b7 100644
 + * "nodedev-destroy" command
 + */
 +static const vshCmdInfo info_node_device_destroy[] = {
-+    {"help", gettext_noop("destroy a device on the node")},
-+    {"desc", gettext_noop("Destroy a device on the node.  Note that this "
-+                          "command destroys devices on the physical host ")},
++    {"help", N_("destroy a device on the node")},
++    {"desc", N_("Destroy a device on the node.  Note that this "
++                "command destroys devices on the physical host")},
 +    {NULL, NULL}
 +};
 +
 +static const vshCmdOptDef opts_node_device_destroy[] = {
 +    {"name", VSH_OT_DATA, VSH_OFLAG_REQ,
-+     gettext_noop("name of the device to be destroyed")},
++     N_("name of the device to be destroyed")},
 +    {NULL, 0, 0, NULL}
 +};
 +
