@@ -20,9 +20,9 @@
  */
 
 #ifndef __VIR_PCI_H__
-#define __VIR_PCI_H__
+# define __VIR_PCI_H__
 
-#include "internal.h"
+# include "internal.h"
 
 typedef struct _pciDevice pciDevice;
 typedef struct _pciDeviceList pciDeviceList;

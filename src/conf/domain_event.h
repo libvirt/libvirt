@@ -23,9 +23,9 @@
 #include "internal.h"
 
 #ifndef __DOMAIN_EVENT_H__
-#define __DOMAIN_EVENT_H__
+# define __DOMAIN_EVENT_H__
 
-#include "domain_conf.h"
+# include "domain_conf.h"
 
 struct _virDomainEventCallback {
     virConnectPtr conn;

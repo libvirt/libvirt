@@ -21,7 +21,7 @@
  */
 
 #ifndef _QPARAMS_H_
-#define _QPARAMS_H_
+# define _QPARAMS_H_
 
 /* Single web service query parameter 'name=value'. */
 struct qparam {

@@ -22,10 +22,10 @@
  */
 
 #ifndef __VIR_STORAGE_FILE_H__
-#define __VIR_STORAGE_FILE_H__
+# define __VIR_STORAGE_FILE_H__
 
-#include "util.h"
-#include <stdbool.h>
+# include "util.h"
+# include <stdbool.h>
 
 enum virStorageFileFormat {
     VIR_STORAGE_FILE_RAW = 0,

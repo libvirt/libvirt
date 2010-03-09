@@ -1,11 +1,11 @@
 #include <config.h>
 #ifdef WITH_QEMU
-#include <sys/utsname.h>
-#include <stdlib.h>
+# include <sys/utsname.h>
+# include <stdlib.h>
 
-#include "testutilsqemu.h"
-#include "testutils.h"
-#include "memory.h"
+# include "testutilsqemu.h"
+# include "testutils.h"
+# include "memory.h"
 
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
 {

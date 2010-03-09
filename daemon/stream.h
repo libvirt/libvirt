@@ -22,9 +22,9 @@
 
 
 #ifndef __LIBVIRTD_STREAM_H__
-#define __LIBVIRTD_STREAM_H__
+# define __LIBVIRTD_STREAM_H__
 
-#include "libvirtd.h"
+# include "libvirtd.h"
 
 
 

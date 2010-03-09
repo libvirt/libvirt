@@ -21,9 +21,9 @@
  */
 
 #ifndef __ESX_VI_TYPES_H__
-#define __ESX_VI_TYPES_H__
+# define __ESX_VI_TYPES_H__
 
-#include "buf.h"
+# include "buf.h"
 
 
 

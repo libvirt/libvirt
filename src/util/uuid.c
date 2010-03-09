@@ -40,7 +40,7 @@
 #include "logging.h"
 
 #ifndef ENODATA
-#define ENODATA EIO
+# define ENODATA EIO
 #endif
 
 static int

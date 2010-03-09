@@ -9,47 +9,47 @@
  */
 
 #ifndef __VIR_XEN_UNIFIED_H__
-#define __VIR_XEN_UNIFIED_H__
+# define __VIR_XEN_UNIFIED_H__
 
-#include "internal.h"
-#include "capabilities.h"
-#include "driver.h"
-#include "domain_conf.h"
-#include "xs_internal.h"
-#if WITH_XEN_INOTIFY
-#include "xen_inotify.h"
-#endif
-#include "domain_event.h"
-#include "hash.h"
+# include "internal.h"
+# include "capabilities.h"
+# include "driver.h"
+# include "domain_conf.h"
+# include "xs_internal.h"
+# if WITH_XEN_INOTIFY
+#  include "xen_inotify.h"
+# endif
+# include "domain_event.h"
+# include "hash.h"
 
-#ifndef HAVE_WINSOCK2_H
-#include <sys/un.h>
-#include <netinet/in.h>
-#else
-#include <winsock2.h>
-#endif
+# ifndef HAVE_WINSOCK2_H
+#  include <sys/un.h>
+#  include <netinet/in.h>
+# else
+#  include <winsock2.h>
+# endif
 
 extern int xenRegister (void);
 
-#define XEN_UNIFIED_HYPERVISOR_OFFSET 0
-#define XEN_UNIFIED_PROXY_OFFSET 1
-#define XEN_UNIFIED_XEND_OFFSET 2
-#define XEN_UNIFIED_XS_OFFSET 3
-#define XEN_UNIFIED_XM_OFFSET 4
+# define XEN_UNIFIED_HYPERVISOR_OFFSET 0
+# define XEN_UNIFIED_PROXY_OFFSET 1
+# define XEN_UNIFIED_XEND_OFFSET 2
+# define XEN_UNIFIED_XS_OFFSET 3
+# define XEN_UNIFIED_XM_OFFSET 4
 
-#if WITH_XEN_INOTIFY
-#define XEN_UNIFIED_INOTIFY_OFFSET 5
-#define XEN_UNIFIED_NR_DRIVERS 6
-#else
-#define XEN_UNIFIED_NR_DRIVERS 5
-#endif
+# if WITH_XEN_INOTIFY
+#  define XEN_UNIFIED_INOTIFY_OFFSET 5
+#  define XEN_UNIFIED_NR_DRIVERS 6
+# else
+#  define XEN_UNIFIED_NR_DRIVERS 5
+# endif
 
-#define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
+# define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
-#define XEN_CONFIG_FORMAT_XM    "xen-xm"
-#define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
+# define XEN_CONFIG_FORMAT_XM    "xen-xm"
+# define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
-#define XEND_DOMAINS_DIR "/var/lib/xend/domains"
+# define XEND_DOMAINS_DIR "/var/lib/xend/domains"
 
 /* _xenUnifiedDriver:
  *
@@ -187,14 +187,14 @@ struct _xenUnifiedPrivate {
      * or /var/lib/xen */
     const char *configDir;
 
-#if WITH_XEN_INOTIFY
+# if WITH_XEN_INOTIFY
     /* The inotify fd */
     int inotifyFD;
     int inotifyWatch;
 
     int  useXenConfigCache ;
     xenUnifiedDomainInfoListPtr configInfoList;
-#endif
+# endif
 
     /* For the 'xm' driver */
     /* Primary config file name -> virDomainDef map */
@@ -220,12 +220,12 @@ void xenUnifiedDomainEventDispatch (xenUnifiedPrivatePtr priv,
                                     virDomainEventPtr event);
 unsigned long xenUnifiedVersion(void);
 
-#ifndef PROXY
+# ifndef PROXY
 void xenUnifiedLock(xenUnifiedPrivatePtr priv);
 void xenUnifiedUnlock(xenUnifiedPrivatePtr priv);
-#else
-#define xenUnifiedLock(p) do {} while(0)
-#define xenUnifiedUnlock(p) do {} while(0)
-#endif
+# else
+#  define xenUnifiedLock(p) do {} while(0)
+#  define xenUnifiedUnlock(p) do {} while(0)
+# endif
 
 #endif /* __VIR_XEN_UNIFIED_H__ */

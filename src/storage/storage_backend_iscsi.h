@@ -22,14 +22,14 @@
  */
 
 #ifndef __VIR_STORAGE_BACKEND_ISCSI_H__
-#define __VIR_STORAGE_BACKEND_ISCSI_H__
+# define __VIR_STORAGE_BACKEND_ISCSI_H__
 
-#include "storage_backend.h"
+# include "storage_backend.h"
 
 extern virStorageBackend virStorageBackendISCSI;
 
-#define IQN_FOUND 1
-#define IQN_MISSING 0
-#define IQN_ERROR -1
+# define IQN_FOUND 1
+# define IQN_MISSING 0
+# define IQN_ERROR -1
 
 #endif /* __VIR_STORAGE_BACKEND_ISCSI_H__ */

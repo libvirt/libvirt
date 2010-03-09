@@ -20,9 +20,9 @@
  */
 
 #ifndef __VIR_USB_H__
-#define __VIR_USB_H__
+# define __VIR_USB_H__
 
-#include "internal.h"
+# include "internal.h"
 
 typedef struct _usbDevice usbDevice;
 

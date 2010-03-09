@@ -2,15 +2,15 @@
 
 #ifdef WITH_ESX
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
 
-#include "internal.h"
-#include "memory.h"
-#include "testutils.h"
-#include "util.h"
-#include "esx/esx_util.h"
+# include "internal.h"
+# include "memory.h"
+# include "testutils.h"
+# include "util.h"
+# include "esx/esx_util.h"
 
 static char *progname;
 
@@ -183,7 +183,7 @@ mymain(int argc, char **argv)
 
     virSetErrorFunc(NULL, testQuietError);
 
-    #define DO_TEST(_name)                                                    \
+# define DO_TEST(_name)                                                    \
         do {                                                                  \
             if (virtTestRun("VMware "#_name, 1, test##_name,                  \
                             NULL) < 0) {                                      \

@@ -22,14 +22,14 @@
  */
 
 #ifndef __VIR_STORAGE_CONF_H__
-#define __VIR_STORAGE_CONF_H__
+# define __VIR_STORAGE_CONF_H__
 
-#include "internal.h"
-#include "util.h"
-#include "storage_encryption_conf.h"
-#include "threads.h"
+# include "internal.h"
+# include "util.h"
+# include "storage_encryption_conf.h"
+# include "threads.h"
 
-#include <libxml/tree.h>
+# include <libxml/tree.h>
 
 /* Shared structs */
 
@@ -318,7 +318,7 @@ static inline int virStoragePoolObjIsActive(virStoragePoolObjPtr pool) {
     return pool->active;
 }
 
-#define virStorageReportError(code, ...)                                \
+# define virStorageReportError(code, ...)                                \
     virReportErrorHelper(NULL, VIR_FROM_STORAGE, code, __FILE__,        \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

@@ -9,7 +9,7 @@
  */
 
 #ifndef __VIR_CONF_H__
-#define __VIR_CONF_H__
+# define __VIR_CONF_H__
 
 /**
  * virConfType:

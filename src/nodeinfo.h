@@ -22,10 +22,10 @@
  */
 
 #ifndef __VIR_NODEINFO_H__
-#define __VIR_NODEINFO_H__
+# define __VIR_NODEINFO_H__
 
-#include "libvirt/libvirt.h"
-#include "capabilities.h"
+# include "libvirt/libvirt.h"
+# include "capabilities.h"
 
 int nodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
 int nodeCapsInitNUMA(virCapsPtr caps);

@@ -21,15 +21,15 @@
 /*-----------------------------------------------------------------------------------*/
 
 #ifndef ONE_CONF_H
-#define ONE_CONF_H
+# define ONE_CONF_H
 
-#include <config.h>
+# include <config.h>
 
-#include "internal.h"
-#include "domain_conf.h"
-#include "capabilities.h"
-#include "threads.h"
-#include "one_client.h"
+# include "internal.h"
+# include "domain_conf.h"
+# include "capabilities.h"
+# include "threads.h"
+# include "one_client.h"
 
 struct one_driver{
     virMutex lock;
@@ -47,7 +47,7 @@ int oneSubmitVM(virConnectPtr conn ,one_driver_t* driver, virDomainObjPtr  vm);
 
 char* xmlOneTemplate(virDomainDefPtr def);
 
-#define oneError(conn, dom, code, ...)                                  \
+# define oneError(conn, dom, code, ...)                                  \
     virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

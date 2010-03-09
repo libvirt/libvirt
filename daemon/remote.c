@@ -44,8 +44,8 @@
 #include "virterror_internal.h"
 
 #if HAVE_POLKIT0
-#include <polkit/polkit.h>
-#include <polkit-dbus/polkit-dbus.h>
+# include <polkit/polkit.h>
+# include <polkit-dbus/polkit-dbus.h>
 #endif
 
 #include "remote.h"
@@ -3516,7 +3516,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
         goto authfail;
     }
 
-#if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
+# if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
     pkresult = polkit_context_is_caller_authorized(pkcontext,
                                                    pkaction,
                                                    pkcaller,
@@ -3528,11 +3528,11 @@ remoteDispatchAuthPolkit (struct qemud_server *server,
                   polkit_error_get_error_message(pkerr));
         goto authfail;
     }
-#else
+# else
     pkresult = polkit_context_can_caller_do_action(pkcontext,
                                                    pkaction,
                                                    pkcaller);
-#endif
+# endif
     polkit_context_unref(pkcontext);
     polkit_caller_unref(pkcaller);
     polkit_action_unref(pkaction);

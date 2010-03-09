@@ -1146,14 +1146,14 @@ error:
 static inline void
 cpuidCall(struct cpuX86cpuid *cpuid)
 {
-#if __x86_64__
+# if __x86_64__
     asm("cpuid"
         : "=a" (cpuid->eax),
           "=b" (cpuid->ebx),
           "=c" (cpuid->ecx),
           "=d" (cpuid->edx)
         : "a" (cpuid->function));
-#else
+# else
     /* we need to avoid direct use of ebx for CPUID output as it is used
      * for global offset table on i386 with -fPIC
      */
@@ -1167,7 +1167,7 @@ cpuidCall(struct cpuX86cpuid *cpuid)
           "=d" (cpuid->edx)
         : "a" (cpuid->function)
         : "cc");
-#endif
+# endif
 }
 
 

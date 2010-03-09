@@ -43,7 +43,7 @@
 #include <linux/fs.h>
 
 #if HAVE_CAPNG
-#include <cap-ng.h>
+# include <cap-ng.h>
 #endif
 
 #include "virterror_internal.h"
@@ -61,19 +61,19 @@
  */
 
 #ifndef CLONE_NEWPID
-#define CLONE_NEWPID  0x20000000
+# define CLONE_NEWPID  0x20000000
 #endif
 #ifndef CLONE_NEWUTS
-#define CLONE_NEWUTS  0x04000000
+# define CLONE_NEWUTS  0x04000000
 #endif
 #ifndef CLONE_NEWUSER
-#define CLONE_NEWUSER 0x10000000
+# define CLONE_NEWUSER 0x10000000
 #endif
 #ifndef CLONE_NEWIPC
-#define CLONE_NEWIPC  0x08000000
+# define CLONE_NEWIPC  0x08000000
 #endif
 #ifndef CLONE_NEWNET
-#define CLONE_NEWNET  0x40000000 /* New network namespace */
+# define CLONE_NEWNET  0x40000000 /* New network namespace */
 #endif
 
 /* messages between parent and container */
@@ -289,19 +289,19 @@ static int lxcContainerChildMountSort(const void *a, const void *b)
 }
 
 #ifndef MS_REC
-#define MS_REC          16384
+# define MS_REC          16384
 #endif
 
 #ifndef MNT_DETACH
-#define MNT_DETACH      0x00000002
+# define MNT_DETACH      0x00000002
 #endif
 
 #ifndef MS_PRIVATE
-#define MS_PRIVATE              (1<<18)
+# define MS_PRIVATE              (1<<18)
 #endif
 
 #ifndef MS_SLAVE
-#define MS_SLAVE                (1<<19)
+# define MS_SLAVE                (1<<19)
 #endif
 
 static int lxcContainerPivotRoot(virDomainFSDefPtr root)

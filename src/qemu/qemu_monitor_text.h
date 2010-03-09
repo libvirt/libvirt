@@ -23,12 +23,12 @@
 
 
 #ifndef QEMU_MONITOR_TEXT_H
-#define QEMU_MONITOR_TEXT_H
+# define QEMU_MONITOR_TEXT_H
 
-#include "internal.h"
+# include "internal.h"
 
-#include "qemu_monitor.h"
-#include "hash.h"
+# include "qemu_monitor.h"
+# include "hash.h"
 
 int qemuMonitorTextIOProcess(qemuMonitorPtr mon,
                              const char *data,

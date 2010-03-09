@@ -23,53 +23,53 @@
 
 
 #ifndef QEMUD_INTERNAL_H__
-#define QEMUD_INTERNAL_H__
+# define QEMUD_INTERNAL_H__
 
-#include <config.h>
+# include <config.h>
 
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
-#include "gnutls_1_0_compat.h"
-#if HAVE_SASL
-#include <sasl/sasl.h>
-#endif
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
+# include "gnutls_1_0_compat.h"
+# if HAVE_SASL
+#  include <sasl/sasl.h>
+# endif
 
-#if HAVE_POLKIT0
-#include <dbus/dbus.h>
-#endif
+# if HAVE_POLKIT0
+#  include <dbus/dbus.h>
+# endif
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
+# ifdef HAVE_SYS_SYSLIMITS_H
+#  include <sys/syslimits.h>
+# endif
 
-#include <rpc/types.h>
-#include <rpc/xdr.h>
-#include "remote_protocol.h"
-#include "logging.h"
-#include "threads.h"
+# include <rpc/types.h>
+# include <rpc/xdr.h>
+# include "remote_protocol.h"
+# include "logging.h"
+# include "threads.h"
 
-#ifdef __GNUC__
-#ifdef HAVE_ANSIDECL_H
-#include <ansidecl.h>
-#endif
+# ifdef __GNUC__
+#  ifdef HAVE_ANSIDECL_H
+#   include <ansidecl.h>
+#  endif
 
-#ifndef __GNUC_PREREQ
-#if defined __GNUC__ && defined __GNUC_MINOR__
-# define __GNUC_PREREQ(maj, min)                                        \
+#  ifndef __GNUC_PREREQ
+#   if defined __GNUC__ && defined __GNUC_MINOR__
+#    define __GNUC_PREREQ(maj, min)                                        \
     ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-#else
-#define __GNUC_PREREQ(maj,min) 0
-#endif
-#endif
+#   else
+#    define __GNUC_PREREQ(maj,min) 0
+#   endif
+#  endif
 
 /**
  * ATTRIBUTE_UNUSED:
  *
  * Macro to flag conciously unused parameters to functions
  */
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((__unused__))
-#endif
+#  ifndef ATTRIBUTE_UNUSED
+#   define ATTRIBUTE_UNUSED __attribute__((__unused__))
+#  endif
 
 /**
  * ATTRIBUTE_FMT_PRINTF
@@ -81,35 +81,35 @@
  * printf format specifiers even on broken Win32 platforms
  * hence we have to force 'gnu_printf' for new GCC
  */
-#ifndef ATTRIBUTE_FMT_PRINTF
-#if __GNUC_PREREQ (4, 4)
-#define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (gnu_printf, fmtpos,argpos)))
-#else
-#define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (printf, fmtpos,argpos)))
-#endif
-#endif
+#  ifndef ATTRIBUTE_FMT_PRINTF
+#   if __GNUC_PREREQ (4, 4)
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (gnu_printf, fmtpos,argpos)))
+#   else
+#    define ATTRIBUTE_FMT_PRINTF(fmtpos,argpos) __attribute__((__format__ (printf, fmtpos,argpos)))
+#   endif
+#  endif
 
-#ifndef ATTRIBUTE_RETURN_CHECK
-#if __GNUC_PREREQ (3, 4)
-#define ATTRIBUTE_RETURN_CHECK __attribute__((__warn_unused_result__))
-#else
-#define ATTRIBUTE_RETURN_CHECK
-#endif
-#endif
+#  ifndef ATTRIBUTE_RETURN_CHECK
+#   if __GNUC_PREREQ (3, 4)
+#    define ATTRIBUTE_RETURN_CHECK __attribute__((__warn_unused_result__))
+#   else
+#    define ATTRIBUTE_RETURN_CHECK
+#   endif
+#  endif
 
-#else
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED
-#endif
-#ifndef ATTRIBUTE_FMT_PRINTF
-#define ATTRIBUTE_FMT_PRINTF(...)
-#endif
-#ifndef ATTRIBUTE_RETURN_CHECK
-#define ATTRIBUTE_RETURN_CHECK
-#endif
-#endif
+# else
+#  ifndef ATTRIBUTE_UNUSED
+#   define ATTRIBUTE_UNUSED
+#  endif
+#  ifndef ATTRIBUTE_FMT_PRINTF
+#   define ATTRIBUTE_FMT_PRINTF(...)
+#  endif
+#  ifndef ATTRIBUTE_RETURN_CHECK
+#   define ATTRIBUTE_RETURN_CHECK
+#  endif
+# endif
 
-#define qemudDebug DEBUG
+# define qemudDebug DEBUG
 
 /* Whether we're passing reads & writes through a sasl SSF */
 enum qemud_sasl_ssf {
@@ -186,7 +186,7 @@ struct qemud_client {
     gnutls_session_t tlssession;
     int auth;
     unsigned int handshake :1; /* If we're in progress for TLS handshake */
-#if HAVE_SASL
+# if HAVE_SASL
     sasl_conn_t *saslconn;
     int saslSSF;
     const char *saslDecoded;
@@ -196,7 +196,7 @@ struct qemud_client {
     unsigned int saslEncodedLength;
     unsigned int saslEncodedOffset;
     char *saslUsername;
-#endif
+# endif
 
     /* Count of meages in 'dx' or 'tx' queue
      * ie RPC calls in progress. Does not count
@@ -229,7 +229,7 @@ struct qemud_client {
 
 };
 
-#define QEMUD_CLIENT_MAGIC 0x7788aaee
+# define QEMUD_CLIENT_MAGIC 0x7788aaee
 
 
 struct qemud_socket {
@@ -273,15 +273,15 @@ struct qemud_server {
     pthread_t eventThread;
     unsigned int hasEventThread :1;
     unsigned int quitEventThread :1;
-#ifdef HAVE_AVAHI
+# ifdef HAVE_AVAHI
     struct libvirtd_mdns *mdns;
-#endif
-#if HAVE_SASL
+# endif
+# if HAVE_SASL
     char **saslUsernameWhitelist;
-#endif
-#if HAVE_POLKIT0
+# endif
+# if HAVE_POLKIT0
     DBusConnection *sysbus;
-#endif
+# endif
 };
 
 void qemudLog(int priority, const char *fmt, ...)
@@ -306,8 +306,8 @@ qemudClientMessageRelease(struct qemud_client *client,
                           struct qemud_client_message *msg);
 
 
-#if HAVE_POLKIT
+# if HAVE_POLKIT
 int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
-#endif
+# endif
 
 #endif

@@ -11,11 +11,11 @@
  */
 
 #ifndef _LIBVIR_SEXPR_H_
-#define _LIBVIR_SEXPR_H_
+# define _LIBVIR_SEXPR_H_
 
-#include "internal.h"
+# include "internal.h"
 
-#include <sys/types.h>
+# include <sys/types.h>
 
 enum sexpr_type {
     SEXPR_NIL,

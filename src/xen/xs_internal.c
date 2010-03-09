@@ -447,7 +447,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
         info->memory = 0;
         info->maxMem = 0;
     }
-#if 0
+# if 0
     /* doesn't seems to work */
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "cpu_time");
     if (tmp != NULL) {
@@ -456,7 +456,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     } else {
         info->cpuTime = 0;
     }
-#endif
+# endif
     snprintf(request, 199, "/local/domain/%d/cpu", domain->id);
     request[199] = 0;
     tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
@@ -689,10 +689,10 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
         if ((endptr == idlist[i]) || (*endptr != 0)) {
             goto done;
         }
-#if 0
+# if 0
         if (virConnectCheckStoreID(conn, (int) id) < 0)
             continue;
-#endif
+# endif
         snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
         prop[199] = 0;
         tmp = xs_read(priv->xshandle, 0, prop, &len);

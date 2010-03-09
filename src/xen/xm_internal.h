@@ -23,12 +23,12 @@
  */
 
 #ifndef _LIBVIRT_XM_INTERNAL_H_
-#define _LIBVIRT_XM_INTERNAL_H_
+# define _LIBVIRT_XM_INTERNAL_H_
 
-#include "internal.h"
-#include "driver.h"
-#include "conf.h"
-#include "domain_conf.h"
+# include "internal.h"
+# include "driver.h"
+# include "conf.h"
+# include "domain_conf.h"
 
 extern struct xenUnifiedDriver xenXMDriver;
 

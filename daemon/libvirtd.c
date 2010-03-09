@@ -63,60 +63,60 @@
 #include "memory.h"
 #include "stream.h"
 #ifdef HAVE_AVAHI
-#include "mdns.h"
+# include "mdns.h"
 #endif
 
 #ifdef WITH_DRIVER_MODULES
-#include "driver.h"
+# include "driver.h"
 #else
-#ifdef WITH_QEMU
-#include "qemu/qemu_driver.h"
-#endif
-#ifdef WITH_LXC
-#include "lxc/lxc_driver.h"
-#endif
-#ifdef WITH_UML
-#include "uml/uml_driver.h"
-#endif
-#ifdef WITH_ONE
-#include "opennebula/one_driver.h"
-#endif
-#ifdef WITH_NETWORK
-#include "network/bridge_driver.h"
-#endif
-#ifdef WITH_NETCF
-#include "interface/netcf_driver.h"
-#endif
-#ifdef WITH_STORAGE_DIR
-#include "storage/storage_driver.h"
-#endif
-#ifdef WITH_NODE_DEVICES
-#include "node_device/node_device_driver.h"
-#endif
-#ifdef WITH_SECRETS
-#include "secret/secret_driver.h"
-#endif
+# ifdef WITH_QEMU
+#  include "qemu/qemu_driver.h"
+# endif
+# ifdef WITH_LXC
+#  include "lxc/lxc_driver.h"
+# endif
+# ifdef WITH_UML
+#  include "uml/uml_driver.h"
+# endif
+# ifdef WITH_ONE
+#  include "opennebula/one_driver.h"
+# endif
+# ifdef WITH_NETWORK
+#  include "network/bridge_driver.h"
+# endif
+# ifdef WITH_NETCF
+#  include "interface/netcf_driver.h"
+# endif
+# ifdef WITH_STORAGE_DIR
+#  include "storage/storage_driver.h"
+# endif
+# ifdef WITH_NODE_DEVICES
+#  include "node_device/node_device_driver.h"
+# endif
+# ifdef WITH_SECRETS
+#  include "secret/secret_driver.h"
+# endif
 #endif
 
 
 #ifdef __sun
-#include <ucred.h>
-#include <priv.h>
+# include <ucred.h>
+# include <priv.h>
 
-#ifndef PRIV_VIRT_MANAGE
-#define PRIV_VIRT_MANAGE ((const char *)"virt_manage")
-#endif
+# ifndef PRIV_VIRT_MANAGE
+#  define PRIV_VIRT_MANAGE ((const char *)"virt_manage")
+# endif
 
-#ifndef PRIV_XVM_CONTROL
-#define PRIV_XVM_CONTROL ((const char *)"xvm_control")
-#endif
+# ifndef PRIV_XVM_CONTROL
+#  define PRIV_XVM_CONTROL ((const char *)"xvm_control")
+# endif
 
-#define PU_RESETGROUPS          0x0001  /* Remove supplemental groups */
-#define PU_CLEARLIMITSET        0x0008  /* L=0 */
+# define PU_RESETGROUPS          0x0001  /* Remove supplemental groups */
+# define PU_CLEARLIMITSET        0x0008  /* L=0 */
 
 extern int __init_daemon_priv(int, uid_t, gid_t, ...);
 
-#define SYSTEM_UID 60
+# define SYSTEM_UID 60
 
 static gid_t unix_sock_gid = 60; /* Not used */
 static int unix_sock_rw_mask = 0666;
@@ -877,33 +877,33 @@ static struct qemud_server *qemudInitialize(void) {
     virDriverLoadModule("uml");
     virDriverLoadModule("one");
 #else
-#ifdef WITH_NETWORK
+# ifdef WITH_NETWORK
     networkRegister();
-#endif
-#ifdef WITH_NETCF
+# endif
+# ifdef WITH_NETCF
     interfaceRegister();
-#endif
-#ifdef WITH_STORAGE_DIR
+# endif
+# ifdef WITH_STORAGE_DIR
     storageRegister();
-#endif
-#if defined(WITH_NODE_DEVICES)
+# endif
+# if defined(WITH_NODE_DEVICES)
     nodedevRegister();
-#endif
-#ifdef WITH_SECRETS
+# endif
+# ifdef WITH_SECRETS
     secretRegister();
-#endif
-#ifdef WITH_QEMU
+# endif
+# ifdef WITH_QEMU
     qemuRegister();
-#endif
-#ifdef WITH_LXC
+# endif
+# ifdef WITH_LXC
     lxcRegister();
-#endif
-#ifdef WITH_UML
+# endif
+# ifdef WITH_UML
     umlRegister();
-#endif
-#ifdef WITH_ONE
+# endif
+# ifdef WITH_ONE
     oneRegister();
-#endif
+# endif
 #endif
 
     virEventRegisterImpl(virEventAddHandleImpl,
@@ -1247,7 +1247,7 @@ remoteCheckAccess (struct qemud_client *client)
 
 #if HAVE_POLKIT
 int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
-#ifdef SO_PEERCRED
+# ifdef SO_PEERCRED
     struct ucred cr;
     unsigned int cr_len = sizeof (cr);
 
@@ -1260,10 +1260,10 @@ int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
 
     *pid = cr.pid;
     *uid = cr.uid;
-#else
+# else
     /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/
-#error "UNIX socket credentials not supported/implemented on this platform yet..."
-#endif
+#  error "UNIX socket credentials not supported/implemented on this platform yet..."
+# endif
     return 0;
 }
 #endif
@@ -2858,7 +2858,7 @@ qemudSetupPrivs (void)
     return 0;
 }
 #else
-#define qemudSetupPrivs() 0
+# define qemudSetupPrivs() 0
 #endif
 
 

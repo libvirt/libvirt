@@ -35,7 +35,7 @@
 
 /* XXX re-implment this for other OS, or use libtools helper lib ? */
 
-#include <dlfcn.h>
+# include <dlfcn.h>
 
 void *
 virDriverLoadModule(const char *name)

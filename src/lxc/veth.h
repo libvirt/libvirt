@@ -10,9 +10,9 @@
  */
 
 #ifndef VETH_H
-#define VETH_H
+# define VETH_H
 
-#include <config.h>
+# include <config.h>
 
 /* Function declarations */
 int vethCreate(char* veth1, int veth1MaxLen, char* veth2,

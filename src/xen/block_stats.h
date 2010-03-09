@@ -9,11 +9,11 @@
  */
 
 #ifndef __BLOCK_STATS_H__
-#define __BLOCK_STATS_H__
+# define __BLOCK_STATS_H__
 
-#ifdef __linux__
+# ifdef __linux__
 
-#include "xen_driver.h"
+#  include "xen_driver.h"
 
 extern int xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
                                      virDomainPtr dom, const char *path,
@@ -21,6 +21,6 @@ extern int xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
 
 extern int xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *dev);
 
-#endif /* __linux__ */
+# endif /* __linux__ */
 
 #endif /* __STATS_LINUX_H__ */

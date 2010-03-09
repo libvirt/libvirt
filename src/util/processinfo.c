@@ -22,7 +22,7 @@
 #include <config.h>
 
 #if HAVE_SCHED_H
-#include <sched.h>
+# include <sched.h>
 #endif
 
 #include "processinfo.h"
@@ -38,7 +38,7 @@ int virProcessInfoSetAffinity(pid_t pid,
                               int maxcpu)
 {
     int i;
-#ifdef CPU_ALLOC
+# ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
     int numcpus = 1024;
     size_t masklen;
@@ -78,7 +78,7 @@ realloc:
         return -1;
     }
     CPU_FREE(mask);
-#else
+# else
     /* Legacy method uses a fixed size cpu mask, only allows upto 1024 cpus */
     cpu_set_t mask;
 
@@ -93,7 +93,7 @@ realloc:
                              _("cannot set CPU affinity on process %d"), pid);
         return -1;
     }
-#endif
+# endif
 
     return 0;
 }
@@ -104,7 +104,7 @@ int virProcessInfoGetAffinity(pid_t pid,
                               int maxcpu)
 {
     int i;
-#ifdef CPU_ALLOC
+# ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
     int numcpus = 1024;
     size_t masklen;
@@ -142,7 +142,7 @@ realloc:
     for (i = 0 ; i < maxcpu ; i++)
         if (CPU_ISSET_S(i, masklen, mask))
             VIR_USE_CPU(map, i);
-#else
+# else
     /* Legacy method uses a fixed size cpu mask, only allows upto 1024 cpus */
     cpu_set_t mask;
 
@@ -156,7 +156,7 @@ realloc:
     for (i = 0 ; i < maxcpu ; i++)
         if (CPU_ISSET(i, &mask))
             VIR_USE_CPU(map, i);
-#endif
+# endif
 
     return 0;
 }

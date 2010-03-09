@@ -20,52 +20,52 @@
  */
 
 #ifndef __VIRTLOG_H_
-#define __VIRTLOG_H_
+# define __VIRTLOG_H_
 
-#include "internal.h"
-#include "buf.h"
+# include "internal.h"
+# include "buf.h"
 
 /*
  * If configured with --enable-debug=yes then library calls
  * are printed to stderr for debugging or to an appropriate channel
  * defined at runtime of from the libvirt daemon configuration file
  */
-#ifdef ENABLE_DEBUG
-#define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
+# ifdef ENABLE_DEBUG
+#  define VIR_DEBUG_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_DEBUG, f, l, 0, fmt, __VA_ARGS__)
-#else
-#define VIR_DEBUG_INT(category, f, l, fmt,...) \
+# else
+#  define VIR_DEBUG_INT(category, f, l, fmt,...) \
     do { } while (0)
-#endif /* !ENABLE_DEBUG */
+# endif /* !ENABLE_DEBUG */
 
-#define VIR_INFO_INT(category, f, l, fmt,...)                              \
+# define VIR_INFO_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_INFO, f, l, 0, fmt, __VA_ARGS__)
-#define VIR_WARN_INT(category, f, l, fmt,...)                              \
+# define VIR_WARN_INT(category, f, l, fmt,...)                              \
     virLogMessage(category, VIR_LOG_WARN, f, l, 0, fmt, __VA_ARGS__)
-#define VIR_ERROR_INT(category, f, l, fmt,...)                             \
+# define VIR_ERROR_INT(category, f, l, fmt,...)                             \
     virLogMessage(category, VIR_LOG_ERROR, f, l, 0, fmt, __VA_ARGS__)
 
-#define VIR_DEBUG(fmt,...)                                                  \
+# define VIR_DEBUG(fmt,...)                                                  \
         VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define VIR_DEBUG0(msg)                                                     \
+# define VIR_DEBUG0(msg)                                                     \
         VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define VIR_INFO(fmt,...)                                                   \
+# define VIR_INFO(fmt,...)                                                   \
         VIR_INFO_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define VIR_INFO0(msg)                                                      \
+# define VIR_INFO0(msg)                                                      \
         VIR_INFO_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define VIR_WARN(fmt,...)                                                   \
+# define VIR_WARN(fmt,...)                                                   \
         VIR_WARN_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define VIR_WARN0(msg)                                                      \
+# define VIR_WARN0(msg)                                                      \
         VIR_WARN_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
-#define VIR_ERROR(fmt,...)                                                  \
+# define VIR_ERROR(fmt,...)                                                  \
         VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define VIR_ERROR0(msg)                                                     \
+# define VIR_ERROR0(msg)                                                     \
         VIR_ERROR_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
 
 /* Legacy compat */
-#define DEBUG(fmt,...)                                                  \
+# define DEBUG(fmt,...)                                                  \
         VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
-#define DEBUG0(msg)                                                     \
+# define DEBUG0(msg)                                                     \
         VIR_DEBUG_INT("file." __FILE__, __func__, __LINE__, "%s", msg)
 
 /*
@@ -78,7 +78,7 @@ typedef enum {
     VIR_LOG_ERROR,
 } virLogPriority;
 
-#define VIR_LOG_DEFAULT VIR_LOG_WARN
+# define VIR_LOG_DEFAULT VIR_LOG_WARN
 
 typedef enum {
     VIR_LOG_TO_STDERR = 1,

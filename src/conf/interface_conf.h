@@ -22,15 +22,15 @@
  */
 
 #ifndef __INTERFACE_CONF_H__
-#define __INTERFACE_CONF_H__
+# define __INTERFACE_CONF_H__
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
+# include <libxml/parser.h>
+# include <libxml/tree.h>
+# include <libxml/xpath.h>
 
-#include "internal.h"
-#include "util.h"
-#include "threads.h"
+# include "internal.h"
+# include "util.h"
+# include "threads.h"
 
 /* There is currently 3 types of interfaces */
 

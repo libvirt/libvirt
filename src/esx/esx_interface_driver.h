@@ -22,7 +22,7 @@
  */
 
 #ifndef __ESX_INTERFACE_DRIVER_H__
-#define __ESX_INTERFACE_DRIVER_H__
+# define __ESX_INTERFACE_DRIVER_H__
 
 int esxInterfaceRegister(void);
 

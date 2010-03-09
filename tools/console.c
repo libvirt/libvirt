@@ -24,31 +24,31 @@
 
 #ifndef __MINGW32__
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <poll.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-#include <signal.h>
+# include <stdio.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+# include <termios.h>
+# include <poll.h>
+# include <string.h>
+# include <errno.h>
+# include <unistd.h>
+# include <signal.h>
 
-#include "console.h"
-#include "internal.h"
-#include "logging.h"
-#include "util.h"
+# include "console.h"
+# include "internal.h"
+# include "logging.h"
+# include "util.h"
 
 /* ie  Ctrl-]  as per telnet */
-#define CTRL_CLOSE_BRACKET '\35'
+# define CTRL_CLOSE_BRACKET '\35'
 
 static int got_signal = 0;
 static void do_signal(int sig ATTRIBUTE_UNUSED) {
     got_signal = 1;
 }
 
-#ifndef HAVE_CFMAKERAW
+# ifndef HAVE_CFMAKERAW
 static void
 cfmakeraw (struct termios *attr)
 {
@@ -59,7 +59,7 @@ cfmakeraw (struct termios *attr)
     attr->c_cflag &= ~(CSIZE | PARENB);
     attr->c_cflag |= CS8;
 }
-#endif /* !HAVE_CFMAKERAW */
+# endif /* !HAVE_CFMAKERAW */
 
 int vshRunConsole(const char *tty) {
     int ttyfd, ret = -1;

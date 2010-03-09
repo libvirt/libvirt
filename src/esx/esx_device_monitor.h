@@ -22,7 +22,7 @@
  */
 
 #ifndef __ESX_DEVICE_MONITOR_H__
-#define __ESX_DEVICE_MONITOR_H__
+# define __ESX_DEVICE_MONITOR_H__
 
 int esxDeviceRegister(void);
 

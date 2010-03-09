@@ -17,10 +17,10 @@
  */
 
 #ifndef ONE_CLIENT_H_
-#define ONE_CLIENT_H_
+# define ONE_CLIENT_H_
 
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/client.h>
+# include <xmlrpc-c/base.h>
+# include <xmlrpc-c/client.h>
 
 struct _oneClient {
     xmlrpc_env env;

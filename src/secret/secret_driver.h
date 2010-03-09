@@ -21,7 +21,7 @@
  */
 
 #ifndef __VIR_SECRET_DRIVER_H__
-#define __VIR_SECRET_DRIVER_H__
+# define __VIR_SECRET_DRIVER_H__
 
 int secretRegister(void);
 

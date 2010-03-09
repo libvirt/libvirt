@@ -22,29 +22,29 @@
  */
 
 #ifndef __VIR_REMOTE_INTERNAL_H__
-#define __VIR_REMOTE_INTERNAL_H__
+# define __VIR_REMOTE_INTERNAL_H__
 
-#include "libvirt/virterror.h"
+# include "libvirt/virterror.h"
 
 int remoteRegister (void);
 
 unsigned long remoteVersion(void);
 
-#define LIBVIRTD_LISTEN_ADDR NULL
-#define LIBVIRTD_TLS_PORT "16514"
-#define LIBVIRTD_TCP_PORT "16509"
-#define LIBVIRTD_PRIV_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
-#define LIBVIRTD_PRIV_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
-#define LIBVIRTD_USER_UNIX_SOCKET "/.libvirt/libvirt-sock"
-#define LIBVIRTD_CONFIGURATION_FILE SYSCONF_DIR "/libvirtd.conf"
+# define LIBVIRTD_LISTEN_ADDR NULL
+# define LIBVIRTD_TLS_PORT "16514"
+# define LIBVIRTD_TCP_PORT "16509"
+# define LIBVIRTD_PRIV_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
+# define LIBVIRTD_PRIV_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
+# define LIBVIRTD_USER_UNIX_SOCKET "/.libvirt/libvirt-sock"
+# define LIBVIRTD_CONFIGURATION_FILE SYSCONF_DIR "/libvirtd.conf"
 
 /* Defaults for PKI directory. */
-#define LIBVIRT_PKI_DIR SYSCONF_DIR "/pki"
-#define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
-#define LIBVIRT_CLIENTKEY LIBVIRT_PKI_DIR "/libvirt/private/clientkey.pem"
-#define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"
-#define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
-#define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
+# define LIBVIRT_PKI_DIR SYSCONF_DIR "/pki"
+# define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
+# define LIBVIRT_CLIENTKEY LIBVIRT_PKI_DIR "/libvirt/private/clientkey.pem"
+# define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"
+# define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
+# define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
 
 
 #endif /* __VIR_REMOTE_INTERNAL_H__ */

@@ -99,8 +99,8 @@ esxSupportsLongMode(esxPrivate *priv)
             for (hostCpuIdInfo = hostCpuIdInfoList; hostCpuIdInfo != NULL;
                  hostCpuIdInfo = hostCpuIdInfo->_next) {
                 if (hostCpuIdInfo->level->value == -2147483647) { /* 0x80000001 */
-                    #define _SKIP4 "%*c%*c%*c%*c"
-                    #define _SKIP12 _SKIP4":"_SKIP4":"_SKIP4
+#define _SKIP4 "%*c%*c%*c%*c"
+#define _SKIP12 _SKIP4":"_SKIP4":"_SKIP4
 
                     /* Expected format: "--X-:----:----:----:----:----:----:----" */
                     if (sscanf(hostCpuIdInfo->edx,
@@ -114,8 +114,8 @@ esxSupportsLongMode(esxPrivate *priv)
                         goto failure;
                     }
 
-                    #undef _SKIP4
-                    #undef _SKIP12
+#undef _SKIP4
+#undef _SKIP12
 
                     if (edxLongModeBit == '1') {
                         priv->supportsLongMode = esxVI_Boolean_True;

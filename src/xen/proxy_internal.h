@@ -10,12 +10,12 @@
 
 
 #ifndef __LIBVIR_PROXY_H__
-#define __LIBVIR_PROXY_H__
+# define __LIBVIR_PROXY_H__
 
-#include "internal.h"
+# include "internal.h"
 
-#define PROXY_SOCKET_PATH "/tmp/livirt_proxy_conn"
-#define PROXY_PROTO_VERSION 1
+# define PROXY_SOCKET_PATH "/tmp/livirt_proxy_conn"
+# define PROXY_PROTO_VERSION 1
 
 /*
  * the command allowed though the proxy

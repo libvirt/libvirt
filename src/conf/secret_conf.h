@@ -21,12 +21,12 @@
  */
 
 #ifndef __VIR_SECRET_CONF_H__
-#define __VIR_SECRET_CONF_H__
+# define __VIR_SECRET_CONF_H__
 
-#include "internal.h"
-#include "util.h"
+# include "internal.h"
+# include "util.h"
 
-#define virSecretReportError(code, ...)                         \
+# define virSecretReportError(code, ...)                         \
     virReportErrorHelper(NULL, VIR_FROM_SECRET, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

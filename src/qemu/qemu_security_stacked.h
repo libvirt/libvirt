@@ -13,7 +13,7 @@
 #include "qemu_conf.h"
 
 #ifndef __QEMU_SECURITY_STACKED
-#define __QEMU_SECURITY_STACKED
+# define __QEMU_SECURITY_STACKED
 
 extern virSecurityDriver qemuStackedSecurityDriver;
 

@@ -23,13 +23,13 @@
  */
 
 #ifndef __VIR_UTIL_H__
-#define __VIR_UTIL_H__
+# define __VIR_UTIL_H__
 
-#include "verify.h"
-#include "internal.h"
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/types.h>
+# include "verify.h"
+# include "internal.h"
+# include <unistd.h>
+# include <sys/select.h>
+# include <sys/types.h>
 
 int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
@@ -192,11 +192,11 @@ char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 char *virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
-#define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
+# define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
-#define VIR_MAC_BUFLEN 6
-#define VIR_MAC_PREFIX_BUFLEN 3
-#define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
+# define VIR_MAC_BUFLEN 6
+# define VIR_MAC_PREFIX_BUFLEN 3
+# define VIR_MAC_STRING_BUFLEN VIR_MAC_BUFLEN * 3
 
 int virParseMacAddr(const char* str,
                     unsigned char *addr) ATTRIBUTE_RETURN_CHECK;
@@ -216,7 +216,7 @@ const char *virEnumToString(const char *const*types,
                             unsigned int ntypes,
                             int type);
 
-#define VIR_ENUM_IMPL(name, lastVal, ...)                               \
+# define VIR_ENUM_IMPL(name, lastVal, ...)                               \
     static const char *const name ## TypeList[] = { __VA_ARGS__ };      \
     extern int (* name ## Verify (void)) [verify_true (ARRAY_CARDINALITY(name ## TypeList) == lastVal)]; \
     const char *name ## TypeToString(int type) {                        \
@@ -230,42 +230,42 @@ const char *virEnumToString(const char *const*types,
                                  type);                                 \
     }
 
-#define VIR_ENUM_DECL(name)                             \
+# define VIR_ENUM_DECL(name)                             \
     const char *name ## TypeToString(int type);         \
     int name ## TypeFromString(const char*type);
 
-#ifndef HAVE_GETUID
+# ifndef HAVE_GETUID
 static inline int getuid (void) { return 0; }
-#endif
+# endif
 
-#ifndef HAVE_GETGID
+# ifndef HAVE_GETGID
 static inline int getgid (void) { return 0; }
-#endif
+# endif
 
 char *virGetHostnameLocalhost(int allow_localhost);
 char *virGetHostname(virConnectPtr conn);
 
 int virKillProcess(pid_t pid, int sig);
 
-#ifdef HAVE_GETPWUID_R
+# ifdef HAVE_GETPWUID_R
 char *virGetUserDirectory(uid_t uid);
 char *virGetUserName(uid_t uid);
 int virGetUserID(const char *name,
                  uid_t *uid) ATTRIBUTE_RETURN_CHECK;
 int virGetGroupID(const char *name,
                   gid_t *gid) ATTRIBUTE_RETURN_CHECK;
-#endif
+# endif
 
 int virRandomInitialize(unsigned int seed) ATTRIBUTE_RETURN_CHECK;
 int virRandom(int max);
 
-#ifdef HAVE_MNTENT_H
+# ifdef HAVE_MNTENT_H
 char *virFileFindMountPoint(const char *type);
-#endif
+# endif
 
 void virFileWaitForDevices(void);
 
-#define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
+# define virBuildPath(path, ...) virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 
 #endif /* __VIR_UTIL_H__ */

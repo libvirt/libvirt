@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIRTD_EVENT_H__
-#define __VIRTD_EVENT_H__
+# define __VIRTD_EVENT_H__
 
-#include "internal.h"
+# include "internal.h"
 
 /**
  * virEventAddHandleImpl: register a callback for monitoring file handle events

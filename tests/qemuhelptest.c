@@ -2,13 +2,13 @@
 
 #ifdef WITH_QEMU
 
-#include <stdio.h>
-#include <stdlib.h>
+# include <stdio.h>
+# include <stdlib.h>
 
-#include "testutils.h"
-#include "qemu/qemu_conf.h"
+# include "testutils.h"
+# include "qemu/qemu_conf.h"
 
-#define MAX_HELP_OUTPUT_SIZE 1024*64
+# define MAX_HELP_OUTPUT_SIZE 1024*64
 
 struct testInfo {
     const char *name;
@@ -101,7 +101,7 @@ mymain(int argc, char **argv)
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-#define DO_TEST(name, flags, version, is_kvm, kvm_version)                          \
+# define DO_TEST(name, flags, version, is_kvm, kvm_version)                          \
     do {                                                                            \
         const struct testInfo info = { name, flags, version, is_kvm, kvm_version }; \
         if (virtTestRun("QEMU Help String Parsing " name,                           \

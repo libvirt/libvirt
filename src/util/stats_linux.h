@@ -9,15 +9,15 @@
  */
 
 #ifndef __STATS_LINUX_H__
-#define __STATS_LINUX_H__
+# define __STATS_LINUX_H__
 
-#ifdef __linux__
+# ifdef __linux__
 
-#include "internal.h"
+#  include "internal.h"
 
 extern int linuxDomainInterfaceStats(const char *path,
                                      struct _virDomainInterfaceStats *stats);
 
-#endif /* __linux__ */
+# endif /* __linux__ */
 
 #endif /* __STATS_LINUX_H__ */

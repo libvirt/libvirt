@@ -9,13 +9,13 @@
  */
 
 #ifndef __VIR_XEN_INTERNAL_H__
-#define __VIR_XEN_INTERNAL_H__
+# define __VIR_XEN_INTERNAL_H__
 
-#include <libxml/uri.h>
+# include <libxml/uri.h>
 
-#include "internal.h"
-#include "capabilities.h"
-#include "driver.h"
+# include "internal.h"
+# include "capabilities.h"
+# include "driver.h"
 
 extern struct xenUnifiedDriver xenHypervisorDriver;
 int    xenHypervisorInit                 (void);

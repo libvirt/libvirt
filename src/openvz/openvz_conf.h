@@ -27,25 +27,25 @@
  */
 
 #ifndef OPENVZ_CONF_H
-#define OPENVZ_CONF_H
+# define OPENVZ_CONF_H
 
-#include "internal.h"
-#include "domain_conf.h"
-#include "threads.h"
+# include "internal.h"
+# include "domain_conf.h"
+# include "threads.h"
 
 enum { OPENVZ_WARN, OPENVZ_ERR };
 
-#define openvzError(conn, code, ...)                                       \
+# define openvzError(conn, code, ...)                                       \
         virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
 /* OpenVZ commands - Replace with wrapper scripts later? */
-#define VZLIST  "/usr/sbin/vzlist"
-#define VZCTL   "/usr/sbin/vzctl"
-#define VZ_CONF_FILE "/etc/vz/vz.conf"
+# define VZLIST  "/usr/sbin/vzlist"
+# define VZCTL   "/usr/sbin/vzctl"
+# define VZ_CONF_FILE "/etc/vz/vz.conf"
 
-#define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
+# define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
 
 struct openvz_driver {
     virMutex lock;

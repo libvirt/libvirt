@@ -20,10 +20,10 @@
 
 
 #ifndef ONE_DRIVER_H
-#define ONE_DRIVER_H
+# define ONE_DRIVER_H
 
-#include <config.h>
-#include "one_client.h"
+# include <config.h>
+# include "one_client.h"
 
 int oneRegister(void);
 

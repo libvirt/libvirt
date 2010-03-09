@@ -22,27 +22,27 @@
  */
 
 #ifndef __QEMUD_CONF_H
-#define __QEMUD_CONF_H
+# define __QEMUD_CONF_H
 
-#include <config.h>
+# include <config.h>
 
-#include "ebtables.h"
-#include "internal.h"
-#include "bridge.h"
-#include "capabilities.h"
-#include "network_conf.h"
-#include "domain_conf.h"
-#include "domain_event.h"
-#include "threads.h"
-#include "security/security_driver.h"
-#include "cgroup.h"
-#include "pci.h"
-#include "cpu_conf.h"
-#include "driver.h"
+# include "ebtables.h"
+# include "internal.h"
+# include "bridge.h"
+# include "capabilities.h"
+# include "network_conf.h"
+# include "domain_conf.h"
+# include "domain_event.h"
+# include "threads.h"
+# include "security/security_driver.h"
+# include "cgroup.h"
+# include "pci.h"
+# include "cpu_conf.h"
+# include "driver.h"
 
-#define qemudDebug(fmt, ...) do {} while(0)
+# define qemudDebug(fmt, ...) do {} while(0)
 
-#define QEMUD_CPUMASK_LEN CPU_SETSIZE
+# define QEMUD_CPUMASK_LEN CPU_SETSIZE
 
 /* Internal flags to keep track of qemu command line capabilities */
 enum qemud_cmd_flags {
@@ -152,16 +152,16 @@ typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
 typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
 /* Port numbers used for KVM migration. */
-#define QEMUD_MIGRATION_FIRST_PORT 49152
-#define QEMUD_MIGRATION_NUM_PORTS 64
+# define QEMUD_MIGRATION_FIRST_PORT 49152
+# define QEMUD_MIGRATION_NUM_PORTS 64
 
 /* Config type for XML import/export conversions */
-#define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
+# define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
-#define QEMU_DRIVE_HOST_PREFIX "drive-"
-#define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
+# define QEMU_DRIVE_HOST_PREFIX "drive-"
+# define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 
-#define qemuReportError(code, ...)                                      \
+# define qemuReportError(code, ...)                                      \
     virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

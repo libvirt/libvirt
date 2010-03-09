@@ -22,7 +22,7 @@
  */
 
 #ifndef __ESX_DRIVER_H__
-#define __ESX_DRIVER_H__
+# define __ESX_DRIVER_H__
 
 int esxRegister(void);
 

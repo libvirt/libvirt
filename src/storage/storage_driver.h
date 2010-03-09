@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIR_STORAGE_DRIVER_H__
-#define __VIR_STORAGE_DRIVER_H__
+# define __VIR_STORAGE_DRIVER_H__
 
-#include "storage_conf.h"
+# include "storage_conf.h"
 
 int storageRegister(void);
 

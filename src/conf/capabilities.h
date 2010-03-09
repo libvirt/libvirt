@@ -22,14 +22,14 @@
  */
 
 #ifndef __VIR_CAPABILITIES_H
-#define __VIR_CAPABILITIES_H
+# define __VIR_CAPABILITIES_H
 
-#include "internal.h"
-#include "util.h"
-#include "buf.h"
-#include "cpu_conf.h"
+# include "internal.h"
+# include "util.h"
+# include "buf.h"
+# include "cpu_conf.h"
 
-#include <libxml/xpath.h>
+# include <libxml/xpath.h>
 
 typedef struct _virCapsGuestFeature virCapsGuestFeature;
 typedef virCapsGuestFeature *virCapsGuestFeaturePtr;

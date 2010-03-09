@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIR_TEST_INTERNAL_H__
-#define __VIR_TEST_INTERNAL_H__
+# define __VIR_TEST_INTERNAL_H__
 
-#include "internal.h"
+# include "internal.h"
 
 int testRegister(void);
 

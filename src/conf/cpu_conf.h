@@ -22,13 +22,13 @@
  */
 
 #ifndef __VIR_CPU_CONF_H__
-#define __VIR_CPU_CONF_H__
+# define __VIR_CPU_CONF_H__
 
-#include "util.h"
-#include "buf.h"
-#ifndef PROXY
-#include "xml.h"
-#endif
+# include "util.h"
+# include "buf.h"
+# ifndef PROXY
+#  include "xml.h"
+# endif
 
 enum virCPUType {
     VIR_CPU_TYPE_HOST,
@@ -83,12 +83,12 @@ struct _virCPUDef {
 void
 virCPUDefFree(virCPUDefPtr def);
 
-#ifndef PROXY
+# ifndef PROXY
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   enum virCPUType mode);
-#endif
+# endif
 
 enum virCPUFormatFlags {
     VIR_CPU_FORMAT_EMBEDED  = (1 << 0)  /* embed into existing <cpu/> element

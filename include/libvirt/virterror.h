@@ -12,13 +12,13 @@
  */
 
 #ifndef __VIR_VIRERR_H__
-#define __VIR_VIRERR_H__
+# define __VIR_VIRERR_H__
 
-#include <libvirt/libvirt.h>
+# include <libvirt/libvirt.h>
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 extern "C" {
-#endif
+# endif
 
 /**
  * virErrorLevel:
@@ -210,8 +210,8 @@ void			virConnSetErrorFunc	(virConnectPtr conn,
                                                  virErrorFunc handler);
 int			virConnCopyLastError	(virConnectPtr conn,
                                                  virErrorPtr to);
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
-#endif
+# endif
 
 #endif /* __VIR_VIRERR_H__ */

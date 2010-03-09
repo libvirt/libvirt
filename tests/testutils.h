@@ -9,11 +9,11 @@
  */
 
 #ifndef __VIT_TEST_UTILS_H__
-#define __VIT_TEST_UTILS_H__
+# define __VIT_TEST_UTILS_H__
 
-#include <stdio.h>
+# include <stdio.h>
 
-#define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
+# define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 
 double virtTestCountAverage(double *items,
                             int nitems);
@@ -44,7 +44,7 @@ int virtTestMain(int argc,
                  char **argv,
                  int (*func)(int, char **));
 
-#define VIRT_TEST_MAIN(func)                    \
+# define VIRT_TEST_MAIN(func)                    \
     int main(int argc, char **argv)  {          \
         return virtTestMain(argc,argv, func);   \
     }

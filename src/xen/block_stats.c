@@ -13,22 +13,22 @@
 /* This file only applies on Linux. */
 #ifdef __linux__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
-#include <regex.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include <string.h>
+# include <unistd.h>
+# include <regex.h>
 
-#include <xs.h>
+# include <xs.h>
 
-#include "virterror_internal.h"
-#include "datatypes.h"
-#include "util.h"
-#include "block_stats.h"
-#include "memory.h"
+# include "virterror_internal.h"
+# include "datatypes.h"
+# include "util.h"
+# include "block_stats.h"
+# include "memory.h"
 
-#define VIR_FROM_THIS VIR_FROM_STATS_LINUX
+# define VIR_FROM_THIS VIR_FROM_STATS_LINUX
 
 /**
  * statsErrorFunc:
@@ -62,14 +62,14 @@ statsErrorFunc (virConnectPtr conn,
 
 /*-------------------- Xen: block stats --------------------*/
 
-#include <linux/major.h>
+# include <linux/major.h>
 
 /* This is normally defined in <linux/major.h> but previously we
  * hard-coded it.  So if it's not defined, hard-code again.
  */
-#ifndef XENVBD_MAJOR
-#define XENVBD_MAJOR 202
-#endif
+# ifndef XENVBD_MAJOR
+#  define XENVBD_MAJOR 202
+# endif
 
 static int
 xstrtoint64 (char const *s, int base, int64_t *result)

@@ -3,13 +3,13 @@
  */
 
 #ifndef __VIR_XML_H__
-#define __VIR_XML_H__
+# define __VIR_XML_H__
 
-#include "internal.h"
+# include "internal.h"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
+# include <libxml/parser.h>
+# include <libxml/tree.h>
+# include <libxml/xpath.h>
 
 int              virXPathBoolean(const char *xpath,
                                  xmlXPathContextPtr ctxt);

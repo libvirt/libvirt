@@ -20,7 +20,7 @@
  */
 
 #ifndef __QEMUD_IPTABLES_H__
-#define __QEMUD_IPTABLES_H__
+# define __QEMUD_IPTABLES_H__
 
 typedef struct _iptablesContext iptablesContext;
 

@@ -23,9 +23,9 @@
  */
 
 #ifndef __VIR_CPU_GENERIC_H__
-#define __VIR_CPU_GENERIC_H__
+# define __VIR_CPU_GENERIC_H__
 
-#include "cpu.h"
+# include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverGeneric;
 

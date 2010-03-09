@@ -23,11 +23,11 @@
 
 
 #ifndef QEMU_MONITOR_JSON_H
-#define QEMU_MONITOR_JSON_H
+# define QEMU_MONITOR_JSON_H
 
-#include "internal.h"
+# include "internal.h"
 
-#include "qemu_monitor.h"
+# include "qemu_monitor.h"
 
 int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              const char *data,

@@ -22,14 +22,14 @@
  */
 
 #ifndef __NETWORK_CONF_H__
-#define __NETWORK_CONF_H__
+# define __NETWORK_CONF_H__
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
+# include <libxml/parser.h>
+# include <libxml/tree.h>
+# include <libxml/xpath.h>
 
-#include "internal.h"
-#include "threads.h"
+# include "internal.h"
+# include "threads.h"
 
 /* 2 possible types of forwarding */
 enum virNetworkForwardType {

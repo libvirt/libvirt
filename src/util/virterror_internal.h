@@ -20,9 +20,9 @@
  */
 
 #ifndef __VIRT_ERROR_H_
-#define __VIRT_ERROR_H_
+# define __VIRT_ERROR_H_
 
-#include "internal.h"
+# include "internal.h"
 
 extern virErrorFunc virErrorHandler;
 extern void *virUserData;
@@ -49,7 +49,7 @@ void virRaiseErrorFull(virConnectPtr conn,
     ATTRIBUTE_FMT_PRINTF(13, 14);
 
 /* Includes 'dom' and 'net' for compatbility, but they're ignored */
-#define virRaiseError(conn, dom, net, domain, code, level,              \
+# define virRaiseError(conn, dom, net, domain, code, level,              \
                       str1, str2, str3, int1, int2, msg, ...)           \
     virRaiseErrorFull(conn, __FILE__, __FUNCTION__, __LINE__,           \
                       domain, code, level, str1, str2, str3, int1, int2, \
@@ -71,7 +71,7 @@ void virReportSystemErrorFull(int domcode,
                               const char *fmt, ...)
     ATTRIBUTE_FMT_PRINTF(6, 7);
 
-#define virReportSystemError(theerrno, fmt,...)                   \
+# define virReportSystemError(theerrno, fmt,...)                   \
     virReportSystemErrorFull(VIR_FROM_THIS,                       \
                              (theerrno),                          \
                              __FILE__, __FUNCTION__, __LINE__,    \
@@ -82,7 +82,7 @@ void virReportOOMErrorFull(int domcode,
                            const char *funcname,
                            size_t linenr);
 
-#define virReportOOMError() \
+# define virReportOOMError() \
     virReportOOMErrorFull(VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 
 

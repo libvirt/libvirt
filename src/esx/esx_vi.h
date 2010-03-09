@@ -21,15 +21,15 @@
  */
 
 #ifndef __ESX_VI_H__
-#define __ESX_VI_H__
+# define __ESX_VI_H__
 
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <curl/curl.h>
+# include <libxml/tree.h>
+# include <libxml/xpath.h>
+# include <curl/curl.h>
 
-#include "internal.h"
-#include "datatypes.h"
-#include "esx_vi_types.h"
+# include "internal.h"
+# include "datatypes.h"
+# include "esx_vi_types.h"
 
 typedef enum _esxVI_APIVersion esxVI_APIVersion;
 typedef enum _esxVI_ProductVersion esxVI_ProductVersion;

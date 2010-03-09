@@ -22,10 +22,10 @@
  */
 
 #ifndef __LIBVIRTD_DISPATCH_H__
-#define __LIBVIRTD_DISPATCH_H__
+# define __LIBVIRTD_DISPATCH_H__
 
 
-#include "libvirtd.h"
+# include "libvirtd.h"
 
 
 int

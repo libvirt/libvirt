@@ -21,11 +21,11 @@
  */
 
 #ifndef __ESX_PRIVATE_H__
-#define __ESX_PRIVATE_H__
+# define __ESX_PRIVATE_H__
 
-#include "internal.h"
-#include "capabilities.h"
-#include "esx_vi.h"
+# include "internal.h"
+# include "capabilities.h"
+# include "esx_vi.h"
 
 typedef struct _esxPrivate {
     esxVI_Context *host;

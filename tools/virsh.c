@@ -37,8 +37,8 @@
 #include <libxml/xmlsave.h>
 
 #ifdef HAVE_READLINE_READLINE_H
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 #endif
 
 #include "internal.h"
@@ -52,8 +52,8 @@
 static char *progname;
 
 #ifndef TRUE
-#define TRUE 1
-#define FALSE 0
+# define TRUE 1
+# define FALSE 0
 #endif
 
 #define VIRSH_MAX_XML_FILE 10*1024*1024
@@ -8772,7 +8772,7 @@ vshInit(vshControl *ctl)
 }
 
 #ifndef O_SYNC
-#define O_SYNC 0
+# define O_SYNC 0
 #endif
 #define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT | O_SYNC)
 

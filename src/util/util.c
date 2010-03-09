@@ -38,31 +38,31 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 #if HAVE_MMAP
-#include <sys/mman.h>
+# include <sys/mman.h>
 #endif
 #include <string.h>
 #include <signal.h>
 #if HAVE_TERMIOS_H
-#include <termios.h>
+# include <termios.h>
 #endif
 #include "c-ctype.h"
 
 #ifdef HAVE_PATHS_H
-#include <paths.h>
+# include <paths.h>
 #endif
 #include <netdb.h>
 #ifdef HAVE_GETPWUID_R
-#include <pwd.h>
-#include <grp.h>
+# include <pwd.h>
+# include <grp.h>
 #endif
 #if HAVE_CAPNG
-#include <cap-ng.h>
+# include <cap-ng.h>
 #endif
 #ifdef HAVE_MNTENT_H
-#include <mntent.h>
+# include <mntent.h>
 #endif
 
 #include "areadlink.h"
@@ -135,7 +135,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 }
 #else
 
-#ifdef HAVE_MMAP
+# ifdef HAVE_MMAP
 int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 {
     int r;
@@ -158,7 +158,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
     return 0;
 }
 
-#else /* HAVE_MMAP */
+# else /* HAVE_MMAP */
 
 int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
 {
@@ -195,7 +195,7 @@ int safezero(int fd, int flags ATTRIBUTE_UNUSED, off_t offset, off_t len)
     VIR_FREE(buf);
     return 0;
 }
-#endif /* HAVE_MMAP */
+# endif /* HAVE_MMAP */
 #endif /* HAVE_POSIX_FALLOCATE */
 
 #ifndef PROXY
@@ -244,14 +244,14 @@ virArgvToString(const char *const *argv)
 }
 
 int virSetNonBlock(int fd) {
-#ifndef WIN32
+# ifndef WIN32
     int flags;
     if ((flags = fcntl(fd, F_GETFL)) < 0)
         return -1;
     flags |= O_NONBLOCK;
     if ((fcntl(fd, F_SETFL, flags)) < 0)
         return -1;
-#else
+# else
     unsigned long flag = 1;
 
     /* This is actually Gnulib's replacement rpl_ioctl function.
@@ -259,12 +259,12 @@ int virSetNonBlock(int fd) {
      */
     if (ioctl (fd, FIONBIO, (void *) &flag) == -1)
         return -1;
-#endif
+# endif
     return 0;
 }
 
 
-#ifndef WIN32
+# ifndef WIN32
 
 int virSetCloseExec(int fd) {
     int flags;
@@ -277,7 +277,7 @@ int virSetCloseExec(int fd) {
 }
 
 
-#if HAVE_CAPNG
+#  if HAVE_CAPNG
 static int virClearCapabilities(void)
 {
     int ret;
@@ -291,13 +291,13 @@ static int virClearCapabilities(void)
 
     return 0;
 }
-#else
+#  else
 static int virClearCapabilities(void)
 {
 //    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
     return 0;
 }
-#endif
+#  endif
 
 
 /* virFork() - fork a new process while avoiding various race/deadlock conditions
@@ -944,7 +944,7 @@ virRunWithHook(const char *const*argv,
     return ret;
 }
 
-#else /* __MINGW32__ */
+# else /* __MINGW32__ */
 
 int
 virRunWithHook(const char *const *argv ATTRIBUTE_UNUSED,
@@ -973,7 +973,7 @@ virExec(const char *const*argv ATTRIBUTE_UNUSED,
     return -1;
 }
 
-#endif /* __MINGW32__ */
+# endif /* __MINGW32__ */
 
 int
 virRun(const char *const*argv,
@@ -1124,7 +1124,7 @@ int virFileHasSuffix(const char *str,
     return STREQ(str + len - suffixlen, suffix);
 }
 
-#define SAME_INODE(Stat_buf_1, Stat_buf_2) \
+# define SAME_INODE(Stat_buf_1, Stat_buf_2) \
   ((Stat_buf_1).st_ino == (Stat_buf_2).st_ino \
    && (Stat_buf_1).st_dev == (Stat_buf_2).st_dev)
 
@@ -1311,7 +1311,7 @@ error:
     return ret;
 }
 
-#ifndef WIN32
+# ifndef WIN32
 int virFileOperation(const char *path, int openflags, mode_t mode,
                      uid_t uid, gid_t gid,
                      virFileOperationHook hook, void *hookdata,
@@ -1530,7 +1530,7 @@ childerror:
     _exit(ret);
 }
 
-#else /* WIN32 */
+# else /* WIN32 */
 
 int virFileOperation(const char *path, int openflags, mode_t mode,
                   uid_t uid, gid_t gid,
@@ -1544,7 +1544,7 @@ int virDirCreate(const char *path, mode_t mode,
                  uid_t uid, gid_t gid, unsigned int flags) {
     return virDirCreateNoFork(path, mode, uid, gid, flags);
 }
-#endif
+# endif
 
 static int virFileMakePathHelper(char *path) {
     struct stat st;
@@ -1638,7 +1638,7 @@ int virFileOpenTty(int *ttymaster,
                             rawmode);
 }
 
-#ifdef __linux__
+# ifdef __linux__
 int virFileOpenTtyAt(const char *ptmx,
                      int *ttymaster,
                      char **ttyName,
@@ -1688,7 +1688,7 @@ cleanup:
     return rc;
 
 }
-#else
+# else
 int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
                      int *ttymaster ATTRIBUTE_UNUSED,
                      char **ttyName ATTRIBUTE_UNUSED,
@@ -1696,7 +1696,7 @@ int virFileOpenTtyAt(const char *ptmx ATTRIBUTE_UNUSED,
 {
     return -1;
 }
-#endif
+# endif
 
 char* virFilePid(const char *dir, const char* name)
 {
@@ -2276,7 +2276,7 @@ char *virIndexToDiskName(int idx, const char *prefix)
 }
 
 #ifndef AI_CANONIDN
-#define AI_CANONIDN 0
+# define AI_CANONIDN 0
 #endif
 
 char *virGetHostnameLocalhost(int allow_localhost)
@@ -2622,14 +2622,14 @@ cleanup:
 #endif
 
 #ifndef PROXY
-#if defined(UDEVADM) || defined(UDEVSETTLE)
+# if defined(UDEVADM) || defined(UDEVSETTLE)
 void virFileWaitForDevices(void)
 {
-#ifdef UDEVADM
+#  ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
-#else
+#  else
     const char *const settleprog[] = { UDEVSETTLE, NULL };
-#endif
+#  endif
     int exitstatus;
 
     if (access(settleprog[0], X_OK) != 0)
@@ -2644,9 +2644,9 @@ void virFileWaitForDevices(void)
     if (virRun(settleprog, &exitstatus) < 0)
     {}
 }
-#else
+# else
 void virFileWaitForDevices(void) {}
-#endif
+# endif
 #endif
 
 int virBuildPathInternal(char **path, ...)

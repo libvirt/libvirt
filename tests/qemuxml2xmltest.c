@@ -10,16 +10,16 @@
 
 #ifdef WITH_QEMU
 
-#include "internal.h"
-#include "testutils.h"
-#include "qemu/qemu_conf.h"
-#include "testutilsqemu.h"
+# include "internal.h"
+# include "testutils.h"
+# include "qemu/qemu_conf.h"
+# include "testutilsqemu.h"
 
 static char *progname;
 static char *abs_srcdir;
 static struct qemud_driver driver;
 
-#define MAX_FILE 4096
+# define MAX_FILE 4096
 
 
 static int testCompareXMLToXMLFiles(const char *xml) {
@@ -80,7 +80,7 @@ mymain(int argc, char **argv)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return (EXIT_FAILURE);
 
-#define DO_TEST(name) \
+# define DO_TEST(name) \
     if (virtTestRun("QEMU XML-2-XML " name, \
                     1, testCompareXMLToXMLHelper, (name)) < 0) \
         ret = -1

@@ -21,10 +21,10 @@
  */
 
 #ifndef __ESX_VI_METHODS_H__
-#define __ESX_VI_METHODS_H__
+# define __ESX_VI_METHODS_H__
 
-#include "esx_vi.h"
-#include "esx_vi_types.h"
+# include "esx_vi.h"
+# include "esx_vi_types.h"
 
 
 

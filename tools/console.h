@@ -21,12 +21,12 @@
  */
 
 #ifndef __VIR_CONSOLE_H__
-#define __VIR_CONSOLE_H__
+# define __VIR_CONSOLE_H__
 
-#ifndef __MINGW32__
+# ifndef __MINGW32__
 
 int vshRunConsole(const char *tty);
 
-#endif /* !__MINGW32__ */
+# endif /* !__MINGW32__ */
 
 #endif /* __VIR_CONSOLE_H__ */

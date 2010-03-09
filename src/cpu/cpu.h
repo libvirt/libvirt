@@ -22,15 +22,15 @@
  */
 
 #ifndef __VIR_CPU_H__
-#define __VIR_CPU_H__
+# define __VIR_CPU_H__
 
-#include "virterror_internal.h"
-#include "datatypes.h"
-#include "conf/cpu_conf.h"
-#include "cpu_x86_data.h"
+# include "virterror_internal.h"
+# include "datatypes.h"
+# include "conf/cpu_conf.h"
+# include "cpu_x86_data.h"
 
 
-#define virCPUReportError(code, ...)                              \
+# define virCPUReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_CPU, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

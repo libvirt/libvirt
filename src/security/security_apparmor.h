@@ -12,12 +12,12 @@
  *
  */
 #ifndef __VIR_SECURITY_APPARMOR_H__
-#define __VIR_SECURITY_APPARMOR_H__
+# define __VIR_SECURITY_APPARMOR_H__
 
 extern virSecurityDriver virAppArmorSecurityDriver;
 
-#define AA_PREFIX  "libvirt-"
-#define PROFILE_NAME_SIZE  8 + VIR_UUID_STRING_BUFLEN /* AA_PREFIX + uuid */
-#define MAX_FILE_LEN       (1024*1024*10)  /* 10MB limit for sanity check */
+# define AA_PREFIX  "libvirt-"
+# define PROFILE_NAME_SIZE  8 + VIR_UUID_STRING_BUFLEN /* AA_PREFIX + uuid */
+# define MAX_FILE_LEN       (1024*1024*10)  /* 10MB limit for sanity check */
 
 #endif /* __VIR_SECURITY_APPARMOR_H__ */

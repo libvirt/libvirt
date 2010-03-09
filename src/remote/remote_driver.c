@@ -45,15 +45,15 @@
 #endif
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 
 #ifdef HAVE_PWD_H
-#include <pwd.h>
+# include <pwd.h>
 #endif
 
 #ifdef HAVE_PATHS_H
-#include <paths.h>
+# include <paths.h>
 #endif
 
 #include <rpc/types.h>
@@ -62,7 +62,7 @@
 #include <gnutls/x509.h>
 #include "gnutls_1_0_compat.h"
 #if HAVE_SASL
-#include <sasl/sasl.h>
+# include <sasl/sasl.h>
 #endif
 #include <libxml/uri.h>
 
@@ -92,7 +92,7 @@
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
 #ifdef WIN32
-#define pipe(fds) _pipe(fds,4096, _O_BINARY)
+# define pipe(fds) _pipe(fds,4096, _O_BINARY)
 #endif
 
 
@@ -679,9 +679,9 @@ doRemoteOpen (virConnectPtr conn,
             }
         }
 
-#ifndef UNIX_PATH_MAX
-#define UNIX_PATH_MAX(addr) (sizeof (addr).sun_path)
-#endif
+# ifndef UNIX_PATH_MAX
+#  define UNIX_PATH_MAX(addr) (sizeof (addr).sun_path)
+# endif
         struct sockaddr_un addr;
         int trials = 0;
 
@@ -6710,7 +6710,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
 
 
 #if HAVE_POLKIT
-#if HAVE_POLKIT1
+# if HAVE_POLKIT1
 static int
 remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED)
@@ -6728,7 +6728,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     DEBUG0("PolicyKit-1 authentication complete");
     return 0;
 }
-#elif HAVE_POLKIT0
+# elif HAVE_POLKIT0
 /* Perform the PolicyKit authentication process
  */
 static int
@@ -6780,7 +6780,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     DEBUG0("PolicyKit-0 authentication complete");
     return 0;
 }
-#endif /* HAVE_POLKIT0 */
+# endif /* HAVE_POLKIT0 */
 #endif /* HAVE_POLKIT */
 /*----------------------------------------------------------------------*/
 

@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <assert.h>
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 #include <time.h>
 #include <gcrypt.h>
@@ -30,7 +30,7 @@
 #include "getpass.h"
 
 #ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
+# include <winsock2.h>
 #endif
 
 #include "virterror_internal.h"
@@ -43,27 +43,27 @@
 #include "memory.h"
 
 #ifndef WITH_DRIVER_MODULES
-#ifdef WITH_TEST
-#include "test/test_driver.h"
-#endif
-#ifdef WITH_XEN
-#include "xen/xen_driver.h"
-#endif
-#ifdef WITH_REMOTE
-#include "remote/remote_driver.h"
-#endif
-#ifdef WITH_OPENVZ
-#include "openvz/openvz_driver.h"
-#endif
-#ifdef WITH_PHYP
-#include "phyp/phyp_driver.h"
-#endif
-#ifdef WITH_VBOX
-#include "vbox/vbox_driver.h"
-#endif
-#ifdef WITH_ESX
-#include "esx/esx_driver.h"
-#endif
+# ifdef WITH_TEST
+#  include "test/test_driver.h"
+# endif
+# ifdef WITH_XEN
+#  include "xen/xen_driver.h"
+# endif
+# ifdef WITH_REMOTE
+#  include "remote/remote_driver.h"
+# endif
+# ifdef WITH_OPENVZ
+#  include "openvz/openvz_driver.h"
+# endif
+# ifdef WITH_PHYP
+#  include "phyp/phyp_driver.h"
+# endif
+# ifdef WITH_VBOX
+#  include "vbox/vbox_driver.h"
+# endif
+# ifdef WITH_ESX
+#  include "esx/esx_driver.h"
+# endif
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -359,27 +359,27 @@ virInitialize(void)
     virDriverLoadModule("esx");
     virDriverLoadModule("remote");
 #else
-#ifdef WITH_TEST
+# ifdef WITH_TEST
     if (testRegister() == -1) return -1;
-#endif
-#ifdef WITH_XEN
+# endif
+# ifdef WITH_XEN
     if (xenRegister () == -1) return -1;
-#endif
-#ifdef WITH_OPENVZ
+# endif
+# ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
-#endif
-#ifdef WITH_PHYP
+# endif
+# ifdef WITH_PHYP
     if (phypRegister() == -1) return -1;
-#endif
-#ifdef WITH_VBOX
+# endif
+# ifdef WITH_VBOX
     if (vboxRegister() == -1) return -1;
-#endif
-#ifdef WITH_ESX
+# endif
+# ifdef WITH_ESX
     if (esxRegister() == -1) return -1;
-#endif
-#ifdef WITH_REMOTE
+# endif
+# ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
-#endif
+# endif
 #endif
 
     return(0);
@@ -991,50 +991,50 @@ virGetVersion(unsigned long *libVer, const char *type,
 #else
         *typeVer = 0;
 
-#if WITH_XEN
+# if WITH_XEN
         if (STRCASEEQ(type, "Xen"))
             *typeVer = xenUnifiedVersion();
-#endif
-#if WITH_TEST
+# endif
+# if WITH_TEST
         if (STRCASEEQ(type, "Test"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_QEMU
+# endif
+# if WITH_QEMU
         if (STRCASEEQ(type, "QEMU"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_LXC
+# endif
+# if WITH_LXC
         if (STRCASEEQ(type, "LXC"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_PHYP
+# endif
+# if WITH_PHYP
         if (STRCASEEQ(type, "phyp"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_OPENVZ
+# endif
+# if WITH_OPENVZ
         if (STRCASEEQ(type, "OpenVZ"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_VBOX
+# endif
+# if WITH_VBOX
         if (STRCASEEQ(type, "VBox"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_UML
+# endif
+# if WITH_UML
         if (STRCASEEQ(type, "UML"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_ONE
+# endif
+# if WITH_ONE
         if (STRCASEEQ(type, "ONE"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_ESX
+# endif
+# if WITH_ESX
         if (STRCASEEQ(type, "ESX"))
             *typeVer = LIBVIR_VERSION_NUMBER;
-#endif
-#if WITH_REMOTE
+# endif
+# if WITH_REMOTE
         if (STRCASEEQ(type, "Remote"))
             *typeVer = remoteVersion();
-#endif
+# endif
         if (*typeVer == 0) {
             virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
             goto error;

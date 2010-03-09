@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIR_CPU_X86_DATA_H__
-#define __VIR_CPU_X86_DATA_H__
+# define __VIR_CPU_X86_DATA_H__
 
-#include <stdint.h>
+# include <stdint.h>
 
 struct cpuX86cpuid {
     uint32_t function;
@@ -34,8 +34,8 @@ struct cpuX86cpuid {
     uint32_t edx;
 };
 
-#define CPUX86_BASIC    0x0
-#define CPUX86_EXTENDED 0x80000000
+# define CPUX86_BASIC    0x0
+# define CPUX86_EXTENDED 0x80000000
 
 struct cpuX86Data {
     int basic_len;

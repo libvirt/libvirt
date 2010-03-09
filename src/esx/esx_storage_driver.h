@@ -22,7 +22,7 @@
  */
 
 #ifndef __ESX_STORAGE_DRIVER_H__
-#define __ESX_STORAGE_DRIVER_H__
+# define __ESX_STORAGE_DRIVER_H__
 
 int esxStorageRegister(void);
 

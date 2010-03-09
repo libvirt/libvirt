@@ -23,12 +23,12 @@
 
 
 #ifndef QEMU_MONITOR_H
-#define QEMU_MONITOR_H
+# define QEMU_MONITOR_H
 
-#include "internal.h"
+# include "internal.h"
 
-#include "domain_conf.h"
-#include "hash.h"
+# include "domain_conf.h"
+# include "hash.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;

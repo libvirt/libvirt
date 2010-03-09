@@ -58,7 +58,7 @@ mymain(int argc ATTRIBUTE_UNUSED,
     if (!virTestGetDebug())
         virSetErrorFunc(NULL, testQuietError);
 
-#define DO_TEST(dev, num)                                              \
+# define DO_TEST(dev, num)                                              \
     do {                                                               \
         struct testInfo info = { dev, num };                           \
         if (virtTestRun("Device " dev " -> " # num,                    \

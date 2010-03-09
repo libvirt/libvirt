@@ -22,8 +22,8 @@
  */
 
 #ifndef __VIR_EVENT_H__
-#define __VIR_EVENT_H__
-#include "internal.h"
+# define __VIR_EVENT_H__
+# include "internal.h"
 /**
  * virEventAddHandle: register a callback for monitoring file handle events
  *

@@ -31,7 +31,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #if HAVE_SYSLOG_H
-#include <syslog.h>
+# include <syslog.h>
 #endif
 
 #include "ignore-value.h"

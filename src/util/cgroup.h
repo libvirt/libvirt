@@ -10,7 +10,7 @@
  */
 
 #ifndef CGROUP_H
-#define CGROUP_H
+# define CGROUP_H
 
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;

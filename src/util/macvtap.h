@@ -20,13 +20,13 @@
  */
 
 #ifndef __UTIL_MACVTAP_H__
-#define __UTIL_MACVTAP_H__
+# define __UTIL_MACVTAP_H__
 
-#include <config.h>
+# include <config.h>
 
-#if defined(WITH_MACVTAP)
+# if defined(WITH_MACVTAP)
 
-#include "internal.h"
+#  include "internal.h"
 
 int openMacvtapTap(virConnectPtr conn,
                    const char *ifname,
@@ -38,11 +38,11 @@ int openMacvtapTap(virConnectPtr conn,
 
 void delMacvtap(const char *ifname);
 
-#endif /* WITH_MACVTAP */
+# endif /* WITH_MACVTAP */
 
-#define MACVTAP_MODE_PRIVATE_STR  "private"
-#define MACVTAP_MODE_VEPA_STR     "vepa"
-#define MACVTAP_MODE_BRIDGE_STR   "bridge"
+# define MACVTAP_MODE_PRIVATE_STR  "private"
+# define MACVTAP_MODE_VEPA_STR     "vepa"
+# define MACVTAP_MODE_BRIDGE_STR   "bridge"
 
 
 #endif /* __UTIL_MACVTAP_H__ */

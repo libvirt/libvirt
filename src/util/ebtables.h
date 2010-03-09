@@ -22,7 +22,7 @@
  */
 
 #ifndef __QEMUD_EBTABLES_H__
-#define __QEMUD_EBTABLES_H__
+# define __QEMUD_EBTABLES_H__
 
 typedef struct
 {

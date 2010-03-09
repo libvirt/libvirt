@@ -101,25 +101,25 @@ if (!host) {\
 
 #if VBOX_API_VERSION < 3001
 
-#define VBOX_MEDIUM_RELEASE(arg) \
+# define VBOX_MEDIUM_RELEASE(arg) \
 if(arg)\
     (arg)->vtbl->imedium.nsisupports.Release((nsISupports *)(arg))
-#define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
+# define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
     (object)->vtbl->imedium.func((IMedium *)(object), arg1)
-#define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
+# define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
     (object)->vtbl->imedium.func((IMedium *)(object), arg1, arg2)
 
 #else  /* VBOX_API_VERSION >= 3001 */
 
 typedef IMedium IHardDisk;
 typedef IMediumAttachment IHardDiskAttachment;
-#define MediaState_Inaccessible     MediumState_Inaccessible
-#define HardDiskVariant_Standard    MediumVariant_Standard
-#define HardDiskVariant_Fixed       MediumVariant_Fixed
-#define VBOX_MEDIUM_RELEASE(arg) VBOX_RELEASE(arg)
-#define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
+# define MediaState_Inaccessible     MediumState_Inaccessible
+# define HardDiskVariant_Standard    MediumVariant_Standard
+# define HardDiskVariant_Fixed       MediumVariant_Fixed
+# define VBOX_MEDIUM_RELEASE(arg) VBOX_RELEASE(arg)
+# define VBOX_MEDIUM_FUNC_ARG1(object, func, arg1) \
     (object)->vtbl->func(object, arg1)
-#define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
+# define VBOX_MEDIUM_FUNC_ARG2(object, func, arg1, arg2) \
     (object)->vtbl->func(object, arg1, arg2)
 
 #endif /* VBOX_API_VERSION >= 3001 */
@@ -217,13 +217,13 @@ static void vboxDriverUnlock(vboxGlobalData *data) {
 
 #if VBOX_API_VERSION == 2002
 
-#define vboxIIDFromUUID(uuid, iid) nsIDFromChar((iid), (uuid))
-#define vboxIIDToUUID(uuid, iid) nsIDtoChar((uuid), (iid))
-#define vboxIIDUnalloc(iid) data->pFuncs->pfnComUnallocMem(iid)
-#define vboxIIDFree(iid) VIR_FREE(iid)
-#define vboxIIDUtf8Free(iid) VIR_FREE(iid)
-#define vboxIIDUtf16Free(iid) VIR_FREE(iid)
-#define DEBUGIID(msg, iid) DEBUGUUID(msg, iid)
+# define vboxIIDFromUUID(uuid, iid) nsIDFromChar((iid), (uuid))
+# define vboxIIDToUUID(uuid, iid) nsIDtoChar((uuid), (iid))
+# define vboxIIDUnalloc(iid) data->pFuncs->pfnComUnallocMem(iid)
+# define vboxIIDFree(iid) VIR_FREE(iid)
+# define vboxIIDUtf8Free(iid) VIR_FREE(iid)
+# define vboxIIDUtf16Free(iid) VIR_FREE(iid)
+# define DEBUGIID(msg, iid) DEBUGUUID(msg, iid)
 
 static void nsIDtoChar(unsigned char *uuid, const nsID *iid) {
     char uuidstrsrc[VIR_UUID_STRING_BUFLEN];
@@ -340,7 +340,7 @@ static void vboxUtf8toIID(char *uuidstr, vboxIID **iid) {
 
 #else /* VBOX_API_VERSION != 2002 */
 
-#define vboxIIDFromUUID(uuid, iid)\
+# define vboxIIDFromUUID(uuid, iid)\
 {\
     char vboxIIDUtf8[VIR_UUID_STRING_BUFLEN];\
 \
@@ -348,7 +348,7 @@ static void vboxUtf8toIID(char *uuidstr, vboxIID **iid) {
     data->pFuncs->pfnUtf8ToUtf16(vboxIIDUtf8, (&(iid)));\
 }
 
-#define vboxIIDToUUID(uuid, iid)\
+# define vboxIIDToUUID(uuid, iid)\
 {\
     char *vboxIIDUtf8  = NULL;\
     data->pFuncs->pfnUtf16ToUtf8((iid), &vboxIIDUtf8);\
@@ -356,11 +356,11 @@ static void vboxUtf8toIID(char *uuidstr, vboxIID **iid) {
     data->pFuncs->pfnUtf8Free(vboxIIDUtf8);\
 }
 
-#define vboxIIDFree(iid) data->pFuncs->pfnUtf16Free(iid)
-#define vboxIIDUtf8Free(iid) data->pFuncs->pfnUtf8Free(iid)
-#define vboxIIDUtf16Free(iid) data->pFuncs->pfnUtf16Free(iid)
-#define vboxIIDUnalloc(iid) data->pFuncs->pfnUtf16Free(iid)
-#define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
+# define vboxIIDFree(iid) data->pFuncs->pfnUtf16Free(iid)
+# define vboxIIDUtf8Free(iid) data->pFuncs->pfnUtf8Free(iid)
+# define vboxIIDUtf16Free(iid) data->pFuncs->pfnUtf16Free(iid)
+# define vboxIIDUnalloc(iid) data->pFuncs->pfnUtf16Free(iid)
+# define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
 
 typedef PRUnichar vboxIID;
 
@@ -407,7 +407,7 @@ static void vboxUtf8toIID(char *uuidstr, vboxIID **iid) {
         virReportOOMError();
 }
 
-#if VBOX_API_VERSION >= 3001
+# if VBOX_API_VERSION >= 3001
 
 /**
  * function to generate the name for medium,
@@ -618,7 +618,7 @@ static PRUnichar *PRUnicharFromInt(int n) {
     return strUtf16;
 }
 
-#endif /* VBOX_API_VERSION >= 3001 */
+# endif /* VBOX_API_VERSION >= 3001 */
 
 #endif /* !(VBOX_API_VERSION == 2002) */
 
@@ -677,11 +677,11 @@ static int vboxInitialize(virConnectPtr conn, vboxGlobalData *data) {
     data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj,
                                ISESSION_IID_STR, &data->vboxSession);
 
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
 
     /* No event queue functionality in 2.2.* as of now */
 
-#else  /* !(VBOX_API_VERSION == 2002) */
+# else  /* !(VBOX_API_VERSION == 2002) */
 
     /* Initial the fWatch needed for Event Callbacks */
     data->fdWatch = -1;
@@ -693,7 +693,7 @@ static int vboxInitialize(virConnectPtr conn, vboxGlobalData *data) {
         goto cleanup;
     }
 
-#endif /* !(VBOX_API_VERSION == 2002) */
+# endif /* !(VBOX_API_VERSION == 2002) */
 #endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
 
     if (data->vboxObj == NULL) {
@@ -3533,23 +3533,23 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                             IDVDImage *dvdImage          = NULL;
                             PRUnichar *dvdfileUtf16      = NULL;
                             vboxIID *dvduuid             = NULL;
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                             nsID dvdemptyuuid;
 
                             memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
-#else
+# else
                             PRUnichar *dvdemptyuuidUtf16 = NULL;
-#endif
+# endif
 
                             VBOX_UTF8_TO_UTF16(def->disks[i]->src, &dvdfileUtf16);
 
                             data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
                             if (!dvdImage) {
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                 data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, &dvdemptyuuid, &dvdImage);
-#else
+# else
                                 data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, dvdemptyuuidUtf16, &dvdImage);
-#endif
+# endif
                             }
                             if (dvdImage) {
                                 rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage, &dvduuid);
@@ -3594,12 +3594,12 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                         data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddfileUtf16, &hardDisk);
 
                         if (!hardDisk) {
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                             data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
                                                               hddfileUtf16,
                                                               AccessMode_ReadWrite,
                                                               &hardDisk);
-#else
+# else
                             data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
                                                               hddfileUtf16,
                                                               AccessMode_ReadWrite,
@@ -3608,7 +3608,7 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                                               0,
                                                               hddEmpty,
                                                               &hardDisk);
-#endif
+# endif
                         }
 
                         if (hardDisk) {
@@ -3683,13 +3683,13 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                 IFloppyImage *floppyImage   = NULL;
                                 PRUnichar *fdfileUtf16      = NULL;
                                 vboxIID *fduuid             = NULL;
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                 nsID fdemptyuuid;
 
                                 memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
-#else
+# else
                                 PRUnichar *fdemptyuuidUtf16 = NULL;
-#endif
+# endif
 
                                 VBOX_UTF8_TO_UTF16(def->disks[i]->src, &fdfileUtf16);
                                 rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
@@ -3699,11 +3699,11 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                                 if (!floppyImage) {
                                     data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
                                                                          fdfileUtf16,
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                                                          &fdemptyuuid,
-#else
+# else
                                                                          fdemptyuuidUtf16,
-#endif
+# endif
                                                                          &floppyImage);
                                 }
 
@@ -4707,23 +4707,23 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                 IDVDImage *dvdImage          = NULL;
                                 PRUnichar *dvdfileUtf16      = NULL;
                                 vboxIID   *dvduuid           = NULL;
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                 nsID dvdemptyuuid;
 
                                 memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
-#else
+# else
                                 PRUnichar *dvdemptyuuidUtf16 = NULL;
-#endif
+# endif
 
                                 VBOX_UTF8_TO_UTF16(dev->data.disk->src, &dvdfileUtf16);
 
                                 data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
                                 if (!dvdImage) {
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                     data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, &dvdemptyuuid, &dvdImage);
-#else
+# else
                                     data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, dvdemptyuuidUtf16, &dvdImage);
-#endif
+# endif
                                 }
                                 if (dvdImage) {
                                     rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage, &dvduuid);
@@ -4763,13 +4763,13 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                     IFloppyImage *floppyImage   = NULL;
                                     PRUnichar *fdfileUtf16      = NULL;
                                     vboxIID *fduuid             = NULL;
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                     nsID fdemptyuuid;
 
                                     memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
-#else
+# else
                                     PRUnichar *fdemptyuuidUtf16 = NULL;
-#endif
+# endif
                                     VBOX_UTF8_TO_UTF16(dev->data.disk->src, &fdfileUtf16);
                                     rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
                                                                               fdfileUtf16,
@@ -4778,11 +4778,11 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                                     if (!floppyImage) {
                                         data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
                                                                              fdfileUtf16,
-#if VBOX_API_VERSION == 2002
+# if VBOX_API_VERSION == 2002
                                                                              &fdemptyuuid,
-#else
+# else
                                                                              fdemptyuuidUtf16,
-#endif
+# endif
                                                                              &floppyImage);
                                     }
 
@@ -5100,7 +5100,7 @@ static nsresult vboxCallbackOnExtraDataChange (IVirtualBoxCallback *pThis,
     return NS_OK;
 }
 
-#if VBOX_API_VERSION < 3001
+# if VBOX_API_VERSION < 3001
 static nsresult vboxCallbackOnMediaRegistered (IVirtualBoxCallback *pThis,
                                                PRUnichar * mediaId,
                                                PRUint32 mediaType,
@@ -5111,8 +5111,8 @@ static nsresult vboxCallbackOnMediaRegistered (IVirtualBoxCallback *pThis,
 
     return NS_OK;
 }
-#else  /* VBOX_API_VERSION >= 3001 */
-#endif /* VBOX_API_VERSION >= 3001 */
+# else  /* VBOX_API_VERSION >= 3001 */
+# endif /* VBOX_API_VERSION >= 3001 */
 
 static nsresult vboxCallbackOnMachineRegistered (IVirtualBoxCallback *pThis,
                                                  PRUnichar * machineId,
@@ -5294,10 +5294,10 @@ static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
         vboxCallback->vtbl->OnMachineDataChange         = &vboxCallbackOnMachineDataChange;
         vboxCallback->vtbl->OnExtraDataCanChange        = &vboxCallbackOnExtraDataCanChange;
         vboxCallback->vtbl->OnExtraDataChange           = &vboxCallbackOnExtraDataChange;
-#if VBOX_API_VERSION < 3001
+# if VBOX_API_VERSION < 3001
         vboxCallback->vtbl->OnMediaRegistered           = &vboxCallbackOnMediaRegistered;
-#else  /* VBOX_API_VERSION >= 3001 */
-#endif /* VBOX_API_VERSION >= 3001 */
+# else  /* VBOX_API_VERSION >= 3001 */
+# endif /* VBOX_API_VERSION >= 3001 */
         vboxCallback->vtbl->OnMachineRegistered         = &vboxCallbackOnMachineRegistered;
         vboxCallback->vtbl->OnSessionStateChange        = &vboxCallbackOnSessionStateChange;
         vboxCallback->vtbl->OnSnapshotTaken             = &vboxCallbackOnSnapshotTaken;
@@ -5929,13 +5929,13 @@ static int vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterfac
                 networkInterface->vtbl->GetId(networkInterface, &iidUtf16);
 
                 if (iidUtf16) {
-#if VBOX_API_VERSION == 3000
+# if VBOX_API_VERSION == 3000
                     IHostNetworkInterface *netInt = NULL;
                     host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &netInt, &progress);
                     VBOX_RELEASE(netInt);
-#else  /* VBOX_API_VERSION > 3000 */
+# else  /* VBOX_API_VERSION > 3000 */
                     host->vtbl->RemoveHostOnlyNetworkInterface(host, iidUtf16, &progress);
-#endif /* VBOX_API_VERSION > 3000 */
+# endif /* VBOX_API_VERSION > 3000 */
                     VBOX_UTF16_FREE(iidUtf16);
                 }
 

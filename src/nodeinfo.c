@@ -36,7 +36,7 @@
 #endif
 
 #ifdef HAVE_SYS_UTSNAME_H
-#include <sys/utsname.h>
+# include <sys/utsname.h>
 #endif
 
 #include "c-ctype.h"
@@ -56,8 +56,8 @@
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifdef __linux__
-#define CPUINFO_PATH "/proc/cpuinfo"
-#define CPU_SYS_PATH "/sys/devices/system/cpu"
+# define CPUINFO_PATH "/proc/cpuinfo"
+# define CPU_SYS_PATH "/sys/devices/system/cpu"
 
 /* NB, this is not static as we need to call it from the testsuite */
 int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,

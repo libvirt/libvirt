@@ -38,7 +38,7 @@
 #include "xs_internal.h"
 #include "xm_internal.h"
 #if WITH_XEN_INOTIFY
-#include "xen_inotify.h"
+# include "xen_inotify.h"
 #endif
 #include "xml.h"
 #include "util.h"

@@ -27,14 +27,14 @@
  */
 
 #ifndef ___VBoxXPCOMC_cglue_h
-#define ___VBoxXPCOMC_cglue_h
+# define ___VBoxXPCOMC_cglue_h
 
 /* This has to be the oldest version we support. */
-#include "vbox_CAPI_v2_2.h"
+# include "vbox_CAPI_v2_2.h"
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 extern "C" {
-#endif
+# endif
 
 /** The dlopen handle for VBoxXPCOMC. */
 extern void *g_hVBoxXPCOMC;
@@ -50,8 +50,8 @@ int VBoxCGlueInit(void);
 void VBoxCGlueTerm(void);
 
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
-#endif
+# endif
 
 #endif

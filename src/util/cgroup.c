@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #ifdef HAVE_MNTENT_H
-#include <mntent.h>
+# include <mntent.h>
 #endif
 #include <fcntl.h>
 #include <string.h>

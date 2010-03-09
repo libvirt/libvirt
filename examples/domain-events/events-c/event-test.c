@@ -6,19 +6,19 @@
 #include <signal.h>
 
 #if HAVE_SYS_POLL_H
-#include <sys/types.h>
-#include <sys/poll.h>
-#include <libvirt/libvirt.h>
+# include <sys/types.h>
+# include <sys/poll.h>
+# include <libvirt/libvirt.h>
 
-#define DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
+# define DEBUG0(fmt) printf("%s:%d :: " fmt "\n", \
         __func__, __LINE__)
-#define DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
+# define DEBUG(fmt, ...) printf("%s:%d: " fmt "\n", \
         __func__, __LINE__, __VA_ARGS__)
-#define STREQ(a,b) (strcmp(a,b) == 0)
+# define STREQ(a,b) (strcmp(a,b) == 0)
 
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((__unused__))
-#endif
+# ifndef ATTRIBUTE_UNUSED
+#  define ATTRIBUTE_UNUSED __attribute__((__unused__))
+# endif
 
 /* handle globals */
 int h_fd = 0;
@@ -28,7 +28,7 @@ virFreeCallback h_ff = NULL;
 void *h_opaque = NULL;
 
 /* timeout globals */
-#define TIMEOUT_MS 1000
+# define TIMEOUT_MS 1000
 int t_active = 0;
 int t_timeout = -1;
 virEventTimeoutCallback t_cb = NULL;

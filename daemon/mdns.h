@@ -25,7 +25,7 @@
 #include "internal.h"
 
 #ifndef __VIRTD_MDNS_H__
-#define __VIRTD_MDNS_H__
+# define __VIRTD_MDNS_H__
 
 struct libvirtd_mdns;
 struct libvirtd_mdns_group;

@@ -9,10 +9,10 @@
  */
 
 #ifndef __VIR_XS_INTERNAL_H__
-#define __VIR_XS_INTERNAL_H__
+# define __VIR_XS_INTERNAL_H__
 
-#include "internal.h"
-#include "driver.h"
+# include "internal.h"
+# include "driver.h"
 
 extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);

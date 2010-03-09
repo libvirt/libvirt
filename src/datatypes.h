@@ -20,13 +20,13 @@
  */
 
 #ifndef __VIRT_DATATYPES_H_
-#define __VIRT_DATATYPES_H_
+# define __VIRT_DATATYPES_H_
 
-#include "internal.h"
+# include "internal.h"
 
-#include "hash.h"
-#include "driver.h"
-#include "threads.h"
+# include "hash.h"
+# include "driver.h"
+# include "threads.h"
 
 /**
  * VIR_CONNECT_MAGIC:
@@ -34,8 +34,8 @@
  * magic value used to protect the API when pointers to connection structures
  * are passed down by the uers.
  */
-#define VIR_CONNECT_MAGIC 	0x4F23DEAD
-#define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
+# define VIR_CONNECT_MAGIC 	0x4F23DEAD
+# define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
 
 
 /**
@@ -44,9 +44,9 @@
  * magic value used to protect the API when pointers to domain structures
  * are passed down by the users.
  */
-#define VIR_DOMAIN_MAGIC		0xDEAD4321
-#define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
-#define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_DOMAIN_MAGIC		0xDEAD4321
+# define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
+# define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_NETWORK_MAGIC:
@@ -54,9 +54,9 @@
  * magic value used to protect the API when pointers to network structures
  * are passed down by the users.
  */
-#define VIR_NETWORK_MAGIC		0xDEAD1234
-#define VIR_IS_NETWORK(obj)		((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
-#define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NETWORK_MAGIC		0xDEAD1234
+# define VIR_IS_NETWORK(obj)		((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
+# define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_INTERFACE_MAGIC:
@@ -64,9 +64,9 @@
  * magic value used to protect the API when pointers to interface structures
  * are passed down by the users.
  */
-#define VIR_INTERFACE_MAGIC		0xDEAD5309
-#define VIR_IS_INTERFACE(obj)		((obj) && (obj)->magic==VIR_INTERFACE_MAGIC)
-#define VIR_IS_CONNECTED_INTERFACE(obj)	(VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_INTERFACE_MAGIC		0xDEAD5309
+# define VIR_IS_INTERFACE(obj)		((obj) && (obj)->magic==VIR_INTERFACE_MAGIC)
+# define VIR_IS_CONNECTED_INTERFACE(obj)	(VIR_IS_INTERFACE(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_STORAGE_POOL_MAGIC:
@@ -74,9 +74,9 @@
  * magic value used to protect the API when pointers to storage pool structures
  * are passed down by the users.
  */
-#define VIR_STORAGE_POOL_MAGIC		0xDEAD5678
-#define VIR_IS_STORAGE_POOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_POOL_MAGIC)
-#define VIR_IS_CONNECTED_STORAGE_POOL(obj)	(VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STORAGE_POOL_MAGIC		0xDEAD5678
+# define VIR_IS_STORAGE_POOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_POOL_MAGIC)
+# define VIR_IS_CONNECTED_STORAGE_POOL(obj)	(VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_STORAGE_VOL_MAGIC:
@@ -84,9 +84,9 @@
  * magic value used to protect the API when pointers to storage vol structures
  * are passed down by the users.
  */
-#define VIR_STORAGE_VOL_MAGIC		0xDEAD8765
-#define VIR_IS_STORAGE_VOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
-#define VIR_IS_CONNECTED_STORAGE_VOL(obj)	(VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STORAGE_VOL_MAGIC		0xDEAD8765
+# define VIR_IS_STORAGE_VOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
+# define VIR_IS_CONNECTED_STORAGE_VOL(obj)	(VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_NODE_DEVICE_MAGIC:
@@ -94,9 +94,9 @@
  * magic value used to protect the API when pointers to storage vol structures
  * are passed down by the users.
  */
-#define VIR_NODE_DEVICE_MAGIC                   0xDEAD5679
-#define VIR_IS_NODE_DEVICE(obj)                 ((obj) && (obj)->magic==VIR_NODE_DEVICE_MAGIC)
-#define VIR_IS_CONNECTED_NODE_DEVICE(obj)       (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NODE_DEVICE_MAGIC                   0xDEAD5679
+# define VIR_IS_NODE_DEVICE(obj)                 ((obj) && (obj)->magic==VIR_NODE_DEVICE_MAGIC)
+# define VIR_IS_CONNECTED_NODE_DEVICE(obj)       (VIR_IS_NODE_DEVICE(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /**
  * VIR_SECRET_MAGIC:
@@ -104,9 +104,9 @@
  * magic value used to protect the API when pointers to secret structures are
  * passed down by the users.
  */
-#define VIR_SECRET_MAGIC		0x5678DEAD
-#define VIR_IS_SECRET(obj)		((obj) && (obj)->magic==VIR_SECRET_MAGIC)
-#define VIR_IS_CONNECTED_SECRET(obj)	(VIR_IS_SECRET(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_SECRET_MAGIC		0x5678DEAD
+# define VIR_IS_SECRET(obj)		((obj) && (obj)->magic==VIR_SECRET_MAGIC)
+# define VIR_IS_CONNECTED_SECRET(obj)	(VIR_IS_SECRET(obj) && VIR_IS_CONNECT((obj)->conn))
 
 
 /**
@@ -115,9 +115,9 @@
  * magic value used to protect the API when pointers to stream structures
  * are passed down by the users.
  */
-#define VIR_STREAM_MAGIC                   0x1DEAD666
-#define VIR_IS_STREAM(obj)                 ((obj) && (obj)->magic==VIR_STREAM_MAGIC)
-#define VIR_IS_CONNECTED_STREAM(obj)       (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_STREAM_MAGIC                   0x1DEAD666
+# define VIR_IS_STREAM(obj)                 ((obj) && (obj)->magic==VIR_STREAM_MAGIC)
+# define VIR_IS_CONNECTED_STREAM(obj)       (VIR_IS_STREAM(obj) && VIR_IS_CONNECT((obj)->conn))
 
 
 /**

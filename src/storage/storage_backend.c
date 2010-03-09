@@ -26,11 +26,11 @@
 #include <string.h>
 #include <stdio.h>
 #if HAVE_REGEX_H
-#include <regex.h>
+# include <regex.h>
 #endif
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 #include <unistd.h>
 #include <fcntl.h>
@@ -40,7 +40,7 @@
 #include <dirent.h>
 
 #if HAVE_SELINUX
-#include <selinux/selinux.h>
+# include <selinux/selinux.h>
 #endif
 
 #include "datatypes.h"
@@ -55,26 +55,26 @@
 #include "logging.h"
 
 #if WITH_STORAGE_LVM
-#include "storage_backend_logical.h"
+# include "storage_backend_logical.h"
 #endif
 #if WITH_STORAGE_ISCSI
-#include "storage_backend_iscsi.h"
+# include "storage_backend_iscsi.h"
 #endif
 #if WITH_STORAGE_SCSI
-#include "storage_backend_scsi.h"
+# include "storage_backend_scsi.h"
 #endif
 #if WITH_STORAGE_MPATH
-#include "storage_backend_mpath.h"
+# include "storage_backend_mpath.h"
 #endif
 #if WITH_STORAGE_DISK
-#include "storage_backend_disk.h"
+# include "storage_backend_disk.h"
 #endif
 #if WITH_STORAGE_DIR
-#include "storage_backend_fs.h"
+# include "storage_backend_fs.h"
 #endif
 
 #ifndef DEV_BSIZE
-#define DEV_BSIZE 512
+# define DEV_BSIZE 512
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

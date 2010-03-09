@@ -21,14 +21,14 @@
  */
 
 #ifndef __VIR_STORAGE_ENCRYPTION_H__
-#define __VIR_STORAGE_ENCRYPTION_H__
+# define __VIR_STORAGE_ENCRYPTION_H__
 
-#include "internal.h"
-#include "buf.h"
-#include "util.h"
+# include "internal.h"
+# include "buf.h"
+# include "util.h"
 
-#include <stdbool.h>
-#include <libxml/tree.h>
+# include <stdbool.h>
+# include <libxml/tree.h>
 
 enum virStorageEncryptionSecretType {
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE = 0,

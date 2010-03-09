@@ -23,7 +23,7 @@ mymain(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 static char *progname;
 static char *abs_srcdir;
 
-#define MAX_FILE 4096
+# define MAX_FILE 4096
 
 extern int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr nodeinfo);
 

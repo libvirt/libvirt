@@ -11,10 +11,10 @@
  *
  */
 #ifndef __VIR_SECURITY_H__
-#define __VIR_SECURITY_H__
+# define __VIR_SECURITY_H__
 
-#include "internal.h"
-#include "domain_conf.h"
+# include "internal.h"
+# include "domain_conf.h"
 
 /*
  * Return values for security driver probing: the driver will determine
@@ -88,7 +88,7 @@ int virSecurityDriverStartup(virSecurityDriverPtr *drv,
 int
 virSecurityDriverVerify(virDomainDefPtr def);
 
-#define virSecurityReportError(code, ...)                           \
+# define virSecurityReportError(code, ...)                           \
     virReportErrorHelper(NULL, VIR_FROM_SECURITY, code, __FILE__,   \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 

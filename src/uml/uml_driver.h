@@ -23,9 +23,9 @@
 
 
 #ifndef UML_DRIVER_H
-#define UML_DRIVER_H
+# define UML_DRIVER_H
 
-#include "internal.h"
+# include "internal.h"
 
 int umlRegister(void);
 

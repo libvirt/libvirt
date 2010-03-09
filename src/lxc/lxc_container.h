@@ -22,28 +22,28 @@
  */
 
 #ifndef LXC_CONTAINER_H
-#define LXC_CONTAINER_H
+# define LXC_CONTAINER_H
 
-#include "lxc_conf.h"
+# include "lxc_conf.h"
 
 enum {
     LXC_CONTAINER_FEATURE_NET = (1 << 0),
     LXC_CONTAINER_FEATURE_USER = (1 << 1),
 };
 
-#define LXC_DEV_MAJ_MEMORY  1
-#define LXC_DEV_MIN_NULL    3
-#define LXC_DEV_MIN_ZERO    5
-#define LXC_DEV_MIN_FULL    7
-#define LXC_DEV_MIN_RANDOM  8
-#define LXC_DEV_MIN_URANDOM 9
+# define LXC_DEV_MAJ_MEMORY  1
+# define LXC_DEV_MIN_NULL    3
+# define LXC_DEV_MIN_ZERO    5
+# define LXC_DEV_MIN_FULL    7
+# define LXC_DEV_MIN_RANDOM  8
+# define LXC_DEV_MIN_URANDOM 9
 
-#define LXC_DEV_MAJ_TTY     5
-#define LXC_DEV_MIN_TTY     0
-#define LXC_DEV_MIN_CONSOLE 1
-#define LXC_DEV_MIN_PTMX    2
+# define LXC_DEV_MAJ_TTY     5
+# define LXC_DEV_MIN_TTY     0
+# define LXC_DEV_MIN_CONSOLE 1
+# define LXC_DEV_MIN_PTMX    2
 
-#define LXC_DEV_MAJ_PTY     136
+# define LXC_DEV_MAJ_PTY     136
 
 int lxcContainerSendContinue(int control);
 

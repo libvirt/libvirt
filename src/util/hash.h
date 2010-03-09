@@ -10,7 +10,7 @@
  */
 
 #ifndef __VIR_HASH_H__
-#define __VIR_HASH_H__
+# define __VIR_HASH_H__
 
 /*
  * The hash table.

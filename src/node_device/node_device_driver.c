@@ -662,11 +662,11 @@ int nodedevRegister(void) {
         return udevNodeRegister();
     return 0;
 #else
-#ifdef HAVE_HAL
+# ifdef HAVE_HAL
     return halNodeRegister();
-#endif
-#ifdef HAVE_UDEV
+# endif
+# ifdef HAVE_UDEV
     return udevNodeRegister();
-#endif
+# endif
 #endif
 }

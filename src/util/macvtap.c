@@ -29,32 +29,32 @@
 
 #if WITH_MACVTAP
 
-#include <stdio.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <stdint.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
+# include <stdio.h>
+# include <errno.h>
+# include <fcntl.h>
+# include <stdint.h>
+# include <sys/socket.h>
+# include <sys/ioctl.h>
 
-#include <linux/if.h>
-#include <linux/netlink.h>
-#include <linux/rtnetlink.h>
-#include <linux/if_tun.h>
+# include <linux/if.h>
+# include <linux/netlink.h>
+# include <linux/rtnetlink.h>
+# include <linux/if_tun.h>
 
-#include "util.h"
-#include "memory.h"
-#include "macvtap.h"
-#include "conf/domain_conf.h"
-#include "virterror_internal.h"
+# include "util.h"
+# include "memory.h"
+# include "macvtap.h"
+# include "conf/domain_conf.h"
+# include "virterror_internal.h"
 
-#define VIR_FROM_THIS VIR_FROM_NET
+# define VIR_FROM_THIS VIR_FROM_NET
 
-#define ReportError(conn, code, ...)                                      \
+# define ReportError(conn, code, ...)                                      \
         virReportErrorHelper(conn, VIR_FROM_NET, code, __FILE__,          \
                                __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#define MACVTAP_NAME_PREFIX	"macvtap"
-#define MACVTAP_NAME_PATTERN	"macvtap%d"
+# define MACVTAP_NAME_PREFIX	"macvtap"
+# define MACVTAP_NAME_PATTERN	"macvtap%d"
 
 static int nlOpen(void)
 {

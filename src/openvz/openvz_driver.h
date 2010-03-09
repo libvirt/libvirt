@@ -27,9 +27,9 @@
 
 
 #ifndef OPENVZ_DRIVER_H
-#define OPENVZ_DRIVER_H
+# define OPENVZ_DRIVER_H
 
-#include "internal.h"
+# include "internal.h"
 
 int openvzRegister(void);
 

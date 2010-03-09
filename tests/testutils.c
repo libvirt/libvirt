@@ -16,10 +16,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifndef WIN32
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 #ifdef HAVE_REGEX_H
-#include <regex.h>
+# include <regex.h>
 #endif
 #include <unistd.h>
 #include <string.h>
@@ -33,11 +33,11 @@
 #include "virterror_internal.h"
 
 #if TEST_OOM_TRACE
-#include <execinfo.h>
+# include <execinfo.h>
 #endif
 
 #ifdef HAVE_PATHS_H
-#include <paths.h>
+# include <paths.h>
 #endif
 
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
@@ -204,9 +204,9 @@ void virtTestCaptureProgramExecChild(const char *const argv[],
     int stdinfd = -1;
     const char *const env[] = {
         "LANG=C",
-#if WITH_DRIVER_MODULES
+# if WITH_DRIVER_MODULES
         "LIBVIRT_DRIVER_DIR=" TEST_DRIVER_DIR,
-#endif
+# endif
         NULL
     };
 
@@ -445,10 +445,10 @@ int virtTestMain(int argc,
     if (ret != EXIT_SUCCESS)
         goto cleanup;
 
-#if TEST_OOM_TRACE
+# if TEST_OOM_TRACE
     if (virTestGetDebug())
         virAllocTestHook(virtTestErrorHook, NULL);
-#endif
+# endif
 
     if (testOOM) {
         /* Makes next test runs quiet... */

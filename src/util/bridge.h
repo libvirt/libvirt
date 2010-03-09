@@ -20,26 +20,26 @@
  */
 
 #ifndef __QEMUD_BRIDGE_H__
-#define __QEMUD_BRIDGE_H__
+# define __QEMUD_BRIDGE_H__
 
-#include <config.h>
+# include <config.h>
 
-#if defined(WITH_BRIDGE)
+# if defined(WITH_BRIDGE)
 
-#include <net/if.h>
-#include <netinet/in.h>
+#  include <net/if.h>
+#  include <netinet/in.h>
 
 /**
  * BR_IFNAME_MAXLEN:
  * maximum size in byte of the name for an interface
  */
-#define BR_IFNAME_MAXLEN    IF_NAMESIZE
+#  define BR_IFNAME_MAXLEN    IF_NAMESIZE
 
 /**
  * BR_INET_ADDR_MAXLEN:
  * maximum size in bytes for an inet addess name
  */
-#define BR_INET_ADDR_MAXLEN INET_ADDRSTRLEN
+#  define BR_INET_ADDR_MAXLEN INET_ADDRSTRLEN
 
 typedef struct _brControl brControl;
 
@@ -109,6 +109,6 @@ int     brGetEnableSTP          (brControl *ctl,
                                  const char *bridge,
                                  int *enable);
 
-#endif /* WITH_BRIDGE */
+# endif /* WITH_BRIDGE */
 
 #endif /* __QEMUD_BRIDGE_H__ */

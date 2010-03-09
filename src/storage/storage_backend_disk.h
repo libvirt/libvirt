@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIR_STORAGE_BACKEND_DISK_H__
-#define __VIR_STORAGE_BACKEND_DISK_H__
+# define __VIR_STORAGE_BACKEND_DISK_H__
 
-#include "storage_backend.h"
+# include "storage_backend.h"
 
 extern virStorageBackend virStorageBackendDisk;
 

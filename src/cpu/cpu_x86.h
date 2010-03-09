@@ -22,9 +22,9 @@
  */
 
 #ifndef __VIR_CPU_X86_H__
-#define __VIR_CPU_X86_H__
+# define __VIR_CPU_X86_H__
 
-#include "cpu.h"
+# include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverX86;
 

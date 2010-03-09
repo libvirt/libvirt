@@ -11,14 +11,14 @@
 #include "libvirt/virterror.h"
 
 #ifdef __GNUC__
-#ifdef ATTRIBUTE_UNUSED
-#undef ATTRIBUTE_UNUSED
-#endif
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
-#endif /* ATTRIBUTE_UNUSED */
+# ifdef ATTRIBUTE_UNUSED
+#  undef ATTRIBUTE_UNUSED
+# endif
+# ifndef ATTRIBUTE_UNUSED
+#  define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# endif /* ATTRIBUTE_UNUSED */
 #else
-#define ATTRIBUTE_UNUSED
+# define ATTRIBUTE_UNUSED
 #endif
 
 #define PyvirConnect_Get(v) (((v) == Py_None) ? NULL : \

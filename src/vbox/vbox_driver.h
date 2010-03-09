@@ -27,9 +27,9 @@
  */
 
 #ifndef VBOX_DRIVER_H
-#define VBOX_DRIVER_H
+# define VBOX_DRIVER_H
 
-#include "internal.h"
+# include "internal.h"
 
 int vboxRegister(void);
 

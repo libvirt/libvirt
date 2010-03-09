@@ -23,34 +23,34 @@
 
 #if defined(WITH_BRIDGE)
 
-#include "bridge.h"
+# include "bridge.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <paths.h>
-#include <sys/wait.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <arpa/inet.h>
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <sys/ioctl.h>
+# include <paths.h>
+# include <sys/wait.h>
 
-#include <linux/param.h>     /* HZ                 */
-#include <linux/sockios.h>   /* SIOCBRADDBR etc.   */
-#include <linux/if_bridge.h> /* SYSFS_BRIDGE_ATTR  */
-#include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */
-#include <net/if_arp.h>    /* ARPHRD_ETHER */
+# include <linux/param.h>     /* HZ                 */
+# include <linux/sockios.h>   /* SIOCBRADDBR etc.   */
+# include <linux/if_bridge.h> /* SYSFS_BRIDGE_ATTR  */
+# include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */
+# include <net/if_arp.h>    /* ARPHRD_ETHER */
 
-#include "internal.h"
-#include "memory.h"
-#include "util.h"
-#include "logging.h"
+# include "internal.h"
+# include "memory.h"
+# include "util.h"
+# include "logging.h"
 
-#define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
-#define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
+# define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
+# define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
 struct _brControl {
     int fd;
@@ -122,7 +122,7 @@ brShutdown(brControl *ctl)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRADDBR
+# ifdef SIOCBRADDBR
 int
 brAddBridge(brControl *ctl,
             const char *name)
@@ -135,15 +135,15 @@ brAddBridge(brControl *ctl,
 
     return errno;
 }
-#else
+# else
 int brAddBridge (brControl *ctl ATTRIBUTE_UNUSED,
                  const char *name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
-#endif
+# endif
 
-#ifdef SIOCBRDELBR
+# ifdef SIOCBRDELBR
 int
 brHasBridge(brControl *ctl,
             const char *name)
@@ -167,14 +167,14 @@ brHasBridge(brControl *ctl,
 
     return 0;
 }
-#else
+# else
 int
 brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
             const char *name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
-#endif
+# endif
 
 /**
  * brDeleteBridge:
@@ -185,7 +185,7 @@ brHasBridge(brControl *ctl ATTRIBUTE_UNUSED,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRDELBR
+# ifdef SIOCBRDELBR
 int
 brDeleteBridge(brControl *ctl,
                const char *name)
@@ -195,16 +195,16 @@ brDeleteBridge(brControl *ctl,
 
     return ioctl(ctl->fd, SIOCBRDELBR, name) == 0 ? 0 : errno;
 }
-#else
+# else
 int
 brDeleteBridge(brControl *ctl ATTRIBUTE_UNUSED,
                const char *name ATTRIBUTE_UNUSED)
 {
     return EINVAL;
 }
-#endif
+# endif
 
-#if defined(SIOCBRADDIF) && defined(SIOCBRDELIF)
+# if defined(SIOCBRADDIF) && defined(SIOCBRDELIF)
 static int
 brAddDelInterface(brControl *ctl,
                   int cmd,
@@ -226,7 +226,7 @@ brAddDelInterface(brControl *ctl,
 
     return ioctl(ctl->fd, cmd, &ifr) == 0 ? 0 : errno;
 }
-#endif
+# endif
 
 /**
  * brAddInterface:
@@ -238,7 +238,7 @@ brAddDelInterface(brControl *ctl,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRADDIF
+# ifdef SIOCBRADDIF
 int
 brAddInterface(brControl *ctl,
                const char *bridge,
@@ -246,7 +246,7 @@ brAddInterface(brControl *ctl,
 {
     return brAddDelInterface(ctl, SIOCBRADDIF, bridge, iface);
 }
-#else
+# else
 int
 brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
                const char *bridge ATTRIBUTE_UNUSED,
@@ -254,7 +254,7 @@ brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
 {
     return EINVAL;
 }
-#endif
+# endif
 
 /**
  * brDeleteInterface:
@@ -266,7 +266,7 @@ brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef SIOCBRDELIF
+# ifdef SIOCBRDELIF
 int
 brDeleteInterface(brControl *ctl,
                   const char *bridge,
@@ -274,7 +274,7 @@ brDeleteInterface(brControl *ctl,
 {
     return brAddDelInterface(ctl, SIOCBRDELIF, bridge, iface);
 }
-#else
+# else
 int
 brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
                   const char *bridge ATTRIBUTE_UNUSED,
@@ -282,7 +282,7 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 {
     return EINVAL;
 }
-#endif
+# endif
 
 /**
  * ifGetMtu
@@ -385,11 +385,11 @@ static int brSetInterfaceMtu(brControl *ctl,
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#ifdef IFF_VNET_HDR
+# ifdef IFF_VNET_HDR
 static int
 brProbeVnetHdr(int tapfd)
 {
-#if defined(IFF_VNET_HDR) && defined(TUNGETFEATURES) && defined(TUNGETIFF)
+#  if defined(IFF_VNET_HDR) && defined(TUNGETFEATURES) && defined(TUNGETIFF)
     unsigned int features;
     struct ifreq dummy;
 
@@ -417,13 +417,13 @@ brProbeVnetHdr(int tapfd)
     VIR_INFO0(_("Enabling IFF_VNET_HDR"));
 
     return 1;
-#else
+#  else
     (void) tapfd;
     VIR_INFO0(_("Not enabling IFF_VNET_HDR; disabled at build time"));
     return 0;
-#endif
+#  endif
 }
-#endif
+# endif
 
 /**
  * brAddTap:
@@ -463,12 +463,12 @@ brAddTap(brControl *ctl,
 
     ifr.ifr_flags = IFF_TAP|IFF_NO_PI;
 
-#ifdef IFF_VNET_HDR
+# ifdef IFF_VNET_HDR
     if (vnet_hdr && brProbeVnetHdr(fd))
         ifr.ifr_flags |= IFF_VNET_HDR;
-#else
+# else
     (void) vnet_hdr;
-#endif
+# endif
 
     if (virStrcpyStatic(ifr.ifr_name, *ifname) == NULL) {
         errno = EINVAL;

@@ -21,7 +21,7 @@
  */
 
 #ifndef __QEMUD_BRIDGE_FILTER_H__
-#define __QEMUD_BRIDGE_FILTER_H__
+# define __QEMUD_BRIDGE_FILTER_H__
 
 
 int networkAllowMacOnPort(struct qemud_driver *driver,

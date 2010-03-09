@@ -125,7 +125,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
 
 #if WITH_STORAGE_FS
 
-#include <mntent.h>
+# include <mntent.h>
 
 struct _virNetfsDiscoverState {
     const char *host;

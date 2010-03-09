@@ -20,6 +20,6 @@
  */
 
 #ifndef __VIR_NODE_DEVICE_HAL_H__
-#define __VIR_NODE_DEVICE_HAL_H__
+# define __VIR_NODE_DEVICE_HAL_H__
 
 #endif /* __VIR_NODE_DEVICE_HAL_H__ */

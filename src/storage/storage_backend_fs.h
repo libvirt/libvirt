@@ -22,14 +22,14 @@
  */
 
 #ifndef __VIR_STORAGE_BACKEND_FS_H__
-#define __VIR_STORAGE_BACKEND_FS_H__
+# define __VIR_STORAGE_BACKEND_FS_H__
 
-#include "storage_backend.h"
+# include "storage_backend.h"
 
-#if WITH_STORAGE_FS
+# if WITH_STORAGE_FS
 extern virStorageBackend virStorageBackendFileSystem;
 extern virStorageBackend virStorageBackendNetFileSystem;
-#endif
+# endif
 extern virStorageBackend virStorageBackendDirectory;
 
 #endif /* __VIR_STORAGE_BACKEND_FS_H__ */

@@ -23,16 +23,16 @@
  */
 
 #ifndef __LIBVIRT_H_
-#define __LIBVIRT_H_
+# define __LIBVIRT_H_
 
-#include "internal.h"
+# include "internal.h"
 
-#ifdef WITH_LIBVIRTD
+# ifdef WITH_LIBVIRTD
 int virStateInitialize(int privileged);
 int virStateCleanup(void);
 int virStateReload(void);
 int virStateActive(void);
-#endif
+# endif
 
 /* Feature detection.  This is a libvirt-private interface for determining
  * what features are supported by the driver.

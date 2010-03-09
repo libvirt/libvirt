@@ -23,11 +23,11 @@
 
 
 #ifndef __VIR_NETWORK__DRIVER_H
-#define __VIR_NETWORK__DRIVER_H
+# define __VIR_NETWORK__DRIVER_H
 
-#include <config.h>
+# include <config.h>
 
-#include "internal.h"
+# include "internal.h"
 
 int networkRegister(void);
 

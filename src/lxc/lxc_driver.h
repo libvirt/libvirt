@@ -22,9 +22,9 @@
  */
 
 #ifndef LXC_DRIVER_H
-#define LXC_DRIVER_H
+# define LXC_DRIVER_H
 
-#include <config.h>
+# include <config.h>
 
 /* Function declarations */
 int lxcRegister(void);

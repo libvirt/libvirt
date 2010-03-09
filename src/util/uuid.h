@@ -20,7 +20,7 @@
  */
 
 #ifndef __VIR_UUID_H__
-#define __VIR_UUID_H__
+# define __VIR_UUID_H__
 
 int virUUIDGenerate(unsigned char *uuid);
 

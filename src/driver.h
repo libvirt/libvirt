@@ -4,14 +4,14 @@
  */
 
 #ifndef __VIR_DRIVER_H__
-#define __VIR_DRIVER_H__
+# define __VIR_DRIVER_H__
 
-#include "config.h"
-#include <stdbool.h>
+# include "config.h"
+# include <stdbool.h>
 
-#include <libxml/uri.h>
+# include <libxml/uri.h>
 
-#include "internal.h"
+# include "internal.h"
 /*
  * List of registered drivers numbers
  */
@@ -55,7 +55,7 @@ typedef enum {
  *   0     Feature is not supported.
  *   -1    Error.
  */
-#define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                      \
+# define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                      \
     ((drv)->supports_feature ? (drv)->supports_feature((conn),(feature)) : 0)
 
 typedef virDrvOpenStatus
@@ -797,7 +797,7 @@ struct _virStorageDriver {
     virDrvStoragePoolIsPersistent   poolIsPersistent;
 };
 
-#ifdef WITH_LIBVIRTD
+# ifdef WITH_LIBVIRTD
 typedef int (*virDrvStateInitialize) (int privileged);
 typedef int (*virDrvStateCleanup) (void);
 typedef int (*virDrvStateReload) (void);
@@ -813,7 +813,7 @@ struct _virStateDriver {
     virDrvStateReload      reload;
     virDrvStateActive      active;
 };
-#endif
+# endif
 
 
 typedef struct _virDeviceMonitor virDeviceMonitor;
@@ -871,10 +871,10 @@ struct _virDeviceMonitor {
 };
 
 /* bits 16 and above of virDomainXMLFlags are for internal use */
-#define VIR_DOMAIN_XML_FLAGS_MASK 0xffff
+# define VIR_DOMAIN_XML_FLAGS_MASK 0xffff
 
 /* Bits 16 and above of virSecretGetValue flags are for internal use */
-#define VIR_SECRET_GET_VALUE_FLAGS_MASK 0xffff
+# define VIR_SECRET_GET_VALUE_FLAGS_MASK 0xffff
 
 enum {
     /* This getValue call is inside libvirt, override the "private" flag.
@@ -993,9 +993,9 @@ int virRegisterInterfaceDriver(virInterfaceDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
 int virRegisterDeviceMonitor(virDeviceMonitorPtr);
 int virRegisterSecretDriver(virSecretDriverPtr);
-#ifdef WITH_LIBVIRTD
+# ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
-#endif
+# endif
 void *virDriverLoadModule(const char *name);
 
 #endif /* __VIR_DRIVER_H__ */

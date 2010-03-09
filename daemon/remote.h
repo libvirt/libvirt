@@ -22,17 +22,17 @@
  */
 
 #ifndef __LIBVIRTD_REMOTE_H__
-#define __LIBVIRTD_REMOTE_H__
+# define __LIBVIRTD_REMOTE_H__
 
 
-#include "libvirtd.h"
+# include "libvirtd.h"
 
 typedef union {
-#include "remote_dispatch_args.h"
+# include "remote_dispatch_args.h"
 } dispatch_args;
 
 typedef union {
-#include "remote_dispatch_ret.h"
+# include "remote_dispatch_ret.h"
 } dispatch_ret;
 
 

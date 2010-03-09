@@ -24,11 +24,11 @@
 #include "threads.h"
 
 #ifdef HAVE_PTHREAD_H
-#include "threads-pthread.c"
+# include "threads-pthread.c"
 #else
-#ifdef WIN32
-#include "threads-win32.c"
-#else
-#error "Either pthreads or Win32 threads are required"
-#endif
+# ifdef WIN32
+#  include "threads-win32.c"
+# else
+#  error "Either pthreads or Win32 threads are required"
+# endif
 #endif

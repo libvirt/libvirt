@@ -20,9 +20,9 @@
  */
 
 #ifndef __VIR_PROCESSINFO_H__
-#define __VIR_PROCESSINFO_H__
+# define __VIR_PROCESSINFO_H__
 
-#include "internal.h"
+# include "internal.h"
 
 int virProcessInfoSetAffinity(pid_t pid,
                               const unsigned char *map,

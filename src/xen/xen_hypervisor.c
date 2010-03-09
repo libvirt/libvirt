@@ -27,13 +27,13 @@
 #include <sys/utsname.h>
 
 #ifdef __sun
-#include <sys/systeminfo.h>
+# include <sys/systeminfo.h>
 
-#include <priv.h>
+# include <priv.h>
 
-#ifndef PRIV_XVM_CONTROL
-#define PRIV_XVM_CONTROL ((const char *)"xvm_control")
-#endif
+# ifndef PRIV_XVM_CONTROL
+#  define PRIV_XVM_CONTROL ((const char *)"xvm_control")
+# endif
 
 #endif /* __sun */
 
@@ -41,11 +41,11 @@
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
 #ifdef HAVE_XEN_LINUX_PRIVCMD_H
-#include <xen/linux/privcmd.h>
+# include <xen/linux/privcmd.h>
 #else
-#ifdef HAVE_XEN_SYS_PRIVCMD_H
-#include <xen/sys/privcmd.h>
-#endif
+# ifdef HAVE_XEN_SYS_PRIVCMD_H
+#  include <xen/sys/privcmd.h>
+# endif
 #endif
 
 /* required for shutdown flags */
@@ -79,7 +79,7 @@ typedef struct v0_hypercall_struct {
 } v0_hypercall_t;
 
 #ifdef __linux__
-#define XEN_V0_IOCTL_HYPERCALL_CMD \
+# define XEN_V0_IOCTL_HYPERCALL_CMD \
         _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t))
 /* the new one */
 typedef struct v1_hypercall_struct
@@ -87,26 +87,26 @@ typedef struct v1_hypercall_struct
     uint64_t op;
     uint64_t arg[5];
 } v1_hypercall_t;
-#define XEN_V1_IOCTL_HYPERCALL_CMD                  \
+# define XEN_V1_IOCTL_HYPERCALL_CMD                  \
     _IOC(_IOC_NONE, 'P', 0, sizeof(v1_hypercall_t))
 typedef v1_hypercall_t hypercall_t;
 #elif defined(__sun)
 typedef privcmd_hypercall_t hypercall_t;
 #else
-#error "unsupported platform"
+# error "unsupported platform"
 #endif
 
 #ifndef __HYPERVISOR_sysctl
-#define __HYPERVISOR_sysctl 35
+# define __HYPERVISOR_sysctl 35
 #endif
 #ifndef __HYPERVISOR_domctl
-#define __HYPERVISOR_domctl 36
+# define __HYPERVISOR_domctl 36
 #endif
 
 #ifdef WITH_RHEL5_API
-#define SYS_IFACE_MIN_VERS_NUMA 3
+# define SYS_IFACE_MIN_VERS_NUMA 3
 #else
-#define SYS_IFACE_MIN_VERS_NUMA 4
+# define SYS_IFACE_MIN_VERS_NUMA 4
 #endif
 
 /* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
@@ -114,7 +114,7 @@ typedef privcmd_hypercall_t hypercall_t;
  * Ensure MAX_VIRT_CPUS is defined accordingly.
  */
 #if !defined(MAX_VIRT_CPUS) && defined(XEN_LEGACY_MAX_VCPUS)
-#define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
+# define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
 #endif
 
 static int xen_ioctl_hypercall_cmd = 0;
@@ -141,16 +141,16 @@ static regex_t xen_cap_rec;
  * The content of the structures for a getdomaininfolist system hypercall
  */
 #ifndef DOMFLAGS_DYING
-#define DOMFLAGS_DYING     (1<<0) /* Domain is scheduled to die.             */
-#define DOMFLAGS_HVM       (1<<1) /* Domain is HVM                           */
-#define DOMFLAGS_SHUTDOWN  (1<<2) /* The guest OS has shut down.             */
-#define DOMFLAGS_PAUSED    (1<<3) /* Currently paused by control software.   */
-#define DOMFLAGS_BLOCKED   (1<<4) /* Currently blocked pending an event.     */
-#define DOMFLAGS_RUNNING   (1<<5) /* Domain is currently running.            */
-#define DOMFLAGS_CPUMASK      255 /* CPU to which this domain is bound.      */
-#define DOMFLAGS_CPUSHIFT       8
-#define DOMFLAGS_SHUTDOWNMASK 255 /* DOMFLAGS_SHUTDOWN guest-supplied code.  */
-#define DOMFLAGS_SHUTDOWNSHIFT 16
+# define DOMFLAGS_DYING     (1<<0) /* Domain is scheduled to die.             */
+# define DOMFLAGS_HVM       (1<<1) /* Domain is HVM                           */
+# define DOMFLAGS_SHUTDOWN  (1<<2) /* The guest OS has shut down.             */
+# define DOMFLAGS_PAUSED    (1<<3) /* Currently paused by control software.   */
+# define DOMFLAGS_BLOCKED   (1<<4) /* Currently blocked pending an event.     */
+# define DOMFLAGS_RUNNING   (1<<5) /* Domain is currently running.            */
+# define DOMFLAGS_CPUMASK      255 /* CPU to which this domain is bound.      */
+# define DOMFLAGS_CPUSHIFT       8
+# define DOMFLAGS_SHUTDOWNMASK 255 /* DOMFLAGS_SHUTDOWN guest-supplied code.  */
+# define DOMFLAGS_SHUTDOWNSHIFT 16
 #endif
 
 /*
@@ -158,10 +158,10 @@ static regex_t xen_cap_rec;
  * They are defined in xen/sched.h
  */
 #ifndef SHUTDOWN_poweroff
-#define SHUTDOWN_poweroff   0  /* Domain exited normally. Clean up and kill. */
-#define SHUTDOWN_reboot     1  /* Clean up, kill, and then restart.          */
-#define SHUTDOWN_suspend    2  /* Clean up, save suspend info, kill.         */
-#define SHUTDOWN_crash      3  /* Tell controller we've crashed.             */
+# define SHUTDOWN_poweroff   0  /* Domain exited normally. Clean up and kill. */
+# define SHUTDOWN_reboot     1  /* Clean up, kill, and then restart.          */
+# define SHUTDOWN_suspend    2  /* Clean up, save suspend info, kill.         */
+# define SHUTDOWN_crash      3  /* Tell controller we've crashed.             */
 #endif
 
 #define XEN_V0_OP_GETDOMAININFOLIST	38
@@ -748,12 +748,12 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 
 
 #ifdef __linux__
-#define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
-#define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
+# define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
+# define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
 #elif defined(__sun)
-#define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
+# define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
 #else
-#error "unsupported platform"
+# error "unsupported platform"
 #endif
 
 #ifndef PROXY
@@ -1430,7 +1430,7 @@ xenHypervisorDomainBlockStats (virDomainPtr dom,
                                const char *path,
                                struct _virDomainBlockStats *stats)
 {
-#ifdef __linux__
+# ifdef __linux__
     xenUnifiedPrivatePtr priv;
     int ret;
 
@@ -1440,12 +1440,12 @@ xenHypervisorDomainBlockStats (virDomainPtr dom,
     ret = xenLinuxDomainBlockStats (priv, dom, path, stats);
     xenUnifiedUnlock(priv);
     return ret;
-#else
+# else
     virXenErrorFunc (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                      "block statistics not supported on this platform",
                      dom->id);
     return -1;
-#endif
+# endif
 }
 
 /* Paths have the form vif<domid>.<n> (this interface checks that
@@ -1460,7 +1460,7 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
                                    const char *path,
                                    struct _virDomainInterfaceStats *stats)
 {
-#ifdef __linux__
+# ifdef __linux__
     int rqdomid, device;
 
     /* Verify that the vif requested is one belonging to the current
@@ -1478,11 +1478,11 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
     }
 
     return linuxDomainInterfaceStats(path, stats);
-#else
+# else
     virXenErrorFunc (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                      "/proc/net/dev: Interface not found", 0);
     return -1;
-#endif
+# endif
 }
 
 /**

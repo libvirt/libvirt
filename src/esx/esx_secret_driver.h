@@ -21,7 +21,7 @@
  */
 
 #ifndef __ESX_SECRET_DRIVER_H__
-#define __ESX_SECRET_DRIVER_H__
+# define __ESX_SECRET_DRIVER_H__
 
 int esxSecretRegister(void);
 

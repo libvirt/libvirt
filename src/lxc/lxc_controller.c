@@ -36,7 +36,7 @@
 #include <sys/mount.h>
 
 #if HAVE_CAPNG
-#include <cap-ng.h>
+# include <cap-ng.h>
 #endif
 
 #include "virterror_internal.h"
@@ -485,11 +485,11 @@ static int lxcControllerCleanupInterfaces(unsigned int nveths,
 }
 
 #ifndef MS_REC
-#define MS_REC          16384
+# define MS_REC          16384
 #endif
 
 #ifndef MS_SLAVE
-#define MS_SLAVE              (1<<19)
+# define MS_SLAVE              (1<<19)
 #endif
 
 static int

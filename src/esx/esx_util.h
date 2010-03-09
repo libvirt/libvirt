@@ -21,12 +21,12 @@
  */
 
 #ifndef __ESX_UTIL_H__
-#define __ESX_UTIL_H__
+# define __ESX_UTIL_H__
 
-#include <libxml/uri.h>
+# include <libxml/uri.h>
 
-#include "internal.h"
-#include "conf.h"
+# include "internal.h"
+# include "conf.h"
 
 char *esxUtil_RequestUsername(virConnectAuthPtr auth,
                               const char *defaultUsername,

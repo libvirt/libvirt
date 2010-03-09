@@ -14,24 +14,24 @@
  */
 
 #ifndef __XEND_INTERNAL_H_
-#define __XEND_INTERNAL_H_
+# define __XEND_INTERNAL_H_
 
-#include <sys/types.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <libxml/uri.h>
+# include <sys/types.h>
+# include <stdint.h>
+# include <stdbool.h>
+# include <libxml/uri.h>
 
-#include "internal.h"
-#include "capabilities.h"
-#include "domain_conf.h"
-#include "driver.h"
-#include "buf.h"
+# include "internal.h"
+# include "capabilities.h"
+# include "domain_conf.h"
+# include "driver.h"
+# include "buf.h"
 
-#ifdef __sun
-#define DEFAULT_VIF_SCRIPT "vif-vnic"
-#else
-#define DEFAULT_VIF_SCRIPT "vif-bridge"
-#endif
+# ifdef __sun
+#  define DEFAULT_VIF_SCRIPT "vif-vnic"
+# else
+#  define DEFAULT_VIF_SCRIPT "vif-bridge"
+# endif
 
 int
 xenDaemonOpen_unix(virConnectPtr conn, const char *path);

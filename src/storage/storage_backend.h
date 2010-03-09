@@ -22,11 +22,11 @@
  */
 
 #ifndef __VIR_STORAGE_BACKEND_H__
-#define __VIR_STORAGE_BACKEND_H__
+# define __VIR_STORAGE_BACKEND_H__
 
-#include <stdint.h>
-#include "internal.h"
-#include "storage_conf.h"
+# include <stdint.h>
+# include "internal.h"
+# include "storage_conf.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn, const char *srcSpec, unsigned int flags);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn, virStoragePoolObjPtr pool);

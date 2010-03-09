@@ -21,12 +21,12 @@
  */
 
 #ifndef __ESX_VMX_H__
-#define __ESX_VMX_H__
+# define __ESX_VMX_H__
 
-#include "internal.h"
-#include "conf.h"
-#include "domain_conf.h"
-#include "esx_vi.h"
+# include "internal.h"
+# include "conf.h"
+# include "domain_conf.h"
+# include "esx_vi.h"
 
 int
 esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id);

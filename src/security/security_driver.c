@@ -17,11 +17,11 @@
 
 #include "security_driver.h"
 #ifdef WITH_SECDRIVER_SELINUX
-#include "security_selinux.h"
+# include "security_selinux.h"
 #endif
 
 #ifdef WITH_SECDRIVER_APPARMOR
-#include "security_apparmor.h"
+# include "security_apparmor.h"
 #endif
 
 static virSecurityDriverPtr security_drivers[] = {

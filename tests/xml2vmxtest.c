@@ -2,20 +2,20 @@
 
 #ifdef WITH_ESX
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
 
-#include "internal.h"
-#include "memory.h"
-#include "testutils.h"
-#include "esx/esx_vmx.h"
+# include "internal.h"
+# include "memory.h"
+# include "testutils.h"
+# include "esx/esx_vmx.h"
 
 static char *progname = NULL;
 static char *abs_srcdir = NULL;
 static virCapsPtr caps = NULL;
 
-#define MAX_FILE 4096
+# define MAX_FILE 4096
 
 static void
 testESXCapsInit(void)
@@ -154,7 +154,7 @@ mymain(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    #define DO_TEST(_in, _out, _version)                                      \
+# define DO_TEST(_in, _out, _version)                                      \
         do {                                                                  \
             struct testInfo info = { _in, _out, _version };                   \
             virResetLastError();                                              \

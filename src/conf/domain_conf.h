@@ -22,20 +22,20 @@
  */
 
 #ifndef __DOMAIN_CONF_H
-#define __DOMAIN_CONF_H
+# define __DOMAIN_CONF_H
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
+# include <libxml/parser.h>
+# include <libxml/tree.h>
+# include <libxml/xpath.h>
 
-#include "internal.h"
-#include "capabilities.h"
-#include "storage_encryption_conf.h"
-#include "cpu_conf.h"
-#include "util.h"
-#include "threads.h"
-#include "hash.h"
-#include "network.h"
+# include "internal.h"
+# include "capabilities.h"
+# include "storage_encryption_conf.h"
+# include "cpu_conf.h"
+# include "util.h"
+# include "threads.h"
+# include "hash.h"
+# include "network.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -566,7 +566,7 @@ struct _virDomainDeviceDef {
 };
 
 
-#define VIR_DOMAIN_MAX_BOOT_DEVS 4
+# define VIR_DOMAIN_MAX_BOOT_DEVS 4
 
 /* 3 possible boot devices */
 enum virDomainBootOrder {
@@ -656,7 +656,7 @@ struct _virDomainClockDef {
     } data;
 };
 
-#define VIR_DOMAIN_CPUMASK_LEN 1024
+# define VIR_DOMAIN_CPUMASK_LEN 1024
 
 /* Guest VM main configuration */
 typedef struct _virDomainDef virDomainDef;
@@ -816,7 +816,7 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
-#ifndef PROXY
+# ifndef PROXY
 virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
                                               const virDomainDefPtr def,
                                               const char *xmlStr,
@@ -840,7 +840,7 @@ virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
-#endif
+# endif
 char *virDomainDefFormat(virDomainDefPtr def,
                          int flags);
 

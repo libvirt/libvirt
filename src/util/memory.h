@@ -21,9 +21,9 @@
 
 
 #ifndef __VIR_MEMORY_H_
-#define __VIR_MEMORY_H_
+# define __VIR_MEMORY_H_
 
-#include "internal.h"
+# include "internal.h"
 
 /* Return 1 if an array of N objects, each of size S, cannot exist due
    to size arithmetic overflow.  S must be positive and N must be
@@ -37,10 +37,10 @@
    sizeof (ptrdiff_t) <= sizeof (size_t), so do not bother to test for
    exactly-SIZE_MAX allocations on such hosts; this avoids a test and
    branch when S is known to be 1.  */
-#ifndef xalloc_oversized
-# define xalloc_oversized(n, s) \
+# ifndef xalloc_oversized
+#  define xalloc_oversized(n, s) \
     ((size_t) (sizeof (ptrdiff_t) <= sizeof (size_t) ? -1 : -2) / (s) < (n))
-#endif
+# endif
 
 
 
@@ -60,7 +60,7 @@ void virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
+# define VIR_ALLOC(ptr) virAlloc(&(ptr), sizeof(*(ptr)))
 
 /**
  * VIR_ALLOC_N:
@@ -73,7 +73,7 @@ void virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_ALLOC_N(ptr, count) virAllocN(&(ptr), sizeof(*(ptr)), (count))
+# define VIR_ALLOC_N(ptr, count) virAllocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
  * VIR_REALLOC_N:
@@ -86,7 +86,7 @@ void virFree(void *ptrptr);
  *
  * Returns -1 on failure, 0 on success
  */
-#define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
+# define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
 
 /**
  * VIR_FREE:
@@ -95,15 +95,15 @@ void virFree(void *ptrptr);
  * Free the memory stored in 'ptr' and update to point
  * to NULL.
  */
-#define VIR_FREE(ptr) virFree(&(ptr))
+# define VIR_FREE(ptr) virFree(&(ptr))
 
 
-#if TEST_OOM
+# if TEST_OOM
 void virAllocTestInit(void);
 int virAllocTestCount(void);
 void virAllocTestOOM(int n, int m);
 void virAllocTestHook(void (*func)(int, void*), void *data);
-#endif
+# endif
 
 
 

@@ -30,8 +30,8 @@
 #include "util.h"
 
 #if HAVE_YAJL
-#include <yajl/yajl_gen.h>
-#include <yajl/yajl_parse.h>
+# include <yajl/yajl_gen.h>
+# include <yajl/yajl_parse.h>
 #endif
 
 /* XXX fixme */

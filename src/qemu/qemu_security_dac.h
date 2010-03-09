@@ -13,7 +13,7 @@
 #include "qemu_conf.h"
 
 #ifndef __QEMU_SECURITY_DAC
-#define __QEMU_SECURITY_DAC
+# define __QEMU_SECURITY_DAC
 
 extern virSecurityDriver qemuDACSecurityDriver;
 

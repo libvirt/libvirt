@@ -628,7 +628,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         }
     }
 
-    #define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)           \
+#define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)           \
         do {                                                                  \
             if (virStrToLong_ll((*anyType)->value, NULL, 10, &number) < 0) {  \
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                          \
@@ -672,7 +672,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         _DESERIALIZE_NUMBER(Long, "xsd:long", int64, INT64_MIN, INT64_MAX);
     }
 
-    #undef _DESERIALIZE_NUMBER
+#undef _DESERIALIZE_NUMBER
 
     return 0;
 

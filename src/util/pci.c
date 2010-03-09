@@ -40,7 +40,7 @@
 
 /* avoid compilation breakage on some systems */
 #ifndef MODPROBE
-#define MODPROBE "modprobe"
+# define MODPROBE "modprobe"
 #endif
 
 #define PCI_SYSFS "/sys/bus/pci/"
@@ -93,9 +93,9 @@ struct _pciDeviceList {
 
 /* PCI30 6.2.1 */
 #define PCI_HEADER_TYPE         0x0e    /* Header type */
-#define  PCI_HEADER_TYPE_BRIDGE 0x1
-#define  PCI_HEADER_TYPE_MASK   0x7f
-#define  PCI_HEADER_TYPE_MULTI  0x80
+#define PCI_HEADER_TYPE_BRIDGE 0x1
+#define PCI_HEADER_TYPE_MASK   0x7f
+#define PCI_HEADER_TYPE_MULTI  0x80
 
 /* PCI30 6.2.1  Device Identification */
 #define PCI_CLASS_DEVICE        0x0a    /* Device class */
@@ -105,7 +105,7 @@ struct _pciDeviceList {
 
 /* PCI30 6.2.3  Device Status */
 #define PCI_STATUS              0x06    /* 16 bits */
-#define  PCI_STATUS_CAP_LIST    0x10    /* Support Capability List */
+#define PCI_STATUS_CAP_LIST    0x10    /* Support Capability List */
 
 /* PCI30 6.7  Capabilities List */
 #define PCI_CAPABILITY_LIST     0x34    /* Offset of first capability list entry */
@@ -119,7 +119,7 @@ struct _pciDeviceList {
 
 /* PCIe20 7.8.3  Device Capabilities Register (Offset 04h) */
 #define PCI_EXP_DEVCAP          0x4     /* Device capabilities */
-#define  PCI_EXP_DEVCAP_FLR     (1<<28) /* Function Level Reset */
+#define PCI_EXP_DEVCAP_FLR     (1<<28) /* Function Level Reset */
 
 /* Header type 1 BR12 3.2 PCI-to-PCI Bridge Configuration Space Header Format */
 #define PCI_PRIMARY_BUS         0x18    /* BR12 3.2.5.2 Primary bus number */
@@ -127,18 +127,18 @@ struct _pciDeviceList {
 #define PCI_SUBORDINATE_BUS     0x1a    /* BR12 3.2.5.4 Highest bus number behind the bridge */
 #define PCI_BRIDGE_CONTROL      0x3e
 /* BR12 3.2.5.18  Bridge Control Register */
-#define  PCI_BRIDGE_CTL_RESET   0x40    /* Secondary bus reset */
+#define PCI_BRIDGE_CTL_RESET   0x40    /* Secondary bus reset */
 
 /* PM12 3.2.4  Power Management Control/Status (Offset = 4) */
 #define PCI_PM_CTRL                4    /* PM control and status register */
-#define  PCI_PM_CTRL_STATE_MASK    0x3  /* Current power state (D0 to D3) */
-#define  PCI_PM_CTRL_STATE_D0      0x0  /* D0 state */
-#define  PCI_PM_CTRL_STATE_D3hot   0x3  /* D3 state */
-#define  PCI_PM_CTRL_NO_SOFT_RESET 0x8  /* No reset for D3hot->D0 */
+#define PCI_PM_CTRL_STATE_MASK    0x3  /* Current power state (D0 to D3) */
+#define PCI_PM_CTRL_STATE_D0      0x0  /* D0 state */
+#define PCI_PM_CTRL_STATE_D3hot   0x3  /* D3 state */
+#define PCI_PM_CTRL_NO_SOFT_RESET 0x8  /* No reset for D3hot->D0 */
 
 /* ECN_AF 6.x.1  Advanced Features Capability Structure */
 #define PCI_AF_CAP              0x3     /* Advanced features capabilities */
-#define  PCI_AF_CAP_FLR         0x2     /* Function Level Reset */
+#define PCI_AF_CAP_FLR         0x2     /* Function Level Reset */
 
 #define PCI_EXP_FLAGS           0x2
 #define PCI_EXP_FLAGS_TYPE      0x00f0
