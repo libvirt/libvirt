@@ -45,7 +45,7 @@
 #endif
 
 #define _(str) dgettext(GETTEXT_PACKAGE, (str))
-#define N_(str) dgettext(GETTEXT_PACKAGE, (str))
+#define N_(str) str
 
 /* String equality tests, suggested by Jim Meyering. */
 #define STREQ(a,b) (strcmp(a,b) == 0)

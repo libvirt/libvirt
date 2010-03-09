@@ -429,7 +429,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s", _("Commands:\n\n"));
         for (def = commands; def->name; def++)
             vshPrint(ctl, "    %-15s %s\n", def->name,
-                     N_(vshCmddefGetInfo(def, "help")));
+                     _(vshCmddefGetInfo(def, "help")));
         return TRUE;
     }
     return vshCmddefHelp(ctl, cmdname);
@@ -725,7 +725,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virDomainGetInfo(dom, &info) < 0)
             state = _("no state");
         else
-            state = N_(vshDomainStateToString(info.state));
+            state = _(vshDomainStateToString(info.state));
 
         vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
@@ -747,7 +747,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virDomainGetInfo(dom, &info) < 0)
             state = _("no state");
         else
-            state = N_(vshDomainStateToString(info.state));
+            state = _(vshDomainStateToString(info.state));
 
         vshPrint(ctl, "%3s %-20s %s\n", "-", names[i], state);
 
@@ -788,7 +788,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainGetInfo(dom, &info) == 0)
         vshPrint(ctl, "%s\n",
-                 N_(vshDomainStateToString(info.state)));
+                 _(vshDomainStateToString(info.state)));
     else
         ret = FALSE;
 
@@ -1761,7 +1761,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainGetInfo(dom, &info) == 0) {
         vshPrint(ctl, "%-15s %s\n", _("State:"),
-                 N_(vshDomainStateToString(info.state)));
+                 _(vshDomainStateToString(info.state)));
 
         vshPrint(ctl, "%-15s %d\n", _("CPU(s):"), info.nrVirtCpu);
 
@@ -2040,7 +2040,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
-                     N_(vshDomainVcpuStateToString(cpuinfo[n].state)));
+                     _(vshDomainVcpuStateToString(cpuinfo[n].state)));
             if (cpuinfo[n].cpuTime != 0) {
                 double cpuUsed = cpuinfo[n].cpuTime;
 
@@ -7869,8 +7869,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         vshError(ctl, _("command '%s' doesn't exist"), cmdname);
         return FALSE;
     } else {
-        const char *desc = N_(vshCmddefGetInfo(def, "desc"));
-        const char *help = N_(vshCmddefGetInfo(def, "help"));
+        const char *desc = _(vshCmddefGetInfo(def, "desc"));
+        const char *help = _(vshCmddefGetInfo(def, "help"));
         char buf[256];
 
         fputs(_("  NAME\n"), stdout);
@@ -7885,15 +7885,17 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                 if (opt->type == VSH_OT_BOOL)
                     fmt = "[--%s]";
                 else if (opt->type == VSH_OT_INT)
-                    fmt = N_("[--%s <number>]");
+                    /* xgettext:c-format */
+                    fmt = _("[--%s <number>]");
                 else if (opt->type == VSH_OT_STRING)
-                    fmt = N_("[--%s <string>]");
+                    /* xgettext:c-format */
+                    fmt = _("[--%s <string>]");
                 else if (opt->type == VSH_OT_DATA)
                     fmt = ((opt->flag & VSH_OFLAG_REQ) ? "<%s>" : "[<%s>]");
                 else
                     assert(0);
                 fputc(' ', stdout);
-                fprintf(stdout, _(fmt), opt->name);
+                fprintf(stdout, fmt, opt->name);
             }
         }
         fputc('\n', stdout);
@@ -7917,7 +7919,7 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                 else if (opt->type == VSH_OT_DATA)
                     snprintf(buf, sizeof(buf), "<%s>", opt->name);
 
-                fprintf(stdout, "    %-15s  %s\n", buf, N_(opt->help));
+                fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
             }
         }
         fputc('\n', stdout);
@@ -9148,8 +9150,7 @@ vshUsage(void)
 
     for (cmd = commands; cmd->name; cmd++)
         fprintf(stdout,
-                "    %-15s %s\n", cmd->name, N_(vshCmddefGetInfo(cmd,
-                                                                 "help")));
+                "    %-15s %s\n", cmd->name, _(vshCmddefGetInfo(cmd, "help")));
 
     fprintf(stdout, "%s",
             _("\n  (specify help <command> for details about the command)\n\n"));
