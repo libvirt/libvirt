@@ -1849,7 +1849,8 @@ AC_ARG_WITH([macvtap],
   [with_macvtap=check])
 
 if test "$with_macvtap" != "no" ; then
-    AC_TRY_COMPILE([ #include <linux/if_link.h> ],
+    AC_TRY_COMPILE([ #include <sys/socket.h>
+                     #include <linux/rtnetlink.h> ],
                    [ int x = MACVLAN_MODE_BRIDGE; ],
                    [ with_macvtap=yes ],
                    [ if test "$with_macvtap" = "yes" ; then
