@@ -9523,9 +9523,18 @@ remoteIOEventLoop(virConnectPtr conn,
         remoteDriverLock(priv);
 
         if (fds[1].revents) {
+            ssize_t s;
             DEBUG0("Woken up from poll by other thread");
-            ignore_value(saferead(priv->wakeupReadFD, &ignore,
-                                  sizeof(ignore)));
+            s = saferead(priv->wakeupReadFD, &ignore, sizeof(ignore));
+            if (s < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("read on wakeup fd failed"));
+                goto error;
+            } else if (s != sizeof(ignore)) {
+                remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("read on wakeup fd failed"));
+                goto error;
+            }
         }
 
         if (ret < 0) {
@@ -9661,6 +9670,7 @@ remoteIO(virConnectPtr conn,
         /* Stick ourselves on the end of the wait queue */
         struct remote_thread_call *tmp = priv->waitDispatch;
         char ignore = 1;
+        ssize_t s;
         while (tmp && tmp->next)
             tmp = tmp->next;
         if (tmp)
@@ -9668,8 +9678,21 @@ remoteIO(virConnectPtr conn,
         else
             priv->waitDispatch = thiscall;
 
-        /* Force other thread to wakup from poll */
-        ignore_value(safewrite(priv->wakeupSendFD, &ignore, sizeof(ignore)));
+        /* Force other thread to wakeup from poll */
+        s = safewrite(priv->wakeupSendFD, &ignore, sizeof(ignore));
+        if (s < 0) {
+            char errout[1024];
+            remoteError(VIR_ERR_INTERNAL_ERROR,
+                        _("failed to wake up polling thread: %s"),
+                        virStrerror(errno, errout, sizeof errout));
+            VIR_FREE(thiscall);
+            return -1;
+        } else if (s != sizeof(ignore)) {
+            remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("failed to wake up polling thread"));
+            VIR_FREE(thiscall);
+            return -1;
+        }
 
         DEBUG("Going to sleep %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
         /* Go to sleep while other thread is working... */
