@@ -251,18 +251,17 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
 
 int nodeGetInfo(virConnectPtr conn,
                 virNodeInfoPtr nodeinfo) {
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
+
 #ifdef HAVE_UNAME
+    {
     struct utsname info;
 
     uname(&info);
 
     if (virStrcpyStatic(nodeinfo->model, info.machine) == NULL)
         return -1;
-
-#else /* !HAVE_UNAME */
-
-    nodeinfo->model[0] = '\0';
-
+    }
 #endif /* !HAVE_UNAME */
 
 #ifdef __linux__
