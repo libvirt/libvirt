@@ -117,7 +117,7 @@
 </pre>
 
     <p>
-      Note that sometimes you'll have to postprocess that output further, by
+      Note that sometimes you'll have to post-process that output further, by
       piping it through "expand -i", since some leading TABs can get through.
       Usually they're in macro definitions or strings, and should be converted
       anyhow.
@@ -424,7 +424,7 @@
   #include &lt;limits.h&gt;
 
   #if HAVE_NUMACTL                Some system includes aren't supported
-  # include &lt;numa.h&gt;               everywhere so need these #if defences.
+  # include &lt;numa.h&gt;               everywhere so need these #if guards.
   #endif
 
   #include "internal.h"           Include this first, after system includes.
@@ -533,7 +533,7 @@
 
 
 
-    <h2><a name="committers">Libvirt committers guidelines</a></h2>
+    <h2><a name="committers">Libvirt committer guidelines</a></h2>
 
     <p>
       The AUTHORS files indicates the list of people with commit access right
@@ -541,11 +541,12 @@
     </p>
 
     <p>
-      The general rule for committing patches is to make sure it has been reviewed
-      properly in the mailing-list first, usually if a couple of persons gave an
+      The general rule for committing a patch is to make sure
+      it has been reviewed
+      properly in the mailing-list first, usually if a couple of people gave an
       ACK or +1 to a patch and nobody raised an objection on the list it should
-      be good to go. If the patch touches a part of the code where you're not the
-      main maintainer, or where you donot have a very clear idea of
+      be good to go. If the patch touches a part of the code where you're not
+      the main maintainer, or where you do not have a very clear idea of
       how things work, it's better
       to wait for a more authoritative feedback though. Before committing, please
       also rebuild locally, run 'make check syntax-check', and make sure you
