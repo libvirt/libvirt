@@ -63,15 +63,15 @@
 int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
                              virNodeInfoPtr nodeinfo);
 
-static unsigned long count_thread_siblings(int cpu)
+static unsigned long count_thread_siblings(unsigned int cpu)
 {
     unsigned long ret = 0;
-    char *path = NULL;
-    FILE *pathfp = NULL;
+    char *path;
+    FILE *pathfp;
     char str[1024];
     int i;
 
-    if (virAsprintf(&path, "%s/cpu%d/topology/thread_siblings", CPU_SYS_PATH,
+    if (virAsprintf(&path, CPU_SYS_PATH "/cpu%u/topology/thread_siblings",
                     cpu) < 0) {
         virReportOOMError();
         return 0;
@@ -91,8 +91,12 @@ static unsigned long count_thread_siblings(int cpu)
 
     i = 0;
     while (str[i] != '\0') {
-        if (str[i] != '\n' && str[i] != ',')
+        if (c_isdigit(str[i]))
             ret += count_one_bits(str[i] - '0');
+        else if (str[i] >= 'A' && str[i] <= 'F')
+            ret += count_one_bits(str[i] - 'A' + 10);
+        else if (str[i] >= 'a' && str[i] <= 'f')
+            ret += count_one_bits(str[i] - 'a' + 10);
         i++;
     }
 
@@ -103,16 +107,16 @@ cleanup:
     return ret;
 }
 
-static int parse_socket(int cpu)
+static int parse_socket(unsigned int cpu)
 {
-    char *path = NULL;
+    char *path;
     FILE *pathfp;
     char socket_str[1024];
     char *tmp;
-    int socket;
+    int socket = -1;
 
-    if (virAsprintf(&path, "%s/cpu%d/topology/physical_package_id",
-                    CPU_SYS_PATH, cpu) < 0) {
+    if (virAsprintf(&path, CPU_SYS_PATH "/cpu%u/topology/physical_package_id",
+                    cpu) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -120,7 +124,8 @@ static int parse_socket(int cpu)
     pathfp = fopen(path, "r");
     if (pathfp == NULL) {
         virReportSystemError(errno, _("cannot open %s"), path);
-        goto cleanup;
+        VIR_FREE(path);
+        return -1;
     }
 
     if (fgets(socket_str, sizeof(socket_str), pathfp) == NULL) {
@@ -147,7 +152,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
     char line[1024];
     DIR *cpudir = NULL;
     struct dirent *cpudirent = NULL;
-    int cpu;
+    unsigned int cpu;
     unsigned long cur_threads;
     int socket;
     unsigned long long socket_mask = 0;
@@ -157,7 +162,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
     nodeinfo->nodes = nodeinfo->cores = 1;
 
     /* NB: It is impossible to fill our nodes, since cpuinfo
-     * has not knowledge of NUMA nodes */
+     * has no knowledge of NUMA nodes */
 
     /* NOTE: hyperthreads are ignored here; they are parsed out of /sys */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
@@ -220,7 +225,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
         return -1;
     }
     while ((cpudirent = readdir(cpudir))) {
-        if (sscanf(cpudirent->d_name, "cpu%d", &cpu) != 1)
+        if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
         socket = parse_socket(cpu);
@@ -243,6 +248,18 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
     }
 
     closedir(cpudir);
+
+    /* there should always be at least one socket and one thread */
+    if (nodeinfo->sockets == 0) {
+        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("no sockets found"));
+        return -1;
+    }
+    if (nodeinfo->threads == 0) {
+        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("no threads found"));
+        return -1;
+    }
 
     return 0;
 }
