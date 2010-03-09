@@ -3033,7 +3033,7 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
         {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("virtio serial device has invalid address type"));
+                            "%s", _("virtio serial device has invalid address type"));
             goto error;
         }
 

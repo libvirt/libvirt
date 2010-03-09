@@ -2330,7 +2330,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME) {
             if (def->clock.data.timezone) {
                 xenXMError(conn, VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("configurable timezones are not supported"));
+                           "%s", _("configurable timezones are not supported"));
                 goto cleanup;
             }
 
