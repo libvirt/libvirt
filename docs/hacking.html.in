@@ -124,6 +124,25 @@
     </p>
 
 
+    <h2><a href="types">Preprocessor</a></h2>
+
+    <p>
+      For variadic macros, stick with C99 syntax:
+  <pre>
+  #define vshPrint(_ctl, ...) fprintf(stdout, __VA_ARGS__)
+  </pre>
+    </p>
+
+    <p>Use parenthesis when checking if a macro is defined, and use
+    indentation to track nesting:
+
+  <pre>
+  #if defined(HAVE_POSIX_FALLOCATE) &amp;&amp; !defined(HAVE_FALLOCATE)
+  # define fallocate(a,ignored,b,c) posix_fallocate(a,b,c)
+  #endif
+  </pre>
+    </p>
+
     <h2><a href="types">C types</a></h2>
 
     <p>
@@ -405,7 +424,7 @@
   #include &lt;limits.h&gt;
 
   #if HAVE_NUMACTL                Some system includes aren't supported
-  #include &lt;numa.h&gt;               everywhere so need these #if defences.
+  # include &lt;numa.h&gt;               everywhere so need these #if defences.
   #endif
 
   #include "internal.h"           Include this first, after system includes.

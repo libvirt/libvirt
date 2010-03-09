@@ -102,6 +102,20 @@ Usually they're in macro definitions or strings, and should be converted
 anyhow.
 
 
+Preprocessor
+============
+For variadic macros, stick with C99 syntax:
+
+#define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
+
+Use parenthesis when checking if a macro is defined, and use
+indentation to track nesting:
+
+#if defined(HAVE_POSIX_FALLOCATE) && !defined(HAVE_FALLOCATE)
+# define fallocate(a,ignored,b,c) posix_fallocate(a,b,c)
+#endif
+
+
 C types
 =======
 Use the right type.
