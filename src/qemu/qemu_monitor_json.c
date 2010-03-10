@@ -648,7 +648,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
 
     *pids = threads;
     threads = NULL;
-    ret = 0;
+    ret = ncpus;
 
 cleanup:
     VIR_FREE(threads);
