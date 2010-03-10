@@ -65,7 +65,8 @@ fi
 # Ensure that whenever we pull in a gnulib update or otherwise change to a
 # different version (i.e., when switching branches), we also rerun ./bootstrap.
 curr_status=.git-module-status
-t=$(git submodule status|sed 's/^[ +-]//;s/ .*//')
+t=$(git submodule status|sed 's/^[ +-]//;s/ .*//'; \
+    git hash-object bootstrap.conf)
 if test "$t" = "$(cat $curr_status 2>/dev/null)"; then
     : # good, it's up to date, all we need is autoreconf
     autoreconf -if

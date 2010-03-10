@@ -279,7 +279,8 @@ ifeq (0,$(MAKELEVEL))
   # b653eda3ac4864de205419d9f41eec267cb89eeb
   _submodule_hash = sed 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
-      actual=$$(git submodule status | $(_submodule_hash));		\
+      actual=$$(git submodule status | $(_submodule_hash);		\
+		git hash-object bootstrap.conf);			\
       stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
       test "$$stamp" = "$$actual"; echo $$?)
   ifeq (1,$(_update_required))
