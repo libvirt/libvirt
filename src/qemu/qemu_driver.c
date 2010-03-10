@@ -3815,46 +3815,6 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
-    struct qemud_driver *driver = dom->conn->privateData;
-    virDomainObjPtr vm;
-    int ret = -1;
-
-    qemuDriverLock(driver);
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        qemuReportError(VIR_ERR_NO_DOMAIN,
-                        _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto cleanup;
-    }
-
-    if (newmax < vm->def->memory) {
-        qemuReportError(VIR_ERR_INVALID_ARG, "%s",
-                        _("cannot set max memory lower than current memory"));
-        goto cleanup;
-    }
-
-    /* There isn't any way to change this value for a running qemu guest */
-    qemuReportError(VIR_ERR_NO_SUPPORT,
-                    "%s", _("cannot set max memory of an active domain"));
-
-cleanup:
-    if (vm)
-        virDomainObjUnlock(vm);
-    return ret;
-}
-
-
 static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     struct qemud_driver *driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
@@ -9505,7 +9465,7 @@ static virDriver qemuDriver = {
     qemudDomainDestroy, /* domainDestroy */
     qemudDomainGetOSType, /* domainGetOSType */
     qemudDomainGetMaxMemory, /* domainGetMaxMemory */
-    qemudDomainSetMaxMemory, /* domainSetMaxMemory */
+    NULL, /* domainSetMaxMemory */
     qemudDomainSetMemory, /* domainSetMemory */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
