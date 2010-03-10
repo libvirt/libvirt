@@ -4514,7 +4514,9 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     if (nvcpus > vm->def->vcpus) {
         for (i = vm->def->vcpus ; i < nvcpus ; i++) {
             /* Online new CPU */
+            qemuDomainObjEnterMonitor(vm);
             rc = qemuMonitorSetCPU(priv->mon, i, 1);
+            qemuDomainObjExitMonitor(vm);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
@@ -4525,7 +4527,9 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     } else {
         for (i = vm->def->vcpus - 1 ; i >= nvcpus ; i--) {
             /* Offline old CPU */
+            qemuDomainObjEnterMonitor(vm);
             rc = qemuMonitorSetCPU(priv->mon, i, 0);
+            qemuDomainObjExitMonitor(vm);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
@@ -4558,18 +4562,21 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
+    if (qemuDomainObjBeginJob(vm) < 0)
+        goto cleanup;
+
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
+        goto endjob;
     }
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                          "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
