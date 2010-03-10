@@ -4389,7 +4389,6 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -4400,7 +4399,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
     priv = vm->privateData;
 
-    if (qemuDomainObjBeginJob(vm) < 0)
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -4498,6 +4497,7 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
