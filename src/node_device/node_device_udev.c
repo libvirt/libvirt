@@ -1220,14 +1220,13 @@ static int udevSetParent(struct udev_device *device,
     if (parent_device == NULL) {
         VIR_INFO("Could not find udev parent for device with sysfs path '%s'",
                  udev_device_get_syspath(device));
-        goto out;
     }
 
     parent_sysfs_path = udev_device_get_syspath(parent_device);
     if (parent_sysfs_path == NULL) {
         VIR_INFO("Could not get syspath for parent of '%s'",
                  udev_device_get_syspath(device));
-        goto out;
+        parent_sysfs_path = "";
     }
 
     def->parent_sysfs_path = strdup(parent_sysfs_path);
