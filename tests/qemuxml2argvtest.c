@@ -249,6 +249,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-fat", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-readonly-disk", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |

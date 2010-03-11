@@ -2398,6 +2398,9 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (bootable &&
         disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
         virBufferAddLit(&opt, ",boot=on");
+    if (disk->readonly &&
+        qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        virBufferAddLit(&opt, ",readonly=on");
     if (disk->driverType &&
         disk->type != VIR_DOMAIN_DISK_TYPE_DIR &&
         qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_FORMAT)
@@ -4694,6 +4697,9 @@ qemuParseCommandLineDisk(const char *val,
                                 _("cannot parse drive unit '%s'"), val);
                 goto cleanup;
             }
+        } else if (STREQ(keywords[i], "readonly")) {
+            if ((values[i] == NULL) || STREQ(values[i], "on"))
+                def->readonly = 1;
         }
     }
 
