@@ -7465,7 +7465,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     if (!ctl->imode) {
         vshError(ctl, "%s", _("cd: command valid only in interactive mode"));
-        return -1;
+        return FALSE;
     }
 
     dir = vshCommandOptString(cmd, "dir", &found);
@@ -7478,10 +7478,10 @@ cmdCd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     if (chdir (dir) == -1) {
         vshError(ctl, _("cd: %s: %s"), strerror(errno), dir);
-        return -1;
+        return FALSE;
     }
 
-    return 0;
+    return TRUE;
 }
 
 #endif
