@@ -421,7 +421,7 @@ static void vshCatchDisconnect(int sig, siginfo_t * siginfo,
  * Catch SIGPIPE signals which may arise when disconnection
  * from libvirtd occurs
  */
-static int
+static void
 vshSetupSignals(void) {
     struct sigaction sig_action;
 
@@ -435,10 +435,10 @@ vshSetupSignals(void) {
 /*
  * vshReconnect:
  *
- * Reconnect after an
+ * Reconnect after a disconnect from libvirtd
  *
  */
-static int
+static void
 vshReconnect(vshControl *ctl) {
     if (ctl->conn != NULL)
         virConnectClose(ctl->conn);
@@ -1896,9 +1896,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainJobInfo info;
     virDomainPtr dom;
-    int ret = TRUE, autostart;
-    unsigned int id;
-    char *str, uuid[VIR_UUID_STRING_BUFLEN];
+    int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1980,8 +1978,6 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int ret = TRUE;
-    unsigned int id;
-    char *str, uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1992,7 +1988,6 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
     if (virDomainAbortJob(dom) < 0)
         ret = FALSE;
 
-cleanup:
     virDomainFree(dom);
     return ret;
 }
@@ -6705,7 +6700,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ret != 0) {
-        vshError(ctl, _("Failed to attach interface"));
+        vshError(ctl, "%s", _("Failed to attach interface"));
         ret = FALSE;
     } else {
         vshPrint(ctl, "%s", _("Interface attached successfully\n"));
@@ -6834,7 +6829,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ret != 0) {
-        vshError(ctl, _("Failed to detach interface"));
+        vshError(ctl, "%s", _("Failed to detach interface"));
         ret = FALSE;
     } else {
         vshPrint(ctl, "%s", _("Interface detached successfully\n"));
@@ -7007,7 +7002,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ret != 0) {
-        vshError(ctl, _("Failed to attach disk"));
+        vshError(ctl, "%s", _("Failed to attach disk"));
         ret = FALSE;
     } else {
         vshPrint(ctl, "%s", _("Disk attached successfully\n"));
@@ -7128,7 +7123,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ret != 0) {
-        vshError(ctl, _("Failed to detach disk"));
+        vshError(ctl, "%s", _("Failed to detach disk"));
         ret = FALSE;
     } else {
         vshPrint(ctl, "%s", _("Disk detached successfully\n"));
@@ -7257,7 +7252,8 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (doc == NULL)
         goto no_memory;
 
-    res = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0, buffer, &node_list);
+    res = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0,
+                                      (const xmlChar *)buffer, &node_list);
     if (res != 0) {
         vshError(ctl, _("Failed to parse XML fragment %s"), from);
         ret = FALSE;
