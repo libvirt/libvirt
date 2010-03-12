@@ -1,12 +1,12 @@
 /*
  * xend_internal.h
  *
+ * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
  * Copyright (C) 2005,2006
  *
  *      Anthony Liguori <aliguori@us.ibm.com>
  *	Daniel Veillard <veillard@redhat.com>
  *
- * Copyright 2006-2008 Red Hat
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING in the main directory of this archive

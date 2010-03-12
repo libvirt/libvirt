@@ -1,7 +1,7 @@
 /*
  * xmconfigtest.c: Test backend for xm_internal config file handling
  *
- * Copyright (C) 2007 Red Hat
+ * Copyright (C) 2007, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

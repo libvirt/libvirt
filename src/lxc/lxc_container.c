@@ -1,6 +1,6 @@
 /*
- * Copyright IBM Corp. 2008
- * Copyright Red Hat 2008-2009
+ * Copyright (C) 2008-2010 Red Hat, Inc.
+ * Copyright (C) 2008 IBM Corp.
  *
  * lxc_container.c: file description
  *

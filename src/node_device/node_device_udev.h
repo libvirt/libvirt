@@ -1,7 +1,7 @@
 /*
  * node_device_udev.h: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009 Red Hat
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

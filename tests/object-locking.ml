@@ -1,7 +1,7 @@
 (*
  * Analyse libvirt driver API methods for mutex locking mistakes
  *
- * Copyright 2008-2009 Red Hat, Inc
+ * Copyright (C) 2008-2010 Red Hat, Inc
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
