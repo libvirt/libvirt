@@ -5495,6 +5495,35 @@ remoteDispatchDomainAbortJob (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                                          virConnectPtr conn,
+                                          remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                          remote_error *rerr,
+                                          remote_domain_migrate_set_max_downtime_args *args,
+                                          void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain(conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainMigrateSetMaxDowntime(dom, args->downtime, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainFree(dom);
+
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

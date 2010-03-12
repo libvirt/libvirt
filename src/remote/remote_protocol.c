@@ -3020,6 +3020,19 @@ xdr_remote_domain_abort_job_args (XDR *xdrs, remote_domain_abort_job_args *objp)
 }
 
 bool_t
+xdr_remote_domain_migrate_set_max_downtime_args (XDR *xdrs, remote_domain_migrate_set_max_downtime_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->downtime))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

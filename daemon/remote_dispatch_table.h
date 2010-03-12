@@ -832,3 +832,8 @@
     .args_filter = (xdrproc_t) xdr_remote_storage_vol_wipe_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainMigrateSetMaxDowntime => 166 */
+    .fn = (dispatch_fn) remoteDispatchDomainMigrateSetMaxDowntime,
+    .args_filter = (xdrproc_t) xdr_remote_domain_migrate_set_max_downtime_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

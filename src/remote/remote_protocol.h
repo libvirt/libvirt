@@ -4,51 +4,51 @@
  */
 
 #ifndef _RP_H_RPCGEN
-# define _RP_H_RPCGEN
+#define _RP_H_RPCGEN
 
-# include <rpc/rpc.h>
+#include <rpc/rpc.h>
 
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif
+#endif
 
-# include "internal.h"
-# include <arpa/inet.h>
-# define REMOTE_MESSAGE_MAX 262144
-# define REMOTE_MESSAGE_HEADER_MAX 24
-# define REMOTE_MESSAGE_PAYLOAD_MAX 262120
-# define REMOTE_STRING_MAX 65536
+#include "internal.h"
+#include <arpa/inet.h>
+#define REMOTE_MESSAGE_MAX 262144
+#define REMOTE_MESSAGE_HEADER_MAX 24
+#define REMOTE_MESSAGE_PAYLOAD_MAX 262120
+#define REMOTE_STRING_MAX 65536
 
 typedef char *remote_nonnull_string;
 
 typedef remote_nonnull_string *remote_string;
-# define REMOTE_DOMAIN_ID_LIST_MAX 16384
-# define REMOTE_DOMAIN_NAME_LIST_MAX 1024
-# define REMOTE_CPUMAP_MAX 256
-# define REMOTE_VCPUINFO_MAX 2048
-# define REMOTE_CPUMAPS_MAX 16384
-# define REMOTE_MIGRATE_COOKIE_MAX 256
-# define REMOTE_NETWORK_NAME_LIST_MAX 256
-# define REMOTE_INTERFACE_NAME_LIST_MAX 256
-# define REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX 256
-# define REMOTE_STORAGE_POOL_NAME_LIST_MAX 256
-# define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
-# define REMOTE_NODE_DEVICE_NAME_LIST_MAX 16384
-# define REMOTE_NODE_DEVICE_CAPS_LIST_MAX 16384
-# define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
-# define REMOTE_NODE_MAX_CELLS 1024
-# define REMOTE_AUTH_SASL_DATA_MAX 65536
-# define REMOTE_AUTH_TYPE_LIST_MAX 20
-# define REMOTE_DOMAIN_MEMORY_STATS_MAX 1024
-# define REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX 65536
-# define REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX 65536
-# define REMOTE_SECURITY_MODEL_MAX VIR_SECURITY_MODEL_BUFLEN
-# define REMOTE_SECURITY_LABEL_MAX VIR_SECURITY_LABEL_BUFLEN
-# define REMOTE_SECURITY_DOI_MAX VIR_SECURITY_DOI_BUFLEN
-# define REMOTE_SECRET_VALUE_MAX 65536
-# define REMOTE_SECRET_UUID_LIST_MAX 16384
-# define REMOTE_CPU_BASELINE_MAX 256
+#define REMOTE_DOMAIN_ID_LIST_MAX 16384
+#define REMOTE_DOMAIN_NAME_LIST_MAX 1024
+#define REMOTE_CPUMAP_MAX 256
+#define REMOTE_VCPUINFO_MAX 2048
+#define REMOTE_CPUMAPS_MAX 16384
+#define REMOTE_MIGRATE_COOKIE_MAX 256
+#define REMOTE_NETWORK_NAME_LIST_MAX 256
+#define REMOTE_INTERFACE_NAME_LIST_MAX 256
+#define REMOTE_DEFINED_INTERFACE_NAME_LIST_MAX 256
+#define REMOTE_STORAGE_POOL_NAME_LIST_MAX 256
+#define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
+#define REMOTE_NODE_DEVICE_NAME_LIST_MAX 16384
+#define REMOTE_NODE_DEVICE_CAPS_LIST_MAX 16384
+#define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
+#define REMOTE_NODE_MAX_CELLS 1024
+#define REMOTE_AUTH_SASL_DATA_MAX 65536
+#define REMOTE_AUTH_TYPE_LIST_MAX 20
+#define REMOTE_DOMAIN_MEMORY_STATS_MAX 1024
+#define REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX 65536
+#define REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX 65536
+#define REMOTE_SECURITY_MODEL_MAX VIR_SECURITY_MODEL_BUFLEN
+#define REMOTE_SECURITY_LABEL_MAX VIR_SECURITY_LABEL_BUFLEN
+#define REMOTE_SECURITY_DOI_MAX VIR_SECURITY_DOI_BUFLEN
+#define REMOTE_SECRET_VALUE_MAX 65536
+#define REMOTE_SECRET_UUID_LIST_MAX 16384
+#define REMOTE_CPU_BASELINE_MAX 256
 
 typedef char remote_uuid[VIR_UUID_BUFLEN];
 
@@ -1710,8 +1710,15 @@ struct remote_domain_abort_job_args {
         remote_nonnull_domain dom;
 };
 typedef struct remote_domain_abort_job_args remote_domain_abort_job_args;
-# define REMOTE_PROGRAM 0x20008086
-# define REMOTE_PROTOCOL_VERSION 1
+
+struct remote_domain_migrate_set_max_downtime_args {
+        remote_nonnull_domain dom;
+        uint64_t downtime;
+        u_int flags;
+};
+typedef struct remote_domain_migrate_set_max_downtime_args remote_domain_migrate_set_max_downtime_args;
+#define REMOTE_PROGRAM 0x20008086
+#define REMOTE_PROTOCOL_VERSION 1
 
 enum remote_procedure {
         REMOTE_PROC_OPEN = 1,
@@ -1879,6 +1886,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
         REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
         REMOTE_PROC_STORAGE_VOL_WIPE = 165,
+        REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -1896,7 +1904,7 @@ enum remote_message_status {
         REMOTE_CONTINUE = 2,
 };
 typedef enum remote_message_status remote_message_status;
-# define REMOTE_MESSAGE_HEADER_XDR_LEN 4
+#define REMOTE_MESSAGE_HEADER_XDR_LEN 4
 
 struct remote_message_header {
         u_int prog;
@@ -1910,7 +1918,7 @@ typedef struct remote_message_header remote_message_header;
 
 /* the xdr functions */
 
-# if defined(__STDC__) || defined(__cplusplus)
+#if defined(__STDC__) || defined(__cplusplus)
 extern  bool_t xdr_remote_nonnull_string (XDR *, remote_nonnull_string*);
 extern  bool_t xdr_remote_string (XDR *, remote_string*);
 extern  bool_t xdr_remote_uuid (XDR *, remote_uuid);
@@ -2189,12 +2197,13 @@ extern  bool_t xdr_remote_cpu_baseline_ret (XDR *, remote_cpu_baseline_ret*);
 extern  bool_t xdr_remote_domain_get_job_info_args (XDR *, remote_domain_get_job_info_args*);
 extern  bool_t xdr_remote_domain_get_job_info_ret (XDR *, remote_domain_get_job_info_ret*);
 extern  bool_t xdr_remote_domain_abort_job_args (XDR *, remote_domain_abort_job_args*);
+extern  bool_t xdr_remote_domain_migrate_set_max_downtime_args (XDR *, remote_domain_migrate_set_max_downtime_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
 extern  bool_t xdr_remote_message_header (XDR *, remote_message_header*);
 
-# else /* K&R C */
+#else /* K&R C */
 extern bool_t xdr_remote_nonnull_string ();
 extern bool_t xdr_remote_string ();
 extern bool_t xdr_remote_uuid ();
@@ -2473,15 +2482,16 @@ extern bool_t xdr_remote_cpu_baseline_ret ();
 extern bool_t xdr_remote_domain_get_job_info_args ();
 extern bool_t xdr_remote_domain_get_job_info_ret ();
 extern bool_t xdr_remote_domain_abort_job_args ();
+extern bool_t xdr_remote_domain_migrate_set_max_downtime_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();
 extern bool_t xdr_remote_message_header ();
 
-# endif /* K&R C */
+#endif /* K&R C */
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 }
-# endif
+#endif
 
 #endif /* !_RP_H_RPCGEN */

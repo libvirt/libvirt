@@ -1522,6 +1522,13 @@ struct remote_domain_abort_job_args {
 };
 
 
+struct remote_domain_migrate_set_max_downtime_args {
+    remote_nonnull_domain dom;
+    unsigned hyper downtime;
+    unsigned flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1709,7 +1716,8 @@ enum remote_procedure {
     REMOTE_PROC_CPU_BASELINE = 162,
     REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
     REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
-    REMOTE_PROC_STORAGE_VOL_WIPE = 165
+    REMOTE_PROC_STORAGE_VOL_WIPE = 165,
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
