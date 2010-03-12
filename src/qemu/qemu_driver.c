@@ -2695,6 +2695,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     FD_ZERO(&keepfd);
 
+    DEBUG0("Beginning VM startup process");
+
     if (virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("VM is already active"));
@@ -2703,22 +2705,27 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
+    DEBUG0("Generating domain security label (if required)");
     if (driver->securityDriver &&
         driver->securityDriver->domainGenSecurityLabel &&
         driver->securityDriver->domainGenSecurityLabel(vm) < 0)
         return -1;
 
+    DEBUG0("Generating setting domain security labels (if required)");
     if (driver->securityDriver &&
         driver->securityDriver->domainSetSecurityAllLabel &&
         driver->securityDriver->domainSetSecurityAllLabel(vm) < 0)
         goto cleanup;
 
-    /* Ensure no historical cgroup for this VM is lieing around bogus settings */
+    /* Ensure no historical cgroup for this VM is lying around bogus
+     * settings */
+    DEBUG0("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(driver, vm, 1);
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         vm->def->graphics[0]->data.vnc.autoport) {
+        DEBUG0("Determining VNC port");
         int port = qemudNextFreeVNCPort(driver);
         if (port < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2735,6 +2742,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    DEBUG0("Creating domain log file");
     if ((logfile = qemudLogFD(driver, vm->def->name)) < 0)
         goto cleanup;
 
@@ -2751,14 +2759,17 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    DEBUG0("Determing emulator version");
     if (qemudExtractVersionInfo(emulator,
                                 NULL,
                                 &qemuCmdFlags) < 0)
         goto cleanup;
 
+    DEBUG0("Setting up domain cgroup (if required)");
     if (qemuSetupCgroup(driver, vm) < 0)
         goto cleanup;
 
+    DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
         goto cleanup;
 
@@ -2767,6 +2778,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         goto cleanup;
     }
 
+    DEBUG0("Preparing monitor state");
     if (qemuPrepareMonitorChr(driver, priv->monConfig, vm->def->name) < 0)
         goto cleanup;
 
@@ -2798,6 +2810,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
      * use in hotplug
      */
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        DEBUG0("Assigning domain PCI addresses");
         /* Populate cache with current addresses */
         if (priv->pciaddrs) {
             qemuDomainPCIAddressSetFree(priv->pciaddrs);
@@ -2816,6 +2829,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         priv->persistentAddrs = 0;
     }
 
+    DEBUG0("Building emulator command line");
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                               priv->monJSON, qemuCmdFlags, &argv, &progenv,
@@ -2899,25 +2913,31 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (ret == -1) /* The VM failed to start */
         goto cleanup;
 
+    DEBUG0("Waiting for monitor to show up");
     if (qemudWaitForMonitor(driver, vm, pos) < 0)
         goto abort;
 
+    DEBUG0("Detecting VCPU PIDs");
     if (qemuDetectVcpuPIDs(driver, vm) < 0)
         goto abort;
 
+    DEBUG0("Setting CPU affinity");
     if (qemudInitCpuAffinity(vm) < 0)
         goto abort;
 
+    DEBUG0("Setting any required VM passwords");
     if (qemuInitPasswords(conn, driver, vm, qemuCmdFlags) < 0)
         goto abort;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        DEBUG0("Determining domain device PCI addresses");
         if (qemuInitPCIAddresses(driver, vm) < 0)
             goto abort;
     }
 
+    DEBUG0("Setting initial memory amount");
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, vm->def->memory) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -2925,6 +2945,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     }
 
     if (migrateFrom == NULL) {
+        DEBUG0("Starting domain CPUs");
         /* Allow the CPUS to start executing */
         if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
             if (virGetLastError() == NULL)
@@ -2937,6 +2958,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
 
+    DEBUG0("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto abort;
 
