@@ -2360,7 +2360,7 @@ qemuPrepareHostUSBDevices(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
             continue;
 
         /* Resolve a vendor/product to bus/device */
@@ -2703,6 +2703,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
+    /* Must be run before security labelling */
+    DEBUG0("Preparing host devices");
+    if (qemuPrepareHostDevices(driver, vm->def) < 0)
+        goto cleanup;
+
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     DEBUG0("Generating domain security label (if required)");
@@ -2767,10 +2772,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Setting up domain cgroup (if required)");
     if (qemuSetupCgroup(driver, vm) < 0)
-        goto cleanup;
-
-    DEBUG0("Preparing host devices");
-    if (qemuPrepareHostDevices(driver, vm->def) < 0)
         goto cleanup;
 
     if (VIR_ALLOC(priv->monConfig) < 0) {
