@@ -788,6 +788,7 @@ static virDriver oneDriver = {
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 static virStateDriver oneStateDriver = {

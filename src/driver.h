@@ -381,6 +381,11 @@ typedef int
 typedef int
     (*virDrvDomainAbortJob)(virDomainPtr domain);
 
+typedef int
+    (*virDrvDomainMigrateSetMaxDowntime)(virDomainPtr domain,
+                                         unsigned long long downtime,
+                                         unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -474,6 +479,7 @@ struct _virDriver {
     virDrvCPUBaseline           cpuBaseline;
     virDrvDomainGetJobInfo     domainGetJobInfo;
     virDrvDomainAbortJob     domainAbortJob;
+    virDrvDomainMigrateSetMaxDowntime  domainMigrateSetMaxDowntime;
 };
 
 typedef int

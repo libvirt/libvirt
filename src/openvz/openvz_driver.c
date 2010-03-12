@@ -1540,6 +1540,7 @@ static virDriver openvzDriver = {
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 int openvzRegister(void) {

@@ -1906,6 +1906,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 /**

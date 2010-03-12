@@ -1647,6 +1647,7 @@ virDriver phypDriver = {
     NULL,                       /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 int

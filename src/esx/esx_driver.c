@@ -3411,6 +3411,7 @@ static virDriver esxDriver = {
     NULL,                            /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 

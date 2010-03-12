@@ -7066,6 +7066,7 @@ virDriver NAME(Driver) = {
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

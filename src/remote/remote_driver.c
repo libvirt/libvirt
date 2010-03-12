@@ -9152,6 +9152,7 @@ static virDriver remote_driver = {
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
+    NULL, /* domainMigrateSetMaxDowntime */
 };
 
 static virNetworkDriver network_driver = {
