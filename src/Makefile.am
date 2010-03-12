@@ -786,7 +786,9 @@ if WITH_LINUX
 USED_SYM_FILES += libvirt_linux.syms
 endif
 
+if WITH_MACVTAP
 USED_SYM_FILES += libvirt_macvtap.syms
+endif
 
 EXTRA_DIST += \
   libvirt_public.syms		\
