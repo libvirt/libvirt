@@ -435,13 +435,13 @@ link_add(virConnectPtr conn,
 
 malformed_resp:
     ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("malformed netlink response message"));
+                "%s", _("malformed netlink response message"));
     VIR_FREE(recvbuf);
     return -1;
 
 buffer_too_small:
     ReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                _("internal buffer is too small"));
+                "%s", _("internal buffer is too small"));
     return -1;
 }
 
