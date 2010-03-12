@@ -11312,3 +11312,52 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainMigrateSetMaxDowntime:
+ * @domain: a domain object
+ * @downtime: maximum tolerable downtime for live migration, in milliseconds
+ * @flags: fine-tuning flags, currently unused, use 0
+ *
+ * Sets maximum tolerable time for which the domain is allowed to be paused
+ * at the end of live migration. It's supposed to be called while the domain is
+ * being live-migrated as a reaction to migration progress.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateSetMaxDowntime(virDomainPtr domain,
+                               unsigned long long downtime,
+                               unsigned int flags)
+{
+    virConnectPtr conn;
+
+    DEBUG("domain=%p, downtime=%llu, flags=%u", domain, downtime, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainMigrateSetMaxDowntime) {
+        if (conn->driver->domainMigrateSetMaxDowntime(domain, downtime, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}

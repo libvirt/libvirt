@@ -408,6 +408,10 @@ int virDomainMigrateToURI (virDomainPtr domain, const char *duri,
                            unsigned long flags, const char *dname,
                            unsigned long bandwidth);
 
+int virDomainMigrateSetMaxDowntime (virDomainPtr domain,
+                                    unsigned long long downtime,
+                                    unsigned int flags);
+
 /**
  * VIR_NODEINFO_MAXCPUS:
  * @nodeinfo: virNodeInfo instance

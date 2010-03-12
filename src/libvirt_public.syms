@@ -361,6 +361,7 @@ LIBVIRT_0.7.7 {
 LIBVIRT_0.7.8 {
     global:
 	virStorageVolWipe;
+        virDomainMigrateSetMaxDowntime;
 } LIBVIRT_0.7.7;
 
 # .... define new API here using predicted next version number ....
