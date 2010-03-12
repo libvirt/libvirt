@@ -332,8 +332,8 @@ This is equivalent to:
  virsh define domain.xml
 except that it does some error checking.
 
-The editor used can be supplied by the C<$EDITOR> environment
-variable, or if that is not defined defaults to C<vi>.
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
 
 =item B<migrate> optional I<--live> I<--suspend> I<domain-id> I<desturi> I<migrateuri>
 
@@ -563,8 +563,8 @@ This is equivalent to:
  virsh define network.xml
 except that it does some error checking.
 
-The editor used can be supplied by the C<$EDITOR> environment
-variable, or if that is not defined defaults to C<vi>.
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
 
 =item B<net-list> optional I<--inactive> or I<--all>
 
@@ -645,9 +645,14 @@ of C<virsh>
 The hypervisor to connect to by default. Set this to a URI, in the same
 format as accepted by the B<connect> option.
 
-=item EDITOR
+=item VISUAL
 
 The editor to use by the B<edit> and B<net-edit> options.
+
+=item EDITOR
+
+The editor to use by the B<edit> and B<net-edit> options, if C<VISUAL>
+is not set.
 
 =item LIBVIRT_DEBUG=LEVEL
 

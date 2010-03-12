@@ -7842,20 +7842,17 @@ editFile (vshControl *ctl, const char *filename)
     char *command;
     int command_ret;
 
-    editor = getenv ("EDITOR");
+    editor = getenv ("VISUAL");
+    if (!editor) editor = getenv ("EDITOR");
     if (!editor) editor = "vi"; /* could be cruel & default to ed(1) here */
 
-    /* Check the editor doesn't contain shell meta-characters, and if
-     * it does, refuse to run.
+    /* Check that filename doesn't contain shell meta-characters, and
+     * if it does, refuse to run.  Follow the Unix conventions for
+     * EDITOR: the user can intentionally specify command options, so
+     * we don't protect any shell metacharacters there.  Lots more
+     * than virsh will misbehave if EDITOR has bogus contents (which
+     * is why sudo scrubs it by default).
      */
-    if (strspn (editor, ACCEPTED_CHARS) != strlen (editor)) {
-        vshError(ctl,
-                 _("%s: $EDITOR environment variable contains shell meta or "
-                   "other unacceptable characters"),
-                 editor);
-        return -1;
-    }
-    /* Same for the filename. */
     if (strspn (filename, ACCEPTED_CHARS) != strlen (filename)) {
         vshError(ctl,
                  _("%s: temporary filename contains shell meta or other "
