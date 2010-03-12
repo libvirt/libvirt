@@ -32,6 +32,13 @@ gsx://example.com                  (GSX over HTTPS)
 esx://example.com/?transport=http  (ESX over HTTP)
 esx://example.com/?no_verify=1     (ESX over HTTPS, but doesn't verify the server's SSL certificate)
 </pre>
+    <p>
+        <strong>Note</strong>: In contrast to other drivers, the ESX driver is
+        a client-side-only driver. It connects to the ESX server using HTTP(S).
+        Therefore, the <a href="remote.html">remote transport mechanism</a>
+        provided by the remote driver and libvirtd will not work, and you
+        cannot use URIs like <code>esx+ssh://example.com</code>.
+    </p>
 
 
     <h3><a name="uriformat">URI Format</a></h3>
