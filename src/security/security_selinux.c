@@ -616,6 +616,14 @@ SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm)
             rc = -1;
     }
 
+    if (vm->def->os.kernel &&
+        SELinuxRestoreSecurityFileLabel(vm->def->os.kernel) < 0)
+        rc = -1;
+
+    if (vm->def->os.initrd &&
+        SELinuxRestoreSecurityFileLabel(vm->def->os.initrd) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -735,6 +743,14 @@ SELinuxSetSecurityAllLabel(virDomainObjPtr vm)
         if (SELinuxSetSecurityHostdevLabel(vm, vm->def->hostdevs[i]) < 0)
             return -1;
     }
+
+    if (vm->def->os.kernel &&
+        SELinuxSetFilecon(vm->def->os.kernel, default_content_context) < 0)
+        return -1;
+
+    if (vm->def->os.initrd &&
+        SELinuxSetFilecon(vm->def->os.initrd, default_content_context) < 0)
+        return -1;
 
     return 0;
 }

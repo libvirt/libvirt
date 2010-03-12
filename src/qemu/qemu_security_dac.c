@@ -332,6 +332,15 @@ qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm)
                                                      vm->def->disks[i]) < 0)
             rc = -1;
     }
+
+    if (vm->def->os.kernel &&
+        qemuSecurityDACRestoreSecurityFileLabel(vm->def->os.kernel) < 0)
+        rc = -1;
+
+    if (vm->def->os.initrd &&
+        qemuSecurityDACRestoreSecurityFileLabel(vm->def->os.initrd) < 0)
+        rc = -1;
+
     return rc;
 }
 
@@ -355,6 +364,18 @@ qemuSecurityDACSetSecurityAllLabel(virDomainObjPtr vm)
         if (qemuSecurityDACSetSecurityHostdevLabel(vm, vm->def->hostdevs[i]) < 0)
             return -1;
     }
+
+    if (vm->def->os.kernel &&
+        qemuSecurityDACSetOwnership(vm->def->os.kernel,
+                                    driver->user,
+                                    driver->group) < 0)
+        return -1;
+
+    if (vm->def->os.initrd &&
+        qemuSecurityDACSetOwnership(vm->def->os.initrd,
+                                    driver->user,
+                                    driver->group) < 0)
+        return -1;
 
     return 0;
 }
