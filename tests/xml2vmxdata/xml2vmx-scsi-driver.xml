@@ -1,0 +1,25 @@
+<domain type='vmware'>
+  <name>scsi-buslogic</name>
+  <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
+  <memory>4096</memory>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='buslogic'/>
+      <source file='[datastore] directory/harddisk1.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='lsilogic'/>
+      <source file='[datastore] directory/harddisk2.vmdk'/>
+      <target dev='sdp' bus='scsi'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='lsisas1068'/>
+      <source file='[datastore] directory/harddisk3.vmdk'/>
+      <target dev='sdae' bus='scsi'/>
+    </disk>
+  </devices>
+</domain>

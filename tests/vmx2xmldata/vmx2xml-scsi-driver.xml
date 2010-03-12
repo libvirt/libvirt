@@ -13,8 +13,18 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='buslogic'/>
-      <source file='[datastore] directory/harddisk.vmdk'/>
+      <source file='[datastore] directory/harddisk1.vmdk'/>
       <target dev='sda' bus='scsi'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='lsilogic'/>
+      <source file='[datastore] directory/harddisk2.vmdk'/>
+      <target dev='sdp' bus='scsi'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='lsisas1068'/>
+      <source file='[datastore] directory/harddisk3.vmdk'/>
+      <target dev='sdae' bus='scsi'/>
     </disk>
   </devices>
 </domain>

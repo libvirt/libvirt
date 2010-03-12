@@ -552,10 +552,11 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
 
         if (disk->driverName != NULL &&
             STRCASENEQ(disk->driverName, "buslogic") &&
-            STRCASENEQ(disk->driverName, "lsilogic")) {
+            STRCASENEQ(disk->driverName, "lsilogic") &&
+            STRCASENEQ(disk->driverName, "lsisas1068")) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML entry 'devices/disk/target' to "
-                        "be 'buslogic' or 'lsilogic' but found '%s'"),
+                        "be 'buslogic' or 'lsilogic' or 'lsisas1068' but found '%s'"),
                       disk->driverName);
             return -1;
         }
@@ -1266,10 +1267,11 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
 
     if (*virtualDev != NULL &&
         STRCASENEQ(*virtualDev, "buslogic") &&
-        STRCASENEQ(*virtualDev, "lsilogic")) {
+        STRCASENEQ(*virtualDev, "lsilogic") &&
+        STRCASENEQ(*virtualDev, "lsisas1068")) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
-                    "but found '%s'"), virtualDev_name, *virtualDev);
+                  _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' or "
+                    "'lsisas1068' but found '%s'"), virtualDev_name, *virtualDev);
         goto failure;
     }
 
@@ -1309,7 +1311,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
      *        bus = VIR_DOMAIN_DISK_BUS_SCSI
      * controller = [0..3]
      *         id = [0..6,8..15]
-     * virtualDev = {'buslogic', 'lsilogic'}
+     * virtualDev = {'buslogic', 'lsilogic', 'lsisas1068'}
      *
      *     device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
      *        bus = VIR_DOMAIN_DISK_BUS_IDE

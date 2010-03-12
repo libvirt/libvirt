@@ -282,6 +282,10 @@ ethernet0.checkMACAddress = "false"
         <dd>
             LSI Logic SCSI controller for recent guests.
         </dd>
+        <dt><code>lsisas1068</code></dt>
+        <dd>
+            LSI Logic SAS 1068 controller.
+        </dd>
     </dl>
     <p>
         Here a domain XML snippet:

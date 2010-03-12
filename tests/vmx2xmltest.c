@@ -130,7 +130,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("graphics-vnc", "graphics-vnc", esxVI_APIVersion_25);
 
-    DO_TEST("scsi-buslogic", "scsi-buslogic", esxVI_APIVersion_25);
+    DO_TEST("scsi-driver", "scsi-driver", esxVI_APIVersion_25);
     DO_TEST("scsi-writethrough", "scsi-writethrough", esxVI_APIVersion_25);
 
     DO_TEST("harddisk-scsi-file", "harddisk-scsi-file", esxVI_APIVersion_25);
