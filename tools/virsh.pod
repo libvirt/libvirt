@@ -10,7 +10,15 @@ virsh <subcommand> [args]
 
 The B<virsh> program is the main interface for managing virsh guest
 domains. The program can be used to create, pause, and shutdown
-domains. It can also be used to list current domains. Libvirt is a C toolkit to interact with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurrently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms, it currently also support QEmu and KVM.
+domains. It can also be used to list current domains. Libvirt is a C
+toolkit to interact with the virtualization capabilities of recent
+versions of Linux (and other OSes). It is free software available
+under the GNU Lesser General Public License. Virtualization of the
+Linux Operating System means the ability to run multiple instances of
+Operating Systems concurrently on a single hardware system where the
+basic resources are driven by a Linux instance. The library aims at
+providing a long term stable C API.  It currently supports Xen, QEmu,
+KVM, LXC, OpenVZ, VirtualBox, OpenNebula, and VMware ESX.
 
 The basic structure of most virsh usage is:
 
@@ -32,9 +40,9 @@ the program.
 
 =head1 NOTES
 
-All B<virsh> operations rely upon the libvirt library.
-For any virsh commands to run xend/qemu, or what ever virtual library that libvirt supports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
-B<service libvirtd start> .
+Most B<virsh> operations rely upon the libvirt library being able to
+connect to an already running libvirtd service.  This can usually be
+done using the command B<service libvirtd start>.
 
 Most B<virsh> commands require root privileges to run due to the
 communications channels used to talk to the hypervisor.  Running as
@@ -637,6 +645,10 @@ of C<virsh>
 The hypervisor to connect to by default. Set this to a URI, in the same
 format as accepted by the B<connect> option.
 
+=item EDITOR
+
+The editor to use by the B<edit> and B<net-edit> options.
+
 =item LIBVIRT_DEBUG=LEVEL
 
 Turn on verbose debugging of all libvirt API calls. Valid levels are
@@ -682,7 +694,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005, 2007-2009 Red Hat, Inc.
+Copyright (C) 2005, 2007-2010 Red Hat, Inc.
 
 =head1 LICENSE
 
