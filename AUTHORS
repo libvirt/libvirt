@@ -24,6 +24,7 @@ The primary maintainers and people with commit access rights:
   John Levon           <john.levon@sun.com>
   Matthias Bolte       <matthias.bolte@googlemail.com>
   Jiri Denemark        <jdenemar@redhat.com>
+  Dave Allan           <dallan@redhat.com>
 
 Patches have also been contributed by:
 
@@ -59,7 +60,6 @@ Patches have also been contributed by:
   Shigeki Sakamoto     <fj0588di@aa.jp.fujitsu.com>
   Gerd von Egidy       <lists@egidy.de>
   Itamar Heim          <iheim@redhat.com>
-  Dave Allan           <dallan@redhat.com>
   Markus Armbruster    <armbru@redhat.com>
   Ryota Ozaki          <ozaki.ryota@gmail.com>
   James Morris         <jmorris@namei.org>
