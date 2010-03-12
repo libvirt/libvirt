@@ -8639,8 +8639,10 @@ vshCommandParse(vshControl *ctl, char *cmdstr)
     return TRUE;
 
  syntaxError:
-    if (ctl->cmd)
+    if (ctl->cmd) {
         vshCommandFree(ctl->cmd);
+        ctl->cmd = NULL;
+    }
     if (first)
         vshCommandOptFree(first);
     VIR_FREE(tkdata);
