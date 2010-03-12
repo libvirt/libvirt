@@ -2407,7 +2407,8 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 
     if (kilobytes > info.maxMem) {
         virDomainFree(dom);
-        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
+        vshError(ctl, _("Requested memory size %d kb is larger than maximum of %lu kb"),
+                 kilobytes, info.maxMem);
         return FALSE;
     }
 
