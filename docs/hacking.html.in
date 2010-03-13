@@ -128,20 +128,19 @@
 
     <p>
       For variadic macros, stick with C99 syntax:
+    </p>
   <pre>
   #define vshPrint(_ctl, ...) fprintf(stdout, __VA_ARGS__)
   </pre>
-    </p>
 
     <p>Use parenthesis when checking if a macro is defined, and use
     indentation to track nesting:
-
+    </p>
   <pre>
   #if defined(HAVE_POSIX_FALLOCATE) &amp;&amp; !defined(HAVE_FALLOCATE)
   # define fallocate(a,ignored,b,c) posix_fallocate(a,b,c)
   #endif
   </pre>
-    </p>
 
     <h2><a href="types">C types</a></h2>
 
@@ -552,9 +551,11 @@
       also rebuild locally, run 'make check syntax-check', and make sure you
       don't raise errors. Try to look for warnings too; for example,
       configure with
+    </p>
 <pre>
       --enable-compile-warnings=error
 </pre>
+    <p>
       which adds -Werror to compile flags, so no warnings get missed
     </p>
 
