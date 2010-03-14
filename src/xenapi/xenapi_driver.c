@@ -173,9 +173,12 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
     VIR_FREE(password);
 
     if (privP != NULL) {
+        virCapabilitiesFree(privP->caps);
+
         if (privP->session != NULL)
             xenSessionFree(privP->session);
 
+        VIR_FREE(privP->url);
         VIR_FREE(privP);
     }
 
