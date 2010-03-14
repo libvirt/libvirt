@@ -45,6 +45,7 @@ augeastest_DATA =
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
 UTIL_SOURCES =							\
+		util/authhelper.c util/authhelper.h		\
 		util/bridge.c util/bridge.h			\
 		util/buf.c util/buf.h				\
 		util/conf.c util/conf.h				\

@@ -28,13 +28,6 @@
 # include "internal.h"
 # include "conf.h"
 
-char *esxUtil_RequestUsername(virConnectAuthPtr auth,
-                              const char *defaultUsername,
-                              const char *hostname);
-
-char *esxUtil_RequestPassword(virConnectAuthPtr auth, const char *username,
-                              const char *hostname);
-
 int esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
                        int *noVerify, int *autoAnswer);
 

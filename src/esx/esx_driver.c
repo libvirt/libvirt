@@ -29,6 +29,7 @@
 #include "internal.h"
 #include "virterror_internal.h"
 #include "domain_conf.h"
+#include "authhelper.h"
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
@@ -354,7 +355,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
     } else {
-        username = esxUtil_RequestUsername(auth, "root", conn->uri->server);
+        username = virRequestUsername(auth, "root", conn->uri->server);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "Username request failed");
@@ -366,7 +367,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         goto failure;
     }
 
-    password = esxUtil_RequestPassword(auth, username, conn->uri->server);
+    password = virRequestPassword(auth, username, conn->uri->server);
 
     if (password == NULL) {
         ESX_ERROR(VIR_ERR_AUTH_FAILED, "Password request failed");
@@ -491,14 +492,14 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        username = esxUtil_RequestUsername(auth, "administrator", vCenter);
+        username = virRequestUsername(auth, "administrator", vCenter);
 
         if (username == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "Username request failed");
             goto failure;
         }
 
-        password = esxUtil_RequestPassword(auth, username, vCenter);
+        password = virRequestPassword(auth, username, vCenter);
 
         if (password == NULL) {
             ESX_ERROR(VIR_ERR_AUTH_FAILED, "Password request failed");

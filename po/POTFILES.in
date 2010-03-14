@@ -55,6 +55,7 @@ src/storage/storage_driver.c
 src/test/test_driver.c
 src/uml/uml_conf.c
 src/uml/uml_driver.c
+src/util/authhelper.c
 src/util/bridge.c
 src/util/conf.c
 src/util/hostusb.c
