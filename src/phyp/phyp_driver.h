@@ -35,7 +35,6 @@ typedef struct _ConnectionData ConnectionData;
 typedef ConnectionData *ConnectionDataPtr;
 struct _ConnectionData {
     LIBSSH2_SESSION *session;
-    virConnectAuthPtr auth;
     int sock;
 };
 

@@ -46,6 +46,7 @@
 #include <domain_event.h>
 
 #include "internal.h"
+#include "authhelper.h"
 #include "util.h"
 #include "datatypes.h"
 #include "buf.h"
@@ -102,12 +103,6 @@ phypOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (conn->uri->user == NULL) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("Missing username in phyp:// URI"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     if (VIR_ALLOC(phyp_driver) < 0) {
         virReportOOMError();
         goto failure;
@@ -160,9 +155,8 @@ phypOpen(virConnectPtr conn,
                    "%s", _("Error while opening SSH session."));
         goto failure;
     }
-    //conn->uri->path = string;
+
     connection_data->session = session;
-    connection_data->auth = auth;
 
     uuid_table->nlpars = 0;
     uuid_table->lpars = NULL;
@@ -245,8 +239,8 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 {
     LIBSSH2_SESSION *session;
     const char *hostname = conn->uri->server;
-    const char *username = conn->uri->user;
-    const char *password = NULL;
+    char *username = NULL;
+    char *password = NULL;
     int sock;
     int rc;
     struct addrinfo *ai = NULL, *cur;
@@ -268,6 +262,28 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     if (virAsprintf(&pvtkey, "%s/.ssh/id_rsa", userhome) < 0) {
         virReportOOMError();
         goto err;
+    }
+
+    if (conn->uri->user != NULL) {
+        username = strdup(conn->uri->user);
+
+        if (username == NULL) {
+            virReportOOMError();
+            goto err;
+        }
+    } else {
+        if (auth == NULL || auth->cb == NULL) {
+            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
+                       "%s", _("No authentication callback provided."));
+            goto err;
+        }
+
+        username = virRequestUsername(auth, NULL, conn->uri->server);
+
+        if (username == NULL) {
+            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED, "Username request failed");
+            goto err;
+        }
     }
 
     memset(&hints, 0, sizeof(hints));
@@ -336,44 +352,16 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     if (rc == LIBSSH2_ERROR_SOCKET_NONE
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
-        int i;
-        int hasPassphrase = 0;
-
-        virConnectCredential creds[] = {
-            {VIR_CRED_PASSPHRASE, "password", "Password", NULL, NULL, 0},
-        };
-
-        if (!auth || !auth->cb) {
+        if (auth == NULL || auth->cb == NULL) {
             PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
                        "%s", _("No authentication callback provided."));
             goto disconnect;
         }
 
-        for (i = 0; i < auth->ncredtype; i++) {
-            if (auth->credtype[i] == VIR_CRED_PASSPHRASE)
-                hasPassphrase = 1;
-        }
+        password = virRequestPassword(auth, username, conn->uri->server);
 
-        if (!hasPassphrase) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       "%s", _("Required credentials are not supported."));
-            goto disconnect;
-        }
-
-        int res =
-            (auth->cb) (creds, ARRAY_CARDINALITY(creds), auth->cbdata);
-
-        if (res < 0) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       "%s", _("Unable to fetch credentials."));
-            goto disconnect;
-        }
-
-        if (creds[0].result) {
-            password = creds[0].result;
-        } else {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
-                       "%s", _("Unable to get password certificates"));
+        if (password == NULL) {
+            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED, "Password request failed");
             goto disconnect;
         }
 
@@ -404,6 +392,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     VIR_FREE(userhome);
     VIR_FREE(pubkey);
     VIR_FREE(pvtkey);
+    VIR_FREE(username);
     VIR_FREE(password);
     return NULL;
 
@@ -411,6 +400,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     VIR_FREE(userhome);
     VIR_FREE(pubkey);
     VIR_FREE(pvtkey);
+    VIR_FREE(username);
     VIR_FREE(password);
     return session;
 }
