@@ -88,7 +88,8 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
     char *password = NULL;
     struct _xenapiPrivate *privP = NULL;
 
-    if (STRCASENEQ(conn->uri->scheme, "XenAPI")) {
+    if (conn->uri == NULL || conn->uri->scheme == NULL ||
+        STRCASENEQ(conn->uri->scheme, "XenAPI")) {
         return VIR_DRV_OPEN_DECLINED;
     }
 
