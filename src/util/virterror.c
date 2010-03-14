@@ -85,6 +85,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_XEN:
             dom = "Xen ";
             break;
+        case VIR_FROM_XENAPI:
+            dom = "XenAPI ";
+            break;
         case VIR_FROM_XML:
             dom = "XML ";
             break;

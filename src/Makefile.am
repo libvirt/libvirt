@@ -205,6 +205,11 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_security_dac.h			\
 		qemu/qemu_security_dac.c
 
+XENAPI_DRIVER_SOURCES =								\
+		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
+		xenapi_driver_private.h							\
+		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
+
 UML_DRIVER_SOURCES =						\
 		uml/uml_conf.c uml/uml_conf.h			\
 		uml/uml_driver.c uml/uml_driver.h
@@ -467,6 +472,22 @@ libvirt_driver_vbox_la_LIBADD = $(DLOPEN_LIBS)
 libvirt_driver_vbox_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif
 
+if WITH_XENAPI
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_xenapi.la
+else
+noinst_LTLIBRARIES += libvirt_driver_xenapi.la
+libvirt_la_LIBADD += libvirt_driver_xenapi.la
+endif
+libvirt_driver_xenapi_la_CFLAGS = $(LIBXENSERVER_CFLAGS) $(LIBCURL_CFLAGS) \
+		-I@top_srcdir@/src/conf
+libvirt_driver_xenapi_la_LDFLAGS = $(LIBXENSERVER_LIBS) $(LIBCURL_LIBS)
+if WITH_DRIVER_MODULES
+libvirt_driver_xenapi_la_LDFLAGS += -module -avoid-version
+endif
+libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
+endif
+
 if WITH_QEMU
 if WITH_DRIVER_MODULES
 mod_LTLIBRARIES += libvirt_driver_qemu.la
@@ -723,6 +744,7 @@ EXTRA_DIST +=							\
 		$(OPENVZ_DRIVER_SOURCES)			\
 		$(PHYP_DRIVER_SOURCES)				\
 		$(VBOX_DRIVER_SOURCES)				\
+		$(XENAPI_DRIVER_SOURCES)			\
 		$(ESX_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\

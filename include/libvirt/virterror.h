@@ -69,6 +69,7 @@ typedef enum {
     VIR_FROM_PHYP,      /* Error from IBM power hypervisor */
     VIR_FROM_SECRET,    /* Error from secret storage */
     VIR_FROM_CPU,       /* Error from CPU driver */
+    VIR_FROM_XENAPI     /* Error from XenAPI */
 } virErrorDomain;
 
 

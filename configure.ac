@@ -219,6 +219,8 @@ AC_ARG_WITH([libssh2],
   AC_HELP_STRING([--with-libssh2=@<:@PFX@:>@], [libssh2 location @<:@default=/usr/local/lib@:>@]),[],[with_libssh2=yes])
 AC_ARG_WITH([phyp],
   AC_HELP_STRING([--with-phyp], [add PHYP support @<:@default=check@:>@]),[],[with_phyp=check])
+AC_ARG_WITH([xenapi],
+  AC_HELP_STRING([--with-xenapi], [add XenAPI support @<:@default=check@:>@]),[],[with_xenapi=check])
 AC_ARG_WITH([vbox],
   AC_HELP_STRING([--with-vbox], [add VirtualBox support @<:@default=yes@:>@]),[],[with_vbox=yes])
 AC_ARG_WITH([lxc],
@@ -340,6 +342,46 @@ if test "$with_libvirtd" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_LIBVIRTD], 1, [whether libvirtd daemon is enabled])
 fi
 AM_CONDITIONAL([WITH_LIBVIRTD], [test "$with_libvirtd" = "yes"])
+
+
+old_LIBS="$LIBS"
+old_CFLAGS="$CFLAGS"
+LIBXENSERVER_LIBS=""
+LIBXENSERVER_CFLAGS=""
+dnl search for the XenServer library
+if test "$with_xenapi" != "no" ; then
+    if test "$with_xenapi" != "yes" -a "$with_xenapi" != "check" ; then
+        LIBXENSERVER_CFLAGS="-I$with_xenapi/include"
+        LIBXENSERVER_LIBS="-L$with_xenapi"
+    fi
+    fail=0
+    CFLAGS="$CFLAGS $LIBXENSERVER_CFLAGS"
+    LIBS="$LIBS $LIBXENSERVER_LIBS"
+    AC_CHECK_LIB([xenserver], [xen_vm_start], [
+        with_xenapi=yes
+        LIBXENSERVER_LIBS="$LIBXENSERVER_LIBS -lxenserver"
+    ],[
+        if test "$with_xenapi" = "yes"; then
+            fail=1
+        fi
+            with_xenapi=no
+    ])
+fi
+
+LIBS="$old_LIBS"
+CFLAGS="$old_CFLAGS"
+
+if test $fail = 1; then
+    AC_MSG_ERROR([You must install the XenServer Library to compile XenAPI driver with -lxenserver])
+fi
+
+if test "$with_xenapi" = "yes"; then
+    AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
+fi
+
+AC_SUBST([LIBXENSERVER_CFLAGS])
+AC_SUBST([LIBXENSERVER_LIBS])
+
 
 old_LIBS="$LIBS"
 old_CFLAGS="$CFLAGS"
@@ -1446,30 +1488,49 @@ AC_SUBST([LIBPARTED_CFLAGS])
 AC_SUBST([LIBPARTED_LIBS])
 
 dnl
-dnl check for libcurl (ESX)
+dnl check for libcurl (ESX/XenAPI)
 dnl
 
 LIBCURL_CFLAGS=""
 LIBCURL_LIBS=""
-LIBCURL_FOUND="no"
 
-if test "$with_esx" = "yes" -o "$with_esx" = "check"; then
+if test "$with_esx" = "yes" -o "$with_esx" = "check" -o "$with_xenapi" = "yes" -o "$with_xenapi" = "check"; then
     PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [
-        LIBCURL_FOUND=yes
-        with_esx="yes"
+        if test "$with_esx" = "check"; then
+            with_esx=yes
+        fi
+
+        if test "$with_xenapi" = "check"; then
+            with_xenapi=yes
+        fi
     ], [
         if test "$with_esx" = "check"; then
             with_esx=no
-            AC_MSG_NOTICE([libcurl is required for ESX driver, disabling it])
-        else
+            AC_MSG_NOTICE([libcurl is required for the ESX driver, disabling it])
+        elif test "$with_esx" = "yes"; then
             AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the ESX driver])
+        fi
+
+        if test "$with_xenapi" = "check"; then
+            with_xenapi=no
+            AC_MSG_NOTICE([libcurl is required for the XenAPI driver, disabling it])
+        elif test "$with_xenapi" = "yes"; then
+            AC_MSG_ERROR([libcurl >= $LIBCURL_REQUIRED is required for the XenAPI driver])
         fi
     ])
 fi
+
+
 if test "$with_esx" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_ESX], 1, [whether ESX driver is enabled])
 fi
 AM_CONDITIONAL([WITH_ESX], [test "$with_esx" = "yes"])
+
+if test "$with_xenapi" = "yes" ; then
+    AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
+fi
+AM_CONDITIONAL([WITH_XENAPI], [test "$with_xenapi" = "yes"])
+
 
 AC_SUBST([LIBCURL_CFLAGS])
 AC_SUBST([LIBCURL_LIBS])
@@ -1909,6 +1970,7 @@ AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([     UML: $with_uml])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([    VBox: $with_vbox])
+AC_MSG_NOTICE([  XenAPI: $with_xenapi])
 AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    PHYP: $with_phyp])
 AC_MSG_NOTICE([     ONE: $with_one])
@@ -2006,6 +2068,11 @@ if test "$with_xen" = "yes" ; then
 AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
 else
 AC_MSG_NOTICE([     xen: no])
+fi
+if test "$with_xenapi" = "yes" ; then
+AC_MSG_NOTICE([  xenapi: $LIBXENSERVER_CFLAGS $LIBXENSERVER_LIBS])
+else
+AC_MSG_NOTICE([  xenapi: no])
 fi
 if test "$with_hal" = "yes" ; then
 AC_MSG_NOTICE([     hal: $HAL_CFLAGS $HAL_LIBS])
