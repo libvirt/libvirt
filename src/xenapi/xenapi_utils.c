@@ -374,12 +374,12 @@ xenapiSessionErrorHandle(virConnectPtr conn, virErrorNumber errNum,
                          const char *buf, const char *filename, const char *func,
                          size_t lineno)
 {
-    xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
+    struct _xenapiPrivate *priv = conn->privateData;
 
-    if (buf == NULL) {
-        char *ret = returnErrorFromSession(session);
+    if (buf == NULL && priv != NULL && priv->session != NULL) {
+        char *ret = returnErrorFromSession(priv->session);
         virReportErrorHelper(conn, VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), ret);
-        xen_session_clear_error(session);
+        xen_session_clear_error(priv->session);
         VIR_FREE(ret);
     } else {
         virReportErrorHelper(conn, VIR_FROM_XENAPI, errNum, filename, func, lineno, _("%s"), buf);
