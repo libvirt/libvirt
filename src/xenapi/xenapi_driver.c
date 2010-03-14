@@ -31,6 +31,7 @@
 #include "domain_conf.h"
 #include "virterror_internal.h"
 #include "datatypes.h"
+#include "authhelper.h"
 #include "util.h"
 #include "uuid.h"
 #include "memory.h"
@@ -83,62 +84,101 @@ getCapsObject (void)
 static virDrvOpenStatus
 xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
-    char *passwd = NULL;
-    xen_session *session;
-    struct _xenapiPrivate *privP;
+    char *username = NULL;
+    char *password = NULL;
+    struct _xenapiPrivate *privP = NULL;
 
     if (STRCASENEQ(conn->uri->scheme, "XenAPI")) {
         return VIR_DRV_OPEN_DECLINED;
     }
+
     if (conn->uri->server == NULL) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "Server name not in URI");
-        return VIR_DRV_OPEN_ERROR;
+        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+                                  "Server name not in URI");
+        goto error;
     }
-    if (auth) {
-        passwd = xenapiUtil_RequestPassword(auth, conn->uri->user, conn->uri->server);
+
+    if (auth == NULL) {
+        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+                                  "Authentication Credentials not found");
+        goto error;
+    }
+
+    if (conn->uri->user != NULL) {
+        username = strdup(conn->uri->user);
+
+        if (username == NULL) {
+            virReportOOMError();
+            goto error;
+        }
     } else {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "Authentication Credentials not found");
-        return VIR_DRV_OPEN_ERROR;
+        username = virRequestUsername(auth, NULL, conn->uri->server);
+
+        if (username == NULL) {
+            xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+                                      "Username request failed");
+            goto error;
+        }
     }
-    if (!passwd || !conn->uri->user) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "Username/Password not valid");
-        VIR_FREE(passwd);
-        return VIR_DRV_OPEN_ERROR;
+
+    password = virRequestPassword(auth, username, conn->uri->server);
+
+    if (password == NULL) {
+        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
+                                  "Password request failed");
+        goto error;
     }
+
     if (VIR_ALLOC(privP) < 0) {
         virReportOOMError();
-        return VIR_DRV_OPEN_ERROR;
+        goto error;
     }
+
     if (virAsprintf(&privP->url, "https://%s", conn->uri->server) < 0) {
         virReportOOMError();
-        VIR_FREE(passwd);
-        return VIR_DRV_OPEN_ERROR;
+        goto error;
     }
-    xenapiUtil_ParseQuery(conn, conn->uri, &privP->noVerify);
+
+    if (xenapiUtil_ParseQuery(conn, conn->uri, &privP->noVerify) < 0)
+        goto error;
+
+    if (!(privP->caps = getCapsObject())) {
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  "Capabilities not found");
+        goto error;
+    }
+
     xmlInitParser();
     xmlKeepBlanksDefault(0);
     xen_init();
     curl_global_init(CURL_GLOBAL_ALL);
 
-    session = xen_session_login_with_password(call_func, privP, conn->uri->user, passwd, xen_api_latest_version);
+    privP->session = xen_session_login_with_password(call_func, privP, username,
+                                                     password, xen_api_latest_version);
 
-    if (session && session->ok) {
-        privP->session = session;
-        if (!(privP->caps = getCapsObject())) {
-            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Capabilities not found");
-            VIR_FREE(passwd);
-            return VIR_DRV_OPEN_ERROR;
-        }
+    if (privP->session != NULL && privP->session->ok) {
         conn->privateData = privP;
-        VIR_FREE(passwd);
+
+        VIR_FREE(username);
+        VIR_FREE(password);
+
         return VIR_DRV_OPEN_SUCCESS;
-    } else {
-        xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "");
-        if (session) xenSessionFree(session);
-        VIR_FREE(privP);
-        VIR_FREE(passwd);
-        return VIR_DRV_OPEN_ERROR;
     }
+
+    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "");
+
+  error:
+    VIR_FREE(username);
+    VIR_FREE(password);
+
+    if (privP != NULL) {
+        if (privP->session != NULL)
+            xenSessionFree(privP->session);
+
+        VIR_FREE(privP);
+    }
+
+    return VIR_DRV_OPEN_ERROR;
 }
 
 /*
@@ -150,10 +190,20 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
 static int
 xenapiClose (virConnectPtr conn)
 {
-    xen_session_logout(((struct _xenapiPrivate *)(conn->privateData))->session);
-    virCapabilitiesFree(((struct _xenapiPrivate *)(conn->privateData))->caps);
-    VIR_FREE(((struct _xenapiPrivate *)(conn->privateData))->url);
-    VIR_FREE(conn->privateData);
+    struct _xenapiPrivate *priv = conn->privateData;
+
+    virCapabilitiesFree(priv->caps);
+
+    if (priv->session != NULL) {
+        xen_session_logout(priv->session);
+        xenSessionFree(priv->session);
+    }
+
+    VIR_FREE(priv->url);
+    VIR_FREE(priv);
+
+    conn->privateData = NULL;
+
     return 0;
 }
 
