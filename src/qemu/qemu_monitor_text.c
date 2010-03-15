@@ -939,7 +939,7 @@ static int qemuMonitorTextSaveMemory(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("could save memory region to '%s'"), path);
+                        _("could not save memory region to '%s'"), path);
         goto cleanup;
     }
 
@@ -986,7 +986,7 @@ int qemuMonitorTextSetMigrationSpeed(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &info) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("could restrict migration speed"));
+                        "%s", _("could not restrict migration speed"));
         goto cleanup;
     }
 
