@@ -6080,12 +6080,6 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
     if (!(drivestr = qemuBuildDriveStr(disk, 0, qemuCmdFlags)))
         goto error;
 
-    if (disk->info.addr.drive.controller <= 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                        _("no drive controller for %s"), disk->dst);
-        goto error;
-    }
-
     for (i = 0 ; i <= disk->info.addr.drive.controller ; i++) {
         cont = qemuDomainFindOrCreateSCSIDiskController(driver, vm, i, qemuCmdFlags);
         if (!cont)
