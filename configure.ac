@@ -61,6 +61,7 @@ gl_INIT
 
 AM_PROG_CC_STDC
 AC_C_CONST
+AC_TYPE_UID_T
 
 dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES
