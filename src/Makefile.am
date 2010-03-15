@@ -813,13 +813,18 @@ if WITH_MACVTAP
 USED_SYM_FILES += libvirt_macvtap.syms
 endif
 
+if WITH_LIBVIRTD
+USED_SYM_FILES += libvirt_daemon.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
   libvirt_driver_modules.syms	\
   libvirt_bridge.syms		\
   libvirt_linux.syms		\
-  libvirt_macvtap.syms
+  libvirt_macvtap.syms		\
+  libvirt_daemon.syms
 
 BUILT_SOURCES = libvirt.syms
 

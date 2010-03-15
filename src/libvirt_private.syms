@@ -285,10 +285,6 @@ iptablesRemoveUdpInput;
 
 
 # libvirt_internal.h
-virStateInitialize;
-virStateCleanup;
-virStateReload;
-virStateActive;
 virDrvSupportsFeature;
 virDomainMigratePrepare;
 virDomainMigratePerform;
@@ -299,7 +295,6 @@ virDomainMigratePrepareTunnel;
 virRegisterDriver;
 virRegisterInterfaceDriver;
 virRegisterNetworkDriver;
-virRegisterStateDriver;
 virRegisterStorageDriver;
 virRegisterDeviceMonitor;
 virRegisterSecretDriver;

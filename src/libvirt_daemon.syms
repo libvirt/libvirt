@@ -1,0 +1,10 @@
+#
+# These symbols are dependent upon --with-libvirtd via WITH_LIBVIRTD.
+#
+
+# libvirt_internal.h
+virStateInitialize;
+virStateCleanup;
+virStateReload;
+virStateActive;
+virRegisterStateDriver;
