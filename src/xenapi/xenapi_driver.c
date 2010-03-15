@@ -1716,11 +1716,11 @@ write_func(void *ptr, size_t size, size_t nmemb, void *comms_)
 {
     xen_comms *comms = comms_;
     size_t n = size * nmemb;
-    #ifdef PRINT_XML
-        printf("\n\n---Result from server -----------------------\n");
-        printf("%s\n",((char*) ptr));
-        fflush(stdout);
-    #endif
+#ifdef PRINT_XML
+    printf("\n\n---Result from server -----------------------\n");
+    printf("%s\n",((char*) ptr));
+    fflush(stdout);
+#endif
     return (size_t) (comms->func(ptr, n, comms->handle) ? n : 0);
 }
 
@@ -1734,12 +1734,11 @@ call_func(const void *data, size_t len, void *user_handle,
 {
     //(void)user_handle;
     struct _xenapiPrivate *priv = (struct _xenapiPrivate *)user_handle;
-    #ifdef PRINT_XML
-
-        printf("\n\n---Data to server: -----------------------\n");
-        printf("%s\n",((char*) data));
-        fflush(stdout);
-    #endif
+#ifdef PRINT_XML
+    printf("\n\n---Data to server: -----------------------\n");
+    printf("%s\n",((char*) data));
+    fflush(stdout);
+#endif
     CURL *curl = curl_easy_init();
     if (!curl) {
       return -1;
@@ -1750,9 +1749,9 @@ call_func(const void *data, size_t len, void *user_handle,
     };
     curl_easy_setopt(curl, CURLOPT_URL, priv->url);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
-    #ifdef CURLOPT_MUTE
-        curl_easy_setopt(curl, CURLOPT_MUTE, 1);
-    #endif
+#ifdef CURLOPT_MUTE
+    curl_easy_setopt(curl, CURLOPT_MUTE, 1);
+#endif
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &write_func);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &comms);
     curl_easy_setopt(curl, CURLOPT_POST, 1);

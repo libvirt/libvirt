@@ -548,7 +548,7 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
                 char macStr[VIR_MAC_STRING_BUFLEN];
                 virFormatMacAddr(def->nets[i]->mac, macStr);
                 if (!(mac = strdup(macStr))) {
-                    if (bridge) VIR_FREE(bridge);
+                    VIR_FREE(bridge);
                     goto error_cleanup;
                 }
             }
@@ -559,7 +559,7 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
                 VIR_FREE(bridge);
                 device_number++;
             }
-            if (bridge) VIR_FREE(bridge);
+            VIR_FREE(bridge);
         }
     }
     return 0;

@@ -162,10 +162,10 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
     nodeinfo->cores = 1;
 
     nodeinfo->nodes = 1;
-#if HAVE_NUMACTL
+# if HAVE_NUMACTL
     if (numa_available() >= 0)
         nodeinfo->nodes = numa_max_node() + 1;
-#endif
+# endif
 
     /* NB: It is impossible to fill our nodes, since cpuinfo
      * has no knowledge of NUMA nodes */
