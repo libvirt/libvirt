@@ -4815,7 +4815,13 @@ qemuParseCommandLineDisk(const char *val,
     else
         def->dst[2] = 'a' + idx;
 
-    virDomainDiskDefAssignAddress(def);
+    if (virDomainDiskDefAssignAddress(def) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("invalid device name '%s'"), def->dst);
+        virDomainDiskDefFree(def);
+        def = NULL;
+        /* fall through to "cleanup" */
+    }
 
 cleanup:
     for (i = 0 ; i < nkeywords ; i++) {
@@ -5623,7 +5629,8 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 goto no_memory;
             }
 
-            virDomainDiskDefAssignAddress(disk);
+            if (virDomainDiskDefAssignAddress(disk) < 0)
+                goto error;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);

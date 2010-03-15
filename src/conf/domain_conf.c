@@ -1233,10 +1233,12 @@ cleanup:
 }
 
 
-void
+int
 virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
 {
     int idx = virDiskNameToIndex(def->dst);
+    if (idx < 0)
+        return -1;
 
     switch (def->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -1270,6 +1272,8 @@ virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
         /* Other disk bus's aren't controller based */
         break;
     }
+
+    return 0;
 }
 
 /* Parse the XML definition for a disk
@@ -1498,8 +1502,9 @@ virDomainDiskDefParseXML(xmlNodePtr node,
     def->serial = serial;
     serial = NULL;
 
-    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-        virDomainDiskDefAssignAddress(def);
+    if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
+        && virDomainDiskDefAssignAddress(def) < 0)
+        goto error;
 
 cleanup:
     VIR_FREE(bus);
