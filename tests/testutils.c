@@ -280,6 +280,12 @@ int virtTestCaptureProgramOutput(const char *const argv[],
         }
     }
 }
+#else /* !WIN32 */
+int virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
+                                 char **buf ATTRIBUTE_UNUSED,
+                                 int buflen ATTRIBUTE_UNUSED) {
+    return -1;
+}
 #endif /* !WIN32 */
 
 
