@@ -331,6 +331,13 @@ static int createRawFileOpHook(int fd, void *data) {
                 goto cleanup;
             }
         }
+
+        if (fsync(fd) < 0) {
+            ret = errno;
+            virReportSystemError(errno, _("cannot sync data to file '%s'"),
+                                 hdata->vol->target.path);
+            goto cleanup;
+        }
     }
 
 cleanup:
@@ -359,7 +366,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     gid_t gid = (vol->target.perms.gid == -1) ? getgid() : vol->target.perms.gid;
 
     if ((createstat = virFileOperation(vol->target.path,
-                                       O_RDWR | O_CREAT | O_EXCL | O_DSYNC,
+                                       O_RDWR | O_CREAT | O_EXCL,
                                        vol->target.perms.mode, uid, gid,
                                        createRawFileOpHook, &hdata,
                                        VIR_FILE_OP_FORCE_PERMS |
