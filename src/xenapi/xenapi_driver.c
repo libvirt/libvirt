@@ -102,7 +102,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
     }
     if (!passwd || !conn->uri->user) {
         xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "Username/Password not valid");
-        if (passwd) VIR_FREE(passwd);
+        VIR_FREE(passwd);
         return VIR_DRV_OPEN_ERROR;
     }
     if (VIR_ALLOC(privP) < 0) {

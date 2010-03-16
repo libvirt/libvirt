@@ -78,5 +78,6 @@ src/xen/xen_hypervisor.c
 src/xen/xen_inotify.c
 src/xen/xm_internal.c
 src/xen/xs_internal.c
+src/xenapi/xenapi_utils.c
 tools/console.c
 tools/virsh.c
