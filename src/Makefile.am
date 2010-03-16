@@ -20,7 +20,9 @@ INCLUDES =							\
 		-DLOCAL_STATE_DIR=\""$(localstatedir)"\"	\
 		-DGETTEXT_PACKAGE=\"$(PACKAGE)\"		\
 		$(WARN_CFLAGS)					\
-		$(LOCK_CHECKING_CFLAGS)
+		$(LOCK_CHECKING_CFLAGS)			\
+		-DIN_LIBVIRT				\
+		$(WIN32_EXTRA_CFLAGS)
 
 EXTRA_DIST = $(conf_DATA)
 

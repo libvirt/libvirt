@@ -1732,6 +1732,7 @@ CYGWIN_EXTRA_LDFLAGS=
 CYGWIN_EXTRA_LIBADD=
 CYGWIN_EXTRA_PYTHON_LIBADD=
 MINGW_EXTRA_LDFLAGS=
+WIN32_EXTRA_CFLAGS=
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
@@ -1744,10 +1745,20 @@ case "$host" in
     MINGW_EXTRA_LDFLAGS="-no-undefined"
     ;;
 esac
+case "$host" in
+  *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+    # If the host is Windows, and shared libraries are disabled, we
+    # need to add -DLIBVIRT_STATIC to the CFLAGS for proper linking
+    if test "x$enable_shared" = "xno"; then
+      WIN32_EXTRA_CFLAGS="-DLIBVIRT_STATIC"
+    fi
+    ;;
+esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
 AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
+AC_SUBST([WIN32_EXTRA_CFLAGS])
 
 dnl Look for windres to build a Windows icon resource.
 AC_CHECK_TOOL([WINDRES], [windres], [no])

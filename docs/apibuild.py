@@ -28,6 +28,7 @@ ignored_words = {
   "ATTRIBUTE_UNUSED": (0, "macro keyword"),
   "ATTRIBUTE_SENTINEL": (0, "macro keyword"),
   "VIR_DEPRECATED": (0, "macro keyword"),
+  "VIR_EXPORT_VAR": (0, "macro keyword"),
   "WINAPI": (0, "Windows keyword"),
   "__declspec": (3, "Windows keyword"),
   "__stdcall": (0, "Windows keyword"),
