@@ -257,10 +257,6 @@ virInterfaceObjUnlock;
 virInterfaceObjListFree;
 
 
-# interface_driver.h
-interfaceRegister;
-
-
 # iptables.h
 iptablesAddForwardAllowCross;
 iptablesAddForwardAllowIn;
