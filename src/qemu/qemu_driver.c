@@ -2975,6 +2975,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
         goto abort;
 
+    if (logfile != -1)
+        close(logfile);
+
     return 0;
 
 cleanup:
