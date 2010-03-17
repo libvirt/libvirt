@@ -99,6 +99,11 @@ enum qemuDomainJob {
 enum qemuDomainJobSignals {
     QEMU_JOB_SIGNAL_CANCEL  = 1 << 0, /* Request job cancellation */
     QEMU_JOB_SIGNAL_SUSPEND = 1 << 1, /* Request VM suspend to finish live migration offline */
+    QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME = 1 << 2, /* Request migration downtime change */
+};
+
+struct qemuDomainJobSignalsData {
+    unsigned long long migrateDowntime; /* Data for QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME */
 };
 
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
@@ -107,6 +112,7 @@ struct _qemuDomainObjPrivate {
     virCond jobCond; /* Use in conjunction with main virDomainObjPtr lock */
     enum qemuDomainJob jobActive;   /* Currently running job */
     unsigned int jobSignals;        /* Signals for running job */
+    struct qemuDomainJobSignalsData jobSignalsData; /* Signal specific data */
     virDomainJobInfo jobInfo;
     unsigned long long jobStart;
 
@@ -352,6 +358,7 @@ static int qemuDomainObjBeginJob(virDomainObjPtr obj)
     }
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
     priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
@@ -399,6 +406,7 @@ static int qemuDomainObjBeginJobWithDriver(struct qemud_driver *driver,
     }
     priv->jobActive = QEMU_JOB_UNSPECIFIED;
     priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
     priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
@@ -424,6 +432,7 @@ static int ATTRIBUTE_RETURN_CHECK qemuDomainObjEndJob(virDomainObjPtr obj)
 
     priv->jobActive = QEMU_JOB_NONE;
     priv->jobSignals = 0;
+    memset(&priv->jobSignalsData, 0, sizeof(priv->jobSignalsData));
     priv->jobStart = 0;
     memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
     virCondSignal(&priv->jobCond);
@@ -4064,6 +4073,17 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
             VIR_DEBUG0("Pausing domain for non-live migration");
             if (qemuDomainMigrateOffline(driver, vm) < 0)
                 VIR_WARN0("Unable to pause domain");
+        } else if (priv->jobSignals & QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME) {
+            unsigned long long ms = priv->jobSignalsData.migrateDowntime;
+
+            priv->jobSignals ^= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
+            priv->jobSignalsData.migrateDowntime = 0;
+            VIR_DEBUG("Setting migration downtime to %llums", ms);
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            rc = qemuMonitorSetMigrationDowntime(priv->mon, ms);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            if (rc < 0)
+                VIR_WARN0("Unable to set migration downtime");
         }
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -9520,6 +9540,60 @@ cleanup:
 }
 
 
+static int
+qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
+                                unsigned long long downtime,
+                                unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    if (flags != 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("unsupported flags (0x%x) passed to '%s'"), flags, __FUNCTION__);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    priv = vm->privateData;
+
+    if (priv->jobActive != QEMU_JOB_MIGRATION) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not being migrated"));
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Requesting migration downtime change to %llums", downtime);
+    priv->jobSignals |= QEMU_JOB_SIGNAL_MIGRATE_DOWNTIME;
+    priv->jobSignalsData.migrateDowntime = downtime;
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -9601,7 +9675,7 @@ static virDriver qemuDriver = {
     qemuCPUBaseline, /* cpuBaseline */
     qemuDomainGetJobInfo, /* domainGetJobInfo */
     qemuDomainAbortJob, /* domainAbortJob */
-    NULL, /* domainMigrateSetMaxDowntime */
+    qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
 };
 
 

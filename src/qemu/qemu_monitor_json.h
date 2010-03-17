@@ -81,6 +81,9 @@ int qemuMonitorJSONSavePhysicalMemory(qemuMonitorPtr mon,
 int qemuMonitorJSONSetMigrationSpeed(qemuMonitorPtr mon,
                                      unsigned long bandwidth);
 
+int qemuMonitorJSONSetMigrationDowntime(qemuMonitorPtr mon,
+                                        unsigned long long downtime);
+
 int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
                                       int *status,
                                       unsigned long long *transferred,

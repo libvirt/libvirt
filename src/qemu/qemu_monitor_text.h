@@ -83,6 +83,9 @@ int qemuMonitorTextSavePhysicalMemory(qemuMonitorPtr mon,
 int qemuMonitorTextSetMigrationSpeed(qemuMonitorPtr mon,
                                      unsigned long bandwidth);
 
+int qemuMonitorTextSetMigrationDowntime(qemuMonitorPtr mon,
+                                        unsigned long long downtime);
+
 int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                                       int *status,
                                       unsigned long long *transferred,

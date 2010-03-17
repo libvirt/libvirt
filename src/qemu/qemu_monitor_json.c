@@ -1088,6 +1088,35 @@ int qemuMonitorJSONSetMigrationSpeed(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorJSONSetMigrationDowntime(qemuMonitorPtr mon,
+                                        unsigned long long downtime)
+{
+    int ret;
+    char *downtimestr;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    if (virAsprintf(&downtimestr, "%llums", downtime) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    cmd = qemuMonitorJSONMakeCommand("migrate_set_downtime",
+                                     "s:value", downtimestr,
+                                     NULL);
+    VIR_FREE(downtimestr);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 static int
 qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
                                        int *status,

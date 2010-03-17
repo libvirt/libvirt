@@ -1016,6 +1016,21 @@ int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
     return ret;
 }
 
+
+int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
+                                    unsigned long long downtime)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d downtime=%llu", mon, mon->fd, downtime);
+
+    if (mon->json)
+        ret = qemuMonitorJSONSetMigrationDowntime(mon, downtime);
+    else
+        ret = qemuMonitorTextSetMigrationDowntime(mon, downtime);
+    return ret;
+}
+
+
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
                                   int *status,
                                   unsigned long long *transferred,

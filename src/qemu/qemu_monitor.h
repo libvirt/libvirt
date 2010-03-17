@@ -176,6 +176,9 @@ int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
                                  unsigned long bandwidth);
 
+int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
+                                    unsigned long long downtime);
+
 enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
     QEMU_MONITOR_MIGRATION_STATUS_ACTIVE,
