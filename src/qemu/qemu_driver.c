@@ -4979,7 +4979,7 @@ static int qemudNodeGetSecurityModel(virConnectPtr conn,
     int ret = 0;
 
     qemuDriverLock(driver);
-    if (!driver->securityDriver) {
+    if (!driver->securityPrimaryDriver) {
         memset(secmodel, 0, sizeof (*secmodel));
         goto cleanup;
     }
