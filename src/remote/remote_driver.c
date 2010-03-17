@@ -7733,6 +7733,36 @@ done:
 }
 
 
+static int
+remoteDomainMigrateSetMaxDowntime(virDomainPtr domain,
+                                  unsigned long long downtime,
+                                  unsigned int flags)
+{
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_migrate_set_max_downtime_args args;
+    int rv = -1;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.downtime = downtime;
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME,
+             (xdrproc_t) xdr_remote_domain_migrate_set_max_downtime_args,
+             (char *) &args,
+             (xdrproc_t) xdr_void,
+             (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /*----------------------------------------------------------------------*/
 
 
@@ -9152,7 +9182,7 @@ static virDriver remote_driver = {
     remoteCPUBaseline, /* cpuBaseline */
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
-    NULL, /* domainMigrateSetMaxDowntime */
+    remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
 };
 
 static virNetworkDriver network_driver = {
