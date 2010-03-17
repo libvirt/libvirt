@@ -2585,7 +2585,46 @@ int virGetGroupID(const char *name,
 
     return 0;
 }
-#endif
+
+#else /* HAVE_GETPWUID_R */
+
+char *
+virGetUserDirectory(uid_t uid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserDirectory is not avialable"));
+
+    return NULL;
+}
+
+char *
+virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserName is not avialable"));
+
+    return NULL;
+}
+
+int virGetUserID(const char *name ATTRIBUTE_UNUSED,
+                 uid_t *uid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetUserID is not avialable"));
+
+    return 0;
+}
+
+
+int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
+                  gid_t *gid ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virGetGroupID is not avialable"));
+
+    return 0;
+}
+#endif /* HAVE_GETPWUID_R */
 
 
 #ifdef HAVE_MNTENT_H
@@ -2619,7 +2658,18 @@ cleanup:
 
     return ret;
 }
-#endif
+
+#else /* HAVE_MNTENT_H */
+
+char *
+virFileFindMountPoint(const char *type ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+
+    return NULL;
+}
+
+#endif /* HAVE_MNTENT_H */
 
 #ifndef PROXY
 # if defined(UDEVADM) || defined(UDEVSETTLE)
