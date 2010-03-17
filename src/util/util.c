@@ -1221,7 +1221,7 @@ int virFileExists(const char *path)
     return(0);
 }
 
-
+# ifndef WIN32
 static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
                                   uid_t uid, gid_t gid,
                                   virFileOperationHook hook, void *hookdata,
@@ -1311,7 +1311,6 @@ error:
     return ret;
 }
 
-# ifndef WIN32
 int virFileOperation(const char *path, int openflags, mode_t mode,
                      uid_t uid, gid_t gid,
                      virFileOperationHook hook, void *hookdata,
@@ -1532,19 +1531,33 @@ childerror:
 
 # else /* WIN32 */
 
-int virFileOperation(const char *path, int openflags, mode_t mode,
-                  uid_t uid, gid_t gid,
-                  virFileOperationHook hook, void *hookdata,
-                  unsigned int flags) {
-    return virFileOperationNoFork(path, openflags, mode, uid, gid,
-                                  hook, hookdata, flags);
+int virFileOperation(const char *path ATTRIBUTE_UNUSED,
+                     int openflags ATTRIBUTE_UNUSED,
+                     mode_t mode ATTRIBUTE_UNUSED,
+                     uid_t uid ATTRIBUTE_UNUSED,
+                     gid_t gid ATTRIBUTE_UNUSED,
+                     virFileOperationHook hook ATTRIBUTE_UNUSED,
+                     void *hookdata ATTRIBUTE_UNUSED,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virFileOperation is not implemented for WIN32"));
+
+    return -1;
 }
 
-int virDirCreate(const char *path, mode_t mode,
-                 uid_t uid, gid_t gid, unsigned int flags) {
-    return virDirCreateNoFork(path, mode, uid, gid, flags);
+int virDirCreate(const char *path ATTRIBUTE_UNUSED,
+                 mode_t mode ATTRIBUTE_UNUSED,
+                 uid_t uid ATTRIBUTE_UNUSED,
+                 gid_t gid ATTRIBUTE_UNUSED,
+                 unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virDirCreate is not implemented for WIN32"));
+
+    return -1;
 }
-# endif
+# endif /* WIN32 */
 
 static int virFileMakePathHelper(char *path) {
     struct stat st;
