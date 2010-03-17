@@ -208,7 +208,7 @@ QEMU_DRIVER_SOURCES =						\
 
 XENAPI_DRIVER_SOURCES =								\
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
-		xenapi_driver_private.h							\
+		xenapi/xenapi_driver_private.h					\
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
 UML_DRIVER_SOURCES =						\
