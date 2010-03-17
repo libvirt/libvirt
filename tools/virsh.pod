@@ -334,6 +334,12 @@ leaves the domain paused on the destination host. The I<desturi> is the
 connection URI of the destination host, and I<migrateuri> is the
 migration URI, which usually can be omitted.
 
+=item B<migrate-setmaxdowntime> I<domain-id> I<downtime>
+
+Set maximum tolerable downtime for a domain which is being live-migrated to
+another host.  The I<downtime> is a number of milliseconds the guest is allowed
+to be down at the end of live migration.
+
 =item B<reboot> I<domain-id>
 
 Reboot a domain.  This acts just as if the domain had the B<reboot>

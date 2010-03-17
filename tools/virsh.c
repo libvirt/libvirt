@@ -227,6 +227,8 @@ static vshCmdOpt *vshCommandOpt(const vshCmd *cmd, const char *name);
 static int vshCommandOptInt(const vshCmd *cmd, const char *name, int *found);
 static char *vshCommandOptString(const vshCmd *cmd, const char *name,
                                  int *found);
+static long long vshCommandOptLongLong(const vshCmd *cmd, const char *name,
+                                       int *found);
 #if 0
 static int vshCommandOptStringList(const vshCmd *cmd, const char *name, char ***data);
 #endif
@@ -2824,6 +2826,51 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
  done:
     if (dom) virDomainFree (dom);
+    return ret;
+}
+
+/*
+ * "migrate-setmaxdowntime" command
+ */
+static const vshCmdInfo info_migrate_setmaxdowntime[] = {
+    {"help", N_("set maximum tolerable downtime")},
+    {"desc", N_("Set maximum tolerable downtime of a domain which is being live-migrated to another host.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"downtime", VSH_OT_DATA, VSH_OFLAG_REQ, N_("maximum tolerable downtime (in milliseconds) for migration")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    long long downtime;
+    int found;
+    int ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    downtime = vshCommandOptLongLong(cmd, "downtime", &found);
+    if (!found || downtime < 1) {
+        vshError(ctl, "%s", _("migrate: Invalid downtime"));
+        goto done;
+    }
+
+    if (virDomainMigrateSetMaxDowntime(dom, downtime, 0))
+        goto done;
+
+    ret = TRUE;
+
+done:
+    virDomainFree(dom);
     return ret;
 }
 
@@ -7767,6 +7814,7 @@ static const vshCmdDef commands[] = {
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
     {"migrate", cmdMigrate, opts_migrate, info_migrate},
+    {"migrate-setmaxdowntime", cmdMigrateSetMaxDowntime, opts_migrate_setmaxdowntime, info_migrate_setmaxdowntime},
 
     {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
     {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
@@ -8105,6 +8153,24 @@ vshCommandOptString(const vshCmd *cmd, const char *name, int *found)
         *found = arg ? TRUE : FALSE;
 
     return arg && arg->data && *arg->data ? arg->data : NULL;
+}
+
+/*
+ * Returns option as long long
+ */
+static long long
+vshCommandOptLongLong(const vshCmd *cmd, const char *name, int *found)
+{
+    vshCmdOpt *arg = vshCommandOpt(cmd, name);
+    int num_found = FALSE;
+    long long res = 0;
+    char *end_p = NULL;
+
+    if ((arg != NULL) && (arg->data != NULL))
+        num_found = !virStrToLong_ll(arg->data, &end_p, 10, &res);
+    if (found)
+        *found = num_found;
+    return res;
 }
 
 #if 0
