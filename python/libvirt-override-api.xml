@@ -40,7 +40,7 @@
     <function name='virNetworkLookupByUUID' file='python'>
       <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
       <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
-      <arg name='conn' type='virNetworkPtr' info='pointer to the hypervisor connection'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the UUID string for the network, must be 16 bytes'/>
     </function>
     <function name='virDomainGetInfo' file='python'>
