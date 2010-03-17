@@ -9,4 +9,4 @@ Makefile.in
 libvirt_qemud
 libvirtd
 libvirtd.init
-libvirtd.*.logrotate
+libvirtd*.logrotate
