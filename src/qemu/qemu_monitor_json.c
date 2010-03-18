@@ -50,6 +50,7 @@ static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data)
 static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data);
 
 struct {
     const char *type;
@@ -60,6 +61,7 @@ struct {
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "STOP", qemuMonitorJSONHandleStop, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
+    { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
 };
 
 
@@ -505,6 +507,28 @@ static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr d
         offset = 0;
     }
     qemuMonitorEmitRTCChange(mon, offset);
+}
+
+VIR_ENUM_DECL(qemuMonitorWatchdogAction)
+VIR_ENUM_IMPL(qemuMonitorWatchdogAction, VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,
+              "none", "pause", "reset", "poweroff" "shutdown", "debug");
+
+static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    const char *action;
+    int actionID;
+    if (!(action = virJSONValueObjectGetString(data, "action"))) {
+        VIR_WARN0("missing action in watchdog event");
+    }
+    if (action) {
+        if ((actionID = qemuMonitorWatchdogActionTypeFromString(action)) < 0) {
+            VIR_WARN("unknown action %s in watchdog event", action);
+            actionID = VIR_DOMAIN_EVENT_WATCHDOG_NONE;
+        }
+    } else {
+            actionID = VIR_DOMAIN_EVENT_WATCHDOG_NONE;
+    }
+    qemuMonitorEmitRTCChange(mon, actionID);
 }
 
 

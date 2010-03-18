@@ -67,6 +67,9 @@ struct _virDomainEvent {
         struct {
             long long offset;
         } rtcChange;
+        struct {
+            int action;
+        } watchdog;
     } data;
 };
 
@@ -562,6 +565,31 @@ virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom,
+                                                   int action)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_WATCHDOG,
+                                  dom->id, dom->name, dom->uuid);
+
+    if (ev)
+        ev->data.watchdog.action = action;
+
+    return ev;
+}
+virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
+                                                   int action)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_WATCHDOG,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+
+    if (ev)
+        ev->data.watchdog.action = action;
+
+    return ev;
+}
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -676,6 +704,12 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         ((virConnectDomainEventRTCChangeCallback)cb)(conn, dom,
                                                      event->data.rtcChange.offset,
                                                      cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_WATCHDOG:
+        ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
+                                                    event->data.watchdog.action,
+                                                    cbopaque);
         break;
 
     default:

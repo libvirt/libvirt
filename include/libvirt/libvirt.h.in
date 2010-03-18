@@ -1879,6 +1879,36 @@ typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
                                                        void *opaque);
 
 /**
+ * virDomainEventWatchdogAction:
+ *
+ * The action that is to be taken due to the watchdog device firing
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_WATCHDOG_NONE = 0, /* No action, watchdog ignored */
+    VIR_DOMAIN_EVENT_WATCHDOG_PAUSE,    /* Guest CPUs are paused */
+    VIR_DOMAIN_EVENT_WATCHDOG_RESET,    /* Guest CPUs are reset */
+    VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF, /* Guest is forcably powered off */
+    VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN, /* Guest is requested to gracefully shutdown */
+    VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,    /* No action, a debug message logged */
+} virDomainEventWatchdogAction;
+
+/**
+ * virConnectDomainEventWatchdogCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @action: action that is to be taken due to watchdog firing
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_WATCHDOG with virConnectDomainEventRegisterAny()
+ *
+ */
+typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
+                                                      virDomainPtr dom,
+                                                      int action,
+                                                      void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -1891,6 +1921,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
     VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback */
     VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback */
+    VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

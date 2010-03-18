@@ -806,6 +806,21 @@ int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
 }
 
 
+int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainWatchdog)
+        ret = mon->cb->domainWatchdog(mon, mon->vm, action);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

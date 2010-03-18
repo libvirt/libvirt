@@ -915,11 +915,34 @@ qemuHandleDomainRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuHandleDomainWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virDomainObjPtr vm,
+                         int action)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+
+    virDomainObjLock(vm);
+    event = virDomainEventWatchdogNewFromObj(vm, action);
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
     .domainReset = qemuHandleDomainReset,
     .domainRTCChange = qemuHandleDomainRTCChange,
+    .domainWatchdog = qemuHandleDomainWatchdog,
 };
 
 static int

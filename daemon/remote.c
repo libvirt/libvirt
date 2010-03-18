@@ -187,10 +187,41 @@ static int remoteRelayDomainEventRTCChange(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int remoteRelayDomainEventWatchdog(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                          virDomainPtr dom,
+                                          int action,
+                                          void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_watchdog_msg data;
+
+    if (!client)
+        return -1;
+
+    REMOTE_DEBUG("Relaying domain watchdog event %s %d %d", dom->name, dom->id, action);
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain (&data.dom, dom);
+    data.action = action;
+
+    remoteDispatchDomainEventSend (client,
+                                   REMOTE_PROC_DOMAIN_EVENT_WATCHDOG,
+                                   (xdrproc_t)xdr_remote_domain_event_watchdog_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventRTCChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventWatchdog),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

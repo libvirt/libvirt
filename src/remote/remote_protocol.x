@@ -1545,6 +1545,11 @@ struct remote_domain_event_rtc_change_msg {
     hyper offset;
 };
 
+struct remote_domain_event_watchdog_msg {
+    remote_nonnull_domain dom;
+    int action;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1737,7 +1742,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY = 167,
     REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168,
     REMOTE_PROC_DOMAIN_EVENT_REBOOT = 169,
-    REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE = 170
+    REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE = 170,
+
+    REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

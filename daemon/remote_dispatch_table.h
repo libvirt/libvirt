@@ -857,3 +857,8 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* Async event DomainEventWatchdog => 171 */
+    .fn = NULL,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
