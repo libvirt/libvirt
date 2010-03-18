@@ -5021,7 +5021,7 @@ static  nsresult vboxCallbackOnMachineStateChange (IVirtualBoxCallback *pThis,
 
         dom = vboxDomainLookupByUUID(g_pVBoxGlobalData->conn, uuid);
         if (dom) {
-            int i = 0;
+            virDomainEventPtr ev;
 
             if (state == MachineState_Starting) {
                 event  = VIR_DOMAIN_EVENT_STARTED;
@@ -5052,14 +5052,14 @@ static  nsresult vboxCallbackOnMachineStateChange (IVirtualBoxCallback *pThis,
                 detail = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
             }
 
-            for (i = 0; i < g_pVBoxGlobalData->domainEventCallbacks->count; i++) {
-                if (g_pVBoxGlobalData->domainEventCallbacks->callbacks[i]->cb) {
-                    g_pVBoxGlobalData->domainEventCallbacks->callbacks[i]->cb(g_pVBoxGlobalData->conn,
-                                                                              dom,
-                                                                              event,
-                                                                              detail,
-                                                                              NULL);
-                }
+            ev = virDomainEventNewFromDom(dom, event, detail);
+
+            if (ev) {
+                virDomainEventDispatch(ev,
+                                       g_pVBoxGlobalData->domainEventCallbacks,
+                                       virDomainEventDispatchDefaultFunc,
+                                       NULL);
+                virDomainEventFree(ev);
             }
         }
     }
@@ -5142,7 +5142,7 @@ static nsresult vboxCallbackOnMachineRegistered (IVirtualBoxCallback *pThis,
 
         dom = vboxDomainLookupByUUID(g_pVBoxGlobalData->conn, uuid);
         if (dom) {
-            int i = 0;
+            virDomainEventPtr ev;
 
             /* CURRENT LIMITATION: we never get the VIR_DOMAIN_EVENT_UNDEFINED
              * event becuase the when the machine is de-registered the call
@@ -5158,14 +5158,14 @@ static nsresult vboxCallbackOnMachineRegistered (IVirtualBoxCallback *pThis,
                 detail = VIR_DOMAIN_EVENT_UNDEFINED_REMOVED;
             }
 
-            for (i = 0; i < g_pVBoxGlobalData->domainEventCallbacks->count; i++) {
-                if (g_pVBoxGlobalData->domainEventCallbacks->callbacks[i]->cb) {
-                    g_pVBoxGlobalData->domainEventCallbacks->callbacks[i]->cb(g_pVBoxGlobalData->conn,
-                                                                              dom,
-                                                                              event,
-                                                                              detail,
-                                                                              NULL);
-                }
+            ev = virDomainEventNewFromDom(dom, event, detail);
+
+            if (ev) {
+                virDomainEventDispatch(ev,
+                                       g_pVBoxGlobalData->domainEventCallbacks,
+                                       virDomainEventDispatchDefaultFunc,
+                                       NULL);
+                virDomainEventFree(ev);
             }
         }
     }
@@ -5412,28 +5412,17 @@ static int vboxDomainEventDeregister (virConnectPtr conn,
         ret = virDomainEventCallbackListRemove(conn, data->domainEventCallbacks,
                                                callback);
 
-    if(data->vboxCallback) {
+    if (data->vboxCallback) {
         /* check count here of how many times register was called
          * and only on the last de-register do the un-register call
          */
-        if (data->domainEventCallbacks && (data->domainEventCallbacks->count <= 0)) {
-            int i = 0;
-
+        if (data->domainEventCallbacks && virDomainEventCallbackListCount(data->domainEventCallbacks) == 0) {
             data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
             VBOX_RELEASE(data->vboxCallback);
 
             /* Remove the Event file handle on which we are listening as well */
             virEventRemoveHandle(data->fdWatch);
             data->fdWatch = -1;
-
-            /* iterate and free all the opaque objects using the
-             * freecb callback provided in vboxDomainEventRegister()
-             */
-            for (i = 0; i < data->domainEventCallbacks->count; i++) {
-                if (data->domainEventCallbacks->callbacks[i]->freecb) {
-                    data->domainEventCallbacks->callbacks[i]->freecb(data->domainEventCallbacks->callbacks[i]->opaque);
-                }
-            }
         }
     }
 

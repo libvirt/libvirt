@@ -35,6 +35,21 @@
     virReportErrorHelper(conn, VIR_FROM_THIS, code, __FILE__,       \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
+struct _virDomainEventCallback {
+    virConnectPtr conn;
+    virConnectDomainEventCallback cb;
+    void *opaque;
+    virFreeCallback freecb;
+    int deleted;
+};
+
+struct _virDomainEvent {
+    int id;
+    char *name;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    int type;
+    int detail;
+};
 
 /**
  * virDomainEventCallbackListFree:
@@ -242,6 +257,13 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     cbList->count++;
     return 0;
 }
+
+
+int virDomainEventCallbackListCount(virDomainEventCallbackListPtr cbList)
+{
+    return cbList->count;
+}
+
 
 void virDomainEventFree(virDomainEventPtr event)
 {

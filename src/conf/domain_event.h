@@ -27,13 +27,6 @@
 
 # include "domain_conf.h"
 
-struct _virDomainEventCallback {
-    virConnectPtr conn;
-    virConnectDomainEventCallback cb;
-    void *opaque;
-    virFreeCallback freecb;
-    int deleted;
-};
 typedef struct _virDomainEventCallback virDomainEventCallback;
 typedef virDomainEventCallback *virDomainEventCallbackPtr;
 
@@ -69,17 +62,12 @@ int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
 
 int virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList);
 
+int virDomainEventCallbackListCount(virDomainEventCallbackListPtr cbList);
+
 /**
  * Dispatching domain events that come in while
  * in a call / response rpc
  */
-struct _virDomainEvent {
-    int id;
-    char *name;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    int type;
-    int detail;
-};
 typedef struct _virDomainEvent virDomainEvent;
 typedef virDomainEvent *virDomainEventPtr;
 
