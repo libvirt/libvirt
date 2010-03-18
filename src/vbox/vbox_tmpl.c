@@ -7073,6 +7073,8 @@ virDriver NAME(Driver) = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainEventRegisterAny */
+    NULL, /* domainEventDeregisterAny */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

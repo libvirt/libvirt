@@ -1857,6 +1857,44 @@ int virDomainGetJobInfo(virDomainPtr dom,
 int virDomainAbortJob(virDomainPtr dom);
 
 
+/* A generic callback definition. Specific events usually have a customization
+ * with extra parameters */
+typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
+                                                     virDomainPtr dom,
+                                                     void *opaque);
+
+/**
+ * VIR_DOMAIN_EVENT_CALLBACK:
+ *
+ * Used to cast the event specific callback into the generic one
+ * for use for virDomainEventRegister
+ */
+#define VIR_DOMAIN_EVENT_CALLBACK(cb) ((virConnectDomainEventGenericCallback)(cb))
+
+
+typedef enum {
+    VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
+
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last event ID supported
+     * by this version of the libvirt API.
+     */
+    VIR_DOMAIN_EVENT_ID_LAST
+} virDomainEventID;
+
+
+/* Use VIR_DOMAIN_EVENT_CALLBACK() to cast the 'cb' parameter  */
+int virConnectDomainEventRegisterAny(virConnectPtr conn,
+                                     virDomainPtr dom, /* Optional, to filter */
+                                     int eventID,
+                                     virConnectDomainEventGenericCallback cb,
+                                     void *opaque,
+                                     virFreeCallback freecb);
+
+int virConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                       int callbackID);
+
 #ifdef __cplusplus
 }
 #endif

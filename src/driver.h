@@ -386,6 +386,18 @@ typedef int
                                          unsigned long long downtime,
                                          unsigned int flags);
 
+typedef int
+    (*virDrvDomainEventRegisterAny)(virConnectPtr conn,
+                                    virDomainPtr dom,
+                                    int eventID,
+                                    virConnectDomainEventGenericCallback cb,
+                                    void *opaque,
+                                    virFreeCallback freecb);
+
+typedef int
+    (*virDrvDomainEventDeregisterAny)(virConnectPtr conn,
+                                      int callbackID);
+
 /**
  * _virDriver:
  *
@@ -480,6 +492,8 @@ struct _virDriver {
     virDrvDomainGetJobInfo     domainGetJobInfo;
     virDrvDomainAbortJob     domainAbortJob;
     virDrvDomainMigrateSetMaxDowntime  domainMigrateSetMaxDowntime;
+    virDrvDomainEventRegisterAny domainEventRegisterAny;
+    virDrvDomainEventDeregisterAny domainEventDeregisterAny;
 };
 
 typedef int

@@ -9189,6 +9189,8 @@ static virDriver remote_driver = {
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainEventRegisterAny */
+    NULL, /* domainEventDeregisterAny */
 };
 
 static virNetworkDriver network_driver = {

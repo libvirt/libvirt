@@ -9338,8 +9338,12 @@ error:
  * @opaque: opaque data to pass on to the callback
  * @freecb: optional function to deallocate opaque when not used anymore
  *
- * Adds a Domain Event Callback.
- * Registering for a domain callback will enable delivery of the events
+ * Adds a callback to receive notifications of domain lifecycle events
+ * occurring on a connection
+ *
+ * Use of this method is no longer recommended. Instead applications
+ * should try virConnectDomainEventRegisterAny which has a more flexible
+ * API contract
  *
  * The virDomainPtr object handle passed into the callback upon delivery
  * of an event is only valid for the duration of execution of the callback.
@@ -9388,9 +9392,12 @@ error:
  * @conn: pointer to the connection
  * @cb: callback to the function handling domain events
  *
- * Removes a Domain Event Callback.
- * De-registering for a domain callback will disable
- * delivery of this event type
+ * Removes a callback previously registered with the virConnectDomainEventRegister
+ * funtion.
+ *
+ * Use of this method is no longer recommended. Instead applications
+ * should try virConnectDomainEventUnregisterAny which has a more flexible
+ * API contract
  *
  * Returns 0 on success, -1 on failure
  */
@@ -11356,7 +11363,121 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
     }
 
     virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
 
+/**
+ * virConnectDomainEventRegisterAny:
+ * @conn: pointer to the connection
+ * @dom: pointer to the domain
+ * @eventID: the event type to receive
+ * @cb: callback to the function handling domain events
+ * @opaque: opaque data to pass on to the callback
+ * @freecb: optional function to deallocate opaque when not used anymore
+ *
+ * Adds a callback to receive notifications of arbitrary domain events
+ * occurring on a domain.
+ *
+ * If dom is NULL, then events will be monitored for any domain. If dom
+ * is non-NULL, then only the specific domain will be monitored
+ *
+ * Most types of event have a callback providing a custom set of parameters
+ * for the event. When registering an event, it is thus neccessary to use
+ * the VIR_DOMAIN_EVENT_CALLBACK() macro to cast the supplied function pointer
+ * to match the signature of this method.
+ *
+ * The virDomainPtr object handle passed into the callback upon delivery
+ * of an event is only valid for the duration of execution of the callback.
+ * If the callback wishes to keep the domain object after the callback
+ * returns, it shall take a reference to it, by calling virDomainRef.
+ * The reference can be released once the object is no longer required
+ * by calling virDomainFree.
+ *
+ * The return value from this method is a positive integer identifier
+ * for the callback. To unregister a callback, this callback ID should
+ * be passed to the virDomainEventUnregisterAny method
+ *
+ * Returns a callback identifier on success, -1 on failure
+ */
+int
+virConnectDomainEventRegisterAny(virConnectPtr conn,
+                                 virDomainPtr dom,
+                                 int eventID,
+                                 virConnectDomainEventGenericCallback cb,
+                                 void *opaque,
+                                 virFreeCallback freecb)
+{
+    DEBUG("conn=%p dom=%p, eventID=%d, cb=%p, opaque=%p, freecb=%p", conn, dom, eventID, cb, opaque, freecb);
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    if (dom != NULL &&
+        !(VIR_IS_CONNECTED_DOMAIN(dom) && dom->conn == conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(conn);
+        return (-1);
+    }
+    if (eventID < 0 || eventID >= VIR_DOMAIN_EVENT_ID_LAST || cb == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if ((conn->driver) && (conn->driver->domainEventRegisterAny)) {
+        int ret;
+        ret = conn->driver->domainEventRegisterAny(conn, dom, eventID, cb, opaque, freecb);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virConnectDomainEventDeregisterAny:
+ * @conn: pointer to the connection
+ * @callbackID: the callback identifier
+ *
+ * Removes an event callback. The callbackID parameter should be the
+ * vaule obtained from a previous virDomainEventRegisterAny method.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virConnectDomainEventDeregisterAny(virConnectPtr conn,
+                                   int callbackID)
+{
+    DEBUG("conn=%p, callbackID=%d", conn, callbackID);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    if (callbackID < 0) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if ((conn->driver) && (conn->driver->domainEventDeregisterAny)) {
+        int ret;
+        ret = conn->driver->domainEventDeregisterAny(conn, callbackID);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
 error:
     virDispatchError(conn);
     return -1;

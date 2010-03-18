@@ -169,6 +169,7 @@ skipped_modules = {
 skipped_types = {
 #    'int *': "usually a return type",
      'virConnectDomainEventCallback': "No function types in python",
+     'virConnectDomainEventGenericCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
 }
 
@@ -330,6 +331,8 @@ skip_function = (
     'virNodeGetSecurityModel', # Needs investigation...
     'virConnectDomainEventRegister',   # overridden in virConnect.py
     'virConnectDomainEventDeregister', # overridden in virConnect.py
+    'virConnectDomainEventRegisterAny',   # overridden in virConnect.py
+    'virConnectDomainEventDeregisterAny', # overridden in virConnect.py
     'virSaveLastError', # We have our own python error wrapper
     'virFreeError', # Only needed if we use virSaveLastError
     'virStreamEventAddCallback',

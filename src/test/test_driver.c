@@ -5245,6 +5245,8 @@ static virDriver testDriver = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+    NULL, /* domainEventRegisterAny */
+    NULL, /* domainEventDeregisterAny */
 };
 
 static virNetworkDriver testNetworkDriver = {
