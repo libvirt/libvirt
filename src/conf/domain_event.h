@@ -46,24 +46,50 @@ int virDomainEventCallbackListAdd(virConnectPtr conn,
                                   void *opaque,
                                   virFreeCallback freecb)
     ATTRIBUTE_NONNULL(1);
+int virDomainEventCallbackListAddID(virConnectPtr conn,
+                                    virDomainEventCallbackListPtr cbList,
+                                    virDomainPtr dom,
+                                    int eventID,
+                                    virConnectDomainEventGenericCallback cb,
+                                    void *opaque,
+                                    virFreeCallback freecb)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(5);
+
 
 int virDomainEventCallbackListRemove(virConnectPtr conn,
                                      virDomainEventCallbackListPtr cbList,
                                      virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1);
-
+int virDomainEventCallbackListRemoveID(virConnectPtr conn,
+                                       virDomainEventCallbackListPtr cbList,
+                                       int callbackID)
+    ATTRIBUTE_NONNULL(1);
 int virDomainEventCallbackListRemoveConn(virConnectPtr conn,
                                          virDomainEventCallbackListPtr cbList)
     ATTRIBUTE_NONNULL(1);
+
 
 int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
                                          virDomainEventCallbackListPtr cbList,
                                          virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1);
+int virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
+                                           virDomainEventCallbackListPtr cbList,
+                                           int callbackID)
+    ATTRIBUTE_NONNULL(1);
+
 
 int virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList);
 
 int virDomainEventCallbackListCount(virDomainEventCallbackListPtr cbList);
+int virDomainEventCallbackListCountID(virConnectPtr conn,
+                                      virDomainEventCallbackListPtr cbList,
+                                      int eventID)
+    ATTRIBUTE_NONNULL(1);
+int virDomainEventCallbackListEventID(virConnectPtr conn,
+                                      virDomainEventCallbackListPtr cbList,
+                                      int callbackID)
+    ATTRIBUTE_NONNULL(1);
 
 /**
  * Dispatching domain events that come in while

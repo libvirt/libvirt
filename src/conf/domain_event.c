@@ -137,6 +137,51 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
 
 
 /**
+ * virDomainEventCallbackListRemoveID:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @callback: the callback to remove
+ *
+ * Internal function to remove a callback from a virDomainEventCallbackListPtr
+ */
+int
+virDomainEventCallbackListRemoveID(virConnectPtr conn,
+                                   virDomainEventCallbackListPtr cbList,
+                                   int callbackID)
+{
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->callbackID == callbackID &&
+            cbList->callbacks[i]->conn == conn) {
+            virFreeCallback freecb = cbList->callbacks[i]->freecb;
+            if (freecb)
+                (*freecb)(cbList->callbacks[i]->opaque);
+            virUnrefConnect(cbList->callbacks[i]->conn);
+            VIR_FREE(cbList->callbacks[i]);
+
+            if (i < (cbList->count - 1))
+                memmove(cbList->callbacks + i,
+                        cbList->callbacks + i + 1,
+                        sizeof(*(cbList->callbacks)) *
+                                (cbList->count - (i + 1)));
+
+            if (VIR_REALLOC_N(cbList->callbacks,
+                              cbList->count - 1) < 0) {
+                ; /* Failure to reduce memory allocation isn't fatal */
+            }
+            cbList->count--;
+
+            return 0;
+        }
+    }
+
+    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("could not find event callback for removal"));
+    return -1;
+}
+
+
+/**
  * virDomainEventCallbackListRemoveConn:
  * @conn: pointer to the connection
  * @cbList: the list
@@ -195,6 +240,25 @@ int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
 }
 
 
+int virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
+                                           virDomainEventCallbackListPtr cbList,
+                                           int callbackID)
+{
+    int i;
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->callbackID == callbackID &&
+            cbList->callbacks[i]->conn == conn) {
+            cbList->callbacks[i]->deleted = 1;
+            return 0;
+        }
+    }
+
+    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("could not find event callback for deletion"));
+    return -1;
+}
+
+
 int virDomainEventCallbackListPurgeMarked(virDomainEventCallbackListPtr cbList)
 {
     int old_count = cbList->count;
@@ -240,6 +304,32 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
                               void *opaque,
                               virFreeCallback freecb)
 {
+    return virDomainEventCallbackListAddID(conn, cbList, NULL,
+                                           VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                           VIR_DOMAIN_EVENT_CALLBACK(callback),
+                                           opaque, freecb);
+}
+
+
+/**
+ * virDomainEventCallbackListAddID:
+ * @conn: pointer to the connection
+ * @cbList: the list
+ * @eventID: the event ID
+ * @callback: the callback to add
+ * @opaque: opaque data tio pass to callback
+ *
+ * Internal function to add a callback from a virDomainEventCallbackListPtr
+ */
+int
+virDomainEventCallbackListAddID(virConnectPtr conn,
+                                virDomainEventCallbackListPtr cbList,
+                                virDomainPtr dom,
+                                int eventID,
+                                virConnectDomainEventGenericCallback callback,
+                                void *opaque,
+                                virFreeCallback freecb)
+{
     virDomainEventCallbackPtr event;
     int i;
 
@@ -259,22 +349,26 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
         }
     }
     /* Allocate new event */
-    if (VIR_ALLOC(event) < 0) {
-        virReportOOMError();
-        return -1;
-    }
+    if (VIR_ALLOC(event) < 0)
+        goto no_memory;
     event->conn = conn;
-    event->cb = VIR_DOMAIN_EVENT_CALLBACK(callback);
-    event->eventID = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
+    event->cb = callback;
+    event->eventID = eventID;
     event->opaque = opaque;
     event->freecb = freecb;
 
-    /* Make space on list */
-    if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0) {
-        virReportOOMError();
-        VIR_FREE(event);
-        return -1;
+    if (dom) {
+        if (VIR_ALLOC(event->dom) < 0)
+            goto no_memory;
+        if (!(event->dom->name = strdup(dom->name)))
+            goto no_memory;
+        memcpy(event->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
+        event->dom->id = dom->id;
     }
+
+    /* Make space on list */
+    if (VIR_REALLOC_N(cbList->callbacks, cbList->count + 1) < 0)
+        goto no_memory;
 
     event->conn->refs++;
 
@@ -284,6 +378,56 @@ virDomainEventCallbackListAdd(virConnectPtr conn,
     event->callbackID = cbList->nextID++;
 
     return event->callbackID;
+
+no_memory:
+    virReportOOMError();
+
+    if (event) {
+        if (event->dom)
+            VIR_FREE(event->dom->name);
+        VIR_FREE(event->dom);
+    }
+    VIR_FREE(event);
+    return -1;
+}
+
+
+int virDomainEventCallbackListCountID(virConnectPtr conn,
+                                      virDomainEventCallbackListPtr cbList,
+                                      int eventID)
+{
+    int i;
+    int count = 0;
+
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->deleted)
+            continue;
+
+        if (cbList->callbacks[i]->eventID == eventID &&
+            cbList->callbacks[i]->conn == conn)
+            count++;
+    }
+
+    return count;
+}
+
+
+int virDomainEventCallbackListEventID(virConnectPtr conn,
+                                      virDomainEventCallbackListPtr cbList,
+                                      int callbackID)
+{
+    int i;
+
+    for (i = 0 ; i < cbList->count ; i++) {
+        if (cbList->callbacks[i]->deleted)
+            continue;
+
+        if (cbList->callbacks[i]->callbackID == callbackID &&
+            cbList->callbacks[i]->conn == conn)
+            return cbList->callbacks[i]->eventID;
+    }
+
+    return -1;
 }
 
 
@@ -295,7 +439,8 @@ int virDomainEventCallbackListCount(virDomainEventCallbackListPtr cbList)
     for (i = 0 ; i < cbList->count ; i++) {
         if (cbList->callbacks[i]->deleted)
             continue;
-        count++;
+        if (cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE)
+            count++;
     }
 
     return count;

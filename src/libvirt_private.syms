@@ -195,11 +195,17 @@ virDomainClockOffsetTypeFromString;
 
 # domain_event.h
 virDomainEventCallbackListAdd;
+virDomainEventCallbackListAddID;
 virDomainEventCallbackListFree;
 virDomainEventCallbackListRemove;
+virDomainEventCallbackListRemoveID;
 virDomainEventCallbackListRemoveConn;
 virDomainEventCallbackListMarkDelete;
+virDomainEventCallbackListMarkDeleteID;
 virDomainEventCallbackListPurgeMarked;
+virDomainEventCallbackListCount;
+virDomainEventCallbackListCountID;
+virDomainEventCallbackListEventID;
 virDomainEventQueueNew;
 virDomainEventQueueFree;
 virDomainEventQueuePop;
