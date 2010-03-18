@@ -1717,6 +1717,16 @@ struct remote_domain_migrate_set_max_downtime_args {
         u_int flags;
 };
 typedef struct remote_domain_migrate_set_max_downtime_args remote_domain_migrate_set_max_downtime_args;
+
+struct remote_domain_events_register_any_args {
+        int eventID;
+};
+typedef struct remote_domain_events_register_any_args remote_domain_events_register_any_args;
+
+struct remote_domain_events_deregister_any_args {
+        int eventID;
+};
+typedef struct remote_domain_events_deregister_any_args remote_domain_events_deregister_any_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1887,6 +1897,8 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
         REMOTE_PROC_STORAGE_VOL_WIPE = 165,
         REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166,
+        REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY = 167,
+        REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2198,6 +2210,8 @@ extern  bool_t xdr_remote_domain_get_job_info_args (XDR *, remote_domain_get_job
 extern  bool_t xdr_remote_domain_get_job_info_ret (XDR *, remote_domain_get_job_info_ret*);
 extern  bool_t xdr_remote_domain_abort_job_args (XDR *, remote_domain_abort_job_args*);
 extern  bool_t xdr_remote_domain_migrate_set_max_downtime_args (XDR *, remote_domain_migrate_set_max_downtime_args*);
+extern  bool_t xdr_remote_domain_events_register_any_args (XDR *, remote_domain_events_register_any_args*);
+extern  bool_t xdr_remote_domain_events_deregister_any_args (XDR *, remote_domain_events_deregister_any_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2483,6 +2497,8 @@ extern bool_t xdr_remote_domain_get_job_info_args ();
 extern bool_t xdr_remote_domain_get_job_info_ret ();
 extern bool_t xdr_remote_domain_abort_job_args ();
 extern bool_t xdr_remote_domain_migrate_set_max_downtime_args ();
+extern bool_t xdr_remote_domain_events_register_any_args ();
+extern bool_t xdr_remote_domain_events_deregister_any_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

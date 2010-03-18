@@ -908,10 +908,6 @@ enum {
     VIR_SECRET_GET_VALUE_INTERNAL_CALL = 1 << 16
 };
 
-/* Make sure ... INTERNAL_CALL can not be set by the caller */
-verify((VIR_SECRET_GET_VALUE_INTERNAL_CALL &
-        VIR_SECRET_GET_VALUE_FLAGS_MASK) == 0);
-
 typedef virSecretPtr
     (*virDrvSecretLookupByUUID)        (virConnectPtr conn,
                                         const unsigned char *uuid);

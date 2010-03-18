@@ -60,16 +60,6 @@ remoteSerializeStreamError(struct qemud_client *client,
                            int proc,
                            int serial);
 
-/* Having this here is dubious. It should be in remote.h
- * but qemud.c shouldn't depend on that header directly.
- * Refactor this later to deal with this properly.
- */
-int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virDomainPtr dom,
-                            int event,
-                            int detail,
-                            void *opaque);
-
 
 int
 remoteSendStreamData(struct qemud_client *client,

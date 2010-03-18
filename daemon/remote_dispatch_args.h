@@ -142,3 +142,5 @@
     remote_domain_abort_job_args val_remote_domain_abort_job_args;
     remote_storage_vol_wipe_args val_remote_storage_vol_wipe_args;
     remote_domain_migrate_set_max_downtime_args val_remote_domain_migrate_set_max_downtime_args;
+    remote_domain_events_register_any_args val_remote_domain_events_register_any_args;
+    remote_domain_events_deregister_any_args val_remote_domain_events_deregister_any_args;

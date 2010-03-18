@@ -837,3 +837,13 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_migrate_set_max_downtime_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainEventsRegisterAny => 167 */
+    .fn = (dispatch_fn) remoteDispatchDomainEventsRegisterAny,
+    .args_filter = (xdrproc_t) xdr_remote_domain_events_register_any_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainEventsDeregisterAny => 168 */
+    .fn = (dispatch_fn) remoteDispatchDomainEventsDeregisterAny,
+    .args_filter = (xdrproc_t) xdr_remote_domain_events_deregister_any_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

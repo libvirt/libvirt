@@ -178,6 +178,14 @@ static int remoteDispatchDomainEventsDeregister(
     remote_error *err,
     void *args,
     remote_domain_events_deregister_ret *ret);
+static int remoteDispatchDomainEventsDeregisterAny(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_events_deregister_any_args *args,
+    void *ret);
 static int remoteDispatchDomainEventsRegister(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -186,6 +194,14 @@ static int remoteDispatchDomainEventsRegister(
     remote_error *err,
     void *args,
     remote_domain_events_register_ret *ret);
+static int remoteDispatchDomainEventsRegisterAny(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_events_register_any_args *args,
+    void *ret);
 static int remoteDispatchDomainGetAutostart(
     struct qemud_server *server,
     struct qemud_client *client,

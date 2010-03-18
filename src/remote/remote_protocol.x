@@ -1528,6 +1528,14 @@ struct remote_domain_migrate_set_max_downtime_args {
     unsigned flags;
 };
 
+struct remote_domain_events_register_any_args {
+    int eventID;
+};
+
+struct remote_domain_events_deregister_any_args {
+    int eventID;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -1717,7 +1725,9 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_JOB_INFO = 163,
     REMOTE_PROC_DOMAIN_ABORT_JOB = 164,
     REMOTE_PROC_STORAGE_VOL_WIPE = 165,
-    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166
+    REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166,
+    REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY = 167,
+    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

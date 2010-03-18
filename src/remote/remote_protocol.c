@@ -3033,6 +3033,24 @@ xdr_remote_domain_migrate_set_max_downtime_args (XDR *xdrs, remote_domain_migrat
 }
 
 bool_t
+xdr_remote_domain_events_register_any_args (XDR *xdrs, remote_domain_events_register_any_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->eventID))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_events_deregister_any_args (XDR *xdrs, remote_domain_events_deregister_any_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->eventID))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

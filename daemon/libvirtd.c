@@ -1275,6 +1275,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     socklen_t addrlen = (socklen_t) (sizeof addr);
     struct qemud_client *client;
     int no_slow_start = 1;
+    int i;
 
     if ((fd = accept(sock->fd, (struct sockaddr *)&addr, &addrlen)) < 0) {
         char ebuf[1024];
@@ -1346,6 +1347,10 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     memcpy (&client->addr, &addr, sizeof addr);
     client->addrlen = addrlen;
 
+    for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++) {
+        client->domainEventCallbackID[i] = -1;
+    }
+
     /* Prepare one for packet receive */
     if (VIR_ALLOC(client->rx) < 0)
         goto cleanup;
@@ -1415,7 +1420,6 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     if (server->nclients > server->nactiveworkers &&
         server->nactiveworkers < server->nworkers) {
-        int i;
         for (i = 0 ; i < server->nworkers ; i++) {
             if (!server->workers[i].hasThread) {
                 if (qemudStartWorker(server, &server->workers[i]) < 0)
@@ -1454,9 +1458,17 @@ void qemudDispatchClientFailure(struct qemud_client *client) {
     }
 
     /* Deregister event delivery callback */
-    if (client->conn && client->domain_events_registered) {
-        DEBUG0("Deregistering to relay remote events");
-        virConnectDomainEventDeregister(client->conn, remoteRelayDomainEvent);
+    if (client->conn) {
+        int i;
+
+        for (i = 0 ; i < VIR_DOMAIN_EVENT_ID_LAST ; i++) {
+            if (client->domainEventCallbackID[i] != -1) {
+                DEBUG("Deregistering to relay remote events %d", i);
+                virConnectDomainEventDeregisterAny(client->conn,
+                                                   client->domainEventCallbackID[i]);
+            }
+            client->domainEventCallbackID[i] = -1;
+        }
     }
 
 #if HAVE_SASL

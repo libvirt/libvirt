@@ -94,35 +94,47 @@ const dispatch_data const *remoteGetDispatchData(int proc)
 /* Prototypes */
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               remote_domain_event_msg *data);
+                               int procnr,
+                               xdrproc_t proc,
+                               void *data);
 
-int remoteRelayDomainEvent (virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virDomainPtr dom,
-                            int event,
-                            int detail,
-                            void *opaque)
+static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                           virDomainPtr dom,
+                                           int event,
+                                           int detail,
+                                           void *opaque)
 {
     struct qemud_client *client = opaque;
-    REMOTE_DEBUG("Relaying domain event %d %d", event, detail);
+    remote_domain_event_msg data;
 
-    if (client) {
-        remote_domain_event_msg data;
+    if (!client)
+        return -1;
 
-        virMutexLock(&client->lock);
+    REMOTE_DEBUG("Relaying domain lifecycle event %d %d", event, detail);
 
-        /* build return data */
-        memset(&data, 0, sizeof data);
-        make_nonnull_domain (&data.dom, dom);
-        data.event = event;
-        data.detail = detail;
+    virMutexLock(&client->lock);
 
-        remoteDispatchDomainEventSend (client, &data);
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain (&data.dom, dom);
+    data.event = event;
+    data.detail = detail;
 
-        virMutexUnlock(&client->lock);
-    }
+    remoteDispatchDomainEventSend (client,
+                                   REMOTE_PROC_DOMAIN_EVENT,
+                                   (xdrproc_t)xdr_remote_domain_event_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
     return 0;
 }
 
+
+static virConnectDomainEventGenericCallback domainEventCallbacks[VIR_DOMAIN_EVENT_ID_LAST] = {
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
+};
+
+verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
 
 /*----- Functions. -----*/
 
@@ -4850,18 +4862,24 @@ remoteDispatchDomainEventsRegister (struct qemud_server *server ATTRIBUTE_UNUSED
                                     remote_domain_events_register_ret *ret ATTRIBUTE_UNUSED)
 {
     CHECK_CONN(client);
+    int callbackID;
 
-    if (virConnectDomainEventRegister(conn,
-                                      remoteRelayDomainEvent,
-                                      client, NULL) < 0) {
+    if (client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] != -1) {
+        remoteDispatchFormatError(rerr, _("domain event %d already registered"), VIR_DOMAIN_EVENT_ID_LIFECYCLE);
+        return -1;
+    }
+
+    if ((callbackID = virConnectDomainEventRegisterAny(conn,
+                                                       NULL,
+                                                       VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                                       VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
+                                                       client, NULL)) < 0) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    if (ret)
-        ret->cb_registered = 1;
+    client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] = callbackID;
 
-    client->domain_events_registered = 1;
     return 0;
 }
 
@@ -4876,21 +4894,26 @@ remoteDispatchDomainEventsDeregister (struct qemud_server *server ATTRIBUTE_UNUS
 {
     CHECK_CONN(client);
 
-    if (virConnectDomainEventDeregister(conn, remoteRelayDomainEvent) < 0) {
+    if (client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] == -1) {
+        remoteDispatchFormatError(rerr, _("domain event %d not registered"), VIR_DOMAIN_EVENT_ID_LIFECYCLE);
+        return -1;
+    }
+
+    if (virConnectDomainEventDeregisterAny(conn,
+                                           client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE]) < 0) {
         remoteDispatchConnError(rerr, conn);
         return -1;
     }
 
-    if (ret)
-        ret->cb_registered = 0;
-
-    client->domain_events_registered = 0;
+    client->domainEventCallbackID[VIR_DOMAIN_EVENT_ID_LIFECYCLE] = -1;
     return 0;
 }
 
 static void
 remoteDispatchDomainEventSend (struct qemud_client *client,
-                               remote_domain_event_msg *data)
+                               int procnr,
+                               xdrproc_t proc,
+                               void *data)
 {
     struct qemud_client_message *msg = NULL;
     XDR xdr;
@@ -4901,7 +4924,7 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
 
     msg->hdr.prog = REMOTE_PROGRAM;
     msg->hdr.vers = REMOTE_PROTOCOL_VERSION;
-    msg->hdr.proc = REMOTE_PROC_DOMAIN_EVENT;
+    msg->hdr.proc = procnr;
     msg->hdr.type = REMOTE_MESSAGE;
     msg->hdr.serial = 1;
     msg->hdr.status = REMOTE_OK;
@@ -4919,8 +4942,10 @@ remoteDispatchDomainEventSend (struct qemud_client *client,
     if (xdr_setpos (&xdr, msg->bufferOffset) == 0)
         goto xdr_error;
 
-    if (!xdr_remote_domain_event_msg(&xdr, data))
+    if (!(proc)(&xdr, data)) {
+        VIR_WARN("Failed to serialize domain event %d", procnr);
         goto xdr_error;
+    }
 
     /* Update length word to include payload*/
     len = msg->bufferOffset = xdr_getpos (&xdr);
@@ -5520,6 +5545,78 @@ remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_
 
     virDomainFree(dom);
 
+    return 0;
+}
+
+
+static int
+remoteDispatchDomainEventsRegisterAny (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr ATTRIBUTE_UNUSED,
+                                       remote_domain_events_register_any_args *args,
+                                       void *ret ATTRIBUTE_UNUSED)
+{
+    CHECK_CONN(client);
+    int callbackID;
+
+    if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST ||
+        args->eventID < 0) {
+        remoteDispatchFormatError(rerr, _("unsupported event ID %d"), args->eventID);
+        return -1;
+    }
+
+    if (client->domainEventCallbackID[args->eventID] != -1)  {
+        remoteDispatchFormatError(rerr, _("domain event %d already registered"), args->eventID);
+        return -1;
+    }
+
+    if ((callbackID = virConnectDomainEventRegisterAny(conn,
+                                                       NULL,
+                                                       args->eventID,
+                                                       domainEventCallbacks[args->eventID],
+                                                       client, NULL)) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    client->domainEventCallbackID[args->eventID] = callbackID;
+
+    return 0;
+}
+
+
+static int
+remoteDispatchDomainEventsDeregisterAny (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                         struct qemud_client *client ATTRIBUTE_UNUSED,
+                                         virConnectPtr conn,
+                                         remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                         remote_error *rerr ATTRIBUTE_UNUSED,
+                                         remote_domain_events_deregister_any_args *args,
+                                         void *ret ATTRIBUTE_UNUSED)
+{
+    CHECK_CONN(client);
+    int callbackID = -1;
+
+    if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST ||
+        args->eventID < 0) {
+        remoteDispatchFormatError(rerr, _("unsupported event ID %d"), args->eventID);
+        return -1;
+    }
+
+    callbackID = client->domainEventCallbackID[args->eventID];
+    if (callbackID < 0) {
+        remoteDispatchFormatError(rerr, _("domain event %d not registered"), args->eventID);
+        return -1;
+    }
+
+    if (virConnectDomainEventDeregisterAny(conn, callbackID) < 0) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    client->domainEventCallbackID[args->eventID] = -1;
     return 0;
 }
 

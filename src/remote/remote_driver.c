@@ -260,7 +260,6 @@ static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, vi
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 void remoteDomainEventFired(int watch, int fd, int event, void *data);
-static void remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr);
 void remoteDomainEventQueueFlush(int timer, void *opaque);
 /*----------------------------------------------------------------------*/
 
@@ -6810,10 +6809,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
 #endif /* HAVE_POLKIT */
 /*----------------------------------------------------------------------*/
 
-static int remoteDomainEventRegister (virConnectPtr conn,
-                                      virConnectDomainEventCallback callback,
-                                      void *opaque,
-                                      virFreeCallback freecb)
+static int remoteDomainEventRegister(virConnectPtr conn,
+                                     virConnectDomainEventCallback callback,
+                                     void *opaque,
+                                     virFreeCallback freecb)
 {
     int rv = -1;
     struct private_data *priv = conn->privateData;
@@ -6830,7 +6829,7 @@ static int remoteDomainEventRegister (virConnectPtr conn,
          goto done;
     }
 
-    if ( priv->callbackList->count == 1 ) {
+    if (virDomainEventCallbackListCountID(conn, priv->callbackList, VIR_DOMAIN_EVENT_ID_LIFECYCLE) == 1) {
         /* Tell the server when we are the first callback deregistering */
         if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_REGISTER,
                 (xdrproc_t) xdr_void, (char *) NULL,
@@ -6845,8 +6844,8 @@ done:
     return rv;
 }
 
-static int remoteDomainEventDeregister (virConnectPtr conn,
-                                        virConnectDomainEventCallback callback)
+static int remoteDomainEventDeregister(virConnectPtr conn,
+                                       virConnectDomainEventCallback callback)
 {
     struct private_data *priv = conn->privateData;
     int rv = -1;
@@ -6865,14 +6864,14 @@ static int remoteDomainEventDeregister (virConnectPtr conn,
             error (conn, VIR_ERR_RPC, _("removing cb from list"));
             goto done;
         }
+    }
 
-        if ( priv->callbackList->count == 0 ) {
-            /* Tell the server when we are the last callback deregistering */
-            if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
-                      (xdrproc_t) xdr_void, (char *) NULL,
-                      (xdrproc_t) xdr_void, (char *) NULL) == -1)
-                goto done;
-        }
+    if (virDomainEventCallbackListCountID(conn, priv->callbackList, VIR_DOMAIN_EVENT_ID_LIFECYCLE) == 0) {
+        /* Tell the server when we are the last callback deregistering */
+        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
+                  (xdrproc_t) xdr_void, (char *) NULL,
+                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
     }
 
     rv = 0;
@@ -6881,6 +6880,38 @@ done:
     remoteDriverUnlock(priv);
     return rv;
 }
+
+/**
+ * remoteDomainReadEventLifecycle
+ *
+ * Read the domain lifecycle event data off the wire
+ */
+static virDomainEventPtr
+remoteDomainReadEventLifecycle(virConnectPtr conn, XDR *xdr)
+{
+    remote_domain_event_msg msg;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+    memset (&msg, 0, sizeof msg);
+
+    /* unmarshall parameters, and process it*/
+    if (! xdr_remote_domain_event_msg(xdr, &msg) ) {
+        error (conn, VIR_ERR_RPC,
+               _("unable to demarshall lifecycle event"));
+        return NULL;
+    }
+
+    dom = get_nonnull_domain(conn,msg.dom);
+    if (!dom)
+        return NULL;
+
+    event = virDomainEventNewFromDom(dom, msg.event, msg.detail);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_event_msg, (char *) &msg);
+
+    virDomainFree(dom);
+    return event;
+}
+
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
 remoteSecretOpen (virConnectPtr conn,
@@ -7763,6 +7794,101 @@ done:
 }
 
 
+static int remoteDomainEventRegisterAny(virConnectPtr conn,
+                                        virDomainPtr dom,
+                                        int eventID,
+                                        virConnectDomainEventGenericCallback callback,
+                                        void *opaque,
+                                        virFreeCallback freecb)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_domain_events_register_any_args args;
+    int callbackID;
+
+    remoteDriverLock(priv);
+
+    if (priv->eventFlushTimer < 0) {
+         error (conn, VIR_ERR_NO_SUPPORT, _("no event support"));
+         goto done;
+    }
+
+    if ((callbackID = virDomainEventCallbackListAddID(conn, priv->callbackList,
+                                                      dom, eventID,
+                                                      callback, opaque, freecb)) < 0) {
+         error (conn, VIR_ERR_RPC, _("adding cb to list"));
+         goto done;
+    }
+
+    /* If this is the first callback for this eventID, we need to enable
+     * events on the server */
+    if (virDomainEventCallbackListCountID(conn, priv->callbackList, eventID) == 1) {
+        args.eventID = eventID;
+
+        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY,
+                  (xdrproc_t) xdr_remote_domain_events_register_any_args, (char *) &args,
+                  (xdrproc_t) xdr_void, (char *)NULL) == -1) {
+            virDomainEventCallbackListRemoveID(conn, priv->callbackList, callbackID);
+            goto done;
+        }
+    }
+
+    rv = callbackID;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int remoteDomainEventDeregisterAny(virConnectPtr conn,
+                                          int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    remote_domain_events_deregister_any_args args;
+    int eventID;
+
+    remoteDriverLock(priv);
+
+    if ((eventID = virDomainEventCallbackListEventID(conn, priv->callbackList, callbackID)) < 0) {
+        errorf (conn, VIR_ERR_RPC, _("unable to find callback ID %d"), callbackID);
+        goto done;
+    }
+
+    if (priv->domainEventDispatching) {
+        if (virDomainEventCallbackListMarkDeleteID(conn, priv->callbackList,
+                                                   callbackID) < 0) {
+            error (conn, VIR_ERR_RPC, _("marking cb for deletion"));
+            goto done;
+        }
+    } else {
+        if (virDomainEventCallbackListRemoveID(conn, priv->callbackList,
+                                               callbackID) < 0) {
+            error (conn, VIR_ERR_RPC, _("removing cb from list"));
+            goto done;
+        }
+    }
+
+    /* If that was the last callback for this eventID, we need to disable
+     * events on the server */
+    if (virDomainEventCallbackListCountID(conn, priv->callbackList, eventID) == 0) {
+        args.eventID = eventID;
+
+        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY,
+                  (xdrproc_t) xdr_remote_domain_events_deregister_any_args, (char *) &args,
+                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /*----------------------------------------------------------------------*/
 
 
@@ -8314,6 +8440,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
                            int in_open,
                            remote_message_header *hdr,
                            XDR *xdr) {
+    virDomainEventPtr event = NULL;
     /* An async message has come in while we were waiting for the
      * response. Process it to pull it off the wire, and try again
      */
@@ -8324,13 +8451,26 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
         return -1;
     }
 
-    if (hdr->proc == REMOTE_PROC_DOMAIN_EVENT) {
-        remoteDomainQueueEvent(conn, xdr);
-        virEventUpdateTimeout(priv->eventFlushTimer, 0);
-    } else {
-        return -1;
+    switch (hdr->proc) {
+    case REMOTE_PROC_DOMAIN_EVENT:
+        event = remoteDomainReadEventLifecycle(conn, xdr);
+        break;
+
+    default:
         DEBUG("Unexpected event proc %d", hdr->proc);
+        break;
     }
+
+    if (!event)
+        return -1;
+
+    if (virDomainEventQueuePush(priv->domainEvents,
+                                event) < 0) {
+        DEBUG0("Error adding event to queue");
+        virDomainEventFree(event);
+    }
+    virEventUpdateTimeout(priv->eventFlushTimer, 0);
+
     return 0;
 }
 
@@ -8860,54 +9000,6 @@ call (virConnectPtr conn, struct private_data *priv,
 }
 
 
-
-/**
- * remoteDomainReadEvent
- *
- * Read the event data off the wire
- */
-static virDomainEventPtr
-remoteDomainReadEvent(virConnectPtr conn, XDR *xdr)
-{
-    remote_domain_event_msg msg;
-    virDomainPtr dom;
-    virDomainEventPtr event = NULL;
-    memset (&msg, 0, sizeof msg);
-
-    /* unmarshall parameters, and process it*/
-    if (! xdr_remote_domain_event_msg(xdr, &msg) ) {
-        error (conn, VIR_ERR_RPC,
-               _("remoteDomainProcessEvent: unmarshalling msg"));
-        return NULL;
-    }
-
-    dom = get_nonnull_domain(conn,msg.dom);
-    if (!dom)
-        return NULL;
-
-    event = virDomainEventNewFromDom(dom, msg.event, msg.detail);
-
-    virDomainFree(dom);
-    return event;
-}
-
-static void
-remoteDomainQueueEvent(virConnectPtr conn, XDR *xdr)
-{
-    struct private_data *priv = conn->privateData;
-    virDomainEventPtr event;
-
-    event = remoteDomainReadEvent(conn, xdr);
-    if (!event)
-        return;
-
-    if (virDomainEventQueuePush(priv->domainEvents,
-                                event) < 0) {
-        DEBUG0("Error adding event to queue");
-        virDomainEventFree(event);
-    }
-}
-
 /** remoteDomainEventFired:
  *
  * The callback for monitoring the remote socket
@@ -8988,14 +9080,6 @@ remoteDomainEventQueueFlush(int timer ATTRIBUTE_UNUSED, void *opaque)
 
     /* Purge any deleted callbacks */
     virDomainEventCallbackListPurgeMarked(priv->callbackList);
-
-    if ( priv->callbackList->count == 0 ) {
-        /* Tell the server when we are the last callback deregistering */
-        if (call (conn, priv, 0, REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER,
-                  (xdrproc_t) xdr_void, (char *) NULL,
-                  (xdrproc_t) xdr_void, (char *) NULL) == -1)
-            VIR_WARN0("Failed to de-register events");
-    }
 
     priv->domainEventDispatching = 0;
 
@@ -9189,8 +9273,8 @@ static virDriver remote_driver = {
     remoteDomainGetJobInfo, /* domainGetJobInfo */
     remoteDomainAbortJob, /* domainFinishJob */
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
+    remoteDomainEventRegisterAny, /* domainEventRegisterAny */
+    remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
 };
 
 static virNetworkDriver network_driver = {
