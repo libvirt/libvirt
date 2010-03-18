@@ -5090,7 +5090,7 @@ testDomainEventDeregister (virConnectPtr conn,
 
 static void testDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
-                                        virConnectDomainEventCallback cb,
+                                        virConnectDomainEventGenericCallback cb,
                                         void *cbopaque,
                                         void *opaque)
 {

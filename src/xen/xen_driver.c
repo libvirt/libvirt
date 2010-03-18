@@ -2042,7 +2042,7 @@ xenUnifiedRemoveDomainInfo(xenUnifiedDomainInfoListPtr list,
 static void
 xenUnifiedDomainEventDispatchFunc(virConnectPtr conn,
                                   virDomainEventPtr event,
-                                  virConnectDomainEventCallback cb,
+                                  virConnectDomainEventGenericCallback cb,
                                   void *cbopaque,
                                   void *opaque)
 {

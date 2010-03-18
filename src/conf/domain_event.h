@@ -31,6 +31,7 @@ typedef struct _virDomainEventCallback virDomainEventCallback;
 typedef virDomainEventCallback *virDomainEventCallbackPtr;
 
 struct _virDomainEventCallbackList {
+    unsigned int nextID;
     unsigned int count;
     virDomainEventCallbackPtr *callbacks;
 };
@@ -96,12 +97,12 @@ void virDomainEventQueueFree(virDomainEventQueuePtr queue);
 
 typedef void (*virDomainEventDispatchFunc)(virConnectPtr conn,
                                            virDomainEventPtr event,
-                                           virConnectDomainEventCallback cb,
+                                           virConnectDomainEventGenericCallback cb,
                                            void *cbopaque,
                                            void *opaque);
 void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                        virDomainEventPtr event,
-                                       virConnectDomainEventCallback cb,
+                                       virConnectDomainEventGenericCallback cb,
                                        void *cbopaque,
                                        void *opaque);
 

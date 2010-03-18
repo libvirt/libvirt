@@ -8953,7 +8953,7 @@ done:
 
 static void remoteDomainEventDispatchFunc(virConnectPtr conn,
                                           virDomainEventPtr event,
-                                          virConnectDomainEventCallback cb,
+                                          virConnectDomainEventGenericCallback cb,
                                           void *cbopaque,
                                           void *opaque)
 {

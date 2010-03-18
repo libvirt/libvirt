@@ -8003,7 +8003,7 @@ qemudDomainEventDeregister (virConnectPtr conn,
 
 static void qemuDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
-                                        virConnectDomainEventCallback cb,
+                                        virConnectDomainEventGenericCallback cb,
                                         void *cbopaque,
                                         void *opaque)
 {

@@ -1476,7 +1476,7 @@ lxcDomainEventDeregister (virConnectPtr conn,
 
 static void lxcDomainEventDispatchFunc(virConnectPtr conn,
                                        virDomainEventPtr event,
-                                       virConnectDomainEventCallback cb,
+                                       virConnectDomainEventGenericCallback cb,
                                        void *cbopaque,
                                        void *opaque)
 {
