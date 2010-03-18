@@ -107,7 +107,7 @@ sc_prohibit_gethostname:
 
 sc_prohibit_gettext_noop:
 	@re='gettext_noop *\('						\
-	msg='use _N, not gettext_noop'					\
+	msg='use N_, not gettext_noop'					\
 	  $(_prohibit_regexp)
 
 sc_prohibit_VIR_ERR_NO_MEMORY:
