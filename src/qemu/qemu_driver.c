@@ -1015,10 +1015,12 @@ static int
 qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm,
                         const char *diskAlias,
-                        int action)
+                        int action,
+                        const char *reason)
 {
     struct qemud_driver *driver = qemu_driver;
     virDomainEventPtr ioErrorEvent = NULL;
+    virDomainEventPtr ioErrorEvent2 = NULL;
     virDomainEventPtr lifecycleEvent = NULL;
     const char *srcPath;
     const char *devAlias;
@@ -1036,6 +1038,7 @@ qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     ioErrorEvent = virDomainEventIOErrorNewFromObj(vm, srcPath, devAlias, action);
+    ioErrorEvent2 = virDomainEventIOErrorReasonNewFromObj(vm, srcPath, devAlias, action, reason);
 
     if (action == VIR_DOMAIN_EVENT_IO_ERROR_PAUSE &&
         vm->state == VIR_DOMAIN_RUNNING) {
@@ -1051,10 +1054,12 @@ qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
     virDomainObjUnlock(vm);
 
-    if (ioErrorEvent || lifecycleEvent) {
+    if (ioErrorEvent || ioErrorEvent2 || lifecycleEvent) {
         qemuDriverLock(driver);
         if (ioErrorEvent)
             qemuDomainEventQueue(driver, ioErrorEvent);
+        if (ioErrorEvent2)
+            qemuDomainEventQueue(driver, ioErrorEvent2);
         if (lifecycleEvent)
             qemuDomainEventQueue(driver, lifecycleEvent);
         qemuDriverUnlock(driver);

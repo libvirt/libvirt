@@ -1659,6 +1659,14 @@ struct remote_domain_event_io_error_msg {
     int action;
 };
 
+struct remote_domain_event_io_error_reason_msg {
+    remote_nonnull_domain dom;
+    remote_nonnull_string srcPath;
+    remote_nonnull_string devAlias;
+    int action;
+    remote_nonnull_string reason;
+};
+
 struct remote_domain_event_graphics_address {
     int family;
     remote_nonnull_string node;
@@ -1996,7 +2004,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT = 191,
     REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
     REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
-    REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194
+    REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
+    REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

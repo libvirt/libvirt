@@ -977,3 +977,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_get_block_info_args,
     .ret_filter = (xdrproc_t) xdr_remote_domain_get_block_info_ret,
 },
+{   /* Async event DomainEventIoErrorReason => 195 */
+    .fn = NULL,
+    .args_filter = (xdrproc_t) xdr_void,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

@@ -2054,6 +2054,28 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 /**
+ * virConnectDomainEventWatchdogCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @srcPath: The host file on which the IO error occurred
+ * @devAlias: The guest device alias associated with the path
+ * @action: action that is to be taken due to the IO error
+ * @reason: the cause of the IO error
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ *
+ */
+typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
+                                                           virDomainPtr dom,
+                                                           const char *srcPath,
+                                                           const char *devAlias,
+                                                           int action,
+                                                           const char *reason,
+                                                           void *opaque);
+
+/**
  * virDomainEventGraphicsPhase:
  *
  * The phase of the graphics client connection
@@ -2161,6 +2183,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback */
     VIR_DOMAIN_EVENT_ID_IO_ERROR = 4,        /* virConnectDomainEventIOErrorCallback */
     VIR_DOMAIN_EVENT_ID_GRAPHICS = 5,        /* virConnectDomainEventGraphicsCallback */
+    VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6, /* virConnectDomainEventIOErrorReasonCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

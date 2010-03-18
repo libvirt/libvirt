@@ -3208,6 +3208,58 @@ libvirt_virConnectDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED
 }
 
 static int
+libvirt_virConnectDomainEventIOErrorReasonCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                                   virDomainPtr dom,
+                                                   const char *srcPath,
+                                                   const char *devAlias,
+                                                   int action,
+                                                   const char *reason,
+                                                   void *opaque)
+{
+    PyObject *pyobj_cbData = (PyObject*)opaque;
+    PyObject *pyobj_dom;
+    PyObject *pyobj_ret;
+    PyObject *pyobj_conn;
+    PyObject *dictKey;
+    int ret = -1;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    /* Create a python instance of this virDomainPtr */
+    virDomainRef(dom);
+    pyobj_dom = libvirt_virDomainPtrWrap(dom);
+    Py_INCREF(pyobj_cbData);
+
+    dictKey = libvirt_constcharPtrWrap("conn");
+    pyobj_conn = PyDict_GetItem(pyobj_cbData, dictKey);
+    Py_DECREF(dictKey);
+
+    /* Call the Callback Dispatcher */
+    pyobj_ret = PyObject_CallMethod(pyobj_conn,
+                                    (char*)"dispatchDomainEventIOErrorCallback",
+                                    (char*)"OssisO",
+                                    pyobj_dom,
+                                    srcPath, devAlias, action, reason,
+                                    pyobj_cbData);
+
+    Py_DECREF(pyobj_cbData);
+    Py_DECREF(pyobj_dom);
+
+    if(!pyobj_ret) {
+#if DEBUG_ERROR
+        printf("%s - ret:%p\n", __FUNCTION__, pyobj_ret);
+#endif
+        PyErr_Print();
+    } else {
+        Py_DECREF(pyobj_ret);
+        ret = 0;
+    }
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+    return ret;
+}
+
+static int
 libvirt_virConnectDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                               virDomainPtr dom,
                                               int phase,
@@ -3344,6 +3396,9 @@ libvirt_virConnectDomainEventRegisterAny(ATTRIBUTE_UNUSED PyObject * self,
         break;
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         cb = VIR_DOMAIN_EVENT_CALLBACK(libvirt_virConnectDomainEventIOErrorCallback);
+        break;
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
+        cb = VIR_DOMAIN_EVENT_CALLBACK(libvirt_virConnectDomainEventIOErrorReasonCallback);
         break;
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
         cb = VIR_DOMAIN_EVENT_CALLBACK(libvirt_virConnectDomainEventGraphicsCallback);

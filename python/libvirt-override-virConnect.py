@@ -94,7 +94,19 @@
             cb = cbData["cb"]
             opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), opaque)
+            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def dispatchDomainEventIOErrorReasonCallback(self, dom, srcPath, devAlias, action, reason, cbData):
+        """Dispatches events to python user domain IO error event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action, reason, opaque)
             return 0
         except AttributeError:
             pass

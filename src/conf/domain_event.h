@@ -129,6 +129,16 @@ virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
                                                   const char *srcPath,
                                                   const char *devAlias,
                                                   int action);
+virDomainEventPtr virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
+                                                        const char *srcPath,
+                                                        const char *devAlias,
+                                                        int action,
+                                                        const char *reason);
+virDomainEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
+                                                        const char *srcPath,
+                                                        const char *devAlias,
+                                                        int action,
+                                                        const char *reason);
 
 virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
                                                    int phase,

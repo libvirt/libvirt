@@ -3290,6 +3290,23 @@ xdr_remote_domain_event_io_error_msg (XDR *xdrs, remote_domain_event_io_error_ms
 }
 
 bool_t
+xdr_remote_domain_event_io_error_reason_msg (XDR *xdrs, remote_domain_event_io_error_reason_msg *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->srcPath))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->devAlias))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->action))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->reason))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_event_graphics_address (XDR *xdrs, remote_domain_event_graphics_address *objp)
 {
 

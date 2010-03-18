@@ -95,7 +95,8 @@ struct _qemuMonitorCallbacks {
     int (*domainIOError)(qemuMonitorPtr mon,
                          virDomainObjPtr vm,
                          const char *diskAlias,
-                         int action);
+                         int action,
+                         const char *reason);
     int (*domainGraphics)(qemuMonitorPtr mon,
                           virDomainObjPtr vm,
                           int phase,
@@ -148,7 +149,8 @@ int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset);
 int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action);
 int qemuMonitorEmitIOError(qemuMonitorPtr mon,
                            const char *diskAlias,
-                           int action);
+                           int action,
+                           const char *reason);
 int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
                             int phase,
                             int localFamily,

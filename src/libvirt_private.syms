@@ -246,6 +246,8 @@ virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 virDomainEventIOErrorNewFromDom;
 virDomainEventIOErrorNewFromObj;
+virDomainEventIOErrorReasonNewFromDom;
+virDomainEventIOErrorReasonNewFromObj;
 virDomainEventGraphicsNewFromDom;
 virDomainEventGraphicsNewFromObj;
 virDomainEventFree;

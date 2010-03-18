@@ -7430,6 +7430,37 @@ remoteDomainReadEventIOError(virConnectPtr conn, XDR *xdr)
 
 
 static virDomainEventPtr
+remoteDomainReadEventIOErrorReason(virConnectPtr conn, XDR *xdr)
+{
+    remote_domain_event_io_error_reason_msg msg;
+    virDomainPtr dom;
+    virDomainEventPtr event = NULL;
+    memset (&msg, 0, sizeof msg);
+
+    /* unmarshall parameters, and process it*/
+    if (! xdr_remote_domain_event_io_error_reason_msg(xdr, &msg) ) {
+        remoteError(VIR_ERR_RPC, "%s",
+                    _("unable to demarshall reboot event"));
+        return NULL;
+    }
+
+    dom = get_nonnull_domain(conn,msg.dom);
+    if (!dom)
+        return NULL;
+
+    event = virDomainEventIOErrorReasonNewFromDom(dom,
+                                                  msg.srcPath,
+                                                  msg.devAlias,
+                                                  msg.action,
+                                                  msg.reason);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_event_io_error_reason_msg, (char *) &msg);
+
+    virDomainFree(dom);
+    return event;
+}
+
+
+static virDomainEventPtr
 remoteDomainReadEventGraphics(virConnectPtr conn, XDR *xdr)
 {
     remote_domain_event_graphics_msg msg;
@@ -9325,6 +9356,10 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
 
     case REMOTE_PROC_DOMAIN_EVENT_IO_ERROR:
         event = remoteDomainReadEventIOError(conn, xdr);
+        break;
+
+    case REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON:
+        event = remoteDomainReadEventIOErrorReason(conn, xdr);
         break;
 
     case REMOTE_PROC_DOMAIN_EVENT_GRAPHICS:

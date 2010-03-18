@@ -256,6 +256,43 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int remoteRelayDomainEventIOErrorReason(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                               virDomainPtr dom,
+                                               const char *srcPath,
+                                               const char *devAlias,
+                                               int action,
+                                               const char *reason,
+                                               void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_io_error_reason_msg data;
+
+    if (!client)
+        return -1;
+
+    REMOTE_DEBUG("Relaying domain io error %s %d %s %s %d %s",
+                 dom->name, dom->id, srcPath, devAlias, action, reason);
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain (&data.dom, dom);
+    data.srcPath = (char*)srcPath;
+    data.devAlias = (char*)devAlias;
+    data.action = action;
+    data.reason = (char*)reason;
+
+    remoteDispatchDomainEventSend (client,
+                                   REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON,
+                                   (xdrproc_t)xdr_remote_domain_event_io_error_reason_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
+
 static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
                                           virDomainPtr dom,
                                           int phase,
@@ -327,6 +364,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventWatchdog),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOError),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventGraphics),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOErrorReason),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

@@ -74,6 +74,7 @@ struct _virDomainEvent {
             char *srcPath;
             char *devAlias;
             int action;
+            char *reason;
         } ioError;
         struct {
             int phase;
@@ -474,6 +475,7 @@ void virDomainEventFree(virDomainEventPtr event)
     case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         VIR_FREE(event->data.ioError.srcPath);
         VIR_FREE(event->data.ioError.devAlias);
+        VIR_FREE(event->data.ioError.reason);
         break;
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:
@@ -630,19 +632,22 @@ virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
-virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action)
+static virDomainEventPtr virDomainEventIOErrorNewFromDomImpl(int event,
+                                                             virDomainPtr dom,
+                                                             const char *srcPath,
+                                                             const char *devAlias,
+                                                             int action,
+                                                             const char *reason)
 {
     virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+        virDomainEventNewInternal(event,
                                   dom->id, dom->name, dom->uuid);
 
     if (ev) {
         ev->data.ioError.action = action;
         if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
-            !(ev->data.ioError.devAlias = strdup(devAlias))) {
+            !(ev->data.ioError.devAlias = strdup(devAlias)) ||
+            (reason && !(ev->data.ioError.reason = strdup(reason)))) {
             virDomainEventFree(ev);
             ev = NULL;
         }
@@ -650,25 +655,71 @@ virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
 
     return ev;
 }
-virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
-                                                  const char *srcPath,
-                                                  const char *devAlias,
-                                                  int action)
+
+static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
+                                                             virDomainObjPtr obj,
+                                                             const char *srcPath,
+                                                             const char *devAlias,
+                                                             int action,
+                                                             const char *reason)
 {
     virDomainEventPtr ev =
-        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+        virDomainEventNewInternal(event,
                                   obj->def->id, obj->def->name, obj->def->uuid);
 
     if (ev) {
         ev->data.ioError.action = action;
         if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
-            !(ev->data.ioError.devAlias = strdup(devAlias))) {
+            !(ev->data.ioError.devAlias = strdup(devAlias)) ||
+            !(ev->data.ioError.reason = strdup(reason))) {
             virDomainEventFree(ev);
             ev = NULL;
         }
     }
 
     return ev;
+}
+
+virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action)
+{
+    return virDomainEventIOErrorNewFromDomImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+                                               dom, srcPath, devAlias,
+                                               action, NULL);
+}
+
+virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action)
+{
+    return virDomainEventIOErrorNewFromObjImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+                                               obj, srcPath, devAlias,
+                                               action, NULL);
+}
+
+virDomainEventPtr virDomainEventIOErrorReasonNewFromDom(virDomainPtr dom,
+                                                        const char *srcPath,
+                                                        const char *devAlias,
+                                                        int action,
+                                                        const char *reason)
+{
+    return virDomainEventIOErrorNewFromDomImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON,
+                                               dom, srcPath, devAlias,
+                                               action, reason);
+}
+
+virDomainEventPtr virDomainEventIOErrorReasonNewFromObj(virDomainObjPtr obj,
+                                                        const char *srcPath,
+                                                        const char *devAlias,
+                                                        int action,
+                                                        const char *reason)
+{
+    return virDomainEventIOErrorNewFromObjImpl(VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON,
+                                               obj, srcPath, devAlias,
+                                               action, reason);
 }
 
 
@@ -851,6 +902,15 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                    event->data.ioError.devAlias,
                                                    event->data.ioError.action,
                                                    cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON:
+        ((virConnectDomainEventIOErrorReasonCallback)cb)(conn, dom,
+                                                         event->data.ioError.srcPath,
+                                                         event->data.ioError.devAlias,
+                                                         event->data.ioError.action,
+                                                         event->data.ioError.reason,
+                                                         cbopaque);
         break;
 
     case VIR_DOMAIN_EVENT_ID_GRAPHICS:

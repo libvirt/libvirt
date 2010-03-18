@@ -1864,6 +1864,15 @@ struct remote_domain_event_io_error_msg {
 };
 typedef struct remote_domain_event_io_error_msg remote_domain_event_io_error_msg;
 
+struct remote_domain_event_io_error_reason_msg {
+        remote_nonnull_domain dom;
+        remote_nonnull_string srcPath;
+        remote_nonnull_string devAlias;
+        int action;
+        remote_nonnull_string reason;
+};
+typedef struct remote_domain_event_io_error_reason_msg remote_domain_event_io_error_reason_msg;
+
 struct remote_domain_event_graphics_address {
         int family;
         remote_nonnull_string node;
@@ -2206,6 +2215,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
         REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
         REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
+        REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2541,6 +2551,7 @@ extern  bool_t xdr_remote_domain_event_reboot_msg (XDR *, remote_domain_event_re
 extern  bool_t xdr_remote_domain_event_rtc_change_msg (XDR *, remote_domain_event_rtc_change_msg*);
 extern  bool_t xdr_remote_domain_event_watchdog_msg (XDR *, remote_domain_event_watchdog_msg*);
 extern  bool_t xdr_remote_domain_event_io_error_msg (XDR *, remote_domain_event_io_error_msg*);
+extern  bool_t xdr_remote_domain_event_io_error_reason_msg (XDR *, remote_domain_event_io_error_reason_msg*);
 extern  bool_t xdr_remote_domain_event_graphics_address (XDR *, remote_domain_event_graphics_address*);
 extern  bool_t xdr_remote_domain_event_graphics_identity (XDR *, remote_domain_event_graphics_identity*);
 extern  bool_t xdr_remote_domain_event_graphics_msg (XDR *, remote_domain_event_graphics_msg*);
@@ -2873,6 +2884,7 @@ extern bool_t xdr_remote_domain_event_reboot_msg ();
 extern bool_t xdr_remote_domain_event_rtc_change_msg ();
 extern bool_t xdr_remote_domain_event_watchdog_msg ();
 extern bool_t xdr_remote_domain_event_io_error_msg ();
+extern bool_t xdr_remote_domain_event_io_error_reason_msg ();
 extern bool_t xdr_remote_domain_event_graphics_address ();
 extern bool_t xdr_remote_domain_event_graphics_identity ();
 extern bool_t xdr_remote_domain_event_graphics_msg ();
