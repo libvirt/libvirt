@@ -5431,6 +5431,107 @@ static int vboxDomainEventDeregister (virConnectPtr conn,
     return ret;
 }
 
+static int vboxDomainEventRegisterAny(virConnectPtr conn,
+                                      virDomainPtr dom,
+                                      int eventID,
+                                      virConnectDomainEventGenericCallback callback,
+                                      void *opaque,
+                                      virFreeCallback freecb) {
+    VBOX_OBJECT_CHECK(conn, int, -1);
+    int vboxRet          = -1;
+    nsresult rc;
+
+    /* Locking has to be there as callbacks are not
+     * really fully thread safe
+     */
+    vboxDriverLock(data);
+
+    if (data->vboxCallback == NULL) {
+        data->vboxCallback = vboxAllocCallbackObj();
+        if (data->vboxCallback != NULL) {
+            rc = data->vboxObj->vtbl->RegisterCallback(data->vboxObj, data->vboxCallback);
+            if (NS_SUCCEEDED(rc)) {
+                vboxRet = 0;
+            }
+        }
+    } else {
+        vboxRet = 0;
+    }
+
+    /* Get the vbox file handle and add a event handle to it
+     * so that the events can be passed down to the user
+     */
+    if (vboxRet == 0) {
+        if (data->fdWatch < 0) {
+            PRInt32 vboxFileHandle;
+            vboxFileHandle = data->vboxQueue->vtbl->GetEventQueueSelectFD(data->vboxQueue);
+
+            data->fdWatch = virEventAddHandle(vboxFileHandle, VIR_EVENT_HANDLE_READABLE, vboxReadCallback, NULL, NULL);
+        }
+
+        if (data->fdWatch >= 0) {
+            /* Once a callback is registered with virtualbox, use a list
+             * to store the callbacks registered with libvirt so that
+             * later you can iterate over them
+             */
+
+            ret = virDomainEventCallbackListAddID(conn, data->domainEventCallbacks,
+                                                  dom, eventID,
+                                                  callback, opaque, freecb);
+            DEBUG("virDomainEventCallbackListAddID (ret = %d) ( conn: %p, "
+                  "data->domainEventCallbacks: %p, callback: %p, opaque: %p, "
+                  "freecb: %p )", ret, conn, data->domainEventCallbacks, callback,
+                  opaque, freecb);
+        }
+    }
+
+    vboxDriverUnlock(data);
+
+    if (ret >= 0) {
+        return ret;
+    } else {
+        if (data->vboxObj && data->vboxCallback) {
+            data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
+        }
+        return -1;
+    }
+}
+
+static int vboxDomainEventDeregisterAny(virConnectPtr conn,
+                                        int callbackID) {
+    VBOX_OBJECT_CHECK(conn, int, -1);
+
+    /* Locking has to be there as callbacks are not
+     * really fully thread safe
+     */
+    vboxDriverLock(data);
+
+    if (data->domainEventDispatching)
+        ret = virDomainEventCallbackListMarkDeleteID(conn, data->domainEventCallbacks,
+                                                     callbackID);
+    else
+        ret = virDomainEventCallbackListRemoveID(conn, data->domainEventCallbacks,
+                                                 callbackID);
+
+    if (data->vboxCallback) {
+        /* check count here of how many times register was called
+         * and only on the last de-register do the un-register call
+         */
+        if (data->domainEventCallbacks && virDomainEventCallbackListCount(data->domainEventCallbacks) == 0) {
+            data->vboxObj->vtbl->UnregisterCallback(data->vboxObj, data->vboxCallback);
+            VBOX_RELEASE(data->vboxCallback);
+
+            /* Remove the Event file handle on which we are listening as well */
+            virEventRemoveHandle(data->fdWatch);
+            data->fdWatch = -1;
+        }
+    }
+
+    vboxDriverUnlock(data);
+
+    return ret;
+}
+
 #endif /* !(VBOX_API_VERSION == 2002) */
 
 /**
@@ -7062,8 +7163,13 @@ virDriver NAME(Driver) = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
+#if VBOX_API_VERSION == 2002
     NULL, /* domainEventRegisterAny */
     NULL, /* domainEventDeregisterAny */
+#else
+    vboxDomainEventRegisterAny, /* domainEventRegisterAny */
+    vboxDomainEventDeregisterAny, /* domainEventDeregisterAny */
+#endif
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

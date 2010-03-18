@@ -7966,10 +7966,10 @@ cleanup:
 
 
 static int
-qemudDomainEventRegister (virConnectPtr conn,
-                          virConnectDomainEventCallback callback,
-                          void *opaque,
-                          virFreeCallback freecb)
+qemuDomainEventRegister(virConnectPtr conn,
+                        virConnectDomainEventCallback callback,
+                        void *opaque,
+                        virFreeCallback freecb)
 {
     struct qemud_driver *driver = conn->privateData;
     int ret;
@@ -7982,9 +7982,10 @@ qemudDomainEventRegister (virConnectPtr conn,
     return ret;
 }
 
+
 static int
-qemudDomainEventDeregister (virConnectPtr conn,
-                            virConnectDomainEventCallback callback)
+qemuDomainEventDeregister(virConnectPtr conn,
+                          virConnectDomainEventCallback callback)
 {
     struct qemud_driver *driver = conn->privateData;
     int ret;
@@ -8000,6 +8001,49 @@ qemudDomainEventDeregister (virConnectPtr conn,
 
     return ret;
 }
+
+
+static int
+qemuDomainEventRegisterAny(virConnectPtr conn,
+                           virDomainPtr dom,
+                           int eventID,
+                           virConnectDomainEventGenericCallback callback,
+                           void *opaque,
+                           virFreeCallback freecb)
+{
+    struct qemud_driver *driver = conn->privateData;
+    int ret;
+
+    qemuDriverLock(driver);
+    ret = virDomainEventCallbackListAddID(conn,
+                                          driver->domainEventCallbacks,
+                                          dom, eventID,
+                                          callback, opaque, freecb);
+    qemuDriverUnlock(driver);
+
+    return ret;
+}
+
+
+static int
+qemuDomainEventDeregisterAny(virConnectPtr conn,
+                             int callbackID)
+{
+    struct qemud_driver *driver = conn->privateData;
+    int ret;
+
+    qemuDriverLock(driver);
+    if (driver->domainEventDispatching)
+        ret = virDomainEventCallbackListMarkDeleteID(conn, driver->domainEventCallbacks,
+                                                     callbackID);
+    else
+        ret = virDomainEventCallbackListRemoveID(conn, driver->domainEventCallbacks,
+                                                 callbackID);
+    qemuDriverUnlock(driver);
+
+    return ret;
+}
+
 
 static void qemuDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
@@ -9659,8 +9703,8 @@ static virDriver qemuDriver = {
     qemudDomainMemoryPeek, /* domainMemoryPeek */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     nodeGetFreeMemory,  /* getFreeMemory */
-    qemudDomainEventRegister, /* domainEventRegister */
-    qemudDomainEventDeregister, /* domainEventDeregister */
+    qemuDomainEventRegister, /* domainEventRegister */
+    qemuDomainEventDeregister, /* domainEventDeregister */
     qemudDomainMigratePrepare2, /* domainMigratePrepare2 */
     qemudDomainMigrateFinish2, /* domainMigrateFinish2 */
     qemudNodeDeviceDettach, /* nodeDeviceDettach */
@@ -9676,8 +9720,8 @@ static virDriver qemuDriver = {
     qemuDomainGetJobInfo, /* domainGetJobInfo */
     qemuDomainAbortJob, /* domainAbortJob */
     qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
+    qemuDomainEventRegisterAny, /* domainEventRegisterAny */
+    qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
 };
 
 

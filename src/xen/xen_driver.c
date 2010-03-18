@@ -1656,11 +1656,12 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
     return(0);
 }
 
+
 static int
-xenUnifiedDomainEventRegister (virConnectPtr conn,
-                               virConnectDomainEventCallback callback,
-                               void *opaque,
-                               void (*freefunc)(void *))
+xenUnifiedDomainEventRegister(virConnectPtr conn,
+                              virConnectDomainEventCallback callback,
+                              void *opaque,
+                              virFreeCallback freefunc)
 {
     GET_PRIVATE (conn);
 
@@ -1680,9 +1681,10 @@ xenUnifiedDomainEventRegister (virConnectPtr conn,
     return (ret);
 }
 
+
 static int
-xenUnifiedDomainEventDeregister (virConnectPtr conn,
-                                 virConnectDomainEventCallback callback)
+xenUnifiedDomainEventDeregister(virConnectPtr conn,
+                                virConnectDomainEventCallback callback)
 {
     int ret;
     GET_PRIVATE (conn);
@@ -1700,6 +1702,59 @@ xenUnifiedDomainEventDeregister (virConnectPtr conn,
     else
         ret = virDomainEventCallbackListRemove(conn, priv->domainEventCallbacks,
                                                callback);
+
+    xenUnifiedUnlock(priv);
+    return ret;
+}
+
+
+static int
+xenUnifiedDomainEventRegisterAny(virConnectPtr conn,
+                                 virDomainPtr dom,
+                                 int eventID,
+                                 virConnectDomainEventGenericCallback callback,
+                                 void *opaque,
+                                 virFreeCallback freefunc)
+{
+    GET_PRIVATE (conn);
+
+    int ret;
+    xenUnifiedLock(priv);
+
+    if (priv->xsWatch == -1) {
+        xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        xenUnifiedUnlock(priv);
+        return -1;
+    }
+
+    ret = virDomainEventCallbackListAddID(conn, priv->domainEventCallbacks,
+                                          dom, eventID,
+                                          callback, opaque, freefunc);
+
+    xenUnifiedUnlock(priv);
+    return (ret);
+}
+
+static int
+xenUnifiedDomainEventDeregisterAny(virConnectPtr conn,
+                                   int callbackID)
+{
+    int ret;
+    GET_PRIVATE (conn);
+    xenUnifiedLock(priv);
+
+    if (priv->xsWatch == -1) {
+        xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        xenUnifiedUnlock(priv);
+        return -1;
+    }
+
+    if (priv->domainEventDispatching)
+        ret = virDomainEventCallbackListMarkDeleteID(conn, priv->domainEventCallbacks,
+                                                     callbackID);
+    else
+        ret = virDomainEventCallbackListRemoveID(conn, priv->domainEventCallbacks,
+                                                 callbackID);
 
     xenUnifiedUnlock(priv);
     return ret;
@@ -1907,8 +1962,8 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
+    xenUnifiedDomainEventRegisterAny, /* domainEventRegisterAny */
+    xenUnifiedDomainEventDeregisterAny, /* domainEventDeregisterAny */
 };
 
 /**

@@ -5053,10 +5053,10 @@ out:
 
 /* Domain event implementations */
 static int
-testDomainEventRegister (virConnectPtr conn,
-                         virConnectDomainEventCallback callback,
-                         void *opaque,
-                         virFreeCallback freecb)
+testDomainEventRegister(virConnectPtr conn,
+                        virConnectDomainEventCallback callback,
+                        void *opaque,
+                        virFreeCallback freecb)
 {
     testConnPtr driver = conn->privateData;
     int ret;
@@ -5069,9 +5069,10 @@ testDomainEventRegister (virConnectPtr conn,
     return ret;
 }
 
+
 static int
-testDomainEventDeregister (virConnectPtr conn,
-                           virConnectDomainEventCallback callback)
+testDomainEventDeregister(virConnectPtr conn,
+                          virConnectDomainEventCallback callback)
 {
     testConnPtr driver = conn->privateData;
     int ret;
@@ -5087,6 +5088,47 @@ testDomainEventDeregister (virConnectPtr conn,
 
     return ret;
 }
+
+
+static int
+testDomainEventRegisterAny(virConnectPtr conn,
+                           virDomainPtr dom,
+                           int eventID,
+                           virConnectDomainEventGenericCallback callback,
+                           void *opaque,
+                           virFreeCallback freecb)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    ret = virDomainEventCallbackListAddID(conn, driver->domainEventCallbacks,
+                                          dom, eventID,
+                                          callback, opaque, freecb);
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
+static int
+testDomainEventDeregisterAny(virConnectPtr conn,
+                             int callbackID)
+{
+    testConnPtr driver = conn->privateData;
+    int ret;
+
+    testDriverLock(driver);
+    if (driver->domainEventDispatching)
+        ret = virDomainEventCallbackListMarkDeleteID(conn, driver->domainEventCallbacks,
+                                                     callbackID);
+    else
+        ret = virDomainEventCallbackListRemoveID(conn, driver->domainEventCallbacks,
+                                                 callbackID);
+    testDriverUnlock(driver);
+
+    return ret;
+}
+
 
 static void testDomainEventDispatchFunc(virConnectPtr conn,
                                         virDomainEventPtr event,
@@ -5245,8 +5287,8 @@ static virDriver testDriver = {
     NULL, /* domainGetJobInfo */
     NULL, /* domainAbortJob */
     NULL, /* domainMigrateSetMaxDowntime */
-    NULL, /* domainEventRegisterAny */
-    NULL, /* domainEventDeregisterAny */
+    testDomainEventRegisterAny, /* domainEventRegisterAny */
+    testDomainEventDeregisterAny, /* domainEventDeregisterAny */
 };
 
 static virNetworkDriver testNetworkDriver = {
