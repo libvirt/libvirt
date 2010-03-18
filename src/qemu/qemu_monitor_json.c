@@ -49,6 +49,7 @@ static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr da
 static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data);
 
 struct {
     const char *type;
@@ -58,6 +59,7 @@ struct {
     { "RESET", qemuMonitorJSONHandleReset, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "STOP", qemuMonitorJSONHandleStop, },
+    { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
 };
 
 
@@ -493,6 +495,16 @@ static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr d
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitStop(mon);
+}
+
+static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    long long offset = 0;
+    if (virJSONValueObjectGetNumberLong(data, "offset", &offset) < 0) {
+        VIR_WARN0("missing offset in RTC change event");
+        offset = 0;
+    }
+    qemuMonitorEmitRTCChange(mon, offset);
 }
 
 

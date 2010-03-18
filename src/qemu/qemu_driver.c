@@ -886,10 +886,40 @@ qemuHandleDomainReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuHandleDomainRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm,
+                          long long offset)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+
+    virDomainObjLock(vm);
+    event = virDomainEventRTCChangeNewFromObj(vm, offset);
+
+    if (vm->def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_VARIABLE)
+        vm->def->clock.data.adjustment = offset;
+
+    if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        VIR_WARN0("unable to save domain status with RTC change");
+
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
     .domainReset = qemuHandleDomainReset,
+    .domainRTCChange = qemuHandleDomainRTCChange,
 };
 
 static int

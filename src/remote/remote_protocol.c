@@ -3060,6 +3060,17 @@ xdr_remote_domain_event_reboot_msg (XDR *xdrs, remote_domain_event_reboot_msg *o
 }
 
 bool_t
+xdr_remote_domain_event_rtc_change_msg (XDR *xdrs, remote_domain_event_rtc_change_msg *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_int64_t (xdrs, &objp->offset))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

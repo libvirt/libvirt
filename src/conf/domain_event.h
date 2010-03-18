@@ -115,6 +115,9 @@ virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int de
 virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom);
 virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj);
 
+virDomainEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom, long long offset);
+virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj, long long offset);
+
 int virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
                             virDomainEventPtr event);
 

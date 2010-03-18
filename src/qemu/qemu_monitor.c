@@ -791,6 +791,21 @@ int qemuMonitorEmitStop(qemuMonitorPtr mon)
 }
 
 
+int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainRTCChange)
+        ret = mon->cb->domainRTCChange(mon, mon->vm, offset);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

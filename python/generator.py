@@ -170,6 +170,7 @@ skipped_types = {
 #    'int *': "usually a return type",
      'virConnectDomainEventCallback': "No function types in python",
      'virConnectDomainEventGenericCallback': "No function types in python",
+     'virConnectDomainEventRTCChangeCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
 }
 

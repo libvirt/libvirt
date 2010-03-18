@@ -64,6 +64,9 @@ struct _virDomainEvent {
             int type;
             int detail;
         } lifecycle;
+        struct {
+            long long offset;
+        } rtcChange;
     } data;
 };
 
@@ -534,6 +537,31 @@ virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
                                      obj->def->id, obj->def->name, obj->def->uuid);
 }
 
+virDomainEventPtr virDomainEventRTCChangeNewFromDom(virDomainPtr dom,
+                                                    long long offset)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
+                                  dom->id, dom->name, dom->uuid);
+
+    if (ev)
+        ev->data.rtcChange.offset = offset;
+
+    return ev;
+}
+virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj,
+                                                    long long offset)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+
+    if (ev)
+        ev->data.rtcChange.offset = offset;
+
+    return ev;
+}
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -642,6 +670,12 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
     case VIR_DOMAIN_EVENT_ID_REBOOT:
         (cb)(conn, dom,
              cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_RTC_CHANGE:
+        ((virConnectDomainEventRTCChangeCallback)cb)(conn, dom,
+                                                     event->data.rtcChange.offset,
+                                                     cbopaque);
         break;
 
     default:

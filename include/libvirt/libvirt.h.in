@@ -1864,6 +1864,21 @@ typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 /**
+ * virConnectDomainEventRTCChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @utcoffset: the new RTC offset from UTC, measured in seconds
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_RTC_CHANGE with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
+                                                       virDomainPtr dom,
+                                                       long long utcoffset,
+                                                       void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -1875,6 +1890,7 @@ typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
 typedef enum {
     VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
     VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback */
+    VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback */
 
     /*
      * NB: this enum value will increase over time as new events are
