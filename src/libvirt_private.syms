@@ -220,6 +220,8 @@ virDomainEventRTCChangeNewFromDom;
 virDomainEventRTCChangeNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
+virDomainEventIOErrorNewFromDom;
+virDomainEventIOErrorNewFromObj;
 virDomainEventFree;
 virDomainEventDispatchDefaultFunc;
 virDomainEventDispatch;

@@ -1909,6 +1909,38 @@ typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
                                                       void *opaque);
 
 /**
+ * virDomainEventIOErrorAction:
+ *
+ * The action that is to be taken due to an IO error occuring
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored */
+    VIR_DOMAIN_EVENT_IO_ERROR_PAUSE,     /* Guest CPUs are pausde */
+    VIR_DOMAIN_EVENT_IO_ERROR_REPORT,    /* IO error reported to guest OS */
+} virDomainEventIOErrorAction;
+
+
+/**
+ * virConnectDomainEventWatchdogCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @srcPath: The host file on which the IO error occurred
+ * @devAlias: The guest device alias associated with the path
+ * @action: action that is to be taken due to the IO error
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ *
+ */
+typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
+                                                     virDomainPtr dom,
+                                                     const char *srcPath,
+                                                     const char *devAlias,
+                                                     int action,
+                                                     void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -1922,6 +1954,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback */
     VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback */
     VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback */
+    VIR_DOMAIN_EVENT_ID_IO_ERROR = 4,        /* virConnectDomainEventIOErrorCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

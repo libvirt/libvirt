@@ -821,6 +821,23 @@ int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
 }
 
 
+int qemuMonitorEmitIOError(qemuMonitorPtr mon,
+                           const char *diskAlias,
+                           int action)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainIOError)
+        ret = mon->cb->domainIOError(mon, mon->vm, diskAlias, action);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

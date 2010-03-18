@@ -51,6 +51,7 @@ static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr d
 static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data);
 
 struct {
     const char *type;
@@ -62,6 +63,7 @@ struct {
     { "STOP", qemuMonitorJSONHandleStop, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
     { "WATCHDOG", qemuMonitorJSONHandleWatchdog, },
+    { "DISK_IO_ERROR", qemuMonitorJSONHandleIOError, },
 };
 
 
@@ -510,8 +512,8 @@ static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr d
 }
 
 VIR_ENUM_DECL(qemuMonitorWatchdogAction)
-VIR_ENUM_IMPL(qemuMonitorWatchdogAction, VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,
-              "none", "pause", "reset", "poweroff" "shutdown", "debug");
+VIR_ENUM_IMPL(qemuMonitorWatchdogAction, VIR_DOMAIN_EVENT_WATCHDOG_DEBUG + 1,
+              "none", "pause", "reset", "poweroff", "shutdown", "debug");
 
 static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data)
 {
@@ -529,6 +531,38 @@ static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr da
             actionID = VIR_DOMAIN_EVENT_WATCHDOG_NONE;
     }
     qemuMonitorEmitRTCChange(mon, actionID);
+}
+
+VIR_ENUM_DECL(qemuMonitorIOErrorAction)
+VIR_ENUM_IMPL(qemuMonitorIOErrorAction, VIR_DOMAIN_EVENT_IO_ERROR_REPORT + 1,
+              "ignore", "stop", "report");
+
+
+static void qemuMonitorJSONHandleIOError(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    const char *device;
+    const char *action;
+    int actionID;
+
+    /* Throughout here we try our best to carry on upon errors,
+       since it's imporatant to get as much info as possible out
+       to the application */
+
+    if ((action = virJSONValueObjectGetString(data, "action")) == NULL) {
+        VIR_WARN0("Missing action in disk io error event");
+        action = "ignore";
+    }
+
+    if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
+        VIR_WARN0("missing device in disk io error event");
+    }
+
+    if ((actionID = qemuMonitorIOErrorActionTypeFromString(action)) < 0) {
+        VIR_WARN("unknown disk io error action '%s'", action);
+        actionID = VIR_DOMAIN_EVENT_IO_ERROR_NONE;
+    }
+
+    qemuMonitorEmitIOError(mon, device, actionID);
 }
 
 

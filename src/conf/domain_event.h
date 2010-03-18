@@ -121,6 +121,15 @@ virDomainEventPtr virDomainEventRTCChangeNewFromObj(virDomainObjPtr obj, long lo
 virDomainEventPtr virDomainEventWatchdogNewFromDom(virDomainPtr dom, int action);
 virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj, int action);
 
+virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action);
+virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action);
+
 int virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
                             virDomainEventPtr event);
 

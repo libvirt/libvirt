@@ -92,6 +92,10 @@ struct _qemuMonitorCallbacks {
     int (*domainWatchdog)(qemuMonitorPtr mon,
                           virDomainObjPtr vm,
                           int action);
+    int (*domainIOError)(qemuMonitorPtr mon,
+                         virDomainObjPtr vm,
+                         const char *diskAlias,
+                         int action);
 };
 
 
@@ -130,6 +134,9 @@ int qemuMonitorEmitPowerdown(qemuMonitorPtr mon);
 int qemuMonitorEmitStop(qemuMonitorPtr mon);
 int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset);
 int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action);
+int qemuMonitorEmitIOError(qemuMonitorPtr mon,
+                           const char *diskAlias,
+                           int action);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);

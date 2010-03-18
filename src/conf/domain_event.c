@@ -70,6 +70,11 @@ struct _virDomainEvent {
         struct {
             int action;
         } watchdog;
+        struct {
+            char *srcPath;
+            char *devAlias;
+            int action;
+        } ioError;
     } data;
 };
 
@@ -458,6 +463,11 @@ void virDomainEventFree(virDomainEventPtr event)
     if (!event)
         return;
 
+    if (event->eventID == VIR_DOMAIN_EVENT_ID_IO_ERROR) {
+        VIR_FREE(event->data.ioError.srcPath);
+        VIR_FREE(event->data.ioError.devAlias);
+    }
+
     VIR_FREE(event->dom.name);
     VIR_FREE(event);
 }
@@ -590,6 +600,47 @@ virDomainEventPtr virDomainEventWatchdogNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+virDomainEventPtr virDomainEventIOErrorNewFromDom(virDomainPtr dom,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+                                  dom->id, dom->name, dom->uuid);
+
+    if (ev) {
+        ev->data.ioError.action = action;
+        if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
+            !(ev->data.ioError.devAlias = strdup(devAlias))) {
+            virDomainEventFree(ev);
+            ev = NULL;
+        }
+    }
+
+    return ev;
+}
+virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
+                                                  const char *srcPath,
+                                                  const char *devAlias,
+                                                  int action)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_IO_ERROR,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+
+    if (ev) {
+        ev->data.watchdog.action = action;
+        if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
+            !(ev->data.ioError.devAlias = strdup(devAlias))) {
+            virDomainEventFree(ev);
+            ev = NULL;
+        }
+    }
+
+    return ev;
+}
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -710,6 +761,14 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
         ((virConnectDomainEventWatchdogCallback)cb)(conn, dom,
                                                     event->data.watchdog.action,
                                                     cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR:
+        ((virConnectDomainEventIOErrorCallback)cb)(conn, dom,
+                                                   event->data.ioError.srcPath,
+                                                   event->data.ioError.devAlias,
+                                                   event->data.ioError.action,
+                                                   cbopaque);
         break;
 
     default:

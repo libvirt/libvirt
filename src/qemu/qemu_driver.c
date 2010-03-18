@@ -756,6 +756,26 @@ findDomainDiskByPath(virDomainObjPtr vm,
     return NULL;
 }
 
+static virDomainDiskDefPtr
+findDomainDiskByAlias(virDomainObjPtr vm,
+                      const char *alias)
+{
+    int i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk;
+
+        disk = vm->def->disks[i];
+        if (disk->info.alias != NULL && STREQ(disk->info.alias, alias))
+            return disk;
+    }
+
+    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("no disk found with alias %s"),
+                    alias);
+    return NULL;
+}
+
 static int
 getVolumeQcowPassphrase(virConnectPtr conn,
                         virDomainDiskDefPtr disk,
@@ -937,12 +957,49 @@ qemuHandleDomainWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                        virDomainObjPtr vm,
+                        const char *diskAlias,
+                        int action)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+    const char *srcPath;
+    const char *devAlias;
+    virDomainDiskDefPtr disk;
+
+    virDomainObjLock(vm);
+    disk = findDomainDiskByAlias(vm, diskAlias);
+
+    if (disk) {
+        srcPath = disk->src;
+        devAlias = disk->info.alias;
+    } else {
+        srcPath = "";
+        devAlias = "";
+    }
+
+    event = virDomainEventIOErrorNewFromObj(vm, srcPath, devAlias, action);
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
     .domainReset = qemuHandleDomainReset,
     .domainRTCChange = qemuHandleDomainRTCChange,
     .domainWatchdog = qemuHandleDomainWatchdog,
+    .domainIOError = qemuHandleDomainIOError,
 };
 
 static int

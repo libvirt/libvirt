@@ -1744,6 +1744,14 @@ struct remote_domain_event_watchdog_msg {
         int action;
 };
 typedef struct remote_domain_event_watchdog_msg remote_domain_event_watchdog_msg;
+
+struct remote_domain_event_io_error_msg {
+        remote_nonnull_domain dom;
+        remote_nonnull_string srcPath;
+        remote_nonnull_string devAlias;
+        int action;
+};
+typedef struct remote_domain_event_io_error_msg remote_domain_event_io_error_msg;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -1919,6 +1927,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_REBOOT = 169,
         REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE = 170,
         REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171,
+        REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2235,6 +2244,7 @@ extern  bool_t xdr_remote_domain_events_deregister_any_args (XDR *, remote_domai
 extern  bool_t xdr_remote_domain_event_reboot_msg (XDR *, remote_domain_event_reboot_msg*);
 extern  bool_t xdr_remote_domain_event_rtc_change_msg (XDR *, remote_domain_event_rtc_change_msg*);
 extern  bool_t xdr_remote_domain_event_watchdog_msg (XDR *, remote_domain_event_watchdog_msg*);
+extern  bool_t xdr_remote_domain_event_io_error_msg (XDR *, remote_domain_event_io_error_msg*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2525,6 +2535,7 @@ extern bool_t xdr_remote_domain_events_deregister_any_args ();
 extern bool_t xdr_remote_domain_event_reboot_msg ();
 extern bool_t xdr_remote_domain_event_rtc_change_msg ();
 extern bool_t xdr_remote_domain_event_watchdog_msg ();
+extern bool_t xdr_remote_domain_event_io_error_msg ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

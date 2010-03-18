@@ -204,6 +204,19 @@ static int myDomainEventWatchdogCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        virDomainPtr dom,
+                                        const char *srcPath,
+                                        const char *devAlias,
+                                        int action,
+                                        void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) io error path=%s alias=%s action=%d\n", __func__, virDomainGetName(dom),
+           virDomainGetID(dom), srcPath, devAlias, action);
+
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -324,6 +337,7 @@ int main(int argc, char **argv)
     int callback3ret = -1;
     int callback4ret = -1;
     int callback5ret = -1;
+    int callback6ret = -1;
 
     struct sigaction action_stop = {
         .sa_handler = stop
@@ -376,12 +390,18 @@ int main(int argc, char **argv)
                                                     VIR_DOMAIN_EVENT_ID_WATCHDOG,
                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventWatchdogCallback),
                                                     strdup("callback watchdog"), myFreeFunc);
+    callback6ret = virConnectDomainEventRegisterAny(dconn,
+                                                    NULL,
+                                                    VIR_DOMAIN_EVENT_ID_IO_ERROR,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventIOErrorCallback),
+                                                    strdup("callback io error"), myFreeFunc);
 
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
         (callback3ret != -1) &&
         (callback4ret != -1) &&
-        (callback5ret != -1)) {
+        (callback5ret != -1) &&
+        (callback6ret != -1)) {
         while(run) {
             struct pollfd pfd = { .fd = h_fd,
                               .events = h_event,
@@ -422,6 +442,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback3ret);
         virConnectDomainEventDeregisterAny(dconn, callback4ret);
         virConnectDomainEventDeregisterAny(dconn, callback5ret);
+        virConnectDomainEventDeregisterAny(dconn, callback6ret);
     }
 
     DEBUG0("Closing connection");
