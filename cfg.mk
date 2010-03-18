@@ -269,6 +269,15 @@ sc_preprocessor_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
 	fi
 
+sc_copyright_format:
+	@$(VC_LIST_EXCEPT) | xargs grep -ni 'copyright .*Red 'Hat	\
+	  | grep -v Inc							\
+	  && { echo '$(ME): Red Hat copyright is missing Inc' 1>&2;	\
+	       exit 1; } || :
+	@$(VC_LIST_EXCEPT) | xargs grep -ni 'copyright [^(].*Red 'Hat	\
+	  && { echo '$(ME): consistently use (C) in Red Hat copyright' 1>&2; \
+	       exit 1; } || :
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
