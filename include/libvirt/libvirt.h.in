@@ -1874,6 +1874,7 @@ typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
 
 typedef enum {
     VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
+    VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

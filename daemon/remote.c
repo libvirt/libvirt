@@ -129,9 +129,37 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int remoteRelayDomainEventReboot(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        virDomainPtr dom,
+                                        void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_reboot_msg data;
 
-static virConnectDomainEventGenericCallback domainEventCallbacks[VIR_DOMAIN_EVENT_ID_LAST] = {
+    if (!client)
+        return -1;
+
+    REMOTE_DEBUG("Relaying domain reboot event %s %d", dom->name, dom->id);
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain (&data.dom, dom);
+
+    remoteDispatchDomainEventSend (client,
+                                   REMOTE_PROC_DOMAIN_EVENT_REBOOT,
+                                   (xdrproc_t)xdr_remote_domain_event_reboot_msg, &data);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
+
+static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

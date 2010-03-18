@@ -172,6 +172,16 @@ static int myDomainEventCallback2(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventRebootCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                       virDomainPtr dom,
+                                       void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) rebooted\n", __func__, virDomainGetName(dom),
+           virDomainGetID(dom));
+
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -289,6 +299,7 @@ int main(int argc, char **argv)
     int sts;
     int callback1ret = -1;
     int callback2ret = -1;
+    int callback3ret = -1;
 
     struct sigaction action_stop = {
         .sa_handler = stop
@@ -326,9 +337,15 @@ int main(int argc, char **argv)
                                                     VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventCallback2),
                                                     strdup("callback 2"), myFreeFunc);
+    callback3ret = virConnectDomainEventRegisterAny(dconn,
+                                                    NULL,
+                                                    VIR_DOMAIN_EVENT_ID_REBOOT,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventRebootCallback),
+                                                    strdup("callback reboot"), myFreeFunc);
 
     if ((callback1ret != -1) &&
-        (callback2ret != -1)) {
+        (callback2ret != -1) &&
+        (callback3ret != -1)) {
         while(run) {
             struct pollfd pfd = { .fd = h_fd,
                               .events = h_event,
@@ -366,6 +383,7 @@ int main(int argc, char **argv)
         DEBUG0("Deregistering event handlers");
         virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
         virConnectDomainEventDeregisterAny(dconn, callback2ret);
+        virConnectDomainEventDeregisterAny(dconn, callback3ret);
 
     }
 

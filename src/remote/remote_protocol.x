@@ -1536,6 +1536,9 @@ struct remote_domain_events_deregister_any_args {
     int eventID;
 };
 
+struct remote_domain_event_reboot_msg {
+    remote_nonnull_domain dom;
+};
 
 /*----- Protocol. -----*/
 
@@ -1727,7 +1730,8 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_VOL_WIPE = 165,
     REMOTE_PROC_DOMAIN_MIGRATE_SET_MAX_DOWNTIME = 166,
     REMOTE_PROC_DOMAIN_EVENTS_REGISTER_ANY = 167,
-    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168
+    REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER_ANY = 168,
+    REMOTE_PROC_DOMAIN_EVENT_REBOOT = 169
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

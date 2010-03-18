@@ -864,9 +864,32 @@ cleanup:
     return ret;
 }
 
+
+static int
+qemuHandleDomainReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                      virDomainObjPtr vm)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+
+    virDomainObjLock(vm);
+    event = virDomainEventRebootNewFromObj(vm);
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
+    .domainReset = qemuHandleDomainReset,
 };
 
 static int

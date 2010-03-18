@@ -523,6 +523,17 @@ virDomainEventPtr virDomainEventNewFromDef(virDomainDefPtr def, int type, int de
     return virDomainEventNew(def->id, def->name, def->uuid, type, detail);
 }
 
+virDomainEventPtr virDomainEventRebootNewFromDom(virDomainPtr dom)
+{
+    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+                                     dom->id, dom->name, dom->uuid);
+}
+virDomainEventPtr virDomainEventRebootNewFromObj(virDomainObjPtr obj)
+{
+    return virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_REBOOT,
+                                     obj->def->id, obj->def->name, obj->def->uuid);
+}
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -626,6 +637,11 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                             event->data.lifecycle.type,
                                             event->data.lifecycle.detail,
                                             cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_REBOOT:
+        (cb)(conn, dom,
+             cbopaque);
         break;
 
     default:

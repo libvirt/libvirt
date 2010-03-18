@@ -214,6 +214,8 @@ virDomainEventNew;
 virDomainEventNewFromDom;
 virDomainEventNewFromObj;
 virDomainEventNewFromDef;
+virDomainEventRebootNewFromDom;
+virDomainEventRebootNewFromObj;
 virDomainEventFree;
 virDomainEventDispatchDefaultFunc;
 virDomainEventDispatch;

@@ -3051,6 +3051,15 @@ xdr_remote_domain_events_deregister_any_args (XDR *xdrs, remote_domain_events_de
 }
 
 bool_t
+xdr_remote_domain_event_reboot_msg (XDR *xdrs, remote_domain_event_reboot_msg *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 
