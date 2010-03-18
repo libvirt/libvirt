@@ -1,7 +1,7 @@
 /*
  * threads-pthread.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,10 @@ void virThreadOnExit(void)
 int virMutexInit(virMutexPtr m)
 {
     int ret;
-    if ((ret = pthread_mutex_init(&m->lock, NULL)) != 0) {
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
+    if ((ret = pthread_mutex_init(&m->lock, &attr)) != 0) {
         errno = ret;
         return -1;
     }
