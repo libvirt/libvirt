@@ -38,10 +38,6 @@ void *t_opaque = NULL;
 
 /* Prototypes */
 const char *eventToString(int event);
-int myDomainEventCallback1 (virConnectPtr conn, virDomainPtr dom,
-                            int event, int detail, void *opaque);
-int myDomainEventCallback2 (virConnectPtr conn, virDomainPtr dom,
-                            int event, int detail, void *opaque);
 int myEventAddHandleFunc  (int fd, int event,
                            virEventHandleCallback cb,
                            void *opaque,
@@ -152,11 +148,11 @@ static const char *eventDetailToString(int event, int detail) {
     return ret;
 }
 
-int myDomainEventCallback1 (virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virDomainPtr dom,
-                            int event,
-                            int detail,
-                            void *opaque ATTRIBUTE_UNUSED)
+static int myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virDomainPtr dom,
+                                  int event,
+                                  int detail,
+                                  void *opaque ATTRIBUTE_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
@@ -164,11 +160,11 @@ int myDomainEventCallback1 (virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-int myDomainEventCallback2 (virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virDomainPtr dom,
-                            int event,
-                            int detail,
-                            void *opaque ATTRIBUTE_UNUSED)
+static int myDomainEventCallback2(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virDomainPtr dom,
+                                  int event,
+                                  int detail,
+                                  void *opaque ATTRIBUTE_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
@@ -293,6 +289,7 @@ int main(int argc, char **argv)
     int sts;
     int callback1ret = -1;
     int callback2ret = -1;
+
     struct sigaction action_stop = {
         .sa_handler = stop
     };
@@ -310,7 +307,7 @@ int main(int argc, char **argv)
                           myEventRemoveTimeoutFunc);
 
     virConnectPtr dconn = NULL;
-    dconn = virConnectOpen (argv[1] ? argv[1] : NULL);
+    dconn = virConnectOpenReadOnly (argv[1] ? argv[1] : NULL);
     if (!dconn) {
         printf("error opening\n");
         return -1;
@@ -324,10 +321,14 @@ int main(int argc, char **argv)
     /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
                                                  strdup("callback 1"), myFreeFunc);
-    callback2ret = virConnectDomainEventRegister(dconn, myDomainEventCallback2,
-                                                 strdup("callback 2"), myFreeFunc);
+    callback2ret = virConnectDomainEventRegisterAny(dconn,
+                                                    NULL,
+                                                    VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventCallback2),
+                                                    strdup("callback 2"), myFreeFunc);
 
-    if ((callback1ret == 0) && (callback2ret == 0) ) {
+    if ((callback1ret != -1) &&
+        (callback2ret != -1)) {
         while(run) {
             struct pollfd pfd = { .fd = h_fd,
                               .events = h_event,
@@ -364,7 +365,7 @@ int main(int argc, char **argv)
 
         DEBUG0("Deregistering event handlers");
         virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
-        virConnectDomainEventDeregister(dconn, myDomainEventCallback2);
+        virConnectDomainEventDeregisterAny(dconn, callback2ret);
 
     }
 
