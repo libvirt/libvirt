@@ -105,6 +105,11 @@ sc_prohibit_gethostname:
 	msg='use virGetHostname, not gethostname'			\
 	  $(_prohibit_regexp)
 
+sc_prohibit_gettext_noop:
+	@re='gettext_noop *\('						\
+	msg='use _N, not gettext_noop'					\
+	  $(_prohibit_regexp)
+
 sc_prohibit_VIR_ERR_NO_MEMORY:
 	@re='\<V''IR_ERR_NO_MEMORY\>'					\
 	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
