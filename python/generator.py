@@ -173,6 +173,7 @@ skipped_types = {
      'virConnectDomainEventRTCChangeCallback': "No function types in python",
      'virConnectDomainEventWatchdogCallback': "No function types in python",
      'virConnectDomainEventIOErrorCallback': "No function types in python",
+     'virConnectDomainEventGraphicsCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
 }
 

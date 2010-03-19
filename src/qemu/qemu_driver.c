@@ -993,6 +993,98 @@ qemuHandleDomainIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuHandleDomainGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                         virDomainObjPtr vm,
+                         int phase,
+                         int localFamily,
+                         const char *localNode,
+                         const char *localService,
+                         int remoteFamily,
+                         const char *remoteNode,
+                         const char *remoteService,
+                         const char *authScheme,
+                         const char *x509dname,
+                         const char *saslUsername)
+{
+    struct qemud_driver *driver = qemu_driver;
+    virDomainEventPtr event;
+    virDomainEventGraphicsAddressPtr localAddr = NULL;
+    virDomainEventGraphicsAddressPtr remoteAddr = NULL;
+    virDomainEventGraphicsSubjectPtr subject = NULL;
+    int i;
+
+    virDomainObjLock(vm);
+
+    if (VIR_ALLOC(localAddr) < 0)
+        goto no_memory;
+    localAddr->family = localFamily;
+    if (!(localAddr->service = strdup(localService)) ||
+        !(localAddr->node = strdup(localNode)))
+        goto no_memory;
+
+    if (VIR_ALLOC(remoteAddr) < 0)
+        goto no_memory;
+    remoteAddr->family = remoteFamily;
+    if (!(remoteAddr->service = strdup(remoteService)) ||
+        !(remoteAddr->node = strdup(remoteNode)))
+        goto no_memory;
+
+    if (VIR_ALLOC(subject) < 0)
+        goto no_memory;
+    if (x509dname) {
+        if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
+            goto no_memory;
+        if (!(subject->identities[subject->nidentity].type = strdup("x509dname")) ||
+            !(subject->identities[subject->nidentity].name = strdup(x509dname)))
+            goto no_memory;
+        subject->nidentity++;
+    }
+    if (saslUsername) {
+        if (VIR_REALLOC_N(subject->identities, subject->nidentity+1) < 0)
+            goto no_memory;
+        if (!(subject->identities[subject->nidentity].type = strdup("saslUsername")) ||
+            !(subject->identities[subject->nidentity].name = strdup(saslUsername)))
+            goto no_memory;
+        subject->nidentity++;
+    }
+
+    event = virDomainEventGraphicsNewFromObj(vm, phase, localAddr, remoteAddr, authScheme, subject);
+    virDomainObjUnlock(vm);
+
+    if (event) {
+        qemuDriverLock(driver);
+        qemuDomainEventQueue(driver, event);
+        qemuDriverUnlock(driver);
+    }
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+    if (localAddr) {
+        VIR_FREE(localAddr->service);
+        VIR_FREE(localAddr->node);
+        VIR_FREE(localAddr);
+    }
+    if (remoteAddr) {
+        VIR_FREE(remoteAddr->service);
+        VIR_FREE(remoteAddr->node);
+        VIR_FREE(remoteAddr);
+    }
+    if (subject) {
+        for (i = 0 ; i < subject->nidentity ; i++) {
+            VIR_FREE(subject->identities[i].type);
+            VIR_FREE(subject->identities[i].name);
+        }
+        VIR_FREE(subject->identities);
+        VIR_FREE(subject);
+    }
+
+    return -1;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
@@ -1000,6 +1092,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainRTCChange = qemuHandleDomainRTCChange,
     .domainWatchdog = qemuHandleDomainWatchdog,
     .domainIOError = qemuHandleDomainIOError,
+    .domainGraphics = qemuHandleDomainGraphics,
 };
 
 static int

@@ -838,6 +838,36 @@ int qemuMonitorEmitIOError(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
+                            int phase,
+                            int localFamily,
+                            const char *localNode,
+                            const char *localService,
+                            int remoteFamily,
+                            const char *remoteNode,
+                            const char *remoteService,
+                            const char *authScheme,
+                            const char *x509dname,
+                            const char *saslUsername)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    qemuMonitorRef(mon);
+    qemuMonitorUnlock(mon);
+    if (mon->cb && mon->cb->domainGraphics)
+        ret = mon->cb->domainGraphics(mon, mon->vm,
+                                      phase,
+                                      localFamily, localNode, localService,
+                                      remoteFamily, remoteNode, remoteService,
+                                      authScheme, x509dname, saslUsername);
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+    return ret;
+}
+
+
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;

@@ -222,6 +222,8 @@ virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 virDomainEventIOErrorNewFromDom;
 virDomainEventIOErrorNewFromObj;
+virDomainEventGraphicsNewFromDom;
+virDomainEventGraphicsNewFromObj;
 virDomainEventFree;
 virDomainEventDispatchDefaultFunc;
 virDomainEventDispatch;

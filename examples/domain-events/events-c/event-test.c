@@ -217,6 +217,47 @@ static int myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                         virDomainPtr dom,
+                                         int phase,
+                                         virDomainEventGraphicsAddressPtr local,
+                                         virDomainEventGraphicsAddressPtr remote,
+                                         const char *authScheme,
+                                         virDomainEventGraphicsSubjectPtr subject,
+                                         void *opaque ATTRIBUTE_UNUSED)
+{
+    int i;
+    printf("%s EVENT: Domain %s(%d) graphics ", __func__, virDomainGetName(dom),
+           virDomainGetID(dom));
+
+    switch (phase) {
+    case VIR_DOMAIN_EVENT_GRAPHICS_CONNECT:
+        printf("connected ");
+        break;
+    case VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE:
+        printf("initialized ");
+        break;
+    case VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT:
+        printf("disconnected ");
+        break;
+    }
+
+    printf("local: family=%d node=%s service=%s ",
+           local->family, local->node, local->service);
+    printf("remote: family=%d node=%s service=%s ",
+           remote->family, remote->node, remote->service);
+
+    printf("auth: %s ", authScheme);
+    for (i = 0 ; i < subject->nidentity ; i++) {
+        printf(" identity: %s=%s",
+               subject->identities[i].type,
+               subject->identities[i].name);
+    }
+    printf("\n");
+
+    return 0;
+}
+
 static void myFreeFunc(void *opaque)
 {
     char *str = opaque;
@@ -338,6 +379,7 @@ int main(int argc, char **argv)
     int callback4ret = -1;
     int callback5ret = -1;
     int callback6ret = -1;
+    int callback7ret = -1;
 
     struct sigaction action_stop = {
         .sa_handler = stop
@@ -395,13 +437,19 @@ int main(int argc, char **argv)
                                                     VIR_DOMAIN_EVENT_ID_IO_ERROR,
                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventIOErrorCallback),
                                                     strdup("callback io error"), myFreeFunc);
+    callback7ret = virConnectDomainEventRegisterAny(dconn,
+                                                    NULL,
+                                                    VIR_DOMAIN_EVENT_ID_GRAPHICS,
+                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventGraphicsCallback),
+                                                    strdup("callback graphics"), myFreeFunc);
 
     if ((callback1ret != -1) &&
         (callback2ret != -1) &&
         (callback3ret != -1) &&
         (callback4ret != -1) &&
         (callback5ret != -1) &&
-        (callback6ret != -1)) {
+        (callback6ret != -1) &&
+        (callback7ret != -1)) {
         while(run) {
             struct pollfd pfd = { .fd = h_fd,
                               .events = h_event,
@@ -443,6 +491,7 @@ int main(int argc, char **argv)
         virConnectDomainEventDeregisterAny(dconn, callback4ret);
         virConnectDomainEventDeregisterAny(dconn, callback5ret);
         virConnectDomainEventDeregisterAny(dconn, callback6ret);
+        virConnectDomainEventDeregisterAny(dconn, callback7ret);
     }
 
     DEBUG0("Closing connection");

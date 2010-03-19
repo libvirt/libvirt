@@ -1557,6 +1557,28 @@ struct remote_domain_event_io_error_msg {
     int action;
 };
 
+struct remote_domain_event_graphics_address {
+    int family;
+    remote_nonnull_string node;
+    remote_nonnull_string service;
+};
+
+const REMOTE_DOMAIN_EVENT_GRAPHICS_IDENTITY_MAX = 20;
+
+struct remote_domain_event_graphics_identity {
+    remote_nonnull_string type;
+    remote_nonnull_string name;
+};
+
+struct remote_domain_event_graphics_msg {
+    remote_nonnull_domain dom;
+    int phase;
+    remote_domain_event_graphics_address local;
+    remote_domain_event_graphics_address remote;
+    remote_nonnull_string authScheme;
+    remote_domain_event_graphics_identity subject<REMOTE_DOMAIN_EVENT_GRAPHICS_IDENTITY_MAX>;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1752,7 +1774,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE = 170,
 
     REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171,
-    REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172
+    REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
+    REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

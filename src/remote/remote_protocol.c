@@ -3097,6 +3097,51 @@ xdr_remote_domain_event_io_error_msg (XDR *xdrs, remote_domain_event_io_error_ms
 }
 
 bool_t
+xdr_remote_domain_event_graphics_address (XDR *xdrs, remote_domain_event_graphics_address *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->family))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->node))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->service))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_event_graphics_identity (XDR *xdrs, remote_domain_event_graphics_identity *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->type))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_event_graphics_msg (XDR *xdrs, remote_domain_event_graphics_msg *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->subject.subject_val;
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->phase))
+                 return FALSE;
+         if (!xdr_remote_domain_event_graphics_address (xdrs, &objp->local))
+                 return FALSE;
+         if (!xdr_remote_domain_event_graphics_address (xdrs, &objp->remote))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->authScheme))
+                 return FALSE;
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->subject.subject_len, REMOTE_DOMAIN_EVENT_GRAPHICS_IDENTITY_MAX,
+                sizeof (remote_domain_event_graphics_identity), (xdrproc_t) xdr_remote_domain_event_graphics_identity))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

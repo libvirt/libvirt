@@ -251,12 +251,77 @@ static int remoteRelayDomainEventIOError(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int remoteRelayDomainEventGraphics(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                          virDomainPtr dom,
+                                          int phase,
+                                          virDomainEventGraphicsAddressPtr local,
+                                          virDomainEventGraphicsAddressPtr remote,
+                                          const char *authScheme,
+                                          virDomainEventGraphicsSubjectPtr subject,
+                                          void *opaque)
+{
+    struct qemud_client *client = opaque;
+    remote_domain_event_graphics_msg data;
+    int i;
+
+    if (!client)
+        return -1;
+
+    REMOTE_DEBUG("Relaying domain graphics event %s %d %d - %d %s %s  - %d %s %s - %s", dom->name, dom->id, phase,
+                 local->family, local->service, local->node,
+                 remote->family, remote->service, remote->node,
+                 authScheme);
+
+    REMOTE_DEBUG("Subject %d", subject->nidentity);
+    for (i = 0 ; i < subject->nidentity ; i++) {
+        REMOTE_DEBUG("  %s=%s", subject->identities[i].type, subject->identities[i].name);
+    }
+
+    virMutexLock(&client->lock);
+
+    /* build return data */
+    memset(&data, 0, sizeof data);
+    make_nonnull_domain (&data.dom, dom);
+    data.phase = phase;
+    data.authScheme = (char*)authScheme;
+
+    data.local.family = local->family;
+    data.local.node = (char *)local->node;
+    data.local.service = (char *)local->service;
+
+    data.remote.family = remote->family;
+    data.remote.node = (char*)remote->node;
+    data.remote.service = (char*)remote->service;
+
+    data.subject.subject_len = subject->nidentity;
+    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0) {
+        VIR_WARN0("cannot allocate memory for graphics event subject");
+        return -1;
+    }
+    for (i = 0 ; i < data.subject.subject_len ; i++) {
+        data.subject.subject_val[i].type = (char*)subject->identities[i].type;
+        data.subject.subject_val[i].name = (char*)subject->identities[i].name;
+    }
+
+    remoteDispatchDomainEventSend (client,
+                                   REMOTE_PROC_DOMAIN_EVENT_GRAPHICS,
+                                   (xdrproc_t)xdr_remote_domain_event_graphics_msg, &data);
+
+    VIR_FREE(data.subject.subject_val);
+
+    virMutexUnlock(&client->lock);
+
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventRTCChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventWatchdog),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventIOError),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventGraphics),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

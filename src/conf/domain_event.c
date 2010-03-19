@@ -75,6 +75,13 @@ struct _virDomainEvent {
             char *devAlias;
             int action;
         } ioError;
+        struct {
+            int phase;
+            virDomainEventGraphicsAddressPtr local;
+            virDomainEventGraphicsAddressPtr remote;
+            char *authScheme;
+            virDomainEventGraphicsSubjectPtr subject;
+        } graphics;
     } data;
 };
 
@@ -463,9 +470,32 @@ void virDomainEventFree(virDomainEventPtr event)
     if (!event)
         return;
 
-    if (event->eventID == VIR_DOMAIN_EVENT_ID_IO_ERROR) {
+    switch (event->eventID) {
+    case VIR_DOMAIN_EVENT_ID_IO_ERROR:
         VIR_FREE(event->data.ioError.srcPath);
         VIR_FREE(event->data.ioError.devAlias);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_GRAPHICS:
+        if (event->data.graphics.local) {
+            VIR_FREE(event->data.graphics.local->node);
+            VIR_FREE(event->data.graphics.local->service);
+            VIR_FREE(event->data.graphics.local);
+        }
+        if (event->data.graphics.remote) {
+            VIR_FREE(event->data.graphics.remote->node);
+            VIR_FREE(event->data.graphics.remote->service);
+            VIR_FREE(event->data.graphics.remote);
+        }
+        VIR_FREE(event->data.graphics.authScheme);
+        if (event->data.graphics.subject) {
+            int i;
+            for (i = 0 ; i < event->data.graphics.subject->nidentity ; i++) {
+                VIR_FREE(event->data.graphics.subject->identities[i].type);
+                VIR_FREE(event->data.graphics.subject->identities[i].name);
+            }
+            VIR_FREE(event->data.graphics.subject);
+        }
     }
 
     VIR_FREE(event->dom.name);
@@ -641,6 +671,58 @@ virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
     return ev;
 }
 
+
+virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
+                                                   int phase,
+                                                   virDomainEventGraphicsAddressPtr local,
+                                                   virDomainEventGraphicsAddressPtr remote,
+                                                   const char *authScheme,
+                                                   virDomainEventGraphicsSubjectPtr subject)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_GRAPHICS,
+                                  dom->id, dom->name, dom->uuid);
+
+    if (ev) {
+        ev->data.graphics.phase = phase;
+        if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
+            virDomainEventFree(ev);
+            ev = NULL;
+        }
+        ev->data.graphics.local = local;
+        ev->data.graphics.remote = remote;
+        ev->data.graphics.subject = subject;
+    }
+
+    return ev;
+}
+
+virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
+                                                   int phase,
+                                                   virDomainEventGraphicsAddressPtr local,
+                                                   virDomainEventGraphicsAddressPtr remote,
+                                                   const char *authScheme,
+                                                   virDomainEventGraphicsSubjectPtr subject)
+{
+    virDomainEventPtr ev =
+        virDomainEventNewInternal(VIR_DOMAIN_EVENT_ID_GRAPHICS,
+                                  obj->def->id, obj->def->name, obj->def->uuid);
+
+    if (ev) {
+        ev->data.graphics.phase = phase;
+        if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
+            virDomainEventFree(ev);
+            ev = NULL;
+        }
+        ev->data.graphics.local = local;
+        ev->data.graphics.remote = remote;
+        ev->data.graphics.subject = subject;
+    }
+
+    return ev;
+}
+
+
 /**
  * virDomainEventQueueFree:
  * @queue: pointer to the queue
@@ -769,6 +851,16 @@ void virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                    event->data.ioError.devAlias,
                                                    event->data.ioError.action,
                                                    cbopaque);
+        break;
+
+    case VIR_DOMAIN_EVENT_ID_GRAPHICS:
+        ((virConnectDomainEventGraphicsCallback)cb)(conn, dom,
+                                                    event->data.graphics.phase,
+                                                    event->data.graphics.local,
+                                                    event->data.graphics.remote,
+                                                    event->data.graphics.authScheme,
+                                                    event->data.graphics.subject,
+                                                    cbopaque);
         break;
 
     default:

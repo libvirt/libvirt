@@ -1941,6 +1941,98 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 /**
+ * virDomainEventGraphicsPhase:
+ *
+ * The phase of the graphics client connection
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0,  /* Initial socket connection established */
+    VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE,   /* Authentication & setup completed */
+    VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT,   /* Final socket disconnection */
+} virDomainEventGraphicsPhase;
+
+/**
+ * virDomainEventGraphicsAddressType:
+ *
+ * The type of address for the connection
+ */
+typedef enum {
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6,  /* IPv6 address */
+} virDomainEventGraphicsAddressType;
+
+
+/**
+ * virDomainEventGraphicsAddress:
+ *
+ * The data structure containing connection address details
+ *
+ */
+struct _virDomainEventGraphicsAddress {
+    int family;               /* Address family, virDomainEventGraphicsAddressType */
+    const char *node;         /* Address of node (eg IP address) */
+    const char *service;      /* Service name/number (eg TCP port) */
+};
+typedef struct _virDomainEventGraphicsAddress virDomainEventGraphicsAddress;
+typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
+
+
+/**
+ * virDomainEventGraphicsSubjectIdentity:
+ *
+ * The data structure representing a single identity
+ *
+ * The types of identity differ according to the authentication scheme,
+ * some examples are 'x509dname' and 'saslUsername'.
+ */
+struct _virDomainEventGraphicsSubjectIdentity {
+    const char *type;     /* Type of identity */
+    const char *name;     /* Identity value */
+};
+typedef struct _virDomainEventGraphicsSubjectIdentity virDomainEventGraphicsSubjectIdentity;
+typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIdentityPtr;
+
+
+/**
+ * virDomainEventGraphicsSubject:
+ *
+ * The data structure representing an authenticated subject
+ *
+ * A subject will have zero or more identities. The types of
+ * identity differ according to the authentication scheme
+ */
+struct _virDomainEventGraphicsSubject {
+    int nidentity;                                /* Number of identities in array*/
+    virDomainEventGraphicsSubjectIdentityPtr identities; /* Array of identities for subject */
+};
+typedef struct _virDomainEventGraphicsSubject virDomainEventGraphicsSubject;
+typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
+
+
+/**
+ * virConnectDomainEventGraphicsCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @phase: the phase of the connection
+ * @local: the local server address
+ * @remote: the remote client address
+ * @authScheme: the authentication scheme activated
+ * @subject: the authenticated subject (user)
+ * @opaque: application specified data
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_GRAPHICS with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
+                                                      virDomainPtr dom,
+                                                      int phase,
+                                                      virDomainEventGraphicsAddressPtr local,
+                                                      virDomainEventGraphicsAddressPtr remote,
+                                                      const char *authScheme,
+                                                      virDomainEventGraphicsSubjectPtr subject,
+                                                      void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -1955,6 +2047,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback */
     VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback */
     VIR_DOMAIN_EVENT_ID_IO_ERROR = 4,        /* virConnectDomainEventIOErrorCallback */
+    VIR_DOMAIN_EVENT_ID_GRAPHICS = 5,        /* virConnectDomainEventGraphicsCallback */
 
     /*
      * NB: this enum value will increase over time as new events are

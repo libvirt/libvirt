@@ -96,6 +96,18 @@ struct _qemuMonitorCallbacks {
                          virDomainObjPtr vm,
                          const char *diskAlias,
                          int action);
+    int (*domainGraphics)(qemuMonitorPtr mon,
+                          virDomainObjPtr vm,
+                          int phase,
+                          int localFamily,
+                          const char *localNode,
+                          const char *localService,
+                          int remoteFamily,
+                          const char *remoteNode,
+                          const char *remoteService,
+                          const char *authScheme,
+                          const char *x509dname,
+                          const char *saslUsername);
 };
 
 
@@ -137,6 +149,18 @@ int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action);
 int qemuMonitorEmitIOError(qemuMonitorPtr mon,
                            const char *diskAlias,
                            int action);
+int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
+                            int phase,
+                            int localFamily,
+                            const char *localNode,
+                            const char *localService,
+                            int remoteFamily,
+                            const char *remoteNode,
+                            const char *remoteService,
+                            const char *authScheme,
+                            const char *x509dname,
+                            const char *saslUsername);
+
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);

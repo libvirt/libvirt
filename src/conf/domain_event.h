@@ -130,6 +130,21 @@ virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
                                                   const char *devAlias,
                                                   int action);
 
+virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
+                                                   int phase,
+                                                   virDomainEventGraphicsAddressPtr local,
+                                                   virDomainEventGraphicsAddressPtr remote,
+                                                   const char *authScheme,
+                                                   virDomainEventGraphicsSubjectPtr subject);
+virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
+                                                   int phase,
+                                                   virDomainEventGraphicsAddressPtr local,
+                                                   virDomainEventGraphicsAddressPtr remote,
+                                                   const char *authScheme,
+                                                   virDomainEventGraphicsSubjectPtr subject);
+
+
+
 int virDomainEventQueuePush(virDomainEventQueuePtr evtQueue,
                             virDomainEventPtr event);
 
