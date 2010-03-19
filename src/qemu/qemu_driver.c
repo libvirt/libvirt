@@ -6373,8 +6373,9 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
+    /* FIXME - need to support vhost-net here (5th arg) */
     if (!(netstr = qemuBuildHostNetStr(net, ' ',
-                                       vlan, tapfd_name)))
+                                       vlan, tapfd_name, 0)))
         goto try_tapfd_close;
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);

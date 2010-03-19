@@ -1183,6 +1183,10 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
     if (is_kvm && (version >= 10000 || kvm_version >= 74))
         flags |= QEMUD_CMD_FLAG_VNET_HDR;
 
+    if (is_kvm && strstr(help, ",vhost=")) {
+        flags |= QEMUD_CMD_FLAG_VNET_HOST;
+    }
+
     /*
      * Handling of -incoming arg with varying features
      *  -incoming tcp    (kvm >= 79, qemu >= 0.10.0)
@@ -1594,6 +1598,27 @@ cleanup:
     VIR_FREE(brname);
 
     return tapfd;
+}
+
+
+int
+qemudOpenVhostNet(virDomainNetDefPtr net,
+                  unsigned long long qemuCmdFlags)
+{
+
+    /* If qemu supports vhost-net mode (including the -netdev command
+     * option), the nic model is virtio, and we can open
+     * /dev/vhost_net, assume that vhost-net mode is available and
+     * return the fd to /dev/vhost_net. Otherwise, return -1.
+     */
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_VNET_HOST &&
+          qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV &&
+          qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE &&
+          net->model && STREQ(net->model, "virtio")))
+        return -1;
+
+    return open("/dev/vhost-net", O_RDWR, 0);
 }
 
 
@@ -2611,7 +2636,8 @@ char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
                     char type_sep,
                     int vlan,
-                    const char *tapfd)
+                    const char *tapfd,
+                    const char *vhostfd)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2678,6 +2704,10 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     } else {
         virBufferVSprintf(&buf, "%cid=host%s",
                           type_sep, net->info.alias);
+    }
+
+    if (vhostfd && *vhostfd) {
+        virBufferVSprintf(&buf, ",vhost=on,vhostfd=%s", vhostfd);
     }
 
     if (virBufferError(&buf)) {
@@ -3828,6 +3858,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virDomainNetDefPtr net = def->nets[i];
             char *nic, *host;
             char tapfd_name[50];
+            char vhostfd_name[50] = "";
             int vlan;
 
             /* VLANs are not used with -netdev, so don't record them */
@@ -3871,6 +3902,24 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
             }
 
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
+                net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+                net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
+                /* Attempt to use vhost-net mode for these types of
+                   network device */
+                int vhostfd = qemudOpenVhostNet(net, qemuCmdFlags);
+                if (vhostfd >= 0) {
+                    if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                        close(vhostfd);
+                        goto no_memory;
+                    }
+
+                    (*tapfds)[(*ntapfds)++] = vhostfd;
+                    if (snprintf(vhostfd_name, sizeof(vhostfd_name), "%d", vhostfd)
+                        >= sizeof(vhostfd_name))
+                        goto no_memory;
+                }
+            }
             /* Possible combinations:
              *
              *  1. Old way:   -net nic,model=e1000,vlan=1 -net tap,vlan=1
@@ -3882,8 +3931,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
                 (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 ADD_ARG_LIT("-netdev");
-                if (!(host = qemuBuildHostNetStr(net, ',',
-                                                 vlan, tapfd_name)))
+                if (!(host = qemuBuildHostNetStr(net, ',', vlan,
+                                                 tapfd_name, vhostfd_name)))
                     goto error;
                 ADD_ARG(host);
             }
@@ -3901,8 +3950,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (!((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
                   (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))) {
                 ADD_ARG_LIT("-net");
-                if (!(host = qemuBuildHostNetStr(net, ',',
-                                                 vlan, tapfd_name)))
+                if (!(host = qemuBuildHostNetStr(net, ',', vlan,
+                                                 tapfd_name, vhostfd_name)))
                     goto error;
                 ADD_ARG(host);
             }

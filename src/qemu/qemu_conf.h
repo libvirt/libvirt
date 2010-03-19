@@ -83,6 +83,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_SMP_TOPOLOGY  = (1 << 28), /* Is sockets=s,cores=c,threads=t available for -smp? */
     QEMUD_CMD_FLAG_NETDEV        = (1 << 29), /* The -netdev flag & netdev_add/remove monitor commands */
     QEMUD_CMD_FLAG_RTC           = (1 << 30), /* The -rtc flag for clock options */
+    QEMUD_CMD_FLAG_VNET_HOST     = (1 << 31), /* vnet-host support is available in qemu */
 };
 
 /* Main driver state */
@@ -200,7 +201,8 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
 char * qemuBuildHostNetStr(virDomainNetDefPtr net,
                            char type_sep,
                            int vlan,
-                           const char *tapfd);
+                           const char *tapfd,
+                           const char *vhostfd);
 
 /* Legacy, pre device support */
 char * qemuBuildNicStr(virDomainNetDefPtr net,
@@ -251,6 +253,10 @@ int         qemudNetworkIfaceConnect    (virConnectPtr conn,
                                          virDomainNetDefPtr net,
                                          unsigned long long qemuCmdFlags)
     ATTRIBUTE_NONNULL(1);
+
+int
+qemudOpenVhostNet(virDomainNetDefPtr net,
+                  unsigned long long qemuCmdFlags);
 
 int qemudPhysIfaceConnect(virConnectPtr conn,
                           struct qemud_driver *driver,
