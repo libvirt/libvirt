@@ -2260,8 +2260,9 @@ const char *virEnumToString(const char *const*types,
     return types[type];
 }
 
-/* Translates a device name of the form (regex) "[fhv]d[a-z]+" into
- * the corresponding index (e.g. sda => 0, hdz => 25, vdaa => 26)
+/* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
+ * into the corresponding index (e.g. sda => 0, hdz => 25, vdaa => 26)
+ * Note that any trailing string of digits is simply ignored.
  * @param name The name of the device
  * @return name's index, or -1 on failure
  */
@@ -2285,11 +2286,16 @@ int virDiskNameToIndex(const char *name) {
         idx = (idx + (i < 1 ? 0 : 1)) * 26;
 
         if (!c_islower(*ptr))
-            return -1;
+            break;
 
         idx += *ptr - 'a';
         ptr++;
     }
+
+    /* Count the trailing digits.  */
+    size_t n_digits = strspn(ptr, "0123456789");
+    if (ptr[n_digits] != '\0')
+        return -1;
 
     return idx;
 }
