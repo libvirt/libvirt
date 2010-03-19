@@ -6889,13 +6889,13 @@ done:
 static virDomainEventPtr
 remoteDomainReadEventLifecycle(virConnectPtr conn, XDR *xdr)
 {
-    remote_domain_event_msg msg;
+    remote_domain_event_lifecycle_msg msg;
     virDomainPtr dom;
     virDomainEventPtr event = NULL;
     memset (&msg, 0, sizeof msg);
 
     /* unmarshall parameters, and process it*/
-    if (! xdr_remote_domain_event_msg(xdr, &msg) ) {
+    if (! xdr_remote_domain_event_lifecycle_msg(xdr, &msg) ) {
         error (conn, VIR_ERR_RPC,
                _("unable to demarshall lifecycle event"));
         return NULL;
@@ -6906,7 +6906,7 @@ remoteDomainReadEventLifecycle(virConnectPtr conn, XDR *xdr)
         return NULL;
 
     event = virDomainEventNewFromDom(dom, msg.event, msg.detail);
-    xdr_free ((xdrproc_t) &xdr_remote_domain_event_msg, (char *) &msg);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_event_lifecycle_msg, (char *) &msg);
 
     virDomainFree(dom);
     return event;
@@ -8452,7 +8452,7 @@ processCallDispatchMessage(virConnectPtr conn, struct private_data *priv,
     }
 
     switch (hdr->proc) {
-    case REMOTE_PROC_DOMAIN_EVENT:
+    case REMOTE_PROC_DOMAIN_EVENT_LIFECYCLE:
         event = remoteDomainReadEventLifecycle(conn, xdr);
         break;
 

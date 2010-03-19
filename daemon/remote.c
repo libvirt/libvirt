@@ -105,7 +105,7 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
                                            void *opaque)
 {
     struct qemud_client *client = opaque;
-    remote_domain_event_msg data;
+    remote_domain_event_lifecycle_msg data;
 
     if (!client)
         return -1;
@@ -121,8 +121,8 @@ static int remoteRelayDomainEventLifecycle(virConnectPtr conn ATTRIBUTE_UNUSED,
     data.detail = detail;
 
     remoteDispatchDomainEventSend (client,
-                                   REMOTE_PROC_DOMAIN_EVENT,
-                                   (xdrproc_t)xdr_remote_domain_event_msg, &data);
+                                   REMOTE_PROC_DOMAIN_EVENT_LIFECYCLE,
+                                   (xdrproc_t)xdr_remote_domain_event_lifecycle_msg, &data);
 
     virMutexUnlock(&client->lock);
 

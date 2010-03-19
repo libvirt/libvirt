@@ -537,7 +537,7 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_remote_domain_events_deregister_ret,
 },
-{   /* Async event DomainEvent => 107 */
+{   /* Async event DomainEventLifecycle => 107 */
     .fn = NULL,
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_void,

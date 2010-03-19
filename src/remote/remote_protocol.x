@@ -1304,7 +1304,7 @@ struct remote_domain_events_deregister_ret {
     int cb_registered;
 };
 
-struct remote_domain_event_msg {
+struct remote_domain_event_lifecycle_msg {
     remote_nonnull_domain dom;
     int event;
     int detail;
@@ -1660,7 +1660,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MEMORY_PEEK = 104,
     REMOTE_PROC_DOMAIN_EVENTS_REGISTER = 105,
     REMOTE_PROC_DOMAIN_EVENTS_DEREGISTER = 106,
-    REMOTE_PROC_DOMAIN_EVENT = 107,
+    REMOTE_PROC_DOMAIN_EVENT_LIFECYCLE = 107,
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2 = 108,
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH2 = 109,
     REMOTE_PROC_GET_URI = 110,
