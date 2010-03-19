@@ -8507,7 +8507,9 @@ remoteIOEventLoop(virConnectPtr conn,
         struct remote_thread_call *tmp = priv->waitDispatch;
         struct remote_thread_call *prev;
         char ignore;
+#ifdef HAVE_PTHREAD_H
         sigset_t oldmask, blockedsigs;
+#endif
 
         fds[0].events = fds[0].revents = 0;
         fds[1].events = fds[1].revents = 0;
@@ -8534,18 +8536,22 @@ remoteIOEventLoop(virConnectPtr conn,
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
+#ifdef HAVE_PTHREAD_H
         sigemptyset (&blockedsigs);
         sigaddset (&blockedsigs, SIGWINCH);
         sigaddset (&blockedsigs, SIGCHLD);
         sigaddset (&blockedsigs, SIGPIPE);
         ignore_value (pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+#endif
 
     repoll:
         ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
 
+#ifdef HAVE_PTHREAD_H
         ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+#endif
 
         remoteDriverLock(priv);
 
