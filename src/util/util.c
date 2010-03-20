@@ -954,7 +954,12 @@ virRunWithHook(const char *const*argv,
     return ret;
 }
 
-# else /* __MINGW32__ */
+# else /* WIN32 */
+
+int virSetCloseExec(int fd ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
 
 int
 virRunWithHook(const char *const *argv ATTRIBUTE_UNUSED,
@@ -965,7 +970,8 @@ virRunWithHook(const char *const *argv ATTRIBUTE_UNUSED,
     if (status)
         *status = ENOTSUP;
     else
-        virUtilError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     "%s", _("virRunWithHook is not implemented for WIN32"));
     return -1;
 }
 
@@ -979,11 +985,31 @@ virExec(const char *const*argv ATTRIBUTE_UNUSED,
         int *errfd ATTRIBUTE_UNUSED,
         int flags ATTRIBUTE_UNUSED)
 {
-    virUtilError(VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virExec is not implemented for WIN32"));
     return -1;
 }
 
-# endif /* __MINGW32__ */
+int
+virExecDaemonize(const char *const*argv ATTRIBUTE_UNUSED,
+                 const char *const*envp ATTRIBUTE_UNUSED,
+                 const fd_set *keepfd ATTRIBUTE_UNUSED,
+                 pid_t *retpid ATTRIBUTE_UNUSED,
+                 int infd ATTRIBUTE_UNUSED,
+                 int *outfd ATTRIBUTE_UNUSED,
+                 int *errfd ATTRIBUTE_UNUSED,
+                 int flags ATTRIBUTE_UNUSED,
+                 virExecHook hook ATTRIBUTE_UNUSED,
+                 void *data ATTRIBUTE_UNUSED,
+                 char *pidfile ATTRIBUTE_UNUSED)
+{
+    virUtilError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("virExecDaemonize is not implemented for WIN32"));
+
+    return -1;
+}
+
+# endif /* WIN32 */
 
 int
 virRun(const char *const*argv,
