@@ -55,10 +55,12 @@ test_final()
 
   if test "$verbose" = "0" ; then
     mod=`eval "expr \( $counter + 1 \) % 40"`
-    for i in `seq $mod 40`
-    do
-      echo -n " "
-    done
+    if test "$mod" != "0" -a "$mod" != "1" ; then
+      for i in `seq $mod 40`
+      do
+        echo -n " "
+      done
+    fi
     if test "$status" = "0" ; then
       printf " %-3d OK\n" $counter
     else

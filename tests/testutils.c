@@ -537,7 +537,7 @@ cleanup:
     virResetLastError();
     if (!virTestGetVerbose()) {
         int i;
-        for (i = (testCounter % 40) ; i < 40 ; i++)
+        for (i = (testCounter % 40) ; i > 0 && i < 40 ; i++)
             fprintf(stderr, " ");
         fprintf(stderr, " %-3d %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
