@@ -4642,7 +4642,9 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
+static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
+                                      const char *xml,
+                                      int mediaChangeOnly ATTRIBUTE_UNUSED) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine *machine    = NULL;
     vboxIID  *iid        = NULL;
@@ -4842,6 +4844,10 @@ cleanup:
     return ret;
 }
 
+static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
+    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+}
+
 static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags) {
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
@@ -4850,7 +4856,18 @@ static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         return -1;
     }
 
-    return vboxDomainAttachDevice(dom, xml);
+    return vboxDomainAttachDeviceImpl(dom, xml, 0);
+}
+
+static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
+                                       unsigned int flags) {
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                  _("cannot modify the persistent configuration of a domain"));
+        return -1;
+    }
+
+    return vboxDomainAttachDeviceImpl(dom, xml, 1);
 }
 
 static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml) {
@@ -7126,7 +7143,7 @@ virDriver NAME(Driver) = {
     vboxDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     vboxDomainDetachDevice, /* domainDetachDevice */
     vboxDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
+    vboxDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

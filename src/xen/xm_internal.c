@@ -113,6 +113,7 @@ struct xenUnifiedDriver xenXMDriver = {
     xenXMDomainUndefine, /* domainUndefine */
     xenXMDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     xenXMDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

@@ -4128,7 +4128,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
         if (priv->xendConfigVersion < 3) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
         /* Cannot modify live config if domain is inactive */
@@ -4144,17 +4144,17 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
-        /* Xen only supports modifying both live and persisted config if
+        /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
         if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                       VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend only supports modifying both live and "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
     }
@@ -4230,6 +4230,119 @@ cleanup:
 }
 
 /**
+ * xenDaemonUpdateDeviceFlags:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
+ *
+ * Create a virtual device attachment to backend.
+ * XML description is translated into S-expression.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
+                           unsigned int flags)
+{
+    xenUnifiedPrivatePtr priv;
+    char *sexpr = NULL;
+    int ret = -1;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainDefPtr def = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char class[8], ref[80];
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+                     __FUNCTION__);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    if (domain->id < 0) {
+        /* If xendConfigVersion < 3 only live config can be changed */
+        if (priv->xendConfigVersion < 3) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persistent config"));
+            return -1;
+        }
+        /* Cannot modify live config if domain is inactive */
+        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Cannot modify live config if domain is inactive"));
+            return -1;
+        }
+    } else {
+        /* Only live config can be changed if xendConfigVersion < 3 */
+        if (priv->xendConfigVersion < 3 &&
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+             flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend version does not support modifying "
+                           "persistent config"));
+            return -1;
+        }
+        /* Xen only supports modifying both live and persistent config if
+         * xendConfigVersion >= 3
+         */
+        if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                      VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
+            virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                         _("Xend only supports modifying both live and "
+                           "persistent config"));
+            return -1;
+        }
+    }
+
+    if (!(def = xenDaemonDomainFetch(domain->conn,
+                                     domain->id,
+                                     domain->name,
+                                     NULL)))
+        goto cleanup;
+
+    if (!(dev = virDomainDeviceDefParse(priv->caps,
+                                        def, xml, VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (xenDaemonFormatSxprDisk(domain->conn,
+                                    dev->data.disk,
+                                    &buf,
+                                    STREQ(def->os.type, "hvm") ? 1 : 0,
+                                    priv->xendConfigVersion, 1) < 0)
+            goto cleanup;
+        break;
+
+    default:
+        virXendError(domain->conn, VIR_ERR_NO_SUPPORT, "%s",
+                     _("unsupported device type"));
+        goto cleanup;
+    }
+
+    sexpr = virBufferContentAndReset(&buf);
+
+    if (virDomainXMLDevID(domain, dev, class, ref, sizeof(ref))) {
+        virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                     _("requested device does not exist"));
+        goto cleanup;
+    } else {
+        /* device exists, attempt to modify it */
+        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
+                      "config", sexpr, "dev", ref, NULL);
+    }
+
+cleanup:
+    VIR_FREE(sexpr);
+    virDomainDefFree(def);
+    virDomainDeviceDefFree(dev);
+    return ret;
+}
+
+/**
  * xenDaemonDetachDeviceFlags:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
@@ -4264,7 +4377,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
         if (priv->xendConfigVersion < 3) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
         /* Cannot modify live config if domain is inactive */
@@ -4280,17 +4393,17 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
-        /* Xen only supports modifying both live and persisted config if
+        /* Xen only supports modifying both live and persistent config if
          * xendConfigVersion >= 3
          */
         if (flags != (VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                       VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
             virXendError(domain->conn, VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend only supports modifying both live and "
-                           "persisted config"));
+                           "persistent config"));
             return -1;
         }
     }
@@ -5224,6 +5337,7 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainUndefine,     /* domainUndefine */
     xenDaemonAttachDeviceFlags,       /* domainAttachDeviceFlags */
     xenDaemonDetachDeviceFlags,       /* domainDetachDeviceFlags */
+    xenDaemonUpdateDeviceFlags,       /* domainUpdateDeviceFlags */
     xenDaemonDomainGetAutostart, /* domainGetAutostart */
     xenDaemonDomainSetAutostart, /* domainSetAutostart */
     xenDaemonGetSchedulerType,   /* domainGetSchedulerType */

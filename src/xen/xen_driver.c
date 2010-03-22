@@ -1489,6 +1489,21 @@ xenUnifiedDomainDetachDeviceFlags (virDomainPtr dom, const char *xml,
 }
 
 static int
+xenUnifiedDomainUpdateDeviceFlags (virDomainPtr dom, const char *xml,
+                                   unsigned int flags)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
+        if (priv->opened[i] && drivers[i]->domainUpdateDeviceFlags &&
+            drivers[i]->domainUpdateDeviceFlags(dom, xml, flags) == 0)
+            return 0;
+
+    return -1;
+}
+
+static int
 xenUnifiedDomainGetAutostart (virDomainPtr dom, int *autostart)
 {
     GET_PRIVATE(dom->conn);
@@ -1930,7 +1945,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     xenUnifiedDomainDetachDevice, /* domainDetachDevice */
     xenUnifiedDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
+    xenUnifiedDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
     xenUnifiedDomainGetAutostart, /* domainGetAutostart */
     xenUnifiedDomainSetAutostart, /* domainSetAutostart */
     xenUnifiedDomainGetSchedulerType, /* domainGetSchedulerType */

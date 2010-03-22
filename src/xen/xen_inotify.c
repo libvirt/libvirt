@@ -82,6 +82,7 @@ struct xenUnifiedDriver xenInotifyDriver = {
     NULL, /* domainUndefine */
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

@@ -7045,6 +7045,121 @@ static int qemudDomainAttachDeviceFlags(virDomainPtr dom,
     return qemudDomainAttachDevice(dom, xml);
 }
 
+
+static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
+                                       const char *xml,
+                                       unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    virDomainDeviceDefPtr dev = NULL;
+    unsigned long long qemuCmdFlags;
+    virCgroupPtr cgroup = NULL;
+    int ret = -1;
+
+    if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot modify the persistent configuration of a domain"));
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("cannot attach device on inactive domain"));
+        goto endjob;
+    }
+
+    dev = virDomainDeviceDefParse(driver->caps, vm->def, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
+    if (dev == NULL)
+        goto endjob;
+
+    if (qemudExtractVersionInfo(vm->def->emulator,
+                                NULL,
+                                &qemuCmdFlags) < 0)
+        goto endjob;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+            if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) !=0 ) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("Unable to find cgroup for %s\n"),
+                                vm->def->name);
+                goto endjob;
+            }
+            if (dev->data.disk->src != NULL &&
+                dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+                virCgroupAllowDevicePath(cgroup,
+                                         dev->data.disk->src) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("unable to allow device %s"),
+                                dev->data.disk->src);
+                goto endjob;
+            }
+        }
+
+        switch (dev->data.disk->device) {
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            ret = qemudDomainChangeEjectableMedia(driver, vm, dev->data.disk);
+            if (ret == 0)
+                dev->data.disk = NULL;
+            break;
+
+
+        default:
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("disk bus '%s' cannot be updated."),
+                            virDomainDiskBusTypeToString(dev->data.disk->bus));
+            break;
+        }
+
+        if (ret != 0 && cgroup) {
+            virCgroupDenyDevicePath(cgroup,
+                                    dev->data.disk->src);
+        }
+        break;
+
+    default:
+        qemuReportError(VIR_ERR_NO_SUPPORT,
+                        _("disk device type '%s' cannot be updated"),
+                        virDomainDiskDeviceTypeToString(dev->data.disk->device));
+        break;
+    }
+
+    if (!ret && virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
+        ret = -1;
+
+endjob:
+    if (qemuDomainObjEndJob(vm) == 0)
+        vm = NULL;
+
+cleanup:
+    if (cgroup)
+        virCgroupFree(&cgroup);
+
+    virDomainDeviceDefFree(dev);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+
 static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev,
@@ -9914,7 +10029,7 @@ static virDriver qemuDriver = {
     qemudDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     qemudDomainDetachDevice, /* domainDetachDevice */
     qemudDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
+    qemuDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
     qemuGetSchedulerType, /* domainGetSchedulerType */

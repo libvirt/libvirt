@@ -95,6 +95,7 @@ struct xenUnifiedDriver {
         virDrvDomainUndefine            domainUndefine;
         virDrvDomainAttachDeviceFlags	domainAttachDeviceFlags;
         virDrvDomainDetachDeviceFlags	domainDetachDeviceFlags;
+        virDrvDomainUpdateDeviceFlags	domainUpdateDeviceFlags;
         virDrvDomainGetAutostart	domainGetAutostart;
         virDrvDomainSetAutostart	domainSetAutostart;
         virDrvDomainGetSchedulerType	domainGetSchedulerType;
