@@ -144,3 +144,4 @@
     remote_domain_migrate_set_max_downtime_args val_remote_domain_migrate_set_max_downtime_args;
     remote_domain_events_register_any_args val_remote_domain_events_register_any_args;
     remote_domain_events_deregister_any_args val_remote_domain_events_deregister_any_args;
+    remote_domain_update_device_flags_args val_remote_domain_update_device_flags_args;

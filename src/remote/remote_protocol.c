@@ -1319,6 +1319,19 @@ xdr_remote_domain_detach_device_flags_args (XDR *xdrs, remote_domain_detach_devi
 }
 
 bool_t
+xdr_remote_domain_update_device_flags_args (XDR *xdrs, remote_domain_update_device_flags_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_get_autostart_args (XDR *xdrs, remote_domain_get_autostart_args *objp)
 {
 

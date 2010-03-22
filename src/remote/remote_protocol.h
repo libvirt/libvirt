@@ -739,6 +739,13 @@ struct remote_domain_detach_device_flags_args {
 };
 typedef struct remote_domain_detach_device_flags_args remote_domain_detach_device_flags_args;
 
+struct remote_domain_update_device_flags_args {
+        remote_nonnull_domain dom;
+        remote_nonnull_string xml;
+        u_int flags;
+};
+typedef struct remote_domain_update_device_flags_args remote_domain_update_device_flags_args;
+
 struct remote_domain_get_autostart_args {
         remote_nonnull_domain dom;
 };
@@ -1956,6 +1963,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171,
         REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
         REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173,
+        REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS = 174,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2097,6 +2105,7 @@ extern  bool_t xdr_remote_domain_attach_device_args (XDR *, remote_domain_attach
 extern  bool_t xdr_remote_domain_attach_device_flags_args (XDR *, remote_domain_attach_device_flags_args*);
 extern  bool_t xdr_remote_domain_detach_device_args (XDR *, remote_domain_detach_device_args*);
 extern  bool_t xdr_remote_domain_detach_device_flags_args (XDR *, remote_domain_detach_device_flags_args*);
+extern  bool_t xdr_remote_domain_update_device_flags_args (XDR *, remote_domain_update_device_flags_args*);
 extern  bool_t xdr_remote_domain_get_autostart_args (XDR *, remote_domain_get_autostart_args*);
 extern  bool_t xdr_remote_domain_get_autostart_ret (XDR *, remote_domain_get_autostart_ret*);
 extern  bool_t xdr_remote_domain_set_autostart_args (XDR *, remote_domain_set_autostart_args*);
@@ -2391,6 +2400,7 @@ extern bool_t xdr_remote_domain_attach_device_args ();
 extern bool_t xdr_remote_domain_attach_device_flags_args ();
 extern bool_t xdr_remote_domain_detach_device_args ();
 extern bool_t xdr_remote_domain_detach_device_flags_args ();
+extern bool_t xdr_remote_domain_update_device_flags_args ();
 extern bool_t xdr_remote_domain_get_autostart_args ();
 extern bool_t xdr_remote_domain_get_autostart_ret ();
 extern bool_t xdr_remote_domain_set_autostart_args ();

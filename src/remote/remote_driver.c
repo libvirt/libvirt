@@ -3157,6 +3157,32 @@ done:
 }
 
 static int
+remoteDomainUpdateDeviceFlags (virDomainPtr domain, const char *xml,
+                               unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_update_device_flags_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.xml = (char *) xml;
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS,
+              (xdrproc_t) xdr_remote_domain_update_device_flags_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetAutostart (virDomainPtr domain, int *autostart)
 {
     int rv = -1;
@@ -9460,7 +9486,7 @@ static virDriver remote_driver = {
     remoteDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     remoteDomainDetachDevice, /* domainDetachDevice */
     remoteDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
-    NULL, /* domainUpdateDeviceFlags */
+    remoteDomainUpdateDeviceFlags, /* domainUpdateDeviceFlags */
     remoteDomainGetAutostart, /* domainGetAutostart */
     remoteDomainSetAutostart, /* domainSetAutostart */
     remoteDomainGetSchedulerType, /* domainGetSchedulerType */

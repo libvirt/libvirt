@@ -1118,6 +1118,32 @@ remoteDispatchDomainAttachDeviceFlags (struct qemud_server *server ATTRIBUTE_UNU
 }
 
 static int
+remoteDispatchDomainUpdateDeviceFlags (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_update_device_flags_args *args,
+                                       void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainUpdateDeviceFlags (dom, args->xml, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virDomainFree(dom);
+    return 0;
+}
+
+static int
 remoteDispatchDomainCreate (struct qemud_server *server ATTRIBUTE_UNUSED,
                             struct qemud_client *client ATTRIBUTE_UNUSED,
                             virConnectPtr conn,

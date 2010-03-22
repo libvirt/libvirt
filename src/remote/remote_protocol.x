@@ -730,6 +730,12 @@ struct remote_domain_detach_device_flags_args {
     unsigned int flags;
 };
 
+struct remote_domain_update_device_flags_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
 struct remote_domain_get_autostart_args {
     remote_nonnull_domain dom;
 };
@@ -1775,7 +1781,8 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171,
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
-    REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173
+    REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173,
+    REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS = 174
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

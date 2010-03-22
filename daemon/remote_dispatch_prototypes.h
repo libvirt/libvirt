@@ -506,6 +506,14 @@ static int remoteDispatchDomainUndefine(
     remote_error *err,
     remote_domain_undefine_args *args,
     void *ret);
+static int remoteDispatchDomainUpdateDeviceFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_update_device_flags_args *args,
+    void *ret);
 static int remoteDispatchDomainXmlFromNative(
     struct qemud_server *server,
     struct qemud_client *client,
