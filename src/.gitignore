@@ -12,6 +12,7 @@ Makefile.in
 *.cov
 libvirt_parthelper
 libvirt_lxc
+libvirt.def
 libvirt.syms
 *.i
 *.s

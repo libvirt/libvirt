@@ -1789,6 +1789,7 @@ CYGWIN_EXTRA_LIBADD=
 CYGWIN_EXTRA_PYTHON_LIBADD=
 MINGW_EXTRA_LDFLAGS=
 WIN32_EXTRA_CFLAGS=
+LIBVIRT_SYMBOL_FILE=libvirt.syms
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
@@ -1808,6 +1809,9 @@ case "$host" in
     if test "x$enable_shared" = "xno"; then
       WIN32_EXTRA_CFLAGS="-DLIBVIRT_STATIC"
     fi
+    # Also set the symbol file to .def, so src/Makefile generates libvirt.def
+    # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the linker
+    LIBVIRT_SYMBOL_FILE=libvirt.def
     ;;
 esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
@@ -1815,6 +1819,7 @@ AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([WIN32_EXTRA_CFLAGS])
+AC_SUBST([LIBVIRT_SYMBOL_FILE])
 
 
 dnl Look for windres to build a Windows icon resource.

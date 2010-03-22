@@ -891,7 +891,7 @@ EXTRA_DIST += \
   libvirt_macvtap.syms		\
   libvirt_daemon.syms
 
-BUILT_SOURCES += libvirt.syms
+BUILT_SOURCES += libvirt.syms libvirt.def
 
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	$(AM_V_GEN)rm -f $@-tmp $@ ; \
@@ -907,11 +907,18 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.syms
 
+libvirt.def: libvirt.syms
+	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
+	printf 'EXPORTS\n' > $@-tmp && \
+	sed -e '/^$$/d; /#/d; /:/d; /\}/d; /\*/d; /LIBVIRT_/d; s/[ \t]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
+	chmod a-w $@-tmp && \
+	mv $@-tmp libvirt.def
+
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
 libvirt_la_LIBADD += \
 		    $(CYGWIN_EXTRA_LIBADD) ../gnulib/lib/libgnu.la
-libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
+libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
                      -version-info $(LIBVIRT_VERSION_INFO) \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) \
@@ -919,7 +926,7 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
-libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) libvirt.syms
+libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal
@@ -929,7 +936,7 @@ noinst_LTLIBRARIES += libvirt_test.la
 # Remove version script from convenience library
 test_LDFLAGS =						\
   $$(echo '$(libvirt_la_LDFLAGS)'			\
-     |sed 's!$(VERSION_SCRIPT_FLAGS)libvirt.syms!!'	\
+     |sed 's!$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE)!!'	\
      |sed 's!-version-info $(LIBVIRT_VERSION_INFO)!!')
 
 # Just like the above, but with a slightly different set of public symbols.
