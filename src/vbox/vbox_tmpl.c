@@ -7126,6 +7126,7 @@ virDriver NAME(Driver) = {
     vboxDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     vboxDomainDetachDevice, /* domainDetachDevice */
     vboxDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

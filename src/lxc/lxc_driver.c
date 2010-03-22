@@ -2472,6 +2472,7 @@ static virDriver lxcDriver = {
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     lxcDomainGetAutostart, /* domainGetAutostart */
     lxcDomainSetAutostart, /* domainSetAutostart */
     lxcGetSchedulerType, /* domainGetSchedulerType */

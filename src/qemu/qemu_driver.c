@@ -9914,6 +9914,7 @@ static virDriver qemuDriver = {
     qemudDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     qemudDomainDetachDevice, /* domainDetachDevice */
     qemudDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */
     qemuGetSchedulerType, /* domainGetSchedulerType */

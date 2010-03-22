@@ -204,6 +204,10 @@ typedef int
                                           const char *xml,
                                           unsigned int flags);
 typedef int
+        (*virDrvDomainUpdateDeviceFlags) (virDomainPtr domain,
+                                          const char *xml,
+                                          unsigned int flags);
+typedef int
         (*virDrvDomainGetAutostart)	(virDomainPtr domain,
                                          int *autostart);
 typedef int
@@ -460,6 +464,7 @@ struct _virDriver {
     virDrvDomainAttachDeviceFlags	domainAttachDeviceFlags;
     virDrvDomainDetachDevice	domainDetachDevice;
     virDrvDomainDetachDeviceFlags	domainDetachDeviceFlags;
+    virDrvDomainUpdateDeviceFlags	domainUpdateDeviceFlags;
     virDrvDomainGetAutostart	domainGetAutostart;
     virDrvDomainSetAutostart	domainSetAutostart;
     virDrvDomainGetSchedulerType	domainGetSchedulerType;

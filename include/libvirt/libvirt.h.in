@@ -878,6 +878,8 @@ int virDomainAttachDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
 int virDomainDetachDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
+int virDomainUpdateDeviceFlags(virDomainPtr domain,
+                               const char *xml, unsigned int flags);
 
 /*
  * NUMA support

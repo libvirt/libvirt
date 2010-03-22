@@ -1901,6 +1901,7 @@ static virDriver umlDriver = {
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     umlDomainGetAutostart, /* domainGetAutostart */
     umlDomainSetAutostart, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */

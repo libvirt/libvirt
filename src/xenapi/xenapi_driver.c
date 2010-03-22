@@ -1716,6 +1716,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     xenapiDomainGetAutostart, /* domainGetAutostart */
     xenapiDomainSetAutostart, /* domainSetAutostart */
     xenapiDomainGetSchedulerType, /* domainGetSchedulerType */

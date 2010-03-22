@@ -1616,6 +1616,7 @@ virDriver phypDriver = {
     NULL,                       /* domainAttachDeviceFlags */
     NULL,                       /* domainDetachDevice */
     NULL,                       /* domainDetachDeviceFlags */
+    NULL,                       /* domainUpdateDeviceFlags */
     NULL,                       /* domainGetAutostart */
     NULL,                       /* domainSetAutostart */
     NULL,                       /* domainGetSchedulerType */

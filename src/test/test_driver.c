@@ -5255,6 +5255,7 @@ static virDriver testDriver = {
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     testDomainGetAutostart, /* domainGetAutostart */
     testDomainSetAutostart, /* domainSetAutostart */
     testDomainGetSchedulerType, /* domainGetSchedulerType */

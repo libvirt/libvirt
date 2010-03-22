@@ -3367,6 +3367,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainAttachDeviceFlags */
     NULL,                            /* domainDetachDevice */
     NULL,                            /* domainDetachDeviceFlags */
+    NULL,                            /* domainUpdateDeviceFlags */
     NULL,                            /* domainGetAutostart */
     NULL,                            /* domainSetAutostart */
     esxDomainGetSchedulerType,       /* domainGetSchedulerType */

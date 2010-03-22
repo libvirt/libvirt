@@ -9460,6 +9460,7 @@ static virDriver remote_driver = {
     remoteDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     remoteDomainDetachDevice, /* domainDetachDevice */
     remoteDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     remoteDomainGetAutostart, /* domainGetAutostart */
     remoteDomainSetAutostart, /* domainSetAutostart */
     remoteDomainGetSchedulerType, /* domainGetSchedulerType */

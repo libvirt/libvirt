@@ -1868,7 +1868,7 @@ error:
  *
  * Deprecated after 0.4.6.
  * Renamed to virDomainCreateXML() providing identical functionality.
- * This existing name will left indefinitely for API compatability.
+ * This existing name will left indefinitely for API compatibility.
  *
  * Returns a new domain object or NULL in case of failure
  */
@@ -5147,6 +5147,10 @@ error:
  * Create a virtual device attachment to backend.  This function,
  * having hotplug semantics, is only allowed on an active domain.
  *
+ * For compatibility, this method can also be used to change the media
+ * in an existing CDROM/Floppy device, however, applications are
+ * recommended to use the virDomainUpdateDeviceFlag method instead.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
@@ -5200,6 +5204,10 @@ error:
  * error if unable to satisfy flags.  E.g. the hypervisor driver will
  * return failure if LIVE is specified but it only supports modifying the
  * persisted device allocation.
+ *
+ * For compatibility, this method can also be used to change the media
+ * in an existing CDROM/Floppy device, however, applications are
+ * recommended to use the virDomainUpdateDeviceFlag method instead.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -5323,6 +5331,64 @@ virDomainDetachDeviceFlags(virDomainPtr domain,
     if (conn->driver->domainDetachDeviceFlags) {
         int ret;
         ret = conn->driver->domainDetachDeviceFlags(domain, xml, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainUpdateDeviceFlags:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of one device
+ * @flags: an OR'ed set of virDomainDeviceModifyFlags
+ *
+ * Change a virtual device on a domain, using the flags parameter
+ * to control how the device is changed.  VIR_DOMAIN_DEVICE_MODIFY_CURRENT
+ * specifies that the device change is made based on current domain
+ * state.  VIR_DOMAIN_DEVICE_MODIFY_LIVE specifies that the device shall be
+ * changed on the active domain instance only and is not added to the
+ * persisted domain configuration. VIR_DOMAIN_DEVICE_MODIFY_CONFIG
+ * specifies that the device shall be changed on the persisted domain
+ * configuration only.  Note that the target hypervisor must return an
+ * error if unable to satisfy flags.  E.g. the hypervisor driver will
+ * return failure if LIVE is specified but it only supports modifying the
+ * persisted device allocation.
+ *
+ * This method is used for actions such changing CDROM/Floppy device
+ * media, altering the graphics configuration such as password,
+ * reconfiguring the NIC device backend connectivity, etc.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainUpdateDeviceFlags(virDomainPtr domain,
+                           const char *xml, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, xml=%s, flags=%d", domain, xml, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainUpdateDeviceFlags) {
+        int ret;
+        ret = conn->driver->domainUpdateDeviceFlags(domain, xml, flags);
         if (ret < 0)
             goto error;
         return ret;

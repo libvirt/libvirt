@@ -1930,6 +1930,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedDomainAttachDeviceFlags, /* domainAttachDeviceFlags */
     xenUnifiedDomainDetachDevice, /* domainDetachDevice */
     xenUnifiedDomainDetachDeviceFlags, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     xenUnifiedDomainGetAutostart, /* domainGetAutostart */
     xenUnifiedDomainSetAutostart, /* domainSetAutostart */
     xenUnifiedDomainGetSchedulerType, /* domainGetSchedulerType */

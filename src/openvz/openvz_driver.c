@@ -1509,6 +1509,7 @@ static virDriver openvzDriver = {
     NULL, /* domainAttachDeviceFlags */
     NULL, /* domainDetachDevice */
     NULL, /* domainDetachDeviceFlags */
+    NULL, /* domainUpdateDeviceFlags */
     openvzDomainGetAutostart, /* domainGetAutostart */
     openvzDomainSetAutostart, /* domainSetAutostart */
     NULL, /* domainGetSchedulerType */
