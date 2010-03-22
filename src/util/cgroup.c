@@ -692,6 +692,9 @@ int virCgroupForDomain(virCgroupPtr driver,
     int rc;
     char *path;
 
+    if (driver == NULL)
+        return -EINVAL;
+
     if (virAsprintf(&path, "%s/%s", driver->path, name) < 0)
         return -ENOMEM;
 

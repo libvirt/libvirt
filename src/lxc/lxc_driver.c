@@ -625,6 +625,12 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
     }
 
     if (virDomainObjIsActive(vm)) {
+        if (driver->cgroup == NULL) {
+            lxcError(VIR_ERR_NO_SUPPORT,
+                     "%s", _("cgroups must be configured on the host"));
+            goto cleanup;
+        }
+
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
                      _("Unable to get cgroup for %s\n"), vm->def->name);
