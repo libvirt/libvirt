@@ -6677,6 +6677,73 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "update-device" command
+ */
+static const vshCmdInfo info_update_device[] = {
+    {"help", N_("update device from an XML file")},
+    {"desc", N_("Update device from an XML <file>.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_update_device[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, N_("XML file")},
+    {"persistent", VSH_OT_BOOL, 0, N_("persist device update")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *from;
+    char *buffer;
+    int ret = TRUE;
+    int found;
+    unsigned int flags;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found) {
+        vshError(ctl, "%s", _("update-device: Missing <file> option"));
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (vshCommandOptBool(cmd, "persistent")) {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
+        if (virDomainIsActive(dom) == 1)
+           flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    } else {
+        flags = VIR_DOMAIN_DEVICE_MODIFY_LIVE;
+    }
+    ret = virDomainUpdateDeviceFlags(dom, buffer, flags);
+    VIR_FREE(buffer);
+
+    if (ret < 0) {
+        vshError(ctl, _("Failed to update device from %s"), from);
+        virDomainFree(dom);
+        return FALSE;
+    } else {
+        vshPrint(ctl, "%s", _("Device updated successfully\n"));
+    }
+
+    virDomainFree(dom);
+    return TRUE;
+}
+
+
+/*
  * "attach-interface" command
  */
 static const vshCmdInfo info_attach_interface[] = {
@@ -7891,6 +7958,7 @@ static const vshCmdDef commands[] = {
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
     {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole},
     {"undefine", cmdUndefine, opts_undefine, info_undefine},
+    {"update-device", cmdUpdateDevice, opts_update_device, info_update_device},
     {"uri", cmdURI, NULL, info_uri},
 
     {"vol-create", cmdVolCreate, opts_vol_create, info_vol_create},
