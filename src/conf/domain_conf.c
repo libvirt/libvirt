@@ -88,7 +88,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "video",
               "hostdev",
               "watchdog",
-              "controller")
+              "controller",
+              "graphics")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -574,6 +575,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         virDomainControllerDefFree(def->data.controller);
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        virDomainGraphicsDefFree(def->data.graphics);
         break;
     }
 
@@ -3298,6 +3302,10 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     } else if (xmlStrEqual(node->name, BAD_CAST "controller")) {
         dev->type = VIR_DOMAIN_DEVICE_CONTROLLER;
         if (!(dev->data.controller = virDomainControllerDefParseXML(node, flags)))
+            goto error;
+    } else if (xmlStrEqual(node->name, BAD_CAST "graphics")) {
+        dev->type = VIR_DOMAIN_DEVICE_GRAPHICS;
+        if (!(dev->data.graphics = virDomainGraphicsDefParseXML(node, flags)))
             goto error;
     } else {
         virDomainReportError(VIR_ERR_XML_ERROR,

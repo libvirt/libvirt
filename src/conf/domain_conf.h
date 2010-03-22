@@ -544,6 +544,7 @@ enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_HOSTDEV,
     VIR_DOMAIN_DEVICE_WATCHDOG,
     VIR_DOMAIN_DEVICE_CONTROLLER,
+    VIR_DOMAIN_DEVICE_GRAPHICS,
 
     VIR_DOMAIN_DEVICE_LAST,
 };
@@ -562,6 +563,7 @@ struct _virDomainDeviceDef {
         virDomainVideoDefPtr video;
         virDomainHostdevDefPtr hostdev;
         virDomainWatchdogDefPtr watchdog;
+        virDomainGraphicsDefPtr graphics;
     } data;
 };
 
