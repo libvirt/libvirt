@@ -3519,7 +3519,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                 DEBUG("disk(%d) shared:     %s", i, def->disks[i]->shared ? "True" : "False");
 
                 if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                        def->disks[i]->src != NULL) {
                         IDVDDrive *dvdDrive = NULL;
                         /* Currently CDROM/DVD Drive is always IDE
                          * Secondary Master so neglecting the following
@@ -3577,7 +3578,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                     } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                     }
                 } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                        def->disks[i]->src != NULL) {
                         IHardDisk *hardDisk     = NULL;
                         PRUnichar *hddfileUtf16 = NULL;
                         vboxIID   *hdduuid      = NULL;
@@ -3674,7 +3676,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
                     } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                     }
                 } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                        def->disks[i]->src != NULL) {
                         IFloppyDrive *floppyDrive;
                         machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
                         if (floppyDrive) {
@@ -3801,7 +3804,8 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
             DEBUG("disk(%d) readonly:   %s", i, def->disks[i]->readonly ? "True" : "False");
             DEBUG("disk(%d) shared:     %s", i, def->disks[i]->shared ? "True" : "False");
 
-            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                def->disks[i]->src != NULL) {
                 IMedium   *medium          = NULL;
                 PRUnichar *mediumUUID      = NULL;
                 PRUnichar *mediumFileUtf16 = NULL;
@@ -4696,7 +4700,8 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                 if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
 #if VBOX_API_VERSION < 3001
                     if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                        if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                        if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                            dev->data.disk->src != NULL) {
                             IDVDDrive *dvdDrive = NULL;
                             /* Currently CDROM/DVD Drive is always IDE
                              * Secondary Master so neglecting the following
@@ -4754,7 +4759,8 @@ static int vboxDomainAttachDevice(virDomainPtr dom, const char *xml) {
                         } else if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
                         }
                     } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                        if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE) {
+                        if (dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                            dev->data.disk->src != NULL) {
                             IFloppyDrive *floppyDrive;
                             machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
                             if (floppyDrive) {
