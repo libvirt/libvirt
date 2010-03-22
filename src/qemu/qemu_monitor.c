@@ -39,7 +39,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-#define QEMU_DEBUG_RAW_IO 0
+#define DEBUG_IO 0
+#define DEBUG_RAW_IO 0
 
 struct _qemuMonitor {
     virMutex lock;
@@ -302,7 +303,8 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
     if (mon->msg && mon->msg->txOffset == mon->msg->txLength)
         msg = mon->msg;
 
-#if QEMU_DEBUG_RAW_IO
+#if DEBUG_IO
+#if DEBUG_RAW_IO
     char *str1 = qemuMonitorEscapeNonPrintable(msg ? msg->txBuffer : "");
     char *str2 = qemuMonitorEscapeNonPrintable(mon->buffer);
     VIR_ERROR("Process %d %p %p [[[[%s]]][[[%s]]]", (int)mon->bufferOffset, mon->msg, msg, str1, str2);
@@ -311,6 +313,8 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
 #else
     VIR_DEBUG("Process %d", (int)mon->bufferOffset);
 #endif
+#endif
+
     if (mon->json)
         len = qemuMonitorJSONIOProcess(mon,
                                        mon->buffer, mon->bufferOffset,
@@ -332,7 +336,9 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
         VIR_FREE(mon->buffer);
         mon->bufferOffset = mon->bufferLength = 0;
     }
+#if DEBUG_IO
     VIR_DEBUG("Process done %d used %d", (int)mon->bufferOffset, len);
+#endif
     if (msg && msg->finished)
         virCondBroadcast(&mon->notify);
     return len;
@@ -455,7 +461,9 @@ qemuMonitorIORead(qemuMonitorPtr mon)
         mon->buffer[mon->bufferOffset] = '\0';
     }
 
+#if DEBUG_IO
     VIR_DEBUG("Now read %d bytes of data", (int)mon->bufferOffset);
+#endif
 
     return ret;
 }
@@ -485,7 +493,9 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 
     qemuMonitorLock(mon);
     qemuMonitorRef(mon);
+#if DEBUG_IO
     VIR_DEBUG("Monitor %p I/O on watch %d fd %d events %d", mon, watch, fd, events);
+#endif
 
     if (mon->fd != fd || mon->watch != watch) {
         VIR_ERROR("event from unexpected fd %d!=%d / watch %d!=%d", mon->fd, fd, mon->watch, watch);
@@ -980,6 +990,9 @@ int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
 {
     int ret;
     DEBUG("mon=%p, fd=%d", mon, mon->fd);
+
+    if (!password)
+        password = "";
 
     if (mon->json)
         ret = qemuMonitorJSONSetVNCPassword(mon, password);

@@ -7046,6 +7046,83 @@ static int qemudDomainAttachDeviceFlags(virDomainPtr dom,
 }
 
 
+static virDomainGraphicsDefPtr qemuDomainFindGraphics(virDomainObjPtr vm,
+                                                      virDomainGraphicsDefPtr dev)
+{
+    int i;
+
+    for (i = 0 ; i < vm->def->ngraphics ; i++) {
+        if (vm->def->graphics[i]->type == dev->type)
+            return vm->def->graphics[i];
+    }
+
+    return NULL;
+}
+
+
+static int
+qemuDomainChangeGraphics(struct qemud_driver *driver,
+                         virDomainObjPtr vm,
+                         virDomainGraphicsDefPtr dev)
+{
+    virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!olddev) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("cannot find existing graphics device to modify"));
+        return -1;
+    }
+
+    switch (dev->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if ((olddev->data.vnc.autoport != dev->data.vnc.autoport) ||
+            (!dev->data.vnc.autoport && (olddev->data.vnc.port != dev->data.vnc.port))) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change port settings on vnc graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(olddev->data.vnc.listenAddr, dev->data.vnc.listenAddr)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change listen address setting on vnc graphics"));
+            return -1;
+        }
+        if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("cannot change keymap setting on vnc graphics"));
+            return -1;
+        }
+
+        if (STRNEQ_NULLABLE(olddev->data.vnc.passwd, dev->data.vnc.passwd)) {
+            VIR_DEBUG("Updating password on VNC server %p %p", dev->data.vnc.passwd, driver->vncPassword);
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            ret = qemuMonitorSetVNCPassword(priv->mon,
+                                            dev->data.vnc.passwd ?
+                                            dev->data.vnc.passwd :
+                                            driver->vncPassword);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+            /* Steal the new dev's  char * reference */
+            VIR_FREE(olddev->data.vnc.passwd);
+            olddev->data.vnc.passwd = dev->data.vnc.passwd;
+            dev->data.vnc.passwd = NULL;
+        } else {
+            ret = 0;
+        }
+        break;
+
+    default:
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unable to change config on '%s' graphics type"),
+                        virDomainGraphicsTypeToString(dev->type));
+        break;
+    }
+
+    return ret;
+}
+
+
 static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                        const char *xml,
                                        unsigned int flags)
@@ -7132,6 +7209,10 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
             virCgroupDenyDevicePath(cgroup,
                                     dev->data.disk->src);
         }
+        break;
+
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
         break;
 
     default:

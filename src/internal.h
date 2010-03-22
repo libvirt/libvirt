@@ -58,6 +58,12 @@
 # define STRCASENEQLEN(a,b,n) (strncasecmp(a,b,n) != 0)
 # define STRPREFIX(a,b) (strncmp(a,b,strlen(b)) == 0)
 
+# define STREQ_NULLABLE(a, b)                           \
+    ((!(a) && !(b)) || ((a) && (b) && STREQ((a), (b))))
+# define STRNEQ_NULLABLE(a, b)                          \
+    ((!(a) ^ !(b)) || ((a) && (b) && STRNEQ((a), (b))))
+
+
 # define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
 # define ARRAY_CARDINALITY(Array) (sizeof (Array) / sizeof *(Array))
 

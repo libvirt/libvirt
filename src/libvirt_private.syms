@@ -139,6 +139,7 @@ virDomainFindByName;
 virDomainFindByUUID;
 virDomainGetRootFilesystem;
 virDomainGraphicsTypeFromString;
+virDomainGraphicsTypeToString;
 virDomainGraphicsDefFree;
 virDomainHostdevDefFree;
 virDomainHostdevModeTypeToString;
