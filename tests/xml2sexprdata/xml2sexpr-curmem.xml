@@ -17,7 +17,7 @@
     <disk type='file' device='disk'>
       <driver name='tap' type='aio'/>
       <source file='/xen/rhel5.img'/>
-      <target dev='xvda:disk'/>
+      <target dev='xvda'/>
     </disk>
     <graphics type='vnc' port='5905'/>
   </devices>
