@@ -632,7 +632,8 @@ SELinuxReleaseSecurityLabel(virDomainObjPtr vm)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
-    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC ||
+        secdef->label == NULL)
         return 0;
 
     context_t con = context_new(secdef->label);
