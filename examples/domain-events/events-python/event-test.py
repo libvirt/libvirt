@@ -172,10 +172,10 @@ class virEventLoopPure:
             if now >= next:
                 sleep = 0
             else:
-                sleep = next - now
+                sleep = (next - now) / 1000.0
 
         self.debug("Poll with a sleep of %d" % sleep)
-        events = self.poll.poll(sleep / 1000.0)
+        events = self.poll.poll(sleep)
 
         # Dispatch any file handle events that occurred
         for (fd, revents) in events:
