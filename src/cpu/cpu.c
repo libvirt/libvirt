@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "logging.h"
 #include "memory.h"
 #include "xml.h"
 #include "cpu.h"
@@ -73,6 +74,8 @@ cpuCompareXML(virCPUDefPtr host,
     virCPUDefPtr cpu = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
 
+    VIR_DEBUG("host=%p, xml=%s", host, NULLSTR(xml));
+
     if (!(doc = virXMLParseString(xml, "cpu.xml")))
         goto cleanup;
 
@@ -104,6 +107,8 @@ cpuCompare(virCPUDefPtr host,
 {
     struct cpuArchDriver *driver;
 
+    VIR_DEBUG("host=%p, cpu=%p", host, cpu);
+
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
 
@@ -125,6 +130,13 @@ cpuDecode(virCPUDefPtr cpu,
           unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
+
+    VIR_DEBUG("cpu=%p, data=%p, nmodels=%u", cpu, data, nmodels);
+    if (models) {
+        unsigned int i;
+        for (i = 0; i < nmodels; i++)
+            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+    }
 
     if (models == NULL && nmodels != 0) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
@@ -163,6 +175,11 @@ cpuEncode(const char *arch,
 {
     struct cpuArchDriver *driver;
 
+    VIR_DEBUG("arch=%s, cpu=%p, forced=%p, required=%p, "
+              "optional=%p, disabled=%p, forbidden=%p",
+              NULLSTR(arch), cpu, forced, required,
+              optional, disabled, forbidden);
+
     if ((driver = cpuGetSubDriver(arch)) == NULL)
         return -1;
 
@@ -183,6 +200,8 @@ cpuDataFree(const char *arch,
             union cpuData *data)
 {
     struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, data=%p", NULLSTR(arch), data);
 
     if (data == NULL)
         return;
@@ -206,6 +225,8 @@ cpuNodeData(const char *arch)
 {
     struct cpuArchDriver *driver;
 
+    VIR_DEBUG("arch=%s", NULLSTR(arch));
+
     if ((driver = cpuGetSubDriver(arch)) == NULL)
         return NULL;
 
@@ -226,6 +247,8 @@ cpuGuestData(virCPUDefPtr host,
              union cpuData **data)
 {
     struct cpuArchDriver *driver;
+
+    VIR_DEBUG("host=%p, guest=%p, data=%p", host, guest, data);
 
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
@@ -253,6 +276,16 @@ cpuBaselineXML(const char **xmlCPUs,
     virCPUDefPtr cpu = NULL;
     char *cpustr;
     unsigned int i;
+
+    VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
+    if (xmlCPUs) {
+        for (i = 0; i < ncpus; i++)
+            VIR_DEBUG("xmlCPUs[%u]=%s", i, NULLSTR(xmlCPUs[i]));
+    }
+    if (models) {
+        for (i = 0; i < nmodels; i++)
+            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+    }
 
     if (xmlCPUs == NULL && ncpus != 0) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
@@ -320,6 +353,17 @@ cpuBaseline(virCPUDefPtr *cpus,
 {
     struct cpuArchDriver *driver;
     virCPUDefPtr cpu;
+    unsigned int i;
+
+    VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
+    if (cpus) {
+        for (i = 0; i < ncpus; i++)
+            VIR_DEBUG("cpus[%u]=%p", i, cpus[i]);
+    }
+    if (models) {
+        for (i = 0; i < nmodels; i++)
+            VIR_DEBUG("models[%u]=%s", i, NULLSTR(models[i]));
+    }
 
     if (cpus == NULL && ncpus != 0) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
@@ -349,8 +393,6 @@ cpuBaseline(virCPUDefPtr *cpus,
     }
 
     if ((cpu = driver->baseline(cpus, ncpus, models, nmodels))) {
-        int i;
-
         cpu->type = VIR_CPU_TYPE_GUEST;
         cpu->match = VIR_CPU_MATCH_EXACT;
         VIR_FREE(cpu->arch);
