@@ -2598,7 +2598,7 @@ qemuInitPCIAddresses(struct qemud_driver *driver,
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
-    for (i = 5900 ; i < 6000 ; i++) {
+    for (i = 5900 ; i < 65535 ; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
