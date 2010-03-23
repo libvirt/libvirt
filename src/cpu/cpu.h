@@ -76,6 +76,10 @@ typedef virCPUDefPtr
                      const char **models,
                      unsigned int nmodels);
 
+typedef int
+(*cpuArchUpdate)    (virCPUDefPtr guest,
+                     const virCPUDefPtr host);
+
 
 struct cpuArchDriver {
     const char *name;
@@ -88,6 +92,7 @@ struct cpuArchDriver {
     cpuArchNodeData     nodeData;
     cpuArchGuestData    guestData;
     cpuArchBaseline     baseline;
+    cpuArchUpdate       update;
 };
 
 
@@ -137,5 +142,9 @@ cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,
              const char **models,
              unsigned int nmodels);
+
+extern int
+cpuUpdate   (virCPUDefPtr guest,
+             const virCPUDefPtr host);
 
 #endif /* __VIR_CPU_H__ */

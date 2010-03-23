@@ -219,4 +219,5 @@ struct cpuArchDriver cpuDriverGeneric = {
     .nodeData   = NULL,
     .guestData  = NULL,
     .baseline   = genericBaseline,
+    .update     = NULL,
 };

@@ -403,3 +403,25 @@ cpuBaseline(virCPUDefPtr *cpus,
 
     return cpu;
 }
+
+
+int
+cpuUpdate(virCPUDefPtr guest,
+          const virCPUDefPtr host)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("guest=%p, host=%p", guest, host);
+
+    if ((driver = cpuGetSubDriver(host->arch)) == NULL)
+        return -1;
+
+    if (driver->update == NULL) {
+        virCPUReportError(VIR_ERR_NO_SUPPORT,
+                _("cannot update guest CPU data for %s architecture"),
+                host->arch);
+        return -1;
+    }
+
+    return driver->update(guest, host);
+}
