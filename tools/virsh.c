@@ -2512,6 +2512,7 @@ static const vshCmdOptDef opts_dumpxml[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"inactive", VSH_OT_BOOL, 0, N_("show inactive defined XML")},
     {"security-info", VSH_OT_BOOL, 0, N_("include security sensitive information in XML dump")},
+    {"update-cpu", VSH_OT_BOOL, 0, N_("update guest CPU according to host CPU")},
     {NULL, 0, 0, NULL}
 };
 
@@ -2524,11 +2525,14 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     int flags = 0;
     int inactive = vshCommandOptBool(cmd, "inactive");
     int secure = vshCommandOptBool(cmd, "security-info");
+    int update = vshCommandOptBool(cmd, "update-cpu");
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
     if (secure)
         flags |= VIR_DOMAIN_XML_SECURE;
+    if (update)
+        flags |= VIR_DOMAIN_XML_UPDATE_CPU;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;

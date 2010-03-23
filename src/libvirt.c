@@ -3256,7 +3256,8 @@ virDomainMigrateVersion2 (virDomainPtr domain,
         return NULL;
     }
     dom_xml = domain->conn->driver->domainDumpXML (domain,
-                                                   VIR_DOMAIN_XML_SECURE);
+                                                   VIR_DOMAIN_XML_SECURE |
+                                                   VIR_DOMAIN_XML_UPDATE_CPU);
     if (!dom_xml)
         return NULL;
 

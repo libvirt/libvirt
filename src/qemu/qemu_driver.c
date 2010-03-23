@@ -5596,6 +5596,44 @@ cleanup:
 }
 
 
+static char *qemudVMDumpXML(struct qemud_driver *driver,
+                            virDomainObjPtr vm,
+                            int flags)
+{
+    char *ret = NULL;
+    virCPUDefPtr cpu = NULL;
+    virDomainDefPtr def;
+    virCPUDefPtr def_cpu;
+
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
+        def = vm->newDef;
+    else
+        def = vm->def;
+    def_cpu = def->cpu;
+
+    /* Update guest CPU requirements according to host CPU */
+    if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) && def_cpu && def_cpu->model) {
+        if (!driver->caps || !driver->caps->host.cpu) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("cannot get host CPU capabilities"));
+            goto cleanup;
+        }
+
+        if (!(cpu = virCPUDefCopy(def_cpu))
+            || cpuUpdate(cpu, driver->caps->host.cpu))
+            goto cleanup;
+        def->cpu = cpu;
+    }
+
+    ret = virDomainDefFormat(def, flags);
+
+cleanup:
+    def->cpu = def_cpu;
+    virCPUDefFree(cpu);
+    return ret;
+}
+
+
 static char *qemudDomainDumpXML(virDomainPtr dom,
                                 int flags) {
     struct qemud_driver *driver = dom->conn->privateData;
@@ -5606,7 +5644,6 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-    qemuDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -5622,12 +5659,12 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
         /* Don't delay if someone's using the monitor, just use
          * existing most recent data instead */
         if (!priv->jobActive) {
-            if (qemuDomainObjBeginJob(vm) < 0)
+            if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
                 goto cleanup;
 
-            qemuDomainObjEnterMonitor(vm);
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
             err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (qemuDomainObjEndJob(vm) == 0) {
                 vm = NULL;
                 goto cleanup;
@@ -5640,13 +5677,12 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
         }
     }
 
-    ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
-                             vm->newDef : vm->def,
-                             flags);
+    ret = qemudVMDumpXML(driver, vm, flags);
 
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -9540,7 +9576,9 @@ static int doPeer2PeerMigrate(virDomainPtr dom,
         goto cleanup;
     }
 
-    dom_xml = virDomainDefFormat(vm->def, VIR_DOMAIN_XML_SECURE);
+    dom_xml = qemudVMDumpXML(driver, vm,
+                             VIR_DOMAIN_XML_SECURE |
+                             VIR_DOMAIN_XML_UPDATE_CPU);
     if (!dom_xml) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to get domain xml"));
