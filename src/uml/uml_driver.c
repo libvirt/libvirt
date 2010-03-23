@@ -1921,10 +1921,10 @@ static virDriver umlDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    umlIsEncrypted,
-    umlIsSecure,
-    umlDomainIsActive,
-    umlDomainIsPersistent,
+    umlIsEncrypted, /* isEncrypted */
+    umlIsSecure, /* isSecure */
+    umlDomainIsActive, /* domainIsActive */
+    umlDomainIsPersistent, /* domainIsPersistent */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

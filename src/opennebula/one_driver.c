@@ -781,8 +781,8 @@ static virDriver oneDriver = {
     NULL, /* nodeDeviceReAttach; */
     NULL, /* nodeDeviceReset; */
     NULL, /* domainMigratePrepareTunnel */
-    oneIsEncrypted,
-    oneIsSecure,
+    oneIsEncrypted, /* isEncrypted */
+    oneIsSecure, /* isSecure */
     NULL, /* domainIsActive */
     NULL, /* domainIsPersistent */
     NULL, /* cpuCompare */

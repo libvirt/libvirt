@@ -1969,10 +1969,10 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedNodeDeviceReAttach, /* nodeDeviceReAttach */
     xenUnifiedNodeDeviceReset, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    xenUnifiedIsEncrypted,
-    xenUnifiedIsSecure,
-    xenUnifiedDomainIsActive,
-    xenUnifiedDomainisPersistent,
+    xenUnifiedIsEncrypted, /* isEncrypted */
+    xenUnifiedIsSecure, /* isSecure */
+    xenUnifiedDomainIsActive, /* domainIsActive */
+    xenUnifiedDomainisPersistent, /* domainIsPersistent */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

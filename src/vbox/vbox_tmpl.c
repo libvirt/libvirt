@@ -8135,10 +8135,10 @@ virDriver NAME(Driver) = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    vboxIsEncrypted,
-    vboxIsSecure,
-    vboxDomainIsActive,
-    vboxDomainIsPersistent,
+    vboxIsEncrypted, /* isEncrypted */
+    vboxIsSecure, /* isSecure */
+    vboxDomainIsActive, /* domainIsActive */
+    vboxDomainIsPersistent, /* domainIsPersistent */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */

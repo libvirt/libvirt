@@ -2527,10 +2527,10 @@ static virDriver lxcDriver = {
     NULL, /* nodeDeviceReAttach */
     NULL, /* nodeDeviceReset */
     NULL, /* domainMigratePrepareTunnel */
-    lxcIsEncrypted,
-    lxcIsSecure,
-    lxcDomainIsActive,
-    lxcDomainIsPersistent,
+    lxcIsEncrypted, /* isEncrypted */
+    lxcIsSecure, /* isSecure */
+    lxcDomainIsActive, /* domainIsActive */
+    lxcDomainIsPersistent, /* domainIsPersistent */
     NULL, /* cpuCompare */
     NULL, /* cpuBaseline */
     NULL, /* domainGetJobInfo */
