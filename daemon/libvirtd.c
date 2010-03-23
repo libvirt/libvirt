@@ -998,22 +998,34 @@ static int qemudNetworkInit(struct qemud_server *server) {
         struct libvirtd_mdns_group *group;
         struct qemud_socket *sock;
         int port = 0;
+        int ret;
 
         server->mdns = libvirtd_mdns_new();
 
         if (!mdns_name) {
-            char groupname[64], *localhost, *tmp;
-            /* Extract the host part of the potentially FQDN */
+            char *groupname, *localhost, *tmp;
+
             localhost = virGetHostname(NULL);
             if (localhost == NULL)
-                goto cleanup;
-
-            if ((tmp = strchr(localhost, '.')))
-                *tmp = '\0';
-            snprintf(groupname, sizeof(groupname)-1, "Virtualization Host %s", localhost);
-            groupname[sizeof(groupname)-1] = '\0';
-            group = libvirtd_mdns_add_group(server->mdns, groupname);
+                /* we couldn't resolve the hostname; assume that we are
+                 * running in disconnected operation, and report a less
+                 * useful Avahi string
+                 */
+                ret = virAsprintf(&groupname, "Virtualization Host");
+            else {
+                /* Extract the host part of the potentially FQDN */
+                if ((tmp = strchr(localhost, '.')))
+                    *tmp = '\0';
+                ret = virAsprintf(&groupname, "Virtualization Host %s",
+                                  localhost);
+            }
             VIR_FREE(localhost);
+            if (ret < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+            group = libvirtd_mdns_add_group(server->mdns, groupname);
+            VIR_FREE(groupname);
         } else {
             group = libvirtd_mdns_add_group(server->mdns, mdns_name);
         }
