@@ -83,6 +83,9 @@ struct _virCPUDef {
 void
 virCPUDefFree(virCPUDefPtr def);
 
+virCPUDefPtr
+virCPUDefCopy(const virCPUDefPtr cpu);
+
 # ifndef PROXY
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,

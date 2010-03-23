@@ -90,6 +90,7 @@ virCPUDefParseXML;
 virCPUDefFormat;
 virCPUDefFormatBuf;
 virCPUDefAddFeature;
+virCPUDefCopy;
 
 
 # datatypes.h

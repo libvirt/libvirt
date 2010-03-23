@@ -67,6 +67,43 @@ virCPUDefFree(virCPUDefPtr def)
 }
 
 
+virCPUDefPtr
+virCPUDefCopy(const virCPUDefPtr cpu)
+{
+    virCPUDefPtr copy;
+    unsigned int i;
+
+    if (!cpu)
+        return NULL;
+
+    if (VIR_ALLOC(copy) < 0
+        || (cpu->arch && !(copy->arch = strdup(cpu->arch)))
+        || (cpu->model && !(copy->model = strdup(cpu->model)))
+        || VIR_ALLOC_N(copy->features, cpu->nfeatures) < 0)
+        goto no_memory;
+
+    copy->type = cpu->type;
+    copy->match = cpu->match;
+    copy->sockets = cpu->sockets;
+    copy->cores = cpu->cores;
+    copy->threads = cpu->threads;
+    copy->nfeatures = cpu->nfeatures;
+
+    for (i = 0; i < copy->nfeatures; i++) {
+        copy->features[i].policy = cpu->features[i].policy;
+        if (!(copy->features[i].name = strdup(cpu->features[i].name)))
+            goto no_memory;
+    }
+
+    return copy;
+
+no_memory:
+    virReportOOMError();
+    virCPUDefFree(copy);
+    return NULL;
+}
+
+
 #ifndef PROXY
 virCPUDefPtr
 virCPUDefParseXML(const xmlNodePtr node,
