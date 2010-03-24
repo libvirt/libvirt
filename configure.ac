@@ -197,10 +197,10 @@ dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
 dnl as this makes a lot of things break in testing situations
 
-if test "$prefix" = "/usr" -a "$localstatedir" = '${prefix}/var' ; then
+if test "$prefix" = "/usr" && test "$localstatedir" = '${prefix}/var' ; then
     localstatedir='/var'
 fi
-if test "$prefix" = "/usr" -a "$sysconfdir" = '${prefix}/etc' ; then
+if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
@@ -240,7 +240,7 @@ AC_ARG_WITH([libvirtd],
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
 dnl
-if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/libvirt" ]] ; then
+if [[ "${LOGNAME}" = "veillard" && test "`pwd`" = "/u/veillard/libvirt" ]] ; then
     STATIC_BINARIES="-static"
 else
     STATIC_BINARIES=
@@ -351,7 +351,7 @@ LIBXENSERVER_LIBS=""
 LIBXENSERVER_CFLAGS=""
 dnl search for the XenServer library
 if test "$with_xenapi" != "no" ; then
-    if test "$with_xenapi" != "yes" -a "$with_xenapi" != "check" ; then
+    if test "$with_xenapi" != "yes" && test "$with_xenapi" != "check" ; then
         LIBXENSERVER_CFLAGS="-I$with_xenapi/include"
         LIBXENSERVER_LIBS="-L$with_xenapi"
     fi
@@ -390,7 +390,7 @@ XEN_LIBS=""
 XEN_CFLAGS=""
 dnl search for the Xen store library
 if test "$with_xen" != "no" ; then
-    if test "$with_xen" != "yes" -a "$with_xen" != "check" ; then
+    if test "$with_xen" != "yes" && test "$with_xen" != "check" ; then
         XEN_CFLAGS="-I$with_xen/include"
         XEN_LIBS="-L$with_xen/lib64 -L$with_xen/lib"
     fi
@@ -571,7 +571,7 @@ AC_ARG_WITH([libxml], AC_HELP_STRING([--with-libxml=@<:@PFX@:>@], [libxml2 locat
 if test "x$with_libxml" = "xno" ; then
     AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR([libxml2 >= $LIBXML_REQUIRED is required for libvirt])
-elif test "x$with_libxml" = "x" -a "x$PKG_CONFIG" != "x" ; then
+elif test "x$with_libxml" = "x" && test "x$PKG_CONFIG" != "x" ; then
     PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED, [LIBXML_FOUND=yes], [LIBXML_FOUND=no])
 fi
 if test "$LIBXML_FOUND" = "no" ; then
@@ -661,7 +661,7 @@ AC_ARG_WITH([sasl],
 SASL_CFLAGS=
 SASL_LIBS=
 if test "x$with_sasl" != "xno"; then
-  if test "x$with_sasl" != "xyes" -a "x$with_sasl" != "xcheck"; then
+  if test "x$with_sasl" != "xyes" && test "x$with_sasl" != "xcheck"; then
     SASL_CFLAGS="-I$with_sasl"
     SASL_LIBS="-L$with_sasl"
   fi
@@ -716,7 +716,7 @@ AC_ARG_WITH([yajl],
 YAJL_CFLAGS=
 YAJL_LIBS=
 if test "x$with_yajl" != "xno"; then
-  if test "x$with_yajl" != "xyes" -a "x$with_yajl" != "xcheck"; then
+  if test "x$with_yajl" != "xyes" && test "x$with_yajl" != "xcheck"; then
     YAJL_CFLAGS="-I$with_yajl/include"
     YAJL_LIBS="-L$with_yajl/lib"
   fi
@@ -1004,7 +1004,7 @@ AC_ARG_WITH([numactl],
 
 NUMACTL_CFLAGS=
 NUMACTL_LIBS=
-if test "$with_qemu" = "yes" -a "$with_numactl" != "no"; then
+if test "$with_qemu" = "yes" && test "$with_numactl" != "no"; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
   if test "$with_numactl" = "check"; then
@@ -1062,7 +1062,7 @@ dnl
 dnl libssh checks
 dnl
 
-if test "$with_libssh2" != "yes" -a "$with_libssh2" != "no"; then
+if test "$with_libssh2" != "yes" && test "$with_libssh2" != "no"; then
 		libssh2_path="$with_libssh2"
 elif test "$with_libssh2" = "yes"; then
 		libssh2_path="/usr/local/lib/"
@@ -1143,7 +1143,7 @@ dnl introduced in 0.4.0 release which need as minimum
 dnl
 CAPNG_CFLAGS=
 CAPNG_LIBS=
-if test "$with_qemu" = "yes" -a "$with_capng" != "no"; then
+if test "$with_qemu" = "yes" && test "$with_capng" != "no"; then
   old_cflags="$CFLAGS"
   old_libs="$LIBS"
   if test "$with_capng" = "check"; then
@@ -1453,7 +1453,7 @@ if test "$with_storage_disk" = "yes" -o "$with_storage_disk" = "check"; then
     PARTED_FOUND=yes
   fi
 
-  if test "$with_storage_disk" != "no" -a "x$PKG_CONFIG" != "x" ; then
+  if test "$with_storage_disk" != "no" && test "x$PKG_CONFIG" != "x" ; then
     PKG_CHECK_MODULES(LIBPARTED, libparted >= $PARTED_REQUIRED, [], [PARTED_FOUND=no])
   fi
   if test "$PARTED_FOUND" = "no"; then
@@ -1635,7 +1635,7 @@ else
 fi
 AC_MSG_RESULT($RUNNING_XEND)
 
-AM_CONDITIONAL([ENABLE_XEN_TESTS], [test "$RUNNING_XEN" != "no" -a "$RUNNING_XEND" != "no"])
+AM_CONDITIONAL([ENABLE_XEN_TESTS], [test "$RUNNING_XEN" != "no" && test "$RUNNING_XEND" != "no"])
 
 AC_ARG_ENABLE([test-coverage],
   AC_HELP_STRING([--enable-test-coverage], [turn on code coverage instrumentation @<:@default=no@:>@]),
