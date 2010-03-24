@@ -276,7 +276,7 @@ AC_MSG_CHECKING([for init script flavor])
 AC_ARG_WITH([init-script],
             [AC_HELP_STRING([--with-init-script=@<:@redhat|auto|none@:>@],
 		     [Style of init script to install @<:@default=auto@:>@])])
-if test "x$with_init_script" = "x" -o "x$with_init_script" = "xauto"; then
+if test "x$with_init_script" = "x" || test "x$with_init_script" = "xauto"; then
     if test -f /etc/redhat-release ; then
         with_init_script=redhat
     else
@@ -482,7 +482,7 @@ AC_CHECK_HEADERS([linux/kvm.h])
 dnl
 dnl check for sufficient headers for LXC
 dnl
-if test "$with_lxc" = "yes" -o "$with_lxc" = "check"; then
+if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
     AC_CHECK_HEADER([sched.h],
     dnl Header is there, check for unshare()
     [
@@ -524,7 +524,7 @@ AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
 dnl
 dnl check for kernel headers required by src/bridge.c
 dnl
-if test "$with_qemu" = "yes" -o "$with_lxc" = "yes" ; then
+if test "$with_qemu" = "yes" || test "$with_lxc" = "yes" ; then
   AC_CHECK_HEADERS([linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h],,
                    AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt]))
 fi
@@ -538,7 +538,7 @@ dnl
 
 XMLRPC_CFLAGS=
 XMLRPC_LIBS=
-if test "x$with_one" = "xyes" -o "x$with_one" = "xcheck"; then
+if test "x$with_one" = "xyes" || test "x$with_one" = "xcheck"; then
     PKG_CHECK_MODULES(XMLRPC, xmlrpc_client >= $XMLRPC_REQUIRED,
       [with_one=yes], [
       if test "x$with_one" = "xcheck" ; then
@@ -768,7 +768,7 @@ AC_ARG_WITH([polkit],
 
 with_polkit0=no
 with_polkit1=no
-if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
+if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
   dnl Check for new polkit first - just a binary
   AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
   if test "x$PKCHECK_PATH" != "x" ; then
@@ -826,7 +826,7 @@ AC_ARG_WITH([avahi],
 
 AVAHI_CFLAGS=
 AVAHI_LIBS=
-if test "x$with_avahi" = "xyes" -o "x$with_avahi" = "xcheck"; then
+if test "x$with_avahi" = "xyes" || test "x$with_avahi" = "xcheck"; then
   PKG_CHECK_MODULES(AVAHI, avahi-client >= $AVAHI_REQUIRED,
     [with_avahi=yes], [
     if test "x$with_avahi" = "xcheck" ; then
@@ -1036,7 +1036,7 @@ dnl
 dnl Checks for the UML driver
 dnl
 
-if test "$with_uml" = "yes" -o "$with_uml" = "check"; then
+if test "$with_uml" = "yes" || test "$with_uml" = "check"; then
     AC_CHECK_HEADER([sys/inotify.h], [
         with_uml=yes
     ], [
@@ -1239,7 +1239,7 @@ AC_ARG_WITH([netcf],
 
 NETCF_CFLAGS=
 NETCF_LIBS=
-if test "$with_netcf" = "yes" -o "$with_netcf" = "check"; then
+if test "$with_netcf" = "yes" || test "$with_netcf" = "check"; then
   PKG_CHECK_MODULES(NETCF, netcf >= $NETCF_REQUIRED,
     [with_netcf=yes], [
     if test "$with_netcf" = "check" ; then
@@ -1298,7 +1298,7 @@ fi
 AM_CONDITIONAL([WITH_STORAGE_DIR], [test "$with_storage_dir" = "yes"])
 
 
-if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
+if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
   AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_fs" = "yes" ; then
@@ -1326,7 +1326,7 @@ if test "$with_storage_fs" = "yes"; then
     [Location or name of the showmount program])
 fi
 
-if test "$with_storage_lvm" = "yes" -o "$with_storage_lvm" = "check"; then
+if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
   AC_PATH_PROG([PVCREATE], [pvcreate], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([VGCREATE], [vgcreate], [], [$PATH:/sbin:/usr/sbin])
   AC_PATH_PROG([LVCREATE], [lvcreate], [], [$PATH:/sbin:/usr/sbin])
@@ -1386,7 +1386,7 @@ AM_CONDITIONAL([WITH_STORAGE_LVM], [test "$with_storage_lvm" = "yes"])
 
 
 
-if test "$with_storage_iscsi" = "yes" -o "$with_storage_iscsi" = "check"; then
+if test "$with_storage_iscsi" = "yes" || test "$with_storage_iscsi" = "check"; then
   AC_PATH_PROG([ISCSIADM], [iscsiadm], [], [$PATH:/sbin:/usr/sbin])
   if test "$with_storage_iscsi" = "yes" ; then
     if test -z "$ISCSIADM" ; then AC_MSG_ERROR([We need iscsiadm for iSCSI storage driver]) ; fi
@@ -1444,7 +1444,7 @@ AC_SUBST([DEVMAPPER_LIBS])
 
 LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
-if test "$with_storage_disk" = "yes" -o "$with_storage_disk" = "check"; then
+if test "$with_storage_disk" = "yes" || test "$with_storage_disk" = "check"; then
   AC_PATH_PROG([PARTED], [parted], [], [$PATH:/sbin:/usr/sbin])
   if test -z "$PARTED" ; then
     with_storage_disk=no
@@ -1495,7 +1495,7 @@ dnl
 LIBCURL_CFLAGS=""
 LIBCURL_LIBS=""
 
-if test "$with_esx" = "yes" -o "$with_esx" = "check" -o "$with_xenapi" = "yes" -o "$with_xenapi" = "check"; then
+if test "$with_esx" = "yes" || test "$with_esx" = "check" || test "$with_xenapi" = "yes" || test "$with_xenapi" = "check"; then
     PKG_CHECK_MODULES(LIBCURL, libcurl >= $LIBCURL_REQUIRED, [
         if test "$with_esx" = "check"; then
             with_esx=yes
@@ -1817,7 +1817,7 @@ AC_ARG_WITH([hal],
 if test "$with_libvirtd" = "no" ; then
   with_hal=no
 fi
-if test "x$with_hal" = "xyes" -o "x$with_hal" = "xcheck"; then
+if test "x$with_hal" = "xyes" || test "x$with_hal" = "xcheck"; then
   PKG_CHECK_MODULES(HAL, hal >= $HAL_REQUIRED,
     [with_hal=yes], [
     if test "x$with_hal" = "xcheck" ; then
@@ -1860,7 +1860,7 @@ AC_ARG_WITH([udev],
 if test "$with_libvirtd" = "no" ; then
   with_udev=no
 fi
-if test "x$with_udev" = "xyes" -o "x$with_udev" = "xcheck"; then
+if test "x$with_udev" = "xyes" || test "x$with_udev" = "xcheck"; then
   PKG_CHECK_MODULES(UDEV, libudev >= $UDEV_REQUIRED,
     [], [
     if test "x$with_udev" = "xcheck" ; then
@@ -1894,7 +1894,7 @@ AC_SUBST([PCIACCESS_CFLAGS])
 AC_SUBST([PCIACCESS_LIBS])
 
 with_nodedev=no;
-if test "$with_hal" = "yes" -o "$with_udev" = "yes";
+if test "$with_hal" = "yes" || test "$with_udev" = "yes";
 then
   with_nodedev=yes
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])

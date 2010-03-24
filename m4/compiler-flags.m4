@@ -1,6 +1,7 @@
-# serial 3
+# serial 4
 # Find valid warning flags for the C Compiler.           -*-Autoconf-*-
 #
+# Copyright (C) 2010 Red Hat, Inc.
 # Copyright (C) 2001, 2002, 2006 Free Software Foundation, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,7 +38,7 @@ AC_DEFUN([gl_COMPILER_FLAGS],
    echo 'int x;' >conftest.c
    $CC $CFLAGS -c conftest.c 2>conftest.err
    ret=$?
-   if test $ret != 0 -o -s conftest.err -o $has_option = "no"; then
+   if test $ret != 0 || test -s conftest.err || test $has_option = "no"; then
        AC_MSG_RESULT(no)
    else
        AC_MSG_RESULT(yes)

@@ -199,7 +199,7 @@ this_test_() { echo "./$0" | sed 's,.*/,,'; }
 this_test=$(this_test_)
 
 verbose=0
-if test -n "$VIR_TEST_DEBUG" -o -n "$VIR_TEST_VERBOSE" ; then
+if test -n "$VIR_TEST_DEBUG" || test -n "$VIR_TEST_VERBOSE" ; then
   verbose=1
 fi
 
