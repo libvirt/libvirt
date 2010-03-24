@@ -124,6 +124,11 @@ VIR_ENUM_IMPL(virDomainDiskCache, VIR_DOMAIN_DISK_CACHE_LAST,
               "writethrough",
               "writeback")
 
+VIR_ENUM_IMPL(virDomainDiskErrorPolicy, VIR_DOMAIN_DISK_ERROR_POLICY_LAST,
+              "default",
+              "stop",
+              "ignore")
+
 VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "ide",
               "fdc",
@@ -1303,6 +1308,7 @@ virDomainDiskDefParseXML(xmlNodePtr node,
     char *target = NULL;
     char *bus = NULL;
     char *cachetag = NULL;
+    char *error_policy = NULL;
     char *devaddr = NULL;
     virStorageEncryptionPtr encryption = NULL;
     char *serial = NULL;
@@ -1368,6 +1374,7 @@ virDomainDiskDefParseXML(xmlNodePtr node,
                 driverName = virXMLPropString(cur, "name");
                 driverType = virXMLPropString(cur, "type");
                 cachetag = virXMLPropString(cur, "cache");
+                error_policy = virXMLPropString(cur, "error_policy");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 def->readonly = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
@@ -1484,6 +1491,13 @@ virDomainDiskDefParseXML(xmlNodePtr node,
         goto error;
     }
 
+    if (error_policy &&
+        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(error_policy)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown disk error policy '%s'"), error_policy);
+        goto error;
+    }
+
     if (devaddr) {
         if (sscanf(devaddr, "%x:%x:%x",
                    &def->info.addr.pci.domain,
@@ -1526,6 +1540,7 @@ cleanup:
     VIR_FREE(driverType);
     VIR_FREE(driverName);
     VIR_FREE(cachetag);
+    VIR_FREE(error_policy);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
     virStorageEncryptionFree(encryption);
@@ -4651,6 +4666,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
     const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
+    const char *error_policy = virDomainDiskErrorPolicyTypeToString(def->error_policy);
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4685,6 +4701,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferVSprintf(buf, " type='%s'", def->driverType);
         if (def->cachemode)
             virBufferVSprintf(buf, " cache='%s'", cachemode);
+        if (def->error_policy)
+            virBufferVSprintf(buf, " error_policy='%s'", error_policy);
         virBufferVSprintf(buf, "/>\n");
     }
 

@@ -521,6 +521,9 @@
           <ref name="driverCache"/>
         </group>
       </choice>
+      <optional>
+        <ref name="driverErrorPolicy"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -540,6 +543,14 @@
         <value>none</value>
         <value>writeback</value>
         <value>writethrough</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="driverErrorPolicy">
+    <attribute name="error_policy">
+      <choice>
+        <value>stop</value>
+        <value>ignore</value>
       </choice>
     </attribute>
   </define>

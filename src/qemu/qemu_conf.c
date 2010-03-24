@@ -2470,6 +2470,14 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAddLit(&opt, ",cache=off");
     }
 
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_MONITOR_JSON) {
+        if (disk->error_policy) {
+            virBufferVSprintf(&opt, ",werror=%s,rerror=%s",
+                              virDomainDiskErrorPolicyTypeToString(disk->error_policy),
+                              virDomainDiskErrorPolicyTypeToString(disk->error_policy));
+        }
+    }
+
     if (virBufferError(&opt)) {
         virReportOOMError();
         goto error;
@@ -4759,6 +4767,12 @@ qemuParseCommandLineDisk(const char *val,
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_WRITEBACK;
             else if (STREQ(values[i], "writethrough"))
                 def->cachemode = VIR_DOMAIN_DISK_CACHE_WRITETHRU;
+        } else if (STREQ(keywords[i], "werror") ||
+                   STREQ(keywords[i], "rerror")) {
+            if (STREQ(values[i], "stop"))
+                def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_STOP;
+            else if (STREQ(values[i], "ignore"))
+                def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE;
         } else if (STREQ(keywords[i], "index")) {
             if (virStrToLong_i(values[i], NULL, 10, &idx) < 0) {
                 virDomainDiskDefFree(def);

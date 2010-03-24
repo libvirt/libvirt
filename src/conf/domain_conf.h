@@ -152,6 +152,14 @@ enum  virDomainDiskCache {
     VIR_DOMAIN_DISK_CACHE_LAST
 };
 
+enum  virDomainDiskErrorPolicy {
+    VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT,
+    VIR_DOMAIN_DISK_ERROR_POLICY_STOP,
+    VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE,
+
+    VIR_DOMAIN_DISK_ERROR_POLICY_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -165,6 +173,7 @@ struct _virDomainDiskDef {
     char *driverType;
     char *serial;
     int cachemode;
+    int error_policy;
     unsigned int readonly : 1;
     unsigned int shared : 1;
     virDomainDeviceInfo info;
@@ -941,6 +950,7 @@ VIR_ENUM_DECL(virDomainDisk)
 VIR_ENUM_DECL(virDomainDiskDevice)
 VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
+VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)

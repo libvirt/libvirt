@@ -261,6 +261,9 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v1-none", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_FORMAT);
+    DO_TEST("disk-drive-error-policy-stop", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_MONITOR_JSON |
+            QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wt", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wb", QEMUD_CMD_FLAG_DRIVE |

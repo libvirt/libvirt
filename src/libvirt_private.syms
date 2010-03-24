@@ -194,7 +194,7 @@ virDomainDefClearDeviceAliases;
 virDomainDeviceInfoIterate;
 virDomainClockOffsetTypeToString;
 virDomainClockOffsetTypeFromString;
-
+virDomainDiskErrorPolicyTypeToString;
 
 # domain_event.h
 virDomainEventCallbackListAdd;
