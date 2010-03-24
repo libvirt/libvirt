@@ -26,6 +26,7 @@ testCompareFiles(const char *vmx, const char *xml, esxVI_APIVersion apiVersion)
     char *vmxPtr = &(vmxData[0]);
     char *xmlPtr = &(xmlData[0]);
     virDomainDefPtr def = NULL;
+    virErrorPtr err = NULL;
 
     if (virtTestLoadFile(vmx, &vmxPtr, MAX_FILE) < 0) {
         goto failure;
@@ -39,12 +40,16 @@ testCompareFiles(const char *vmx, const char *xml, esxVI_APIVersion apiVersion)
                              apiVersion);
 
     if (def == NULL) {
+        err = virGetLastError();
+        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
         goto failure;
     }
 
     formatted = virDomainDefFormat(def, VIR_DOMAIN_XML_SECURE);
 
     if (formatted == NULL) {
+        err = virGetLastError();
+        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
         goto failure;
     }
 
@@ -116,6 +121,9 @@ mymain(int argc, char **argv)
                 result = -1;                                                  \
             }                                                                 \
         } while (0)
+
+    DO_TEST("case-insensitive-1", "case-insensitive-1", esxVI_APIVersion_25);
+    DO_TEST("case-insensitive-2", "case-insensitive-2", esxVI_APIVersion_25);
 
     DO_TEST("minimal", "minimal", esxVI_APIVersion_25);
     DO_TEST("minimal-64bit", "minimal-64bit", esxVI_APIVersion_25);

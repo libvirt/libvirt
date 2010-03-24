@@ -831,7 +831,10 @@ virConfGetValue(virConfPtr conf, const char *setting)
 
     cur = conf->entries;
     while (cur != NULL) {
-        if ((cur->name != NULL) && (STREQ(cur->name, setting)))
+        if ((cur->name != NULL) &&
+            ((conf->flags & VIR_CONF_FLAG_VMX_FORMAT &&
+              STRCASEEQ(cur->name, setting)) ||
+             STREQ(cur->name, setting)))
             return(cur->value);
         cur = cur->next;
     }
