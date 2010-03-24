@@ -19,7 +19,7 @@ test_intro()
   name=$1
   if test "$verbose" = "0" ; then
     echo "TEST: $name"
-    echo -n "      "
+    printf "      "
   fi
 }
 
@@ -29,15 +29,15 @@ test_result()
   name=$2
   status=$3
   if test "$verbose" = "0" ; then
-    mod=`eval "expr \( $counter - 1 \) % 40"`
-    if test "$counter" != 1 -a "$mod" = 0 ; then
-        printf " %-3d\n" `eval "expr $counter - 1"`
-        echo -n "      "
+    mod=`expr \( $counter + 40 - 1 \) % 40`
+    if test "$counter" != 1 && test "$mod" = 0 ; then
+        printf " %-3d\n" `expr $counter - 1`
+        printf "      "
     fi
     if test "$status" = "0" ; then
-        echo -n "."
+        printf "."
     else
-        echo -n "!"
+        printf "!"
     fi
   else
     if test "$status" = "0" ; then
@@ -54,11 +54,11 @@ test_final()
   status=$2
 
   if test "$verbose" = "0" ; then
-    mod=`eval "expr \( $counter + 1 \) % 40"`
-    if test "$mod" != "0" -a "$mod" != "1" ; then
+    mod=`expr \( $counter + 1 \) % 40`
+    if test "$mod" != "0" && test "$mod" != "1" ; then
       for i in `seq $mod 40`
       do
-        echo -n " "
+        printf " "
       done
     fi
     if test "$status" = "0" ; then

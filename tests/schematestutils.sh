@@ -21,7 +21,7 @@ do
     ret=$?
 
     test_result $n $(basename $(dirname $xml))"/"$(basename $xml) $ret
-    if test "$verbose" = "1" -a $ret != 0 ; then
+    if test "$verbose" = "1" && test $ret != 0 ; then
         echo -e "$cmd\n$result"
     fi
     if test "$ret" != 0 ; then
