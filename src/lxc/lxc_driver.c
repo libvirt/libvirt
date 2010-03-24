@@ -381,7 +381,7 @@ static virDomainPtr lxcDomainDefine(virConnectPtr conn, const char *xml)
     }
 
     if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def)))
+                                  &driver->domains, def, false)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
@@ -1378,7 +1378,7 @@ lxcDomainCreateAndStart(virConnectPtr conn,
 
 
     if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, def)))
+                                  &driver->domains, def, false)))
         goto cleanup;
     def = NULL;
 

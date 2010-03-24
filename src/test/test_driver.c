@@ -554,7 +554,7 @@ static int testOpenDefault(virConnectPtr conn) {
     if (testDomainGenerateIfnames(conn, domdef) < 0)
         goto error;
     if (!(domobj = virDomainAssignDef(privconn->caps,
-                                      &privconn->domains, domdef)))
+                                      &privconn->domains, domdef, false)))
         goto error;
     domdef = NULL;
 
@@ -910,7 +910,7 @@ static int testOpenFromFile(virConnectPtr conn,
 
         if (testDomainGenerateIfnames(conn, def) < 0 ||
             !(dom = virDomainAssignDef(privconn->caps,
-                                       &privconn->domains, def))) {
+                                       &privconn->domains, def, false))) {
             virDomainDefFree(def);
             goto error;
         }
@@ -1308,7 +1308,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
     if (!(dom = virDomainAssignDef(privconn->caps,
-                                   &privconn->domains, def)))
+                                   &privconn->domains, def, false)))
         goto cleanup;
     def = NULL;
 
@@ -1852,7 +1852,7 @@ static int testDomainRestore(virConnectPtr conn,
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
     if (!(dom = virDomainAssignDef(privconn->caps,
-                                   &privconn->domains, def)))
+                                   &privconn->domains, def, true)))
         goto cleanup;
     def = NULL;
 
@@ -2301,7 +2301,7 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     if (testDomainGenerateIfnames(conn, def) < 0)
         goto cleanup;
     if (!(dom = virDomainAssignDef(privconn->caps,
-                                   &privconn->domains, def)))
+                                   &privconn->domains, def, false)))
         goto cleanup;
     def = NULL;
     dom->persistent = 1;

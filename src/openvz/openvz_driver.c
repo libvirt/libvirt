@@ -825,7 +825,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
     if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, vmdef)))
+                                  &driver->domains, vmdef, false)))
         goto cleanup;
     vmdef = NULL;
     vm->persistent = 1;
@@ -905,7 +905,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     }
     if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains, vmdef)))
+                                  &driver->domains, vmdef, false)))
         goto cleanup;
     vmdef = NULL;
     /* All OpenVZ domains seem to be persistent - this is a bit of a violation

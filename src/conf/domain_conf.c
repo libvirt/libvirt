@@ -766,15 +766,23 @@ static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
 
 virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
                                    virDomainObjListPtr doms,
-                                   const virDomainDefPtr def)
+                                   const virDomainDefPtr def,
+                                   bool live)
 {
     virDomainObjPtr domain;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((domain = virDomainFindByUUID(doms, def->uuid))) {
         if (!virDomainObjIsActive(domain)) {
-            virDomainDefFree(domain->def);
-            domain->def = def;
+            if (live) {
+                /* save current configuration to be restored on domain shutdown */
+                if (!domain->newDef)
+                    domain->newDef = domain->def;
+                domain->def = def;
+            } else {
+                virDomainDefFree(domain->def);
+                domain->def = def;
+            }
         } else {
             virDomainDefFree(domain->newDef);
             domain->newDef = def;
@@ -5856,7 +5864,7 @@ virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
         newVM = 0;
     }
 
-    if (!(dom = virDomainAssignDef(caps, doms, def)))
+    if (!(dom = virDomainAssignDef(caps, doms, def, false)))
         goto error;
 
     dom->autostart = autostart;

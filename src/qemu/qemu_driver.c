@@ -3809,7 +3809,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def)))
+                                  def, false)))
         goto cleanup;
 
     def = NULL;
@@ -5466,7 +5466,7 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def))) {
+                                  def, true))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to assign new VM"));
         goto cleanup;
@@ -6007,7 +6007,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def))) {
+                                  def, false))) {
         goto cleanup;
     }
     def = NULL;
@@ -8881,7 +8881,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def))) {
+                                  def, true))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to assign new VM"));
         goto cleanup;
@@ -9112,7 +9112,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def))) {
+                                  def, true))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to assign new VM"));
         goto cleanup;

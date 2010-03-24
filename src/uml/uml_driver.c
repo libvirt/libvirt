@@ -1283,7 +1283,7 @@ static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def)))
+                                  def, false)))
         goto cleanup;
     def = NULL;
 
@@ -1619,7 +1619,7 @@ static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
 
     if (!(vm = virDomainAssignDef(driver->caps,
                                   &driver->domains,
-                                  def)))
+                                  def, false)))
         goto cleanup;
     def = NULL;
     vm->persistent = 1;
