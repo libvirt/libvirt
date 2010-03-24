@@ -766,15 +766,18 @@ EXTRA_DIST +=							\
 		$(SECRET_DRIVER_SOURCES)			\
 		$(VBOX_DRIVER_EXTRA_DIST)
 
-check-local:
+check-local: augeas-check
+
+.PHONY: augeas-check
+augeas-check:
 if WITH_QEMU
-	if test -x '$(AUGPARSE)'; then \
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/qemu \
 	    $(srcdir)/qemu/test_libvirtd_qemu.aug; \
 	fi
 endif
 if WITH_LXC
-	if test -x '$(AUGPARSE)'; then \
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/lxc \
 	    $(srcdir)/lxc/test_libvirtd_lxc.aug; \
 	fi
