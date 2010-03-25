@@ -759,8 +759,7 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
             virDomainDefFree(domain->def);
             domain->def = def;
         } else {
-            if (domain->newDef)
-                virDomainDefFree(domain->newDef);
+            virDomainDefFree(domain->newDef);
             domain->newDef = def;
         }
 

@@ -64,6 +64,7 @@ useless_free_options =		\
   --name=VIR_FREE		\
   --name=xmlFree		\
   --name=xmlXPathFreeContext	\
+  --name=virDomainDefFree	\
   --name=xmlXPathFreeObject
 
 # Avoid uses of write(2).  Either switch to streams (fwrite), or use

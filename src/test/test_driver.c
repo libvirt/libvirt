@@ -1328,8 +1328,7 @@ cleanup:
         virDomainObjUnlock(dom);
     if (event)
         testDomainEventQueue(privconn, event);
-    if (def)
-        virDomainDefFree(def);
+    virDomainDefFree(def);
     testDriverUnlock(privconn);
     return ret;
 }
