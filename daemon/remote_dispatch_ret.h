@@ -119,3 +119,9 @@
     remote_domain_memory_stats_ret val_remote_domain_memory_stats_ret;
     remote_cpu_baseline_ret val_remote_cpu_baseline_ret;
     remote_domain_get_job_info_ret val_remote_domain_get_job_info_ret;
+    remote_nwfilter_lookup_by_name_ret val_remote_nwfilter_lookup_by_name_ret;
+    remote_nwfilter_lookup_by_uuid_ret val_remote_nwfilter_lookup_by_uuid_ret;
+    remote_nwfilter_get_xml_desc_ret val_remote_nwfilter_get_xml_desc_ret;
+    remote_num_of_nwfilters_ret val_remote_num_of_nwfilters_ret;
+    remote_list_nwfilters_ret val_remote_list_nwfilters_ret;
+    remote_nwfilter_define_xml_ret val_remote_nwfilter_define_xml_ret;

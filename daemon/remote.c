@@ -66,6 +66,7 @@ static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static virSecretPtr get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret);
+static virNWFilterPtr get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -73,6 +74,7 @@ static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, vi
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
+static void make_nonnull_nwfilter (remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src);
 
 
 #include "remote_dispatch_prototypes.h"
@@ -5837,6 +5839,185 @@ remoteDispatchDomainEventsDeregisterAny (struct qemud_server *server ATTRIBUTE_U
 }
 
 
+
+static int
+remoteDispatchNwfilterLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_nwfilter_lookup_by_name_args *args,
+                                    remote_nwfilter_lookup_by_name_ret *ret)
+{
+    virNWFilterPtr nwfilter;
+
+    nwfilter = virNWFilterLookupByName (conn, args->name);
+    if (nwfilter == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_nwfilter (&ret->nwfilter, nwfilter);
+    virNWFilterFree(nwfilter);
+    return 0;
+}
+
+static int
+remoteDispatchNwfilterLookupByUuid (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_nwfilter_lookup_by_uuid_args *args,
+                                    remote_nwfilter_lookup_by_uuid_ret *ret)
+{
+    virNWFilterPtr nwfilter;
+
+    nwfilter = virNWFilterLookupByUUID (conn, (unsigned char *) args->uuid);
+    if (nwfilter == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_nwfilter (&ret->nwfilter, nwfilter);
+    virNWFilterFree(nwfilter);
+    return 0;
+}
+
+
+static int
+remoteDispatchNwfilterDefineXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                 remote_error *rerr,
+                                 remote_nwfilter_define_xml_args *args,
+                                 remote_nwfilter_define_xml_ret *ret)
+{
+    virNWFilterPtr nwfilter;
+
+    nwfilter = virNWFilterDefineXML (conn, args->xml);
+    if (nwfilter == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_nwfilter (&ret->nwfilter, nwfilter);
+    virNWFilterFree(nwfilter);
+    return 0;
+}
+
+
+static int
+remoteDispatchNwfilterUndefine (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client ATTRIBUTE_UNUSED,
+                                virConnectPtr conn,
+                                remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                remote_error *rerr,
+                                remote_nwfilter_undefine_args *args,
+                                void *ret ATTRIBUTE_UNUSED)
+{
+    virNWFilterPtr nwfilter;
+
+    nwfilter = get_nonnull_nwfilter (conn, args->nwfilter);
+    if (nwfilter == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virNWFilterUndefine (nwfilter) == -1) {
+        virNWFilterFree(nwfilter);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virNWFilterFree(nwfilter);
+    return 0;
+}
+
+static int
+remoteDispatchListNwfilters (struct qemud_server *server ATTRIBUTE_UNUSED,
+                             struct qemud_client *client ATTRIBUTE_UNUSED,
+                             virConnectPtr conn,
+                             remote_message_header *hdr ATTRIBUTE_UNUSED,
+                             remote_error *rerr,
+                             remote_list_nwfilters_args *args,
+                             remote_list_nwfilters_ret *ret)
+{
+
+    if (args->maxnames > REMOTE_NWFILTER_NAME_LIST_MAX) {
+        remoteDispatchFormatError (rerr,
+                                   "%s", _("maxnames > REMOTE_NWFILTER_NAME_LIST_MAX"));
+        return -1;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->maxnames) < 0) {
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    ret->names.names_len =
+        virConnectListNWFilters (conn,
+                                 ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) {
+        VIR_FREE(ret->names.names_len);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+remoteDispatchNwfilterGetXmlDesc (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
+                              remote_message_header *hdr ATTRIBUTE_UNUSED,
+                              remote_error *rerr,
+                              remote_nwfilter_get_xml_desc_args *args,
+                              remote_nwfilter_get_xml_desc_ret *ret)
+{
+    virNWFilterPtr nwfilter;
+
+    nwfilter = get_nonnull_nwfilter (conn, args->nwfilter);
+    if (nwfilter == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virNWFilterGetXMLDesc (nwfilter, args->flags);
+    if (!ret->xml) {
+        virNWFilterFree(nwfilter);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virNWFilterFree(nwfilter);
+    return 0;
+}
+
+
+static int
+remoteDispatchNumOfNwfilters (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client ATTRIBUTE_UNUSED,
+                              virConnectPtr conn,
+                              remote_message_header *hdr ATTRIBUTE_UNUSED,
+                              remote_error *rerr,
+                              void *args ATTRIBUTE_UNUSED,
+                              remote_num_of_nwfilters_ret *ret)
+{
+
+    ret->num = virConnectNumOfNWFilters (conn);
+    if (ret->num == -1) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
@@ -5887,6 +6068,12 @@ static virSecretPtr
 get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
 {
     return virGetSecret (conn, BAD_CAST secret.uuid, secret.usageType, secret.usageID);
+}
+
+static virNWFilterPtr
+get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter)
+{
+    return virGetNWFilter (conn, nwfilter.name, BAD_CAST nwfilter.uuid);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
@@ -5940,4 +6127,11 @@ make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
     memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
     secret_dst->usageType = secret_src->usageType;
     secret_dst->usageID = strdup (secret_src->usageID);
+}
+
+static void
+make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src)
+{
+    nwfilter_dst->name = strdup (nwfilter_src->name);
+    memcpy (nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
 }

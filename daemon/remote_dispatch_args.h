@@ -145,3 +145,9 @@
     remote_domain_events_register_any_args val_remote_domain_events_register_any_args;
     remote_domain_events_deregister_any_args val_remote_domain_events_deregister_any_args;
     remote_domain_update_device_flags_args val_remote_domain_update_device_flags_args;
+    remote_nwfilter_lookup_by_name_args val_remote_nwfilter_lookup_by_name_args;
+    remote_nwfilter_lookup_by_uuid_args val_remote_nwfilter_lookup_by_uuid_args;
+    remote_nwfilter_get_xml_desc_args val_remote_nwfilter_get_xml_desc_args;
+    remote_list_nwfilters_args val_remote_list_nwfilters_args;
+    remote_nwfilter_define_xml_args val_remote_nwfilter_define_xml_args;
+    remote_nwfilter_undefine_args val_remote_nwfilter_undefine_args;

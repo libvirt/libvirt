@@ -103,6 +103,9 @@ const REMOTE_NODE_DEVICE_NAME_LIST_MAX = 16384;
 /* Upper limit on lists of node device capabilities. */
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 16384;
 
+/* Upper limit on lists of network filter names. */
+const REMOTE_NWFILTER_NAME_LIST_MAX = 1024;
+
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
@@ -176,6 +179,12 @@ struct remote_nonnull_network {
     remote_uuid uuid;
 };
 
+/* A network filter which may not be NULL. */
+struct remote_nonnull_nwfilter {
+    remote_nonnull_string name;
+    remote_uuid uuid;
+};
+
 /* An interface which may not be NULL. */
 struct remote_nonnull_interface {
     remote_nonnull_string name;
@@ -210,6 +219,7 @@ struct remote_nonnull_secret {
 /* A domain or network which may be NULL. */
 typedef remote_nonnull_domain *remote_domain;
 typedef remote_nonnull_network *remote_network;
+typedef remote_nonnull_nwfilter *remote_nwfilter;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 typedef remote_nonnull_storage_vol *remote_storage_vol;
 typedef remote_nonnull_node_device *remote_node_device;
@@ -234,6 +244,7 @@ struct remote_error {
     int int1;
     int int2;
     remote_network net;
+    remote_nwfilter nwfilter;
 };
 
 /* Authentication types available thus far.... */
@@ -847,6 +858,57 @@ struct remote_network_get_autostart_ret {
 struct remote_network_set_autostart_args {
     remote_nonnull_network net;
     int autostart;
+};
+
+/* network filter calls */
+
+struct remote_num_of_nwfilters_ret {
+    int num;
+};
+
+struct remote_list_nwfilters_args {
+    int maxnames;
+};
+
+struct remote_list_nwfilters_ret {
+    remote_nonnull_string names<REMOTE_NWFILTER_NAME_LIST_MAX>;
+};
+
+struct remote_nwfilter_lookup_by_uuid_args {
+    remote_uuid uuid;
+};
+
+struct remote_nwfilter_lookup_by_uuid_ret {
+    remote_nonnull_nwfilter nwfilter;
+};
+
+struct remote_nwfilter_lookup_by_name_args {
+    remote_nonnull_string name;
+};
+
+struct remote_nwfilter_lookup_by_name_ret {
+    remote_nonnull_nwfilter nwfilter;
+};
+
+struct remote_nwfilter_define_xml_args {
+    remote_nonnull_string xml;
+};
+
+struct remote_nwfilter_define_xml_ret {
+    remote_nonnull_nwfilter nwfilter;
+};
+
+struct remote_nwfilter_undefine_args {
+    remote_nonnull_nwfilter nwfilter;
+};
+
+struct remote_nwfilter_get_xml_desc_args {
+    remote_nonnull_nwfilter nwfilter;
+    int flags;
+};
+
+struct remote_nwfilter_get_xml_desc_ret {
+    remote_nonnull_string xml;
 };
 
 
@@ -1782,7 +1844,15 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_EVENT_WATCHDOG = 171,
     REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
     REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173,
-    REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS = 174
+    REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS = 174,
+    REMOTE_PROC_NWFILTER_LOOKUP_BY_NAME = 175,
+    REMOTE_PROC_NWFILTER_LOOKUP_BY_UUID = 176,
+    REMOTE_PROC_NWFILTER_GET_XML_DESC = 177,
+    REMOTE_PROC_NUM_OF_NWFILTERS = 178,
+    REMOTE_PROC_LIST_NWFILTERS = 179,
+    REMOTE_PROC_NWFILTER_DEFINE_XML = 180,
+
+    REMOTE_PROC_NWFILTER_UNDEFINE = 181
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

@@ -722,6 +722,14 @@ static int remoteDispatchListNetworks(
     remote_error *err,
     remote_list_networks_args *args,
     remote_list_networks_ret *ret);
+static int remoteDispatchListNwfilters(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_list_nwfilters_args *args,
+    remote_list_nwfilters_ret *ret);
 static int remoteDispatchListSecrets(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -1026,6 +1034,14 @@ static int remoteDispatchNumOfNetworks(
     remote_error *err,
     void *args,
     remote_num_of_networks_ret *ret);
+static int remoteDispatchNumOfNwfilters(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    void *args,
+    remote_num_of_nwfilters_ret *ret);
 static int remoteDispatchNumOfSecrets(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -1042,6 +1058,46 @@ static int remoteDispatchNumOfStoragePools(
     remote_error *err,
     void *args,
     remote_num_of_storage_pools_ret *ret);
+static int remoteDispatchNwfilterDefineXml(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_nwfilter_define_xml_args *args,
+    remote_nwfilter_define_xml_ret *ret);
+static int remoteDispatchNwfilterGetXmlDesc(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_nwfilter_get_xml_desc_args *args,
+    remote_nwfilter_get_xml_desc_ret *ret);
+static int remoteDispatchNwfilterLookupByName(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_nwfilter_lookup_by_name_args *args,
+    remote_nwfilter_lookup_by_name_ret *ret);
+static int remoteDispatchNwfilterLookupByUuid(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_nwfilter_lookup_by_uuid_args *args,
+    remote_nwfilter_lookup_by_uuid_ret *ret);
+static int remoteDispatchNwfilterUndefine(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_nwfilter_undefine_args *args,
+    void *ret);
 static int remoteDispatchOpen(
     struct qemud_server *server,
     struct qemud_client *client,

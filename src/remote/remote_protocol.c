@@ -60,6 +60,17 @@ xdr_remote_nonnull_network (XDR *xdrs, remote_nonnull_network *objp)
 }
 
 bool_t
+xdr_remote_nonnull_nwfilter (XDR *xdrs, remote_nonnull_nwfilter *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+         if (!xdr_remote_uuid (xdrs, objp->uuid))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_nonnull_interface (XDR *xdrs, remote_nonnull_interface *objp)
 {
 
@@ -135,6 +146,15 @@ xdr_remote_network (XDR *xdrs, remote_network *objp)
 }
 
 bool_t
+xdr_remote_nwfilter (XDR *xdrs, remote_nwfilter *objp)
+{
+
+         if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_nwfilter), (xdrproc_t) xdr_remote_nonnull_nwfilter))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_storage_pool (XDR *xdrs, remote_storage_pool *objp)
 {
 
@@ -186,6 +206,8 @@ xdr_remote_error (XDR *xdrs, remote_error *objp)
          if (!xdr_int (xdrs, &objp->int2))
                  return FALSE;
          if (!xdr_remote_network (xdrs, &objp->net))
+                 return FALSE;
+         if (!xdr_remote_nwfilter (xdrs, &objp->nwfilter))
                  return FALSE;
         return TRUE;
 }
@@ -1580,6 +1602,118 @@ xdr_remote_network_set_autostart_args (XDR *xdrs, remote_network_set_autostart_a
          if (!xdr_remote_nonnull_network (xdrs, &objp->net))
                  return FALSE;
          if (!xdr_int (xdrs, &objp->autostart))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_num_of_nwfilters_ret (XDR *xdrs, remote_num_of_nwfilters_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_nwfilters_args (XDR *xdrs, remote_list_nwfilters_args *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->maxnames))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_list_nwfilters_ret (XDR *xdrs, remote_list_nwfilters_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_NWFILTER_NAME_LIST_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_lookup_by_uuid_args (XDR *xdrs, remote_nwfilter_lookup_by_uuid_args *objp)
+{
+
+         if (!xdr_remote_uuid (xdrs, objp->uuid))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_lookup_by_uuid_ret (XDR *xdrs, remote_nwfilter_lookup_by_uuid_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_nwfilter (xdrs, &objp->nwfilter))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_lookup_by_name_args (XDR *xdrs, remote_nwfilter_lookup_by_name_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_lookup_by_name_ret (XDR *xdrs, remote_nwfilter_lookup_by_name_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_nwfilter (xdrs, &objp->nwfilter))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_define_xml_args (XDR *xdrs, remote_nwfilter_define_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_define_xml_ret (XDR *xdrs, remote_nwfilter_define_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_nwfilter (xdrs, &objp->nwfilter))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_undefine_args (XDR *xdrs, remote_nwfilter_undefine_args *objp)
+{
+
+         if (!xdr_remote_nonnull_nwfilter (xdrs, &objp->nwfilter))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_get_xml_desc_args (XDR *xdrs, remote_nwfilter_get_xml_desc_args *objp)
+{
+
+         if (!xdr_remote_nonnull_nwfilter (xdrs, &objp->nwfilter))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_nwfilter_get_xml_desc_ret (XDR *xdrs, remote_nwfilter_get_xml_desc_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
                  return FALSE;
         return TRUE;
 }

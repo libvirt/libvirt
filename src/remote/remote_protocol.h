@@ -36,6 +36,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
 #define REMOTE_NODE_DEVICE_NAME_LIST_MAX 16384
 #define REMOTE_NODE_DEVICE_CAPS_LIST_MAX 16384
+#define REMOTE_NWFILTER_NAME_LIST_MAX 1024
 #define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
 #define REMOTE_NODE_MAX_CELLS 1024
 #define REMOTE_AUTH_SASL_DATA_MAX 65536
@@ -64,6 +65,12 @@ struct remote_nonnull_network {
         remote_uuid uuid;
 };
 typedef struct remote_nonnull_network remote_nonnull_network;
+
+struct remote_nonnull_nwfilter {
+        remote_nonnull_string name;
+        remote_uuid uuid;
+};
+typedef struct remote_nonnull_nwfilter remote_nonnull_nwfilter;
 
 struct remote_nonnull_interface {
         remote_nonnull_string name;
@@ -100,6 +107,8 @@ typedef remote_nonnull_domain *remote_domain;
 
 typedef remote_nonnull_network *remote_network;
 
+typedef remote_nonnull_nwfilter *remote_nwfilter;
+
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 
 typedef remote_nonnull_storage_vol *remote_storage_vol;
@@ -118,6 +127,7 @@ struct remote_error {
         int int1;
         int int2;
         remote_network net;
+        remote_nwfilter nwfilter;
 };
 typedef struct remote_error remote_error;
 
@@ -889,6 +899,70 @@ struct remote_network_set_autostart_args {
         int autostart;
 };
 typedef struct remote_network_set_autostart_args remote_network_set_autostart_args;
+
+struct remote_num_of_nwfilters_ret {
+        int num;
+};
+typedef struct remote_num_of_nwfilters_ret remote_num_of_nwfilters_ret;
+
+struct remote_list_nwfilters_args {
+        int maxnames;
+};
+typedef struct remote_list_nwfilters_args remote_list_nwfilters_args;
+
+struct remote_list_nwfilters_ret {
+        struct {
+                u_int names_len;
+                remote_nonnull_string *names_val;
+        } names;
+};
+typedef struct remote_list_nwfilters_ret remote_list_nwfilters_ret;
+
+struct remote_nwfilter_lookup_by_uuid_args {
+        remote_uuid uuid;
+};
+typedef struct remote_nwfilter_lookup_by_uuid_args remote_nwfilter_lookup_by_uuid_args;
+
+struct remote_nwfilter_lookup_by_uuid_ret {
+        remote_nonnull_nwfilter nwfilter;
+};
+typedef struct remote_nwfilter_lookup_by_uuid_ret remote_nwfilter_lookup_by_uuid_ret;
+
+struct remote_nwfilter_lookup_by_name_args {
+        remote_nonnull_string name;
+};
+typedef struct remote_nwfilter_lookup_by_name_args remote_nwfilter_lookup_by_name_args;
+
+struct remote_nwfilter_lookup_by_name_ret {
+        remote_nonnull_nwfilter nwfilter;
+};
+typedef struct remote_nwfilter_lookup_by_name_ret remote_nwfilter_lookup_by_name_ret;
+
+struct remote_nwfilter_define_xml_args {
+        remote_nonnull_string xml;
+};
+typedef struct remote_nwfilter_define_xml_args remote_nwfilter_define_xml_args;
+
+struct remote_nwfilter_define_xml_ret {
+        remote_nonnull_nwfilter nwfilter;
+};
+typedef struct remote_nwfilter_define_xml_ret remote_nwfilter_define_xml_ret;
+
+struct remote_nwfilter_undefine_args {
+        remote_nonnull_nwfilter nwfilter;
+};
+typedef struct remote_nwfilter_undefine_args remote_nwfilter_undefine_args;
+
+struct remote_nwfilter_get_xml_desc_args {
+        remote_nonnull_nwfilter nwfilter;
+        int flags;
+};
+typedef struct remote_nwfilter_get_xml_desc_args remote_nwfilter_get_xml_desc_args;
+
+struct remote_nwfilter_get_xml_desc_ret {
+        remote_nonnull_string xml;
+};
+typedef struct remote_nwfilter_get_xml_desc_ret remote_nwfilter_get_xml_desc_ret;
 
 struct remote_num_of_interfaces_ret {
         int num;
@@ -1964,6 +2038,13 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_IO_ERROR = 172,
         REMOTE_PROC_DOMAIN_EVENT_GRAPHICS = 173,
         REMOTE_PROC_DOMAIN_UPDATE_DEVICE_FLAGS = 174,
+        REMOTE_PROC_NWFILTER_LOOKUP_BY_NAME = 175,
+        REMOTE_PROC_NWFILTER_LOOKUP_BY_UUID = 176,
+        REMOTE_PROC_NWFILTER_GET_XML_DESC = 177,
+        REMOTE_PROC_NUM_OF_NWFILTERS = 178,
+        REMOTE_PROC_LIST_NWFILTERS = 179,
+        REMOTE_PROC_NWFILTER_DEFINE_XML = 180,
+        REMOTE_PROC_NWFILTER_UNDEFINE = 181,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2001,6 +2082,7 @@ extern  bool_t xdr_remote_string (XDR *, remote_string*);
 extern  bool_t xdr_remote_uuid (XDR *, remote_uuid);
 extern  bool_t xdr_remote_nonnull_domain (XDR *, remote_nonnull_domain*);
 extern  bool_t xdr_remote_nonnull_network (XDR *, remote_nonnull_network*);
+extern  bool_t xdr_remote_nonnull_nwfilter (XDR *, remote_nonnull_nwfilter*);
 extern  bool_t xdr_remote_nonnull_interface (XDR *, remote_nonnull_interface*);
 extern  bool_t xdr_remote_nonnull_storage_pool (XDR *, remote_nonnull_storage_pool*);
 extern  bool_t xdr_remote_nonnull_storage_vol (XDR *, remote_nonnull_storage_vol*);
@@ -2008,6 +2090,7 @@ extern  bool_t xdr_remote_nonnull_node_device (XDR *, remote_nonnull_node_device
 extern  bool_t xdr_remote_nonnull_secret (XDR *, remote_nonnull_secret*);
 extern  bool_t xdr_remote_domain (XDR *, remote_domain*);
 extern  bool_t xdr_remote_network (XDR *, remote_network*);
+extern  bool_t xdr_remote_nwfilter (XDR *, remote_nwfilter*);
 extern  bool_t xdr_remote_storage_pool (XDR *, remote_storage_pool*);
 extern  bool_t xdr_remote_storage_vol (XDR *, remote_storage_vol*);
 extern  bool_t xdr_remote_node_device (XDR *, remote_node_device*);
@@ -2133,6 +2216,18 @@ extern  bool_t xdr_remote_network_get_bridge_name_ret (XDR *, remote_network_get
 extern  bool_t xdr_remote_network_get_autostart_args (XDR *, remote_network_get_autostart_args*);
 extern  bool_t xdr_remote_network_get_autostart_ret (XDR *, remote_network_get_autostart_ret*);
 extern  bool_t xdr_remote_network_set_autostart_args (XDR *, remote_network_set_autostart_args*);
+extern  bool_t xdr_remote_num_of_nwfilters_ret (XDR *, remote_num_of_nwfilters_ret*);
+extern  bool_t xdr_remote_list_nwfilters_args (XDR *, remote_list_nwfilters_args*);
+extern  bool_t xdr_remote_list_nwfilters_ret (XDR *, remote_list_nwfilters_ret*);
+extern  bool_t xdr_remote_nwfilter_lookup_by_uuid_args (XDR *, remote_nwfilter_lookup_by_uuid_args*);
+extern  bool_t xdr_remote_nwfilter_lookup_by_uuid_ret (XDR *, remote_nwfilter_lookup_by_uuid_ret*);
+extern  bool_t xdr_remote_nwfilter_lookup_by_name_args (XDR *, remote_nwfilter_lookup_by_name_args*);
+extern  bool_t xdr_remote_nwfilter_lookup_by_name_ret (XDR *, remote_nwfilter_lookup_by_name_ret*);
+extern  bool_t xdr_remote_nwfilter_define_xml_args (XDR *, remote_nwfilter_define_xml_args*);
+extern  bool_t xdr_remote_nwfilter_define_xml_ret (XDR *, remote_nwfilter_define_xml_ret*);
+extern  bool_t xdr_remote_nwfilter_undefine_args (XDR *, remote_nwfilter_undefine_args*);
+extern  bool_t xdr_remote_nwfilter_get_xml_desc_args (XDR *, remote_nwfilter_get_xml_desc_args*);
+extern  bool_t xdr_remote_nwfilter_get_xml_desc_ret (XDR *, remote_nwfilter_get_xml_desc_ret*);
 extern  bool_t xdr_remote_num_of_interfaces_ret (XDR *, remote_num_of_interfaces_ret*);
 extern  bool_t xdr_remote_list_interfaces_args (XDR *, remote_list_interfaces_args*);
 extern  bool_t xdr_remote_list_interfaces_ret (XDR *, remote_list_interfaces_ret*);
@@ -2296,6 +2391,7 @@ extern bool_t xdr_remote_string ();
 extern bool_t xdr_remote_uuid ();
 extern bool_t xdr_remote_nonnull_domain ();
 extern bool_t xdr_remote_nonnull_network ();
+extern bool_t xdr_remote_nonnull_nwfilter ();
 extern bool_t xdr_remote_nonnull_interface ();
 extern bool_t xdr_remote_nonnull_storage_pool ();
 extern bool_t xdr_remote_nonnull_storage_vol ();
@@ -2303,6 +2399,7 @@ extern bool_t xdr_remote_nonnull_node_device ();
 extern bool_t xdr_remote_nonnull_secret ();
 extern bool_t xdr_remote_domain ();
 extern bool_t xdr_remote_network ();
+extern bool_t xdr_remote_nwfilter ();
 extern bool_t xdr_remote_storage_pool ();
 extern bool_t xdr_remote_storage_vol ();
 extern bool_t xdr_remote_node_device ();
@@ -2428,6 +2525,18 @@ extern bool_t xdr_remote_network_get_bridge_name_ret ();
 extern bool_t xdr_remote_network_get_autostart_args ();
 extern bool_t xdr_remote_network_get_autostart_ret ();
 extern bool_t xdr_remote_network_set_autostart_args ();
+extern bool_t xdr_remote_num_of_nwfilters_ret ();
+extern bool_t xdr_remote_list_nwfilters_args ();
+extern bool_t xdr_remote_list_nwfilters_ret ();
+extern bool_t xdr_remote_nwfilter_lookup_by_uuid_args ();
+extern bool_t xdr_remote_nwfilter_lookup_by_uuid_ret ();
+extern bool_t xdr_remote_nwfilter_lookup_by_name_args ();
+extern bool_t xdr_remote_nwfilter_lookup_by_name_ret ();
+extern bool_t xdr_remote_nwfilter_define_xml_args ();
+extern bool_t xdr_remote_nwfilter_define_xml_ret ();
+extern bool_t xdr_remote_nwfilter_undefine_args ();
+extern bool_t xdr_remote_nwfilter_get_xml_desc_args ();
+extern bool_t xdr_remote_nwfilter_get_xml_desc_ret ();
 extern bool_t xdr_remote_num_of_interfaces_ret ();
 extern bool_t xdr_remote_list_interfaces_args ();
 extern bool_t xdr_remote_list_interfaces_ret ();

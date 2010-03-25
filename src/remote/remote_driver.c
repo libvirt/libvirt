@@ -248,6 +248,7 @@ static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int 
 
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
+static virNWFilterPtr get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static virInterfacePtr get_nonnull_interface (virConnectPtr conn, remote_nonnull_interface iface);
 static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
@@ -259,6 +260,7 @@ static void make_nonnull_interface (remote_nonnull_interface *interface_dst, vir
 static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
+static void make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src);
 void remoteDomainEventFired(int watch, int fd, int event, void *data);
 void remoteDomainEventQueueFlush(int timer, void *opaque);
 /*----------------------------------------------------------------------*/
@@ -6111,6 +6113,287 @@ done:
     return rv;
 }
 
+/* ------------------------------------------------------------- */
+
+static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
+remoteNWFilterOpen (virConnectPtr conn,
+                    virConnectAuthPtr auth,
+                    int flags)
+{
+    if (inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (conn->driver &&
+        STREQ (conn->driver->name, "remote")) {
+        struct private_data *priv;
+
+       /* If we're here, the remote driver is already
+         * in use due to a) a QEMU uri, or b) a remote
+         * URI. So we can re-use existing connection
+         */
+        priv = conn->privateData;
+        remoteDriverLock(priv);
+        priv->localUses++;
+        conn->nwfilterPrivateData = priv;
+        remoteDriverUnlock(priv);
+        return VIR_DRV_OPEN_SUCCESS;
+    } else {
+        /* Using a non-remote driver, so we need to open a
+         * new connection for network filtering APIs, forcing it to
+         * use the UNIX transport. This handles Xen driver
+         * which doesn't have its own impl of the network filtering APIs.
+         */
+        struct private_data *priv;
+        int ret;
+        ret = remoteOpenSecondaryDriver(conn,
+                                        auth,
+                                        flags,
+                                        &priv);
+        if (ret == VIR_DRV_OPEN_SUCCESS)
+            conn->nwfilterPrivateData = priv;
+        return ret;
+    }
+}
+
+static int
+remoteNWFilterClose (virConnectPtr conn)
+{
+    int rv = 0;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+    priv->localUses--;
+    if (!priv->localUses) {
+        rv = doRemoteClose(conn, priv);
+        conn->nwfilterPrivateData = NULL;
+        remoteDriverUnlock(priv);
+        virMutexDestroy(&priv->lock);
+        VIR_FREE(priv);
+    }
+    if (priv)
+        remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteNumOfNWFilters (virConnectPtr conn)
+{
+    int rv = -1;
+    remote_num_of_nwfilters_ret ret;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_NWFILTERS,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_num_of_nwfilters_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static virNWFilterPtr
+remoteNWFilterDefineXML (virConnectPtr conn, const char *xmlDesc,
+                         unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virNWFilterPtr net = NULL;
+    remote_nwfilter_define_xml_args args;
+    remote_nwfilter_define_xml_ret ret;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    args.xml = (char *) xmlDesc;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NWFILTER_DEFINE_XML,
+              (xdrproc_t) xdr_remote_nwfilter_define_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_nwfilter_define_xml_ret, (char *) &ret) == -1)
+        goto done;
+
+    net = get_nonnull_nwfilter (conn, ret.nwfilter);
+    xdr_free ((xdrproc_t) &xdr_remote_nwfilter_define_xml_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return net;
+}
+
+
+static int
+remoteNWFilterUndefine (virNWFilterPtr nwfilter)
+{
+    int rv = -1;
+    remote_nwfilter_undefine_args args;
+    struct private_data *priv = nwfilter->conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_nwfilter (&args.nwfilter, nwfilter);
+
+    if (call (nwfilter->conn, priv, 0, REMOTE_PROC_NWFILTER_UNDEFINE,
+              (xdrproc_t) xdr_remote_nwfilter_undefine_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteListNWFilters (virConnectPtr conn, char **const names, int maxnames)
+{
+    int rv = -1;
+    int i;
+    remote_list_nwfilters_args args;
+    remote_list_nwfilters_ret ret;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    if (maxnames > REMOTE_NWFILTER_NAME_LIST_MAX) {
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote nwfilters: %d > %d"),
+                maxnames, REMOTE_NWFILTER_NAME_LIST_MAX);
+        goto done;
+    }
+    args.maxnames = maxnames;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_LIST_NWFILTERS,
+              (xdrproc_t) xdr_remote_list_nwfilters_args, (char *) &args,
+              (xdrproc_t) xdr_remote_list_nwfilters_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > maxnames) {
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote nwfilters: %d > %d"),
+                ret.names.names_len, maxnames);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_list_nwfilters_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+
+static virNWFilterPtr
+remoteNWFilterLookupByUUID (virConnectPtr conn,
+                            const unsigned char *uuid)
+{
+    virNWFilterPtr net = NULL;
+    remote_nwfilter_lookup_by_uuid_args args;
+    remote_nwfilter_lookup_by_uuid_ret ret;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NWFILTER_LOOKUP_BY_UUID,
+              (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_args, (char *) &args,
+              (xdrproc_t) xdr_remote_nwfilter_lookup_by_uuid_ret, (char *) &ret) == -1)
+        goto done;
+
+    net = get_nonnull_nwfilter (conn, ret.nwfilter);
+    xdr_free ((xdrproc_t) &xdr_remote_nwfilter_lookup_by_uuid_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return net;
+}
+
+static virNWFilterPtr
+remoteNWFilterLookupByName (virConnectPtr conn,
+                            const char *name)
+{
+    virNWFilterPtr net = NULL;
+    remote_nwfilter_lookup_by_name_args args;
+    remote_nwfilter_lookup_by_name_ret ret;
+    struct private_data *priv = conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    args.name = (char *) name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NWFILTER_LOOKUP_BY_NAME,
+              (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_args, (char *) &args,
+              (xdrproc_t) xdr_remote_nwfilter_lookup_by_name_ret, (char *) &ret) == -1)
+        goto done;
+
+    net = get_nonnull_nwfilter (conn, ret.nwfilter);
+    xdr_free ((xdrproc_t) &xdr_remote_nwfilter_lookup_by_name_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return net;
+}
+
+
+static char *
+remoteNWFilterGetXMLDesc (virNWFilterPtr nwfilter, unsigned int flags)
+{
+    char *rv = NULL;
+    remote_nwfilter_get_xml_desc_args args;
+    remote_nwfilter_get_xml_desc_ret ret;
+    struct private_data *priv = nwfilter->conn->nwfilterPrivateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_nwfilter (&args.nwfilter, nwfilter);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (nwfilter->conn, priv, 0, REMOTE_PROC_NWFILTER_GET_XML_DESC,
+              (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_args, (char *) &args,
+              (xdrproc_t) xdr_remote_nwfilter_get_xml_desc_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees. */
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -9382,6 +9665,13 @@ get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret)
     return virGetSecret(conn, BAD_CAST secret.uuid, secret.usageType, secret.usageID);
 }
 
+static virNWFilterPtr
+get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter)
+{
+    return virGetNWFilter (conn, nwfilter.name, BAD_CAST nwfilter.uuid);
+}
+
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -9427,6 +9717,13 @@ make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
     memcpy (secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
     secret_dst->usageType = secret_src->usageType;
     secret_dst->usageID = secret_src->usageID;
+}
+
+static void
+make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src)
+{
+    nwfilter_dst->name = nwfilter_src->name;
+    memcpy (nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
 }
 
 /*----------------------------------------------------------------------*/
@@ -9635,6 +9932,19 @@ static virDeviceMonitor dev_monitor = {
     .deviceDestroy = remoteNodeDeviceDestroy
 };
 
+static virNWFilterDriver nwfilter_driver = {
+    .name = "remote",
+    .open = remoteNWFilterOpen,
+    .close = remoteNWFilterClose,
+    .nwfilterLookupByUUID = remoteNWFilterLookupByUUID,
+    .nwfilterLookupByName = remoteNWFilterLookupByName,
+    .getXMLDesc           = remoteNWFilterGetXMLDesc,
+    .defineXML            = remoteNWFilterDefineXML,
+    .undefine             = remoteNWFilterUndefine,
+    .numOfNWFilters       = remoteNumOfNWFilters,
+    .listNWFilters        = remoteListNWFilters,
+};
+
 
 #ifdef WITH_LIBVIRTD
 static virStateDriver state_driver = {
@@ -9659,6 +9969,7 @@ remoteRegister (void)
     if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
     if (virRegisterDeviceMonitor (&dev_monitor) == -1) return -1;
     if (virRegisterSecretDriver (&secret_driver) == -1) return -1;
+    if (virRegisterNWFilterDriver(&nwfilter_driver) == -1) return -1;
 #ifdef WITH_LIBVIRTD
     if (virRegisterStateDriver (&state_driver) == -1) return -1;
 #endif
