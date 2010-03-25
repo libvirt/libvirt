@@ -73,6 +73,7 @@
 
 static const char *supported_protocols[] = {
     "ipv4",
+    "ipv6",
     "arp",
     NULL,
 };
@@ -117,6 +118,8 @@ printDataType(virConnectPtr conn,
               nwItemDescPtr item)
 {
     int done;
+    int i, pos, s;
+
     if (printVar(conn, vars, buf, bufsize, item, &done))
         return 1;
 
@@ -133,6 +136,21 @@ printDataType(virConnectPtr conn,
             virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
                                    _("Buffer too small for IP address"));
             return 1;
+        }
+    break;
+
+    case DATATYPE_IPV6ADDR:
+        pos = 0;
+        for (i = 0; i < 16; i++) {
+            s = snprintf(&buf[pos], bufsize - pos, "%x%s",
+                         (unsigned int)item->u.ipaddr.addr.ipv6Addr[i],
+                         ((i & 1) && (i < 15)) ? ":" : "" );
+            if (s >= bufsize - pos) {
+                virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+                                       _("Buffer too small for IPv6 address"));
+                return 1;
+            }
+            pos += s;
         }
     break;
 
@@ -155,6 +173,7 @@ printDataType(virConnectPtr conn,
         }
     break;
 
+    case DATATYPE_IPV6MASK:
     case DATATYPE_IPMASK:
     case DATATYPE_UINT8:
         if (snprintf(buf, bufsize, "%d",
@@ -304,6 +323,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 {
     char macaddr[VIR_MAC_STRING_BUFLEN],
          ipaddr[INET_ADDRSTRLEN],
+         ipv6addr[INET6_ADDRSTRLEN],
          number[20];
     char chain[MAX_CHAINNAME_LENGTH];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -587,6 +607,135 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
     break;
 
+    case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
+        virBufferVSprintf(&buf,
+                          CMD_DEF_PRE EBTABLES_CMD " -t %s -%%c %s %%s",
+                          EBTABLES_DEFAULT_TABLE, chain);
+
+        if (ebtablesHandleEthHdr(conn,
+                                 &buf,
+                                 vars,
+                                 &rule->p.ipv6HdrFilter.ethHdr))
+            goto err_exit;
+
+        virBufferAddLit(&buf,
+                        " -p ipv6");
+
+        if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr)) {
+            if (printDataType(conn,
+                              vars,
+                              ipv6addr, sizeof(ipv6addr),
+                              &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr))
+                goto err_exit;
+
+            virBufferVSprintf(&buf,
+                          " --ip6-source %s %s",
+                          ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr),
+                          ipv6addr);
+
+            if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask)) {
+                if (printDataType(conn,
+                                  vars,
+                                  number, sizeof(number),
+                                  &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask))
+                    goto err_exit;
+                virBufferVSprintf(&buf,
+                             "/%s",
+                             number);
+            }
+        }
+
+        if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr)) {
+
+            if (printDataType(conn,
+                              vars,
+                              ipv6addr, sizeof(ipv6addr),
+                              &rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr))
+                goto err_exit;
+
+            virBufferVSprintf(&buf,
+                          " --ip6-destination %s %s",
+                          ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr),
+                          ipv6addr);
+
+            if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask)) {
+                if (printDataType(conn,
+                                  vars,
+                                  number, sizeof(number),
+                                  &rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask))
+                    goto err_exit;
+                virBufferVSprintf(&buf,
+                                  "/%s",
+                                  number);
+            }
+        }
+
+        if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataProtocolID)) {
+            if (printDataType(conn,
+                              vars,
+                              number, sizeof(number),
+                              &rule->p.ipv6HdrFilter.ipHdr.dataProtocolID))
+                goto err_exit;
+
+            virBufferVSprintf(&buf,
+                 " --ip6-protocol %s %s",
+                 ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.ipHdr.dataProtocolID),
+                 number);
+        }
+
+        if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataSrcPortStart)) {
+
+            if (printDataType(conn,
+                              vars,
+                              number, sizeof(number),
+                              &rule->p.ipv6HdrFilter.portData.dataSrcPortStart))
+                goto err_exit;
+
+            virBufferVSprintf(&buf,
+                          " --ip6-source-port %s %s",
+                          ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.portData.dataSrcPortStart),
+                          number);
+
+            if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataSrcPortEnd)) {
+                if (printDataType(conn,
+                                  vars,
+                                  number, sizeof(number),
+                                  &rule->p.ipv6HdrFilter.portData.dataSrcPortEnd))
+                    goto err_exit;
+
+                virBufferVSprintf(&buf,
+                                  ":%s",
+                                  number);
+            }
+        }
+
+        if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataDstPortStart)) {
+
+            if (printDataType(conn,
+                              vars,
+                              number, sizeof(number),
+                              &rule->p.ipv6HdrFilter.portData.dataDstPortStart))
+                goto err_exit;
+
+            virBufferVSprintf(&buf,
+                          " --ip6-destination-port %s %s",
+                          ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.portData.dataDstPortStart),
+                          number);
+
+            if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataDstPortEnd)) {
+                if (printDataType(conn,
+                                vars,
+                                number, sizeof(number),
+                                &rule->p.ipv6HdrFilter.portData.dataDstPortEnd))
+                    goto err_exit;
+
+                virBufferVSprintf(&buf,
+                                  ":%s",
+                                  number);
+            }
+        }
+    break;
+
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
         virBufferVSprintf(&buf,
                           CMD_DEF_PRE EBTABLES_CMD " -t %s -%%c %s %%s",
@@ -650,6 +799,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
+    case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
 
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
@@ -1229,6 +1379,11 @@ ebiptablesApplyNewRules(virConnectPtr conn,
         ebtablesCreateTmpSubChain(conn, &buf, 1, ifname, "ipv4", 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
         ebtablesCreateTmpSubChain(conn, &buf, 0, ifname, "ipv4", 1);
+
+    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
+        ebtablesCreateTmpSubChain(conn, &buf, 1, ifname, "ipv6", 1);
+    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
+        ebtablesCreateTmpSubChain(conn, &buf, 0, ifname, "ipv6", 1);
 
     // keep arp as last
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))

@@ -73,7 +73,8 @@ VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
 VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
               "arp",
-              "ipv4");
+              "ipv4",
+              "ipv6");
 
 
 /*
@@ -366,6 +367,9 @@ static const struct int_map macProtoMap[] = {
       .attr = ETHERTYPE_IP,
       .val  = "ipv4",
     }, {
+      .attr = ETHERTYPE_IPV6,
+      .val  = "ipv6",
+    }, {
       .val  = NULL,
     }
 };
@@ -447,6 +451,13 @@ checkIPv4Mask(enum attrDatatype datatype ATTRIBUTE_UNUSED, void *maskptr,
               virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
 {
     return checkValidMask(maskptr, 4);
+}
+
+static bool
+checkIPv6Mask(enum attrDatatype datatype ATTRIBUTE_UNUSED, void *maskptr,
+              virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
+{
+    return checkValidMask(maskptr, 16);
 }
 
 
@@ -765,6 +776,61 @@ static const virXMLAttr2Struct ipAttributes[] = {
 };
 
 
+static const virXMLAttr2Struct ipv6Attributes[] = {
+    COMMON_MAC_PROPS(ipv6HdrFilter),
+    {
+        .name = SRCIPADDR,
+        .datatype = DATATYPE_IPV6ADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataSrcIPAddr),
+    },
+    {
+        .name = DSTIPADDR,
+        .datatype = DATATYPE_IPV6ADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataDstIPAddr),
+    },
+    {
+        .name = SRCIPMASK,
+        .datatype = DATATYPE_IPV6MASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataSrcIPMask),
+    },
+    {
+        .name = DSTIPMASK,
+        .datatype = DATATYPE_IPV6MASK,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataDstIPMask),
+    },
+    {
+        .name = "protocol",
+        .datatype = DATATYPE_STRING,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataProtocolID),
+        .validator= checkIPProtocolID,
+        .formatter= formatIPProtocolID,
+    },
+    {
+        .name = SRCPORTSTART,
+        .datatype = DATATYPE_UINT16,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataSrcPortStart),
+    },
+    {
+        .name = SRCPORTEND,
+        .datatype = DATATYPE_UINT16,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataSrcPortEnd),
+    },
+    {
+        .name = DSTPORTSTART,
+        .datatype = DATATYPE_UINT16,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataDstPortStart),
+    },
+    {
+        .name = DSTPORTEND,
+        .datatype = DATATYPE_UINT16,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.portData.dataDstPortEnd),
+    },
+    {
+        .name = NULL,
+    }
+};
+
+
 typedef struct _virAttributes virAttributes;
 struct _virAttributes {
     const char *id;
@@ -786,6 +852,10 @@ static const virAttributes virAttr[] = {
         .id = "ip",
         .att = ipAttributes,
         .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IP,
+    }, {
+        .id = "ipv6",
+        .att = ipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IPV6,
     }, {
         .id = NULL,
     }
@@ -820,6 +890,89 @@ virNWIPv4AddressParser(const char *input,
             return 0;
         output->addr.ipv4Addr[i] = (unsigned char)d;
         n = endptr + 1;
+    }
+    return 1;
+}
+
+
+static bool
+virNWIPv6AddressParser(const char *input,
+                       nwIPAddressPtr output)
+{
+    int i, j, pos;
+    uint16_t n;
+    int shiftpos = -1;
+    char prevchar;
+    char base;
+
+    memset(output, 0x0, sizeof(*output));
+
+    output->isIPv6 = 1;
+
+    pos = 0;
+    i = 0;
+
+    while (i < 8) {
+        j = 0;
+        n = 0;
+        while (1) {
+            prevchar = input[pos++];
+            if (prevchar == ':' || prevchar == 0) {
+                if (j > 0) {
+                    output->addr.ipv6Addr[i * 2 + 0] = n >> 8;
+                    output->addr.ipv6Addr[i * 2 + 1] = n;
+                    i++;
+                }
+                break;
+            }
+
+            if (j >= 4)
+                return 0;
+
+            if (prevchar >= '0' && prevchar <= '9')
+                base = '0';
+            else if (prevchar >= 'a' && prevchar <= 'f')
+                base = 'a' - 10;
+            else if (prevchar >= 'A' && prevchar <= 'F')
+                base = 'A' - 10;
+            else
+                return 0;
+            n <<= 4;
+            n |= (prevchar - base);
+            j++;
+        }
+
+        if (prevchar == 0)
+            break;
+
+        if (input[pos] == ':') {
+            pos ++;
+            // sequence of zeros
+            if (prevchar != ':')
+                return 0;
+
+            if (shiftpos != -1)
+                return 0;
+
+            shiftpos = i;
+        }
+    }
+
+    if (shiftpos != -1) {
+        if (i >= 7)
+            return 0;
+        i--;
+        j = 0;
+        while (i >= shiftpos) {
+            output->addr.ipv6Addr[15 - (j*2) - 1] =
+                              output->addr.ipv6Addr[i * 2 + 0];
+            output->addr.ipv6Addr[15 - (j*2) - 0] =
+                              output->addr.ipv6Addr[i * 2 + 1];
+            output->addr.ipv6Addr[i * 2 + 0] = 0;
+            output->addr.ipv6Addr[i * 2 + 1] = 0;
+            i--;
+            j++;
+        }
     }
     return 1;
 }
@@ -969,6 +1122,41 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                             found = 1;
                         break;
 
+                        case DATATYPE_IPV6ADDR:
+                            storage_ptr = &item->u.ipaddr;
+                            if (!virNWIPv6AddressParser(prop,
+                                       (nwIPAddressPtr)storage_ptr)) {
+                                rc = -1;
+                            }
+                            found = 1;
+                        break;
+
+                        case DATATYPE_IPV6MASK:
+                            storage_ptr = &item->u.u8;
+                            if (!virNWIPv6AddressParser(prop, &ipaddr)) {
+                                if (sscanf(prop, "%d", &int_val) == 1) {
+                                    if (int_val >= 0 && int_val <= 128) {
+                                        if (!validator)
+                                            *(uint8_t *)storage_ptr =
+                                                   (uint8_t)int_val;
+                                        found = 1;
+                                        data_ptr = &int_val;
+                                    } else
+                                        rc = -1;
+                                } else
+                                    rc = -1;
+                            } else {
+                                if (checkIPv6Mask(datatype,
+                                                  ipaddr.addr.ipv6Addr, nwf))
+                                    *(uint8_t *)storage_ptr =
+                                       getMaskNumBits(ipaddr.addr.ipv6Addr,
+                                                 sizeof(ipaddr.addr.ipv6Addr));
+                                else
+                                    rc = -1;
+                                found = 1;
+                            }
+                        break;
+
                         case DATATYPE_STRING:
                             if (!validator) {
                                 // not supported
@@ -1074,6 +1262,13 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.ipHdrFilter.ipHdr.dataDstIPMask,
                       rule->p.ipHdrFilter.ipHdr.dataDstIPAddr);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
+        COPY_NEG_SIGN(rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
@@ -1952,7 +2147,36 @@ virNWIPAddressFormat(virBufferPtr buf, nwIPAddressPtr ipaddr)
                           ipaddr->addr.ipv4Addr[2],
                           ipaddr->addr.ipv4Addr[3]);
     } else {
-        virBufferAddLit(buf, "MISSING IPv6 ADDRESS FORMATTER");
+        int i;
+        int dcshown = 0, in_dc = 0;
+        unsigned short n;
+        while (i < 8) {
+            n = (ipaddr->addr.ipv6Addr[i * 2 + 0] << 8) |
+                 ipaddr->addr.ipv6Addr[i * 2 + 1];
+            if (n == 0) {
+                if (!dcshown) {
+                    in_dc = 1;
+                    if (i == 0)
+                        virBufferAddLit(buf, ":");
+                    dcshown = 1;
+                }
+                if (in_dc) {
+                    i++;
+                    continue;
+                }
+            }
+            if (in_dc) {
+                dcshown = 1;
+                virBufferAddLit(buf, ":");
+                in_dc = 0;
+            }
+            i++;
+            virBufferVSprintf(buf, "%x", n);
+            if (i < 8)
+                virBufferAddLit(buf, ":");
+        }
+        if (in_dc)
+            virBufferAddLit(buf, ":");
     }
 }
 
@@ -2021,6 +2245,7 @@ virNWFilterRuleDefDetailsFormat(virConnectPtr conn,
                switch (att[i].datatype) {
 
                case DATATYPE_IPMASK:
+               case DATATYPE_IPV6MASK:
                    // display all masks in CIDR format
                case DATATYPE_UINT8:
                    storage_ptr = &item->u.u8;
@@ -2033,6 +2258,7 @@ virNWFilterRuleDefDetailsFormat(virConnectPtr conn,
                break;
 
                case DATATYPE_IPADDR:
+               case DATATYPE_IPV6ADDR:
                    storage_ptr = &item->u.ipaddr;
                    virNWIPAddressFormat(buf,
                                         (nwIPAddressPtr)storage_ptr);

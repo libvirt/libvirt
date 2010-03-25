@@ -68,8 +68,10 @@ enum attrDatatype {
     DATATYPE_IPADDR           = (1 << 4),
     DATATYPE_IPMASK           = (1 << 5),
     DATATYPE_STRING           = (1 << 6),
+    DATATYPE_IPV6ADDR         = (1 << 7),
+    DATATYPE_IPV6MASK         = (1 << 8),
 
-    DATATYPE_LAST             = (1 << 7),
+    DATATYPE_LAST             = (1 << 9),
 };
 
 
@@ -86,7 +88,7 @@ struct _nwIPAddress {
     int isIPv6;
     union {
         unsigned char ipv4Addr[4];
-        /* unsigned char ipv6Addr[16]; future :-) */
+        unsigned char ipv6Addr[16];
     } addr;
 };
 
@@ -171,6 +173,15 @@ struct _ipHdrFilterDef {
 };
 
 
+typedef struct _ipv6HdrFilterDef  ipv6HdrFilterDef;
+typedef ipv6HdrFilterDef *ipv6HdrFilterDefPtr;
+struct _ipv6HdrFilterDef {
+    ethHdrDataDef  ethHdr;
+    ipHdrDataDef   ipHdr;
+    portDataDef    portData;
+};
+
+
 enum virNWFilterRuleActionType {
     VIR_NWFILTER_RULE_ACTION_DROP = 0,
     VIR_NWFILTER_RULE_ACTION_ACCEPT,
@@ -198,6 +209,7 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_MAC,
     VIR_NWFILTER_RULE_PROTOCOL_ARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
+    VIR_NWFILTER_RULE_PROTOCOL_IPV6,
 };
 
 enum virNWFilterEbtablesTableType {
@@ -223,6 +235,7 @@ struct _virNWFilterRuleDef {
         ethHdrFilterDef  ethHdrFilter;
         arpHdrFilterDef  arpHdrFilter;
         ipHdrFilterDef   ipHdrFilter;
+        ipv6HdrFilterDef ipv6HdrFilter;
     } p;
 
     int nvars;
@@ -249,6 +262,7 @@ enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_ROOT = 0,
     VIR_NWFILTER_CHAINSUFFIX_ARP,
     VIR_NWFILTER_CHAINSUFFIX_IPv4,
+    VIR_NWFILTER_CHAINSUFFIX_IPv6,
 
     VIR_NWFILTER_CHAINSUFFIX_LAST,
 };
