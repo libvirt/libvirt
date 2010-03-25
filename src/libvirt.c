@@ -91,6 +91,8 @@ static virDeviceMonitorPtr virDeviceMonitorTab[MAX_DRIVERS];
 static int virDeviceMonitorTabCount = 0;
 static virSecretDriverPtr virSecretDriverTab[MAX_DRIVERS];
 static int virSecretDriverTabCount = 0;
+static virNWFilterDriverPtr virNWFilterDriverTab[MAX_DRIVERS];
+static int virNWFilterDriverTabCount = 0;
 #ifdef WITH_LIBVIRTD
 static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
@@ -655,6 +657,32 @@ virLibSecretError(virSecretPtr secret, virErrorNumber error, const char *info)
 }
 
 /**
+ * virLibNWFilterError:
+ * @conn: the connection if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the connection level
+ */
+static void
+virLibNWFilterError(virNWFilterPtr pool, virErrorNumber error,
+                    const char *info)
+{
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_NWFILTER)
+        conn = pool->conn;
+
+    virRaiseError(conn, NULL, NULL, VIR_FROM_NWFILTER, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
  *
@@ -808,6 +836,38 @@ virRegisterSecretDriver(virSecretDriverPtr driver)
     virSecretDriverTab[virSecretDriverTabCount] = driver;
     return virSecretDriverTabCount++;
 }
+
+/**
+ * virRegisterNWFilterDriver:
+ * @driver: pointer to a network filter driver block
+ *
+ * Register a network filter virtualization driver
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterNWFilterDriver(virNWFilterDriverPtr driver)
+{
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    if (virNWFilterDriverTabCount >= MAX_DRIVERS) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+
+    DEBUG ("registering %s as network filter driver %d",
+           driver->name, virNWFilterDriverTabCount);
+
+    virNWFilterDriverTab[virNWFilterDriverTabCount] = driver;
+    return virNWFilterDriverTabCount++;
+}
+
 
 /**
  * virRegisterDriver:
@@ -1249,6 +1309,26 @@ do_open (const char *name,
             break;
          } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->secretDriver = virSecretDriverTab[i];
+            break;
+        }
+    }
+
+    /* Network filter driver. Optional */
+    for (i = 0; i < virNWFilterDriverTabCount; i++) {
+        res = virNWFilterDriverTab[i]->open (ret, auth, flags);
+        DEBUG("nwfilter driver %d %s returned %s",
+              i, virNWFilterDriverTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+        if (res == VIR_DRV_OPEN_ERROR) {
+            if (STREQ(virNWFilterDriverTab[i]->name, "remote")) {
+                virLibConnWarning (NULL, VIR_WAR_NO_NWFILTER,
+                                   _("Is the daemon running ?"));
+            }
+            break;
+         } else if (res == VIR_DRV_OPEN_SUCCESS) {
+            ret->nwfilterDriver = virNWFilterDriverTab[i];
             break;
         }
     }
@@ -11081,6 +11161,512 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool)
 error:
     virDispatchError(pool->conn);
     return -1;
+}
+
+
+
+/**
+ * virConnectNumOfNWFilters:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of nwfilters.
+ *
+ * Returns the number of nwfilters found or -1 in case of error
+ */
+int
+virConnectNumOfNWFilters(virConnectPtr conn)
+{
+    DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->numOfNWFilters) {
+        int ret;
+        ret = conn->nwfilterDriver->numOfNWFilters (conn);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virConnectListNWFilters:
+ * @conn: pointer to the hypervisor connection
+ * @names: array to collect the list of names of network filters
+ * @maxnames: size of @names
+ *
+ * Collect the list of network filters, and store their names in @names
+ *
+ * Returns the number of network filters found or -1 in case of error
+ */
+int
+virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
+{
+    DEBUG("conn=%p, names=%p, maxnames=%d", conn, names, maxnames);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    if ((names == NULL) || (maxnames < 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->listNWFilters) {
+        int ret;
+        ret = conn->nwfilterDriver->listNWFilters (conn, names, maxnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNWFilterLookupByName:
+ * @conn: pointer to the hypervisor connection
+ * @name: name for the network filter
+ *
+ * Try to lookup a network filter on the given hypervisor based on its name.
+ *
+ * Returns a new nwfilter object or NULL in case of failure.  If the
+ * network filter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
+ */
+virNWFilterPtr
+virNWFilterLookupByName(virConnectPtr conn, const char *name)
+{
+    DEBUG("conn=%p, name=%s", conn, name);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    if (name == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto  error;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByName) {
+        virNWFilterPtr ret;
+        ret = conn->nwfilterDriver->nwfilterLookupByName (conn, name);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virNWFilterLookupByUUID:
+ * @conn: pointer to the hypervisor connection
+ * @uuid: the raw UUID for the network filter
+ *
+ * Try to lookup a network filter on the given hypervisor based on its UUID.
+ *
+ * Returns a new nwfilter object or NULL in case of failure.  If the
+ * nwfdilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
+ */
+virNWFilterPtr
+virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    DEBUG("conn=%p, uuid=%s", conn, uuid);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    if (uuid == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterLookupByUUID){
+        virNWFilterPtr ret;
+        ret = conn->nwfilterDriver->nwfilterLookupByUUID (conn, uuid);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virNWFIlterLookupByUUIDString:
+ * @conn: pointer to the hypervisor connection
+ * @uuidstr: the string UUID for the nwfilter
+ *
+ * Try to lookup an nwfilter on the given hypervisor based on its UUID.
+ *
+ * Returns a new nwfilter object or NULL in case of failure.  If the
+ * nwfilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
+ */
+virNWFilterPtr
+virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    DEBUG("conn=%p, uuidstr=%s", conn, uuidstr);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    if (uuidstr == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (virUUIDParse(uuidstr, uuid) < 0) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    return virNWFilterLookupByUUID(conn, &uuid[0]);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virNWFilterFree:
+ * @nwfilter: a nwfilter object
+ *
+ * Free the nwfilter object. The running instance is kept alive.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNWFilterFree(virNWFilterPtr nwfilter)
+{
+    DEBUG("nwfilter=%p", nwfilter);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (virUnrefNWFilter(nwfilter) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+    return 0;
+}
+
+/**
+ * virNWFilterGetName:
+ * @nwfilter: a nwfilter object
+ *
+ * Get the public name for the network filter
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * its lifetime will be the same as the nwfilter object.
+ */
+const char *
+virNWFilterGetName(virNWFilterPtr nwfilter)
+{
+    DEBUG("nwfilter=%p", nwfilter);
+
+    virResetLastError();
+
+    if (!VIR_IS_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    return (nwfilter->name);
+}
+
+/**
+ * virNWFilterGetUUID:
+ * @nwfilter: a nwfilter object
+ * @uuid: pointer to a VIR_UUID_BUFLEN bytes array
+ *
+ * Get the UUID for a network filter
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNWFilterGetUUID(virNWFilterPtr nwfilter, unsigned char *uuid)
+{
+    DEBUG("nwfilter=%p, uuid=%p", nwfilter, uuid);
+
+    virResetLastError();
+
+    if (!VIR_IS_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (uuid == NULL) {
+        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    memcpy(uuid, &nwfilter->uuid[0], VIR_UUID_BUFLEN);
+
+    return 0;
+
+error:
+    virDispatchError(nwfilter->conn);
+    return -1;
+}
+
+/**
+ * virNWFilterGetUUIDString:
+ * @nwfilter: a nwfilter object
+ * @buf: pointer to a VIR_UUID_STRING_BUFLEN bytes array
+ *
+ * Get the UUID for a network filter as string. For more information about
+ * UUID see RFC4122.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    DEBUG("nwfilter=%p, buf=%p", nwfilter, buf);
+
+    virResetLastError();
+
+    if (!VIR_IS_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (buf == NULL) {
+        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (virNWFilterGetUUID(nwfilter, &uuid[0]))
+        goto error;
+
+    virUUIDFormat(uuid, buf);
+    return 0;
+
+error:
+    virDispatchError(nwfilter->conn);
+    return -1;
+}
+
+
+/**
+ * virNWFilterDefineXML:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: an XML description of the nwfilter
+ *
+ * Define a new network filter, based on an XML description
+ * similar to the one returned by virNWFilterGetXMLDesc()
+ *
+ * Returns a new nwfilter object or NULL in case of failure
+ */
+virNWFilterPtr
+virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
+{
+    DEBUG("conn=%p, xmlDesc=%s", conn, xmlDesc);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    if (xmlDesc == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->defineXML) {
+        virNWFilterPtr ret;
+        ret = conn->nwfilterDriver->defineXML (conn, xmlDesc, 0);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterUndefine:
+ * @nwfilter: a nwfilter object
+ *
+ * Undefine the nwfilter object. This call will not succeed if
+ * a running VM is referencing the filter. This does not free the
+ * associated virNWFilterPtr object.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNWFilterUndefine(virNWFilterPtr nwfilter)
+{
+    virConnectPtr conn;
+    DEBUG("nwfilter=%p", nwfilter);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = nwfilter->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibNWFilterError(nwfilter, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->undefine) {
+        int ret;
+        ret = conn->nwfilterDriver->undefine (nwfilter);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(nwfilter->conn);
+    return -1;
+}
+
+
+/**
+ * virNWFilterGetXMLDesc:
+ * @nwfilter: a nwfilter object
+ * @flags: an OR'ed set of extraction flags, not used yet
+ *
+ * Provide an XML description of the network filter. The description may be
+ * reused later to redefine the network filter with virNWFilterCreateXML().
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, int flags)
+{
+    virConnectPtr conn;
+    DEBUG("nwfilter=%p, flags=%d", nwfilter, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_NWFILTER(nwfilter)) {
+        virLibNWFilterError(NULL, VIR_ERR_INVALID_NWFILTER, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+    if (flags != 0) {
+        virLibNWFilterError(nwfilter, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    conn = nwfilter->conn;
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->getXMLDesc) {
+        char *ret;
+        ret = conn->nwfilterDriver->getXMLDesc (nwfilter, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(nwfilter->conn);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterRef:
+ * @nwfilter: the nwfilter to hold a reference on
+ *
+ * Increment the reference count on the nwfilter. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virNWFilterFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a connection, and it is required that the
+ * connection remain open until all threads have finished using
+ * it. ie, each new thread using an nwfilter would increment
+ * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virNWFilterRef(virNWFilterPtr nwfilter)
+{
+    if ((!VIR_IS_CONNECTED_NWFILTER(nwfilter))) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    virMutexLock(&nwfilter->conn->lock);
+    DEBUG("nwfilter=%p refs=%d", nwfilter, nwfilter->refs);
+    nwfilter->refs++;
+    virMutexUnlock(&nwfilter->conn->lock);
+    return 0;
 }
 
 

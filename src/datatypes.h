@@ -121,6 +121,17 @@
 
 
 /**
+ * VIR_NWFILTER_MAGIC:
+ *
+ * magic value used to protect the API when pointers to network filter
+ * pool structures are passed down by the users.
+ */
+#define VIR_NWFILTER_MAGIC			0xDEAD7777
+#define VIR_IS_NWFILTER(obj)			((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
+#define VIR_IS_CONNECTED_NWFILTER(obj)		(VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
+
+
+/**
  * _virConnect:
  *
  * Internal structure associated to a connection
@@ -141,6 +152,7 @@ struct _virConnect {
     virStorageDriverPtr storageDriver;
     virDeviceMonitorPtr  deviceMonitor;
     virSecretDriverPtr secretDriver;
+    virNWFilterDriverPtr nwfilterDriver;
 
     /* Private data pointer which can be used by driver and
      * network driver as they wish.
@@ -152,6 +164,7 @@ struct _virConnect {
     void *            storagePrivateData;
     void *            devMonPrivateData;
     void *            secretPrivateData;
+    void *            nwfilterPrivateData;
 
     /*
      * The lock mutex must be acquired before accessing/changing
@@ -173,6 +186,7 @@ struct _virConnect {
     virHashTablePtr storageVols;/* hash table for known storage vols */
     virHashTablePtr nodeDevices; /* hash table for known node devices */
     virHashTablePtr secrets;  /* hash taboe for known secrets */
+    virHashTablePtr nwfilterPools; /* hash tables ofr known nw filter pools */
     int refs;                 /* reference count */
 };
 
@@ -335,5 +349,23 @@ int virUnrefSecret(virSecretPtr secret);
 
 virStreamPtr virGetStream(virConnectPtr conn);
 int virUnrefStream(virStreamPtr st);
+
+/**
+* _virNWFilter:
+*
+* Internal structure associated to a network filter
+*/
+struct _virNWFilter {
+    unsigned int magic;                  /* specific value to check */
+    int refs;                            /* reference count */
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *name;                          /* the network filter external name */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the network filter unique identifier */
+};
+
+virNWFilterPtr virGetNWFilter(virConnectPtr conn,
+                                  const char *name,
+                                  const unsigned char *uuid);
+int virUnrefNWFilter(virNWFilterPtr pool);
 
 #endif

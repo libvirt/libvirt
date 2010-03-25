@@ -175,6 +175,9 @@ virGetConnect(void) {
     ret->secrets = virHashCreate(20);
     if (ret->secrets == NULL)
         goto failed;
+    ret->nwfilterPools = virHashCreate(20);
+    if (ret->nwfilterPools == NULL)
+        goto failed;
 
     ret->refs = 1;
     return(ret);
@@ -1360,5 +1363,144 @@ int virUnrefStream(virStreamPtr st) {
     }
 
     virMutexUnlock(&st->conn->lock);
+    return (refs);
+}
+
+
+/**
+ * virGetNWFilter:
+ * @conn: the hypervisor connection
+ * @name: pointer to the network filter pool name
+ * @uuid: pointer to the uuid
+ *
+ * Lookup if the network filter is already registered for that connection,
+ * if yes return a new pointer to it, if no allocate a new structure,
+ * and register it in the table. In any case a corresponding call to
+ * virFreeNWFilterPool() is needed to not leak data.
+ *
+ * Returns a pointer to the network, or NULL in case of failure
+ */
+virNWFilterPtr
+virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+    virNWFilterPtr ret = NULL;
+
+    if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(NULL);
+    }
+    virMutexLock(&conn->lock);
+
+    /* TODO search by UUID first as they are better differenciators */
+
+    ret = (virNWFilterPtr) virHashLookup(conn->nwfilterPools, name);
+    /* TODO check the UUID */
+    if (ret == NULL) {
+        if (VIR_ALLOC(ret) < 0) {
+            virMutexUnlock(&conn->lock);
+            virReportOOMError();
+            goto error;
+        }
+        ret->name = strdup(name);
+        if (ret->name == NULL) {
+            virMutexUnlock(&conn->lock);
+            virReportOOMError();
+            goto error;
+        }
+        ret->magic = VIR_NWFILTER_MAGIC;
+        ret->conn = conn;
+        if (uuid != NULL)
+            memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+
+        if (virHashAddEntry(conn->nwfilterPools, name, ret) < 0) {
+            virMutexUnlock(&conn->lock);
+            virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("failed to add network filter pool to connection hash table"));
+            goto error;
+        }
+        conn->refs++;
+    }
+    ret->refs++;
+    virMutexUnlock(&conn->lock);
+    return(ret);
+
+error:
+    if (ret != NULL) {
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
+    }
+    return(NULL);
+}
+
+
+/**
+ * virReleaseNWFilterPool:
+ * @pool: the pool to release
+ *
+ * Unconditionally release all memory associated with a pool.
+ * The conn.lock mutex must be held prior to calling this, and will
+ * be released prior to this returning. The pool obj must not
+ * be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virReleaseNWFilterPool(virNWFilterPtr pool) {
+    virConnectPtr conn = pool->conn;
+    DEBUG("release pool %p %s", pool, pool->name);
+
+    /* TODO search by UUID first as they are better differenciators */
+    if (virHashRemoveEntry(conn->nwfilterPools, pool->name, NULL) < 0) {
+        virMutexUnlock(&conn->lock);
+        virLibConnError(conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("pool missing from connection hash table"));
+        conn = NULL;
+    }
+
+    pool->magic = -1;
+    VIR_FREE(pool->name);
+    VIR_FREE(pool);
+
+    if (conn) {
+        DEBUG("unref connection %p %d", conn, conn->refs);
+        conn->refs--;
+        if (conn->refs == 0) {
+            virReleaseConnect(conn);
+            /* Already unlocked mutex */
+            return;
+        }
+        virMutexUnlock(&conn->lock);
+    }
+}
+
+
+/**
+ * virUnrefNWFilter:
+ * @pool: the nwfilter to unreference
+ *
+ * Unreference the networkf itler. If the use count drops to zero, the
+ * structure is actually freed.
+ *
+ * Returns the reference count or -1 in case of failure.
+ */
+int
+virUnrefNWFilter(virNWFilterPtr pool) {
+    int refs;
+
+    if (!VIR_IS_CONNECTED_NWFILTER(pool)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+    virMutexLock(&pool->conn->lock);
+    DEBUG("unref pool %p %s %d", pool, pool->name, pool->refs);
+    pool->refs--;
+    refs = pool->refs;
+    if (refs == 0) {
+        virReleaseNWFilterPool(pool);
+        /* Already unlocked mutex */
+        return (0);
+    }
+
+    virMutexUnlock(&pool->conn->lock);
     return (refs);
 }

@@ -105,6 +105,8 @@ virUnrefConnect;
 virUnrefSecret;
 virGetStream;
 virUnrefStream;
+virGetNWFilter;
+virUnrefNWFilter;
 
 
 # domain_conf.h
@@ -311,6 +313,7 @@ virRegisterNetworkDriver;
 virRegisterStorageDriver;
 virRegisterDeviceMonitor;
 virRegisterSecretDriver;
+virRegisterNWFilterDriver;
 
 
 # json.h

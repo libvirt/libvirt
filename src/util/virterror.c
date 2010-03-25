@@ -178,6 +178,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_CPU:
             dom = "CPU ";
             break;
+        case VIR_FROM_NWFILTER:
+            dom = "Network Filter";
+            break;
     }
     return(dom);
 }
@@ -1099,6 +1102,30 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Secret not found");
             else
                 errmsg = _("Secret not found: %s");
+            break;
+        case VIR_WAR_NO_NWFILTER:
+            if (info == NULL)
+                errmsg = _("Failed to start the nwfilter driver");
+            else
+                errmsg = _("Failed to start the nwfilter driver: %s");
+            break;
+        case VIR_ERR_INVALID_NWFILTER:
+            if (info == NULL)
+                    errmsg = _("Invalid network filter");
+            else
+                    errmsg = _("Invalid network filter: %s");
+            break;
+        case VIR_ERR_NO_NWFILTER:
+            if (info == NULL)
+                    errmsg = _("Network filter not found");
+            else
+                    errmsg = _("Network filter not found: %s");
+            break;
+        case VIR_ERR_BUILD_FIREWALL:
+            if (info == NULL)
+                    errmsg = _("Error while building firewall");
+            else
+                    errmsg = _("Error while building firewall: %s");
             break;
         case VIR_ERR_CONFIG_UNSUPPORTED:
             if (info == NULL)

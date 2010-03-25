@@ -69,7 +69,8 @@ typedef enum {
     VIR_FROM_PHYP,      /* Error from IBM power hypervisor */
     VIR_FROM_SECRET,    /* Error from secret storage */
     VIR_FROM_CPU,       /* Error from CPU driver */
-    VIR_FROM_XENAPI     /* Error from XenAPI */
+    VIR_FROM_XENAPI,    /* Error from XenAPI */
+    VIR_FROM_NWFILTER   /* Error from network filter driver */
 } virErrorDomain;
 
 
@@ -169,6 +170,10 @@ typedef enum {
     VIR_ERR_NO_INTERFACE, /* interface driver not running */
     VIR_ERR_INVALID_INTERFACE, /* invalid interface object */
     VIR_ERR_MULTIPLE_INTERFACES, /* more than one matching interface found */
+    VIR_WAR_NO_NWFILTER, /* failed to start nwfilter driver */
+    VIR_ERR_INVALID_NWFILTER, /* invalid nwfilter object */
+    VIR_ERR_NO_NWFILTER, /* nw filter pool not found */
+    VIR_ERR_BUILD_FIREWALL, /* nw filter pool not found */
     VIR_WAR_NO_SECRET, /* failed to start secret storage */
     VIR_ERR_INVALID_SECRET, /* invalid secret */
     VIR_ERR_NO_SECRET, /* secret not found */
