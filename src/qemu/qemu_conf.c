@@ -54,6 +54,7 @@
 #include "network.h"
 #include "macvtap.h"
 #include "cpu/cpu.h"
+#include "nwfilter/nwfilter_gentech_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1472,6 +1473,17 @@ qemudPhysIfaceConnect(virConnectPtr conn,
                                  net->ifname);
         }
     }
+
+    if (rc >= 0) {
+        if ((net->filter) && (net->ifname)) {
+            err = virNWFilterInstantiateFilter(conn, net);
+            if (err) {
+                close(rc);
+                rc = -1;
+                delMacvtap(net->ifname);
+            }
+        }
+    }
 #else
     (void)conn;
     (void)net;
@@ -1591,6 +1603,16 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             virReportSystemError(err,
                  _("failed to add ebtables rule to allow MAC address on  '%s'"),
                                  net->ifname);
+        }
+    }
+
+    if (tapfd >= 0) {
+        if ((net->filter) && (net->ifname)) {
+            err = virNWFilterInstantiateFilter(conn, net);
+            if (err) {
+                close(tapfd);
+                tapfd = -1;
+            }
         }
     }
 
@@ -3309,6 +3331,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char domid[50];
     char *cpu;
     char *smp;
+    int last_good_net = -1;
 
     uname_normalize(&ut);
 
@@ -3963,6 +3986,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
                 ADD_ARG(host);
             }
+            last_good_net = i;
         }
     }
 
@@ -4422,6 +4446,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         for (i = 0 ; i < qenvc ; i++)
             VIR_FREE((qenv)[i]);
         VIR_FREE(qenv);
+    }
+    for (i = 0; i <= last_good_net; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if ((net->filter) && (net->ifname))
+            virNWFilterTeardownFilter(net);
     }
     return -1;
 

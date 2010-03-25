@@ -83,6 +83,7 @@
 #include "xml.h"
 #include "cpu/cpu.h"
 #include "macvtap.h"
+#include "nwfilter/nwfilter_gentech_driver.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -2870,6 +2871,21 @@ cleanup:
 }
 
 
+static void
+qemuTearNWFilter(virDomainNetDefPtr net) {
+    if ((net->filter) && (net->ifname))
+        virNWFilterTeardownFilter(net);
+}
+
+
+static void
+qemuTearVMNWFilters(virDomainObjPtr vm) {
+    int i;
+    for (i = 0; i < vm->def->nnets; i++)
+        qemuTearNWFilter(vm->def->nets[i]);
+}
+
+
 struct qemudHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -3219,6 +3235,8 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
+    qemuTearVMNWFilters(vm);
+
     qemuDomainReAttachHostDevices(driver, vm->def);
 
     if (driver->securityDriver &&
@@ -3266,6 +3284,8 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
     orig_err = virSaveLastError();
+
+    qemuTearVMNWFilters(vm);
 
     if (driver->macFilter) {
         def = vm->def;
@@ -6659,6 +6679,8 @@ cleanup:
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
         VIR_WARN0("Unable to release PCI address on NIC");
 
+    qemuTearNWFilter(net);
+
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
     VIR_FREE(tapfd_name);
@@ -7473,6 +7495,8 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
                                  detach->ifname);
         }
     }
+
+    qemuTearNWFilter(detach);
 
     if (vm->def->nnets > 1) {
         memmove(vm->def->nets + i,
@@ -10156,8 +10180,24 @@ static virStateDriver qemuStateDriver = {
     .active = qemudActive,
 };
 
+static int
+qemudVMFilterRebuild(virConnectPtr conn,
+                     virHashIterator iter, void *data)
+{
+    (void)conn;
+    virHashForEach(qemu_driver->domains.objs, iter, data);
+    return 0;
+}
+
+
+static virNWFilterCallbackDriver qemuCallbackDriver = {
+    .name = "QEMU",
+    .vmFilterRebuild = qemudVMFilterRebuild,
+};
+
 int qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterStateDriver(&qemuStateDriver);
+    virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 }
