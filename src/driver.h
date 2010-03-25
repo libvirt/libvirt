@@ -1009,6 +1009,58 @@ struct _virStreamDriver {
 };
 
 
+typedef int
+    (*virDrvConnectNumOfNWFilters)        (virConnectPtr conn);
+typedef int
+    (*virDrvConnectListNWFilters)         (virConnectPtr conn,
+                                           char **const names,
+                                           int maxnames);
+typedef virNWFilterPtr
+    (*virDrvNWFilterLookupByName)             (virConnectPtr conn,
+                                               const char *name);
+typedef virNWFilterPtr
+    (*virDrvNWFilterLookupByUUID)             (virConnectPtr conn,
+                                               const unsigned char *uuid);
+typedef virNWFilterPtr
+    (*virDrvNWFilterDefineXML)                (virConnectPtr conn,
+                                               const char *xmlDesc,
+                                               unsigned int flags);
+typedef int
+    (*virDrvNWFilterUndefine)                 (virNWFilterPtr pool);
+
+typedef char *
+    (*virDrvNWFilterGetXMLDesc)              (virNWFilterPtr pool,
+                                              unsigned int flags);
+
+
+typedef struct _virNWFilterDriver virNWFilterDriver;
+typedef virNWFilterDriver *virNWFilterDriverPtr;
+
+/**
+ * _virNWFilterDriver:
+ *
+ * Structure associated to a network filter driver, defining the various
+ * entry points for it.
+ *
+ * All drivers must support the following fields/methods:
+ *  - open
+ *  - close
+ */
+struct _virNWFilterDriver {
+    const char * name;    /* the name of the driver */
+    virDrvOpen            open;
+    virDrvClose           close;
+
+    virDrvConnectNumOfNWFilters numOfNWFilters;
+    virDrvConnectListNWFilters listNWFilters;
+    virDrvNWFilterLookupByName nwfilterLookupByName;
+    virDrvNWFilterLookupByUUID nwfilterLookupByUUID;
+    virDrvNWFilterDefineXML defineXML;
+    virDrvNWFilterUndefine undefine;
+    virDrvNWFilterGetXMLDesc getXMLDesc;
+};
+
+
 /*
  * Registration
  * TODO: also need ways to (des)activate a given driver
@@ -1020,6 +1072,7 @@ int virRegisterInterfaceDriver(virInterfaceDriverPtr);
 int virRegisterStorageDriver(virStorageDriverPtr);
 int virRegisterDeviceMonitor(virDeviceMonitorPtr);
 int virRegisterSecretDriver(virSecretDriverPtr);
+int virRegisterNWFilterDriver(virNWFilterDriverPtr);
 # ifdef WITH_LIBVIRTD
 int virRegisterStateDriver(virStateDriverPtr);
 # endif
