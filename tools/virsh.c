@@ -254,6 +254,14 @@ static virNetworkPtr vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     vshCommandOptNetworkBy(_ctl, _cmd, _name,                      \
                            VSH_BYUUID|VSH_BYNAME)
 
+static virNWFilterPtr vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
+                                                  char **name, int flag);
+
+/* default is lookup by Name and UUID */
+#define vshCommandOptNWFilter(_ctl, _cmd, _name)                    \
+    vshCommandOptNWFilterBy(_ctl, _cmd, _name,                      \
+                            VSH_BYUUID|VSH_BYNAME)
+
 static virInterfacePtr vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
                                                 char **name, int flag);
 
@@ -3849,6 +3857,300 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
     virInterfaceFree(iface);
     return ret;
 }
+
+
+/*
+ * "nwfilter-define" command
+ */
+static const vshCmdInfo info_nwfilter_define[] = {
+    {"help", N_("define or update a network filter from an XML file")},
+    {"desc", N_("Define a new network filter or update an existing one.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_nwfilter_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, N_("file containing an XML network filter description")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
+{
+    virNWFilterPtr nwfilter;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char *buffer;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
+
+    nwfilter = virNWFilterDefineXML(ctl->conn, buffer);
+    VIR_FREE(buffer);
+
+    if (nwfilter != NULL) {
+        vshPrint(ctl, _("Network filter %s defined from %s\n"),
+                 virNWFilterGetName(nwfilter), from);
+        virNWFilterFree(nwfilter);
+    } else {
+        vshError(ctl, _("Failed to define network filter from %s"), from);
+        ret = FALSE;
+    }
+    return ret;
+}
+
+
+/*
+ * "nwfilter-undefine" command
+ */
+static const vshCmdInfo info_nwfilter_undefine[] = {
+    {"help", N_("undefine a network filter")},
+    {"desc", N_("Undefine a given network filter.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_nwfilter_undefine[] = {
+    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
+{
+    virNWFilterPtr nwfilter;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, &name)))
+        return FALSE;
+
+    if (virNWFilterUndefine(nwfilter) == 0) {
+        vshPrint(ctl, _("Network filter %s undefined\n"), name);
+    } else {
+        vshError(ctl, _("Failed to undefine network filter %s"), name);
+        ret = FALSE;
+    }
+
+    virNWFilterFree(nwfilter);
+    return ret;
+}
+
+
+/*
+ * "nwfilter-dumpxml" command
+ */
+static const vshCmdInfo info_nwfilter_dumpxml[] = {
+    {"help", N_("network filter information in XML")},
+    {"desc", N_("Output the network filter information as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
+    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
+{
+    virNWFilterPtr nwfilter;
+    int ret = TRUE;
+    char *dump;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL)))
+        return FALSE;
+
+    dump = virNWFilterGetXMLDesc(nwfilter, 0);
+    if (dump != NULL) {
+        printf("%s", dump);
+        VIR_FREE(dump);
+    } else {
+        ret = FALSE;
+    }
+
+    virNWFilterFree(nwfilter);
+    return ret;
+}
+
+/*
+ * "nwfilter-list" command
+ */
+static const vshCmdInfo info_nwfilter_list[] = {
+    {"help", N_("list network filters")},
+    {"desc", N_("Returns list of network filters.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_nwfilter_list[] = {
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int numfilters, i;
+    char **names;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    numfilters = virConnectNumOfNWFilters(ctl->conn);
+    if (numfilters < 0) {
+        vshError(ctl, "%s", _("Failed to list network filters"));
+        return FALSE;
+    }
+
+    names = vshMalloc(ctl, sizeof(char *) * numfilters);
+
+    if ((numfilters = virConnectListNWFilters(ctl->conn, names,
+                                              numfilters)) < 0) {
+        vshError(ctl, "%s", _("Failed to list network filters"));
+        VIR_FREE(names);
+        return FALSE;
+    }
+
+    qsort(&names[0], numfilters, sizeof(char *), namesorter);
+
+    vshPrintExtra(ctl, "%-36s  %-20s \n", _("UUID"), _("Name"));
+    vshPrintExtra(ctl,
+       "----------------------------------------------------------------\n");
+
+    for (i = 0; i < numfilters; i++) {
+        virNWFilterPtr nwfilter =
+            virNWFilterLookupByName(ctl->conn, names[i]);
+
+        /* this kind of work with networks is not atomic operation */
+        if (!nwfilter) {
+            VIR_FREE(names[i]);
+            continue;
+        }
+
+        virNWFilterGetUUIDString(nwfilter, uuid);
+        vshPrint(ctl, "%-36s  %-20s\n",
+                 uuid,
+                 virNWFilterGetName(nwfilter));
+        virNWFilterFree(nwfilter);
+        VIR_FREE(names[i]);
+    }
+
+    VIR_FREE(names);
+    return TRUE;
+}
+
+
+/*
+ * "nwfilter-edit" command
+ */
+static const vshCmdInfo info_nwfilter_edit[] = {
+    {"help", N_("edit XML configuration for a network filter")},
+    {"desc", N_("Edit the XML configuration for a network filter.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_nwfilter_edit[] = {
+    {"nwfilter", VSH_OT_DATA, VSH_OFLAG_REQ, N_("network filter name or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNWFilterEdit (vshControl *ctl, const vshCmd *cmd)
+{
+    int ret = FALSE;
+    virNWFilterPtr nwfilter = NULL;
+    char *tmp = NULL;
+    char *doc = NULL;
+    char *doc_edited = NULL;
+    char *doc_reread = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    nwfilter = vshCommandOptNWFilter (ctl, cmd, NULL);
+    if (nwfilter == NULL)
+        goto cleanup;
+
+    /* Get the XML configuration of the interface. */
+    doc = virNWFilterGetXMLDesc (nwfilter, 0);
+    if (!doc)
+        goto cleanup;
+
+    /* Create and open the temporary file. */
+    tmp = editWriteToTempFile (ctl, doc);
+    if (!tmp) goto cleanup;
+
+    /* Start the editor. */
+    if (editFile (ctl, tmp) == -1) goto cleanup;
+
+    /* Read back the edited file. */
+    doc_edited = editReadBackFile (ctl, tmp);
+    if (!doc_edited) goto cleanup;
+
+    unlink (tmp);
+    tmp = NULL;
+
+    /* Compare original XML with edited.  Has it changed at all? */
+    if (STREQ (doc, doc_edited)) {
+        vshPrint (ctl, _("Network filter %s XML configuration not changed.\n"),
+                  virNWFilterGetName (nwfilter));
+        ret = TRUE;
+        goto cleanup;
+    }
+
+    /* Now re-read the network filter XML.  Did someone else change it while
+     * it was being edited?  This also catches problems such as us
+     * losing a connection or the interface going away.
+     */
+    doc_reread = virNWFilterGetXMLDesc (nwfilter, 0);
+    if (!doc_reread)
+        goto cleanup;
+
+    if (STRNEQ (doc, doc_reread)) {
+        vshError(ctl, "%s",
+                 _("ERROR: the XML configuration was changed by another user"));
+        goto cleanup;
+    }
+
+    /* Everything checks out, so redefine the interface. */
+    virNWFilterFree (nwfilter);
+    nwfilter = virNWFilterDefineXML (ctl->conn, doc_edited);
+    if (!nwfilter)
+        goto cleanup;
+
+    vshPrint (ctl, _("Network filter %s XML configuration edited.\n"),
+              virNWFilterGetName(nwfilter));
+
+    ret = TRUE;
+
+cleanup:
+    if (nwfilter)
+        virNWFilterFree (nwfilter);
+
+    VIR_FREE(doc);
+    VIR_FREE(doc_edited);
+    VIR_FREE(doc_reread);
+
+    if (tmp) {
+        unlink (tmp);
+        VIR_FREE(tmp);
+    }
+
+    return ret;
+}
+
 
 /**************************************************************************/
 /*
@@ -7915,6 +8217,12 @@ static const vshCmdDef commands[] = {
     {"nodedev-create", cmdNodeDeviceCreate, opts_node_device_create, info_node_device_create},
     {"nodedev-destroy", cmdNodeDeviceDestroy, opts_node_device_destroy, info_node_device_destroy},
 
+    {"nwfilter-define", cmdNWFilterDefine, opts_nwfilter_define, info_nwfilter_define},
+    {"nwfilter-undefine", cmdNWFilterUndefine, opts_nwfilter_undefine, info_nwfilter_undefine},
+    {"nwfilter-dumpxml", cmdNWFilterDumpXML, opts_nwfilter_dumpxml, info_nwfilter_dumpxml},
+    {"nwfilter-list", cmdNWFilterList, opts_nwfilter_list, info_nwfilter_list},
+    {"nwfilter-edit", cmdNWFilterEdit, opts_nwfilter_edit, info_nwfilter_edit},
+
     {"pool-autostart", cmdPoolAutostart, opts_pool_autostart, info_pool_autostart},
     {"pool-build", cmdPoolBuild, opts_pool_build, info_pool_build},
     {"pool-create", cmdPoolCreate, opts_pool_create, info_pool_create},
@@ -8386,6 +8694,47 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
         vshError(ctl, _("failed to get network '%s'"), n);
 
     return network;
+}
+
+
+static virNWFilterPtr
+vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
+                        char **name, int flag)
+{
+    virNWFilterPtr nwfilter = NULL;
+    char *n;
+    const char *optname = "nwfilter";
+    if (!cmd_has_option (ctl, cmd, optname))
+        return NULL;
+
+    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
+        vshError(ctl, "%s", _("undefined nwfilter name"));
+        return NULL;
+    }
+
+    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    /* try it by UUID */
+    if ((flag & VSH_BYUUID) && (strlen(n) == VIR_UUID_STRING_BUFLEN-1)) {
+        vshDebug(ctl, 5, "%s: <%s> trying as nwfilter UUID\n",
+                 cmd->def->name, optname);
+        nwfilter = virNWFilterLookupByUUIDString(ctl->conn, n);
+    }
+    /* try it by NAME */
+    if (nwfilter == NULL && (flag & VSH_BYNAME)) {
+        vshDebug(ctl, 5, "%s: <%s> trying as nwfilter NAME\n",
+                 cmd->def->name, optname);
+        nwfilter = virNWFilterLookupByName(ctl->conn, n);
+    }
+
+    if (!nwfilter)
+        vshError(ctl, _("failed to get nwfilter '%s'"), n);
+
+    return nwfilter;
 }
 
 static virInterfacePtr
