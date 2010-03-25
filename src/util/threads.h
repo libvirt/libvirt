@@ -38,6 +38,7 @@ int virThreadInitialize(void) ATTRIBUTE_RETURN_CHECK;
 void virThreadOnExit(void);
 
 int virMutexInit(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
+int virMutexInitRecursive(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
 void virMutexDestroy(virMutexPtr m);
 
 void virMutexLock(virMutexPtr m);

@@ -46,6 +46,19 @@ int virMutexInit(virMutexPtr m)
     return 0;
 }
 
+int virMutexInitRecursive(virMutexPtr m)
+{
+    int ret;
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    if ((ret = pthread_mutex_init(&m->lock, &attr)) != 0) {
+        errno = ret;
+        return -1;
+    }
+    return 0;
+}
+
 void virMutexDestroy(virMutexPtr m)
 {
     pthread_mutex_destroy(&m->lock);
