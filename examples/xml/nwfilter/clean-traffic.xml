@@ -1,0 +1,17 @@
+<filter name='clean-traffic'>
+   <!-- An example of a traffic filter enforcing clean traffic
+        from a VM by
+      - preventing MAC spoofing -->
+   <filterref filter='no-mac-spoofing'/>
+
+   <!-- preventing IP spoofing on outgoing, allow all IPv4 in incoming -->
+   <filterref filter='no-ip-spoofing'/>
+   <filterref filter='allow-incoming-ipv4'/>
+
+   <!-- preventing ARP spoofing/poisoning -->
+   <filterref filter='no-arp-spoofing'/>
+
+   <!-- preventing any other traffic than IPv4 and ARP -->
+   <filterref filter='no-other-l2-traffic'/>
+
+</filter>

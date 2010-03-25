@@ -1,0 +1,7 @@
+<filter name='no-ip-spoofing' chain='ipv4'>
+
+    <!-- drop if srcipaddr is not the IP address of the guest -->
+    <rule action='drop' direction='out'>
+        <ip match='no' srcipaddr='$IP' />
+    </rule>
+</filter>

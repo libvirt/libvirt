@@ -1,0 +1,3 @@
+<filter name='allow-incoming-ipv4' chain='ipv4'>
+  <rule direction='in' action='accept'/>
+</filter>

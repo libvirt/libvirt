@@ -1,0 +1,5 @@
+<filter name='no-mac-spoofing' chain='ipv4'>
+  <rule action='drop' direction='out' priority='10'>
+      <mac match='no' srcmacaddr='$MAC' />
+  </rule>
+</filter>

@@ -1,0 +1,8 @@
+<filter name='no-mac-broadcast' chain='ipv4'>
+    <!-- drop if destination mac is bcast mac addr. -->
+    <rule action='drop' direction='out'>
+        <mac dstmacaddr='ff:ff:ff:ff:ff:ff' />
+    </rule>
+
+    <!-- not doing anything with receiving side ... -->
+</filter>

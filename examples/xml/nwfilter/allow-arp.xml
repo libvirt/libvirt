@@ -1,0 +1,3 @@
+<filter name='allow-arp' chain='arp'>
+  <rule direction='inout' action='accept'/>
+</filter>

@@ -1987,7 +1987,8 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           examples/domsuspend/Makefile \
           examples/dominfo/Makefile \
           examples/python/Makefile \
-          examples/hellolibvirt/Makefile)
+          examples/hellolibvirt/Makefile \
+          examples/xml/nwfilter/Makefile)
 
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Configuration summary])

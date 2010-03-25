@@ -1,0 +1,24 @@
+<filter name='allow-dhcp-server' chain='ipv4'>
+
+    <!-- accept outgoing DHCP requests -->
+    <!-- note, this rule must be evaluated before general MAC broadcast
+         traffic is discarded since DHCP requests use MAC broadcast -->
+    <rule action='accept' direction='out' priority='100'>
+        <ip srcipaddr='0.0.0.0'
+            dstipaddr='255.255.255.255'
+            protocol='udp'
+            srcportstart='68'
+            dstportstart='67' />
+    </rule>
+
+    <!-- accept incoming DHCP responses from a specific DHCP server
+         parameter DHPCSERVER needs to be passed from where this filter is
+         referenced -->
+    <rule action='accept' direction='in' priority='100' >
+        <ip srcipaddr='$DHCPSERVER'
+            protocol='udp'
+            srcportstart='67'
+            dstportstart='68'/>
+    </rule>
+
+</filter>

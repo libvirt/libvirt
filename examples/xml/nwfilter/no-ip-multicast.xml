@@ -1,0 +1,9 @@
+<filter name='no-ip-multicast' chain='ipv4'>
+
+    <!-- drop if destination IP address is in the 224.0.0.0/4 subnet -->
+    <rule action='drop' direction='out'>
+        <ip dstipaddr='224.0.0.0' dstipmask='4' />
+    </rule>
+
+    <!-- not doing anything with receiving side ... -->
+</filter>

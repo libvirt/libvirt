@@ -1,0 +1,7 @@
+<filter name='no-other-l2-traffic'>
+
+    <!-- drop all other l2 traffic than for which rules have been
+         written for; i.e., drop all other than arp and ipv4 traffic -->
+    <rule action='drop' direction='inout' priority='1000'/>
+
+</filter>
