@@ -465,6 +465,7 @@ virNWFilterPoolObjListFree;
 virNWFilterDefFormat;
 virNWFilterChainSuffixTypeToString;
 virNWFilterRuleActionTypeToString;
+virNWFilterRuleProtocolTypeToString;
 virNWFilterJumpTargetTypeToString;
 virNWFilterRegisterCallbackDriver;
 virNWFilterTestUnassignDef;

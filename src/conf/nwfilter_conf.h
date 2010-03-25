@@ -150,6 +150,10 @@ struct _ipHdrDataDef {
     nwItemDesc dataDstIPAddr;
     nwItemDesc dataDstIPMask;
     nwItemDesc dataProtocolID;
+    nwItemDesc dataSrcIPFrom;
+    nwItemDesc dataSrcIPTo;
+    nwItemDesc dataDstIPFrom;
+    nwItemDesc dataDstIPTo;
     nwItemDesc dataDSCP;
 };
 
@@ -182,6 +186,61 @@ struct _ipv6HdrFilterDef {
 };
 
 
+typedef struct _icmpHdrFilterDef  icmpHdrFilterDef;
+typedef icmpHdrFilterDef *icmpHdrFilterDefPtr;
+struct _icmpHdrFilterDef {
+    nwItemDesc   dataSrcMACAddr;
+    ipHdrDataDef ipHdr;
+    nwItemDesc   dataICMPType;
+    nwItemDesc   dataICMPCode;
+    nwItemDesc   dataStateFlags;
+};
+
+
+typedef struct _allHdrFilterDef  allHdrFilterDef;
+typedef allHdrFilterDef *allHdrFilterDefPtr;
+struct _allHdrFilterDef {
+    nwItemDesc    dataSrcMACAddr;
+    ipHdrDataDef  ipHdr;
+};
+
+
+typedef struct _igmpHdrFilterDef  igmpHdrFilterDef;
+typedef igmpHdrFilterDef *igmpHdrFilterDefPtr;
+struct _igmpHdrFilterDef {
+    nwItemDesc   dataSrcMACAddr;
+    ipHdrDataDef ipHdr;
+};
+
+
+typedef struct _tcpHdrFilterDef  tcpHdrFilterDef;
+typedef tcpHdrFilterDef *tcpHdrFilterDefPtr;
+struct _tcpHdrFilterDef {
+    nwItemDesc   dataSrcMACAddr;
+    ipHdrDataDef ipHdr;
+    portDataDef  portData;
+    nwItemDesc   dataTCPOption;
+};
+
+
+typedef struct _udpHdrFilterDef  udpHdrFilterDef;
+typedef udpHdrFilterDef *udpHdrFilterDefPtr;
+struct _udpHdrFilterDef {
+    nwItemDesc   dataSrcMACAddr;
+    ipHdrDataDef ipHdr;
+    portDataDef  portData;
+};
+
+
+typedef struct _sctpHdrFilterDef  sctpHdrFilterDef;
+typedef sctpHdrFilterDef *sctpHdrFilterDefPtr;
+struct _sctpHdrFilterDef {
+    nwItemDesc   dataSrcMACAddr;
+    ipHdrDataDef ipHdr;
+    portDataDef  portData;
+};
+
+
 enum virNWFilterRuleActionType {
     VIR_NWFILTER_RULE_ACTION_DROP = 0,
     VIR_NWFILTER_RULE_ACTION_ACCEPT,
@@ -210,6 +269,14 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_ARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
     VIR_NWFILTER_RULE_PROTOCOL_IPV6,
+    VIR_NWFILTER_RULE_PROTOCOL_TCP,
+    VIR_NWFILTER_RULE_PROTOCOL_ICMP,
+    VIR_NWFILTER_RULE_PROTOCOL_IGMP,
+    VIR_NWFILTER_RULE_PROTOCOL_UDP,
+    VIR_NWFILTER_RULE_PROTOCOL_SCTP,
+    VIR_NWFILTER_RULE_PROTOCOL_ALL,
+
+    VIR_NWFILTER_RULE_PROTOCOL_LAST
 };
 
 enum virNWFilterEbtablesTableType {
@@ -236,6 +303,12 @@ struct _virNWFilterRuleDef {
         arpHdrFilterDef  arpHdrFilter;
         ipHdrFilterDef   ipHdrFilter;
         ipv6HdrFilterDef ipv6HdrFilter;
+        tcpHdrFilterDef  tcpHdrFilter;
+        icmpHdrFilterDef icmpHdrFilter;
+        udpHdrFilterDef  udpHdrFilter;
+        allHdrFilterDef  allHdrFilter;
+        igmpHdrFilterDef igmpHdrFilter;
+        sctpHdrFilterDef sctpHdrFilter;
     } p;
 
     int nvars;

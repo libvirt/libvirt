@@ -25,6 +25,12 @@
 
 #define MAX_CHAINNAME_LENGTH  32 /* see linux/netfilter_bridge/ebtables.h */
 
+enum RuleType {
+    RT_EBTABLES,
+    RT_IPTABLES,
+/*  RT_IP6TABLES, for future use */
+};
+
 typedef struct _ebiptablesRuleInst ebiptablesRuleInst;
 typedef ebiptablesRuleInst *ebiptablesRuleInstPtr;
 struct _ebiptablesRuleInst {
@@ -32,6 +38,7 @@ struct _ebiptablesRuleInst {
     enum virNWFilterChainSuffixType neededProtocolChain;
     char chainprefix;    // I for incoming, O for outgoing
     unsigned int priority;
+    enum RuleType ruleType;
 };
 
 extern virNWFilterTechDriver ebiptables_driver;

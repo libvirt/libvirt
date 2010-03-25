@@ -76,6 +76,19 @@ VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "ipv4",
               "ipv6");
 
+VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
+              "none",
+              "mac",
+              "arp",
+              "ip",
+              "ipv6",
+              "tcp",
+              "icmp",
+              "igmp",
+              "udp",
+              "sctp",
+              "all");
+
 
 /*
  * a map entry for a simple static int-to-string map
@@ -117,6 +130,10 @@ static const char srcipaddr_str[]    = "srcipaddr";
 static const char srcipmask_str[]    = "srcipmask";
 static const char dstipaddr_str[]    = "dstipaddr";
 static const char dstipmask_str[]    = "dstipmask";
+static const char srcipfrom_str[]    = "srcipfrom";
+static const char srcipto_str[]      = "srcipto";
+static const char dstipfrom_str[]    = "dstipfrom";
+static const char dstipto_str[]      = "dstipto";
 static const char srcportstart_str[] = "srcportstart";
 static const char srcportend_str[]   = "srcportend";
 static const char dstportstart_str[] = "dstportstart";
@@ -135,6 +152,10 @@ static const char dscp_str[]         = "dscp";
 #define SRCIPMASK     srcipmask_str
 #define DSTIPADDR     dstipaddr_str
 #define DSTIPMASK     dstipmask_str
+#define SRCIPFROM     srcipfrom_str
+#define SRCIPTO       srcipto_str
+#define DSTIPFROM     dstipfrom_str
+#define DSTIPTO       dstipto_str
 #define SRCPORTSTART  srcportstart_str
 #define SRCPORTEND    srcportend_str
 #define DSTPORTSTART  dstportstart_str
@@ -831,6 +852,149 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
 };
 
 
+#define COMMON_L3_MAC_PROPS(STRUCT) \
+    {\
+        .name = SRCMACADDR,\
+        .datatype = DATATYPE_MACADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.dataSrcMACAddr),\
+    }
+
+#define COMMON_IP_PROPS(STRUCT) \
+    COMMON_L3_MAC_PROPS(STRUCT),\
+    {\
+        .name = SRCIPADDR,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPAddr),\
+    },\
+    {\
+        .name = DSTIPADDR,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPAddr),\
+    },\
+    {\
+        .name = SRCIPMASK,\
+        .datatype = DATATYPE_IPMASK,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPMask),\
+    },\
+    {\
+        .name = DSTIPMASK,\
+        .datatype = DATATYPE_IPMASK,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPMask),\
+    },\
+    {\
+        .name = SRCIPFROM,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPFrom),\
+    },\
+    {\
+        .name = SRCIPTO,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPTo),\
+    },\
+    {\
+        .name = DSTIPFROM,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPFrom),\
+    },\
+    {\
+        .name = DSTIPTO,\
+        .datatype = DATATYPE_IPADDR,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPTo),\
+    },\
+    {\
+        .name = DSCP,\
+        .datatype = DATATYPE_UINT8,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDSCP),\
+        .validator = dscpValidator,\
+    }
+
+#define COMMON_PORT_PROPS(STRUCT) \
+    {\
+        .name = SRCPORTSTART,\
+        .datatype = DATATYPE_UINT16,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.portData.dataSrcPortStart),\
+    },\
+    {\
+        .name = SRCPORTEND,\
+        .datatype = DATATYPE_UINT16,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.portData.dataSrcPortEnd),\
+    },\
+    {\
+        .name = DSTPORTSTART,\
+        .datatype = DATATYPE_UINT16,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.portData.dataDstPortStart),\
+    },\
+    {\
+        .name = DSTPORTEND,\
+        .datatype = DATATYPE_UINT16,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.portData.dataDstPortEnd),\
+    }
+
+static const virXMLAttr2Struct tcpAttributes[] = {
+    COMMON_IP_PROPS(tcpHdrFilter),
+    COMMON_PORT_PROPS(tcpHdrFilter),
+    {
+        .name = "option",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPOption),
+    },
+    {
+        .name = NULL,
+    }
+};
+
+static const virXMLAttr2Struct udpAttributes[] = {
+    COMMON_IP_PROPS(udpHdrFilter),
+    COMMON_PORT_PROPS(udpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct sctpAttributes[] = {
+    COMMON_IP_PROPS(sctpHdrFilter),
+    COMMON_PORT_PROPS(sctpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct icmpAttributes[] = {
+    COMMON_IP_PROPS(icmpHdrFilter),
+    {
+        .name = "type",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPType),
+    },
+    {
+        .name = "code",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPCode),
+    },
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct allAttributes[] = {
+    COMMON_IP_PROPS(allHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct igmpAttributes[] = {
+    COMMON_IP_PROPS(igmpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
 typedef struct _virAttributes virAttributes;
 struct _virAttributes {
     const char *id;
@@ -856,6 +1020,30 @@ static const virAttributes virAttr[] = {
         .id = "ipv6",
         .att = ipv6Attributes,
         .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IPV6,
+    }, {
+        .id = "tcp",
+        .att = tcpAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_TCP,
+    }, {
+        .id = "udp",
+        .att = udpAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDP,
+    }, {
+        .id = "sctp",
+        .att = sctpAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_SCTP,
+    }, {
+        .id = "icmp",
+        .att = icmpAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ICMP,
+    }, {
+        .id = "all", // = 'any'
+        .att = allAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ALL,
+    }, {
+        .id = "igmp",
+        .att = igmpAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IGMP,
     }, {
         .id = NULL,
     }
@@ -1274,8 +1462,96 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
     break;
-    }
 
+    case VIR_NWFILTER_RULE_PROTOCOL_TCP:
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.tcpHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.tcpHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.tcpHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.tcpHdrFilter.ipHdr.dataDstIPFrom);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.portData.dataSrcPortEnd,
+                      rule->p.tcpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.portData.dataDstPortStart,
+                      rule->p.tcpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.tcpHdrFilter.portData.dataDstPortEnd,
+                      rule->p.tcpHdrFilter.portData.dataSrcPortStart);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_UDP:
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.udpHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.udpHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.udpHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.udpHdrFilter.ipHdr.dataDstIPFrom);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.portData.dataSrcPortEnd,
+                      rule->p.udpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.portData.dataDstPortStart,
+                      rule->p.udpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.udpHdrFilter.portData.dataDstPortEnd,
+                      rule->p.udpHdrFilter.portData.dataSrcPortStart);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.sctpHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.sctpHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.sctpHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.sctpHdrFilter.ipHdr.dataDstIPFrom);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.portData.dataSrcPortEnd,
+                      rule->p.sctpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.portData.dataDstPortStart,
+                      rule->p.sctpHdrFilter.portData.dataSrcPortStart);
+        COPY_NEG_SIGN(rule->p.sctpHdrFilter.portData.dataDstPortEnd,
+                      rule->p.sctpHdrFilter.portData.dataSrcPortStart);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
+        COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.icmpHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.icmpHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.icmpHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.icmpHdrFilter.ipHdr.dataDstIPFrom);
+        COPY_NEG_SIGN(rule->p.icmpHdrFilter.dataICMPCode,
+                      rule->p.icmpHdrFilter.dataICMPType);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_ALL:
+        COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.allHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.allHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.allHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.allHdrFilter.ipHdr.dataDstIPFrom);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
+        COPY_NEG_SIGN(rule->p.igmpHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.igmpHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.igmpHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.igmpHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.igmpHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.igmpHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.igmpHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.igmpHdrFilter.ipHdr.dataDstIPFrom);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_LAST:
+    break;
+    }
 #undef COPY_NEG_SIGN
 }
 

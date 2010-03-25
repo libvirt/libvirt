@@ -303,6 +303,13 @@ AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([EBTABLES_PATH], "$EBTABLES_PATH", [path to ebtables binary])
 
+AC_PATH_PROG([GREP_PATH], [grep], /bin/grep, [/bin:$PATH])
+AC_DEFINE_UNQUOTED([GREP_PATH], "$GREP_PATH", [path to grep binary])
+
+AC_PATH_PROG([GAWK_PATH], [gawk], /bin/gawk, [/bin:$PATH])
+AC_DEFINE_UNQUOTED([GAWK_PATH], "$GAWK_PATH", [path to gawk binary])
+
+
 if test "$with_openvz" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
 fi
