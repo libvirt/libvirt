@@ -97,8 +97,16 @@ DOMAIN_EVENT_SOURCES =						\
 		conf/domain_event.c conf/domain_event.h
 
 # Network driver generic impl APIs
-NETWORK_CONF_SOURCES =                                         \
+NETWORK_CONF_SOURCES =						\
 		conf/network_conf.c conf/network_conf.h
+
+# Network filter driver generic impl APIs
+NWFILTER_PARAM_CONF_SOURCES =					\
+		conf/nwfilter_params.c conf/nwfilter_conf.h
+
+NWFILTER_CONF_SOURCES =					\
+		$(NWFILTER_PARAM_CONF_SOURCES)			\
+		conf/nwfilter_conf.c conf/nwfilter_conf.h
 
 # Storage driver generic impl APIs
 STORAGE_CONF_SOURCES =                                         \
@@ -126,6 +134,7 @@ CONF_SOURCES =							\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(DOMAIN_EVENT_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
+		$(NWFILTER_CONF_SOURCES)			\
 		$(NODE_DEVICE_CONF_SOURCES)			\
 		$(STORAGE_CONF_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
@@ -761,6 +770,7 @@ EXTRA_DIST +=							\
 		$(NODE_DEVICE_DRIVER_SOURCES)			\
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
 		$(NODE_DEVICE_DRIVER_UDEV_SOURCES)		\
+		$(NWFILTER_DRIVER_SOURCES)			\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
 		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
@@ -903,6 +913,7 @@ libvirt_lxc_SOURCES =						\
 		$(NODE_INFO_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
 		$(DOMAIN_CONF_SOURCES)				\
+		$(NWFILTER_PARAM_CONF_SOURCES)			\
 		$(CPU_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS) $(YAJL_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la

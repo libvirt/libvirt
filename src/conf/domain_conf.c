@@ -42,6 +42,7 @@
 #include "logging.h"
 #include "network.h"
 #include "macvtap.h"
+#include "nwfilter_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -460,6 +461,9 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->ifname);
 
     virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def->filter);
+    virNWFilterHashTableFree(def->filterparams);
 
     VIR_FREE(def);
 }
@@ -1736,9 +1740,11 @@ virDomainNetDefParseXML(virCapsPtr caps,
     char *address = NULL;
     char *port = NULL;
     char *model = NULL;
+    char *filter = NULL;
     char *internal = NULL;
     char *devaddr = NULL;
     char *mode = NULL;
+    virNWFilterHashTablePtr filterparams = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -1807,6 +1813,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 script = virXMLPropString(cur, "path");
             } else if (xmlStrEqual (cur->name, BAD_CAST "model")) {
                 model = virXMLPropString(cur, "type");
+            } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
+                filter = virXMLPropString(cur, "filter");
+                filterparams = virNWFilterParseParamAttributes(cur);
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
@@ -1986,6 +1995,22 @@ virDomainNetDefParseXML(virCapsPtr caps,
         model = NULL;
     }
 
+    if (filter != NULL) {
+        switch (def->type) {
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            def->filter = filter;
+            filter = NULL;
+            def->filterparams = filterparams;
+            filterparams = NULL;
+        break;
+        default:
+        break;
+        }
+    }
+
 cleanup:
     VIR_FREE(macaddr);
     VIR_FREE(network);
@@ -1996,10 +2021,12 @@ cleanup:
     VIR_FREE(script);
     VIR_FREE(bridge);
     VIR_FREE(model);
+    VIR_FREE(filter);
     VIR_FREE(type);
     VIR_FREE(internal);
     VIR_FREE(devaddr);
     VIR_FREE(mode);
+    virNWFilterHashTableFree(filterparams);
 
     return def;
 
@@ -4810,6 +4837,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                       int flags)
 {
     const char *type = virDomainNetTypeToString(def->type);
+    char *attrs;
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4888,6 +4916,17 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->model)
         virBufferEscapeString(buf, "      <model type='%s'/>\n",
                               def->model);
+    if (def->filter) {
+        virBufferEscapeString(buf, "      <filterref filter='%s'",
+                              def->filter);
+        attrs = virNWFilterFormatParamAttributes(def->filterparams,
+                                                 "        ");
+        if (!attrs || strlen(attrs) <= 1)
+            virBufferAddLit(buf, "/>\n");
+        else
+            virBufferVSprintf(buf, ">\n%s      </filterref>\n", attrs);
+        VIR_FREE(attrs);
+    }
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;

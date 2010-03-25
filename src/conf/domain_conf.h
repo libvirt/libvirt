@@ -36,6 +36,8 @@
 # include "threads.h"
 # include "hash.h"
 # include "network.h"
+# include "nwfilter_params.h"
+# include "nwfilter_conf.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -282,6 +284,8 @@ struct _virDomainNetDef {
     } data;
     char *ifname;
     virDomainDeviceInfo info;
+    char *filter;
+    virNWFilterHashTablePtr filterparams;
 };
 
 enum virDomainChrTargetType {

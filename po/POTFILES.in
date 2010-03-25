@@ -8,6 +8,8 @@ src/conf/domain_event.c
 src/conf/interface_conf.c
 src/conf/network_conf.c
 src/conf/node_device_conf.c
+src/conf/nwfilter_conf.c
+src/conf/nwfilter_params.c
 src/conf/secret_conf.c
 src/conf/storage_conf.c
 src/conf/storage_encryption_conf.c
