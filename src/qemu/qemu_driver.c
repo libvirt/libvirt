@@ -1929,6 +1929,9 @@ qemuDetectVcpuPIDs(struct qemud_driver *driver,
     return 0;
 }
 
+/*
+ * To be run between fork/exec of QEMU only
+ */
 static int
 qemudInitCpuAffinity(virDomainObjPtr vm)
 {
@@ -1936,7 +1939,8 @@ qemudInitCpuAffinity(virDomainObjPtr vm)
     virNodeInfo nodeinfo;
     unsigned char *cpumap;
     int cpumaplen;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    DEBUG0("Setting CPU affinity");
 
     if (nodeGetInfo(NULL, &nodeinfo) < 0)
         return -1;
@@ -1968,14 +1972,14 @@ qemudInitCpuAffinity(virDomainObjPtr vm)
             VIR_USE_CPU(cpumap, i);
     }
 
-    /* The XML config only gives a per-VM affinity, so we apply
-     * the same mapping to all vCPUs */
-    for (i = 0 ; i < priv->nvcpupids ; i++) {
-        if (virProcessInfoSetAffinity(priv->vcpupids[i],
-                                      cpumap, cpumaplen, maxcpu) < 0) {
-            VIR_FREE(cpumap);
-            return -1;
-        }
+    /* We are pressuming we are running between fork/exec of QEMU
+     * so use '0' to indicate our own process ID. No threads are
+     * running at this point
+     */
+    if (virProcessInfoSetAffinity(0, /* Self */
+                                  cpumap, cpumaplen, maxcpu) < 0) {
+        VIR_FREE(cpumap);
+        return -1;
     }
     VIR_FREE(cpumap);
 
@@ -2896,6 +2900,12 @@ struct qemudHookData {
 static int qemudSecurityHook(void *data) {
     struct qemudHookData *h = data;
 
+    /* This must take place before exec(), so that all QEMU
+     * memory allocation is on the correct NUMA node
+     */
+    if (qemudInitCpuAffinity(h->vm) < 0)
+        return -1;
+
     if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
         return -1;
 
@@ -3200,10 +3210,6 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Detecting VCPU PIDs");
     if (qemuDetectVcpuPIDs(driver, vm) < 0)
-        goto abort;
-
-    DEBUG0("Setting CPU affinity");
-    if (qemudInitCpuAffinity(vm) < 0)
         goto abort;
 
     DEBUG0("Setting any required VM passwords");
