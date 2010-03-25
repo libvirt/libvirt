@@ -6,6 +6,7 @@
 /useless-if-before-free
 /vc-list-files
 arg-nonnull.h
+c++defs.h
 config.rpath
 gitlog-to-changelog
 mkinstalldirs

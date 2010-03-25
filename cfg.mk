@@ -51,6 +51,7 @@ local-checks-to-skip =			\
   sc_space_tab				\
   sc_sun_os_names			\
   sc_system_h_headers			\
+  sc_texinfo_acronym			\
   sc_tight_scope			\
   sc_two_space_separator_in_usage	\
   sc_error_message_uppercase		\
