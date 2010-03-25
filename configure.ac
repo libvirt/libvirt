@@ -294,6 +294,9 @@ if test x"$with_rhel5_api" = x"yes"; then
    AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
 fi
 
+AC_PATH_PROG([BASH_PATH], [bash], /bin/bash, [/bin:$PATH])
+AC_DEFINE_UNQUOTED([BASH_PATH], "$BASH_PATH", [path to bash binary])
+
 AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 
@@ -1267,6 +1270,15 @@ if test "$with_secrets" = "yes" ; then
   AC_DEFINE_UNQUOTED([WITH_SECRETS], 1, [whether local secrets management driver is available])
 fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
+
+with_nwfilter=yes
+if test "$with_libvirtd" = "no"; then
+  with_nwfilter=no
+fi
+if test "$with_nwfilter" = "yes" ; then
+  AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
+fi
+AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
 
 AC_ARG_WITH([storage-fs],

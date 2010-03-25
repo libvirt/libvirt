@@ -449,6 +449,42 @@ virNodeDeviceGetWWNs;
 virNodeDeviceGetParentHost;
 
 
+# nwfilter_conf.h
+virNWFilterPoolLoadAllConfigs;
+virNWFilterPoolObjAssignDef;
+virNWFilterPoolObjSaveDef;
+virNWFilterPoolObjFindByName;
+virNWFilterPoolObjFindByUUID;
+virNWFilterPoolObjLock;
+virNWFilterPoolObjUnlock;
+virNWFilterPoolObjRemove;
+virNWFilterDefFree;
+virNWFilterDefParseString;
+virNWFilterPoolObjDeleteDef;
+virNWFilterPoolObjListFree;
+virNWFilterDefFormat;
+virNWFilterChainSuffixTypeToString;
+virNWFilterRuleActionTypeToString;
+virNWFilterJumpTargetTypeToString;
+virNWFilterRegisterCallbackDriver;
+virNWFilterTestUnassignDef;
+virNWFilterConfLayerInit;
+virNWFilterConfLayerShutdown;
+
+
+#nwfilter_params.h
+virNWFilterHashTableCreate;
+virNWFilterHashTableFree;
+virNWFilterHashTablePut;
+virNWFilterHashTablePutAll;
+virNWFilterHashTableRemoveEntry;
+
+
+# nwfilter_gentech_driver.h
+virNWFilterInstantiateFilter;
+virNWFilterTeardownFilter;
+
+
 # pci.h
 pciGetDevice;
 pciFreeDevice;

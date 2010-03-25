@@ -175,6 +175,7 @@ skipped_types = {
      'virConnectDomainEventIOErrorCallback': "No function types in python",
      'virConnectDomainEventGraphicsCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
+     'virNWFilterPtr': "No function types in python",
 }
 
 #######################################################################
@@ -273,6 +274,7 @@ skip_impl = (
     'virConnectListStorageVols',
     'virConnectListDefinedStorageVols',
     'virConnectListDefinedInterfaces',
+    'virConnectListNWFilters',
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',

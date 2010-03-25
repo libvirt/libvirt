@@ -116,6 +116,10 @@ endif
 if WITH_SECRETS
     libvirtd_LDADD += ../src/libvirt_driver_secret.la
 endif
+
+if WITH_NWFILTER
+    libvirtd_LDADD += ../src/libvirt_driver_nwfilter.la
+endif
 endif
 
 libvirtd_LDADD += ../src/libvirt.la

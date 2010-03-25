@@ -284,6 +284,11 @@ STORAGE_DRIVER_DISK_SOURCES =					\
 STORAGE_HELPER_DISK_SOURCES =					\
 		storage/parthelper.c
 
+# Network filters
+NWFILTER_DRIVER_SOURCES =					\
+		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
+		nwfilter/nwfilter_gentech_driver.c 			\
+		nwfilter/nwfilter_ebiptables_driver.c
 
 # Security framework and drivers for various models
 SECURITY_DRIVER_SOURCES =					\
@@ -724,6 +729,22 @@ endif
 if WITH_DRIVER_MODULES
 libvirt_driver_nodedev_la_LDFLAGS += -module -avoid-version
 endif
+endif
+
+
+if WITH_NWFILTER
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_nwfilter.la
+else
+libvirt_la_LIBADD += libvirt_driver_nwfilter.la
+noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
+endif
+libvirt_driver_nwfilter_la_CFLAGS = \
+		-I@top_srcdir@/src/conf
+if WITH_DRIVER_MODULES
+libvirt_driver_nwfilter_la_LDFLAGS = -module -avoid-version ../gnulib/lib/libgnu.la
+endif
+libvirt_driver_nwfilter_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
 endif
 
 

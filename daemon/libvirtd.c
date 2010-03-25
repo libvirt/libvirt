@@ -96,6 +96,9 @@
 # ifdef WITH_SECRETS
 #  include "secret/secret_driver.h"
 # endif
+# ifdef WITH_NWFILTER
+#  include "nwfilter/nwfilter_driver.h"
+# endif
 #endif
 
 
@@ -876,6 +879,7 @@ static struct qemud_server *qemudInitialize(void) {
     virDriverLoadModule("lxc");
     virDriverLoadModule("uml");
     virDriverLoadModule("one");
+    virDriverLoadModule("nwfilter");
 #else
 # ifdef WITH_NETWORK
     networkRegister();
@@ -891,6 +895,9 @@ static struct qemud_server *qemudInitialize(void) {
 # endif
 # ifdef WITH_SECRETS
     secretRegister();
+# endif
+# ifdef WITH_NWFILTER
+    nwfilterRegister();
 # endif
 # ifdef WITH_QEMU
     qemuRegister();

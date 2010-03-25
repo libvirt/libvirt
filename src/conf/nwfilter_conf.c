@@ -39,6 +39,7 @@
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
+#include "nwfilter/nwfilter_gentech_driver.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -1605,10 +1606,42 @@ struct cbStruct {
 };
 
 static void
-virNWFilterDomainFWUpdateCB(void *payload ATTRIBUTE_UNUSED,
+virNWFilterDomainFWUpdateCB(void *payload,
                             const char *name ATTRIBUTE_UNUSED,
-                            void *data ATTRIBUTE_UNUSED)
+                            void *data)
 {
+    virDomainObjPtr obj = payload;
+    virDomainDefPtr vm = obj->def;
+    struct cbStruct *cb = data;
+    int i;
+
+    virDomainObjLock(obj);
+
+    if (virDomainObjIsActive(obj)) {
+        for (i = 0; i < vm->nnets; i++) {
+            virDomainNetDefPtr net = vm->nets[i];
+            if ((net->filter) && (net->ifname)) {
+                switch (cb->step) {
+                case STEP_APPLY_NEW:
+                    cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
+                                                                 net);
+                    break;
+
+                case STEP_TEAR_NEW:
+                    cb->err = virNWFilterRollbackUpdateFilter(cb->conn, net);
+                    break;
+
+                case STEP_TEAR_OLD:
+                    cb->err = virNWFilterTearOldFilter(cb->conn, net);
+                    break;
+                }
+                if (cb->err)
+                    break;
+            }
+        }
+    }
+
+    virDomainObjUnlock(obj);
 }
 
 
