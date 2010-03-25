@@ -56,8 +56,8 @@ if test "x$1" = "x--system"; then
     EXTRA_ARGS="--prefix=/usr --sysconfdir=/etc --localstatedir=/var"
     echo "Running ./configure with $EXTRA_ARGS $@"
 else
-    if test -z "$*"; then
-	echo "I am going to run ./configure with no arguments - if you wish "
+    if test -z "$*" && test ! -f "$THEDIR/config.status"; then
+        echo "I am going to run ./configure with no arguments - if you wish "
         echo "to pass any to it, please specify them on the $0 command line."
     fi
 fi
@@ -92,7 +92,11 @@ if test "x$OBJ_DIR" != x; then
     cd "$OBJ_DIR"
 fi
 
-$srcdir/configure $EXTRA_ARGS "$@" && {
+if test -z "$*" && test -f config.status; then
+    ./config.status --recheck
+else
+    $srcdir/configure $EXTRA_ARGS "$@"
+fi && {
     echo
     echo "Now type 'make' to compile libvirt."
 }
