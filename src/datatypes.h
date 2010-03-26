@@ -126,9 +126,9 @@
  * magic value used to protect the API when pointers to network filter
  * pool structures are passed down by the users.
  */
-#define VIR_NWFILTER_MAGIC			0xDEAD7777
-#define VIR_IS_NWFILTER(obj)			((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
-#define VIR_IS_CONNECTED_NWFILTER(obj)		(VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
+# define VIR_NWFILTER_MAGIC			0xDEAD7777
+# define VIR_IS_NWFILTER(obj)			((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
+# define VIR_IS_CONNECTED_NWFILTER(obj)		(VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
 
 
 /**

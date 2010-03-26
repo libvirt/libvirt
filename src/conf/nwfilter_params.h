@@ -20,9 +20,9 @@
  * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 #ifndef NWFILTER_PARAMS_H
-#define NWFILTER_PARAMS_H
+# define NWFILTER_PARAMS_H
 
-#include "hash.h"
+# include "hash.h"
 
 typedef struct _virNWFilterHashTable virNWFilterHashTable;
 typedef virNWFilterHashTable *virNWFilterHashTablePtr;

@@ -26,10 +26,10 @@
  */
 
 #ifndef __VIR_NWFILTER_DRIVER_H__
-#define __VIR_NWFILTER_DRIVER_H__
+# define __VIR_NWFILTER_DRIVER_H__
 
-#include "nwfilter_params.h"
-#include "nwfilter_conf.h"
+# include "nwfilter_params.h"
+# include "nwfilter_conf.h"
 
 int nwfilterRegister(void);
 

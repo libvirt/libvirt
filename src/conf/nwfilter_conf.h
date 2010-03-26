@@ -24,15 +24,15 @@
  * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 #ifndef NWFILTER_CONF_H
-#define NWFILTER_CONF_H
+# define NWFILTER_CONF_H
 
-#include <stdint.h>
-#include <stddef.h>
+# include <stdint.h>
+# include <stddef.h>
 
-#include "internal.h"
-#include "util.h"
-#include "hash.h"
-#include "xml.h"
+# include "internal.h"
+# include "util.h"
+# include "hash.h"
+# include "xml.h"
 
 /**
  * Chain suffix size is:
@@ -43,7 +43,7 @@
  *   terminating '0' =
  * 32-3-15-1-1 = 12
  */
-#define MAX_CHAIN_SUFFIX_SIZE	12
+# define MAX_CHAIN_SUFFIX_SIZE	12
 
 
 enum virNWFilterEntryItemFlags {
@@ -53,10 +53,10 @@ enum virNWFilterEntryItemFlags {
 };
 
 
-#define HAS_ENTRY_ITEM(data) \
+# define HAS_ENTRY_ITEM(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)
 
-#define ENTRY_GET_NEG_SIGN(data) \
+# define ENTRY_GET_NEG_SIGN(data) \
   ((((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG) ? "!" : "")
 
 // datatypes appearing in rule attributes
@@ -288,7 +288,7 @@ enum virNWFilterEbtablesTableType {
 };
 
 
-#define MAX_RULE_PRIORITY  1000
+# define MAX_RULE_PRIORITY  1000
 
 
 typedef struct _virNWFilterRuleDef  virNWFilterRuleDef;
@@ -522,7 +522,7 @@ void virNWFilterConfLayerShutdown(void);
 int virNWFilterParamConfLayerInit(void);
 void virNWFilterParamConfLayerShutdown(void);
 
-#define virNWFilterReportError(conn, code, fmt...)                          \
+# define virNWFilterReportError(conn, code, fmt...)                          \
         virReportErrorHelper(conn, VIR_FROM_NWFILTER, code, __FILE__,       \
                                __FUNCTION__, __LINE__, fmt)
 

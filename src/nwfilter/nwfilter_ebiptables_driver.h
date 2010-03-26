@@ -21,9 +21,9 @@
  * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 #ifndef VIR_NWFILTER_EBTABLES_DRIVER_H__
-#define VIR_NWFILTER_EBTABLES_DRIVER_H__
+# define VIR_NWFILTER_EBTABLES_DRIVER_H__
 
-#define MAX_CHAINNAME_LENGTH  32 /* see linux/netfilter_bridge/ebtables.h */
+# define MAX_CHAINNAME_LENGTH  32 /* see linux/netfilter_bridge/ebtables.h */
 
 enum RuleType {
     RT_EBTABLES,
@@ -43,6 +43,6 @@ struct _ebiptablesRuleInst {
 
 extern virNWFilterTechDriver ebiptables_driver;
 
-#define EBIPTABLES_DRIVER_ID "ebiptables"
+# define EBIPTABLES_DRIVER_ID "ebiptables"
 
 #endif

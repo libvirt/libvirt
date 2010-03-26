@@ -21,7 +21,7 @@
  * Author: Stefan Berger <stefanb@us.ibm.com>
  */
 #ifndef __NWFILTER_GENTECH_DRIVER_H
-#define __NWFILTER_GENTECH_DRIVER_H
+# define __NWFILTER_GENTECH_DRIVER_H
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 
