@@ -270,10 +270,12 @@ sc_preprocessor_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
 	fi
 
-# Using test's -a operator is not portable.
-sc_prohibit_test_minus_a:
-	@re='\<test .+ -[a] '						\
-	msg='use "test C1 && test C2, not "test C1 -''a C2"'		\
+_m1 = use "test C1 && test C2", not "test C1 -''a C2"
+_m2 = use "test C1 || test C2", not "test C1 -''o C2"
+# Using test's -a and -o operators is not portable.
+sc_prohibit_test_minus_ao:
+	@re='\<test .+ -[ao] '						\
+	msg='$(_m1); $(_m2)'						\
 	  $(_prohibit_regexp)
 
 sc_copyright_format:
