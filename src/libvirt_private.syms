@@ -263,6 +263,12 @@ virHashSearch;
 virHashSize;
 
 
+# hooks.h
+virHookCall;
+virHookInitialize;
+virHookPresent;
+
+
 # interface_conf.h
 virInterfaceDefFormat;
 virInterfaceDefParseFile;

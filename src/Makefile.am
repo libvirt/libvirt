@@ -54,6 +54,7 @@ UTIL_SOURCES =							\
 		util/cgroup.c util/cgroup.h			\
 		util/event.c util/event.h			\
 		util/hash.c util/hash.h				\
+		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
 		util/ebtables.c util/ebtables.h			\
 		util/json.c util/json.h				\
