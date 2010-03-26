@@ -304,15 +304,15 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
         msg = mon->msg;
 
 #if DEBUG_IO
-#if DEBUG_RAW_IO
+# if DEBUG_RAW_IO
     char *str1 = qemuMonitorEscapeNonPrintable(msg ? msg->txBuffer : "");
     char *str2 = qemuMonitorEscapeNonPrintable(mon->buffer);
     VIR_ERROR("Process %d %p %p [[[[%s]]][[[%s]]]", (int)mon->bufferOffset, mon->msg, msg, str1, str2);
     VIR_FREE(str1);
     VIR_FREE(str2);
-#else
+# else
     VIR_DEBUG("Process %d", (int)mon->bufferOffset);
-#endif
+# endif
 #endif
 
     if (mon->json)
