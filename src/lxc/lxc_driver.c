@@ -49,6 +49,7 @@
 #include "nodeinfo.h"
 #include "uuid.h"
 #include "stats_linux.h"
+#include "hooks.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -722,6 +723,16 @@ static int lxcVmCleanup(lxc_driver_t *driver,
         DEBUG("container exited with rc: %d", rc);
     }
 
+    /* now that we know it's stopped call the hook if present */
+    if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+
+        /* we can't stop the operation even if the script raised an error */
+        virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                    VIR_HOOK_LXC_OP_STOPPED, VIR_HOOK_SUBOP_END, NULL, xml);
+        VIR_FREE(xml);
+    }
+
     virEventRemoveHandle(priv->monitorWatch);
     close(priv->monitor);
 
@@ -1129,6 +1140,22 @@ static int lxcControllerStart(lxc_driver_t *driver,
     ADD_ARG(NULL);
 
     FD_SET(appPty, &keepfd);
+
+    /* now that we know it is about to start call the hook if present */
+    if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+        int hookret;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
+                    VIR_HOOK_LXC_OP_START, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+        VIR_FREE(xml);
+
+        /*
+         * If the script raised an error abort the launch
+         */
+        if (hookret < 0)
+            goto cleanup;
+    }
 
     if (virExec(largv, lenv, &keepfd, &child,
                 -1, &logfd, &logfd,
