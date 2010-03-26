@@ -5007,6 +5007,976 @@ static int vboxDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     return vboxDomainDetachDevice(dom, xml);
 }
 
+static int
+vboxDomainSnapshotGetAll(virDomainPtr dom,
+                         IMachine *machine,
+                         ISnapshot ***snapshots)
+{
+    ISnapshot **list = NULL;
+    PRUint32 count;
+    nsresult rc;
+    unsigned int next;
+    unsigned int top;
+
+    rc = machine->vtbl->GetSnapshotCount(machine, &count);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get snapshot count for domain %s"),
+                  dom->name);
+        goto error;
+    }
+
+    if (count == 0)
+        goto out;
+
+    if (VIR_ALLOC_N(list, count) < 0) {
+        virReportOOMError();
+        goto error;
+    }
+
+    rc = machine->vtbl->GetSnapshot(machine, NULL, list);
+    if (NS_FAILED(rc) || !list[0]) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get root snapshot for domain %s"),
+                  dom->name);
+        goto error;
+    }
+
+    /* BFS walk through snapshot tree */
+    top = 1;
+    for (next = 0; next < count; next++) {
+        PRUint32 childrenCount = 0;
+        ISnapshot **children = NULL;
+        unsigned int i;
+
+        if (!list[next]) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      _("unexpected number of snapshots < %u"), count);
+            goto error;
+        }
+
+        rc = list[next]->vtbl->GetChildren(list[next], &childrenCount,
+                                           &children);
+        if (NS_FAILED(rc)) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      "%s", _("could not get children snapshots"));
+            goto error;
+        }
+        for (i = 0; i < childrenCount; i++) {
+            if (!children[i])
+                continue;
+            if (top == count) {
+                vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                          _("unexpected number of snapshots > %u"), count);
+                goto error;
+            }
+            list[top++] = children[i];
+        }
+    }
+
+out:
+    *snapshots = list;
+    return count;
+
+error:
+    if (list) {
+        for (next = 0; next < count; next++)
+            VBOX_RELEASE(list[next]);
+    }
+    VIR_FREE(list);
+
+    return -1;
+}
+
+static ISnapshot *
+vboxDomainSnapshotGet(vboxGlobalData *data,
+                      virDomainPtr dom,
+                      IMachine *machine,
+                      const char *name)
+{
+    ISnapshot **snapshots = NULL;
+    ISnapshot *snapshot = NULL;
+    nsresult rc;
+    int count = 0;
+    int i;
+
+    if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < count; i++) {
+        PRUnichar *nameUtf16;
+        char *nameUtf8;
+
+        rc = snapshots[i]->vtbl->GetName(snapshots[i], &nameUtf16);
+        if (NS_FAILED(rc) || !nameUtf16) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      "%s", _("could not get snapshot name"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
+        VBOX_UTF16_FREE(nameUtf16);
+        if (STREQ(name, nameUtf8))
+            snapshot = snapshots[i];
+        VBOX_UTF8_FREE(nameUtf8);
+
+        if (snapshot)
+            break;
+    }
+
+    if (!snapshot) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID,
+                  _("domain %s has no snapshots with name %s"),
+                  dom->name, name);
+        goto cleanup;
+    }
+
+cleanup:
+    if (count > 0) {
+        for (i = 0; i < count; i++) {
+            if (snapshots[i] != snapshot)
+                VBOX_RELEASE(snapshots[i]);
+        }
+    }
+    VIR_FREE(snapshots);
+    return snapshot;
+}
+
+static virDomainSnapshotPtr
+vboxDomainSnapshotCreateXML(virDomainPtr dom,
+                            const char *xmlDesc,
+                            unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    virDomainSnapshotDefPtr def = NULL;
+    vboxIID *domiid = NULL;
+    IMachine *machine = NULL;
+    IConsole *console = NULL;
+    IProgress *progress = NULL;
+    ISnapshot *snapshot = NULL;
+    PRUnichar *name = NULL;
+    PRUnichar *description = NULL;
+    PRUint32 state;
+    nsresult rc;
+#if VBOX_API_VERSION == 2002
+    nsresult result;
+#else
+    PRInt32 result;
+#endif
+
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, 1)))
+        goto cleanup;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(domiid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, domiid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid, &machine);
+    if (NS_FAILED(rc) || !machine) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetState(machine, &state);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get domain state"));
+        goto cleanup;
+    }
+
+    if ((state >= MachineState_FirstOnline)
+        && (state <= MachineState_LastOnline)) {
+        rc = data->vboxObj->vtbl->OpenExistingSession(data->vboxObj,
+                                                      data->vboxSession,
+                                                      domiid);
+    } else {
+        rc = data->vboxObj->vtbl->OpenSession(data->vboxObj,
+                                              data->vboxSession,
+                                              domiid);
+    }
+    if (NS_SUCCEEDED(rc))
+        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not open VirtualBox session with domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    VBOX_UTF8_TO_UTF16(def->name, &name);
+    if (!name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (def->description) {
+        VBOX_UTF8_TO_UTF16(def->description, &description);
+        if (!description) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rc = console->vtbl->TakeSnapshot(console, name, description, &progress);
+    if (NS_FAILED(rc) || !progress) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not take snapshot of domain %s"), dom->name);
+        goto cleanup;
+    }
+
+    progress->vtbl->WaitForCompletion(progress, -1);
+    progress->vtbl->GetResultCode(progress, &result);
+    if (NS_FAILED(result)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not take snapshot of domain %s"), dom->name);
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get current snapshot of domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    ret = virGetDomainSnapshot(dom, def->name);
+
+cleanup:
+    VBOX_RELEASE(progress);
+    VBOX_UTF16_FREE(description);
+    VBOX_UTF16_FREE(name);
+    VBOX_RELEASE(console);
+    data->vboxSession->vtbl->Close(data->vboxSession);
+    VBOX_RELEASE(machine);
+    vboxIIDFree(domiid);
+    virDomainSnapshotDefFree(def);
+    return ret;
+}
+
+static char *
+vboxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
+                          unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
+    vboxIID *domiid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    ISnapshot *parent = NULL;
+    nsresult rc;
+    virDomainSnapshotDefPtr def = NULL;
+    PRUnichar *str16;
+    char *str8;
+    PRInt64 timestamp;
+    PRBool online = PR_FALSE;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(domiid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, domiid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    if (!(snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name)))
+        goto cleanup;
+
+    if (VIR_ALLOC(def) < 0
+        || !(def->name = strdup(snapshot->name)))
+        goto no_memory;
+
+    rc = snap->vtbl->GetDescription(snap, &str16);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get description of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    if (str16) {
+        VBOX_UTF16_TO_UTF8(str16, &str8);
+        VBOX_UTF16_FREE(str16);
+        def->description = strdup(str8);
+        VBOX_UTF8_FREE(str8);
+        if (!def->description)
+            goto no_memory;
+    }
+
+    rc = snap->vtbl->GetTimeStamp(snap, &timestamp);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get creation time of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    /* timestamp is in milliseconds while creationTime in seconds */
+    def->creationTime = timestamp / 1000;
+
+    rc = snap->vtbl->GetParent(snap, &parent);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get parent of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    if (parent) {
+        rc = parent->vtbl->GetName(parent, &str16);
+        if (NS_FAILED(rc) || !str16) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      _("could not get name of parent of snapshot %s"),
+                      snapshot->name);
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(str16, &str8);
+        VBOX_UTF16_FREE(str16);
+        def->parent = strdup(str8);
+        VBOX_UTF8_FREE(str8);
+        if (!def->parent)
+            goto no_memory;
+    }
+
+    rc = snap->vtbl->GetOnline(snap, &online);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get online state of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+    if (online)
+        def->state = VIR_DOMAIN_RUNNING;
+    else
+        def->state = VIR_DOMAIN_SHUTOFF;
+
+    virUUIDFormat(dom->uuid, uuidstr);
+    ret = virDomainSnapshotDefFormat(uuidstr, def, 0);
+
+cleanup:
+    virDomainSnapshotDefFree(def);
+    VBOX_RELEASE(parent);
+    VBOX_RELEASE(snap);
+    VBOX_RELEASE(machine);
+    vboxIIDFree(domiid);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+    goto cleanup;
+}
+
+static int
+vboxDomainSnapshotNum(virDomainPtr dom,
+                      unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *iid = NULL;
+    IMachine *machine = NULL;
+    nsresult rc;
+    PRUint32 snapshotCount;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, iid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetSnapshotCount(machine, &snapshotCount);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get snapshot count for domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    ret = snapshotCount;
+
+cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDFree(iid);
+    return ret;
+}
+
+static int
+vboxDomainSnapshotListNames(virDomainPtr dom,
+                            char **names,
+                            int nameslen,
+                            unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *iid = NULL;
+    IMachine *machine = NULL;
+    nsresult rc;
+    ISnapshot **snapshots = NULL;
+    int count = 0;
+    int i;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, iid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nameslen; i++) {
+        PRUnichar *nameUtf16;
+        char *name;
+
+        if (i >= count)
+            break;
+
+        rc = snapshots[i]->vtbl->GetName(snapshots[i], &nameUtf16);
+        if (NS_FAILED(rc) || !nameUtf16) {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      "%s", _("could not get snapshot name"));
+            goto cleanup;
+        }
+        VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+        VBOX_UTF16_FREE(nameUtf16);
+        names[i] = strdup(name);
+        VBOX_UTF8_FREE(name);
+        if (!names[i]) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    if (count <= nameslen)
+        ret = count;
+    else
+        ret = nameslen;
+
+cleanup:
+    if (count > 0) {
+        for (i = 0; i < count; i++)
+            VBOX_RELEASE(snapshots[i]);
+    }
+    VIR_FREE(snapshots);
+    VBOX_RELEASE(machine);
+    vboxIIDFree(iid);
+    return ret;
+}
+
+static virDomainSnapshotPtr
+vboxDomainSnapshotLookupByName(virDomainPtr dom,
+                               const char *name,
+                               unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    vboxIID *iid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *snapshot = NULL;
+    nsresult rc;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, iid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    if (!(snapshot = vboxDomainSnapshotGet(data, dom, machine, name)))
+        goto cleanup;
+
+    ret = virGetDomainSnapshot(dom, name);
+
+cleanup:
+    VBOX_RELEASE(snapshot);
+    VBOX_RELEASE(machine);
+    vboxIIDFree(iid);
+    return ret;
+}
+
+static int
+vboxDomainHasCurrentSnapshot(virDomainPtr dom,
+                             unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *iid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *snapshot = NULL;
+    nsresult rc;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, iid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid, &machine);
+    if (NS_FAILED(rc) || !machine) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get current snapshot"));
+        goto cleanup;
+    }
+
+    if (snapshot)
+        ret = 1;
+    else
+        ret = 0;
+
+cleanup:
+    VBOX_RELEASE(machine);
+    vboxIIDFree(iid);
+    return ret;
+}
+
+static virDomainSnapshotPtr
+vboxDomainSnapshotCurrent(virDomainPtr dom,
+                          unsigned int flags ATTRIBUTE_UNUSED)
+{
+    VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
+    vboxIID *iid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *snapshot = NULL;
+    PRUnichar *nameUtf16 = NULL;
+    char *name = NULL;
+    nsresult rc;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(iid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, iid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, iid, &machine);
+    if (NS_FAILED(rc) || !machine) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetCurrentSnapshot(machine, &snapshot);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get current snapshot"));
+        goto cleanup;
+    }
+
+    if (!snapshot) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                  _("domain has no snapshots"));
+        goto cleanup;
+    }
+
+    rc = snapshot->vtbl->GetName(snapshot, &nameUtf16);
+    if (NS_FAILED(rc) || !nameUtf16) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get current snapshot name"));
+        goto cleanup;
+    }
+
+    VBOX_UTF16_TO_UTF8(nameUtf16, &name);
+    if (!name) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = virGetDomainSnapshot(dom, name);
+
+cleanup:
+    VBOX_UTF8_FREE(name);
+    VBOX_UTF16_FREE(nameUtf16);
+    VBOX_RELEASE(snapshot);
+    VBOX_RELEASE(machine);
+    vboxIIDFree(iid);
+    return ret;
+}
+
+#if VBOX_API_VERSION < 3001
+static int
+vboxDomainSnapshotRestore(virDomainPtr dom,
+                          IMachine *machine,
+                          ISnapshot *snapshot)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *iid = NULL;
+    nsresult rc;
+
+    rc = snapshot->vtbl->GetId(snapshot, &iid);
+    if (NS_FAILED(rc) || !iid) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get snapshot UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->SetCurrentSnapshot(machine, iid);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not restore snapshot for domain %s"), dom->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    vboxIIDUnalloc(iid);
+    return ret;
+}
+#else
+static int
+vboxDomainSnapshotRestore(virDomainPtr dom,
+                          IMachine *machine,
+                          ISnapshot *snapshot)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    IConsole *console = NULL;
+    IProgress *progress = NULL;
+    PRUint32 state;
+    nsresult rc;
+    PRInt32 result;
+    vboxIID *domiid;
+
+    rc = machine->vtbl->GetId(machine, &domiid);
+    if (NS_FAILED(rc) || !domiid) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get domain UUID"));
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetState(machine, &state);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get domain state"));
+        goto cleanup;
+    }
+
+    if (state >= MachineState_FirstOnline
+        && state <= MachineState_LastOnline) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID,
+                  _("domain %s is already running"), dom->name);
+        goto cleanup;
+    }
+
+    rc = data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession,
+                                          domiid);
+    if (NS_SUCCEEDED(rc))
+        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not open VirtualBox session with domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    rc = console->vtbl->RestoreSnapshot(console, snapshot, &progress);
+    if (NS_FAILED(rc) || !progress) {
+        if (rc == VBOX_E_INVALID_VM_STATE) {
+            vboxError(dom->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                      _("cannot restore domain snapshot for running domain"));
+        } else {
+            vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                      _("could not restore snapshot for domain %s"),
+                      dom->name);
+        }
+        goto cleanup;
+    }
+
+    progress->vtbl->WaitForCompletion(progress, -1);
+    progress->vtbl->GetResultCode(progress, &result);
+    if (NS_FAILED(result)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not restore snapshot for domain %s"), dom->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VBOX_RELEASE(progress);
+    VBOX_RELEASE(console);
+    data->vboxSession->vtbl->Close(data->vboxSession);
+    return ret;
+}
+#endif
+
+static int
+vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                           unsigned int flags ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *domiid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *newSnapshot = NULL;
+    ISnapshot *prevSnapshot = NULL;
+    PRBool online = PR_FALSE;
+    PRUint32 state;
+    nsresult rc;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(domiid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, domiid);
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    newSnapshot = vboxDomainSnapshotGet(data, dom, machine, snapshot->name);
+    if (!newSnapshot)
+        goto cleanup;
+
+    rc = newSnapshot->vtbl->GetOnline(newSnapshot, &online);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get online state of snapshot %s"),
+                  snapshot->name);
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetCurrentSnapshot(machine, &prevSnapshot);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not get current snapshot of domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    rc = machine->vtbl->GetState(machine, &state);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get domain state"));
+        goto cleanup;
+    }
+
+    if (state >= MachineState_FirstOnline
+        && state <= MachineState_LastOnline) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                  _("cannot revert snapshot of running domain"));
+        goto cleanup;
+    }
+
+    if (vboxDomainSnapshotRestore(dom, machine, newSnapshot))
+        goto cleanup;
+
+    if (online) {
+        ret = vboxDomainCreate(dom);
+        if (!ret)
+            vboxDomainSnapshotRestore(dom, machine, prevSnapshot);
+    } else
+        ret = 0;
+
+cleanup:
+    VBOX_RELEASE(prevSnapshot);
+    VBOX_RELEASE(newSnapshot);
+    vboxIIDUnalloc(domiid);
+    return ret;
+}
+
+static int
+vboxDomainSnapshotDeleteSingle(vboxGlobalData *data,
+                               IConsole *console,
+                               ISnapshot *snapshot)
+{
+    IProgress *progress = NULL;
+    vboxIID *iid = NULL;
+    int ret = -1;
+    nsresult rc;
+#if VBOX_API_VERSION == 2002
+    nsresult result;
+#else
+    PRInt32 result;
+#endif
+
+    rc = snapshot->vtbl->GetId(snapshot, &iid);
+    if (NS_FAILED(rc) || !iid) {
+        vboxError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get snapshot UUID"));
+        goto cleanup;
+    }
+
+#if VBOX_API_VERSION < 3001
+    rc = console->vtbl->DiscardSnapshot(console, iid, &progress);
+#else
+    rc = console->vtbl->DeleteSnapshot(console, iid, &progress);
+#endif
+    if (NS_FAILED(rc) || !progress) {
+        if (rc == VBOX_E_INVALID_VM_STATE) {
+            vboxError(NULL, VIR_ERR_OPERATION_INVALID, "%s",
+                      _("cannot delete domain snapshot for running domain"));
+        } else {
+            vboxError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("could not delete snapshot"));
+        }
+        goto cleanup;
+    }
+
+    progress->vtbl->WaitForCompletion(progress, -1);
+    progress->vtbl->GetResultCode(progress, &result);
+    if (NS_FAILED(result)) {
+        vboxError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not delete snapshot"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+cleanup:
+    VBOX_RELEASE(progress);
+    vboxIIDUnalloc(iid);
+    return ret;
+}
+
+static int
+vboxDomainSnapshotDeleteTree(vboxGlobalData *data,
+                             IConsole *console,
+                             ISnapshot *snapshot)
+{
+    PRUint32 childrenCount = 0;
+    ISnapshot **children = NULL;
+    int ret = -1;
+    nsresult rc;
+    unsigned int i;
+
+    rc = snapshot->vtbl->GetChildren(snapshot, &childrenCount, &children);
+    if (NS_FAILED(rc)) {
+        vboxError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get children snapshots"));
+        goto cleanup;
+    }
+
+    if (childrenCount > 0) {
+        for (i = 0; i < childrenCount; i++) {
+            if (vboxDomainSnapshotDeleteTree(data, console, children[i]))
+                goto cleanup;
+        }
+    }
+
+    ret = vboxDomainSnapshotDeleteSingle(data, console, snapshot);
+
+cleanup:
+    for (i = 0; i < childrenCount; i++)
+        VBOX_RELEASE(children[i]);
+    return ret;
+}
+
+static int
+vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                         unsigned int flags)
+{
+    virDomainPtr dom = snapshot->domain;
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    vboxIID *domiid = NULL;
+    IMachine *machine = NULL;
+    ISnapshot *snap = NULL;
+    IConsole *console = NULL;
+    PRUint32 state;
+    nsresult rc;
+
+#if VBOX_API_VERSION == 2002
+    if (VIR_ALLOC(domiid) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+#endif
+
+    vboxIIDFromUUID(dom->uuid, domiid);
+
+    rc = data->vboxObj->vtbl->GetMachine(data->vboxObj, domiid, &machine);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching UUID"));
+        goto cleanup;
+    }
+
+    snap = vboxDomainSnapshotGet(data, dom, machine, snapshot->name);
+    if (!snap)
+        goto cleanup;
+
+    rc = machine->vtbl->GetState(machine, &state);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("could not get domain state"));
+        goto cleanup;
+    }
+
+    if (state >= MachineState_FirstOnline
+        && state <= MachineState_LastOnline) {
+        vboxError(dom->conn, VIR_ERR_OPERATION_INVALID, "%s",
+                  _("cannot delete snapshots of running domain"));
+        goto cleanup;
+    }
+
+    rc = data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession,
+                                          domiid);
+    if (NS_SUCCEEDED(rc))
+        rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
+    if (NS_FAILED(rc)) {
+        vboxError(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                  _("could not open VirtualBox session with domain %s"),
+                  dom->name);
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN)
+        ret = vboxDomainSnapshotDeleteTree(data, console, snap);
+    else
+        ret = vboxDomainSnapshotDeleteSingle(data, console, snap);
+
+cleanup:
+    VBOX_RELEASE(console);
+    VBOX_RELEASE(snap);
+    vboxIIDUnalloc(domiid);
+    data->vboxSession->vtbl->Close(data->vboxSession);
+    return ret;
+}
+
 #if VBOX_API_VERSION == 2002
     /* No Callback support for VirtualBox 2.2.* series */
 #else /* !(VBOX_API_VERSION == 2002) */
@@ -7187,15 +8157,15 @@ virDriver NAME(Driver) = {
     NULL, /* domainManagedSave */
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
-    NULL, /* domainSnapshotCreateXML */
-    NULL, /* domainSnapshotDumpXML */
-    NULL, /* domainSnapshotNum */
-    NULL, /* domainSnapshotListNames */
-    NULL, /* domainSnapshotLookupByName */
-    NULL, /* domainHasCurrentSnapshot */
-    NULL, /* domainSnapshotCurrent */
-    NULL, /* domainRevertToSnapshot */
-    NULL, /* domainSnapshotDelete */
+    vboxDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
+    vboxDomainSnapshotDumpXML, /* domainSnapshotDumpXML */
+    vboxDomainSnapshotNum, /* domainSnapshotNum */
+    vboxDomainSnapshotListNames, /* domainSnapshotListNames */
+    vboxDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
+    vboxDomainHasCurrentSnapshot, /* domainHasCurrentSnapshot */
+    vboxDomainSnapshotCurrent, /* domainSnapshotCurrent */
+    vboxDomainRevertToSnapshot, /* domainRevertToSnapshot */
+    vboxDomainSnapshotDelete, /* domainSnapshotDelete */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {
