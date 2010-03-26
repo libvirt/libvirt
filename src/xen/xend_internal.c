@@ -5719,6 +5719,15 @@ xenDaemonFormatSxprNet(virConnectPtr conn,
         if (def->data.ethernet.ipaddr != NULL)
             virBufferVSprintf(buf, "(ip '%s')", def->data.ethernet.ipaddr);
         break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
     }
 
     if (def->ifname != NULL &&
