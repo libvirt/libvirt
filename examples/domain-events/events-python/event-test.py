@@ -412,6 +412,21 @@ def myDomainEventCallback1 (conn, dom, event, detail, opaque):
 def myDomainEventCallback2 (conn, dom, event, detail, opaque):
     print "myDomainEventCallback2 EVENT: Domain %s(%s) %s %d" % (dom.name(), dom.ID(), eventToString(event), detail)
 
+def myDomainEventRebootCallback(conn, dom, opaque):
+    print "myDomainEventRebootCallback: Domain %s(%s)" % (dom.name(), dom.ID())
+
+def myDomainEventRTCChangeCallback(conn, dom, utcoffset, opaque):
+    print "myDomainEventRTCChangeCallback: Domain %s(%s) %d" % (dom.name(), dom.ID(), utcoffset)
+
+def myDomainEventWatchdogCallback(conn, dom, action, opaque):
+    print "myDomainEventWatchdogCallback: Domain %s(%s) %d" % (dom.name(), dom.ID(), action)
+
+def myDomainEventIOErrorCallback(conn, dom, srcpath, devalias, action, opaque):
+    print "myDomainEventIOErrorCallback: Domain %s(%s) %s %s %d" % (dom.name(), dom.ID(), srcpath, devalias, action)
+
+def myDomainEventGraphicsCallback(conn, dom, phase, localAddr, remoteAddr, authScheme, subject, opaque):
+    print "myDomainEventGraphicsCallback: Domain %s(%s) %d %s" % (dom.name(), dom.ID(), phase, authScheme)
+
 def usage():
         print "usage: "+os.path.basename(sys.argv[0])+" [uri]"
         print "   uri will default to qemu:///system"
@@ -451,7 +466,12 @@ def main():
 
     #Add 2 callbacks to prove this works with more than just one
     vc.domainEventRegister(myDomainEventCallback1,None)
-    vc.domainEventRegister(myDomainEventCallback2,None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, myDomainEventCallback2, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_REBOOT, myDomainEventRebootCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_RTC_CHANGE, myDomainEventRTCChangeCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_IO_ERROR, myDomainEventIOErrorCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_WATCHDOG, myDomainEventWatchdogCallback, None)
+    vc.domainEventRegisterAny(None, libvirt.VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback, None)
 
     # The rest of your app would go here normally, but for sake
     # of demo we'll just go to sleep. The other option is to

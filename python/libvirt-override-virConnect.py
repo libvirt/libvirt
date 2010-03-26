@@ -41,3 +41,48 @@
             return 0
         except AttributeError:
             pass
+
+    def dispatchDomainEventLifecycleCallback(self, dom, event, detail, cbData):
+        """Dispatches events to python user domain event callbacks
+        """
+        cb = cbData["cb"]
+        opaque = cbData["opaque"]
+
+        cb(self, virDomain(self, _obj=dom), event, detail, opaque)
+        return 0
+
+    def dispatchDomainEventGenericCallback(self, dom, cbData):
+        """Dispatches events to python user domain event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def domainEventDeregisterAny(self, callbackID):
+        """Removes a Domain Event Callback. De-registering for a
+           domain callback will disable delivery of this event type """
+        try:
+            ret = libvirtmod.virConnectDomainEventDeregisterAny(self._o, callbackID)
+            if ret == -1: raise libvirtError ('virConnectDomainEventDeregisterAny() failed', conn=self)
+            del self.domainEventCallbackID[callbackID]
+        except AttributeError:
+            pass
+
+    def domainEventRegisterAny(self, dom, eventID, cb, opaque):
+        """Adds a Domain Event Callback. Registering for a domain
+           callback will enable delivery of the events """
+        if not hasattr(self, 'domainEventCallbackID'):
+            self.domainEventCallbackID = {}
+        cbData = { "cb": cb, "conn": self, "opaque": opaque }
+        if dom is None:
+            ret = libvirtmod.virConnectDomainEventRegisterAny(self._o, None, eventID, cbData)
+        else:
+            ret = libvirtmod.virConnectDomainEventRegisterAny(self._o, dom._o, eventID, cbData)
+        if ret == -1:
+            raise libvirtError ('virConnectDomainEventRegisterAny() failed', conn=self)
+        self.domainEventCallbackID[ret] = opaque
