@@ -2686,6 +2686,14 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                               net->data.socket.address,
                               net->data.socket.port);
             break;
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
         }
         type_sep = ',';
         break;

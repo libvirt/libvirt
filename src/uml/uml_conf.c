@@ -244,6 +244,14 @@ umlBuildCommandLineNet(virConnectPtr conn,
         umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
                        _("internal networking type not supported"));
         goto error;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("direct networking type not supported"));
+        goto error;
+
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
     }
 
     virBufferVSprintf(&buf, ",%02x:%02x:%02x:%02x:%02x:%02x",

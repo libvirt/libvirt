@@ -451,6 +451,10 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         VIR_FREE(def->data.direct.linkdev);
         break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
     }
 
     VIR_FREE(def->ifname);
@@ -1743,7 +1747,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
 
     type = virXMLPropString(node, "type");
     if (type != NULL) {
-        if ((def->type = virDomainNetTypeFromString(type)) < 0) {
+        if ((int)(def->type = virDomainNetTypeFromString(type)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("unknown interface type '%s'"), type);
             goto error;
@@ -1951,6 +1955,10 @@ virDomainNetDefParseXML(virCapsPtr caps,
         def->data.direct.linkdev = dev;
         dev = NULL;
 
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
 
@@ -4867,6 +4875,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferVSprintf(buf, " mode='%s'",
                    virDomainNetdevMacvtapTypeToString(def->data.direct.mode));
         virBufferAddLit(buf, "/>\n");
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
 

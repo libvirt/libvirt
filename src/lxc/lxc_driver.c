@@ -800,6 +800,16 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
             bridge = def->nets[i]->data.bridge.brname;
             break;
+
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
         }
 
         DEBUG("bridge: %s", bridge);

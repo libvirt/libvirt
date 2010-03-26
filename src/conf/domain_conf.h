@@ -251,7 +251,7 @@ enum virDomainNetdevMacvtapType {
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
 struct _virDomainNetDef {
-    int type;
+    enum virDomainNetType type;
     unsigned char mac[VIR_MAC_BUFLEN];
     char *model;
     union {
