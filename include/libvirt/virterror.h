@@ -71,6 +71,7 @@ typedef enum {
     VIR_FROM_CPU,       /* Error from CPU driver */
     VIR_FROM_XENAPI,    /* Error from XenAPI */
     VIR_FROM_NWFILTER   /* Error from network filter driver */
+    VIR_FROM_HOOK       /* Error from Synchronous hooks */
 } virErrorDomain;
 
 
@@ -181,6 +182,7 @@ typedef enum {
     VIR_ERR_OPERATION_TIMEOUT, /* timeout occurred during operation */
     VIR_ERR_MIGRATE_PERSIST_FAILED, /* a migration worked, but making the
                                        VM persist on the dest host failed */
+    VIR_ERR_HOOK_SCRIPT_FAILED, /* a synchronous hook script failed */
 } virErrorNumber;
 
 /**

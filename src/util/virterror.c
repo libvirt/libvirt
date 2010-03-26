@@ -180,6 +180,8 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             break;
         case VIR_FROM_NWFILTER:
             dom = "Network Filter";
+        case VIR_FROM_HOOK:
+            dom = "Sync Hook ";
             break;
     }
     return(dom);
@@ -1144,6 +1146,11 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Failed to make domain persistent after migration");
             else
                 errmsg = _("Failed to make domain persistent after migration: %s");
+        case VIR_ERR_HOOK_SCRIPT_FAILED:
+            if (info == NULL)
+                errmsg = _("Hook script execution failed");
+            else
+                errmsg = _("Hook script execution failed: %s");
             break;
     }
     return (errmsg);
