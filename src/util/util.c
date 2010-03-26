@@ -786,7 +786,7 @@ int virExecDaemonize(const char *const*argv,
     return ret;
 }
 
-static int
+int
 virPipeReadUntilEOF(int outfd, int errfd,
                     char **outbuf, char **errbuf) {
 

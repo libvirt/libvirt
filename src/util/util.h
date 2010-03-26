@@ -81,6 +81,8 @@ int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
 int virRunWithHook(const char *const*argv,
                    virExecHook hook, void *data,
                    int *status) ATTRIBUTE_RETURN_CHECK;
+int virPipeReadUntilEOF(int outfd, int errfd,
+                        char **outbuf, char **errbuf);
 int virFork(pid_t *pid);
 
 int virFileReadLimFD(int fd, int maxlen, char **buf) ATTRIBUTE_RETURN_CHECK;

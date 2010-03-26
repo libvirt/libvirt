@@ -633,6 +633,7 @@ virFilePid;
 virFileReadPid;
 virFileLinkPointsTo;
 virParseNumber;
+virPipeReadUntilEOF;
 virAsprintf;
 virRun;
 virSkipSpaces;
