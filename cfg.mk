@@ -308,9 +308,14 @@ ifeq (0,$(MAKELEVEL))
       stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
       test "$$stamp" = "$$actual"; echo $$?)
   ifeq (1,$(_update_required))
-    $(error gnulib update required; run ./autogen.sh first)
+    $(info INFO: gnulib update required; running ./autogen.sh first)
+Makefile: _autogen
   endif
 endif
+
+.PHONY: _autogen
+_autogen:
+	$(srcdir)/autogen.sh
 
 # Exempt @...@ uses of these symbols.
 _makefile_at_at_check_exceptions = ' && !/(SCHEMA|SYSCONF)DIR/'
