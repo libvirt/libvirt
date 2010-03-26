@@ -84,6 +84,7 @@
 #include "cpu/cpu.h"
 #include "macvtap.h"
 #include "nwfilter/nwfilter_gentech_driver.h"
+#include "hooks.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -3100,6 +3101,22 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               &tapfds, &ntapfds, migrateFrom) < 0)
         goto cleanup;
 
+    /* now that we know it is about to start call the hook if present */
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+        int hookret;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
+                    VIR_HOOK_QEMU_OP_START, VIR_HOOK_SUBOP_BEGIN, NULL, xml);
+        VIR_FREE(xml);
+
+        /*
+         * If the script raised an error abort the launch
+         */
+        if (hookret < 0)
+            goto cleanup;
+    }
+
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
@@ -3323,6 +3340,16 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
 
     /* shut it off for sure */
     virKillProcess(vm->pid, SIGKILL);
+
+    /* now that we know it's stopped call the hook if present */
+    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
+        char *xml = virDomainDefFormat(vm->def, 0);
+
+        /* we can't stop the operation even if the script raised an error */
+        virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
+                    VIR_HOOK_QEMU_OP_STOPPED, VIR_HOOK_SUBOP_END, NULL, xml);
+        VIR_FREE(xml);
+    }
 
     /* Reset Security Labels */
     if (driver->securityDriver &&
