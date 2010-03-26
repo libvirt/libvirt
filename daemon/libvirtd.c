@@ -62,6 +62,7 @@
 #include "event.h"
 #include "memory.h"
 #include "stream.h"
+#include "hooks.h"
 #ifdef HAVE_AVAHI
 # include "mdns.h"
 #endif
@@ -199,6 +200,7 @@ enum {
     VIR_DAEMON_ERR_PRIVS,
     VIR_DAEMON_ERR_NETWORK,
     VIR_DAEMON_ERR_CONFIG,
+    VIR_DAEMON_ERR_HOOKS,
 
     VIR_DAEMON_ERR_LAST
 };
@@ -212,7 +214,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_DAEMON_ERR_LAST,
               "Unable to setup signal handlers",
               "Unable to drop privileges",
               "Unable to initialize network sockets",
-              "Unable to load configuration file")
+              "Unable to load configuration file",
+              "Unable to look for hook scripts")
 
 static void sig_handler(int sig, siginfo_t * siginfo,
                         void* context ATTRIBUTE_UNUSED) {
@@ -378,8 +381,11 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
     switch (siginfo.si_signo) {
     case SIGHUP:
         VIR_INFO0(_("Reloading configuration on SIGHUP"));
+        virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
+                    VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
         if (virStateReload() < 0)
             VIR_WARN0(_("Error while reloading drivers"));
+
         break;
 
     case SIGINT:
@@ -3143,8 +3149,22 @@ int main(int argc, char **argv) {
         goto error;
     }
 
+    /* setup the hooks if any */
+    if (virHookInitialize()) {
+        ret = VIR_DAEMON_ERR_HOOKS;
+        goto error;
+    }
+
     /* Disable error func, now logging is setup */
     virSetErrorFunc(NULL, virshErrorHandler);
+
+    /*
+     * Call the daemon startup hook
+     * TODO: should we abort the daemon startup if the script returned
+     *       an error ?
+     */
+    virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_START,
+                0, "start", NULL);
 
     if (qemudNetworkInit(server) < 0) {
         ret = VIR_DAEMON_ERR_NETWORK;
@@ -3205,6 +3225,9 @@ shutdown:
         virMutexUnlock(&server->lock);
     }
     pthread_join(server->eventThread, NULL);
+
+    virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_SHUTDOWN,
+                0, "shutdown", NULL);
 
 error:
     if (statuswrite != -1) {
