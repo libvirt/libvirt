@@ -2834,11 +2834,11 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     bool haveIptables = false;
     bool haveIp6tables = false;
 
-    if (inst)
-        qsort(inst, nruleInstances, sizeof(inst[0]),
-              ebiptablesRuleOrderSort);
+    if (nruleInstances > 1 && inst)
+        qsort(inst, nruleInstances, sizeof(inst[0]), ebiptablesRuleOrderSort);
 
     for (i = 0; i < nruleInstances; i++) {
+        sa_assert (inst);
         if (inst[i]->ruleType == RT_EBTABLES) {
             if (inst[i]->chainprefix == CHAINPREFIX_HOST_IN_TEMP)
                 chains_in  |= (1 << inst[i]->neededProtocolChain);
@@ -2881,6 +2881,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto tear_down_tmpebchains;
 
     for (i = 0; i < nruleInstances; i++)
+        sa_assert (inst);
         switch (inst[i]->ruleType) {
         case RT_EBTABLES:
             ebiptablesInstCommand(&buf,
@@ -2918,6 +2919,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
            goto tear_down_tmpiptchains;
 
         for (i = 0; i < nruleInstances; i++) {
+            sa_assert (inst);
             if (inst[i]->ruleType == RT_IPTABLES)
                 iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
