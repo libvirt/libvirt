@@ -5205,6 +5205,22 @@ static int testSecretClose(virConnectPtr conn) {
     return 0;
 }
 
+
+static virDrvOpenStatus testNWFilterOpen(virConnectPtr conn,
+                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                         int flags ATTRIBUTE_UNUSED) {
+    if (STRNEQ(conn->driver->name, "Test"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    conn->secretPrivateData = conn->privateData;
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int testNWFilterClose(virConnectPtr conn) {
+    conn->nwfilterPrivateData = NULL;
+    return 0;
+}
+
 static virDriver testDriver = {
     VIR_DRV_TEST,
     "Test",
@@ -5398,6 +5414,12 @@ static virSecretDriver testSecretDriver = {
 };
 
 
+static virNWFilterDriver testNWFilterDriver = {
+    .name = "Test",
+    .open = testNWFilterOpen,
+    .close = testNWFilterClose,
+};
+
 /**
  * testRegister:
  *
@@ -5417,6 +5439,8 @@ testRegister(void)
     if (virRegisterDeviceMonitor(&testDevMonitor) < 0)
         return -1;
     if (virRegisterSecretDriver(&testSecretDriver) < 0)
+        return -1;
+    if (virRegisterNWFilterDriver(&testNWFilterDriver) < 0)
         return -1;
 
     return 0;
