@@ -687,7 +687,7 @@ virDomainEventPtr virDomainEventGraphicsNewFromDom(virDomainPtr dom,
         ev->data.graphics.phase = phase;
         if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
             virDomainEventFree(ev);
-            ev = NULL;
+            return NULL;
         }
         ev->data.graphics.local = local;
         ev->data.graphics.remote = remote;
@@ -712,7 +712,7 @@ virDomainEventPtr virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
         ev->data.graphics.phase = phase;
         if (!(ev->data.graphics.authScheme = strdup(authScheme))) {
             virDomainEventFree(ev);
-            ev = NULL;
+            return NULL;
         }
         ev->data.graphics.local = local;
         ev->data.graphics.remote = remote;
