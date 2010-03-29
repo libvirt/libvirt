@@ -523,7 +523,8 @@ int virNWFilterParamConfLayerInit(void);
 void virNWFilterParamConfLayerShutdown(void);
 
 # define virNWFilterReportError(conn, code, fmt...)                          \
-        virReportErrorHelper(conn, VIR_FROM_NWFILTER, code, __FILE__,       \
+        (void)conn;                                                          \
+        virReportErrorHelper(NULL, VIR_FROM_NWFILTER, code, __FILE__,	\
                                __FUNCTION__, __LINE__, fmt)
 
 

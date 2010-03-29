@@ -44,9 +44,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
-#define virNWFilterError(conn, code, fmt...)                             \
-            virReportErrorHelper(conn, VIR_FROM_NWFILTER, code, __FILE__,\
-                                  __FUNCTION__, __LINE__, fmt)
 
 VIR_ENUM_IMPL(virNWFilterRuleAction, VIR_NWFILTER_RULE_ACTION_LAST,
               "drop",
@@ -2248,9 +2245,9 @@ virNWFilterPoolObjLoad(virConnectPtr conn,
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virNWFilterError(conn, VIR_ERR_INVALID_NWFILTER,
-            "NWFilter pool config filename '%s' does not match pool name '%s'",
-                      path, def->name);
+        virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            _("network filter pool config filename '%s' does not match pool name '%s'"),
+            path, def->name);
         virNWFilterDefFree(def);
         return NULL;
     }
@@ -2300,9 +2297,9 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
 
         if (virFileBuildPath(configDir, entry->d_name,
                              NULL, path, PATH_MAX) < 0) {
-            virNWFilterError(conn, VIR_ERR_INTERNAL_ERROR,
-                            "Config filename '%s/%s' is too long",
-                            configDir, entry->d_name);
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("config filename '%s/%s' is too long"),
+                                   configDir, entry->d_name);
             continue;
         }
 
