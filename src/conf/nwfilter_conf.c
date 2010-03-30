@@ -83,6 +83,9 @@ VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "icmp",
               "igmp",
               "udp",
+              "udplite",
+              "esp",
+              "ah",
               "sctp",
               "all");
 
@@ -584,6 +587,17 @@ static const struct int_map ipProtoMap[] = {
     } , {
         .attr = IPPROTO_UDP,
         .val  = "udp",
+#ifdef IPPROTO_UDPLITE
+    } , {
+        .attr = IPPROTO_UDPLITE,
+        .val  = "udplite",
+#endif
+    } , {
+        .attr = IPPROTO_ESP,
+        .val  = "esp",
+    } , {
+        .attr = IPPROTO_AH,
+        .val  = "ah",
     } , {
         .attr = IPPROTO_ICMP,
         .val  = "icmp",
@@ -948,6 +962,26 @@ static const virXMLAttr2Struct udpAttributes[] = {
     }
 };
 
+static const virXMLAttr2Struct udpliteAttributes[] = {
+    COMMON_IP_PROPS(udpliteHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+static const virXMLAttr2Struct espAttributes[] = {
+    COMMON_IP_PROPS(espHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+static const virXMLAttr2Struct ahAttributes[] = {
+    COMMON_IP_PROPS(ahHdrFilter),
+    {
+        .name = NULL,
+    }
+};
 
 static const virXMLAttr2Struct sctpAttributes[] = {
     COMMON_IP_PROPS(sctpHdrFilter),
@@ -1025,6 +1059,18 @@ static const virAttributes virAttr[] = {
         .id = "udp",
         .att = udpAttributes,
         .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDP,
+    }, {
+        .id = "udplite",
+        .att = udpliteAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPLITE,
+    }, {
+        .id = "esp",
+        .att = espAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ESP,
+    }, {
+        .id = "ah",
+        .att = ahAttributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_AH,
     }, {
         .id = "sctp",
         .att = sctpAttributes,
@@ -1492,6 +1538,39 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
                       rule->p.udpHdrFilter.portData.dataSrcPortStart);
         COPY_NEG_SIGN(rule->p.udpHdrFilter.portData.dataDstPortEnd,
                       rule->p.udpHdrFilter.portData.dataSrcPortStart);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
+        COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.udpliteHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.udpliteHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.udpliteHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.udpliteHdrFilter.ipHdr.dataDstIPFrom);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_ESP:
+        COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.espHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.espHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.espHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.espHdrFilter.ipHdr.dataDstIPFrom);
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_AH:
+        COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataSrcIPMask,
+                      rule->p.ahHdrFilter.ipHdr.dataSrcIPAddr);
+        COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataDstIPMask,
+                      rule->p.ahHdrFilter.ipHdr.dataDstIPAddr);
+        COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataSrcIPTo,
+                      rule->p.ahHdrFilter.ipHdr.dataSrcIPFrom);
+        COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataDstIPTo,
+                      rule->p.ahHdrFilter.ipHdr.dataDstIPFrom);
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:

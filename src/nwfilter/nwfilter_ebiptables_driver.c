@@ -1089,6 +1089,75 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
             goto err_exit;
     break;
 
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
+        virBufferVSprintf(&buf,
+                          CMD_DEF_PRE IPTABLES_CMD " -%%c %s %%s",
+                          chain);
+
+        virBufferAddLit(&buf, " -p udplite");
+
+        if (iptablesHandleSrcMacAddr(conn,
+                                     &buf,
+                                     vars,
+                                     &rule->p.udpliteHdrFilter.dataSrcMACAddr,
+                                     directionIn))
+            goto err_exit;
+
+        if (iptablesHandleIpHdr(conn,
+                                &buf,
+                                vars,
+                                &rule->p.udpliteHdrFilter.ipHdr,
+                                directionIn))
+            goto err_exit;
+
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_ESP:
+        virBufferVSprintf(&buf,
+                          CMD_DEF_PRE IPTABLES_CMD " -%%c %s %%s",
+                          chain);
+
+        virBufferAddLit(&buf, " -p esp");
+
+        if (iptablesHandleSrcMacAddr(conn,
+                                     &buf,
+                                     vars,
+                                     &rule->p.espHdrFilter.dataSrcMACAddr,
+                                     directionIn))
+            goto err_exit;
+
+        if (iptablesHandleIpHdr(conn,
+                                &buf,
+                                vars,
+                                &rule->p.espHdrFilter.ipHdr,
+                                directionIn))
+            goto err_exit;
+
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_AH:
+        virBufferVSprintf(&buf,
+                          CMD_DEF_PRE IPTABLES_CMD " -%%c %s %%s",
+                          chain);
+
+        virBufferAddLit(&buf, " -p ah");
+
+        if (iptablesHandleSrcMacAddr(conn,
+                                     &buf,
+                                     vars,
+                                     &rule->p.ahHdrFilter.dataSrcMACAddr,
+                                     directionIn))
+            goto err_exit;
+
+        if (iptablesHandleIpHdr(conn,
+                                &buf,
+                                vars,
+                                &rule->p.ahHdrFilter.ipHdr,
+                                directionIn))
+            goto err_exit;
+
+    break;
+
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
         virBufferVSprintf(&buf,
                           CMD_DEF_PRE IPTABLES_CMD " -%%c %s %%s",
@@ -1836,6 +1905,9 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
 
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
     case VIR_NWFILTER_RULE_PROTOCOL_UDP:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
+    case VIR_NWFILTER_RULE_PROTOCOL_ESP:
+    case VIR_NWFILTER_RULE_PROTOCOL_AH:
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
