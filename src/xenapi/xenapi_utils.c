@@ -309,7 +309,7 @@ getCpuBitMapfromString(char *mask, unsigned char *cpumap, int maplen)
     bzero(cpumap, maplen);
     num = strtok_r(mask, ",", &bp);
     while (num != NULL) {
-        if (sscanf(num, "%d", &pos) != 1)
+        if (virStrToLong_i(num, NULL, 10, &pos) < 0)
             return;
         if (pos < 0 || pos > max_bits - 1)
             VIR_WARN ("number in str %d exceeds cpumap's max bits %d", pos, max_bits);
