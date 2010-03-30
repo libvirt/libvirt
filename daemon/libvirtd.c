@@ -3150,7 +3150,7 @@ int main(int argc, char **argv) {
     }
 
     /* setup the hooks if any */
-    if (virHookInitialize()) {
+    if (virHookInitialize() < 0) {
         ret = VIR_DAEMON_ERR_HOOKS;
         goto error;
     }
