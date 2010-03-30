@@ -282,15 +282,23 @@ pciIterDevices(pciIterPredicate predicate,
     }
 
     while ((entry = readdir(dir))) {
-        unsigned domain, bus, slot, function;
+        unsigned int domain, bus, slot, function;
         pciDevice *check;
+        char *tmp;
 
         /* Ignore '.' and '..' */
         if (entry->d_name[0] == '.')
             continue;
 
-        if (sscanf(entry->d_name, "%x:%x:%x.%x",
-                   &domain, &bus, &slot, &function) < 4) {
+        /* expected format: <domain>:<bus>:<slot>.<function> */
+        if (/* domain */
+            virStrToLong_ui(entry->d_name, &tmp, 16, &domain) < 0 || *tmp != ':' ||
+            /* bus */
+            virStrToLong_ui(tmp + 1, &tmp, 16, &bus) < 0 || *tmp != ':' ||
+            /* slot */
+            virStrToLong_ui(tmp + 1, &tmp, 16, &slot) < 0 || *tmp != '.' ||
+            /* function */
+            virStrToLong_ui(tmp + 1, NULL, 16, &function) < 0) {
             VIR_WARN("Unusual entry in " PCI_SYSFS "devices: %s", entry->d_name);
             continue;
         }
@@ -913,11 +921,9 @@ pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
 {
     FILE *fp;
     char line[160];
+    char *tmp;
     unsigned long long start, end;
-    int consumed;
-    char *rest;
-    unsigned long long domain;
-    int bus, slot, function;
+    unsigned int domain, bus, slot, function;
     int in_matching_device;
     int ret;
     size_t match_depth;
@@ -945,22 +951,36 @@ pciWaitForDeviceCleanup(pciDevice *dev, const char *matcher)
          * of these situations
          */
         if (in_matching_device && (strspn(line, " ") == (match_depth + 2))) {
-            if (sscanf(line, "%Lx-%Lx : %n", &start, &end, &consumed) != 2)
+            /* expected format: <start>-<end> : <suffix> */
+            if (/* start */
+                virStrToLong_ull(line, &tmp, 16, &start) < 0 || *tmp != '-' ||
+                /* end */
+                virStrToLong_ull(tmp + 1, &tmp, 16, &end) < 0 ||
+                (tmp = STRSKIP(tmp, " : ")) == NULL)
                 continue;
 
-            rest = line + consumed;
-            if (STRPREFIX(rest, matcher)) {
+            if (STRPREFIX(tmp, matcher)) {
                 ret = 1;
                 break;
             }
         }
         else {
             in_matching_device = 0;
-            if (sscanf(line, "%Lx-%Lx : %n", &start, &end, &consumed) != 2)
-                continue;
 
-            rest = line + consumed;
-            if (sscanf(rest, "%Lx:%x:%x.%x", &domain, &bus, &slot, &function) != 4)
+            /* expected format: <start>-<end> : <domain>:<bus>:<slot>.<function> */
+            if (/* start */
+                virStrToLong_ull(line, &tmp, 16, &start) < 0 || *tmp != '-' ||
+                /* end */
+                virStrToLong_ull(tmp + 1, &tmp, 16, &end) < 0 ||
+                (tmp = STRSKIP(tmp, " : ")) == NULL ||
+                /* domain */
+                virStrToLong_ui(tmp, &tmp, 16, &domain) < 0 || *tmp != ':' ||
+                /* bus */
+                virStrToLong_ui(tmp + 1, &tmp, 16, &bus) < 0 || *tmp != ':' ||
+                /* slot */
+                virStrToLong_ui(tmp + 1, &tmp, 16, &slot) < 0 || *tmp != '.' ||
+                /* function */
+                virStrToLong_ui(tmp + 1, &tmp, 16, &function) < 0 || *tmp != '\n')
                 continue;
 
             if (domain != dev->domain || bus != dev->bus || slot != dev->slot ||
