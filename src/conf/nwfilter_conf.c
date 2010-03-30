@@ -39,7 +39,6 @@
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
-#include "nwfilter/nwfilter_gentech_driver.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -2140,56 +2139,7 @@ virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
 }
 
 
-enum UpdateStep {
-    STEP_APPLY_NEW,
-    STEP_TEAR_NEW,
-    STEP_TEAR_OLD,
-};
-
-struct cbStruct {
-    virConnectPtr conn;
-    enum UpdateStep step;
-    int err;
-};
-
-static void
-virNWFilterDomainFWUpdateCB(void *payload,
-                            const char *name ATTRIBUTE_UNUSED,
-                            void *data)
-{
-    virDomainObjPtr obj = payload;
-    virDomainDefPtr vm = obj->def;
-    struct cbStruct *cb = data;
-    int i;
-
-    virDomainObjLock(obj);
-
-    if (virDomainObjIsActive(obj)) {
-        for (i = 0; i < vm->nnets; i++) {
-            virDomainNetDefPtr net = vm->nets[i];
-            if ((net->filter) && (net->ifname)) {
-                switch (cb->step) {
-                case STEP_APPLY_NEW:
-                    cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
-                                                                 net);
-                    break;
-
-                case STEP_TEAR_NEW:
-                    cb->err = virNWFilterRollbackUpdateFilter(cb->conn, net);
-                    break;
-
-                case STEP_TEAR_OLD:
-                    cb->err = virNWFilterTearOldFilter(cb->conn, net);
-                    break;
-                }
-                if (cb->err)
-                    break;
-            }
-        }
-    }
-
-    virDomainObjUnlock(obj);
-}
+static virHashIterator virNWFilterDomainFWUpdateCB;
 
 
 static int
@@ -2197,7 +2147,7 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
 {
     int i;
     int err;
-    struct cbStruct cb = {
+    struct domUpdateCBStruct cb = {
         .conn = conn,
         .err = 0,
         .step = STEP_APPLY_NEW,
@@ -2793,8 +2743,10 @@ char *virNWFilterConfigFile(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-int virNWFilterConfLayerInit(void)
+int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
 {
+    virNWFilterDomainFWUpdateCB = domUpdateCB;
+
     if (virMutexInit(&updateMutex))
         return 1;
 

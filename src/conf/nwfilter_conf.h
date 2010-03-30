@@ -432,6 +432,19 @@ struct _virNWFilterRuleInst {
 };
 
 
+enum UpdateStep {
+    STEP_APPLY_NEW,
+    STEP_TEAR_NEW,
+    STEP_TEAR_OLD,
+};
+
+struct domUpdateCBStruct {
+    virConnectPtr conn;
+    enum UpdateStep step;
+    int err;
+};
+
+
 enum virDomainNetType;
 
 typedef int (*virNWFilterRuleCreateInstance)(virConnectPtr conn,
@@ -546,7 +559,7 @@ virNWFilterDefPtr virNWFilterDefParseFile(virConnectPtr conn,
 void virNWFilterPoolObjLock(virNWFilterPoolObjPtr obj);
 void virNWFilterPoolObjUnlock(virNWFilterPoolObjPtr obj);
 
-int virNWFilterConfLayerInit(void);
+int virNWFilterConfLayerInit(virHashIterator domUpdateCB);
 void virNWFilterConfLayerShutdown(void);
 
 int virNWFilterParamConfLayerInit(void);

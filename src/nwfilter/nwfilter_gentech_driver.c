@@ -681,3 +681,43 @@ virNWFilterTeardownFilter(const virDomainNetDefPtr net)
 
     return 0;
 }
+
+
+void
+virNWFilterDomainFWUpdateCB(void *payload,
+                            const char *name ATTRIBUTE_UNUSED,
+                            void *data)
+{
+    virDomainObjPtr obj = payload;
+    virDomainDefPtr vm = obj->def;
+    struct domUpdateCBStruct *cb = data;
+    int i;
+
+    virDomainObjLock(obj);
+
+    if (virDomainObjIsActive(obj)) {
+        for (i = 0; i < vm->nnets; i++) {
+            virDomainNetDefPtr net = vm->nets[i];
+            if ((net->filter) && (net->ifname)) {
+                switch (cb->step) {
+                case STEP_APPLY_NEW:
+                    cb->err = virNWFilterUpdateInstantiateFilter(cb->conn,
+                                                                 net);
+                    break;
+
+                case STEP_TEAR_NEW:
+                    cb->err = virNWFilterRollbackUpdateFilter(cb->conn, net);
+                    break;
+
+                case STEP_TEAR_OLD:
+                    cb->err = virNWFilterTearOldFilter(cb->conn, net);
+                    break;
+                }
+                if (cb->err)
+                    break;
+            }
+        }
+    }
+
+    virDomainObjUnlock(obj);
+}

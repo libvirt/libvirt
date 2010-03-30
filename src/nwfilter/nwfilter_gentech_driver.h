@@ -51,4 +51,8 @@ int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 virNWFilterHashTablePtr virNWFilterCreateVarHashmap(virConnectPtr conn,
                                                      char *macaddr);
 
+void virNWFilterDomainFWUpdateCB(void *payload,
+                                 const char *name ATTRIBUTE_UNUSED,
+                                 void *data);
+
 #endif

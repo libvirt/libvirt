@@ -34,6 +34,7 @@
 #include "memory.h"
 #include "domain_conf.h"
 #include "nwfilter_driver.h"
+#include "nwfilter_gentech_driver.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -64,7 +65,7 @@ static int
 nwfilterDriverStartup(int privileged) {
     char *base = NULL;
 
-    if (virNWFilterConfLayerInit() < 0)
+    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
         return -1;
 
     if (VIR_ALLOC(driverState) < 0)
