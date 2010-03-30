@@ -835,8 +835,9 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 {
     char conf_file[PATH_MAX];
     char line[1024];
-    char uuidbuf[1024];
-    char iden[1024];
+    char *saveptr;
+    char *uuidbuf;
+    char *iden;
     int fd, ret;
     int retval = 0;
 
@@ -859,8 +860,10 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
             break;
         }
 
-        sscanf(line, "%s %s\n", iden, uuidbuf);
-        if(STREQ(iden, "#UUID:")) {
+        iden = strtok_r(line, " ", &saveptr);
+        uuidbuf = strtok_r(NULL, "\n", &saveptr);
+
+        if (iden != NULL && uuidbuf != NULL && STREQ(iden, "#UUID:")) {
             if (virStrcpy(uuidstr, uuidbuf, len) == NULL)
                 retval = -1;
             break;
