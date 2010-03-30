@@ -3179,6 +3179,36 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         goto error;
     }
 
+    /* Look for an 'rtc' timer element, and add in appropriate clock= and driftfix= */
+    int i;
+    for (i = 0; i < def->ntimers; i++) {
+        if (def->timers[i]->name == VIR_DOMAIN_TIMER_NAME_RTC) {
+            if (def->timers[i]->wallclock == VIR_DOMAIN_TIMER_WALLCLOCK_HOST) {
+                virBufferAddLit(&buf, ",clock=host");
+            } else if (def->timers[i]->wallclock == VIR_DOMAIN_TIMER_WALLCLOCK_GUEST) {
+                virBufferAddLit(&buf, ",clock=vm");
+            }
+            switch (def->timers[i]->tickpolicy) {
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+                /* This is the default - missed ticks delivered when
+                   next scheduled, at normal rate */
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+                /* deliver ticks at a faster rate until caught up */
+                virBufferAddLit(&buf, ",driftfix=slew");
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported rtc timer tickpolicy '%s'"),
+                                virDomainTimerTickpolicyTypeToString(def->timers[i]->tickpolicy));
+                goto error;
+            }
+            break; /* no need to check other timers - there is only one rtc */
+        }
+    }
+
     if (virBufferError(&buf)) {
         virReportOOMError();
         goto error;
@@ -3651,6 +3681,105 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE &&
         def->clock.data.timezone) {
         ADD_ENV_PAIR("TZ", def->clock.data.timezone);
+    }
+
+    for (i = 0; i < def->clock.ntimers; i++) {
+        switch (def->clock.timers[i]->name) {
+        default:
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("unsupported timer type (name) '%s'"),
+                            virDomainTimerNameTypeToString(def->clock.timers[i]->name));
+            goto error;
+
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+            /* This has already been taken care of (in qemuBuildClockArgStr)
+               if QEMUD_CMD_FLAG_RTC is set (mutually exclusive with
+               QEMUD_FLAG_RTC_TD_HACK) */
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_RTC_TD_HACK) {
+                switch (def->clock.timers[i]->tickpolicy) {
+                case -1:
+                case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+                    /* the default - do nothing */
+                    break;
+                case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+                    ADD_ARG_LIT("-rtc-td-hack");
+                    break;
+                case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+                case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    _("unsupported rtc tickpolicy '%s'"),
+                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
+                goto error;
+                }
+            } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_RTC)
+                       && (def->clock.timers[i]->tickpolicy
+                           != VIR_DOMAIN_TIMER_TICKPOLICY_DELAY)
+                       && (def->clock.timers[i]->tickpolicy != -1)) {
+                /* a non-default rtc policy was given, but there is no
+                   way to implement it in this version of qemu */
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported rtc tickpolicy '%s'"),
+                                virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
+                goto error;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+            switch (def->clock.timers[i]->tickpolicy) {
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+                /* delay is the default if we don't have kernel
+                   (-no-kvm-pit), otherwise, the default is catchup. */
+                if (qemuCmdFlags & QEMUD_CMD_FLAG_NO_KVM_PIT)
+                    ADD_ARG_LIT("-no-kvm-pit-reinjection");
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+                if (qemuCmdFlags & QEMUD_CMD_FLAG_NO_KVM_PIT) {
+                    /* do nothing - this is default for kvm-pit */
+                } else if (qemuCmdFlags & QEMUD_CMD_FLAG_TDF) {
+                    /* -tdf switches to 'catchup' with userspace pit. */
+                    ADD_ARG_LIT("-tdf");
+                } else {
+                    /* can't catchup if we have neither pit mode */
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    _("unsupported pit tickpolicy '%s'"),
+                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
+                    goto error;
+                }
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                /* no way to support these modes for pit in qemu */
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported pit tickpolicy '%s'"),
+                                virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
+                goto error;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            /* the only meaningful attribute for hpet is "present". If
+             * present is -1, that means it wasn't specified, and
+             * should be left at the default for the
+             * hypervisor. "default" when -no-hpet exists is "yes",
+             * and when -no-hpet doesn't exist is "no". "confusing"?
+             * "yes"! */
+
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_NO_HPET) {
+                if (def->clock.timers[i]->present == 0)
+                    ADD_ARG_LIT("-no-hpet");
+            } else {
+                /* no hpet timer available. The only possible action
+                   is to raise an error if present="yes" */
+                if (def->clock.timers[i]->present == 1) {
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                    "%s", _("pit timer is not supported"));
+                }
+            }
+            break;
+        }
     }
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT) &&
