@@ -13,13 +13,17 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dnl ******************************
 
     AC_ARG_ENABLE(compile-warnings,
-                  AC_HELP_STRING([--enable-compile-warnings=@<:@no/minimum/yes/maximum/error@:>@],
-                                 [Turn on compiler warnings]),,
+                  [AC_HELP_STRING([--enable-compile-warnings=@<:@no/minimum/yes/maximum/error@:>@],
+                                 [Turn on compiler warnings])],,
                   [enable_compile_warnings="m4_default([$1],[maximum])"])
 
     warnCFLAGS=
 
-    common_flags="-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fasynchronous-unwind-tables"
+    common_flags=
+    common_flags="$common_flags -Wp,-D_FORTIFY_SOURCE=2"
+    common_flags="$common_flags -fexceptions"
+    common_flags="$common_flags -fasynchronous-unwind-tables"
+    common_flags="$common_flags -fdiagnostics-show-option"
 
     case "$enable_compile_warnings" in
     no)
