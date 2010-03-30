@@ -598,7 +598,9 @@ static int PRUnicharToInt(PRUnichar *strUtf16) {
     if (!strUtf8)
         return -1;
 
-    ret = atoi(strUtf8);
+    if (virStrToLong_i(strUtf8, NULL, 10, &ret) < 0)
+        ret = -1;
+
     g_pVBoxGlobalData->pFuncs->pfnUtf8Free(strUtf8);
 
     return ret;
