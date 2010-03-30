@@ -1115,20 +1115,11 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 goto no_memory;
 
             if (mac[0]) {
-                unsigned int rawmac[6];
-                sscanf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
-                       (unsigned int*)&rawmac[0],
-                       (unsigned int*)&rawmac[1],
-                       (unsigned int*)&rawmac[2],
-                       (unsigned int*)&rawmac[3],
-                       (unsigned int*)&rawmac[4],
-                       (unsigned int*)&rawmac[5]);
-                net->mac[0] = rawmac[0];
-                net->mac[1] = rawmac[1];
-                net->mac[2] = rawmac[2];
-                net->mac[3] = rawmac[3];
-                net->mac[4] = rawmac[4];
-                net->mac[5] = rawmac[5];
+                if (virParseMacAddr(mac, net->mac) < 0) {
+                    xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                               _("malformed mac address '%s'"), mac);
+                    goto cleanup;
+                }
             }
 
             if (bridge[0] || STREQ(script, "vif-bridge") ||

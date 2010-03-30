@@ -1819,25 +1819,11 @@ xenDaemonParseSxprNets(virConnectPtr conn,
 
             tmp = sexpr_node(node, "device/vif/mac");
             if (tmp) {
-                unsigned int mac[6];
-                if (sscanf(tmp, "%02x:%02x:%02x:%02x:%02x:%02x",
-                           (unsigned int*)&mac[0],
-                           (unsigned int*)&mac[1],
-                           (unsigned int*)&mac[2],
-                           (unsigned int*)&mac[3],
-                           (unsigned int*)&mac[4],
-                           (unsigned int*)&mac[5]) != 6) {
+                if (virParseMacAddr(tmp, net->mac) < 0) {
                     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("malformed mac address '%s'"),
-                                 tmp);
+                                 _("malformed mac address '%s'"), tmp);
                     goto cleanup;
                 }
-                net->mac[0] = mac[0];
-                net->mac[1] = mac[1];
-                net->mac[2] = mac[2];
-                net->mac[3] = mac[3];
-                net->mac[4] = mac[4];
-                net->mac[5] = mac[5];
             }
 
             if (model &&
