@@ -44,7 +44,7 @@ struct uml_driver {
 
     int privileged;
 
-    unsigned int umlVersion;
+    unsigned long umlVersion;
     int nextvmid;
 
     virDomainObjList domains;

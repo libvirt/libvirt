@@ -2074,6 +2074,41 @@ virParseNumber(const char **str)
     return (ret);
 }
 
+
+/**
+ * virParseVersionString:
+ * @str: const char pointer to the version string
+ * @version: unsigned long pointer to output the version number
+ *
+ * Parse an unsigned version number from a version string. Expecting
+ * 'major.minor.micro' format, ignoring an optional suffix.
+ *
+ * The major, minor and micro numbers are encoded into a single version number:
+ *
+ *   1000000 * major + 1000 * minor + micro
+ *
+ * Returns the 0 for success, -1 for error.
+ */
+int
+virParseVersionString(const char *str, unsigned long *version)
+{
+    unsigned int major, minor, micro;
+    char *tmp;
+
+    if (virStrToLong_ui(str, &tmp, 10, &major) < 0 || *tmp != '.')
+        return -1;
+
+    if (virStrToLong_ui(tmp + 1, &tmp, 10, &minor) < 0 || *tmp != '.')
+        return -1;
+
+    if (virStrToLong_ui(tmp + 1, &tmp, 10, &micro) < 0)
+        return -1;
+
+    *version = 1000000 * major + 1000 * minor + micro;
+
+    return 0;
+}
+
 /**
  * virAsprintf
  *

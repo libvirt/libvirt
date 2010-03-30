@@ -684,34 +684,17 @@ static int
 esxGetVersion(virConnectPtr conn, unsigned long *version)
 {
     esxPrivate *priv = conn->privateData;
-    char *temp;
-    unsigned int major, minor, release;
 
-    temp = (char *)priv->host->service->about->version;
+    if (virParseVersionString(priv->host->service->about->version,
+                              version) < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  "Could not parse version number from '%s'",
+                  priv->host->service->about->version);
 
-    /* Expecting 'major.minor.release' format */
-    if (virStrToLong_ui(temp, &temp, 10, &major) < 0 || *temp != '.') {
-        goto failure;
+        return -1;
     }
-
-    if (virStrToLong_ui(temp + 1, &temp, 10, &minor) < 0 || *temp != '.') {
-        goto failure;
-    }
-
-    if (virStrToLong_ui(temp + 1, NULL, 10, &release) < 0) {
-        goto failure;
-    }
-
-    *version = 1000000 * major + 1000 * minor + release;
 
     return 0;
-
-  failure:
-    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-              "Expecting version to match 'major.minor.release', but got '%s'",
-              priv->host->service->about->version);
-
-    return -1;
 }
 
 

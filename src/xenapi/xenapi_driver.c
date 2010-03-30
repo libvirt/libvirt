@@ -253,9 +253,8 @@ xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
     xen_host host;
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
     xen_string_string_map *result = NULL;
-    int i;
+    int i, ret = -1;
     char *version = NULL;
-    unsigned long major = 0, minor = 0, release = 0;
     if (!(xen_session_get_this_host(session, &host, session))) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);
         return -1;
@@ -278,18 +277,17 @@ xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
             }
         }
         if (version) {
-            if (sscanf(version, "%ld.%ld.%ld", &major, &minor, &release) != 3) {
+            if (virParseVersionString(version, hvVer) < 0)
                 xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
-                                          _("Couldn't get version info"));
-                xen_string_string_map_free(result);
-                VIR_FREE(version);
-                return -1;
-            }
-            *hvVer = major * 1000000 + minor * 1000 + release;
-            VIR_FREE(version);
+                                          _("Couldn't parse version info"));
+            else
+                ret = 0;
             xen_string_string_map_free(result);
-            return 0;
+            VIR_FREE(version);
+            return ret;
         }
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Couldn't get version info"));
     }
     return -1;
 }

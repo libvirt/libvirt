@@ -78,8 +78,8 @@ openvzExtractVersionInfo(const char *cmd, int *retversion)
     pid_t child;
     int newstdout = -1;
     int ret = -1, status;
-    unsigned int major, minor, micro;
-    unsigned int version;
+    unsigned long version;
+    char *tmp;
 
     if (retversion)
         *retversion = 0;
@@ -93,12 +93,14 @@ openvzExtractVersionInfo(const char *cmd, int *retversion)
     if (len < 0)
         goto cleanup2;
 
-    if (sscanf(help, "vzctl version %u.%u.%u",
-               &major, &minor, &micro) != 3) {
-        goto cleanup2;
-    }
+    tmp = help;
 
-    version = (major * 1000 * 1000) + (minor * 1000) + micro;
+    /* expected format: vzctl version <major>.<minor>.<micro> */
+    if ((tmp = STRSKIP(tmp, "vzctl version ")) == NULL)
+        goto cleanup2;
+
+    if (virParseVersionString(tmp, &version) < 0)
+        goto cleanup2;
 
     if (retversion)
         *retversion = version;

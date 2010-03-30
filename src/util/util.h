@@ -189,6 +189,7 @@ int virMacAddrCompare (const char *mac1, const char *mac2);
 
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
+int virParseVersionString(const char *str, unsigned long *version);
 int virAsprintf(char **strp, const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(2, 3);
 char *virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;

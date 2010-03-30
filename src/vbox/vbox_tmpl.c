@@ -157,7 +157,7 @@ if (strUtf16) {\
 
 typedef struct {
     virMutex lock;
-    int version;
+    unsigned long version;
 
     virCapsPtr caps;
 
@@ -713,10 +713,7 @@ cleanup:
 }
 
 static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
-    unsigned int major      = 0;
-    unsigned int minor      = 0;
-    unsigned int micro      = 0;
-    int          ret        = -1;
+    int ret = -1;
     PRUnichar *versionUtf16 = NULL;
     nsresult rc;
 
@@ -729,20 +726,17 @@ static int vboxExtractVersion(virConnectPtr conn, vboxGlobalData *data) {
 
         VBOX_UTF16_TO_UTF8(versionUtf16, &vboxVersion);
 
-        if (sscanf(vboxVersion, "%u.%u.%u", &major, &minor, &micro) == 3)
+        if (virParseVersionString(vboxVersion, &data->version) >= 0)
             ret = 0;
 
         VBOX_UTF8_FREE(vboxVersion);
         VBOX_COM_UNALLOC_MEM(versionUtf16);
-    } else {
-        ret = -1;
     }
-
-    data->version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
     if (ret != 0)
         vboxError(conn, VIR_ERR_INTERNAL_ERROR,"%s",
                   "Cound not extract VirtualBox version");
+
     return ret;
 }
 

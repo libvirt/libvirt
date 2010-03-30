@@ -1951,19 +1951,13 @@ lxcActive(void) {
 static int lxcVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *version)
 {
     struct utsname ver;
-    int maj;
-    int min;
-    int rev;
 
     uname(&ver);
 
-    if (sscanf(ver.release, "%i.%i.%i", &maj, &min, &rev) != 3) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("Unknown release: %s"), ver.release);
+    if (virParseVersionString(ver.release, version) < 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR, _("Unknown release: %s"), ver.release);
         return -1;
     }
-
-    *version = (maj * 1000 * 1000) + (min * 1000) + rev;
 
     return 0;
 }

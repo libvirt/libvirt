@@ -1225,17 +1225,18 @@ cleanup:
 static int umlGetVersion(virConnectPtr conn, unsigned long *version) {
     struct uml_driver *driver = conn->privateData;
     struct utsname ut;
-    int major, minor, micro;
     int ret = -1;
 
-    uname(&ut);
-
     umlDriverLock(driver);
-    if (sscanf(ut.release, "%u.%u.%u",
-               &major, &minor, &micro) != 3) {
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse version %s"), ut.release);
-        goto cleanup;
+
+    if (driver->umlVersion == 0) {
+        uname(&ut);
+
+        if (virParseVersionString(ut.release, &driver->umlVersion) < 0) {
+            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse version %s"), ut.release);
+            goto cleanup;
+        }
     }
 
     *version = driver->umlVersion;
