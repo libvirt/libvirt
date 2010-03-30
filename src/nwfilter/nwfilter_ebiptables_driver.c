@@ -144,7 +144,7 @@ printDataType(virConnectPtr conn,
               nwItemDescPtr item)
 {
     int done;
-    int i, pos, s;
+    char *data;
 
     if (printVar(conn, vars, buf, bufsize, item, &done))
         return 1;
@@ -154,30 +154,38 @@ printDataType(virConnectPtr conn,
 
     switch (item->datatype) {
     case DATATYPE_IPADDR:
-        if (snprintf(buf, bufsize, "%d.%d.%d.%d",
-                    item->u.ipaddr.addr.ipv4Addr[0],
-                    item->u.ipaddr.addr.ipv4Addr[1],
-                    item->u.ipaddr.addr.ipv4Addr[2],
-                    item->u.ipaddr.addr.ipv4Addr[3]) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
-                                   _("Buffer too small for IP address"));
+        data = virSocketFormatAddr(&item->u.ipaddr.addr);
+        if (!data) {
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("internal IPv4 address representation "
+                                     "is bad"));
             return 1;
         }
+        if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("buffer too small for IP address"));
+            VIR_FREE(data);
+            return 1;
+        }
+        VIR_FREE(data);
     break;
 
     case DATATYPE_IPV6ADDR:
-        pos = 0;
-        for (i = 0; i < 16; i++) {
-            s = snprintf(&buf[pos], bufsize - pos, "%x%s",
-                         (unsigned int)item->u.ipaddr.addr.ipv6Addr[i],
-                         ((i & 1) && (i < 15)) ? ":" : "" );
-            if (s >= bufsize - pos) {
-                virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
-                                       _("Buffer too small for IPv6 address"));
-                return 1;
-            }
-            pos += s;
+        data = virSocketFormatAddr(&item->u.ipaddr.addr);
+        if (!data) {
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("internal IPv6 address representation "
+                                     "is bad"));
+            return 1;
         }
+
+        if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                   _("buffer too small for IPv6 address"));
+            VIR_FREE(data);
+            return 1;
+        }
+        VIR_FREE(data);
     break;
 
     case DATATYPE_MACADDR:

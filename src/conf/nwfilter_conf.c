@@ -473,22 +473,6 @@ checkValidMask(unsigned char *data, int len)
 }
 
 
-/* check for a valid IPv4 mask */
-static bool
-checkIPv4Mask(enum attrDatatype datatype ATTRIBUTE_UNUSED, void *maskptr,
-              virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
-{
-    return checkValidMask(maskptr, 4);
-}
-
-static bool
-checkIPv6Mask(enum attrDatatype datatype ATTRIBUTE_UNUSED, void *maskptr,
-              virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
-{
-    return checkValidMask(maskptr, 16);
-}
-
-
 static bool
 checkMACMask(enum attrDatatype datatype ATTRIBUTE_UNUSED,
              void *macMask,
@@ -497,16 +481,6 @@ checkMACMask(enum attrDatatype datatype ATTRIBUTE_UNUSED,
     return checkValidMask((unsigned char *)macMask, 6);
 }
 
-
-static int getMaskNumBits(const unsigned char *mask, int len) {
-     int i = 0;
-     while (i < (len << 3)) {
-         if (!(mask[i>>3] & (0x80 >> (i & 3))))
-             break;
-         i++;
-     }
-     return i;
-}
 
 /*
  * supported arp opcode -- see 'ebtables -h arp' for the naming
@@ -1227,21 +1201,8 @@ static bool
 virNWIPv4AddressParser(const char *input,
                        nwIPAddressPtr output)
 {
-    int i;
-    char *endptr;
-    const char *n = input;
-    long int d;
-
-    for (i = 0; i < 4; i++) {
-        d = strtol(n, &endptr, 10);
-        if (d < 0 || d > 255            ||
-            (endptr - n        > 3    ) ||
-            (i <= 2 && *endptr != '.' ) ||
-            (i == 3 && *endptr != '\0'))
-            return 0;
-        output->addr.ipv4Addr[i] = (unsigned char)d;
-        n = endptr + 1;
-    }
+    if (virSocketParseIpv4Addr(input, &output->addr) == -1)
+        return 0;
     return 1;
 }
 
@@ -1250,81 +1211,8 @@ static bool
 virNWIPv6AddressParser(const char *input,
                        nwIPAddressPtr output)
 {
-    int i, j, pos;
-    uint16_t n;
-    int shiftpos = -1;
-    char prevchar;
-    char base;
-
-    memset(output, 0x0, sizeof(*output));
-
-    output->isIPv6 = 1;
-
-    pos = 0;
-    i = 0;
-
-    while (i < 8) {
-        j = 0;
-        n = 0;
-        while (1) {
-            prevchar = input[pos++];
-            if (prevchar == ':' || prevchar == 0) {
-                if (j > 0) {
-                    output->addr.ipv6Addr[i * 2 + 0] = n >> 8;
-                    output->addr.ipv6Addr[i * 2 + 1] = n;
-                    i++;
-                }
-                break;
-            }
-
-            if (j >= 4)
-                return 0;
-
-            if (prevchar >= '0' && prevchar <= '9')
-                base = '0';
-            else if (prevchar >= 'a' && prevchar <= 'f')
-                base = 'a' - 10;
-            else if (prevchar >= 'A' && prevchar <= 'F')
-                base = 'A' - 10;
-            else
-                return 0;
-            n <<= 4;
-            n |= (prevchar - base);
-            j++;
-        }
-
-        if (prevchar == 0)
-            break;
-
-        if (input[pos] == ':') {
-            pos ++;
-            // sequence of zeros
-            if (prevchar != ':')
-                return 0;
-
-            if (shiftpos != -1)
-                return 0;
-
-            shiftpos = i;
-        }
-    }
-
-    if (shiftpos != -1) {
-        if (i >= 7)
-            return 0;
-        i--;
-        j = 0;
-        while (i >= shiftpos) {
-            output->addr.ipv6Addr[15 - (j*2) - 1] =
-                              output->addr.ipv6Addr[i * 2 + 0];
-            output->addr.ipv6Addr[15 - (j*2) - 0] =
-                              output->addr.ipv6Addr[i * 2 + 1];
-            output->addr.ipv6Addr[i * 2 + 0] = 0;
-            output->addr.ipv6Addr[i * 2 + 1] = 0;
-            i--;
-            j++;
-        }
-    }
+    if (virSocketParseIpv6Addr(input, &output->addr) == -1)
+        return 0;
     return 1;
 }
 
@@ -1442,11 +1330,10 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 } else
                                     rc = -1;
                             } else {
-                                if (checkIPv4Mask(datatype,
-                                                  ipaddr.addr.ipv4Addr, nwf))
-                                    *(uint8_t *)storage_ptr =
-                                       getMaskNumBits(ipaddr.addr.ipv4Addr,
-                                                 sizeof(ipaddr.addr.ipv4Addr));
+                                int_val = virSocketGetNumNetmaskBits(
+                                                     &ipaddr.addr);
+                                if (int_val >= 0)
+                                    *(uint8_t *)storage_ptr = int_val;
                                 else
                                     rc = -1;
                                 found = 1;
@@ -1497,11 +1384,10 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 } else
                                     rc = -1;
                             } else {
-                                if (checkIPv6Mask(datatype,
-                                                  ipaddr.addr.ipv6Addr, nwf))
-                                    *(uint8_t *)storage_ptr =
-                                       getMaskNumBits(ipaddr.addr.ipv6Addr,
-                                                 sizeof(ipaddr.addr.ipv6Addr));
+                                int_val = virSocketGetNumNetmaskBits(
+                                                     &ipaddr.addr);
+                                if (int_val >= 0)
+                                    *(uint8_t *)storage_ptr = int_val;
                                 else
                                     rc = -1;
                                 found = 1;
@@ -2571,43 +2457,12 @@ virNWFilterPoolObjDeleteDef(virConnectPtr conn,
 static void
 virNWIPAddressFormat(virBufferPtr buf, nwIPAddressPtr ipaddr)
 {
-    if (!ipaddr->isIPv6) {
-        virBufferVSprintf(buf, "%d.%d.%d.%d",
-                          ipaddr->addr.ipv4Addr[0],
-                          ipaddr->addr.ipv4Addr[1],
-                          ipaddr->addr.ipv4Addr[2],
-                          ipaddr->addr.ipv4Addr[3]);
-    } else {
-        int i;
-        int dcshown = 0, in_dc = 0;
-        unsigned short n;
-        while (i < 8) {
-            n = (ipaddr->addr.ipv6Addr[i * 2 + 0] << 8) |
-                 ipaddr->addr.ipv6Addr[i * 2 + 1];
-            if (n == 0) {
-                if (!dcshown) {
-                    in_dc = 1;
-                    if (i == 0)
-                        virBufferAddLit(buf, ":");
-                    dcshown = 1;
-                }
-                if (in_dc) {
-                    i++;
-                    continue;
-                }
-            }
-            if (in_dc) {
-                dcshown = 1;
-                virBufferAddLit(buf, ":");
-                in_dc = 0;
-            }
-            i++;
-            virBufferVSprintf(buf, "%x", n);
-            if (i < 8)
-                virBufferAddLit(buf, ":");
-        }
-        if (in_dc)
-            virBufferAddLit(buf, ":");
+    virSocketAddrPtr addr = &ipaddr->addr;
+    char *output = virSocketFormatAddr(addr);
+
+    if (output) {
+        virBufferVSprintf(buf, "%s", output);
+        VIR_FREE(output);
     }
 }
 

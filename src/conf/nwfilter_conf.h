@@ -33,6 +33,8 @@
 # include "util.h"
 # include "hash.h"
 # include "xml.h"
+# include "network.h"
+
 
 /**
  * Chain suffix size is:
@@ -85,11 +87,7 @@ struct _nwMACAddress {
 typedef struct _nwIPAddress nwIPAddress;
 typedef nwIPAddress *nwIPAddressPtr;
 struct _nwIPAddress {
-    int isIPv6;
-    union {
-        unsigned char ipv4Addr[4];
-        unsigned char ipv6Addr[16];
-    } addr;
+    virSocketAddr addr;
 };
 
 

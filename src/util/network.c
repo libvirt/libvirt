@@ -219,88 +219,10 @@ virSocketGetPort(virSocketAddrPtr addr) {
  * Returns 0 in case of success and -1 in case of error
  */
 int virSocketAddrIsNetmask(virSocketAddrPtr netmask) {
-    int i;
-
-    if (netmask == NULL)
-        return(-1);
-
-    if (netmask->stor.ss_family == AF_INET) {
-        virIPv4Addr tm;
-        unsigned char tmp;
-        int ok = 0;
-
-        if (getIPv4Addr(netmask, &tm) < 0)
-            return(-1);
-
-        for (i = 0;i < 4;i++) {
-           if (tm[i] != 0)
-               break;
-        }
-
-        if (i >= 4)
-            return(0);
-
-        tmp = 0xFF;
-        do {
-            if (tm[i] == tmp) {
-                ok = 1;
-                break;
-            }
-            tmp <<= 1;
-        } while (tmp != 0);
-        if (ok == 0)
-            return(-1);
-        i++;
-
-        if (i >= 4)
-            return(0);
-
-        for (;i < 4;i++) {
-            if (tm[i] != 0xFF)
-                return(-1);
-        }
-    } else if (netmask->stor.ss_family == AF_INET6) {
-        virIPv6Addr tm;
-        unsigned short tmp;
-        int ok = 0;
-
-        /*
-         * Hum, on IPv6 people use prefixes instead of netmask
-         */
-        if (getIPv6Addr(netmask, &tm) < 0)
-            return(-1);
-
-        for (i = 0;i < 8;i++) {
-           if (tm[i] != 0)
-               break;
-        }
-
-        if (i >= 8)
-            return(0);
-
-        tmp = 0xFFFF;
-        do {
-            if (tm[i] == tmp) {
-                ok = 1;
-                break;
-            }
-            tmp <<= 1;
-        } while (tmp != 0);
-        if (ok == 0)
-            return(-1);
-        i++;
-
-        if (i >= 8)
-            return(0);
-
-        for (;i < 8;i++) {
-            if (tm[i] != 0xFFFF)
-                return(-1);
-        }
-    } else {
-        return(-1);
-    }
-    return(0);
+    int n = virSocketGetNumNetmaskBits(netmask);
+    if (n < 0)
+        return -1;
+    return 0;
 }
 
 /**
@@ -414,4 +336,91 @@ int virSocketGetRange(virSocketAddrPtr start, virSocketAddrPtr end) {
         return(-1);
     }
     return(ret);
+}
+
+
+/**
+ * virGetNumNetmaskBits
+ * @netmask: the presumed netmask
+ *
+ * Get the number of netmask bits in a netmask.
+ *
+ * Returns the number of bits in the netmask or -1 if an error occurred
+ * or the netmask is invalid.
+ */
+int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask)
+{
+    int i, j;
+    int c = 0;
+
+    if (netmask->stor.ss_family == AF_INET) {
+        virIPv4Addr tm;
+        uint8_t bit;
+
+        if (getIPv4Addr(netmask, &tm) < 0)
+            return -1;
+
+        for (i = 0; i < 4; i++)
+            if (tm[i] == 0xff)
+                c += 8;
+            else
+                break;
+
+        if (c == 8 * 4)
+            return c;
+
+        j = i << 3;
+        while (j < (8 * 4)) {
+            bit = 1 << (7 - (j & 7));
+            if ((tm[j >> 3] & bit)) {
+                c++;
+            } else
+                break;
+            j++;
+        }
+
+        while (j < (8 * 4)) {
+            bit = 1 << (7 - (j & 7));
+            if ((tm[j >> 3] & bit))
+                return -1;
+            j++;
+        }
+
+        return c;
+    } else if (netmask->stor.ss_family == AF_INET6) {
+        virIPv6Addr tm;
+        uint16_t bit;
+
+        if (getIPv6Addr(netmask, &tm) < 0)
+            return -1;
+
+        for (i = 0; i < 8; i++)
+            if (tm[i] == 0xffff)
+                c += 16;
+            else
+                break;
+
+        if (c == 16 * 8)
+            return c;
+
+        j = i << 4;
+        while (j < (16 * 8)) {
+            bit = 1 << (15 - (j & 0xf));
+            if ((tm[j >> 4] & bit)) {
+                c++;
+            } else
+                break;
+            j++;
+        }
+
+        while (j < (16 * 8)) {
+            bit = 1 << (15 - (j & 0xf));
+            if ((tm[j >> 4]) & bit)
+                return -1;
+            j++;
+        }
+
+        return c;
+    }
+    return -1;
 }

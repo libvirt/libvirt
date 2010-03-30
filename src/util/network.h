@@ -48,4 +48,7 @@ int virSocketAddrIsNetmask(virSocketAddrPtr netmask);
 int virSocketCheckNetmask (virSocketAddrPtr addr1,
                            virSocketAddrPtr addr2,
                            virSocketAddrPtr netmask);
+
+int virSocketGetNumNetmaskBits(const virSocketAddrPtr netmask);
+
 #endif /* __VIR_NETWORK_H__ */
