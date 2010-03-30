@@ -86,7 +86,15 @@ VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "esp",
               "ah",
               "sctp",
-              "all");
+              "all",
+              "tcp-ipv6",
+              "icmpv6",
+              "udp-ipv6",
+              "udplite-ipv6",
+              "esp-ipv6",
+              "ah-ipv6",
+              "sctp-ipv6",
+              "all-ipv6");
 
 
 /*
@@ -869,41 +877,41 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.dataSrcMACAddr),\
     }
 
-#define COMMON_IP_PROPS(STRUCT) \
+#define COMMON_IP_PROPS(STRUCT, ADDRTYPE, MASKTYPE) \
     COMMON_L3_MAC_PROPS(STRUCT),\
     {\
         .name = SRCIPADDR,\
-        .datatype = DATATYPE_IPADDR,\
+        .datatype = ADDRTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPAddr),\
     },\
     {\
         .name = DSTIPADDR,\
-        .datatype = DATATYPE_IPADDR,\
+        .datatype = ADDRTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPAddr),\
     },\
     {\
         .name = SRCIPMASK,\
-        .datatype = DATATYPE_IPMASK,\
+        .datatype = MASKTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPMask),\
     },\
     {\
         .name = DSTIPMASK,\
-        .datatype = DATATYPE_IPMASK,\
+        .datatype = MASKTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPMask),\
     },\
     {\
         .name = SRCIPFROM,\
-        .datatype = DATATYPE_IPADDR,\
+        .datatype = ADDRTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPFrom),\
     },\
     {\
         .name = SRCIPTO,\
-        .datatype = DATATYPE_IPADDR,\
+        .datatype = ADDRTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPTo),\
     },\
     {\
         .name = DSTIPFROM,\
-        .datatype = DATATYPE_IPADDR,\
+        .datatype = ADDRTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPFrom),\
     },\
     {\
@@ -941,7 +949,7 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
     }
 
 static const virXMLAttr2Struct tcpAttributes[] = {
-    COMMON_IP_PROPS(tcpHdrFilter),
+    COMMON_IP_PROPS(tcpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     COMMON_PORT_PROPS(tcpHdrFilter),
     {
         .name = "option",
@@ -954,7 +962,7 @@ static const virXMLAttr2Struct tcpAttributes[] = {
 };
 
 static const virXMLAttr2Struct udpAttributes[] = {
-    COMMON_IP_PROPS(udpHdrFilter),
+    COMMON_IP_PROPS(udpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     COMMON_PORT_PROPS(udpHdrFilter),
     {
         .name = NULL,
@@ -962,28 +970,28 @@ static const virXMLAttr2Struct udpAttributes[] = {
 };
 
 static const virXMLAttr2Struct udpliteAttributes[] = {
-    COMMON_IP_PROPS(udpliteHdrFilter),
+    COMMON_IP_PROPS(udpliteHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     {
         .name = NULL,
     }
 };
 
 static const virXMLAttr2Struct espAttributes[] = {
-    COMMON_IP_PROPS(espHdrFilter),
+    COMMON_IP_PROPS(espHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     {
         .name = NULL,
     }
 };
 
 static const virXMLAttr2Struct ahAttributes[] = {
-    COMMON_IP_PROPS(ahHdrFilter),
+    COMMON_IP_PROPS(ahHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     {
         .name = NULL,
     }
 };
 
 static const virXMLAttr2Struct sctpAttributes[] = {
-    COMMON_IP_PROPS(sctpHdrFilter),
+    COMMON_IP_PROPS(sctpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     COMMON_PORT_PROPS(sctpHdrFilter),
     {
         .name = NULL,
@@ -992,7 +1000,7 @@ static const virXMLAttr2Struct sctpAttributes[] = {
 
 
 static const virXMLAttr2Struct icmpAttributes[] = {
-    COMMON_IP_PROPS(icmpHdrFilter),
+    COMMON_IP_PROPS(icmpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     {
         .name = "type",
         .datatype = DATATYPE_UINT8,
@@ -1010,7 +1018,7 @@ static const virXMLAttr2Struct icmpAttributes[] = {
 
 
 static const virXMLAttr2Struct allAttributes[] = {
-    COMMON_IP_PROPS(allHdrFilter),
+    COMMON_IP_PROPS(allHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
     {
         .name = NULL,
     }
@@ -1018,7 +1026,88 @@ static const virXMLAttr2Struct allAttributes[] = {
 
 
 static const virXMLAttr2Struct igmpAttributes[] = {
-    COMMON_IP_PROPS(igmpHdrFilter),
+    COMMON_IP_PROPS(igmpHdrFilter, DATATYPE_IPADDR, DATATYPE_IPMASK),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct tcpipv6Attributes[] = {
+    COMMON_IP_PROPS(tcpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMON_PORT_PROPS(tcpHdrFilter),
+    {
+        .name = "option",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.tcpHdrFilter.dataTCPOption),
+    },
+    {
+        .name = NULL,
+    }
+};
+
+static const virXMLAttr2Struct udpipv6Attributes[] = {
+    COMMON_IP_PROPS(udpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMON_PORT_PROPS(udpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct udpliteipv6Attributes[] = {
+    COMMON_IP_PROPS(udpliteHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct espipv6Attributes[] = {
+    COMMON_IP_PROPS(espHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct ahipv6Attributes[] = {
+    COMMON_IP_PROPS(ahHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct sctpipv6Attributes[] = {
+    COMMON_IP_PROPS(sctpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    COMMON_PORT_PROPS(sctpHdrFilter),
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct icmpv6Attributes[] = {
+    COMMON_IP_PROPS(icmpHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
+    {
+        .name = "type",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPType),
+    },
+    {
+        .name = "code",
+        .datatype = DATATYPE_UINT8,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.icmpHdrFilter.dataICMPCode),
+    },
+    {
+        .name = NULL,
+    }
+};
+
+
+static const virXMLAttr2Struct allipv6Attributes[] = {
+    COMMON_IP_PROPS(allHdrFilter, DATATYPE_IPV6ADDR, DATATYPE_IPV6MASK),
     {
         .name = NULL,
     }
@@ -1086,6 +1175,38 @@ static const virAttributes virAttr[] = {
         .id = "igmp",
         .att = igmpAttributes,
         .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IGMP,
+    }, {
+        .id = "tcp-ipv6",
+        .att = tcpipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6,
+    }, {
+        .id = "udp-ipv6",
+        .att = udpipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6,
+    }, {
+        .id = "udplite-ipv6",
+        .att = udpliteipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6,
+    }, {
+        .id = "esp-ipv6",
+        .att = espipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6,
+    }, {
+        .id = "ah-ipv6",
+        .att = ahipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6,
+    }, {
+        .id = "sctp-ipv6",
+        .att = sctpipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6,
+    }, {
+        .id = "icmpv6",
+        .att = icmpv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ICMPV6,
+    }, {
+        .id = "all-ipv6", // = 'any'
+        .att = allipv6Attributes,
+        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6,
     }, {
         .id = NULL,
     }
@@ -1506,6 +1627,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
+    case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
         COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.tcpHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.tcpHdrFilter.ipHdr.dataDstIPMask,
@@ -1523,6 +1645,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_UDP:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6:
         COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.udpHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.udpHdrFilter.ipHdr.dataDstIPMask,
@@ -1540,6 +1663,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6:
         COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.udpliteHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.udpliteHdrFilter.ipHdr.dataDstIPMask,
@@ -1551,6 +1675,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ESP:
+    case VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6:
         COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.espHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.espHdrFilter.ipHdr.dataDstIPMask,
@@ -1562,6 +1687,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_AH:
+    case VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6:
         COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.ahHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.ahHdrFilter.ipHdr.dataDstIPMask,
@@ -1573,6 +1699,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
+    case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
         COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.sctpHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.sctpHdrFilter.ipHdr.dataDstIPMask,
@@ -1590,6 +1717,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
+    case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
         COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.icmpHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.icmpHdrFilter.ipHdr.dataDstIPMask,
@@ -1603,6 +1731,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
+    case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataSrcIPMask,
                       rule->p.allHdrFilter.ipHdr.dataSrcIPAddr);
         COPY_NEG_SIGN(rule->p.allHdrFilter.ipHdr.dataDstIPMask,

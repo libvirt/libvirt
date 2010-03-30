@@ -28,7 +28,7 @@
 enum RuleType {
     RT_EBTABLES,
     RT_IPTABLES,
-/*  RT_IP6TABLES, for future use */
+    RT_IP6TABLES,
 };
 
 typedef struct _ebiptablesRuleInst ebiptablesRuleInst;
