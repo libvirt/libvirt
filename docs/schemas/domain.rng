@@ -295,6 +295,9 @@
     </interleave>
   </define>
   <define name="clock">
+    <zeroOrMore>
+      <ref name="timer"/>
+    </zeroOrMore>
     <optional>
       <element name="clock">
         <choice>
@@ -329,7 +332,62 @@
       </element>
     </optional>
   </define>
-  <!--
+  <define name="timer">
+    <element name="timer">
+      <attribute name="name">
+        <choice>
+          <value>platform</value>
+          <value>pit</value>
+          <value>rtc</value>
+          <value>hpet</value>
+          <value>tsc</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="wallclock">
+          <choice>
+            <value>host</value>
+            <value>guest</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="tickpolicy">
+          <choice>
+            <value>delay</value>
+            <value>catchup</value>
+            <value>merge</value>
+            <value>discard</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="frequency">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="mode">
+          <choice>
+            <value>auto</value>
+            <value>native</value>
+            <value>emulate</value>
+            <value>paravirt</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="present">
+          <choice>
+            <value>yes</value>
+            <value>no</value>
+          </choice>
+        </attribute>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+<!--
       A bootloader may be used to extract the OS information instead of
       defining the OS parameter in the instance. It points just to the
       binary or script used to extract the data from the first disk device.
