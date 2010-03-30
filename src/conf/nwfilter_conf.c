@@ -105,6 +105,9 @@ struct int_map {
     const char *val;
 };
 
+#define INTMAP_ENTRY(ATT, VAL) { .attr = ATT, .val = VAL }
+#define INTMAP_ENTRY_LAST      { .val = NULL }
+
 
 /*
  * only one filter update allowed
@@ -388,18 +391,10 @@ struct _virXMLAttr2Struct
 
 
 static const struct int_map macProtoMap[] = {
-    {
-      .attr = ETHERTYPE_ARP,
-      .val  = "arp",
-    }, {
-      .attr = ETHERTYPE_IP,
-      .val  = "ipv4",
-    }, {
-      .attr = ETHERTYPE_IPV6,
-      .val  = "ipv6",
-    }, {
-      .val  = NULL,
-    }
+    INTMAP_ENTRY(ETHERTYPE_ARP , "arp"),
+    INTMAP_ENTRY(ETHERTYPE_IP  , "ipv4"),
+    INTMAP_ENTRY(ETHERTYPE_IPV6, "ipv6"),
+    INTMAP_ENTRY_LAST
 };
 
 
@@ -486,36 +481,16 @@ checkMACMask(enum attrDatatype datatype ATTRIBUTE_UNUSED,
  * supported arp opcode -- see 'ebtables -h arp' for the naming
  */
 static const struct int_map arpOpcodeMap[] = {
-    {
-        .attr = 1,
-        .val = "Request",
-    } , {
-        .attr = 2,
-        .val = "Reply",
-    } , {
-        .attr = 3,
-        .val = "Request_Reverse",
-    } , {
-        .attr = 4,
-        .val = "Reply_Reverse",
-    } , {
-        .attr = 5,
-        .val = "DRARP_Request",
-    } , {
-        .attr = 6,
-        .val = "DRARP_Reply",
-    } , {
-        .attr = 7,
-        .val = "DRARP_Error",
-    } , {
-        .attr = 8,
-        .val = "InARP_Request",
-    } , {
-        .attr = 9,
-        .val = "ARP_NAK",
-    } , {
-        .val = NULL,
-    }
+    INTMAP_ENTRY(1, "Request"),
+    INTMAP_ENTRY(2, "Reply"),
+    INTMAP_ENTRY(3, "Request_Reverse"),
+    INTMAP_ENTRY(4, "Reply_Reverse"),
+    INTMAP_ENTRY(5, "DRARP_Request"),
+    INTMAP_ENTRY(6, "DRARP_Reply"),
+    INTMAP_ENTRY(7, "DRARP_Error"),
+    INTMAP_ENTRY(8, "InARP_Request"),
+    INTMAP_ENTRY(9, "ARP_NAK"),
+    INTMAP_ENTRY_LAST
 };
 
 
@@ -562,37 +537,21 @@ arpOpcodeFormatter(virBufferPtr buf,
 
 
 static const struct int_map ipProtoMap[] = {
-    {
-        .attr = IPPROTO_TCP,
-        .val  = "tcp",
-    } , {
-        .attr = IPPROTO_UDP,
-        .val  = "udp",
+    INTMAP_ENTRY(IPPROTO_TCP, "tcp"),
+    INTMAP_ENTRY(IPPROTO_UDP, "udp"),
 #ifdef IPPROTO_UDPLITE
-    } , {
-        .attr = IPPROTO_UDPLITE,
-        .val  = "udplite",
+    INTMAP_ENTRY(IPPROTO_UDPLITE, "udplite"),
 #endif
-    } , {
-        .attr = IPPROTO_ESP,
-        .val  = "esp",
-    } , {
-        .attr = IPPROTO_AH,
-        .val  = "ah",
-    } , {
-        .attr = IPPROTO_ICMP,
-        .val  = "icmp",
-    } , {
-        .attr = IPPROTO_IGMP,
-        .val  = "igmp",
+    INTMAP_ENTRY(IPPROTO_ESP, "esp"),
+    INTMAP_ENTRY(IPPROTO_AH,  "ah"),
+    INTMAP_ENTRY(IPPROTO_ICMP, "icmp"),
+    INTMAP_ENTRY(IPPROTO_IGMP, "igmp"),
 #ifdef IPPROTO_SCTP
-    } , {
-        .attr = IPPROTO_SCTP,
-        .val  = "sctp",
+    INTMAP_ENTRY(IPPROTO_SCTP, "sctp"),
 #endif
-    } , {
-        .val = NULL,
-    }
+    INTMAP_ENTRY(IPPROTO_IPV6, "ipv6"),
+    INTMAP_ENTRY(IPPROTO_ICMPV6, "icmpv6"),
+    INTMAP_ENTRY_LAST
 };
 
 
