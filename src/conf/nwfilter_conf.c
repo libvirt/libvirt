@@ -1233,7 +1233,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_UINT8:
                             storage_ptr = &item->u.u8;
-                            if (sscanf(prop, "%d", &int_val) == 1) {
+                            if (virStrToLong_i(prop, NULL, 10, &int_val) >= 0) {
                                 if (int_val >= 0 && int_val <= 0xff) {
                                     if (!validator)
                                         *(uint8_t *)storage_ptr = int_val;
@@ -1247,7 +1247,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_UINT16:
                             storage_ptr = &item->u.u16;
-                            if (sscanf(prop, "%d", &int_val) == 1) {
+                            if (virStrToLong_i(prop, NULL, 10, &int_val) >= 0) {
                                 if (int_val >= 0 && int_val <= 0xffff) {
                                     if (!validator)
                                         *(uint16_t *)storage_ptr = int_val;
@@ -1653,8 +1653,8 @@ virNWFilterRuleParse(virConnectPtr conn,
     ret->priority = MAX_RULE_PRIORITY / 2;
 
     if (prio) {
-        if (sscanf(prio, "%d", (int *)&priority) == 1) {
-            if ((int)priority >= 0 && priority <= MAX_RULE_PRIORITY)
+        if (virStrToLong_ui(prio, NULL, 10, &priority) >= 0) {
+            if (priority <= MAX_RULE_PRIORITY)
                 ret->priority = priority;
         }
     }
