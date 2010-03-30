@@ -5217,14 +5217,14 @@ qemuParseCommandLinePCI(const char *val)
     }
 
     start = val + strlen("host=");
-    if (virStrToLong_i(start, &end, 16, &bus) < 0 || !end || *end != ':') {
+    if (virStrToLong_i(start, &end, 16, &bus) < 0 || *end != ':') {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot extract PCI device bus '%s'"), val);
         VIR_FREE(def);
         goto cleanup;
     }
     start = end + 1;
-    if (virStrToLong_i(start, &end, 16, &slot) < 0 || !end || *end != '.') {
+    if (virStrToLong_i(start, &end, 16, &slot) < 0 || *end != '.') {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("cannot extract PCI device slot '%s'"), val);
         VIR_FREE(def);
@@ -5275,7 +5275,7 @@ qemuParseCommandLineUSB(const char *val)
 
     start = val + strlen("host:");
     if (strchr(start, ':')) {
-        if (virStrToLong_i(start, &end, 16, &first) < 0 || !end || *end != ':') {
+        if (virStrToLong_i(start, &end, 16, &first) < 0 || *end != ':') {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot extract USB device vendor '%s'"), val);
             VIR_FREE(def);
@@ -5289,7 +5289,7 @@ qemuParseCommandLineUSB(const char *val)
             goto cleanup;
         }
     } else {
-        if (virStrToLong_i(start, &end, 10, &first) < 0 || !end || *end != '.') {
+        if (virStrToLong_i(start, &end, 10, &first) < 0 || *end != '.') {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                              _("cannot extract USB device bus '%s'"), val);
             VIR_FREE(def);
@@ -5573,13 +5573,11 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     for (i = 0; i < nkws; i++) {
         if (vals[i] == NULL) {
             if (i > 0 ||
-                virStrToLong_i(kws[i], &end, 10, &n) < 0 ||
-                !end || *end != '\0')
+                virStrToLong_i(kws[i], &end, 10, &n) < 0 || *end != '\0')
                 goto syntax;
             dom->vcpus = n;
         } else {
-            if (virStrToLong_i(vals[i], &end, 10, &n) < 0 ||
-                !end || *end != '\0')
+            if (virStrToLong_i(vals[i], &end, 10, &n) < 0 || *end != '\0')
                 goto syntax;
             if (STREQ(kws[i], "sockets"))
                 sockets = n;

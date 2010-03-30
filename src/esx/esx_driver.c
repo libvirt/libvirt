@@ -690,13 +690,11 @@ esxGetVersion(virConnectPtr conn, unsigned long *version)
     temp = (char *)priv->host->service->about->version;
 
     /* Expecting 'major.minor.release' format */
-    if (virStrToLong_ui(temp, &temp, 10, &major) < 0 || temp == NULL ||
-        *temp != '.') {
+    if (virStrToLong_ui(temp, &temp, 10, &major) < 0 || *temp != '.') {
         goto failure;
     }
 
-    if (virStrToLong_ui(temp + 1, &temp, 10, &minor) < 0 || temp == NULL ||
-        *temp != '.') {
+    if (virStrToLong_ui(temp + 1, &temp, 10, &minor) < 0 || *temp != '.') {
         goto failure;
     }
 
