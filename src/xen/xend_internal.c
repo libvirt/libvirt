@@ -4683,7 +4683,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     else if ((p = strrchr (uri, ':')) != NULL) { /* "hostname:port" */
         int port_nr, n;
 
-        if (sscanf (p+1, "%d", &port_nr) != 1) {
+        if (virStrToLong_i(p+1, NULL, 10, &port_nr) < 0) {
             virXendError (conn, VIR_ERR_INVALID_ARG,
                           "%s", _("xenDaemonDomainMigrate: invalid port number"));
             return -1;
