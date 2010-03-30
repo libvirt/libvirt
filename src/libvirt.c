@@ -1660,8 +1660,9 @@ virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
         return ret;
     }
 
-   *libVer = LIBVIR_VERSION_NUMBER;
-    ret = 0;
+    *libVer = LIBVIR_VERSION_NUMBER;
+    return 0;
+
 error:
     virDispatchError(conn);
     return ret;
