@@ -25,6 +25,9 @@ The primary maintainers and people with commit access rights:
   Matthias Bolte       <matthias.bolte@googlemail.com>
   Jiri Denemark        <jdenemar@redhat.com>
   Dave Allan           <dallan@redhat.com>
+  Laine Stump          <laine@redhat.com>
+  Stefan Berger        <stefanb@us.ibm.com>
+  Eric Blake           <eblake@redhat.com>
 
 Patches have also been contributed by:
 
@@ -71,7 +74,6 @@ Patches have also been contributed by:
   Takahashi Tomohiro   <takatom@jp.fujitsu.com>
   Serge E. Hallyn      <serue@us.ibm.com>
   Soren Hansen         <soren@canonical.com>
-  Laine Stump          <laine@redhat.com>
   Abel Míguez Rodríguez<amiguezr@pdi.ucm.es>
   Doug Goldstein       <cardoe@gentoo.org>
   Javier Fontan        <jfontan@gmail.com>
@@ -89,10 +91,8 @@ Patches have also been contributed by:
   Steve Yarmie         <steve.yarmie@gmail.com>
   Dan Kenigsberg       <danken@redhat.com>
   Yuji NISHIDA         <nishidy@nict.go.jp>
-  Eric Blake           <eblake@redhat.com>
   Dustin Xiong         <x_k_123@hotmail.com>
   Rolf Eike Beer       <eike@sf-mail.de>
-  Stefan Berger        <stefanb@us.ibm.com>
   Wolfgang Mauerer     <wolfgang.mauerer@siemens.com>
   Philipp Hahn         <hahn@univention.de>
 
