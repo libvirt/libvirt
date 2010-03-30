@@ -8254,6 +8254,7 @@ static const vshCmdDef commands[] = {
     {"pwd", cmdPwd, NULL, info_pwd},
 #endif
     {"quit", cmdQuit, NULL, info_quit},
+    {"exit", cmdQuit, NULL, info_quit},
     {"reboot", cmdReboot, opts_reboot, info_reboot},
     {"restore", cmdRestore, opts_restore, info_restore},
     {"resume", cmdResume, opts_resume, info_resume},

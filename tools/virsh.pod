@@ -65,7 +65,7 @@ The following commands are generic i.e. not specific to a domain.
 This prints a small synopsis about all commands available for B<virsh>
 B<help> I<command> will print out a detailed help message on that command.
 
-=item B<quit>
+=item B<quit>, B<exit>
 
 quit this interactive terminal
 
