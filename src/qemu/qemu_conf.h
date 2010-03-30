@@ -84,6 +84,10 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_NETDEV        = (1 << 29), /* The -netdev flag & netdev_add/remove monitor commands */
     QEMUD_CMD_FLAG_RTC           = (1 << 30), /* The -rtc flag for clock options */
     QEMUD_CMD_FLAG_VNET_HOST     = (1 << 31), /* vnet-host support is available in qemu */
+    QEMUD_CMD_FLAG_RTC_TD_HACK   = (1LL << 32), /* -rtd-td-hack available */
+    QEMUD_CMD_FLAG_NO_HPET       = (1LL << 33), /* -no-hpet flag is supported */
+    QEMUD_CMD_FLAG_NO_KVM_PIT    = (1LL << 34), /* -no-kvm-pit-reinjection supported */
+    QEMUD_CMD_FLAG_TDF           = (1LL << 35), /* -tdf flag (user-mode pit catchup) */
 };
 
 /* Main driver state */

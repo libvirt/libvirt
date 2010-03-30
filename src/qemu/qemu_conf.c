@@ -1160,6 +1160,16 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
     /* The trailing ' ' is important to avoid a bogus match */
     if (strstr(help, "-rtc "))
         flags |= QEMUD_CMD_FLAG_RTC;
+    /* to wit */
+    if (strstr(help, "-rtc-td-hack"))
+        flags |= QEMUD_CMD_FLAG_RTC_TD_HACK;
+    if (strstr(help, "-no-hpet"))
+        flags |= QEMUD_CMD_FLAG_NO_HPET;
+    if (strstr(help, "-no-kvm-pit-reinjection"))
+        flags |= QEMUD_CMD_FLAG_NO_KVM_PIT;
+    if (strstr(help, "-tdf"))
+        flags |= QEMUD_CMD_FLAG_TDF;
+
     /* Keep disabled till we're actually ready to turn on netdev mode
      * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
 #if 0
