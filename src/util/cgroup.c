@@ -12,7 +12,6 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <inttypes.h>
 #ifdef HAVE_MNTENT_H
 # include <mntent.h>
 #endif
@@ -374,7 +373,7 @@ static int virCgroupGetValueI64(virCgroupPtr group,
     if (rc != 0)
         goto out;
 
-    if (sscanf(strval, "%" SCNi64, value) != 1)
+    if (virStrToLong_ll(strval, NULL, 10, value) < 0)
         rc = -EINVAL;
 out:
     VIR_FREE(strval);
