@@ -245,6 +245,29 @@ VIR_ENUM_IMPL(virDomainClockOffset, VIR_DOMAIN_CLOCK_OFFSET_LAST,
               "variable",
               "timezone");
 
+VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
+              "platform",
+              "pit",
+              "rtc",
+              "hpet",
+              "tsc");
+
+VIR_ENUM_IMPL(virDomainTimerWallclock, VIR_DOMAIN_TIMER_WALLCLOCK_LAST,
+              "host",
+              "guest");
+
+VIR_ENUM_IMPL(virDomainTimerTickpolicy, VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
+              "delay",
+              "catchup",
+              "merge",
+              "discard");
+
+VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
+              "auto",
+              "native",
+              "emulate",
+              "paravirt");
+
 #define virDomainReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -606,6 +629,18 @@ void virSecurityLabelDefFree(virDomainDefPtr def)
     VIR_FREE(def->seclabel.imagelabel);
 }
 
+static void
+virDomainClockDefClear(virDomainClockDefPtr def)
+{
+    if (def->offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE)
+        VIR_FREE(def->data.timezone);
+
+    int i;
+    for (i = 0; i < def->ntimers; i++)
+        VIR_FREE(def->timers[i]);
+    VIR_FREE(def->timers);
+}
+
 void virDomainDefFree(virDomainDefPtr def)
 {
     unsigned int i;
@@ -675,8 +710,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.bootloader);
     VIR_FREE(def->os.bootloaderArgs);
 
-    if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE)
-        VIR_FREE(def->clock.data.timezone);
+    virDomainClockDefClear(&def->clock);
 
     VIR_FREE(def->name);
     VIR_FREE(def->cpumask);
@@ -2512,6 +2546,107 @@ error:
 }
 
 
+/* Parse the XML definition for a clock timer */
+static virDomainTimerDefPtr
+virDomainTimerDefParseXML(const xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
+                          int flags ATTRIBUTE_UNUSED)
+{
+    char *name = NULL;
+    char *present = NULL;
+    char *tickpolicy = NULL;
+    char *wallclock = NULL;
+    char *mode = NULL;
+
+    virDomainTimerDefPtr def;
+    xmlNodePtr oldnode = ctxt->node;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    ctxt->node = node;
+
+    name = virXMLPropString(node, "name");
+    if (name == NULL) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("missing timer name"));
+        goto error;
+    }
+    if ((def->name = virDomainTimerNameTypeFromString(name)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown timer name '%s'"), name);
+        goto error;
+    }
+
+    def->present = -1; /* unspecified */
+    if ((present = virXMLPropString(node, "present")) != NULL) {
+        if (STREQ(present, "yes")) {
+            def->present = 1;
+        } else if (STREQ(present, "no")) {
+            def->present = 0;
+        } else {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown timer present value '%s'"), present);
+            goto error;
+        }
+    }
+
+    def->tickpolicy = -1;
+    tickpolicy = virXMLPropString(node, "tickpolicy");
+    if (tickpolicy != NULL) {
+        if ((def->tickpolicy = virDomainTimerTickpolicyTypeFromString(tickpolicy)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown timer tickpolicy '%s'"), tickpolicy);
+            goto error;
+        }
+    }
+
+    def->wallclock = -1;
+    wallclock = virXMLPropString(node, "wallclock");
+    if (wallclock != NULL) {
+        if ((def->wallclock = virDomainTimerWallclockTypeFromString(wallclock)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown timer wallclock '%s'"), wallclock);
+            goto error;
+        }
+    }
+
+    int ret = virXPathULong("string(./frequency)", ctxt, &def->frequency);
+    if (ret == -1) {
+        def->frequency = 0;
+    } else if (ret <= 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("invalid timer frequency"));
+        goto error;
+    }
+
+    def->mode = -1;
+    mode = virXMLPropString(node, "mode");
+    if (mode != NULL) {
+        if ((def->mode = virDomainTimerModeTypeFromString(mode)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown timer mode '%s'"), mode);
+            goto error;
+        }
+    }
+
+cleanup:
+    VIR_FREE(name);
+    VIR_FREE(present);
+    VIR_FREE(tickpolicy);
+    VIR_FREE(wallclock);
+    VIR_FREE(mode);
+    ctxt->node = oldnode;
+
+    return def;
+
+error:
+    VIR_FREE(def);
+    goto cleanup;
+}
+
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
 virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
@@ -3643,7 +3778,6 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                                    &def->onCrash, VIR_DOMAIN_LIFECYCLE_DESTROY) < 0)
         goto error;
 
-
     tmp = virXPathString("string(./clock/@offset)", ctxt);
     if (tmp) {
         if ((def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
@@ -3671,6 +3805,24 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         }
         break;
     }
+
+    if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("failed to parse timers"));
+        goto error;
+    }
+    if (n && VIR_ALLOC_N(def->clock.timers, n) < 0)
+        goto no_memory;
+    for (i = 0 ; i < n ; i++) {
+        virDomainTimerDefPtr timer = virDomainTimerDefParseXML(nodes[i],
+                                                               ctxt,
+                                                               flags);
+        if (!timer)
+            goto error;
+
+        def->clock.timers[def->clock.ntimers++] = timer;
+    }
+    VIR_FREE(nodes);
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
@@ -5272,6 +5424,75 @@ virDomainInputDefFormat(virBufferPtr buf,
 
 
 static int
+virDomainTimerDefFormat(virBufferPtr buf,
+                        virDomainTimerDefPtr def)
+{
+    const char *name = virDomainTimerNameTypeToString(def->name);
+
+    if (!name) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected timer name %d"), def->name);
+        return -1;
+    }
+    virBufferVSprintf(buf, "    <timer name='%s'", name);
+
+    if (def->present == 0) {
+        virBufferAddLit(buf, " present='no'");
+    } else if (def->present == 1) {
+        virBufferAddLit(buf, " present='yes'");
+    }
+
+    if (def->tickpolicy != -1) {
+        const char *tickpolicy
+            = virDomainTimerTickpolicyTypeToString(def->tickpolicy);
+        if (!tickpolicy) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected timer tickpolicy %d"),
+                                 def->tickpolicy);
+            return -1;
+        }
+        virBufferVSprintf(buf, " tickpolicy='%s'", tickpolicy);
+    }
+
+    if ((def->name == VIR_DOMAIN_TIMER_NAME_PLATFORM)
+        || (def->name == VIR_DOMAIN_TIMER_NAME_RTC)) {
+        if (def->wallclock != -1) {
+            const char *wallclock
+                = virDomainTimerWallclockTypeToString(def->wallclock);
+            if (!wallclock) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unexpected timer wallclock %d"),
+                                     def->wallclock);
+                return -1;
+            }
+            virBufferVSprintf(buf, " wallclock='%s'", wallclock);
+        }
+    }
+
+    if (def->name == VIR_DOMAIN_TIMER_NAME_TSC) {
+        if (def->frequency > 0) {
+            virBufferVSprintf(buf, " frequency='%lu'", def->frequency);
+        }
+
+        if (def->mode != -1) {
+            const char *mode
+                = virDomainTimerModeTypeToString(def->mode);
+            if (!mode) {
+                virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                     _("unexpected timer mode %d"),
+                                     def->mode);
+                return -1;
+            }
+            virBufferVSprintf(buf, " mode='%s'", mode);
+        }
+    }
+
+    virBufferAddLit(buf, "/>\n");
+
+    return 0;
+}
+
+static int
 virDomainGraphicsDefFormat(virBufferPtr buf,
                            virDomainGraphicsDefPtr def,
                            int flags)
@@ -5569,7 +5790,16 @@ char *virDomainDefFormat(virDomainDefPtr def,
         virBufferEscapeString(&buf, " timezone='%s'", def->clock.data.timezone);
         break;
     }
-    virBufferAddLit(&buf, "/>\n");
+    if (def->clock.ntimers == 0) {
+        virBufferAddLit(&buf, "/>\n");
+    } else {
+        virBufferAddLit(&buf, ">\n");
+        for (n = 0; n < def->clock.ntimers; n++) {
+            if (virDomainTimerDefFormat(&buf, def->clock.timers[n]) < 0)
+                goto cleanup;
+        }
+        virBufferAddLit(&buf, "  </clock>\n");
+    }
 
     if (virDomainLifecycleDefFormat(&buf, def->onPoweroff,
                                     "on_poweroff") < 0)

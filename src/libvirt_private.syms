@@ -197,6 +197,15 @@ virDomainDeviceInfoIterate;
 virDomainClockOffsetTypeToString;
 virDomainClockOffsetTypeFromString;
 virDomainDiskErrorPolicyTypeToString;
+virDomainTimerNameTypeToString;
+virDomainTimerNameTypeFromString;
+virDomainTimerWallclockTypeToString;
+virDomainTimerWallclockTypeFromString;
+virDomainTimerTickpolicyTypeToString;
+virDomainTimerTickpolicyTypeFromString;
+virDomainTimerModeTypeToString;
+virDomainTimerModeTypeFromString;
+
 
 # domain_event.h
 virDomainEventCallbackListAdd;

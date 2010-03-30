@@ -646,6 +646,56 @@ struct _virSecurityLabelDef {
     int type;
 };
 
+enum virDomainTimerNameType {
+    VIR_DOMAIN_TIMER_NAME_PLATFORM = 0,
+    VIR_DOMAIN_TIMER_NAME_PIT,
+    VIR_DOMAIN_TIMER_NAME_RTC,
+    VIR_DOMAIN_TIMER_NAME_HPET,
+    VIR_DOMAIN_TIMER_NAME_TSC,
+
+    VIR_DOMAIN_TIMER_NAME_LAST,
+};
+
+enum virDomainTimerWallclockType {
+    VIR_DOMAIN_TIMER_WALLCLOCK_HOST = 0,
+    VIR_DOMAIN_TIMER_WALLCLOCK_GUEST,
+
+    VIR_DOMAIN_TIMER_WALLCLOCK_LAST,
+};
+
+enum virDomainTimerTickpolicyType {
+    VIR_DOMAIN_TIMER_TICKPOLICY_DELAY = 0,
+    VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP,
+    VIR_DOMAIN_TIMER_TICKPOLICY_MERGE,
+    VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD,
+
+    VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
+};
+
+enum virDomainTimerModeType {
+    VIR_DOMAIN_TIMER_MODE_AUTO = 0,
+    VIR_DOMAIN_TIMER_MODE_NATIVE,
+    VIR_DOMAIN_TIMER_MODE_EMULATE,
+    VIR_DOMAIN_TIMER_MODE_PARAVIRT,
+
+    VIR_DOMAIN_TIMER_MODE_LAST,
+};
+
+typedef struct _virDomainTimerDef virDomainTimerDef;
+typedef virDomainTimerDef *virDomainTimerDefPtr;
+struct _virDomainTimerDef {
+    int name;
+    int present;    /* unspecified = -1, no = 0, yes = 1 */
+    int tickpolicy; /* none|catchup|merge|discard */
+
+    /* wallclock is only valid for name='platform|rtc' */
+    int wallclock;  /* host|guest */
+
+    /* frequency & mode are only valid for name='tsc' */
+    unsigned long frequency; /* in Hz, unspecified = 0 */
+    int mode;       /* auto|native|emulate|paravirt */
+};
+
 enum virDomainClockOffsetType {
     VIR_DOMAIN_CLOCK_OFFSET_UTC = 0,
     VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME = 1,
@@ -669,6 +719,9 @@ struct _virDomainClockDef {
          * offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME */
         char *timezone;
     } data;
+
+    int ntimers;
+    virDomainTimerDefPtr *timers;
 };
 
 # define VIR_DOMAIN_CPUMASK_LEN 1024
@@ -974,5 +1027,10 @@ VIR_ENUM_DECL(virDomainSeclabel)
 VIR_ENUM_DECL(virDomainClockOffset)
 
 VIR_ENUM_DECL(virDomainNetdevMacvtap)
+
+VIR_ENUM_DECL(virDomainTimerName)
+VIR_ENUM_DECL(virDomainTimerWallclock)
+VIR_ENUM_DECL(virDomainTimerTickpolicy)
+VIR_ENUM_DECL(virDomainTimerMode)
 
 #endif /* __DOMAIN_CONF_H */
