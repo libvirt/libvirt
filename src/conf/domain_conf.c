@@ -1290,6 +1290,23 @@ cleanup:
     return ret;
 }
 
+static int
+virDomainParseLegacyDeviceAddress(char *devaddr,
+                                  virDomainDevicePCIAddressPtr pci)
+{
+    char *tmp;
+
+    /* expected format: <domain>:<bus>:<slot> */
+    if (/* domain */
+        virStrToLong_ui(devaddr, &tmp, 16, &pci->domain) < 0 || *tmp != ':' ||
+        /* bus */
+        virStrToLong_ui(tmp + 1, &tmp, 16, &pci->bus) < 0 || *tmp != ':' ||
+        /* slot */
+        virStrToLong_ui(tmp + 1, NULL, 16, &pci->slot) < 0)
+        return -1;
+
+    return 0;
+}
 
 int
 virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
@@ -1541,10 +1558,8 @@ virDomainDiskDefParseXML(xmlNodePtr node,
     }
 
     if (devaddr) {
-        if (sscanf(devaddr, "%x:%x:%x",
-                   &def->info.addr.pci.domain,
-                   &def->info.addr.pci.bus,
-                   &def->info.addr.pci.slot) < 3) {
+        if (virDomainParseLegacyDeviceAddress(devaddr,
+                                              &def->info.addr.pci) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to parse devaddr parameter '%s'"),
                                  devaddr);
@@ -1901,10 +1916,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
     }
 
     if (devaddr) {
-        if (sscanf(devaddr, "%x:%x:%x",
-                   &def->info.addr.pci.domain,
-                   &def->info.addr.pci.bus,
-                   &def->info.addr.pci.slot) < 3) {
+        if (virDomainParseLegacyDeviceAddress(devaddr,
+                                              &def->info.addr.pci) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                  _("Unable to parse devaddr parameter '%s'"),
                                  devaddr);
@@ -3222,10 +3235,8 @@ virDomainHostdevSubsysPciDefParseXML(const xmlNodePtr node,
                 /* Legacy back-compat. Don't add any more attributes here */
                 char *devaddr = virXMLPropString(cur, "devaddr");
                 if (devaddr &&
-                    sscanf(devaddr, "%x:%x:%x",
-                           &def->info.addr.pci.domain,
-                           &def->info.addr.pci.bus,
-                           &def->info.addr.pci.slot) < 3) {
+                    virDomainParseLegacyDeviceAddress(devaddr,
+                                                      &def->info.addr.pci) < 0) {
                     virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                          _("Unable to parse devaddr parameter '%s'"),
                                          devaddr);
