@@ -15,6 +15,7 @@ libexec_PROGRAMS = libvirt_proxy
 
 libvirt_proxy_SOURCES = libvirt_proxy.c \
             @top_srcdir@/src/util/buf.c \
+            @top_srcdir@/src/util/hash.c \
 	    @top_srcdir@/src/util/logging.c \
             @top_srcdir@/src/util/memory.c \
             @top_srcdir@/src/util/network.c \
@@ -26,6 +27,7 @@ libvirt_proxy_SOURCES = libvirt_proxy.c \
             @top_srcdir@/src/conf/storage_encryption_conf.c \
             @top_srcdir@/src/conf/domain_conf.c \
             @top_srcdir@/src/conf/cpu_conf.c \
+            @top_srcdir@/src/conf/nwfilter_params.c \
             @top_srcdir@/src/xen/xend_internal.c \
 	    @top_srcdir@/src/xen/xen_hypervisor.c \
 	    @top_srcdir@/src/xen/sexpr.c  \

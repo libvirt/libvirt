@@ -214,6 +214,7 @@ err_exit:
 }
 
 
+#ifndef PROXY
 virNWFilterHashTablePtr
 virNWFilterParseParamAttributes(xmlNodePtr cur)
 {
@@ -254,6 +255,7 @@ skip_entry:
     }
     return table;
 }
+#endif
 
 
 struct formatterParam {
