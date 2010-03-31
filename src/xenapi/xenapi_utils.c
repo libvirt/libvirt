@@ -119,7 +119,7 @@ xenapiUtil_ParseQuery(virConnectPtr conn, xmlURIPtr uri, int *noVerify)
             if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
                 (*noVerify != 0 && *noVerify != 1)) {
                 xenapiSessionErrorHandler(conn, VIR_ERR_INVALID_ARG,
-                           "Query parameter 'no_verify' has unexpected value (should be 0 or 1)");
+      _("Query parameter 'no_verify' has unexpected value (should be 0 or 1)"));
                 goto failure;
             }
         }

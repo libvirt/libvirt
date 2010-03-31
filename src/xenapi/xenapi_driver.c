@@ -95,13 +95,13 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
 
     if (conn->uri->server == NULL) {
         xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  "Server name not in URI");
+                                  _("Server name not in URI"));
         goto error;
     }
 
     if (auth == NULL) {
         xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  "Authentication Credentials not found");
+                                  _("Authentication Credentials not found"));
         goto error;
     }
 
@@ -117,7 +117,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
 
         if (username == NULL) {
             xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                      "Username request failed");
+                                      _("Username request failed"));
             goto error;
         }
     }
@@ -126,7 +126,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
 
     if (password == NULL) {
         xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED,
-                                  "Password request failed");
+                                  _("Password request failed"));
         goto error;
     }
 
@@ -145,7 +145,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
 
     if (!(privP->caps = getCapsObject())) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
-                                  "Capabilities not found");
+                                  _("Capabilities not found"));
         goto error;
     }
 
@@ -166,7 +166,7 @@ xenapiOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUS
         return VIR_DRV_OPEN_SUCCESS;
     }
 
-    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, "");
+    xenapiSessionErrorHandler(conn, VIR_ERR_AUTH_FAILED, NULL);
 
   error:
     VIR_FREE(username);
@@ -279,7 +279,8 @@ xenapiGetVersion (virConnectPtr conn, unsigned long *hvVer)
         }
         if (version) {
             if (sscanf(version, "%ld.%ld.%ld", &major, &minor, &release) != 3) {
-                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get version info");
+                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                          _("Couldn't get version info"));
                 xen_string_string_map_free(result);
                 VIR_FREE(version);
                 return -1;
@@ -356,7 +357,8 @@ xenapiNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
         info->memory = (unsigned long)(memory / 1024);
         xen_host_metrics_set_free(xen_met_set);
     } else {
-        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Unable to get host metric Information");
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Unable to get host metric Information"));
         return -1;
     }
     if (xen_host_cpu_get_all(session, &host_cpu_set)) {
@@ -377,7 +379,8 @@ xenapiNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info)
         VIR_FREE(modelname);
         return 0;
     }
-    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Unable to get Host CPU set");
+    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Unable to get Host CPU set"));
     return -1;
 }
 
@@ -397,7 +400,8 @@ xenapiGetCapabilities (virConnectPtr conn)
         return xml;
     }
   cleanup:
-    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Capabilities not available");
+    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Capabilities not available"));
     return NULL;
 }
 
@@ -426,7 +430,8 @@ xenapiListDomains (virConnectPtr conn, int *ids, int maxids)
         for (i = 0; (i < (result->size)) && (i < maxids); i++) {
             xen_vm_get_domid(session, &t0, result->contents[i]);
             if (t0 > (int64_t)INT_MAX || t0 < (int64_t)INT_MIN) {
-                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "DomainID can't fit in 32 bits");
+                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                          _("DomainID can't fit in 32 bits"));
                 xen_vm_set_free(result);
                 return -1;
             }
@@ -497,7 +502,8 @@ xenapiDomainCreateXML (virConnectPtr conn,
                 domP = virGetDomain(conn, record->name_label, raw_uuid);
                 if (!domP) {
                     xen_vm_record_free(record);
-                    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Domain Pointer is invalid");
+                    xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                              _("Domain Pointer is invalid"));
                     return domP;
                 }
                 domP->id = record->domid;
@@ -549,7 +555,8 @@ xenapiDomainLookupByID (virConnectPtr conn, int id)
                         xen_vm_get_domid(session, &domid, result->contents[i]);
                         domP->id = domid;
                     } else {
-                        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Domain Pointer not valid");
+                        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                                  _("Domain Pointer not valid"));
                         domP = NULL;
                     }
                     xen_uuid_free(uuid);
@@ -590,7 +597,8 @@ xenapiDomainLookupByUUID (virConnectPtr conn,
         if (record != NULL) {
             domP = virGetDomain(conn, record->name_label, uuid);
             if (!domP) {
-                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Domain Pointer not valid");
+                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                          _("Domain Pointer not valid"));
                 domP = NULL;
             } else {
                 domP->id = record->domid;
@@ -624,7 +632,8 @@ xenapiDomainLookupByName (virConnectPtr conn,
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, (char *)name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return NULL;
         }
@@ -644,13 +653,14 @@ xenapiDomainLookupByName (virConnectPtr conn,
                 xen_uuid_free(uuid);
                 xen_vm_set_free(vms);
             if (!session->ok)
-                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get the Domain Pointer");
+                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                          _("Couldn't get the Domain Pointer"));
                 return NULL;
             }
         }
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
     return NULL;
 }
 
@@ -669,7 +679,8 @@ xenapiDomainSuspend (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) &&  vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         } else {
@@ -684,7 +695,7 @@ xenapiDomainSuspend (virDomainPtr dom)
         }
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -703,7 +714,8 @@ xenapiDomainResume (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         } else {
@@ -718,7 +730,7 @@ xenapiDomainResume (virDomainPtr dom)
         }
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -737,7 +749,8 @@ xenapiDomainShutdown (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         } else {
@@ -752,7 +765,7 @@ xenapiDomainShutdown (virDomainPtr dom)
         }
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -771,7 +784,8 @@ xenapiDomainReboot (virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -785,7 +799,7 @@ xenapiDomainReboot (virDomainPtr dom, unsigned int flags ATTRIBUTE_UNUSED)
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -804,7 +818,8 @@ xenapiDomainDestroy (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -818,7 +833,7 @@ xenapiDomainDestroy (virDomainPtr dom)
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -839,7 +854,8 @@ xenapiDomainGetOSType (virDomainPtr dom)
 
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return NULL;
         }
@@ -852,7 +868,7 @@ xenapiDomainGetOSType (virDomainPtr dom)
             virReportOOMError();
         VIR_FREE(boot_policy);
     } else
-        xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
 
   cleanup:
     if (vms) xen_vm_set_free(vms);
@@ -873,7 +889,8 @@ xenapiDomainGetMaxMemory (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return 0;
         }
@@ -903,7 +920,8 @@ xenapiDomainSetMaxMemory (virDomainPtr dom, unsigned long memory)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -939,7 +957,8 @@ xenapiDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
     info->cpuTime = 0; /* CPU time is not advertised */
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -982,7 +1001,8 @@ xenapiDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1013,7 +1033,8 @@ xenapiDomainPinVcpu (virDomainPtr dom, unsigned int vcpu ATTRIBUTE_UNUSED,
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1063,13 +1084,15 @@ xenapiDomainGetVcpus (virDomainPtr dom,
     if (xenapiDomainGetInfo(dom, &domInfo) == 0) {
         nvcpus = domInfo.nrVirtCpu;
     } else {
-        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Couldn't fetch Domain Information");
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Couldn't fetch Domain Information"));
         return -1;
     }
     if (xenapiNodeGetInfo(dom->conn, &nodeInfo) == 0)
         cpus = nodeInfo.cpus;
     else {
-        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Couldn't fetch Node Information");
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Couldn't fetch Node Information"));
         return -1;
     }
     if (nvcpus > maxinfo)
@@ -1079,7 +1102,8 @@ xenapiDomainGetVcpus (virDomainPtr dom,
     if (!xen_vm_get_by_name_label(session, &vms, dom->name))
         return -1;
     if (vms->size != 1) {
-        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Domain name is not unique"));
         xen_vm_set_free(vms);
         return -1;
     }
@@ -1130,7 +1154,8 @@ xenapiDomainGetMaxVcpus (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1166,7 +1191,8 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
 
     if (!xen_vm_get_by_name_label(session, &vms, dom->name)) return NULL;
     if (vms->size != 1) {
-        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+        xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Domain name is not unique"));
         xen_vm_set_free(vms);
         return NULL;
     }
@@ -1322,7 +1348,7 @@ xenapiDomainDumpXML (virDomainPtr dom, int flags ATTRIBUTE_UNUSED)
             if (vif_rec != NULL) {
                 if (virParseMacAddr((const char *)vif_rec->mac,defPtr->nets[i]->mac) < 0)
                     xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
-                                              "Unable to parse given mac address");
+                                              _("Unable to parse given mac address"));
                 xen_vif_record_free(vif_rec);
             }
         }
@@ -1373,7 +1399,8 @@ xenapiListDefinedDomains (virConnectPtr conn, char **const names,
                 }
                 xen_vm_record_free(record);
             } else {
-                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get VM record");
+                xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                          _("Couldn't get VM record"));
                 xen_vm_set_free(result);
                 while (--j >= 0) VIR_FREE(names[j]);
                    return -1;
@@ -1434,7 +1461,8 @@ xenapiDomainCreate (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1476,7 +1504,8 @@ xenapiDomainDefineXML (virConnectPtr conn, const char *xml)
         if (!session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);
         else
-            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get VM information from XML");
+            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Couldn't get VM information from XML"));
         virDomainDefFree(defPtr);
         return NULL;
     }
@@ -1508,7 +1537,8 @@ xenapiDomainUndefine (virDomainPtr dom)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1522,7 +1552,7 @@ xenapiDomainUndefine (virDomainPtr dom)
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -1543,7 +1573,8 @@ xenapiDomainGetAutostart (virDomainPtr dom, int *autostart)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1569,7 +1600,7 @@ xenapiDomainGetAutostart (virDomainPtr dom, int *autostart)
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -1588,7 +1619,8 @@ xenapiDomainSetAutostart (virDomainPtr dom, int autostart)
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
-            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR, "Domain name is not unique");
+            xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Domain name is not unique"));
             xen_vm_set_free(vms);
             return -1;
         }
@@ -1607,7 +1639,7 @@ xenapiDomainSetAutostart (virDomainPtr dom, int autostart)
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
-    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, "");
+    xenapiSessionErrorHandler(dom->conn, VIR_ERR_NO_DOMAIN, NULL);
     return -1;
 }
 
@@ -1636,12 +1668,14 @@ xenapiNodeGetFreeMemory (virConnectPtr conn)
     xen_host_metrics_get_all(session, &xen_met_set);
     if (xen_met_set != NULL) {
         if (!xen_host_metrics_get_memory_free(session, (int64_t *)&freeMem, xen_met_set->contents[0])) {
-            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get host metrics - memory information");
+            xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                      _("Couldn't get host metrics - memory information"));
             freeMem = 0;
         }
         xen_host_metrics_set_free(xen_met_set);
     } else {
-        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, "Couldn't get host metrics");
+        xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("Couldn't get host metrics"));
     }
     return freeMem;
 }
@@ -1657,7 +1691,7 @@ xenapiNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
                               int startCell, int maxCells)
 {
     if (maxCells > 1 && startCell > 0) {
-        xenapiSessionErrorHandler(conn, VIR_ERR_NO_SUPPORT, "");
+        xenapiSessionErrorHandler(conn, VIR_ERR_NO_SUPPORT, NULL);
         return -1;
     } else {
         freeMems[0] = xenapiNodeGetFreeMemory(conn);
