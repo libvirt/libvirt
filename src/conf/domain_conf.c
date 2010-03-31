@@ -6129,13 +6129,13 @@ cleanup:
 }
 
 
-virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
-                                    virDomainObjListPtr doms,
-                                    const char *configDir,
-                                    const char *autostartDir,
-                                    const char *name,
-                                    virDomainLoadConfigNotify notify,
-                                    void *opaque)
+static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
+                                           virDomainObjListPtr doms,
+                                           const char *configDir,
+                                           const char *autostartDir,
+                                           const char *name,
+                                           virDomainLoadConfigNotify notify,
+                                           void *opaque)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virDomainDefPtr def = NULL;

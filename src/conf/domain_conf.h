@@ -962,14 +962,6 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
                                           void *opaque);
 
-virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
-                                    virDomainObjListPtr doms,
-                                    const char *configDir,
-                                    const char *autostartDir,
-                                    const char *name,
-                                    virDomainLoadConfigNotify notify,
-                                    void *opaque);
-
 int virDomainLoadAllConfigs(virCapsPtr caps,
                             virDomainObjListPtr doms,
                             const char *configDir,
