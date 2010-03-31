@@ -115,6 +115,13 @@ virCPUDefParseXML(const xmlNodePtr node,
     int n;
     unsigned int i;
 
+    if (!xmlStrEqual(node->name, BAD_CAST "cpu")) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                          "%s",
+                          _("XML does not contain expected 'cpu' element"));
+        return NULL;
+    }
+
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
         return NULL;
