@@ -659,11 +659,12 @@ enum virDomainTimerNameType {
     VIR_DOMAIN_TIMER_NAME_LAST,
 };
 
-enum virDomainTimerWallclockType {
-    VIR_DOMAIN_TIMER_WALLCLOCK_HOST = 0,
-    VIR_DOMAIN_TIMER_WALLCLOCK_GUEST,
+enum virDomainTimerTrackType {
+    VIR_DOMAIN_TIMER_TRACK_BOOT = 0,
+    VIR_DOMAIN_TIMER_TRACK_GUEST,
+    VIR_DOMAIN_TIMER_TRACK_WALL,
 
-    VIR_DOMAIN_TIMER_WALLCLOCK_LAST,
+    VIR_DOMAIN_TIMER_TRACK_LAST,
 };
 
 enum virDomainTimerTickpolicyType {
@@ -680,8 +681,17 @@ enum virDomainTimerModeType {
     VIR_DOMAIN_TIMER_MODE_NATIVE,
     VIR_DOMAIN_TIMER_MODE_EMULATE,
     VIR_DOMAIN_TIMER_MODE_PARAVIRT,
+    VIR_DOMAIN_TIMER_MODE_SMPSAFE,
 
     VIR_DOMAIN_TIMER_MODE_LAST,
+};
+
+typedef struct _virDomainTimerCatchupDef virDomainTimerCatchupDef;
+typedef virDomainTimerCatchupDef *virDomainTimerCatchupDefPtr;
+struct _virDomainTimerCatchupDef {
+    unsigned long threshold;
+    unsigned long slew;
+    unsigned long limit;
 };
 
 typedef struct _virDomainTimerDef virDomainTimerDef;
@@ -691,8 +701,10 @@ struct _virDomainTimerDef {
     int present;    /* unspecified = -1, no = 0, yes = 1 */
     int tickpolicy; /* none|catchup|merge|discard */
 
-    /* wallclock is only valid for name='platform|rtc' */
-    int wallclock;  /* host|guest */
+    virDomainTimerCatchupDef catchup;
+
+    /* track is only valid for name='platform|rtc' */
+    int track;  /* host|guest */
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long frequency; /* in Hz, unspecified = 0 */
@@ -1032,7 +1044,7 @@ VIR_ENUM_DECL(virDomainClockOffset)
 VIR_ENUM_DECL(virDomainNetdevMacvtap)
 
 VIR_ENUM_DECL(virDomainTimerName)
-VIR_ENUM_DECL(virDomainTimerWallclock)
+VIR_ENUM_DECL(virDomainTimerTrack)
 VIR_ENUM_DECL(virDomainTimerTickpolicy)
 VIR_ENUM_DECL(virDomainTimerMode)
 

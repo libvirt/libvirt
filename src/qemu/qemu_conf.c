@@ -3183,11 +3183,22 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
     int i;
     for (i = 0; i < def->ntimers; i++) {
         if (def->timers[i]->name == VIR_DOMAIN_TIMER_NAME_RTC) {
-            if (def->timers[i]->wallclock == VIR_DOMAIN_TIMER_WALLCLOCK_HOST) {
-                virBufferAddLit(&buf, ",clock=host");
-            } else if (def->timers[i]->wallclock == VIR_DOMAIN_TIMER_WALLCLOCK_GUEST) {
+            switch (def->timers[i]->track) {
+            case -1: /* unspecified - use hypervisor default */
+                break;
+            case VIR_DOMAIN_TIMER_TRACK_BOOT:
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("unsupported rtc timer track '%s'"),
+                                virDomainTimerTrackTypeToString(def->timers[i]->track));
+                goto error;
+            case VIR_DOMAIN_TIMER_TRACK_GUEST:
                 virBufferAddLit(&buf, ",clock=vm");
+                break;
+            case VIR_DOMAIN_TIMER_TRACK_WALL:
+                virBufferAddLit(&buf, ",clock=host");
+                break;
             }
+
             switch (def->timers[i]->tickpolicy) {
             case -1:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:

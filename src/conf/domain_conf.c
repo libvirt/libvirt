@@ -252,9 +252,10 @@ VIR_ENUM_IMPL(virDomainTimerName, VIR_DOMAIN_TIMER_NAME_LAST,
               "hpet",
               "tsc");
 
-VIR_ENUM_IMPL(virDomainTimerWallclock, VIR_DOMAIN_TIMER_WALLCLOCK_LAST,
-              "host",
-              "guest");
+VIR_ENUM_IMPL(virDomainTimerTrack, VIR_DOMAIN_TIMER_TRACK_LAST,
+              "boot",
+              "guest",
+              "wall");
 
 VIR_ENUM_IMPL(virDomainTimerTickpolicy, VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
               "delay",
@@ -266,7 +267,8 @@ VIR_ENUM_IMPL(virDomainTimerMode, VIR_DOMAIN_TIMER_MODE_LAST,
               "auto",
               "native",
               "emulate",
-              "paravirt");
+              "paravirt",
+              "smpsafe");
 
 #define virDomainReportError(code, ...)                              \
     virReportErrorHelper(NULL, VIR_FROM_DOMAIN, code, __FILE__,      \
@@ -2575,7 +2577,7 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
     char *name = NULL;
     char *present = NULL;
     char *tickpolicy = NULL;
-    char *wallclock = NULL;
+    char *track = NULL;
     char *mode = NULL;
 
     virDomainTimerDefPtr def;
@@ -2623,12 +2625,12 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
         }
     }
 
-    def->wallclock = -1;
-    wallclock = virXMLPropString(node, "wallclock");
-    if (wallclock != NULL) {
-        if ((def->wallclock = virDomainTimerWallclockTypeFromString(wallclock)) < 0) {
+    def->track = -1;
+    track = virXMLPropString(node, "track");
+    if (track != NULL) {
+        if ((def->track = virDomainTimerTrackTypeFromString(track)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("unknown timer wallclock '%s'"), wallclock);
+                                 _("unknown timer track '%s'"), track);
             goto error;
         }
     }
@@ -2636,7 +2638,7 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
     int ret = virXPathULong("string(./frequency)", ctxt, &def->frequency);
     if (ret == -1) {
         def->frequency = 0;
-    } else if (ret <= 0) {
+    } else if (ret < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              "%s", _("invalid timer frequency"));
         goto error;
@@ -2652,11 +2654,42 @@ virDomainTimerDefParseXML(const xmlNodePtr node,
         }
     }
 
+    xmlNodePtr catchup = virXPathNode("./catchup", ctxt);
+    if (catchup != NULL) {
+        ret = virXPathULong("string(./catchup/@threshold)", ctxt,
+                            &def->catchup.threshold);
+        if (ret == -1) {
+            def->catchup.threshold = 0;
+        } else if (ret < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("invalid catchup threshold"));
+            goto error;
+        }
+
+        ret = virXPathULong("string(./catchup/@slew)", ctxt, &def->catchup.slew);
+        if (ret == -1) {
+            def->catchup.slew = 0;
+        } else if (ret < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("invalid catchup slew"));
+            goto error;
+        }
+
+        ret = virXPathULong("string(./catchup/@limit)", ctxt, &def->catchup.limit);
+        if (ret == -1) {
+            def->catchup.limit = 0;
+        } else if (ret < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 "%s", _("invalid catchup limit"));
+            goto error;
+        }
+    }
+
 cleanup:
     VIR_FREE(name);
     VIR_FREE(present);
     VIR_FREE(tickpolicy);
-    VIR_FREE(wallclock);
+    VIR_FREE(track);
     VIR_FREE(mode);
     ctxt->node = oldnode;
 
@@ -5474,16 +5507,16 @@ virDomainTimerDefFormat(virBufferPtr buf,
 
     if ((def->name == VIR_DOMAIN_TIMER_NAME_PLATFORM)
         || (def->name == VIR_DOMAIN_TIMER_NAME_RTC)) {
-        if (def->wallclock != -1) {
-            const char *wallclock
-                = virDomainTimerWallclockTypeToString(def->wallclock);
-            if (!wallclock) {
+        if (def->track != -1) {
+            const char *track
+                = virDomainTimerTrackTypeToString(def->track);
+            if (!track) {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                                     _("unexpected timer wallclock %d"),
-                                     def->wallclock);
+                                     _("unexpected timer track %d"),
+                                     def->track);
                 return -1;
             }
-            virBufferVSprintf(buf, " wallclock='%s'", wallclock);
+            virBufferVSprintf(buf, " track='%s'", track);
         }
     }
 
@@ -5505,7 +5538,23 @@ virDomainTimerDefFormat(virBufferPtr buf,
         }
     }
 
-    virBufferAddLit(buf, "/>\n");
+    if ((def->catchup.threshold == 0)
+        && (def->catchup.slew == 0)
+        && (def->catchup.limit == 0)) {
+        virBufferAddLit(buf, "/>\n");
+    } else {
+        virBufferAddLit(buf, ">\n      <catchup ");
+        if (def->catchup.threshold > 0) {
+            virBufferVSprintf(buf, " threshold='%lu'", def->catchup.threshold);
+        }
+        if (def->catchup.slew > 0) {
+            virBufferVSprintf(buf, " slew='%lu'", def->catchup.slew);
+        }
+        if (def->catchup.limit > 0) {
+            virBufferVSprintf(buf, " limit='%lu'", def->catchup.limit);
+        }
+        virBufferAddLit(buf, "/>\n    </timer>\n");
+    }
 
     return 0;
 }

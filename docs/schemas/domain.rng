@@ -344,10 +344,11 @@
         </choice>
       </attribute>
       <optional>
-        <attribute name="wallclock">
+        <attribute name="track">
           <choice>
-            <value>host</value>
+            <value>boot</value>
             <value>guest</value>
+            <value>wall</value>
           </choice>
         </attribute>
       </optional>
@@ -362,6 +363,9 @@
         </attribute>
       </optional>
       <optional>
+        <ref name="catchup"/>
+      </optional>
+      <optional>
         <attribute name="frequency">
           <ref name="unsignedInt"/>
         </attribute>
@@ -373,6 +377,7 @@
             <value>native</value>
             <value>emulate</value>
             <value>paravirt</value>
+            <value>smpsafe</value>
           </choice>
         </attribute>
       </optional>
@@ -385,6 +390,21 @@
         </attribute>
       </optional>
       <empty/>
+    </element>
+  </define>
+  <define name="catchup">
+    <element name="catchup">
+      <optional>
+        <attribute name="threshold">
+          <ref name="unsignedInt"/>
+        </attribute>
+        <attribute name="slew">
+          <ref name="unsignedInt"/>
+        </attribute>
+        <attribute name="limit">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
     </element>
   </define>
 <!--
