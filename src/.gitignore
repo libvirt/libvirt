@@ -15,3 +15,4 @@ libvirt_lxc
 libvirt.syms
 *.i
 *.s
+virt-aa-helper
