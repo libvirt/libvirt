@@ -103,7 +103,8 @@ NETWORK_CONF_SOURCES =						\
 
 # Network filter driver generic impl APIs
 NWFILTER_PARAM_CONF_SOURCES =					\
-		conf/nwfilter_params.c conf/nwfilter_conf.h
+		conf/nwfilter_params.c conf/nwfilter_params.h	\
+		conf/nwfilter_conf.h
 
 NWFILTER_CONF_SOURCES =					\
 		$(NWFILTER_PARAM_CONF_SOURCES)			\
@@ -288,8 +289,11 @@ STORAGE_HELPER_DISK_SOURCES =					\
 # Network filters
 NWFILTER_DRIVER_SOURCES =					\
 		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
-		nwfilter/nwfilter_gentech_driver.c 			\
-		nwfilter/nwfilter_ebiptables_driver.c
+		nwfilter/nwfilter_gentech_driver.c			\
+		nwfilter/nwfilter_gentech_driver.h			\
+		nwfilter/nwfilter_ebiptables_driver.c			\
+		nwfilter/nwfilter_ebiptables_driver.h
+
 
 # Security framework and drivers for various models
 SECURITY_DRIVER_SOURCES =					\
