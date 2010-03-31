@@ -106,7 +106,7 @@ ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
 	  $(XSLTPROC) --stringparam pagename $$name --nonet --html $(top_srcdir)/docs/site.xsl $< > $@ || (rm $@ && exit 1) ; fi )
 
 %.html: %.html.tmp
-	@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
+	@(if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
 	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
 	  $(XMLLINT) --nonet --format --valid $< > $@ || (rm $@ && exit 1) ; \
@@ -117,8 +117,9 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	-@(if [ -x $(XSLTPROC) ] ; then \
 	  echo "Rebuilding the HTML pages from the XML API" ; \
 	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )
-	-@(if [ -x $(XMLLINT) -a -x $(XMLCATALOG) ] ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
+	-@(if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" \
+	    > /dev/null ; then \
 	  echo "Validating the resulting XHTML pages" ; \
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi );

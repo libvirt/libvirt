@@ -240,7 +240,7 @@ AC_ARG_WITH([libvirtd],
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
 dnl
-if [[ "${LOGNAME}" = "veillard" && test "`pwd`" = "/u/veillard/libvirt" ]] ; then
+if test "${LOGNAME}" = "veillard" && test "`pwd`" = "/u/veillard/libvirt" ; then
     STATIC_BINARIES="-static"
 else
     STATIC_BINARIES=
