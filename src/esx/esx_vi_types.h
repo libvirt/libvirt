@@ -1,4 +1,3 @@
-
 /*
  * esx_vi_types.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
@@ -50,7 +49,7 @@ typedef struct _esxVI_DateTime esxVI_DateTime;
 typedef struct _esxVI_Fault esxVI_Fault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
 
-#include "esx_vi_types.generated.typedef"
+# include "esx_vi_types.generated.typedef"
 
 
 
@@ -70,7 +69,7 @@ enum _esxVI_Type {
     esxVI_Type_Fault,
     esxVI_Type_ManagedObjectReference,
 
-#include "esx_vi_types.generated.typeenum"
+# include "esx_vi_types.generated.typeenum"
 
     esxVI_Type_Other,
 };
@@ -294,6 +293,6 @@ int esxVI_ManagedObjectReference_Deserialize
 
 
 
-#include "esx_vi_types.generated.h"
+# include "esx_vi_types.generated.h"
 
 #endif /* __ESX_VI_TYPES_H__ */
