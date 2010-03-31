@@ -11333,7 +11333,7 @@ error:
 }
 
 /**
- * virNWFIlterLookupByUUIDString:
+ * virNWFilterLookupByUUIDString:
  * @conn: pointer to the hypervisor connection
  * @uuidstr: the string UUID for the nwfilter
  *
