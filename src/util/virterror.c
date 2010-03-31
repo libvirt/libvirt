@@ -180,6 +180,7 @@ static const char *virErrorDomainName(virErrorDomain domain) {
             break;
         case VIR_FROM_NWFILTER:
             dom = "Network Filter";
+            break;
         case VIR_FROM_HOOK:
             dom = "Sync Hook ";
             break;
