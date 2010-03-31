@@ -670,6 +670,9 @@ fi
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
 %endif
 
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
+%{_sysconfdir}/libvirt/nwfilter/*.xml
+
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf

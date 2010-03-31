@@ -13,6 +13,8 @@ FILTERS = \
 	no-mac-spoofing.xml \
 	no-other-l2-traffic.xml
 
+EXTRA_DIST=$(FILTERS)
+
 confdir = $(sysconfdir)/libvirt
 
 NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
