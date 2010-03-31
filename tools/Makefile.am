@@ -17,18 +17,18 @@ man1_MANS = virt-xml-validate.1 virt-pki-validate.1 virsh.1
 
 
 virt-xml-validate: virt-xml-validate.in Makefile
-	sed -e 's,@SCHEMADIR@,$(pkgdatadir)/schemas,' < $< > $@ || (rm $@ && exit 1)
-	chmod +x $@
+	$(AM_V_GEN)sed -e 's,@SCHEMADIR@,$(pkgdatadir)/schemas,' < $< > $@ \
+	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-xml-validate.1: virt-xml-validate
-	$(POD2MAN) $< $@
+	$(AM_V_GEN)$(POD2MAN) $< $@
 
 virt-pki-validate: virt-pki-validate.in Makefile
-	sed -e 's,@SYSCONFDIR@,$(sysconfdir),' < $< > $@ || (rm $@ && exit 1)
-	chmod +x $@
+	$(AM_V_GEN)sed -e 's,@SYSCONFDIR@,$(sysconfdir),' < $< > $@ \
+	    || (rm $@ && exit 1) && chmod +x $@
 
 virt-pki-validate.1: virt-pki-validate
-	$(POD2MAN) $< $@
+	$(AM_V_GEN)$(POD2MAN) $< $@
 
 virsh_SOURCES =							\
 		console.c console.h				\
@@ -55,24 +55,24 @@ virsh_CFLAGS = 							\
 BUILT_SOURCES = virsh-net-edit.c virsh-pool-edit.c
 
 virsh-net-edit.c: virsh.c Makefile.am
-	rm -f $@-tmp
-	echo '/* Automatically generated from: $^ */' > $@-tmp
-	echo 'static int' >> $@-tmp
+	$(AM_V_GEN)rm -f $@-tmp && \
+	echo '/* Automatically generated from: $^ */' > $@-tmp && \
+	echo 'static int' >> $@-tmp && \
 	awk '/^cmdEdit/, /^}/' $< \
 	  | sed -e 's/domain/network/g' \
 	      -e 's/Domain/Network/g' \
 	      -e 's/cmdEdit/cmdNetworkEdit/g' \
 	      -e 's/dom/network/g' \
 	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp
-	chmod a-w $@-tmp
-	rm -f $@
+	>> $@-tmp && \
+	chmod a-w $@-tmp && \
+	rm -f $@ && \
 	mv $@-tmp $@
 
 virsh-pool-edit.c: virsh.c Makefile.am
-	rm -f $@-tmp
-	echo '/* Automatically generated from: $^ */' > $@-tmp
-	echo 'static int' >> $@-tmp
+	$(AM_V_GEN)rm -f $@-tmp && \
+	echo '/* Automatically generated from: $^ */' > $@-tmp && \
+	echo 'static int' >> $@-tmp && \
 	awk '/^cmdEdit/, /^}/' $< \
 	  | sed -e 's/domain/pool/g' \
 	      -e 's/vshCommandOptDomain/vshCommandOptPool/g' \
@@ -83,9 +83,9 @@ virsh-pool-edit.c: virsh.c Makefile.am
 	      -e 's/\(virStoragePoolDefineXML.*\));/\1, 0);/' \
 	      -e 's/dom/pool/g' \
 	      -e 's/int flags.*/int flags = 0;/g' \
-	>> $@-tmp
-	chmod a-w $@-tmp
-	rm -f $@
+	>> $@-tmp && \
+	chmod a-w $@-tmp && \
+	rm -f $@ && \
 	mv $@-tmp $@
 
 
@@ -110,13 +110,13 @@ virsh_LDADD += virsh_win_icon.$(OBJEXT)
 # information is needed in this area.
 
 virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
-	$(WINDRES) \
+	$(AM_V_GEN)$(WINDRES) \
 	  --input-format rc --input $< \
 	  --output-format coff --output $@
 endif
 
 virsh.1: virsh.pod
-	$(POD2MAN) $< $@
+	$(AM_V_GEN)$(POD2MAN) $< $@
 
 
 CLEANFILES = $(bin_SCRIPTS) $(man1_MANS)

@@ -172,16 +172,16 @@ remote.c: remote_dispatch_prototypes.h \
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 
 remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	perl -w $(srcdir)/remote_generate_stubs.pl -p $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -p $(REMOTE_PROTOCOL) > $@
 
 remote_dispatch_table.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	perl -w $(srcdir)/remote_generate_stubs.pl -t $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -t $(REMOTE_PROTOCOL) > $@
 
 remote_dispatch_args.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	perl -w $(srcdir)/remote_generate_stubs.pl -a $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -a $(REMOTE_PROTOCOL) > $@
 
 remote_dispatch_ret.h: $(srcdir)/remote_generate_stubs.pl $(REMOTE_PROTOCOL)
-	perl -w $(srcdir)/remote_generate_stubs.pl -r $(REMOTE_PROTOCOL) > $@
+	$(AM_V_GEN)perl -w $(srcdir)/remote_generate_stubs.pl -r $(REMOTE_PROTOCOL) > $@
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
                   libvirtd.uml.logrotate
@@ -195,16 +195,16 @@ libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
 	mv $@-t $@
 
 libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
-	sed							\
+	$(AM_V_GEN)sed						\
 	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
-	    < $< > $@-t
-	mv $@-t $@
+	    < $< > $@-t &&					\
+	    mv $@-t $@
 
 libvirtd.uml.logrotate: libvirtd.uml.logrotate.in
-	sed							\
+	$(AM_V_GEN)sed						\
 	    -e 's![@]localstatedir[@]!$(localstatedir)!g'	\
-	    < $< > $@-t
-	mv $@-t $@
+	    < $< > $@-t &&					\
+	    mv $@-t $@
 
 install-logrotate: $(LOGROTATE_CONFS)
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu/
@@ -231,13 +231,13 @@ uninstall-init:
 BUILT_SOURCES += libvirtd.init
 
 libvirtd.init: libvirtd.init.in
-	sed						\
+	$(AM_V_GEN)sed					\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
 	    -e s!\@sbindir\@!@sbindir@!g		\
 	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
-	    < $< > $@-t
-	chmod a+x $@-t
-	mv $@-t $@
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
 
 check-local:
 	test -x '$(AUGPARSE)' \

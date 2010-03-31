@@ -891,17 +891,17 @@ EXTRA_DIST += \
 BUILT_SOURCES += libvirt.syms
 
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
-	rm -f $@-tmp $@
-	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp
-	cat $(srcdir)/libvirt_public.syms >>$@-tmp
-	printf '\n\n# Private symbols\n\n' >>$@-tmp
-	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp
-	printf 'global:\n\n' >>$@-tmp
+	$(AM_V_GEN)rm -f $@-tmp $@ ; \
+	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
+	cat $(srcdir)/libvirt_public.syms >>$@-tmp && \
+	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
+	printf 'LIBVIRT_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
+	printf 'global:\n\n' >>$@-tmp && \
 	for file in $(USED_SYM_FILES); do \
 	    cat $(srcdir)/$$file >>$@-tmp; \
-	done
-	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp
-	chmod a-w $@-tmp
+	done && \
+	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
+	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.syms
 
 # Empty source list - it merely links a bunch of convenience libs together
