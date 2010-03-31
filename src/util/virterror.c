@@ -184,6 +184,9 @@ static const char *virErrorDomainName(virErrorDomain domain) {
         case VIR_FROM_HOOK:
             dom = "Sync Hook ";
             break;
+        case VIR_FROM_DOMAIN_SNAPSHOT:
+            dom = "Domain Snapshot ";
+            break;
     }
     return(dom);
 }
@@ -1152,6 +1155,18 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Hook script execution failed");
             else
                 errmsg = _("Hook script execution failed: %s");
+            break;
+        case VIR_ERR_INVALID_DOMAIN_SNAPSHOT:
+            if (info == NULL)
+                errmsg = _("Invalid snapshot");
+            else
+                errmsg = _("Invalid snapshot: %s");
+            break;
+        case VIR_ERR_NO_DOMAIN_SNAPSHOT:
+            if (info == NULL)
+                errmsg = _("Domain snapshot not found");
+            else
+                errmsg = _("Domain snapshot not found: %s");
             break;
     }
     return (errmsg);

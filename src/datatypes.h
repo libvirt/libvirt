@@ -130,6 +130,15 @@
 # define VIR_IS_NWFILTER(obj)			((obj) && (obj)->magic==VIR_NWFILTER_MAGIC)
 # define VIR_IS_CONNECTED_NWFILTER(obj)		(VIR_IS_NWFILTER(obj) && VIR_IS_CONNECT((obj)->conn))
 
+/**
+ * VIR_SNAPSHOT_MAGIC:
+ *
+ * magic value used to protect the API when pointers to snapshot structures
+ * are passed down by the users.
+ */
+# define VIR_SNAPSHOT_MAGIC                0x6666DEAD
+# define VIR_IS_SNAPSHOT(obj)              ((obj) && (obj)->magic==VIR_SNAPSHOT_MAGIC)
+# define VIR_IS_DOMAIN_SNAPSHOT(obj)    (VIR_IS_SNAPSHOT(obj) && VIR_IS_DOMAIN((obj)->domain))
 
 /**
  * _virConnect:
@@ -202,6 +211,7 @@ struct _virDomain {
     char *name;                          /* the domain external name */
     int id;                              /* the domain ID */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
+    virHashTablePtr snapshots; /* hash table for known snapshots */
 };
 
 /**
@@ -304,6 +314,17 @@ struct _virStream {
     void *privateData;
 };
 
+/**
+ * _virDomainSnapshot
+ *
+ * Internal structure associated with a domain snapshot
+ */
+struct _virDomainSnapshot {
+    unsigned int magic;
+    int refs;
+    char *name;
+    virDomainPtr domain;
+};
 
 /************************************************************************
  *									*
@@ -367,5 +388,9 @@ virNWFilterPtr virGetNWFilter(virConnectPtr conn,
                                   const char *name,
                                   const unsigned char *uuid);
 int virUnrefNWFilter(virNWFilterPtr pool);
+
+virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
+                                          const char *name);
+int virUnrefDomainSnapshot(virDomainSnapshotPtr pool);
 
 #endif

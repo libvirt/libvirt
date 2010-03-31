@@ -126,3 +126,10 @@
     remote_list_nwfilters_ret val_remote_list_nwfilters_ret;
     remote_nwfilter_define_xml_ret val_remote_nwfilter_define_xml_ret;
     remote_domain_has_managed_save_image_ret val_remote_domain_has_managed_save_image_ret;
+    remote_domain_snapshot_create_xml_ret val_remote_domain_snapshot_create_xml_ret;
+    remote_domain_snapshot_dump_xml_ret val_remote_domain_snapshot_dump_xml_ret;
+    remote_domain_snapshot_num_ret val_remote_domain_snapshot_num_ret;
+    remote_domain_snapshot_list_names_ret val_remote_domain_snapshot_list_names_ret;
+    remote_domain_snapshot_lookup_by_name_ret val_remote_domain_snapshot_lookup_by_name_ret;
+    remote_domain_has_current_snapshot_ret val_remote_domain_has_current_snapshot_ret;
+    remote_domain_snapshot_current_ret val_remote_domain_snapshot_current_ret;

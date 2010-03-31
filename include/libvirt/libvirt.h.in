@@ -1384,6 +1384,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot */
     VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host */
     VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file */
+    VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot */
 } virDomainEventStartedDetailType;
 
 /**
@@ -1420,6 +1421,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_MIGRATED = 3,  /* Migrated off to another host */
     VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file */
     VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed */
+    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded */
 } virDomainEventStoppedDetailType;
 
 
@@ -1871,6 +1873,66 @@ int virDomainGetJobInfo(virDomainPtr dom,
                         virDomainJobInfoPtr info);
 int virDomainAbortJob(virDomainPtr dom);
 
+/**
+ * virDomainSnapshot:
+ *
+ * a virDomainSnapshot is a private structure representing a snapshot of
+ * a domain.
+ */
+typedef struct _virDomainSnapshot virDomainSnapshot;
+
+/**
+ * virDomainSnapshotPtr:
+ *
+ * a virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
+ * and is the type used to reference a domain snapshot in the API.
+ */
+typedef virDomainSnapshot *virDomainSnapshotPtr;
+
+/* Take a snapshot of the current VM state */
+virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
+                                                const char *xmlDesc,
+                                                unsigned int flags);
+
+/* Dump the XML of a snapshot */
+char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                                  unsigned int flags);
+
+/* Return the number of snapshots for this domain */
+int virDomainSnapshotNum(virDomainPtr domain, unsigned int flags);
+
+/* Get the names of all snapshots for this domain */
+int virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
+                               unsigned int flags);
+
+/* Get a handle to a named snapshot */
+virDomainSnapshotPtr virDomainSnapshotLookupByName(virDomainPtr domain,
+                                                   const char *name,
+                                                   unsigned int flags);
+
+/* Check whether a domain has a snapshot which is currently used */
+int virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned flags);
+
+/* Get a handle to the current snapshot */
+virDomainSnapshotPtr virDomainSnapshotCurrent(virDomainPtr domain,
+                                              unsigned int flags);
+
+/* Revert the domain to a point-in-time snapshot.  The
+ * state of the guest after this call will be the state
+ * of the guest when the snapshot in question was taken
+ */
+int virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                              unsigned int flags);
+
+/* Delete a snapshot */
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN = (1 << 0),
+} virDomainSnapshotDeleteFlags;
+
+int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                            unsigned int flags);
+
+int virDomainSnapshotFree(virDomainSnapshotPtr snapshot);
 
 /* A generic callback definition. Specific events usually have a customization
  * with extra parameters */

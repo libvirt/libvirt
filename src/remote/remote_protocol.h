@@ -42,6 +42,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_AUTH_SASL_DATA_MAX 65536
 #define REMOTE_AUTH_TYPE_LIST_MAX 20
 #define REMOTE_DOMAIN_MEMORY_STATS_MAX 1024
+#define REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX 1024
 #define REMOTE_DOMAIN_BLOCK_PEEK_BUFFER_MAX 65536
 #define REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX 65536
 #define REMOTE_SECURITY_MODEL_MAX VIR_SECURITY_MODEL_BUFLEN
@@ -102,6 +103,12 @@ struct remote_nonnull_secret {
         remote_nonnull_string usageID;
 };
 typedef struct remote_nonnull_secret remote_nonnull_secret;
+
+struct remote_nonnull_domain_snapshot {
+        remote_nonnull_string name;
+        remote_nonnull_domain domain;
+};
+typedef struct remote_nonnull_domain_snapshot remote_nonnull_domain_snapshot;
 
 typedef remote_nonnull_domain *remote_domain;
 
@@ -1883,6 +1890,101 @@ struct remote_domain_managed_save_remove_args {
         u_int flags;
 };
 typedef struct remote_domain_managed_save_remove_args remote_domain_managed_save_remove_args;
+
+struct remote_domain_snapshot_create_xml_args {
+        remote_nonnull_domain domain;
+        remote_nonnull_string xml_desc;
+        int flags;
+};
+typedef struct remote_domain_snapshot_create_xml_args remote_domain_snapshot_create_xml_args;
+
+struct remote_domain_snapshot_create_xml_ret {
+        remote_nonnull_domain_snapshot snap;
+};
+typedef struct remote_domain_snapshot_create_xml_ret remote_domain_snapshot_create_xml_ret;
+
+struct remote_domain_snapshot_dump_xml_args {
+        remote_nonnull_domain_snapshot snap;
+        int flags;
+};
+typedef struct remote_domain_snapshot_dump_xml_args remote_domain_snapshot_dump_xml_args;
+
+struct remote_domain_snapshot_dump_xml_ret {
+        remote_nonnull_string xml;
+};
+typedef struct remote_domain_snapshot_dump_xml_ret remote_domain_snapshot_dump_xml_ret;
+
+struct remote_domain_snapshot_num_args {
+        remote_nonnull_domain domain;
+        int flags;
+};
+typedef struct remote_domain_snapshot_num_args remote_domain_snapshot_num_args;
+
+struct remote_domain_snapshot_num_ret {
+        int num;
+};
+typedef struct remote_domain_snapshot_num_ret remote_domain_snapshot_num_ret;
+
+struct remote_domain_snapshot_list_names_args {
+        remote_nonnull_domain domain;
+        int nameslen;
+        int flags;
+};
+typedef struct remote_domain_snapshot_list_names_args remote_domain_snapshot_list_names_args;
+
+struct remote_domain_snapshot_list_names_ret {
+        struct {
+                u_int names_len;
+                remote_nonnull_string *names_val;
+        } names;
+};
+typedef struct remote_domain_snapshot_list_names_ret remote_domain_snapshot_list_names_ret;
+
+struct remote_domain_snapshot_lookup_by_name_args {
+        remote_nonnull_domain domain;
+        remote_nonnull_string name;
+        int flags;
+};
+typedef struct remote_domain_snapshot_lookup_by_name_args remote_domain_snapshot_lookup_by_name_args;
+
+struct remote_domain_snapshot_lookup_by_name_ret {
+        remote_nonnull_domain_snapshot snap;
+};
+typedef struct remote_domain_snapshot_lookup_by_name_ret remote_domain_snapshot_lookup_by_name_ret;
+
+struct remote_domain_has_current_snapshot_args {
+        remote_nonnull_domain domain;
+        int flags;
+};
+typedef struct remote_domain_has_current_snapshot_args remote_domain_has_current_snapshot_args;
+
+struct remote_domain_has_current_snapshot_ret {
+        int result;
+};
+typedef struct remote_domain_has_current_snapshot_ret remote_domain_has_current_snapshot_ret;
+
+struct remote_domain_snapshot_current_args {
+        remote_nonnull_domain domain;
+        int flags;
+};
+typedef struct remote_domain_snapshot_current_args remote_domain_snapshot_current_args;
+
+struct remote_domain_snapshot_current_ret {
+        remote_nonnull_domain_snapshot snap;
+};
+typedef struct remote_domain_snapshot_current_ret remote_domain_snapshot_current_ret;
+
+struct remote_domain_revert_to_snapshot_args {
+        remote_nonnull_domain_snapshot snap;
+        int flags;
+};
+typedef struct remote_domain_revert_to_snapshot_args remote_domain_revert_to_snapshot_args;
+
+struct remote_domain_snapshot_delete_args {
+        remote_nonnull_domain_snapshot snap;
+        int flags;
+};
+typedef struct remote_domain_snapshot_delete_args remote_domain_snapshot_delete_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -2071,6 +2173,15 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MANAGED_SAVE = 182,
         REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE = 183,
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_CREATE_XML = 185,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_DUMP_XML = 186,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_NUM = 187,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_NAMES = 188,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_LOOKUP_BY_NAME = 189,
+        REMOTE_PROC_DOMAIN_HAS_CURRENT_SNAPSHOT = 190,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT = 191,
+        REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
+        REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2114,6 +2225,7 @@ extern  bool_t xdr_remote_nonnull_storage_pool (XDR *, remote_nonnull_storage_po
 extern  bool_t xdr_remote_nonnull_storage_vol (XDR *, remote_nonnull_storage_vol*);
 extern  bool_t xdr_remote_nonnull_node_device (XDR *, remote_nonnull_node_device*);
 extern  bool_t xdr_remote_nonnull_secret (XDR *, remote_nonnull_secret*);
+extern  bool_t xdr_remote_nonnull_domain_snapshot (XDR *, remote_nonnull_domain_snapshot*);
 extern  bool_t xdr_remote_domain (XDR *, remote_domain*);
 extern  bool_t xdr_remote_network (XDR *, remote_network*);
 extern  bool_t xdr_remote_nwfilter (XDR *, remote_nwfilter*);
@@ -2410,6 +2522,22 @@ extern  bool_t xdr_remote_domain_managed_save_args (XDR *, remote_domain_managed
 extern  bool_t xdr_remote_domain_has_managed_save_image_args (XDR *, remote_domain_has_managed_save_image_args*);
 extern  bool_t xdr_remote_domain_has_managed_save_image_ret (XDR *, remote_domain_has_managed_save_image_ret*);
 extern  bool_t xdr_remote_domain_managed_save_remove_args (XDR *, remote_domain_managed_save_remove_args*);
+extern  bool_t xdr_remote_domain_snapshot_create_xml_args (XDR *, remote_domain_snapshot_create_xml_args*);
+extern  bool_t xdr_remote_domain_snapshot_create_xml_ret (XDR *, remote_domain_snapshot_create_xml_ret*);
+extern  bool_t xdr_remote_domain_snapshot_dump_xml_args (XDR *, remote_domain_snapshot_dump_xml_args*);
+extern  bool_t xdr_remote_domain_snapshot_dump_xml_ret (XDR *, remote_domain_snapshot_dump_xml_ret*);
+extern  bool_t xdr_remote_domain_snapshot_num_args (XDR *, remote_domain_snapshot_num_args*);
+extern  bool_t xdr_remote_domain_snapshot_num_ret (XDR *, remote_domain_snapshot_num_ret*);
+extern  bool_t xdr_remote_domain_snapshot_list_names_args (XDR *, remote_domain_snapshot_list_names_args*);
+extern  bool_t xdr_remote_domain_snapshot_list_names_ret (XDR *, remote_domain_snapshot_list_names_ret*);
+extern  bool_t xdr_remote_domain_snapshot_lookup_by_name_args (XDR *, remote_domain_snapshot_lookup_by_name_args*);
+extern  bool_t xdr_remote_domain_snapshot_lookup_by_name_ret (XDR *, remote_domain_snapshot_lookup_by_name_ret*);
+extern  bool_t xdr_remote_domain_has_current_snapshot_args (XDR *, remote_domain_has_current_snapshot_args*);
+extern  bool_t xdr_remote_domain_has_current_snapshot_ret (XDR *, remote_domain_has_current_snapshot_ret*);
+extern  bool_t xdr_remote_domain_snapshot_current_args (XDR *, remote_domain_snapshot_current_args*);
+extern  bool_t xdr_remote_domain_snapshot_current_ret (XDR *, remote_domain_snapshot_current_ret*);
+extern  bool_t xdr_remote_domain_revert_to_snapshot_args (XDR *, remote_domain_revert_to_snapshot_args*);
+extern  bool_t xdr_remote_domain_snapshot_delete_args (XDR *, remote_domain_snapshot_delete_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2427,6 +2555,7 @@ extern bool_t xdr_remote_nonnull_storage_pool ();
 extern bool_t xdr_remote_nonnull_storage_vol ();
 extern bool_t xdr_remote_nonnull_node_device ();
 extern bool_t xdr_remote_nonnull_secret ();
+extern bool_t xdr_remote_nonnull_domain_snapshot ();
 extern bool_t xdr_remote_domain ();
 extern bool_t xdr_remote_network ();
 extern bool_t xdr_remote_nwfilter ();
@@ -2723,6 +2852,22 @@ extern bool_t xdr_remote_domain_managed_save_args ();
 extern bool_t xdr_remote_domain_has_managed_save_image_args ();
 extern bool_t xdr_remote_domain_has_managed_save_image_ret ();
 extern bool_t xdr_remote_domain_managed_save_remove_args ();
+extern bool_t xdr_remote_domain_snapshot_create_xml_args ();
+extern bool_t xdr_remote_domain_snapshot_create_xml_ret ();
+extern bool_t xdr_remote_domain_snapshot_dump_xml_args ();
+extern bool_t xdr_remote_domain_snapshot_dump_xml_ret ();
+extern bool_t xdr_remote_domain_snapshot_num_args ();
+extern bool_t xdr_remote_domain_snapshot_num_ret ();
+extern bool_t xdr_remote_domain_snapshot_list_names_args ();
+extern bool_t xdr_remote_domain_snapshot_list_names_ret ();
+extern bool_t xdr_remote_domain_snapshot_lookup_by_name_args ();
+extern bool_t xdr_remote_domain_snapshot_lookup_by_name_ret ();
+extern bool_t xdr_remote_domain_has_current_snapshot_args ();
+extern bool_t xdr_remote_domain_has_current_snapshot_ret ();
+extern bool_t xdr_remote_domain_snapshot_current_args ();
+extern bool_t xdr_remote_domain_snapshot_current_ret ();
+extern bool_t xdr_remote_domain_revert_to_snapshot_args ();
+extern bool_t xdr_remote_domain_snapshot_delete_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

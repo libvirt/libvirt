@@ -67,6 +67,7 @@ static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_no
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static virSecretPtr get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret);
 static virNWFilterPtr get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
+static virDomainSnapshotPtr get_nonnull_domain_snapshot (virConnectPtr conn, remote_nonnull_domain_snapshot snapshot);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -75,6 +76,7 @@ static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virSt
 static void make_nonnull_node_device (remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 static void make_nonnull_nwfilter (remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src);
+static void make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
 
 
 #include "remote_dispatch_prototypes.h"
@@ -5845,6 +5847,298 @@ remoteDispatchDomainMigrateSetMaxDowntime(struct qemud_server *server ATTRIBUTE_
     return 0;
 }
 
+static int
+remoteDispatchDomainSnapshotCreateXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_snapshot_create_xml_args *args,
+                                       remote_domain_snapshot_create_xml_ret *ret)
+{
+    virDomainSnapshotPtr snapshot;
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    snapshot = virDomainSnapshotCreateXML(domain, args->xml_desc, args->flags);
+    if (snapshot == NULL) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_domain_snapshot(&ret->snap, snapshot);
+
+    virDomainSnapshotFree(snapshot);
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotDumpXml (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                     struct qemud_client *client ATTRIBUTE_UNUSED,
+                                     virConnectPtr conn,
+                                     remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                     remote_error *rerr,
+                                     remote_domain_snapshot_dump_xml_args *args,
+                                     remote_domain_snapshot_dump_xml_ret *ret)
+{
+    virDomainSnapshotPtr snapshot;
+
+    snapshot = get_nonnull_domain_snapshot(conn, args->snap);
+    if (snapshot == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virDomainSnapshotGetXMLDesc(snapshot, args->flags);
+    if (!ret->xml) {
+        virDomainSnapshotFree(snapshot);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainSnapshotFree(snapshot);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotNum (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                 remote_error *rerr,
+                                 remote_domain_snapshot_num_args *args,
+                                 remote_domain_snapshot_num_ret *ret)
+{
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->num = virDomainSnapshotNum(domain, args->flags);
+    if (ret->num == -1) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotListNames (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_snapshot_list_names_args *args,
+                                       remote_domain_snapshot_list_names_ret *ret)
+{
+    virDomainPtr domain;
+
+    if (args->nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+        remoteDispatchFormatError (rerr, "%s",
+                                   _("nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX"));
+        return -1;
+    }
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    /* Allocate return buffer. */
+    if (VIR_ALLOC_N(ret->names.names_val, args->nameslen) < 0) {
+        virDomainFree(domain);
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    ret->names.names_len = virDomainSnapshotListNames(domain,
+                                                      ret->names.names_val,
+                                                      args->nameslen,
+                                                      args->flags);
+    if (ret->names.names_len == -1) {
+        virDomainFree(domain);
+        VIR_FREE(ret->names.names_val);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotLookupByName (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                          struct qemud_client *client ATTRIBUTE_UNUSED,
+                                          virConnectPtr conn,
+                                          remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                          remote_error *rerr,
+                                          remote_domain_snapshot_lookup_by_name_args *args,
+                                          remote_domain_snapshot_lookup_by_name_ret *ret)
+{
+    virDomainSnapshotPtr snapshot;
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    snapshot = virDomainSnapshotLookupByName(domain, args->name, args->flags);
+    if (snapshot == NULL) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_domain_snapshot (&ret->snap, snapshot);
+
+    virDomainSnapshotFree(snapshot);
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainHasCurrentSnapshot(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_has_current_snapshot_args *args,
+                                       remote_domain_has_current_snapshot_ret *ret)
+{
+    virDomainPtr domain;
+    int result;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    result = virDomainHasCurrentSnapshot(domain, args->flags);
+    if (result < 0) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->result = result;
+
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotCurrent(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_domain_snapshot_current_args *args,
+                                    remote_domain_snapshot_current_ret *ret)
+{
+    virDomainSnapshotPtr snapshot;
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    snapshot = virDomainSnapshotCurrent(domain, args->flags);
+    if (snapshot == NULL) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    make_nonnull_domain_snapshot(&ret->snap, snapshot);
+
+    virDomainSnapshotFree(snapshot);
+    virDomainFree(domain);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainRevertToSnapshot (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                      struct qemud_client *client ATTRIBUTE_UNUSED,
+                                      virConnectPtr conn,
+                                      remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                      remote_error *rerr,
+                                      remote_domain_revert_to_snapshot_args *args,
+                                      void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainSnapshotPtr snapshot;
+
+    snapshot = get_nonnull_domain_snapshot(conn, args->snap);
+    if (snapshot == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainRevertToSnapshot(snapshot, args->flags) == -1) {
+        virDomainSnapshotFree(snapshot);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainSnapshotFree(snapshot);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSnapshotDelete (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                    struct qemud_client *client ATTRIBUTE_UNUSED,
+                                    virConnectPtr conn,
+                                    remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                    remote_error *rerr,
+                                    remote_domain_snapshot_delete_args *args,
+                                    void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainSnapshotPtr snapshot;
+
+    snapshot = get_nonnull_domain_snapshot(conn, args->snap);
+    if (snapshot == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainSnapshotDelete(snapshot, args->flags) == -1) {
+        virDomainSnapshotFree(snapshot);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainSnapshotFree(snapshot);
+
+    return 0;
+}
+
 
 static int
 remoteDispatchDomainEventsRegisterAny (struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -6155,6 +6449,16 @@ get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter)
     return virGetNWFilter (conn, nwfilter.name, BAD_CAST nwfilter.uuid);
 }
 
+static virDomainSnapshotPtr
+get_nonnull_domain_snapshot (virConnectPtr conn, remote_nonnull_domain_snapshot snapshot)
+{
+    virDomainPtr domain;
+    domain = get_nonnull_domain(conn, snapshot.domain);
+    if (domain == NULL)
+        return NULL;
+    return virGetDomainSnapshot(domain, snapshot.name);
+}
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -6213,4 +6517,11 @@ make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwf
 {
     nwfilter_dst->name = strdup (nwfilter_src->name);
     memcpy (nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
+{
+    snapshot_dst->name = strdup(snapshot_src->name);
+    make_nonnull_domain(&snapshot_dst->domain, snapshot_src->domain);
 }

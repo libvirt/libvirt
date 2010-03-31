@@ -683,6 +683,31 @@ virLibNWFilterError(virNWFilterPtr pool, virErrorNumber error,
 }
 
 /**
+ * virLibDomainSnapshotError:
+ * @snapshot: the snapshot if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the domain snapshot level
+ */
+static void
+virLibDomainSnapshotError(virDomainSnapshotPtr snapshot, virErrorNumber error, const char *info)
+{
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_DOMAIN_SNAPSHOT)
+        conn = snapshot->domain->conn;
+
+    virRaiseError(conn, NULL, NULL, VIR_FROM_DOMAIN_SNAPSHOT, error, VIR_ERR_ERROR,
+                  errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
  *
@@ -12275,4 +12300,433 @@ int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 error:
     virDispatchError(conn);
     return -1;
+}
+
+/**
+ * virDomainSnapshotCreateXML:
+ * @domain: a domain object
+ * @xmlDesc: string containing an XML description of the domain
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Creates a new snapshot of a domain based on the snapshot xml
+ * contained in xmlDesc.
+ *
+ * Returns an (opaque) virDomainSnapshotPtr on success, NULL on failure.
+ */
+virDomainSnapshotPtr
+virDomainSnapshotCreateXML(virDomainPtr domain,
+                           const char *xmlDesc,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    DEBUG("domain=%p, xmlDesc=%s, flags=%u", domain, xmlDesc, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return NULL;
+    }
+
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSnapshotCreateXML) {
+        virDomainSnapshotPtr ret;
+        ret = conn->driver->domainSnapshotCreateXML(domain, xmlDesc, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virDomainSnapshotGetXMLDesc:
+ * @snapshot: a domain snapshot object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Provide an XML description of the domain snapshot.
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("snapshot=%p, flags=%d", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+
+    conn = snapshot->domain->conn;
+
+    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED,
+                        _("virDomainSnapshotGetXMLDesc with secure flag"));
+        goto error;
+    }
+
+    if (conn->driver->domainSnapshotDumpXML) {
+        char *ret;
+        ret = conn->driver->domainSnapshotDumpXML(snapshot, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virDomainSnapshotNum:
+ * @domain: a domain object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Provides the number of domain snapshots for this domain..
+ *
+ * Returns the number of domain snapshost found or -1 in case of error.
+ */
+int
+virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p", domain);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+    if (conn->driver->domainSnapshotNum) {
+        int ret = conn->driver->domainSnapshotNum(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotListNames:
+ * @domain: a domain object
+ * @names: array to collect the list of names of snapshots
+ * @nameslen: size of @names
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Collect the list of domain snapshots for the given domain, and store
+ * their names in @names.  Caller is responsible for freeing each member
+ * of the array.
+ *
+ * Returns the number of domain snapshots found or -1 in case of error.
+ */
+int
+virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    DEBUG("domain=%p, names=%p, nameslen=%d, flags=%u",
+          domain, names, nameslen, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+
+    if ((names == NULL) || (nameslen < 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSnapshotListNames) {
+        int ret = conn->driver->domainSnapshotListNames(domain, names,
+                                                        nameslen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotLookupByName:
+ * @domain: a domain object
+ * @name: name for the domain snapshot
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Try to lookup a domain snapshot based on its name.
+ *
+ * Returns a domain snapshot object or NULL in case of failure.  If the
+ * domain snapshot cannot be found, then the VIR_ERR_NO_DOMAIN_SNAPSHOT
+ * error is raised.
+ */
+virDomainSnapshotPtr
+virDomainSnapshotLookupByName(virDomainPtr domain,
+                              const char *name,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, name=%s, flags=%u", domain, name, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+
+    conn = domain->conn;
+
+    if (name == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainSnapshotLookupByName) {
+        virDomainSnapshotPtr dom;
+        dom = conn->driver->domainSnapshotLookupByName(domain, name, flags);
+        if (!dom)
+            goto error;
+        return dom;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virDomainHasCurrentSnapshot:
+ * @domain: pointer to the domain object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Determine if the domain has a current snapshot.
+ *
+ * Returns 1 if such snapshot exists, 0 if it doesn't, -1 on error.
+ */
+int
+virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainHasCurrentSnapshot) {
+        int ret = conn->driver->domainHasCurrentSnapshot(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotCurrent:
+ * @domain: a domain object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Get the current snapshot for a domain, if any.
+ *
+ * Returns a domain snapshot object or NULL in case of failure.  If the
+ * current domain snapshot cannot be found, then the VIR_ERR_NO_DOMAIN_SNAPSHOT
+ * error is raised.
+ */
+virDomainSnapshotPtr
+virDomainSnapshotCurrent(virDomainPtr domain,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, flags=%u", domain, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (NULL);
+    }
+
+    conn = domain->conn;
+
+    if (conn->driver->domainSnapshotCurrent) {
+        virDomainSnapshotPtr snap;
+        snap = conn->driver->domainSnapshotCurrent(domain, flags);
+        if (!snap)
+            goto error;
+        return snap;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
+ * virDomainRevertToSnapshot
+ * @snapshot: a domain snapshot object
+ * @flags: unused flag parameters; callers should pass 0
+ *
+ * Revert the domain to a given snapshot.
+ *
+ * Returns 0 if the creation is successful, -1 on error.
+ */
+int
+virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+
+    DEBUG("snapshot=%p, flags=%u", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainRevertToSnapshot) {
+        int ret = conn->driver->domainRevertToSnapshot(snapshot, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotDelete
+ * @snapshot: a domain snapshot object
+ * @flags: flag parameters
+ *
+ * Delete the snapshot.
+ *
+ * If @flags is 0, then just this snapshot is deleted, and changes from
+ * this snapshot are automatically merged into children snapshots.  If
+ * flags is VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, then this snapshot
+ * and any children snapshots are deleted.
+ *
+ * Returns 0 if the snapshot was successfully deleted, -1 on error.
+ */
+int
+virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                        unsigned int flags)
+{
+    virConnectPtr conn;
+
+    DEBUG("snapshot=%p, flags=%u", snapshot, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = snapshot->domain->conn;
+
+    if (conn->driver->domainSnapshotDelete) {
+        int ret = conn->driver->domainSnapshotDelete(snapshot, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainSnapshotFree:
+ * @snapshot: a domain snapshot object
+ *
+ * Free the domain snapshot object.  The snapshot itself is not modified.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
+{
+    DEBUG("snapshot=%p", snapshot);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibDomainSnapshotError(NULL, VIR_ERR_INVALID_DOMAIN_SNAPSHOT,
+                                  __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+    if (virUnrefDomainSnapshot(snapshot) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+    return 0;
 }

@@ -254,6 +254,7 @@ static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_no
 static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static virNodeDevicePtr get_nonnull_node_device (virConnectPtr conn, remote_nonnull_node_device dev);
 static virSecretPtr get_nonnull_secret (virConnectPtr conn, remote_nonnull_secret secret);
+static virDomainSnapshotPtr get_nonnull_domain_snapshot (virDomainPtr domain, remote_nonnull_domain_snapshot snapshot);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface (remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -261,6 +262,7 @@ static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, vi
 static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 static void make_nonnull_secret (remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 static void make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src);
+static void make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
 void remoteDomainEventFired(int watch, int fd, int event, void *data);
 void remoteDomainEventQueueFlush(int timer, void *opaque);
 /*----------------------------------------------------------------------*/
@@ -8374,6 +8376,291 @@ done:
     return rv;
 }
 
+static virDomainSnapshotPtr
+remoteDomainSnapshotCreateXML(virDomainPtr domain,
+                              const char *xmlDesc,
+                              unsigned int flags)
+{
+    virDomainSnapshotPtr snapshot = NULL;
+    remote_domain_snapshot_create_xml_args args;
+    remote_domain_snapshot_create_xml_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.domain, domain);
+    args.xml_desc = (char *) xmlDesc;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_CREATE_XML,
+              (xdrproc_t) xdr_remote_domain_snapshot_create_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_create_xml_ret, (char *) &ret) == -1)
+        goto done;
+
+    snapshot = get_nonnull_domain_snapshot(domain, ret.snap);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_snapshot_create_xml_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return snapshot;
+}
+
+
+static char *
+remoteDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    char *rv = NULL;
+    remote_domain_snapshot_dump_xml_args args;
+    remote_domain_snapshot_dump_xml_ret ret;
+    struct private_data *priv = snapshot->domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain_snapshot(&args.snap, snapshot);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (snapshot->domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_DUMP_XML,
+              (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_ret, (char *) &ret) == -1)
+        goto done;
+
+    /* Caller frees. */
+    rv = ret.xml;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteDomainSnapshotNum (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_snapshot_num_args args;
+    remote_domain_snapshot_num_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.domain, domain);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_NUM,
+              (xdrproc_t) xdr_remote_domain_snapshot_num_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_num_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.num;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteDomainSnapshotListNames (virDomainPtr domain, char **const names,
+                               int nameslen, unsigned int flags)
+{
+    int rv = -1;
+    int i;
+    remote_domain_snapshot_list_names_args args;
+    remote_domain_snapshot_list_names_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    if (nameslen > REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX) {
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("too many remote domain snapshot names: %d > %d"),
+                nameslen, REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX);
+        goto done;
+    }
+
+    make_nonnull_domain(&args.domain, domain);
+    args.nameslen = nameslen;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_NAMES,
+              (xdrproc_t) xdr_remote_domain_snapshot_list_names_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_list_names_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (ret.names.names_len > nameslen) {
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("too many remote domain snapshots: %d > %d"),
+                ret.names.names_len, nameslen);
+        goto cleanup;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i) {
+        names[i] = strdup (ret.names.names_val[i]);
+
+        if (names[i] == NULL) {
+            for (--i; i >= 0; --i)
+                VIR_FREE(names[i]);
+
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    rv = ret.names.names_len;
+
+cleanup:
+    xdr_free ((xdrproc_t) xdr_remote_domain_snapshot_list_names_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static virDomainSnapshotPtr
+remoteDomainSnapshotLookupByName (virDomainPtr domain, const char *name,
+                                  unsigned int flags)
+{
+    virDomainSnapshotPtr snapshot = NULL;
+    remote_domain_snapshot_lookup_by_name_args args;
+    remote_domain_snapshot_lookup_by_name_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.domain, domain);
+    args.name = (char *) name;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_LOOKUP_BY_NAME,
+              (xdrproc_t) xdr_remote_domain_snapshot_lookup_by_name_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_snapshot_lookup_by_name_ret, (char *) &ret) == -1)
+        goto done;
+
+    snapshot = get_nonnull_domain_snapshot (domain, ret.snap);
+    xdr_free ((xdrproc_t) &xdr_remote_domain_snapshot_lookup_by_name_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return snapshot;
+}
+
+
+static int
+remoteDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_has_current_snapshot_args args;
+    remote_domain_has_current_snapshot_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.domain, domain);
+    args.flags = flags;
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_HAS_CURRENT_SNAPSHOT,
+             (xdrproc_t) xdr_remote_domain_has_current_snapshot_args, (char *) &args,
+             (xdrproc_t) xdr_remote_domain_has_current_snapshot_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.result;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static virDomainSnapshotPtr
+remoteDomainSnapshotCurrent(virDomainPtr domain,
+                            unsigned int flags)
+{
+    virDomainSnapshotPtr snapshot = NULL;
+    remote_domain_snapshot_current_args args;
+    remote_domain_snapshot_current_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.domain, domain);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof ret);
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT,
+             (xdrproc_t) xdr_remote_domain_snapshot_current_args, (char *) &args,
+             (xdrproc_t) xdr_remote_domain_snapshot_current_ret, (char *) &ret) == -1)
+        goto done;
+
+    snapshot = get_nonnull_domain_snapshot(domain, ret.snap);
+    xdr_free((xdrproc_t) &xdr_remote_domain_snapshot_current_ret, (char *) &ret);
+
+done:
+    remoteDriverUnlock(priv);
+    return snapshot;
+}
+
+
+static int
+remoteDomainRevertToSnapshot (virDomainSnapshotPtr snapshot,
+                              unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_revert_to_snapshot_args args;
+    struct private_data *priv = snapshot->domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain_snapshot(&args.snap, snapshot);
+    args.flags = flags;
+
+    if (call (snapshot->domain->conn, priv, 0, REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT,
+              (xdrproc_t) xdr_remote_domain_revert_to_snapshot_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteDomainSnapshotDelete (virDomainSnapshotPtr snapshot,
+                            unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_snapshot_delete_args args;
+    struct private_data *priv = snapshot->domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain_snapshot(&args.snap, snapshot);
+    args.flags = flags;
+
+    if (call (snapshot->domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE,
+              (xdrproc_t) xdr_remote_domain_snapshot_delete_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 static int remoteDomainEventRegisterAny(virConnectPtr conn,
                                         virDomainPtr dom,
@@ -9744,6 +10031,12 @@ get_nonnull_nwfilter (virConnectPtr conn, remote_nonnull_nwfilter nwfilter)
     return virGetNWFilter (conn, nwfilter.name, BAD_CAST nwfilter.uuid);
 }
 
+static virDomainSnapshotPtr
+get_nonnull_domain_snapshot (virDomainPtr domain, remote_nonnull_domain_snapshot snapshot)
+{
+    return virGetDomainSnapshot(domain, snapshot.name);
+}
+
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
@@ -9797,6 +10090,13 @@ make_nonnull_nwfilter (remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwf
 {
     nwfilter_dst->name = nwfilter_src->name;
     memcpy (nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
+{
+    snapshot_dst->name = snapshot_src->name;
+    make_nonnull_domain(&snapshot_dst->domain, snapshot_src->domain);
 }
 
 /*----------------------------------------------------------------------*/
@@ -9894,6 +10194,15 @@ static virDriver remote_driver = {
     remoteDomainManagedSave, /* domainManagedSave */
     remoteDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
     remoteDomainManagedSaveRemove, /* domainManagedSaveRemove */
+    remoteDomainSnapshotCreateXML, /* domainSnapshotCreateXML */
+    remoteDomainSnapshotDumpXML, /* domainSnapshotDumpXML */
+    remoteDomainSnapshotNum, /* domainSnapshotNum */
+    remoteDomainSnapshotListNames, /* domainSnapshotListNames */
+    remoteDomainSnapshotLookupByName, /* domainSnapshotLookupByName */
+    remoteDomainHasCurrentSnapshot, /* domainHasCurrentSnapshot */
+    remoteDomainSnapshotCurrent, /* domainSnapshotCurrent */
+    remoteDomainRevertToSnapshot, /* domainRevertToSnapshot */
+    remoteDomainSnapshotDelete, /* domainSnapshotDelete */
 };
 
 static virNetworkDriver network_driver = {

@@ -2541,6 +2541,15 @@ static virDriver lxcDriver = {
     NULL, /* domainManagedSave */
     NULL, /* domainHasManagedSaveImage */
     NULL, /* domainManagedSaveRemove */
+    NULL, /* domainSnapshotCreateXML */
+    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotNum */
+    NULL, /* domainSnapshotListNames */
+    NULL, /* domainSnapshotLookupByName */
+    NULL, /* domainHasCurrentSnapshot */
+    NULL, /* domainSnapshotCurrent */
+    NULL, /* domainRevertToSnapshot */
+    NULL, /* domainSnapshotDelete */
 };
 
 static virStateDriver lxcStateDriver = {

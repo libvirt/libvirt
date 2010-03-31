@@ -154,3 +154,12 @@
     remote_domain_managed_save_args val_remote_domain_managed_save_args;
     remote_domain_has_managed_save_image_args val_remote_domain_has_managed_save_image_args;
     remote_domain_managed_save_remove_args val_remote_domain_managed_save_remove_args;
+    remote_domain_snapshot_create_xml_args val_remote_domain_snapshot_create_xml_args;
+    remote_domain_snapshot_dump_xml_args val_remote_domain_snapshot_dump_xml_args;
+    remote_domain_snapshot_num_args val_remote_domain_snapshot_num_args;
+    remote_domain_snapshot_list_names_args val_remote_domain_snapshot_list_names_args;
+    remote_domain_snapshot_lookup_by_name_args val_remote_domain_snapshot_lookup_by_name_args;
+    remote_domain_has_current_snapshot_args val_remote_domain_has_current_snapshot_args;
+    remote_domain_snapshot_current_args val_remote_domain_snapshot_current_args;
+    remote_domain_revert_to_snapshot_args val_remote_domain_revert_to_snapshot_args;
+    remote_domain_snapshot_delete_args val_remote_domain_snapshot_delete_args;

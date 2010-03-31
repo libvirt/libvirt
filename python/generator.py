@@ -241,6 +241,8 @@ py_types = {
     'const virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
     'virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
     'const virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
+
+    'virDomainSnapshotPtr':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
 }
 
 py_return_types = {
@@ -317,6 +319,7 @@ skip_impl = (
     'virNodeListDevices',
     'virNodeDeviceListCaps',
     'virConnectBaselineCPU',
+    'virDomainSnapshotListNames',
 )
 
 

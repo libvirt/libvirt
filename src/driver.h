@@ -411,6 +411,44 @@ typedef int
 typedef int
     (*virDrvDomainManagedSaveRemove)(virDomainPtr domain, unsigned int flags);
 
+typedef virDomainSnapshotPtr
+    (*virDrvDomainSnapshotCreateXML)(virDomainPtr domain,
+                                     const char *xmlDesc,
+                                     unsigned int flags);
+
+typedef char *
+    (*virDrvDomainSnapshotDumpXML)(virDomainSnapshotPtr snapshot,
+                                   unsigned int flags);
+
+typedef int
+    (*virDrvDomainSnapshotNum)(virDomainPtr domain, unsigned int flags);
+
+typedef int
+    (*virDrvDomainSnapshotListNames)(virDomainPtr domain, char **names,
+                                     int nameslen,
+                                     unsigned int flags);
+
+typedef virDomainSnapshotPtr
+    (*virDrvDomainSnapshotLookupByName)(virDomainPtr domain,
+                                        const char *name,
+                                        unsigned int flags);
+
+typedef int
+    (*virDrvDomainHasCurrentSnapshot)(virDomainPtr domain, unsigned int flags);
+
+typedef virDomainSnapshotPtr
+    (*virDrvDomainSnapshotCurrent)(virDomainPtr domain,
+                                   unsigned int flags);
+
+typedef int
+    (*virDrvDomainRevertToSnapshot)(virDomainSnapshotPtr snapshot,
+                                    unsigned int flags);
+
+typedef int
+    (*virDrvDomainSnapshotDelete)(virDomainSnapshotPtr snapshot,
+                                  unsigned int flags);
+
+
 /**
  * _virDriver:
  *
@@ -511,6 +549,15 @@ struct _virDriver {
     virDrvDomainManagedSave domainManagedSave;
     virDrvDomainHasManagedSaveImage domainHasManagedSaveImage;
     virDrvDomainManagedSaveRemove domainManagedSaveRemove;
+    virDrvDomainSnapshotCreateXML domainSnapshotCreateXML;
+    virDrvDomainSnapshotDumpXML domainSnapshotDumpXML;
+    virDrvDomainSnapshotNum domainSnapshotNum;
+    virDrvDomainSnapshotListNames domainSnapshotListNames;
+    virDrvDomainSnapshotLookupByName domainSnapshotLookupByName;
+    virDrvDomainHasCurrentSnapshot domainHasCurrentSnapshot;
+    virDrvDomainSnapshotCurrent domainSnapshotCurrent;
+    virDrvDomainRevertToSnapshot domainRevertToSnapshot;
+    virDrvDomainSnapshotDelete domainSnapshotDelete;
 };
 
 typedef int

@@ -228,6 +228,21 @@ libvirt_virStreamPtrWrap(virStreamPtr node)
 }
 
 PyObject *
+libvirt_virDomainSnapshotPtrWrap(virDomainSnapshotPtr node)
+{
+    PyObject *ret;
+
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virDomainSnapshotPtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virEventHandleCallbackWrap(virEventHandleCallback node)
 {
     PyObject *ret;

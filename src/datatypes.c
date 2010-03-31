@@ -129,6 +129,20 @@ virSecretFreeName(void *secret_, const char *name ATTRIBUTE_UNUSED)
 }
 
 /**
+ * virDomainSnapshotFreeName:
+ * @snapshot: a domain snapshotobject
+ *
+ * Destroy the domain snapshot object, this is just used by the domain hash callback.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+virDomainSnapshotFreeName(virDomainSnapshotPtr snapshot, const char *name ATTRIBUTE_UNUSED)
+{
+    return (virUnrefDomainSnapshot(snapshot));
+}
+
+/**
  * virGetConnect:
  *
  * Allocates a new hypervisor connection structure
@@ -337,6 +351,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         ret->id = -1;
         if (uuid != NULL)
             memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+        ret->snapshots = virHashCreate(20);
 
         if (virHashAddEntry(conn->domains, name, ret) < 0) {
             virMutexUnlock(&conn->lock);
@@ -389,6 +404,8 @@ virReleaseDomain(virDomainPtr domain) {
     domain->magic = -1;
     domain->id = -1;
     VIR_FREE(domain->name);
+    if (domain->snapshots != NULL)
+        virHashFree(domain->snapshots, (virHashDeallocator) virDomainSnapshotFreeName);
     VIR_FREE(domain);
 
     if (conn) {
@@ -1502,5 +1519,110 @@ virUnrefNWFilter(virNWFilterPtr pool) {
     }
 
     virMutexUnlock(&pool->conn->lock);
+    return (refs);
+}
+
+
+virDomainSnapshotPtr
+virGetDomainSnapshot(virDomainPtr domain, const char *name)
+{
+    virDomainSnapshotPtr ret = NULL;
+
+    if ((!VIR_IS_DOMAIN(domain)) || (name == NULL)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(NULL);
+    }
+    virMutexLock(&domain->conn->lock);
+
+    ret = (virDomainSnapshotPtr) virHashLookup(domain->snapshots, name);
+    if (ret == NULL) {
+        if (VIR_ALLOC(ret) < 0) {
+            virMutexUnlock(&domain->conn->lock);
+            virReportOOMError();
+            goto error;
+        }
+        ret->name = strdup(name);
+        if (ret->name == NULL) {
+            virMutexUnlock(&domain->conn->lock);
+            virReportOOMError();
+            goto error;
+        }
+        ret->magic = VIR_SNAPSHOT_MAGIC;
+        ret->domain = domain;
+
+        if (virHashAddEntry(domain->snapshots, name, ret) < 0) {
+            virMutexUnlock(&domain->conn->lock);
+            virLibConnError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("failed to add snapshot to domain hash table"));
+            goto error;
+        }
+        domain->refs++;
+        DEBUG("New hash entry %p", ret);
+    } else {
+        DEBUG("Existing hash entry %p: refs now %d", ret, ret->refs+1);
+    }
+    ret->refs++;
+    virMutexUnlock(&domain->conn->lock);
+    return(ret);
+
+ error:
+    if (ret != NULL) {
+        VIR_FREE(ret->name);
+        VIR_FREE(ret);
+    }
+    return(NULL);
+}
+
+
+static void
+virReleaseDomainSnapshot(virDomainSnapshotPtr snapshot)
+{
+    virDomainPtr domain = snapshot->domain;
+    DEBUG("release snapshot %p %s", snapshot, snapshot->name);
+
+    if (virHashRemoveEntry(domain->snapshots, snapshot->name, NULL) < 0) {
+        virMutexUnlock(&domain->conn->lock);
+        virLibConnError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("snapshot missing from domain hash table"));
+        domain = NULL;
+    }
+
+    snapshot->magic = -1;
+    VIR_FREE(snapshot->name);
+    VIR_FREE(snapshot);
+
+    if (domain) {
+        DEBUG("unref domain %p %d", domain, domain->refs);
+        domain->refs--;
+        if (domain->refs == 0) {
+            virReleaseDomain(domain);
+            /* Already unlocked mutex */
+            return;
+        }
+        virMutexUnlock(&domain->conn->lock);
+    }
+}
+
+int
+virUnrefDomainSnapshot(virDomainSnapshotPtr snapshot)
+{
+    int refs;
+
+    if (!VIR_IS_DOMAIN_SNAPSHOT(snapshot)) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    virMutexLock(&snapshot->domain->conn->lock);
+    DEBUG("unref snapshot %p %s %d", snapshot, snapshot->name, snapshot->refs);
+    snapshot->refs--;
+    refs = snapshot->refs;
+    if (refs == 0) {
+        virReleaseDomainSnapshot(snapshot);
+        /* Already unlocked mutex */
+        return (0);
+    }
+
+    virMutexUnlock(&snapshot->domain->conn->lock);
     return (refs);
 }

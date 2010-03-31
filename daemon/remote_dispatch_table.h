@@ -927,3 +927,48 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_managed_save_remove_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainSnapshotCreateXml => 185 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotCreateXml,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_create_xml_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_create_xml_ret,
+},
+{   /* DomainSnapshotDumpXml => 186 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotDumpXml,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_dump_xml_ret,
+},
+{   /* DomainSnapshotNum => 187 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotNum,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_num_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_num_ret,
+},
+{   /* DomainSnapshotListNames => 188 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotListNames,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_list_names_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_list_names_ret,
+},
+{   /* DomainSnapshotLookupByName => 189 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotLookupByName,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_lookup_by_name_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_lookup_by_name_ret,
+},
+{   /* DomainHasCurrentSnapshot => 190 */
+    .fn = (dispatch_fn) remoteDispatchDomainHasCurrentSnapshot,
+    .args_filter = (xdrproc_t) xdr_remote_domain_has_current_snapshot_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_has_current_snapshot_ret,
+},
+{   /* DomainSnapshotCurrent => 191 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotCurrent,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_current_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_snapshot_current_ret,
+},
+{   /* DomainRevertToSnapshot => 192 */
+    .fn = (dispatch_fn) remoteDispatchDomainRevertToSnapshot,
+    .args_filter = (xdrproc_t) xdr_remote_domain_revert_to_snapshot_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainSnapshotDelete => 193 */
+    .fn = (dispatch_fn) remoteDispatchDomainSnapshotDelete,
+    .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_delete_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

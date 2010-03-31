@@ -10531,6 +10531,15 @@ static virDriver qemuDriver = {
     qemuDomainManagedSave, /* domainManagedSave */
     qemuDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
     qemuDomainManagedSaveRemove, /* domainManagedSaveRemove */
+    NULL, /* domainSnapshotCreateXML */
+    NULL, /* domainSnapshotDumpXML */
+    NULL, /* domainSnapshotNum */
+    NULL, /* domainSnapshotListNames */
+    NULL, /* domainSnapshotLookupByName */
+    NULL, /* domainHasCurrentSnapshot */
+    NULL, /* domainSnapshotCurrent */
+    NULL, /* domainRevertToSnapshot */
+    NULL, /* domainSnapshotDelete */
 };
 
 

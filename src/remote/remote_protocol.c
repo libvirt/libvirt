@@ -128,6 +128,17 @@ xdr_remote_nonnull_secret (XDR *xdrs, remote_nonnull_secret *objp)
 }
 
 bool_t
+xdr_remote_nonnull_domain_snapshot (XDR *xdrs, remote_nonnull_domain_snapshot *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain (XDR *xdrs, remote_domain *objp)
 {
 
@@ -3326,6 +3337,176 @@ xdr_remote_domain_managed_save_remove_args (XDR *xdrs, remote_domain_managed_sav
          if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
                  return FALSE;
          if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_create_xml_args (XDR *xdrs, remote_domain_snapshot_create_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml_desc))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_create_xml_ret (XDR *xdrs, remote_domain_snapshot_create_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_dump_xml_args (XDR *xdrs, remote_domain_snapshot_dump_xml_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_dump_xml_ret (XDR *xdrs, remote_domain_snapshot_dump_xml_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_num_args (XDR *xdrs, remote_domain_snapshot_num_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_num_ret (XDR *xdrs, remote_domain_snapshot_num_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->num))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_list_names_args (XDR *xdrs, remote_domain_snapshot_list_names_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->nameslen))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_list_names_ret (XDR *xdrs, remote_domain_snapshot_list_names_ret *objp)
+{
+        char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+         if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX,
+                sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_lookup_by_name_args (XDR *xdrs, remote_domain_snapshot_lookup_by_name_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_lookup_by_name_ret (XDR *xdrs, remote_domain_snapshot_lookup_by_name_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_has_current_snapshot_args (XDR *xdrs, remote_domain_has_current_snapshot_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_has_current_snapshot_ret (XDR *xdrs, remote_domain_has_current_snapshot_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->result))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_current_args (XDR *xdrs, remote_domain_snapshot_current_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_current_ret (XDR *xdrs, remote_domain_snapshot_current_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_revert_to_snapshot_args (XDR *xdrs, remote_domain_revert_to_snapshot_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_snapshot_delete_args (XDR *xdrs, remote_domain_snapshot_delete_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain_snapshot (xdrs, &objp->snap))
+                 return FALSE;
+         if (!xdr_int (xdrs, &objp->flags))
                  return FALSE;
         return TRUE;
 }

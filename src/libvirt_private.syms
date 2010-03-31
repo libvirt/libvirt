@@ -109,6 +109,7 @@ virGetStream;
 virUnrefStream;
 virGetNWFilter;
 virUnrefNWFilter;
+virGetDomainSnapshot;
 
 
 # domain_conf.h

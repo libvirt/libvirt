@@ -121,6 +121,9 @@ const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 /* Upper limit on list of memory stats */
 const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
 
+/* Upper limit on lists of domain snapshots. */
+const REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX = 1024;
+
 /* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
  * requests for large amounts of data.
@@ -214,6 +217,12 @@ struct remote_nonnull_secret {
     remote_uuid uuid;
     int usageType;
     remote_nonnull_string usageID;
+};
+
+/* A snapshot which may not be NULL. */
+struct remote_nonnull_domain_snapshot {
+    remote_nonnull_string name;
+    remote_nonnull_domain domain;
 };
 
 /* A domain or network which may be NULL. */
@@ -1666,6 +1675,83 @@ struct remote_domain_managed_save_remove_args {
     unsigned flags;
 };
 
+struct remote_domain_snapshot_create_xml_args {
+    remote_nonnull_domain domain;
+    remote_nonnull_string xml_desc;
+    int flags;
+};
+
+struct remote_domain_snapshot_create_xml_ret {
+    remote_nonnull_domain_snapshot snap;
+};
+
+struct remote_domain_snapshot_dump_xml_args {
+    remote_nonnull_domain_snapshot snap;
+    int flags;
+};
+
+struct remote_domain_snapshot_dump_xml_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_domain_snapshot_num_args {
+    remote_nonnull_domain domain;
+    int flags;
+};
+
+struct remote_domain_snapshot_num_ret {
+    int num;
+};
+
+struct remote_domain_snapshot_list_names_args {
+    remote_nonnull_domain domain;
+    int nameslen;
+    int flags;
+};
+
+struct remote_domain_snapshot_list_names_ret {
+    remote_nonnull_string names<REMOTE_DOMAIN_SNAPSHOT_LIST_NAMES_MAX>;
+};
+
+struct remote_domain_snapshot_lookup_by_name_args {
+    remote_nonnull_domain domain;
+    remote_nonnull_string name;
+    int flags;
+};
+
+struct remote_domain_snapshot_lookup_by_name_ret {
+    remote_nonnull_domain_snapshot snap;
+};
+
+struct remote_domain_has_current_snapshot_args {
+    remote_nonnull_domain domain;
+    int flags;
+};
+
+struct remote_domain_has_current_snapshot_ret {
+    int result;
+};
+
+struct remote_domain_snapshot_current_args {
+    remote_nonnull_domain domain;
+    int flags;
+};
+
+struct remote_domain_snapshot_current_ret {
+    remote_nonnull_domain_snapshot snap;
+};
+
+struct remote_domain_revert_to_snapshot_args {
+    remote_nonnull_domain_snapshot snap;
+    int flags;
+};
+
+struct remote_domain_snapshot_delete_args {
+    remote_nonnull_domain_snapshot snap;
+    int flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1874,7 +1960,16 @@ enum remote_procedure {
     REMOTE_PROC_NWFILTER_UNDEFINE = 181,
     REMOTE_PROC_DOMAIN_MANAGED_SAVE = 182,
     REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE = 183,
-    REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_CREATE_XML = 185,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_DUMP_XML = 186,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_NUM = 187,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_LIST_NAMES = 188,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_LOOKUP_BY_NAME = 189,
+    REMOTE_PROC_DOMAIN_HAS_CURRENT_SNAPSHOT = 190,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT = 191,
+    REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
+    REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193
 
     /*
      * Notice how the entries are grouped in sets of 10 ?
