@@ -156,13 +156,13 @@ printDataType(virConnectPtr conn,
     case DATATYPE_IPADDR:
         data = virSocketFormatAddr(&item->u.ipaddr.addr);
         if (!data) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv4 address representation "
                                      "is bad"));
             return 1;
         }
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IP address"));
             VIR_FREE(data);
             return 1;
@@ -173,14 +173,14 @@ printDataType(virConnectPtr conn,
     case DATATYPE_IPV6ADDR:
         data = virSocketFormatAddr(&item->u.ipaddr.addr);
         if (!data) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv6 address representation "
                                      "is bad"));
             return 1;
         }
 
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IPv6 address"));
             VIR_FREE(data);
             return 1;
@@ -191,7 +191,7 @@ printDataType(virConnectPtr conn,
     case DATATYPE_MACADDR:
     case DATATYPE_MACMASK:
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for MAC address"));
             return 1;
         }
@@ -202,7 +202,7 @@ printDataType(virConnectPtr conn,
     case DATATYPE_UINT16:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u16) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint16 type"));
             return 1;
         }
@@ -213,7 +213,7 @@ printDataType(virConnectPtr conn,
     case DATATYPE_UINT8:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
