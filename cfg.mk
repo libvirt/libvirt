@@ -71,99 +71,96 @@ useless_free_options =		\
 # Avoid uses of write(2).  Either switch to streams (fwrite), or use
 # the safewrite wrapper.
 sc_avoid_write:
-	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  grep '\<write *(' $$($(VC_LIST_EXCEPT) | grep '\.c$$') &&	\
-	    { echo "$(ME): the above files use write;"			\
-	      " consider using the safewrite wrapper instead"		\
-		  1>&2; exit 1; } || :;					\
-	else :;								\
-	fi
+	@prohibit='\<write *\('						\
+	in_vc_files='\.c$$'						\
+	halt='consider using safewrite instead of write'		\
+	 $(_sc_search_regexp)
 
 # Use STREQ rather than comparing strcmp == 0, or != 0.
 # Similarly, use STREQLEN or STRPREFIX rather than strncmp.
 sc_prohibit_strcmp_and_strncmp:
-	@re='strn?cmp *\('						\
-	msg='use STREQ() in place of the above uses of str[n]cmp'	\
-	  $(_prohibit_regexp)
+	@prohibit='strn?cmp *\('					\
+	halt='use STREQ() in place of the above uses of str[n]cmp'	\
+	  $(_sc_search_regexp)
 
 # Use virAsprintf rather than a'sprintf since *strp is undefined on error.
 sc_prohibit_asprintf:
-	@re='\<[a]sprintf\>'						\
-	msg='use virAsprintf, not a'sprintf				\
-	  $(_prohibit_regexp)
+	@prohibit='\<[a]sprintf\>'					\
+	halt='use virAsprintf, not a'sprintf				\
+	  $(_sc_search_regexp)
 
 sc_prohibit_strncpy:
-	@re='strncpy *\('						\
-	msg='use virStrncpy, not strncpy'				\
-	  $(_prohibit_regexp)
+	@prohibit='strncpy *\('						\
+	halt='use virStrncpy, not strncpy'				\
+	  $(_sc_search_regexp)
 
 sc_prohibit_readlink:
-	@re='readlink *\('						\
-	msg='use virFileResolveLink, not readlink'			\
-	  $(_prohibit_regexp)
+	@prohibit='readlink *\('					\
+	halt='use virFileResolveLink, not readlink'			\
+	  $(_sc_search_regexp)
 
 sc_prohibit_gethostname:
-	@re='gethostname *\('						\
-	msg='use virGetHostname, not gethostname'			\
-	  $(_prohibit_regexp)
+	@prohibit='gethostname *\('					\
+	halt='use virGetHostname, not gethostname'			\
+	  $(_sc_search_regexp)
 
 sc_prohibit_gettext_noop:
-	@re='gettext_noop *\('						\
-	msg='use N_, not gettext_noop'					\
-	  $(_prohibit_regexp)
+	@prohibit='gettext_noop *\('					\
+	halt='use N_, not gettext_noop'					\
+	  $(_sc_search_regexp)
 
 sc_prohibit_VIR_ERR_NO_MEMORY:
-	@re='\<V''IR_ERR_NO_MEMORY\>'					\
-	msg='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
-	  $(_prohibit_regexp)
+	@prohibit='\<V''IR_ERR_NO_MEMORY\>'				\
+	halt='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
+	  $(_sc_search_regexp)
 
+# Use a subshell for each function, to give the optimal warning message.
 include $(srcdir)/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
 	@fail=0 ; \
 	for i in $(NON_REENTRANT) ; \
 	do \
-	   grep --before 2 --after 1 -nE "\<$$i\>[:space:]*\(" $$($(VC_LIST_EXCEPT)) && \
-	     fail=1 && echo "$(ME): use $${i}_r, not $${i}" || : ; \
+	    (prohibit="\\<$$i *\\("					\
+	     halt="use $${i}_r, not $$i"				\
+	     $(_sc_search_regexp)					\
+	    ) || fail=1;						\
 	done ; \
 	exit $$fail
 
 # Prohibit the inclusion of <ctype.h>.
 sc_prohibit_ctype_h:
-	@grep -E '^# *include  *<ctype\.h>' $$($(VC_LIST_EXCEPT)) &&	\
-	  { echo "$(ME): don't use ctype.h; instead, use c-ctype.h"	\
-		1>&2; exit 1; } || :
+	@prohibit='^# *include  *<ctype\.h>'				\
+	halt="don't use ctype.h; instead, use c-ctype.h"		\
+	 $(_sc_search_regexp)
 
 # Ensure that no C source file uses TABs for indentation.
 # Also match *.h.in files, to get libvirt.h.in.
 # Exclude files in gnulib, since they're imported.
 sc_TAB_in_indentation:
-	@grep -lE '^ *	' /dev/null					\
-	     $$($(VC_LIST_EXCEPT)					\
-		| grep -E '\.(rng|[ch](\.in)?)$$'			\
-		| grep -v '^gnulib/') &&				\
-	  { echo '$(ME): found TAB(s) used for indentation in C sources;'\
-	      'use spaces' 1>&2; exit 1; } || :
+	@prohibit='^ *	'						\
+	in_vc_files='\.(rng|[ch](\.in)?)$$'				\
+	halt='use spaces, not TAB, for indentation in C sources'	\
+	 $(_sc_search_regexp)
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 |isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
 
 sc_avoid_ctype_macros:
-	@grep -E '\b($(ctype_re)) *\(' /dev/null			\
-	     $$($(VC_LIST_EXCEPT)) &&					\
-	  { echo "$(ME): don't use ctype macros (use c-ctype.h)"	\
-		1>&2; exit 1; } || :
+	@prohibit='\b($(ctype_re)) *\('					\
+	halt="don't use ctype macros (use c-ctype.h)"			\
+	 $(_sc_search_regexp)
 
 sc_prohibit_virBufferAdd_with_string_literal:
-	@re='\<virBufferAdd *\([^,]+, *"[^"]'				\
-	msg='use virBufferAddLit, not virBufferAdd, with a string literal' \
-	  $(_prohibit_regexp)
+	@prohibit='\<virBufferAdd *\([^,]+, *"[^"]'			\
+	halt='use virBufferAddLit, not virBufferAdd, with a string literal' \
+	  $(_sc_search_regexp)
 
 # Not only do they fail to deal well with ipv6, but the gethostby*
 # functions are also not thread-safe.
 sc_prohibit_gethostby:
-	@re='\<gethostby(addr|name2?) *\('				\
-	msg='use getaddrinfo, not gethostby*'				\
-	  $(_prohibit_regexp)
+	@prohibit='\<gethostby(addr|name2?) *\('			\
+	halt='use getaddrinfo, not gethostby*'				\
+	  $(_sc_search_regexp)
 
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
@@ -239,7 +236,7 @@ func_re := ($(func_or))
 #    "%s", _("no storage vol w..."
 sc_libvirt_unmarked_diagnostics:
 	@grep -nE							\
-            '\<$(func_re) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
+	    '\<$(func_re) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
 	  | grep -v '_''(' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
@@ -272,22 +269,14 @@ sc_preprocessor_indentation:
 	  echo '$(ME): skipping test $@: cppi not installed' 1>&2;	\
 	fi
 
-_m1 = use "test C1 && test C2", not "test C1 -''a C2"
-_m2 = use "test C1 || test C2", not "test C1 -''o C2"
-# Using test's -a and -o operators is not portable.
-sc_prohibit_test_minus_ao:
-	@re='(\<test| \[+) .+ -[ao] '					\
-	msg='$(_m1); $(_m2)'						\
-	  $(_prohibit_regexp)
-
 sc_copyright_format:
-	@$(VC_LIST_EXCEPT) | xargs grep -ni 'copyright .*Red 'Hat	\
-	  | grep -v Inc							\
-	  && { echo '$(ME): Red Hat copyright is missing Inc' 1>&2;	\
-	       exit 1; } || :
-	@$(VC_LIST_EXCEPT) | xargs grep -ni 'copyright [^(].*Red 'Hat	\
-	  && { echo '$(ME): consistently use (C) in Red Hat copyright' 1>&2; \
-	       exit 1; } || :
+	@require='Copyright .*Red 'Hat', Inc\.'				\
+	containing='Copyright .*Red 'Hat				\
+	halt='Red Hat copyright is missing Inc.'			\
+	 $(_sc_search_regexp)
+	@prohibit='Copyright [^(].*Red 'Hat				\
+	halt='consistently use (C) in Red Hat copyright'		\
+	 $(_sc_search_regexp)
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
