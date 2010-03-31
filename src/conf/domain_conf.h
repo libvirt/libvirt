@@ -298,7 +298,7 @@ struct _virDomainNetDef {
 };
 
 # define VALID_IFNAME_CHARS \
- "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+ "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/"
 
 enum virDomainChrTargetType {
     VIR_DOMAIN_CHR_TARGET_TYPE_NULL = 0,
