@@ -1570,7 +1570,7 @@ static int vboxDomainDestroy(virDomainPtr dom) {
 #if VBOX_API_VERSION == 2002
             console->vtbl->PowerDown(console);
 #else
-            IProgress *progress;
+            IProgress *progress = NULL;
             console->vtbl->PowerDown(console, &progress);
             if (progress) {
                 progress->vtbl->WaitForCompletion(progress, -1);
