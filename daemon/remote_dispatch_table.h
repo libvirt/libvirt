@@ -912,3 +912,18 @@
     .args_filter = (xdrproc_t) xdr_remote_nwfilter_undefine_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainManagedSave => 182 */
+    .fn = (dispatch_fn) remoteDispatchDomainManagedSave,
+    .args_filter = (xdrproc_t) xdr_remote_domain_managed_save_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},
+{   /* DomainHasManagedSaveImage => 183 */
+    .fn = (dispatch_fn) remoteDispatchDomainHasManagedSaveImage,
+    .args_filter = (xdrproc_t) xdr_remote_domain_has_managed_save_image_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_has_managed_save_image_ret,
+},
+{   /* DomainManagedSaveRemove => 184 */
+    .fn = (dispatch_fn) remoteDispatchDomainManagedSaveRemove,
+    .args_filter = (xdrproc_t) xdr_remote_domain_managed_save_remove_args,
+    .ret_filter = (xdrproc_t) xdr_void,
+},

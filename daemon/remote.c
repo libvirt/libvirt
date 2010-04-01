@@ -2416,6 +2416,85 @@ remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainManagedSave (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                 struct qemud_client *client ATTRIBUTE_UNUSED,
+                                 virConnectPtr conn,
+                                 remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                 remote_error *rerr,
+                                 remote_domain_managed_save_args *args,
+                                 void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainManagedSave (dom, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virDomainFree(dom);
+    return 0;
+}
+
+static int
+remoteDispatchDomainHasManagedSaveImage (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                         struct qemud_client *client ATTRIBUTE_UNUSED,
+                                         virConnectPtr conn,
+                                         remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                         remote_error *rerr,
+                                         remote_domain_has_managed_save_image_args *args,
+                                         remote_domain_has_managed_save_image_ret *ret)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->ret = virDomainHasManagedSaveImage (dom, args->flags);
+    if (ret->ret == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virDomainFree(dom);
+    return 0;
+}
+
+static int
+remoteDispatchDomainManagedSaveRemove (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                       struct qemud_client *client ATTRIBUTE_UNUSED,
+                                       virConnectPtr conn,
+                                       remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                       remote_error *rerr,
+                                       remote_domain_managed_save_remove_args *args,
+                                       void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainManagedSaveRemove (dom, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+    virDomainFree(dom);
+    return 0;
+}
+
+static int
 remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
                             struct qemud_client *client ATTRIBUTE_UNUSED,
                             virConnectPtr conn,

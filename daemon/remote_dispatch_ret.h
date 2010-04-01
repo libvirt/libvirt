@@ -125,3 +125,4 @@
     remote_num_of_nwfilters_ret val_remote_num_of_nwfilters_ret;
     remote_list_nwfilters_ret val_remote_list_nwfilters_ret;
     remote_nwfilter_define_xml_ret val_remote_nwfilter_define_xml_ret;
+    remote_domain_has_managed_save_image_ret val_remote_domain_has_managed_save_image_ret;

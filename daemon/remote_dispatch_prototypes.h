@@ -282,6 +282,14 @@ static int remoteDispatchDomainGetVcpus(
     remote_error *err,
     remote_domain_get_vcpus_args *args,
     remote_domain_get_vcpus_ret *ret);
+static int remoteDispatchDomainHasManagedSaveImage(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_has_managed_save_image_args *args,
+    remote_domain_has_managed_save_image_ret *ret);
 static int remoteDispatchDomainInterfaceStats(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -330,6 +338,22 @@ static int remoteDispatchDomainLookupByUuid(
     remote_error *err,
     remote_domain_lookup_by_uuid_args *args,
     remote_domain_lookup_by_uuid_ret *ret);
+static int remoteDispatchDomainManagedSave(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_managed_save_args *args,
+    void *ret);
+static int remoteDispatchDomainManagedSaveRemove(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_managed_save_remove_args *args,
+    void *ret);
 static int remoteDispatchDomainMemoryPeek(
     struct qemud_server *server,
     struct qemud_client *client,

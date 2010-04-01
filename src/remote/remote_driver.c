@@ -3616,6 +3616,79 @@ done:
     return rv;
 }
 
+static int
+remoteDomainManagedSave (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_managed_save_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MANAGED_SAVE,
+              (xdrproc_t) xdr_remote_domain_managed_save_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainHasManagedSaveImage (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_has_managed_save_image_args args;
+    remote_domain_has_managed_save_image_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE,
+              (xdrproc_t) xdr_remote_domain_has_managed_save_image_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_has_managed_save_image_ret, (char *) &ret) == -1)
+        goto done;
+
+    rv = ret.ret;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteDomainManagedSaveRemove (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_managed_save_remove_args args;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.flags = flags;
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE,
+              (xdrproc_t) xdr_remote_domain_managed_save_remove_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto done;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 /*----------------------------------------------------------------------*/
 
 static virDrvOpenStatus ATTRIBUTE_NONNULL (1)
@@ -9818,9 +9891,9 @@ static virDriver remote_driver = {
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
     remoteDomainEventRegisterAny, /* domainEventRegisterAny */
     remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
+    remoteDomainManagedSave, /* domainManagedSave */
+    remoteDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
+    remoteDomainManagedSaveRemove, /* domainManagedSaveRemove */
 };
 
 static virNetworkDriver network_driver = {

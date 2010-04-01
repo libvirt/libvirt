@@ -1647,6 +1647,25 @@ struct remote_domain_event_graphics_msg {
     remote_domain_event_graphics_identity subject<REMOTE_DOMAIN_EVENT_GRAPHICS_IDENTITY_MAX>;
 };
 
+struct remote_domain_managed_save_args {
+    remote_nonnull_domain dom;
+    unsigned flags;
+};
+
+struct remote_domain_has_managed_save_image_args {
+    remote_nonnull_domain dom;
+    unsigned flags;
+};
+
+struct remote_domain_has_managed_save_image_ret {
+    int ret;
+};
+
+struct remote_domain_managed_save_remove_args {
+    remote_nonnull_domain dom;
+    unsigned flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -1852,7 +1871,10 @@ enum remote_procedure {
     REMOTE_PROC_LIST_NWFILTERS = 179,
     REMOTE_PROC_NWFILTER_DEFINE_XML = 180,
 
-    REMOTE_PROC_NWFILTER_UNDEFINE = 181
+    REMOTE_PROC_NWFILTER_UNDEFINE = 181,
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE = 182,
+    REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE = 183,
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

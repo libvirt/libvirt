@@ -1860,6 +1860,29 @@ struct remote_domain_event_graphics_msg {
         } subject;
 };
 typedef struct remote_domain_event_graphics_msg remote_domain_event_graphics_msg;
+
+struct remote_domain_managed_save_args {
+        remote_nonnull_domain dom;
+        u_int flags;
+};
+typedef struct remote_domain_managed_save_args remote_domain_managed_save_args;
+
+struct remote_domain_has_managed_save_image_args {
+        remote_nonnull_domain dom;
+        u_int flags;
+};
+typedef struct remote_domain_has_managed_save_image_args remote_domain_has_managed_save_image_args;
+
+struct remote_domain_has_managed_save_image_ret {
+        int ret;
+};
+typedef struct remote_domain_has_managed_save_image_ret remote_domain_has_managed_save_image_ret;
+
+struct remote_domain_managed_save_remove_args {
+        remote_nonnull_domain dom;
+        u_int flags;
+};
+typedef struct remote_domain_managed_save_remove_args remote_domain_managed_save_remove_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -2045,6 +2068,9 @@ enum remote_procedure {
         REMOTE_PROC_LIST_NWFILTERS = 179,
         REMOTE_PROC_NWFILTER_DEFINE_XML = 180,
         REMOTE_PROC_NWFILTER_UNDEFINE = 181,
+        REMOTE_PROC_DOMAIN_MANAGED_SAVE = 182,
+        REMOTE_PROC_DOMAIN_HAS_MANAGED_SAVE_IMAGE = 183,
+        REMOTE_PROC_DOMAIN_MANAGED_SAVE_REMOVE = 184,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2380,6 +2406,10 @@ extern  bool_t xdr_remote_domain_event_io_error_msg (XDR *, remote_domain_event_
 extern  bool_t xdr_remote_domain_event_graphics_address (XDR *, remote_domain_event_graphics_address*);
 extern  bool_t xdr_remote_domain_event_graphics_identity (XDR *, remote_domain_event_graphics_identity*);
 extern  bool_t xdr_remote_domain_event_graphics_msg (XDR *, remote_domain_event_graphics_msg*);
+extern  bool_t xdr_remote_domain_managed_save_args (XDR *, remote_domain_managed_save_args*);
+extern  bool_t xdr_remote_domain_has_managed_save_image_args (XDR *, remote_domain_has_managed_save_image_args*);
+extern  bool_t xdr_remote_domain_has_managed_save_image_ret (XDR *, remote_domain_has_managed_save_image_ret*);
+extern  bool_t xdr_remote_domain_managed_save_remove_args (XDR *, remote_domain_managed_save_remove_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -2689,6 +2719,10 @@ extern bool_t xdr_remote_domain_event_io_error_msg ();
 extern bool_t xdr_remote_domain_event_graphics_address ();
 extern bool_t xdr_remote_domain_event_graphics_identity ();
 extern bool_t xdr_remote_domain_event_graphics_msg ();
+extern bool_t xdr_remote_domain_managed_save_args ();
+extern bool_t xdr_remote_domain_has_managed_save_image_args ();
+extern bool_t xdr_remote_domain_has_managed_save_image_ret ();
+extern bool_t xdr_remote_domain_managed_save_remove_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

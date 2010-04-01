@@ -151,3 +151,6 @@
     remote_list_nwfilters_args val_remote_list_nwfilters_args;
     remote_nwfilter_define_xml_args val_remote_nwfilter_define_xml_args;
     remote_nwfilter_undefine_args val_remote_nwfilter_undefine_args;
+    remote_domain_managed_save_args val_remote_domain_managed_save_args;
+    remote_domain_has_managed_save_image_args val_remote_domain_has_managed_save_image_args;
+    remote_domain_managed_save_remove_args val_remote_domain_managed_save_remove_args;

@@ -3289,6 +3289,48 @@ xdr_remote_domain_event_graphics_msg (XDR *xdrs, remote_domain_event_graphics_ms
 }
 
 bool_t
+xdr_remote_domain_managed_save_args (XDR *xdrs, remote_domain_managed_save_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_has_managed_save_image_args (XDR *xdrs, remote_domain_has_managed_save_image_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_has_managed_save_image_ret (XDR *xdrs, remote_domain_has_managed_save_image_ret *objp)
+{
+
+         if (!xdr_int (xdrs, &objp->ret))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_managed_save_remove_args (XDR *xdrs, remote_domain_managed_save_remove_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 
