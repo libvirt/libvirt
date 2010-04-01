@@ -1333,6 +1333,44 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "managedsave" command
+ */
+static const vshCmdInfo info_managedsave[] = {
+    {"help", N_("managed save of a domain state")},
+    {"desc", N_("Save and stop a running domain, so libvirt can restart it from the same state")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_managedsave[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return FALSE;
+
+    if (virDomainManagedSave(dom, 0) == 0) {
+        vshPrint(ctl, _("Domain %s state saved by libvirt\n"), name);
+    } else {
+        vshError(ctl, _("Failed to save domain %s state"), name);
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "schedinfo" command
  */
 static const vshCmdInfo info_schedinfo[] = {
@@ -8207,6 +8245,8 @@ static const vshCmdDef commands[] = {
     {"iface-edit", cmdInterfaceEdit, opts_interface_edit, info_interface_edit},
     {"iface-start", cmdInterfaceStart, opts_interface_start, info_interface_start},
     {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy, info_interface_destroy},
+
+    {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave},
 
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
 

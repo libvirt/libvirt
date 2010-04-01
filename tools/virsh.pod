@@ -335,6 +335,12 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
+=item B<managedsave> I<domain-id>
+
+Ask libvirt to save a running domain state in a place managed by libvirt.
+If libvirt is asked to restart the domain later on it will resume it from
+the saved domain state (and the state is discarded).
+
 =item B<migrate> optional I<--live> I<--suspend> I<domain-id> I<desturi> I<migrateuri>
 
 Migrate domain to another host.  Add --live for live migration; --suspend
