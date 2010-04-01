@@ -403,19 +403,17 @@ checkMacProtocolID(enum attrDatatype datatype, void *value,
                    virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
 {
     int32_t res = -1;
-    const char *str;
 
     if (datatype == DATATYPE_STRING) {
         if (intMapGetByString(macProtoMap, (char *)value, 1, &res) == 0)
             res = -1;
     } else if (datatype == DATATYPE_UINT16) {
-        if (intMapGetByInt(macProtoMap,
-                           (int32_t)*(uint16_t *)value, &str) == 0)
-            res = -1;
+        res = (uint32_t)*(uint16_t *)value;
     }
 
     if (res != -1) {
         nwf->p.ethHdrFilter.dataProtocolID.u.u16 = res;
+        nwf->p.ethHdrFilter.dataProtocolID.datatype = DATATYPE_UINT16;
         return 1;
     }
 
@@ -433,9 +431,10 @@ macProtocolIDFormatter(virBufferPtr buf,
                        nwf->p.ethHdrFilter.dataProtocolID.u.u16,
                        &str)) {
         virBufferVSprintf(buf, "%s", str);
-        return 1;
+    } else {
+        virBufferVSprintf(buf, "%d", nwf->p.ethHdrFilter.dataProtocolID.u.u16);
     }
-    return 0;
+    return 1;
 }
 
 
@@ -500,15 +499,12 @@ arpOpcodeValidator(enum attrDatatype datatype,
                    virNWFilterRuleDefPtr nwf)
 {
     int32_t res = -1;
-    const char *str;
 
     if (datatype == DATATYPE_STRING) {
         if (intMapGetByString(arpOpcodeMap, (char *)value, 1, &res) == 0)
             res = -1;
     } else if (datatype == DATATYPE_UINT16) {
-        if (intMapGetByInt(arpOpcodeMap,
-                           (uint32_t)*(uint16_t *)value, &str) == 0)
-            res = -1;
+        res = (uint32_t)*(uint16_t *)value;
     }
 
     if (res != -1) {
@@ -530,9 +526,10 @@ arpOpcodeFormatter(virBufferPtr buf,
                        nwf->p.arpHdrFilter.dataOpcode.u.u16,
                        &str)) {
         virBufferVSprintf(buf, "%s", str);
-        return 1;
+    } else {
+        virBufferVSprintf(buf, "%d", nwf->p.arpHdrFilter.dataOpcode.u.u16);
     }
-    return 0;
+    return 1;
 }
 
 
@@ -560,16 +557,12 @@ static bool checkIPProtocolID(enum attrDatatype datatype,
                               virNWFilterRuleDefPtr nwf)
 {
     int32_t res = -1;
-    const char *str;
 
     if (datatype == DATATYPE_STRING) {
         if (intMapGetByString(ipProtoMap, (char *)value, 1, &res) == 0)
             res = -1;
     } else if (datatype == DATATYPE_UINT8) {
-        // may just accept what user provides and not test...
-        if (intMapGetByInt(ipProtoMap,
-                           (uint32_t)*(uint16_t *)value, &str) == 0)
-            res = -1;
+        res = (uint32_t)*(uint16_t *)value;
     }
 
     if (res != -1) {
@@ -591,19 +584,25 @@ formatIPProtocolID(virBufferPtr buf,
                        nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8,
                        &str)) {
         virBufferVSprintf(buf, "%s", str);
-        return 1;
+    } else {
+        virBufferVSprintf(buf, "%d",
+                          nwf->p.ipHdrFilter.ipHdr.dataProtocolID.u.u8);
     }
-    return 0;
+    return 1;
 }
 
 
 static bool
 dscpValidator(enum attrDatatype datatype ATTRIBUTE_UNUSED, void *val,
-              virNWFilterRuleDefPtr nwf ATTRIBUTE_UNUSED)
+              virNWFilterRuleDefPtr nwf)
 {
     uint8_t dscp = *(uint16_t *)val;
     if (dscp > 63)
         return 0;
+
+    nwf->p.ipHdrFilter.ipHdr.dataDSCP.u.u8 = dscp;
+    nwf->p.ipHdrFilter.ipHdr.dataDSCP.datatype = DATATYPE_UINT8;
+
     return 1;
 }
 
@@ -685,24 +684,19 @@ static const virXMLAttr2Struct arpAttributes[] = {
 static const virXMLAttr2Struct ipAttributes[] = {
     COMMON_MAC_PROPS(ipHdrFilter),
     {
-        .name = "version",
-        .datatype = DATATYPE_UINT8,
-        .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataIPVersion),
-    },
-    {
         .name = SRCIPADDR,
         .datatype = DATATYPE_IPADDR,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataSrcIPAddr),
     },
     {
-        .name = DSTIPADDR,
-        .datatype = DATATYPE_IPADDR,
-        .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataDstIPAddr),
-    },
-    {
         .name = SRCIPMASK,
         .datatype = DATATYPE_IPMASK,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataSrcIPMask),
+    },
+    {
+        .name = DSTIPADDR,
+        .datatype = DATATYPE_IPADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataDstIPAddr),
     },
     {
         .name = DSTIPMASK,
@@ -711,7 +705,7 @@ static const virXMLAttr2Struct ipAttributes[] = {
     },
     {
         .name = "protocol",
-        .datatype = DATATYPE_STRING,
+        .datatype = DATATYPE_STRING | DATATYPE_UINT8,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipHdrFilter.ipHdr.dataProtocolID),
         .validator= checkIPProtocolID,
         .formatter= formatIPProtocolID,
@@ -756,14 +750,14 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataSrcIPAddr),
     },
     {
-        .name = DSTIPADDR,
-        .datatype = DATATYPE_IPV6ADDR,
-        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataDstIPAddr),
-    },
-    {
         .name = SRCIPMASK,
         .datatype = DATATYPE_IPV6MASK,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataSrcIPMask),
+    },
+    {
+        .name = DSTIPADDR,
+        .datatype = DATATYPE_IPV6ADDR,
+        .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataDstIPAddr),
     },
     {
         .name = DSTIPMASK,
@@ -818,14 +812,14 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPAddr),\
     },\
     {\
-        .name = DSTIPADDR,\
-        .datatype = ADDRTYPE,\
-        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPAddr),\
-    },\
-    {\
         .name = SRCIPMASK,\
         .datatype = MASKTYPE,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataSrcIPMask),\
+    },\
+    {\
+        .name = DSTIPADDR,\
+        .datatype = ADDRTYPE,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDstIPAddr),\
     },\
     {\
         .name = DSTIPMASK,\
@@ -856,7 +850,7 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .name = DSCP,\
         .datatype = DATATYPE_UINT8,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDSCP),\
-        .validator = dscpValidator,\
+        /*.validator = dscpValidator,*/\
     }
 
 #define COMMON_PORT_PROPS(STRUCT) \
@@ -1276,26 +1270,26 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_IPMASK:
                             storage_ptr = &item->u.u8;
-                            if (!virNWIPv4AddressParser(prop, &ipaddr)) {
-                                if (sscanf(prop, "%d", &int_val) == 1) {
-                                    if (int_val >= 0 && int_val <= 32) {
-                                        if (!validator)
-                                            *(uint8_t *)storage_ptr =
-                                                   (uint8_t)int_val;
-                                        found = 1;
-                                        data_ptr = &int_val;
-                                    } else
-                                        rc = -1;
+                            if (virStrToLong_i(prop, NULL, 10, &int_val) == 0) {
+                                if (int_val >= 0 && int_val <= 32) {
+                                    if (!validator)
+                                        *(uint8_t *)storage_ptr =
+                                               (uint8_t)int_val;
+                                    found = 1;
+                                    data_ptr = &int_val;
                                 } else
                                     rc = -1;
                             } else {
-                                int_val = virSocketGetNumNetmaskBits(
+                                if (virNWIPv4AddressParser(prop, &ipaddr)) {
+                                    int_val = virSocketGetNumNetmaskBits(
                                                      &ipaddr.addr);
-                                if (int_val >= 0)
-                                    *(uint8_t *)storage_ptr = int_val;
-                                else
+                                    if (int_val >= 0)
+                                        *(uint8_t *)storage_ptr = int_val;
+                                    else
+                                        rc = -1;
+                                    found = 1;
+                                } else
                                     rc = -1;
-                                found = 1;
                             }
                         break;
 
@@ -1330,26 +1324,26 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_IPV6MASK:
                             storage_ptr = &item->u.u8;
-                            if (!virNWIPv6AddressParser(prop, &ipaddr)) {
-                                if (sscanf(prop, "%d", &int_val) == 1) {
-                                    if (int_val >= 0 && int_val <= 128) {
-                                        if (!validator)
-                                            *(uint8_t *)storage_ptr =
-                                                   (uint8_t)int_val;
-                                        found = 1;
-                                        data_ptr = &int_val;
-                                    } else
-                                        rc = -1;
+                            if (virStrToLong_i(prop, NULL, 10, &int_val) == 0) {
+                                if (int_val >= 0 && int_val <= 128) {
+                                    if (!validator)
+                                        *(uint8_t *)storage_ptr =
+                                               (uint8_t)int_val;
+                                    found = 1;
+                                    data_ptr = &int_val;
                                 } else
                                     rc = -1;
                             } else {
-                                int_val = virSocketGetNumNetmaskBits(
-                                                     &ipaddr.addr);
-                                if (int_val >= 0)
-                                    *(uint8_t *)storage_ptr = int_val;
-                                else
-                                    rc = -1;
-                                found = 1;
+                                if (virNWIPv6AddressParser(prop, &ipaddr)) {
+                                    int_val = virSocketGetNumNetmaskBits(
+                                                  &ipaddr.addr);
+                                    if (int_val >= 0)
+                                        *(uint8_t *)storage_ptr = int_val;
+                                    else
+                                        rc = -1;
+                                    found = 1;
+                                } else
+                                   rc = -1;
                             }
                         break;
 

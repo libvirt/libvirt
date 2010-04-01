@@ -189,6 +189,7 @@ printDataType(virConnectPtr conn,
     break;
 
     case DATATYPE_MACADDR:
+    case DATATYPE_MACMASK:
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
             virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
                                    _("Buffer too small for MAC address"));
