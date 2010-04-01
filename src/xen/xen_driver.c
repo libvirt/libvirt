@@ -1980,6 +1980,9 @@ static virDriver xenUnifiedDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     xenUnifiedDomainEventRegisterAny, /* domainEventRegisterAny */
     xenUnifiedDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 /**

@@ -378,6 +378,9 @@ LIBVIRT_0.7.8 {
 	virNWFilterRef;
 	virNWFilterDefineXML;
 	virNWFilterUndefine;
+	virDomainManagedSave;
+	virDomainHasManagedSaveImage;
+	virDomainManagedSaveRemove;
 } LIBVIRT_0.7.7;
 
 

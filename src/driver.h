@@ -402,6 +402,15 @@ typedef int
     (*virDrvDomainEventDeregisterAny)(virConnectPtr conn,
                                       int callbackID);
 
+typedef int
+    (*virDrvDomainManagedSave)(virDomainPtr domain, unsigned int flags);
+
+typedef int
+    (*virDrvDomainHasManagedSaveImage)(virDomainPtr domain, unsigned int flags);
+
+typedef int
+    (*virDrvDomainManagedSaveRemove)(virDomainPtr domain, unsigned int flags);
+
 /**
  * _virDriver:
  *
@@ -499,6 +508,9 @@ struct _virDriver {
     virDrvDomainMigrateSetMaxDowntime  domainMigrateSetMaxDowntime;
     virDrvDomainEventRegisterAny domainEventRegisterAny;
     virDrvDomainEventDeregisterAny domainEventDeregisterAny;
+    virDrvDomainManagedSave domainManagedSave;
+    virDrvDomainHasManagedSaveImage domainHasManagedSaveImage;
+    virDrvDomainManagedSaveRemove domainManagedSaveRemove;
 };
 
 typedef int

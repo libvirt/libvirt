@@ -639,6 +639,16 @@ int                     virDomainRestore        (virConnectPtr conn,
                                                  const char *from);
 
 /*
+ * Managed domain save
+ */
+int                    virDomainManagedSave     (virDomainPtr dom,
+                                                 unsigned int flags);
+int                    virDomainHasManagedSaveImage(virDomainPtr dom,
+                                                 unsigned int flags);
+int                    virDomainManagedSaveRemove(virDomainPtr dom,
+                                                 unsigned int flags);
+
+/*
  * Domain core dump
  */
 int                     virDomainCoreDump       (virDomainPtr domain,

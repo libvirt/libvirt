@@ -7184,6 +7184,9 @@ virDriver NAME(Driver) = {
     vboxDomainEventRegisterAny, /* domainEventRegisterAny */
     vboxDomainEventDeregisterAny, /* domainEventDeregisterAny */
 #endif
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

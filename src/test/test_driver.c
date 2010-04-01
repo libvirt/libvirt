@@ -5306,6 +5306,9 @@ static virDriver testDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     testDomainEventRegisterAny, /* domainEventRegisterAny */
     testDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 static virNetworkDriver testNetworkDriver = {

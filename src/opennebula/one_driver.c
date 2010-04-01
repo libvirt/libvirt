@@ -792,6 +792,9 @@ static virDriver oneDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     NULL, /* domainEventRegisterAny */
     NULL, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 static virStateDriver oneStateDriver = {

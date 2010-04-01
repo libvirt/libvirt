@@ -9818,6 +9818,9 @@ static virDriver remote_driver = {
     remoteDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
     remoteDomainEventRegisterAny, /* domainEventRegisterAny */
     remoteDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 static virNetworkDriver network_driver = {

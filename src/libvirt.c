@@ -12136,3 +12136,143 @@ error:
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virDomainManagedSave:
+ * @dom: pointer to the domain
+ * @flags: optional flags currently unused
+ *
+ * This method will suspend a domain and save its memory contents to
+ * a file on disk. After the call, if successful, the domain is not
+ * listed as running anymore.
+ * The difference from virDomainSave() is that libvirt is keeping track of
+ * the saved state itself, and will reuse it once the domain is being
+ * restarted (automatically or via an explicit libvirt call).
+ * As a result any running domain is sure to not have a managed saved image.
+ *
+ * Returns 0 in case of success or -1 in case of failure
+ */
+int virDomainManagedSave(virDomainPtr dom, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainManagedSave) {
+        int ret;
+
+        ret = conn->driver->domainManagedSave(dom, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainHasManagedSaveImage:
+ * @dom: pointer to the domain
+ * @flags: optional flags currently unused
+ *
+ * Check if a domain has a managed save image as created by
+ * virDomainManagedSave(). Note that any running domain should not have
+ * such an image, as it should have been removed on restart.
+ *
+ * Returns 0 if no image is present, 1 if an image is present, and
+ *         -1 in case of error
+ */
+int virDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+
+    if (conn->driver->domainHasManagedSaveImage) {
+        int ret;
+
+        ret = conn->driver->domainHasManagedSaveImage(dom, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virDomainManagedSaveRemove:
+ * @dom: pointer to the domain
+ * @flags: optional flags currently unused
+ *
+ * Remove any managed save image as for this domain.
+ *
+ * Returns 0 in case of success, and -1 in case of error
+ */
+int virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("dom=%p, flags=%u", dom, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainManagedSaveRemove) {
+        int ret;
+
+        ret = conn->driver->domainManagedSaveRemove(dom, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}

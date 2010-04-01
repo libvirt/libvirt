@@ -10312,6 +10312,9 @@ static virDriver qemuDriver = {
     qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
     qemuDomainEventRegisterAny, /* domainEventRegisterAny */
     qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 

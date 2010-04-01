@@ -3389,6 +3389,9 @@ static virDriver esxDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     NULL, /* domainEventRegisterAny */
     NULL, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 

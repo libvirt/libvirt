@@ -2538,6 +2538,9 @@ static virDriver lxcDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     lxcDomainEventRegisterAny, /* domainEventRegisterAny */
     lxcDomainEventDeregisterAny, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 static virStateDriver lxcStateDriver = {

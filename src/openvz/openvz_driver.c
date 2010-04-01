@@ -1544,6 +1544,9 @@ static virDriver openvzDriver = {
     NULL, /* domainMigrateSetMaxDowntime */
     NULL, /* domainEventRegisterAny */
     NULL, /* domainEventDeregisterAny */
+    NULL, /* domainManagedSave */
+    NULL, /* domainHasManagedSaveImage */
+    NULL, /* domainManagedSaveRemove */
 };
 
 int openvzRegister(void) {
