@@ -430,7 +430,7 @@ SELinuxSetSecurityImageLabel(virDomainObjPtr vm,
         path = NULL;
 
         if (ret < 0)
-            return -1;
+           break;
 
         if (meta.backingStore != NULL &&
             SELinuxSetFilecon(meta.backingStore,
