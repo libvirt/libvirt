@@ -120,6 +120,7 @@ struct qemud_driver {
      * the QEMU user/group */
     char *libDir;
     char *cacheDir;
+    char *saveDir;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;
     unsigned int vncSASL : 1;

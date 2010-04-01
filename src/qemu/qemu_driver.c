@@ -1399,6 +1399,9 @@ qemudStartup(int privileged) {
         if (virAsprintf(&qemu_driver->cacheDir,
                       "%s/cache/libvirt/qemu", LOCAL_STATE_DIR) == -1)
             goto out_of_memory;
+        if (virAsprintf(&qemu_driver->saveDir,
+                      "%s/lib/libvirt/qemu/save/", LOCAL_STATE_DIR) == -1)
+            goto out_of_memory;
     } else {
         uid_t uid = geteuid();
         char *userdir = virGetUserDirectory(uid);
@@ -1423,6 +1426,8 @@ qemudStartup(int privileged) {
             goto out_of_memory;
         if (virAsprintf(&qemu_driver->cacheDir, "%s/qemu/cache", base) == -1)
             goto out_of_memory;
+        if (virAsprintf(&qemu_driver->saveDir, "%s/qemu/save", base) == -1)
+            goto out_of_memory;
     }
 
     if (virFileMakePath(qemu_driver->stateDir) != 0) {
@@ -1441,6 +1446,12 @@ qemudStartup(int privileged) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to create cache dir '%s': %s"),
                   qemu_driver->cacheDir, virStrerror(errno, ebuf, sizeof ebuf));
+        goto error;
+    }
+    if (virFileMakePath(qemu_driver->saveDir) != 0) {
+        char ebuf[1024];
+        VIR_ERROR(_("Failed to create save dir '%s': %s"),
+                  qemu_driver->saveDir, virStrerror(errno, ebuf, sizeof ebuf));
         goto error;
     }
 
@@ -1491,6 +1502,12 @@ qemudStartup(int privileged) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  qemu_driver->cacheDir, qemu_driver->user, qemu_driver->group);
+            goto error;
+        }
+        if (chown(qemu_driver->saveDir, qemu_driver->user, qemu_driver->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 qemu_driver->saveDir, qemu_driver->user, qemu_driver->group);
             goto error;
         }
     }
@@ -1645,6 +1662,7 @@ qemudShutdown(void) {
     VIR_FREE(qemu_driver->stateDir);
     VIR_FREE(qemu_driver->libDir);
     VIR_FREE(qemu_driver->cacheDir);
+    VIR_FREE(qemu_driver->saveDir);
     VIR_FREE(qemu_driver->vncTLSx509certdir);
     VIR_FREE(qemu_driver->vncListen);
     VIR_FREE(qemu_driver->vncPassword);
@@ -4570,8 +4588,8 @@ endjob:
 }
 
 
-static int qemudDomainSave(virDomainPtr dom,
-                           const char *path)
+static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
+                               int compressed)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -4589,18 +4607,8 @@ static int qemudDomainSave(virDomainPtr dom,
     header.version = QEMUD_SAVE_VERSION;
 
     qemuDriverLock(driver);
-    if (driver->saveImageFormat == NULL)
-        header.compressed = QEMUD_SAVE_FORMAT_RAW;
-    else {
-        header.compressed =
-            qemudSaveCompressionTypeFromString(driver->saveImageFormat);
-        if (header.compressed < 0) {
-            qemuReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("Invalid save image format specified "
-                                    "in configuration file"));
-            goto cleanup;
-        }
-    }
+
+    header.compressed = compressed;
 
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
@@ -4829,6 +4837,183 @@ cleanup:
     return ret;
 }
 
+static int qemudDomainSave(virDomainPtr dom, const char *path)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    int compressed;
+
+    /* Hm, is this safe against qemudReload? */
+    if (driver->saveImageFormat == NULL)
+        compressed = QEMUD_SAVE_FORMAT_RAW;
+    else {
+        compressed = qemudSaveCompressionTypeFromString(driver->saveImageFormat);
+        if (compressed < 0) {
+            qemuReportError(VIR_ERR_OPERATION_FAILED,
+                            "%s", _("Invalid save image format specified "
+                                    "in configuration file"));
+            return -1;
+        }
+    }
+
+    return qemudDomainSaveFlag(dom, path, compressed);
+}
+
+static char *
+qemuDomainManagedSavePath(struct qemud_driver *driver, virDomainObjPtr vm) {
+    char *ret;
+
+    if (virAsprintf(&ret, "%s/%s.save", driver->saveDir, vm->def->name) < 0) {
+        virReportOOMError();
+        return(NULL);
+    }
+
+    return(ret);
+}
+
+static int
+qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *name = NULL;
+    int ret = -1;
+    int compressed;
+
+    if (flags != 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("unsupported flags (0x%x) passed to '%s'"),
+                        flags, __FUNCTION__);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto error;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto error;
+    }
+
+    name = qemuDomainManagedSavePath(driver, vm);
+    if (name == NULL)
+        goto error;
+
+    VIR_DEBUG("Saving state to %s", name);
+
+    /* FIXME: we should take the flags parameter, and use bits out
+     * of there to control whether we are compressing or not
+     */
+    compressed = QEMUD_SAVE_FORMAT_RAW;
+
+    /* we have to drop our locks here because qemudDomainSaveFlag is
+     * going to pick them back up.  Unfortunately it opens a race window
+     * between us dropping and qemudDomainSaveFlag picking it back up, but
+     * if we want to allow other operations to be able to happen while
+     * qemuDomainSaveFlag is running (possibly for a long time), I'm not
+     * sure if there is a better solution
+     */
+    virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+
+    ret = qemudDomainSaveFlag(dom, name, compressed);
+
+cleanup:
+    VIR_FREE(name);
+
+    return ret;
+
+error:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    goto cleanup;
+}
+
+static int
+qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    char *name = NULL;
+
+    if (flags != 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("unsupported flags (0x%x) passed to '%s'"),
+                        flags, __FUNCTION__);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    name = qemuDomainManagedSavePath(driver, vm);
+    if (name == NULL)
+        goto cleanup;
+
+    ret = virFileExists(name);
+
+cleanup:
+    VIR_FREE(name);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
+static int
+qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
+{
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    char *name = NULL;
+
+    if (flags != 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("unsupported flags (0x%x) passed to '%s'"),
+                        flags, __FUNCTION__);
+        return -1;
+    }
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    name = qemuDomainManagedSavePath(driver, vm);
+    if (name == NULL)
+        goto cleanup;
+
+    ret = unlink(name);
+
+cleanup:
+    VIR_FREE(name);
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
 
 static int qemudDomainCoreDump(virDomainPtr dom,
                                const char *path,
@@ -5979,6 +6164,7 @@ static int qemudDomainStart(virDomainPtr dom) {
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
+    char *managed_save = NULL;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6000,6 +6186,35 @@ static int qemudDomainStart(virDomainPtr dom) {
         goto endjob;
     }
 
+    /*
+     * If there is a managed saved state restore it instead of starting
+     * from scratch. In any case the old state is removed.
+     */
+    managed_save = qemuDomainManagedSavePath(driver, vm);
+    if ((managed_save) && (virFileExists(managed_save))) {
+        /*
+         * We should still have a reference left to vm but
+         * one should check for 0 anyway
+         */
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
+        virDomainObjUnlock(vm);
+        qemuDriverUnlock(driver);
+        ret = qemudDomainRestore(dom->conn, managed_save);
+
+        if (unlink(managed_save) < 0) {
+            VIR_WARN("Failed to remove the managed state %s", managed_save);
+        }
+
+        if (ret == 0) {
+            /* qemudDomainRestore should have sent the Started/Restore event */
+            VIR_FREE(managed_save);
+            return(ret);
+        }
+        qemuDriverLock(driver);
+        virDomainObjLock(vm);
+    }
+
     ret = qemudStartVMDaemon(dom->conn, driver, vm, NULL, -1);
     if (ret != -1)
         event = virDomainEventNewFromObj(vm,
@@ -6011,6 +6226,7 @@ endjob:
         vm = NULL;
 
 cleanup:
+    VIR_FREE(managed_save);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
@@ -10312,9 +10528,9 @@ static virDriver qemuDriver = {
     qemuDomainMigrateSetMaxDowntime, /* domainMigrateSetMaxDowntime */
     qemuDomainEventRegisterAny, /* domainEventRegisterAny */
     qemuDomainEventDeregisterAny, /* domainEventDeregisterAny */
-    NULL, /* domainManagedSave */
-    NULL, /* domainHasManagedSaveImage */
-    NULL, /* domainManagedSaveRemove */
+    qemuDomainManagedSave, /* domainManagedSave */
+    qemuDomainHasManagedSaveImage, /* domainHasManagedSaveImage */
+    qemuDomainManagedSaveRemove, /* domainManagedSaveRemove */
 };
 
 
