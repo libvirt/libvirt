@@ -1415,7 +1415,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         if (xenXMConfigGetString(conn, conf, "parallel", &str, NULL) < 0)
             goto cleanup;
         if (str && STRNEQ(str, "none") &&
-            !(chr = xenDaemonParseSxprChar(conn, str, NULL)))
+            !(chr = xenDaemonParseSxprChar(str, NULL)))
             goto cleanup;
 
         if (chr) {
@@ -1432,7 +1432,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
         if (xenXMConfigGetString(conn, conf, "serial", &str, NULL) < 0)
             goto cleanup;
         if (str && STRNEQ(str, "none") &&
-            !(chr = xenDaemonParseSxprChar(conn, str, NULL)))
+            !(chr = xenDaemonParseSxprChar(str, NULL)))
             goto cleanup;
 
         if (chr) {
@@ -1445,7 +1445,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             def->nserials++;
         }
     } else {
-        if (!(def->console = xenDaemonParseSxprChar(conn, "pty", NULL)))
+        if (!(def->console = xenDaemonParseSxprChar("pty", NULL)))
             goto cleanup;
         def->console->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE;
     }
@@ -1455,7 +1455,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             goto cleanup;
 
         if (str &&
-            xenDaemonParseSxprSound(conn, def, str) < 0)
+            xenDaemonParseSxprSound(def, str) < 0)
             goto cleanup;
     }
 
@@ -2572,7 +2572,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             char *str;
             int ret;
 
-            ret = xenDaemonFormatSxprChr(conn, def->parallels[0], &buf);
+            ret = xenDaemonFormatSxprChr(def->parallels[0], &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "parallel", str);
@@ -2589,7 +2589,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             char *str;
             int ret;
 
-            ret = xenDaemonFormatSxprChr(conn, def->serials[0], &buf);
+            ret = xenDaemonFormatSxprChr(def->serials[0], &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "serial", str);
@@ -2605,9 +2605,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         if (def->sounds) {
             virBuffer buf = VIR_BUFFER_INITIALIZER;
             char *str = NULL;
-            int ret = xenDaemonFormatSxprSound(conn,
-                                               def,
-                                               &buf);
+            int ret = xenDaemonFormatSxprSound(def, &buf);
             str = virBufferContentAndReset(&buf);
             if (ret == 0)
                 ret = xenXMConfigSetString(conf, "soundhw", str);

@@ -96,12 +96,11 @@ xenDaemonDomainFetch(virConnectPtr xend,
                      const char *name,
                      const char *cpus);
 
-    int xend_parse_sexp_desc_char(virConnectPtr conn,
-                                  virBufferPtr buf,
-                                  const char *devtype,
-                                  int portNum,
-                                  const char *value,
-                                  const char *tty);
+int xend_parse_sexp_desc_char(virBufferPtr buf,
+                              const char *devtype,
+                              int portNum,
+                              const char *value,
+                              const char *tty);
 
 virDomainDefPtr
 xenDaemonParseSxprString(virConnectPtr conn,
@@ -109,21 +108,18 @@ xenDaemonParseSxprString(virConnectPtr conn,
                          int xendConfigVersion);
 
 int
-xenDaemonParseSxprSound(virConnectPtr conn,
-                        virDomainDefPtr def,
+xenDaemonParseSxprSound(virDomainDefPtr def,
                         const char *str);
+
 virDomainChrDefPtr
-xenDaemonParseSxprChar(virConnectPtr conn,
-                       const char *value,
+xenDaemonParseSxprChar(const char *value,
                        const char *tty);
 
 int
-xenDaemonFormatSxprChr(virConnectPtr conn,
-                       virDomainChrDefPtr def,
+xenDaemonFormatSxprChr(virDomainChrDefPtr def,
                        virBufferPtr buf);
 int
-xenDaemonFormatSxprSound(virConnectPtr conn,
-                         virDomainDefPtr def,
+xenDaemonFormatSxprSound(virDomainDefPtr def,
                          virBufferPtr buf);
 
 char *
