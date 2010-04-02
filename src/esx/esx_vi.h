@@ -28,8 +28,17 @@
 # include <curl/curl.h>
 
 # include "internal.h"
+# include "virterror_internal.h"
 # include "datatypes.h"
 # include "esx_vi_types.h"
+
+
+
+# define ESX_VI_ERROR(code, ...)                                              \
+    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
+                         __LINE__, __VA_ARGS__)
+
+
 
 typedef enum _esxVI_APIVersion esxVI_APIVersion;
 typedef enum _esxVI_ProductVersion esxVI_ProductVersion;

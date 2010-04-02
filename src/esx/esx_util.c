@@ -27,20 +27,16 @@
 #include <netdb.h>
 
 #include "internal.h"
-#include "virterror_internal.h"
 #include "datatypes.h"
 #include "qparams.h"
 #include "util.h"
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"
+#include "esx_private.h"
 #include "esx_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
-
-#define ESX_ERROR(code, ...)                                                 \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,   \
-                         __LINE__, __VA_ARGS__)
 
 /* AI_ADDRCONFIG is missing on some systems. */
 #ifndef AI_ADDRCONFIG
@@ -101,8 +97,8 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 
             if (STRNEQ(*transport, "http") && STRNEQ(*transport, "https")) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
-                          "Query parameter 'transport' has unexpected value "
-                          "'%s' (should be http|https)", *transport);
+                          _("Query parameter 'transport' has unexpected value "
+                            "'%s' (should be http|https)"), *transport);
                 goto failure;
             }
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
@@ -124,8 +120,8 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
             if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
                 (*noVerify != 0 && *noVerify != 1)) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
-                          "Query parameter 'no_verify' has unexpected value "
-                          "'%s' (should be 0 or 1)", queryParam->value);
+                          _("Query parameter 'no_verify' has unexpected value "
+                            "'%s' (should be 0 or 1)"), queryParam->value);
                 goto failure;
             }
         } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
@@ -136,8 +132,8 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
             if (virStrToLong_i(queryParam->value, NULL, 10, autoAnswer) < 0 ||
                 (*autoAnswer != 0 && *autoAnswer != 1)) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
-                          "Query parameter 'auto_answer' has unexpected value "
-                          "'%s' (should be 0 or 1)", queryParam->value);
+                          _("Query parameter 'auto_answer' has unexpected "
+                            "value '%s' (should be 0 or 1)"), queryParam->value);
                 goto failure;
             }
         } else {
@@ -213,7 +209,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
     if (datastoreName == NULL || *datastoreName != NULL ||
         directoryName == NULL || *directoryName != NULL ||
         fileName == NULL || *fileName != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -234,8 +230,8 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
     if (sscanf(datastoreRelatedPath, "[%a[^]%]] %a[^\n]", datastoreName,
                &directoryAndFileName) != 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Datastore related path '%s' doesn't have expected format "
-                  "'[<datastore>] <path>'", datastoreRelatedPath);
+                  _("Datastore related path '%s' doesn't have expected format "
+                    "'[<datastore>] <path>'"), datastoreRelatedPath);
         goto failure;
     }
 
@@ -250,7 +246,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
 
         if (*separator == '\0') {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Datastore related path '%s' doesn't reference a file",
+                      _("Datastore related path '%s' doesn't reference a file"),
                       datastoreRelatedPath);
             goto failure;
         }
@@ -302,14 +298,14 @@ esxUtil_ResolveHostname(const char *hostname,
 
     if (errcode != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "IP address lookup for host '%s' failed: %s", hostname,
+                  _("IP address lookup for host '%s' failed: %s"), hostname,
                   gai_strerror(errcode));
         return -1;
     }
 
     if (result == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "No IP address for host '%s' found: %s", hostname,
+                  _("No IP address for host '%s' found: %s"), hostname,
                   gai_strerror(errcode));
         return -1;
     }
@@ -319,7 +315,7 @@ esxUtil_ResolveHostname(const char *hostname,
 
     if (errcode != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Formating IP address for host '%s' failed: %s", hostname,
+                  _("Formating IP address for host '%s' failed: %s"), hostname,
                   gai_strerror(errcode));
         freeaddrinfo(result);
         return -1;
@@ -347,13 +343,13 @@ esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
         }
 
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Missing essential config entry '%s'", name);
+                  _("Missing essential config entry '%s'"), name);
         return -1;
     }
 
     if (value->type != VIR_CONF_STRING) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Config entry '%s' must be a string", name);
+                  _("Config entry '%s' must be a string"), name);
         return -1;
     }
 
@@ -363,7 +359,7 @@ esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
         }
 
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Missing essential config entry '%s'", name);
+                  _("Missing essential config entry '%s'"), name);
         return -1;
     }
 
@@ -392,14 +388,14 @@ esxUtil_GetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
             return 0;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Missing essential config entry '%s'", name);
+                      _("Missing essential config entry '%s'"), name);
             return -1;
         }
     }
 
     if (value->type != VIR_CONF_STRING) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Config entry '%s' must be a string", name);
+                  _("Config entry '%s' must be a string"), name);
         return -1;
     }
 
@@ -408,14 +404,14 @@ esxUtil_GetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
             return 0;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Missing essential config entry '%s'", name);
+                      _("Missing essential config entry '%s'"), name);
             return -1;
         }
     }
 
     if (virUUIDParse(value->str, uuid) < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not parse UUID from string '%s'", value->str);
+                  _("Could not parse UUID from string '%s'"), value->str);
         return -1;
     }
 
@@ -438,7 +434,7 @@ esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
             return 0;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Missing essential config entry '%s'", name);
+                      _("Missing essential config entry '%s'"), name);
             return -1;
         }
     }
@@ -449,7 +445,7 @@ esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
                 return 0;
             } else {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Missing essential config entry '%s'", name);
+                          _("Missing essential config entry '%s'"), name);
                 return -1;
             }
         }
@@ -458,13 +454,13 @@ esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
             *number = -1;
         } else if (virStrToLong_ll(value->str, NULL, 10, number) < 0) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Config entry '%s' must represent an integer value",
+                      _("Config entry '%s' must represent an integer value"),
                       name);
             return -1;
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Config entry '%s' must be a string", name);
+                  _("Config entry '%s' must be a string"), name);
         return -1;
     }
 
@@ -487,7 +483,7 @@ esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, int *boolean_,
             return 0;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Missing essential config entry '%s'", name);
+                      _("Missing essential config entry '%s'"), name);
             return -1;
         }
     }
@@ -498,7 +494,7 @@ esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, int *boolean_,
                 return 0;
             } else {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Missing essential config entry '%s'", name);
+                          _("Missing essential config entry '%s'"), name);
                 return -1;
             }
         }
@@ -509,13 +505,13 @@ esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, int *boolean_,
             *boolean_ = 0;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Config entry '%s' must represent a boolean value "
-                      "(true|false)", name);
+                      _("Config entry '%s' must represent a boolean value "
+                        "(true|false)"), name);
             return -1;
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Config entry '%s' must be a string", name);
+                  _("Config entry '%s' must be a string"), name);
         return -1;
     }
 

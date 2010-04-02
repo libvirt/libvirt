@@ -32,15 +32,10 @@
 #include "memory.h"
 #include "logging.h"
 #include "util.h"
-#include "virterror_internal.h"
 #include "esx_vi.h"
 #include "esx_vi_types.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
-
-#define ESX_VI_ERROR(code, ...)                                               \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, __VA_ARGS__)
 
 
 
@@ -123,7 +118,8 @@
     esxVI_##_type##_DeepCopy(esxVI_##_type **dest, esxVI_##_type *src)        \
     {                                                                         \
         if (dest == NULL || *dest != NULL) {                                  \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -213,7 +209,8 @@
                                     esxVI_##_type **ptrptr)                   \
     {                                                                         \
         if (anyType == NULL || ptrptr == NULL || *ptrptr != NULL) {           \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -236,7 +233,8 @@
                               const char *element, virBufferPtr output)       \
     {                                                                         \
         if (element == NULL || output == NULL ) {                             \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -274,7 +272,8 @@
         xmlNodePtr childNode = NULL;                                          \
                                                                               \
         if (ptrptr == NULL || *ptrptr != NULL) {                              \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -318,7 +317,8 @@
         long long value;                                                      \
                                                                               \
         if (number == NULL || *number != NULL) {                              \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -565,7 +565,8 @@
     esxVI_##__type##_DynamicCast(void *item)                                  \
     {                                                                         \
         if (item == NULL) {                                                   \
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");         \
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
+                         _("Invalid argument"));                              \
             return NULL;                                                      \
         }                                                                     \
                                                                               \
@@ -709,7 +710,7 @@ esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
 {
     if (anyType->type != type) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "Expecting type '%s' but found '%s'",
+                     _("Expecting type '%s' but found '%s'"),
                      esxVI_Type_ToString(type),
                      anyType->type != esxVI_Type_Other
                        ? esxVI_Type_ToString(anyType->type)
@@ -724,7 +725,7 @@ int
 esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 {
     if (dest == NULL || *dest != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -740,7 +741,8 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
     (*dest)->node = xmlCopyNode(src->node, 1);
 
     if ((*dest)->node == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not copy an XML node");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not copy an XML node"));
         goto failure;
     }
 
@@ -790,7 +792,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
     long long int number;
 
     if (anyType == NULL || *anyType != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -801,7 +803,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
     (*anyType)->node = xmlCopyNode(node, 1);
 
     if ((*anyType)->node == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not copy an XML node");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not copy an XML node"));
         goto failure;
     }
 
@@ -811,8 +814,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
                  BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
 
     if ((*anyType)->other == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "AnyType is missing 'type' property");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("AnyType is missing 'type' property"));
         goto failure;
     }
 
@@ -820,7 +823,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 
     if ((*anyType)->type == esxVI_Type_Undefined) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "Unknown value '%s' for AnyType 'type' property",
+                     _("Unknown value '%s' for AnyType 'type' property"),
                      (*anyType)->other);
         goto failure;
     }
@@ -837,19 +840,19 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
         }
     }
 
-#define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)           \
+#define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)               \
         do {                                                                  \
             if (virStrToLong_ll((*anyType)->value, NULL, 10, &number) < 0) {  \
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                          \
-                             "Unknown value '%s' for "_xsdType,               \
-                             (*anyType)->value);                              \
+                             _("Unknown value '%s' for %s"),                  \
+                             (*anyType)->value, _xsdType);                    \
                 goto failure;                                                 \
             }                                                                 \
                                                                               \
             if (number < (_min) || number > (_max)) {                         \
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                          \
-                             "Value '%s' is out of "_xsdType" range",         \
-                             (*anyType)->value);                              \
+                             _("Value '%s' is out of %s range"),              \
+                             (*anyType)->value, _xsdType);                    \
                 goto failure;                                                 \
             }                                                                 \
                                                                               \
@@ -864,7 +867,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
             (*anyType)->boolean = esxVI_Boolean_False;
         } else {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         "Unknown value '%s' for xsd:boolean",
+                         _("Unknown value '%s' for xsd:boolean"),
                          (*anyType)->value);
             goto failure;
         }
@@ -995,7 +998,7 @@ int
 esxVI_String_DeepCopyValue(char **dest, const char *src)
 {
     if (dest == NULL || *dest != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1029,7 +1032,7 @@ esxVI_String_SerializeValue(const char *value, const char *element,
                             virBufferPtr output)
 {
     if (element == NULL || output == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1059,7 +1062,7 @@ int
 esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
 {
     if (value == NULL || *value != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1184,7 +1187,7 @@ int
 esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 {
     if (dateTime == NULL || *dateTime != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1196,9 +1199,9 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
       (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
     if ((*dateTime)->value == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "XML node doesn't contain text, expecting an "
-                     "xsd:dateTime value");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("XML node doesn't contain text, expecting an "
+                       "xsd:dateTime value"));
         goto failure;
     }
 
@@ -1281,7 +1284,7 @@ esxVI_ManagedObjectReference_Serialize
    const char *element, virBufferPtr output)
 {
     if (element == NULL || output == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1311,7 +1314,7 @@ esxVI_ManagedObjectReference_Deserialize
   (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference)
 {
     if (managedObjectReference == NULL || *managedObjectReference != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1323,8 +1326,8 @@ esxVI_ManagedObjectReference_Deserialize
       (char *)xmlGetNoNsProp(node, BAD_CAST "type");
 
     if ((*managedObjectReference)->type == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                     "ManagedObjectReference is missing 'type' property");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("ManagedObjectReference is missing 'type' property"));
         goto failure;
     }
 

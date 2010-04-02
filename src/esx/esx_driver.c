@@ -27,7 +27,6 @@
 #include <netdb.h>
 
 #include "internal.h"
-#include "virterror_internal.h"
 #include "domain_conf.h"
 #include "authhelper.h"
 #include "util.h"
@@ -47,10 +46,6 @@
 #include "esx_vmx.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
-
-#define ESX_ERROR(code, ...)                                                  \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, __VA_ARGS__)
 
 static int esxDomainGetMaxVcpus(virDomainPtr domain);
 
@@ -84,8 +79,8 @@ esxSupportsLongMode(esxPrivate *priv)
     }
 
     if (hostSystem == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve the HostSystem object");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
         goto failure;
     }
 
@@ -108,9 +103,9 @@ esxSupportsLongMode(esxPrivate *priv)
                                "%*c%*c%c%*c:"_SKIP12":"_SKIP12":%*c%*c%*c%c",
                                &edxLongModeBit, &edxFirstBit) != 2) {
                         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                  "HostSystem property 'hardware.cpuFeature[].edx' "
-                                  "with value '%s' doesn't have expected format "
-                                  "'----:----:----:----:----:----:----:----'",
+                                  _("HostSystem property 'hardware.cpuFeature[].edx' "
+                                    "with value '%s' doesn't have expected format "
+                                    "'----:----:----:----:----:----:----:----'"),
                                   hostCpuIdInfo->edx);
                         goto failure;
                     }
@@ -124,10 +119,10 @@ esxSupportsLongMode(esxPrivate *priv)
                         priv->supportsLongMode = esxVI_Boolean_False;
                     } else {
                         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                  "Bit 29 (Long Mode) of HostSystem property "
-                                  "'hardware.cpuFeature[].edx' with value '%s' "
-                                  "has unexpected value '%c', expecting '0' "
-                                  "or '1'", hostCpuIdInfo->edx, edxLongModeBit);
+                                  _("Bit 29 (Long Mode) of HostSystem property "
+                                    "'hardware.cpuFeature[].edx' with value '%s' "
+                                    "has unexpected value '%c', expecting '0' "
+                                    "or '1'"), hostCpuIdInfo->edx, edxLongModeBit);
                         goto failure;
                     }
 
@@ -358,7 +353,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         username = virRequestUsername(auth, "root", conn->uri->server);
 
         if (username == NULL) {
-            ESX_ERROR(VIR_ERR_AUTH_FAILED, "Username request failed");
+            ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
             goto failure;
         }
     }
@@ -370,7 +365,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     password = virRequestPassword(auth, username, conn->uri->server);
 
     if (password == NULL) {
-        ESX_ERROR(VIR_ERR_AUTH_FAILED, "Password request failed");
+        ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
         goto failure;
     }
 
@@ -383,14 +378,14 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         if (priv->host->productVersion != esxVI_ProductVersion_ESX35 &&
             priv->host->productVersion != esxVI_ProductVersion_ESX40) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "%s is neither an ESX 3.5 host nor an ESX 4.0 host",
+                      _("%s is neither an ESX 3.5 host nor an ESX 4.0 host"),
                       conn->uri->server);
             goto failure;
         }
     } else { /* GSX */
         if (priv->host->productVersion != esxVI_ProductVersion_GSX20) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "%s isn't a GSX 2.0 host", conn->uri->server);
+                      _("%s isn't a GSX 2.0 host"), conn->uri->server);
             goto failure;
         }
     }
@@ -457,16 +452,17 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                     if (virStrcpyStatic(vCenterIpAddress,
                                         dynamicProperty->val->string) == NULL) {
                         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                  "vCenter IP address %s too big for "
-                                  "destination", dynamicProperty->val->string);
+                                  _("vCenter IP address %s too big for "
+                                    "destination"),
+                                  dynamicProperty->val->string);
                         goto failure;
                     }
                 } else if (STRNEQ(vCenterIpAddress,
                            dynamicProperty->val->string)) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              "This host is managed by a vCenter with IP "
-                              "address %s, but a mismachting vCenter '%s' "
-                              "(%s) has been specified",
+                              _("This host is managed by a vCenter with IP "
+                                "address %s, but a mismachting vCenter '%s' "
+                                "(%s) has been specified"),
                               dynamicProperty->val->string, vCenter,
                               vCenterIpAddress);
                     goto failure;
@@ -477,8 +473,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         if (STREQ(vCenter, "*")) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "This host is not managed by a vCenter");
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("This host is not managed by a vCenter"));
             goto failure;
         }
 
@@ -495,14 +491,14 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         username = virRequestUsername(auth, "administrator", vCenter);
 
         if (username == NULL) {
-            ESX_ERROR(VIR_ERR_AUTH_FAILED, "Username request failed");
+            ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
             goto failure;
         }
 
         password = virRequestPassword(auth, username, vCenter);
 
         if (password == NULL) {
-            ESX_ERROR(VIR_ERR_AUTH_FAILED, "Password request failed");
+            ESX_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
             goto failure;
         }
 
@@ -514,8 +510,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         if (priv->vCenter->productVersion != esxVI_ProductVersion_VPX25 &&
             priv->vCenter->productVersion != esxVI_ProductVersion_VPX40) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "%s is neither a vCenter 2.5 server nor a vCenter "
-                      "4.0 server", conn->uri->server);
+                      _("%s is neither a vCenter 2.5 server nor a vCenter "
+                        "4.0 server"), conn->uri->server);
             goto failure;
         }
     }
@@ -613,8 +609,8 @@ esxSupportsVMotion(esxPrivate *priv)
     }
 
     if (hostSystem == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve the HostSystem object");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
         goto failure;
     }
 
@@ -688,7 +684,7 @@ esxGetVersion(virConnectPtr conn, unsigned long *version)
     if (virParseVersionString(priv->host->service->about->version,
                               version) < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not parse version number from '%s'",
+                  _("Could not parse version number from '%s'"),
                   priv->host->service->about->version);
 
         return -1;
@@ -725,8 +721,8 @@ esxGetHostname(virConnectPtr conn)
     }
 
     if (hostSystem == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve the HostSystem object");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
         goto failure;
     }
 
@@ -754,8 +750,8 @@ esxGetHostname(virConnectPtr conn)
     }
 
     if (hostName == NULL || strlen(hostName) < 1) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Missing or empty 'hostName' property");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Missing or empty 'hostName' property"));
         goto failure;
     }
 
@@ -824,8 +820,8 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
     }
 
     if (hostSystem == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve the HostSystem object");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
         goto failure;
     }
 
@@ -906,7 +902,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                            sizeof(nodeinfo->model) - 1,
                            sizeof(nodeinfo->model)) == NULL) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "CPU Model %s too long for destination",
+                          _("CPU Model %s too long for destination"),
                           dynamicProperty->val->string);
                 goto failure;
             }
@@ -1003,7 +999,7 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
                                                 &ids[count]) < 0 ||
             ids[count] <= 0) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Failed to parse positive integer from '%s'",
+                      _("Failed to parse positive integer from '%s'"),
                       virtualMachine->obj->value);
             goto failure;
         }
@@ -1110,7 +1106,7 @@ esxDomainLookupByID(virConnectPtr conn, int id)
     }
 
     if (domain == NULL) {
-        ESX_ERROR(VIR_ERR_NO_DOMAIN, "No domain with ID %d", id);
+        ESX_ERROR(VIR_ERR_NO_DOMAIN, _("No domain with ID %d"), id);
     }
 
   cleanup:
@@ -1208,7 +1204,7 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
     }
 
     if (virtualMachine == NULL) {
-        ESX_ERROR(VIR_ERR_NO_DOMAIN, "No domain with name '%s'", name);
+        ESX_ERROR(VIR_ERR_NO_DOMAIN, _("No domain with name '%s'"), name);
         goto failure;
     }
 
@@ -1274,7 +1270,8 @@ esxDomainSuspend(virDomainPtr domain)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not powered on");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered on"));
         goto failure;
     }
 
@@ -1285,7 +1282,7 @@ esxDomainSuspend(virDomainPtr domain)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not suspend domain");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not suspend domain"));
         goto failure;
     }
 
@@ -1329,7 +1326,7 @@ esxDomainResume(virDomainPtr domain)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_Suspended) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not suspended");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not suspended"));
         goto failure;
     }
 
@@ -1340,7 +1337,7 @@ esxDomainResume(virDomainPtr domain)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not resume domain");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not resume domain"));
         goto failure;
     }
 
@@ -1382,7 +1379,8 @@ esxDomainShutdown(virDomainPtr domain)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not powered on");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered on"));
         goto failure;
     }
 
@@ -1427,7 +1425,8 @@ esxDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not powered on");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered on"));
         goto failure;
     }
 
@@ -1481,7 +1480,8 @@ esxDomainDestroy(virDomainPtr domain)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_PoweredOn) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not powered on");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered on"));
         goto failure;
     }
 
@@ -1492,7 +1492,7 @@ esxDomainDestroy(virDomainPtr domain)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not destroy domain");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not destroy domain"));
         goto failure;
     }
 
@@ -1556,7 +1556,8 @@ esxDomainGetMaxMemory(virDomainPtr domain)
             }
 
             if (dynamicProperty->val->int32 < 0) {
-                ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Got invalid memory size %d",
+                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                          _("Got invalid memory size %d"),
                           dynamicProperty->val->int32);
             } else {
                 memoryMB = dynamicProperty->val->int32;
@@ -1616,7 +1617,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not set max-memory to %lu kilobytes", memory);
+                  _("Could not set max-memory to %lu kilobytes"), memory);
         goto failure;
     }
 
@@ -1670,7 +1671,7 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not set memory to %lu kilobytes", memory);
+                  _("Could not set memory to %lu kilobytes"), memory);
         goto failure;
     }
 
@@ -1962,8 +1963,8 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     esxVI_TaskInfoState taskInfoState;
 
     if (nvcpus < 1) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Requested number of virtual CPUs must at least be 1");
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Requested number of virtual CPUs must at least be 1"));
         goto failure;
     }
 
@@ -1979,8 +1980,8 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 
     if (nvcpus > maxVcpus) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Requested number of virtual CPUs is greater than max "
-                  "allowable number of virtual CPUs for the domain: %d > %d",
+                  _("Requested number of virtual CPUs is greater than max "
+                    "allowable number of virtual CPUs for the domain: %d > %d"),
                   nvcpus, maxVcpus);
         goto failure;
     }
@@ -2004,7 +2005,7 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not set number of virtual CPUs to %d", nvcpus);
+                  _("Could not set number of virtual CPUs to %d"), nvcpus);
         goto failure;
     }
 
@@ -2048,8 +2049,8 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
     }
 
     if (hostSystem == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve the HostSystem object");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
         goto failure;
     }
 
@@ -2193,7 +2194,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
 
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Unsupported config format '%s'", nativeFormat);
+                  _("Unsupported config format '%s'"), nativeFormat);
         return NULL;
     }
 
@@ -2222,7 +2223,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
 
     if (STRNEQ(nativeFormat, "vmware-vmx")) {
         ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Unsupported config format '%s'", nativeFormat);
+                  _("Unsupported config format '%s'"), nativeFormat);
         return NULL;
     }
 
@@ -2373,7 +2374,8 @@ esxDomainCreate(virDomainPtr domain)
     }
 
     if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "Domain is not powered off");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not powered off"));
         goto failure;
     }
 
@@ -2384,7 +2386,7 @@ esxDomainCreate(virDomainPtr domain)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not start domain");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not start domain"));
         goto failure;
     }
 
@@ -2446,9 +2448,9 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     if (virtualMachine != NULL) {
         /* FIXME */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Domain already exists, editing existing domains is not "
-                  "supported yet");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Domain already exists, editing existing domains is not "
+                    "supported yet"));
         goto failure;
     }
 
@@ -2467,9 +2469,9 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
      * datastore isn't perfect but should work in the majority of cases.
      */
     if (def->ndisks < 1) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Domain XML doesn't contain any disks, cannot deduce "
-                  "datastore and path for VMX file");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Domain XML doesn't contain any disks, cannot deduce "
+                    "datastore and path for VMX file"));
         goto failure;
     }
 
@@ -2482,16 +2484,16 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     if (disk == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Domain XML doesn't contain any file-based harddisks, "
-                  "cannot deduce datastore and path for VMX file");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Domain XML doesn't contain any file-based harddisks, "
+                    "cannot deduce datastore and path for VMX file"));
         goto failure;
     }
 
     if (disk->src == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "First file-based harddisk has no source, cannot deduce "
-                  "datastore and path for VMX file");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("First file-based harddisk has no source, cannot deduce "
+                    "datastore and path for VMX file"));
         goto failure;
     }
 
@@ -2502,8 +2504,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     if (! virFileHasSuffix(fileName, ".vmdk")) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting source '%s' of first file-based harddisk to be a "
-                  "VMDK image", disk->src);
+                  _("Expecting source '%s' of first file-based harddisk to "
+                    "be a VMDK image"), disk->src);
         goto failure;
     }
 
@@ -2572,7 +2574,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Could not define domain");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not define domain"));
         goto failure;
     }
 
@@ -2641,8 +2643,8 @@ esxDomainUndefine(virDomainPtr domain)
 
     if (powerState != esxVI_VirtualMachinePowerState_Suspended &&
         powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
-        ESX_ERROR(VIR_ERR_OPERATION_INVALID,
-                  "Domain is not suspended or powered off");
+        ESX_ERROR(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not suspended or powered off"));
         goto failure;
     }
 
@@ -2725,8 +2727,8 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
     int i = 0;
 
     if (*nparams < 3) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Parameter array must have space for 3 items");
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Parameter array must have space for 3 items"));
         goto failure;
     }
 
@@ -2810,7 +2812,7 @@ esxDomainGetSchedulerParameters(virDomainPtr domain,
 
               default:
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Shares level has unknown value %d",
+                          _("Shares level has unknown value %d"),
                           (int)sharesInfo->level);
                 goto failure;
             }
@@ -2874,8 +2876,8 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             if (params[i].value.l < 0) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
-                          "Could not set reservation to %lld MHz, expecting "
-                          "positive value", params[i].value.l);
+                          _("Could not set reservation to %lld MHz, expecting "
+                            "positive value"), params[i].value.l);
                 goto failure;
             }
 
@@ -2888,8 +2890,8 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
             if (params[i].value.l < -1) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
-                          "Could not set limit to %lld MHz, expecting "
-                          "positive value or -1 (unlimited)",
+                          _("Could not set limit to %lld MHz, expecting "
+                            "positive value or -1 (unlimited)"),
                           params[i].value.l);
                 goto failure;
             }
@@ -2928,14 +2930,14 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
                   default:
                     ESX_ERROR(VIR_ERR_INVALID_ARG,
-                              "Could not set shares to %d, expecting positive "
-                              "value or -1 (low), -2 (normal) or -3 (high)",
+                              _("Could not set shares to %d, expecting positive "
+                                "value or -1 (low), -2 (normal) or -3 (high)"),
                               params[i].value.i);
                     goto failure;
                 }
             }
         } else {
-            ESX_ERROR(VIR_ERR_INVALID_ARG, "Unknown field '%s'",
+            ESX_ERROR(VIR_ERR_INVALID_ARG, _("Unknown field '%s'"),
                       params[i].field);
             goto failure;
         }
@@ -2949,8 +2951,8 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not change scheduler parameters");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not change scheduler parameters"));
         goto failure;
     }
 
@@ -3028,14 +3030,14 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_TaskInfoState taskInfoState;
 
     if (priv->vCenter == NULL) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Migration not possible without a vCenter");
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Migration not possible without a vCenter"));
         goto failure;
     }
 
     if (dname != NULL) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  "Renaming domains on migration not supported");
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Renaming domains on migration not supported"));
         goto failure;
     }
 
@@ -3086,12 +3088,12 @@ esxDomainMigratePerform(virDomainPtr domain,
          */
         if (eventList->fullFormattedMessage != NULL) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Could not migrate domain, validation reported a "
-                      "problem: %s", eventList->fullFormattedMessage);
+                      _("Could not migrate domain, validation reported a "
+                        "problem: %s"), eventList->fullFormattedMessage);
         } else {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Could not migrate domain, validation reported a "
-                      "problem");
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("Could not migrate domain, validation reported a "
+                        "problem"));
         }
 
         goto failure;
@@ -3109,9 +3111,9 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not migrate domain, migration task finished with "
-                  "an error");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not migrate domain, migration task finished with "
+                    "an error"));
         goto failure;
     }
 
@@ -3201,8 +3203,8 @@ esxNodeGetFreeMemory(virConnectPtr conn)
     }
 
     if (resourcePoolResourceUsage == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not retrieve memory usage of resource pool");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve memory usage of resource pool"));
         goto failure;
     }
 

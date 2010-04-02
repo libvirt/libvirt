@@ -27,6 +27,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include "esx_private.h"
 #include "esx_util.h"
 #include "esx_vmx.h"
 
@@ -421,12 +422,6 @@ def->parallels[0]...
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_ERROR(code, ...)                                                  \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__, __FUNCTION__,    \
-                         __LINE__, __VA_ARGS__)
-
-
-
 #define ESX_BUILD_VMX_NAME(_suffix)                                           \
     snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."#_suffix, prefix);
 
@@ -438,9 +433,9 @@ esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
     int idx;
 
     if (! STRPREFIX(name, "sd")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'dev' of entry "
-                  "'devices/disk/target' to start with 'sd'");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting domain XML attribute 'dev' of entry "
+                    "'devices/disk/target' to start with 'sd'"));
         return -1;
     }
 
@@ -448,14 +443,14 @@ esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
 
     if (idx < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not parse valid disk index from '%s'", name);
+                  _("Could not parse valid disk index from '%s'"), name);
         return -1;
     }
 
     /* Each of the 4 SCSI controllers offers 15 IDs for devices */
     if (idx >= (4 * 15)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "SCSI disk index (parsed from '%s') is too large", name);
+                  _("SCSI disk index (parsed from '%s') is too large"), name);
         return -1;
     }
 
@@ -478,9 +473,9 @@ esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id)
     int idx;
 
     if (! STRPREFIX(name, "hd")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'dev' of entry "
-                  "'devices/disk/target' to start with 'hd'");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting domain XML attribute 'dev' of entry "
+                    "'devices/disk/target' to start with 'hd'"));
         return -1;
     }
 
@@ -488,14 +483,14 @@ esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id)
 
     if (idx < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not parse valid disk index from '%s'", name);
+                  _("Could not parse valid disk index from '%s'"), name);
         return -1;
     }
 
     /* Each of the 2 IDE controllers offers 2 IDs for devices */
     if (idx >= (2 * 2)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "IDE disk index (parsed from '%s') is too large", name);
+                  _("IDE disk index (parsed from '%s') is too large"), name);
         return -1;
     }
 
@@ -513,9 +508,9 @@ esxVMX_FloppyDiskNameToController(const char *name, int *controller)
     int idx;
 
     if (! STRPREFIX(name, "fd")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'dev' of entry "
-                  "'devices/disk/target' to start with 'fd'");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting domain XML attribute 'dev' of entry "
+                    "'devices/disk/target' to start with 'fd'"));
         return -1;
     }
 
@@ -523,13 +518,13 @@ esxVMX_FloppyDiskNameToController(const char *name, int *controller)
 
     if (idx < 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Could not parse valid disk index from '%s'", name);
+                  _("Could not parse valid disk index from '%s'"), name);
         return -1;
     }
 
     if (idx >= 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Floppy disk index (parsed from '%s') is too large", name);
+                  _("Floppy disk index (parsed from '%s') is too large"), name);
         return -1;
     }
 
@@ -559,8 +554,8 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
             STRCASENEQ(disk->driverName, "buslogic") &&
             STRCASENEQ(disk->driverName, "lsilogic")) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting domain XML entry 'devices/disk/target' to be "
-                      "'buslogic' or 'lsilogic' but found '%s'",
+                      _("Expecting domain XML entry 'devices/disk/target' to "
+                        "be 'buslogic' or 'lsilogic' but found '%s'"),
                       disk->driverName);
             return -1;
         }
@@ -576,8 +571,8 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
             virtualDev[controller] = disk->driverName;
         } else if (STRCASENEQ(virtualDev[controller], disk->driverName)) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Inconsistent driver usage ('%s' is not '%s') on SCSI "
-                      "controller index %d", virtualDev[controller],
+                      _("Inconsistent driver usage ('%s' is not '%s') on SCSI "
+                        "controller index %d"), virtualDev[controller],
                       disk->driverName, controller);
             return -1;
         }
@@ -602,8 +597,8 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
     if (sscanf(absolutePath, "/vmfs/volumes/%a[^/]/%a[^\n]",
                &preliminaryDatastoreName, &directoryAndFileName) != 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Absolute path '%s' doesn't have expected format "
-                  "'/vmfs/volumes/<datastore>/<path>'", absolutePath);
+                  _("Absolute path '%s' doesn't have expected format "
+                    "'/vmfs/volumes/<datastore>/<path>'"), absolutePath);
         goto failure;
     }
 
@@ -697,8 +692,8 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
     } else if (strchr(fileName, '/') != NULL) {
         /* Found relative path, this is not supported */
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Found relative path '%s' in VMX file, this is not "
-                  "supported", fileName);
+                  _("Found relative path '%s' in VMX file, this is not "
+                    "supported"), fileName);
         return NULL;
     } else {
         /* Found single file name referencing a file inside a datastore */
@@ -758,8 +753,8 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     if (config_version != 8) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry 'config.version' to be 8 but found "
-                  "%lld", config_version);
+                  _("Expecting VMX entry 'config.version' to be 8 but found "
+                    "%lld"), config_version);
         goto failure;
     }
 
@@ -773,8 +768,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
       case esxVI_APIVersion_25:
         if (virtualHW_version != 4) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting VMX entry 'virtualHW.version' to be 4 for "
-                      "VI API version 2.5 but found %lld", virtualHW_version);
+                      _("Expecting VMX entry 'virtualHW.version' to be 4 for "
+                        "VI API version 2.5 but found %lld"),
+                      virtualHW_version);
             goto failure;
         }
 
@@ -783,8 +779,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
       case esxVI_APIVersion_40:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting VMX entry 'virtualHW.version' to be 4 or 7 for "
-                      "VI API version 4.0 but found %lld", virtualHW_version);
+                      _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
+                        "for VI API version 4.0 but found %lld"),
+                      virtualHW_version);
             goto failure;
         }
 
@@ -793,16 +790,16 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
       case esxVI_APIVersion_Unknown:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
-                      "but found %lld", virtualHW_version);
+                      _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
+                        "but found %lld"), virtualHW_version);
             goto failure;
         }
 
         break;
 
       default:
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VI API version 2.5 or 4.0");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting VI API version 2.5 or 4.0"));
         goto failure;
     }
 
@@ -824,8 +821,8 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     if (memsize <= 0 || memsize % 4 != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry 'memsize' to be an unsigned "
-                  "integer (multiple of 4) but found %lld", memsize);
+                  _("Expecting VMX entry 'memsize' to be an unsigned "
+                    "integer (multiple of 4) but found %lld"), memsize);
         goto failure;
     }
 
@@ -853,8 +850,8 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     if (numvcpus <= 0 || (numvcpus % 2 != 0 && numvcpus != 1)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry 'numvcpus' to be an unsigned "
-                  "integer (1 or a multiple of 2) but found %lld", numvcpus);
+                  _("Expecting VMX entry 'numvcpus' to be an unsigned "
+                    "integer (1 or a multiple of 2) but found %lld"), numvcpus);
         goto failure;
     }
 
@@ -885,16 +882,16 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
             if (number < 0) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Expecting VMX entry 'sched.cpu.affinity' to be "
-                          "a comma separated list of unsigned integers but "
-                          "found '%s'", sched_cpu_affinity);
+                          _("Expecting VMX entry 'sched.cpu.affinity' to be "
+                            "a comma separated list of unsigned integers but "
+                            "found '%s'"), sched_cpu_affinity);
                 goto failure;
             }
 
             if (number >= VIR_DOMAIN_CPUMASK_LEN) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "VMX entry 'sched.cpu.affinity' contains a %d, this "
-                          "value is too large", number);
+                          _("VMX entry 'sched.cpu.affinity' contains a %d, "
+                            "this value is too large"), number);
                 goto failure;
             }
 
@@ -913,9 +910,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
                 break;
             } else {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Expecting VMX entry 'sched.cpu.affinity' to be "
-                          "a comma separated list of unsigned integers but "
-                          "found '%s'", sched_cpu_affinity);
+                          _("Expecting VMX entry 'sched.cpu.affinity' to be "
+                            "a comma separated list of unsigned integers but "
+                            "found '%s'"), sched_cpu_affinity);
                 goto failure;
             }
 
@@ -924,9 +921,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
         if (count < numvcpus) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting VMX entry 'sched.cpu.affinity' to contain "
-                      "at least as many values as 'numvcpus' (%lld) but "
-                      "found only %d value(s)", numvcpus, count);
+                      _("Expecting VMX entry 'sched.cpu.affinity' to contain "
+                        "at least as many values as 'numvcpus' (%lld) but "
+                        "found only %d value(s)"), numvcpus, count);
             goto failure;
         }
     }
@@ -1175,7 +1172,7 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     long long port = 0;
 
     if (def == NULL || *def != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1240,13 +1237,13 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
     char virtualDev_name[32];
 
     if (virtualDev == NULL || *virtualDev != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
     if (controller < 0 || controller > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "SCSI controller index %d out of [0..3] range",
+                  _("SCSI controller index %d out of [0..3] range"),
                   controller);
         return -1;
     }
@@ -1271,8 +1268,8 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
         STRCASENEQ(*virtualDev, "buslogic") &&
         STRCASENEQ(*virtualDev, "lsilogic")) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
-                  "but found '%s'", virtualDev_name, *virtualDev);
+                  _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
+                    "but found '%s'"), virtualDev_name, *virtualDev);
         goto failure;
     }
 
@@ -1352,7 +1349,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
     int writeThrough = 0;
 
     if (def == NULL || *def != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -1370,14 +1367,14 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         if (bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             if (controller < 0 || controller > 3) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "SCSI controller index %d out of [0..3] range",
+                          _("SCSI controller index %d out of [0..3] range"),
                           controller);
                 goto failure;
             }
 
             if (id < 0 || id > 15 || id == 7) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "SCSI ID %d out of [0..6,8..15] range", id);
+                          _("SCSI ID %d out of [0..6,8..15] range"), id);
                 goto failure;
             }
 
@@ -1405,14 +1402,14 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         } else if (bus == VIR_DOMAIN_DISK_BUS_IDE) {
             if (controller < 0 || controller > 1) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "IDE controller index %d out of [0..1] range",
+                          _("IDE controller index %d out of [0..1] range"),
                           controller);
                 goto failure;
             }
 
             if (id < 0 || id > 1) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "IDE ID %d out of [0..1] range", id);
+                          _("IDE ID %d out of [0..1] range"), id);
                 goto failure;
             }
 
@@ -1428,7 +1425,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             }
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Unsupported bus type '%s' for device type '%s'",
+                      _("Unsupported bus type '%s' for device type '%s'"),
                       virDomainDiskBusTypeToString(bus),
                       virDomainDiskDeviceTypeToString(device));
             goto failure;
@@ -1437,7 +1434,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         if (bus == VIR_DOMAIN_DISK_BUS_FDC) {
             if (controller < 0 || controller > 1) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Floppy controller index %d out of [0..1] range",
+                          _("Floppy controller index %d out of [0..1] range"),
                           controller);
                 goto failure;
             }
@@ -1454,14 +1451,14 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             }
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Unsupported bus type '%s' for device type '%s'",
+                      _("Unsupported bus type '%s' for device type '%s'"),
                       virDomainDiskBusTypeToString(bus),
                       virDomainDiskDeviceTypeToString(device));
             goto failure;
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Unsupported device type '%s'",
+                  _("Unsupported device type '%s'"),
                   virDomainDiskDeviceTypeToString(device));
         goto failure;
     }
@@ -1532,14 +1529,14 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
                 if (bus == VIR_DOMAIN_DISK_BUS_SCSI &&
                     STRCASENEQ(deviceType, "scsi-hardDisk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              "Expecting VMX entry '%s' to be 'scsi-hardDisk' "
-                              "but found '%s'", deviceType_name, deviceType);
+                              _("Expecting VMX entry '%s' to be 'scsi-hardDisk' "
+                                "but found '%s'"), deviceType_name, deviceType);
                     goto failure;
                 } else if (bus == VIR_DOMAIN_DISK_BUS_IDE &&
                            STRCASENEQ(deviceType, "ata-hardDisk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              "Expecting VMX entry '%s' to be 'ata-hardDisk' "
-                              "but found '%s'", deviceType_name, deviceType);
+                              _("Expecting VMX entry '%s' to be 'ata-hardDisk' "
+                                "but found '%s'"), deviceType_name, deviceType);
                     goto failure;
                 }
             }
@@ -1574,8 +1571,8 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             goto ignore;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Invalid or not yet handled value '%s' for VMX entry "
-                      "'%s'", fileName, fileName_name);
+                      _("Invalid or not yet handled value '%s' for VMX entry "
+                        "'%s'"), fileName, fileName_name);
             goto failure;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -1583,8 +1580,8 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             if (deviceType != NULL) {
                 if (STRCASENEQ(deviceType, "cdrom-image")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              "Expecting VMX entry '%s' to be 'cdrom-image' "
-                              "but found '%s'", deviceType_name, deviceType);
+                              _("Expecting VMX entry '%s' to be 'cdrom-image' "
+                                "but found '%s'"), deviceType_name, deviceType);
                     goto failure;
                 }
             }
@@ -1611,8 +1608,8 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             fileName = NULL;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Invalid or not yet handled value '%s' for VMX entry "
-                      "'%s'", fileName, fileName_name);
+                      _("Invalid or not yet handled value '%s' for VMX entry "
+                        "'%s'"), fileName, fileName_name);
             goto failure;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -1620,8 +1617,8 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             if (fileType != NULL) {
                 if (STRCASENEQ(fileType, "file")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                              "Expecting VMX entry '%s' to be 'file' but "
-                              "found '%s'", fileType_name, fileType);
+                              _("Expecting VMX entry '%s' to be 'file' but "
+                                "found '%s'"), fileType_name, fileType);
                     goto failure;
                 }
             }
@@ -1640,12 +1637,12 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
             fileName = NULL;
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Invalid or not yet handled value '%s' for VMX entry "
-                      "'%s'", fileName, fileName_name);
+                      _("Invalid or not yet handled value '%s' for VMX entry "
+                        "'%s'"), fileName, fileName_name);
             goto failure;
         }
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Unsupported device type '%s'",
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Unsupported device type '%s'"),
                   virDomainDiskDeviceTypeToString(device));
         goto failure;
     }
@@ -1704,13 +1701,13 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     char *networkName = NULL;
 
     if (def == NULL || *def != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
     if (controller < 0 || controller > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Ethernet controller index %d out of [0..3] range",
+                  _("Ethernet controller index %d out of [0..3] range"),
                   controller);
         return -1;
     }
@@ -1767,8 +1764,8 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         if (generatedAddress != NULL) {
             if (virParseMacAddr(generatedAddress, (*def)->mac) < 0) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Expecting VMX entry '%s' to be MAC address but "
-                          "found '%s'", generatedAddress_name,
+                          _("Expecting VMX entry '%s' to be MAC address but "
+                            "found '%s'"), generatedAddress_name,
                           generatedAddress);
                 goto failure;
             }
@@ -1777,15 +1774,15 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         if (address != NULL) {
             if (virParseMacAddr(address, (*def)->mac) < 0) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Expecting VMX entry '%s' to be MAC address but "
-                          "found '%s'", address_name, address);
+                          _("Expecting VMX entry '%s' to be MAC address but "
+                            "found '%s'"), address_name, address);
                 goto failure;
             }
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry '%s' to be 'generated' or 'static' or "
-                  "'vpx' but found '%s'", addressType_name, addressType);
+                  _("Expecting VMX entry '%s' to be 'generated' or 'static' or "
+                    "'vpx' but found '%s'"), addressType_name, addressType);
         goto failure;
     }
 
@@ -1800,8 +1797,8 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         STRCASENEQ(virtualDev, "vmxnet3") &&
         STRCASENEQ(virtualDev, "e1000")) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                  "'vmxnet3' or 'e1000' but found '%s'", virtualDev_name,
+                  _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
+                    "'vmxnet3' or 'e1000' but found '%s'"), virtualDev_name,
                   virtualDev);
         goto failure;
     }
@@ -1831,13 +1828,13 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     } else if (STRCASEEQ(connectionType, "hostonly")) {
         /* FIXME */
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "No yet handled value '%s' for VMX entry '%s'",
+                  _("No yet handled value '%s' for VMX entry '%s'"),
                   connectionType, connectionType_name);
         goto failure;
     } else if (STRCASEEQ(connectionType, "nat")) {
         /* FIXME */
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "No yet handled value '%s' for VMX entry '%s'",
+                  _("No yet handled value '%s' for VMX entry '%s'"),
                   connectionType, connectionType_name);
         goto failure;
     } else if (STRCASEEQ(connectionType, "custom")) {
@@ -1851,7 +1848,7 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         vnet = NULL;
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Invalid value '%s' for VMX entry '%s'", connectionType,
+                  _("Invalid value '%s' for VMX entry '%s'"), connectionType,
                   connectionType_name);
         goto failure;
     }
@@ -1899,13 +1896,13 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     char *fileName = NULL;
 
     if (def == NULL || *def != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
     if (port < 0 || port > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Serial port index %d out of [0..3] range", port);
+                  _("Serial port index %d out of [0..3] range"), port);
         return -1;
     }
 
@@ -1978,8 +1975,8 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
         fileName = NULL;
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry '%s' to be 'device', 'file' or 'pipe' "
-                  "but found '%s'", fileType_name, fileType);
+                  _("Expecting VMX entry '%s' to be 'device', 'file' or 'pipe' "
+                    "but found '%s'"), fileType_name, fileType);
         goto failure;
     }
 
@@ -2022,13 +2019,13 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     char *fileName = NULL;
 
     if (def == NULL || *def != NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
     if (port < 0 || port > 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Parallel port index %d out of [0..2] range", port);
+                  _("Parallel port index %d out of [0..2] range"), port);
         return -1;
     }
 
@@ -2091,8 +2088,8 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VMX entry '%s' to be 'device' or 'file' but "
-                  "found '%s'", fileType_name, fileType);
+                  _("Expecting VMX entry '%s' to be 'device' or 'file' but "
+                    "found '%s'"), fileType_name, fileType);
         goto failure;
     }
 
@@ -2157,8 +2154,8 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
     } else {
         /* Found relative path, this is not supported */
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Found relative path '%s' in domain XML, this is not "
-                  "supported", src);
+                  _("Found relative path '%s' in domain XML, this is not "
+                    "supported"), src);
         goto failure;
     }
 
@@ -2192,7 +2189,7 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
 
     if (def->virtType != VIR_DOMAIN_VIRT_VMWARE) { /* FIXME: maybe add VIR_DOMAIN_VIRT_ESX ? */
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting virt type to be '%s' but found '%s'",
+                  _("Expecting virt type to be '%s' but found '%s'"),
                   virDomainVirtTypeToString(VIR_DOMAIN_VIRT_VMWARE),
                   virDomainVirtTypeToString(def->virtType));
         return NULL;
@@ -2212,8 +2209,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
         break;
 
       default:
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting VI API version 2.5 or 4.0");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting VI API version 2.5 or 4.0"));
         goto failure;
     }
 
@@ -2224,8 +2221,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
         virBufferAddLit(&buffer, "guestOS = \"other-64\"\n");
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'arch' of entry 'os/type' "
-                  "to be 'i686' or 'x86_64' but found '%s'", def->os.arch);
+                  _("Expecting domain XML attribute 'arch' of entry 'os/type' "
+                    "to be 'i686' or 'x86_64' but found '%s'"), def->os.arch);
         goto failure;
     }
 
@@ -2248,8 +2245,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
     /* def:maxmem -> vmx:memsize */
     if (def->maxmem <= 0 || def->maxmem % 4096 != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML entry 'memory' to be an unsigned "
-                  "integer (multiple of 4096) but found %lld",
+                  _("Expecting domain XML entry 'memory' to be an unsigned "
+                    "integer (multiple of 4096) but found %lld"),
                   (unsigned long long)def->maxmem);
         goto failure;
     }
@@ -2262,8 +2259,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
     if (def->memory < def->maxmem) {
         if (def->memory <= 0 || def->memory % 1024 != 0) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting domain XML entry 'currentMemory' to be an "
-                      "unsigned integer (multiple of 1024) but found %lld",
+                      _("Expecting domain XML entry 'currentMemory' to be an "
+                        "unsigned integer (multiple of 1024) but found %lld"),
                       (unsigned long long)def->memory);
             goto failure;
         }
@@ -2276,8 +2273,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
     /* def:vcpus -> vmx:numvcpus */
     if (def->vcpus <= 0 || (def->vcpus % 2 != 0 && def->vcpus != 1)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML entry 'vcpu' to be an unsigned "
-                  "integer (1 or a multiple of 2) but found %d",
+                  _("Expecting domain XML entry 'vcpu' to be an unsigned "
+                    "integer (1 or a multiple of 2) but found %d"),
                   (int)def->vcpus);
         goto failure;
     }
@@ -2298,8 +2295,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
 
         if (sched_cpu_affinity_length < def->vcpus) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting domain XML attribute 'cpuset' of entry "
-                      "'vcpu' to contains at least %d CPU(s)",
+                      _("Expecting domain XML attribute 'cpuset' of entry "
+                        "'vcpu' to contains at least %d CPU(s)"),
                       (int)def->vcpus);
             goto failure;
         }
@@ -2331,7 +2328,7 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
 
           default:
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Unsupported graphics type '%s'",
+                      _("Unsupported graphics type '%s'"),
                       virDomainGraphicsTypeToString(def->graphics[i]->type));
             goto failure;
         }
@@ -2381,7 +2378,7 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
 
           default:
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Unsupported disk device type '%s'",
+                      _("Unsupported disk device type '%s'"),
                       virDomainDiskDeviceTypeToString(def->disks[i]->device));
             goto failure;
         }
@@ -2440,7 +2437,7 @@ int
 esxVMX_FormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 {
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -2490,7 +2487,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
     char *fileName = NULL;
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -2514,14 +2511,14 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Unsupported bus type '%s' for harddisk",
+                  _("Unsupported bus type '%s' for harddisk"),
                   virDomainDiskBusTypeToString(def->bus));
         return -1;
     }
 
     if (def->type != VIR_DOMAIN_DISK_TYPE_FILE) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "%s harddisk '%s' has unsupported type '%s', expecting '%s'",
+                  _("%s harddisk '%s' has unsupported type '%s', expecting '%s'"),
                   busName, def->dst, virDomainDiskTypeToString(def->type),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_FILE));
         return -1;
@@ -2535,8 +2532,8 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
     if (def->src != NULL) {
         if (! virFileHasSuffix(def->src, ".vmdk")) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Image file for %s harddisk '%s' has unsupported suffix, "
-                      "expecting '.vmdk'", busName, def->dst);
+                      _("Image file for %s harddisk '%s' has unsupported suffix, "
+                        "expecting '.vmdk'"), busName, def->dst);
             return -1;
         }
 
@@ -2558,7 +2555,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
                               entryPrefix, controller, id);
         } else if (def->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "%s harddisk '%s' has unsupported cache mode '%s'",
+                      _("%s harddisk '%s' has unsupported cache mode '%s'"),
                       busName, def->dst,
                       virDomainDiskCacheTypeToString(def->cachemode));
             return -1;
@@ -2580,7 +2577,7 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
     char *fileName = NULL;
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -2601,7 +2598,8 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
             return -1;
         }
     } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Unsupported bus type '%s' for cdrom",
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Unsupported bus type '%s' for cdrom"),
                   virDomainDiskBusTypeToString(def->bus));
         return -1;
     }
@@ -2616,8 +2614,8 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
         if (def->src != NULL) {
             if (! virFileHasSuffix(def->src, ".iso")) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Image file for %s cdrom '%s' has unsupported "
-                          "suffix, expecting '.iso'", busName, def->dst);
+                          _("Image file for %s cdrom '%s' has unsupported "
+                            "suffix, expecting '.iso'"), busName, def->dst);
                 return -1;
             }
 
@@ -2642,8 +2640,8 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "%s cdrom '%s' has unsupported type '%s', expecting '%s' "
-                  "or '%s'", busName, def->dst,
+                  _("%s cdrom '%s' has unsupported type '%s', expecting '%s' "
+                    "or '%s'"), busName, def->dst,
                   virDomainDiskTypeToString(def->type),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_FILE),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_BLOCK));
@@ -2663,7 +2661,7 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
     char *fileName = NULL;
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -2680,8 +2678,8 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
         if (def->src != NULL) {
             if (! virFileHasSuffix(def->src, ".flp")) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          "Image file for floppy '%s' has unsupported suffix, "
-                          "expecting '.flp'", def->dst);
+                          _("Image file for floppy '%s' has unsupported "
+                            "suffix, expecting '.flp'"), def->dst);
                 return -1;
             }
 
@@ -2706,8 +2704,8 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Floppy '%s' has unsupported type '%s', expecting '%s' "
-                  "or '%s'", def->dst,
+                  _("Floppy '%s' has unsupported type '%s', expecting '%s' "
+                    "or '%s'"), def->dst,
                   virDomainDiskTypeToString(def->type),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_FILE),
                   virDomainDiskTypeToString(VIR_DOMAIN_DISK_TYPE_BLOCK));
@@ -2728,7 +2726,7 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
 
     if (controller < 0 || controller > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Ethernet controller index %d out of [0..3] range",
+                  _("Ethernet controller index %d out of [0..3] range"),
                   controller);
         return -1;
     }
@@ -2742,9 +2740,9 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
             STRCASENEQ(def->model, "vmxnet3") &&
             STRCASENEQ(def->model, "e1000")) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      "Expecting domain XML entry 'devices/interfase/model' "
-                      "to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' but "
-                      "found '%s'", def->model);
+                      _("Expecting domain XML entry 'devices/interfase/model' "
+                        "to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
+                        "but found '%s'"), def->model);
             return -1;
         }
 
@@ -2771,7 +2769,7 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
         break;
 
       default:
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "Unsupported net type '%s'",
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Unsupported net type '%s'"),
                   virDomainNetTypeToString(def->type));
         return -1;
     }
@@ -2821,14 +2819,15 @@ esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
 
     if (def->target.port < 0 || def->target.port > 3) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Serial port index %d out of [0..3] range", def->target.port);
+                  _("Serial port index %d out of [0..3] range"),
+                  def->target.port);
         return -1;
     }
 
     if (def->data.file.path == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'path' of entry "
-                  "'devices/serial/source' to be present");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting domain XML attribute 'path' of entry "
+                    "'devices/serial/source' to be present"));
         return -1;
     }
 
@@ -2874,7 +2873,7 @@ esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
 
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Unsupported character device type '%s'",
+                  _("Unsupported character device type '%s'"),
                   virDomainChrTypeToString(def->type));
         return -1;
     }
@@ -2897,15 +2896,15 @@ esxVMX_FormatParallel(esxVI_Context *ctx, virDomainChrDefPtr def,
 
     if (def->target.port < 0 || def->target.port > 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Parallel port index %d out of [0..2] range",
+                  _("Parallel port index %d out of [0..2] range"),
                   def->target.port);
         return -1;
     }
 
     if (def->data.file.path == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Expecting domain XML attribute 'path' of entry "
-                  "'devices/parallel/source' to be present");
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Expecting domain XML attribute 'path' of entry "
+                    "'devices/parallel/source' to be present"));
         return -1;
     }
 
@@ -2939,7 +2938,7 @@ esxVMX_FormatParallel(esxVI_Context *ctx, virDomainChrDefPtr def,
 
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  "Unsupported character device type '%s'",
+                  _("Unsupported character device type '%s'"),
                   virDomainChrTypeToString(def->type));
         return -1;
     }

@@ -27,15 +27,12 @@
 #include "memory.h"
 #include "logging.h"
 #include "uuid.h"
-#include "virterror_internal.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_VI_ERROR(code, ...)                                               \
-    virReportErrorHelper(NULL, VIR_FROM_ESX, code, __FILE__,  __FUNCTION__,   \
-                         __LINE__, __VA_ARGS__)
+
 
 #define ESX_VI__SOAP__REQUEST_HEADER                                          \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
@@ -45,6 +42,8 @@
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "              \
       "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"                       \
     "<soapenv:Body>"
+
+
 
 #define ESX_VI__SOAP__REQUEST_FOOTER                                          \
     "</soapenv:Body>"                                                         \
@@ -109,7 +108,7 @@
 
 #define ESX_VI__METHOD__CHECK_SERVICE()                                       \
     if (ctx->service == NULL) {                                               \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid call");                 \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));        \
         return -1;                                                            \
     }
 
@@ -117,7 +116,7 @@
 
 #define ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(_name)                        \
     if (_name == NULL || *_name != NULL) {                                    \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");             \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));    \
         return -1;                                                            \
     }
 
@@ -198,7 +197,7 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
     esxVI_Response *response = NULL;
 
     if (serviceContent == NULL || *serviceContent != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
@@ -276,7 +275,7 @@ ESX_VI__METHOD(SessionIsActive,
     ESX_VI__METHOD__CHECK_SERVICE()
 
     if (active == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "Invalid argument");
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 },

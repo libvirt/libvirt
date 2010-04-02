@@ -18,6 +18,12 @@ src/cpu/cpu_generic.c
 src/cpu/cpu_map.c
 src/cpu/cpu_x86.c
 src/datatypes.c
+src/esx/esx_driver.c
+src/esx/esx_util.c
+src/esx/esx_vi.c
+src/esx/esx_vi_methods.c
+src/esx/esx_vi_types.c
+src/esx/esx_vmx.c
 src/interface/netcf_driver.c
 src/libvirt.c
 src/lxc/lxc_container.c
