@@ -6151,21 +6151,24 @@ static virDomainObjPtr virDomainLoadConfig(virCapsPtr caps,
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
+    if (!(def = virDomainDefParseFile(caps, configFile,
+                                      VIR_DOMAIN_XML_INACTIVE)))
+        goto error;
+
+    /* if the domain is already in our hashtable, we don't need to do
+     * anything further
+     */
+    if ((dom = virDomainFindByUUID(doms, def->uuid))) {
+        VIR_FREE(configFile);
+        virDomainDefFree(def);
+        return dom;
+    }
+
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
         goto error;
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
-
-    if (!(def = virDomainDefParseFile(caps, configFile,
-                                      VIR_DOMAIN_XML_INACTIVE)))
-        goto error;
-
-    if ((dom = virDomainFindByName(doms, def->name))) {
-        virDomainObjUnlock(dom);
-        dom = NULL;
-        newVM = 0;
-    }
 
     if (!(dom = virDomainAssignDef(caps, doms, def, false)))
         goto error;
