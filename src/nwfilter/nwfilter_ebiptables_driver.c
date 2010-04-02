@@ -2103,9 +2103,9 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
                               void *_inst)
 {
     ebiptablesRuleInstPtr inst = (ebiptablesRuleInstPtr)_inst;
-    printf("Command Template: %s\nNeeded protocol: %s\n\n",
-           inst->commandTemplate,
-           virNWFilterChainSuffixTypeToString(inst->neededProtocolChain));
+    VIR_INFO("Command Template: '%s', Needed protocol: '%s'",
+             inst->commandTemplate,
+             virNWFilterChainSuffixTypeToString(inst->neededProtocolChain));
     return 0;
 }
 

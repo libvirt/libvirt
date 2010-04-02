@@ -836,7 +836,7 @@ static int halDeviceMonitorReload(void)
     dbus_error_init(&err);
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        fprintf(stderr, "%s: libhal_get_all_devices failed\n", __FUNCTION__);
+        VIR_ERROR0("libhal_get_all_devices failed");
         return -1;
     }
     for (i = 0; i < num_devs; i++) {
