@@ -1125,6 +1125,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
     enum virNWFilterEntryItemFlags *flags ,match_flag = 0, flags_set = 0;
     nwItemDesc *item;
     int int_val;
+    unsigned int uint_val;
     void *data_ptr, *storage_ptr;
     valueValidator validator;
     char *match = virXMLPropString(node, "match");
@@ -1174,12 +1175,12 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_UINT8:
                             storage_ptr = &item->u.u8;
-                            if (virStrToLong_i(prop, NULL, 10, &int_val) >= 0) {
-                                if (int_val >= 0 && int_val <= 0xff) {
+                            if (virStrToLong_ui(prop, NULL, 10, &uint_val) >= 0) {
+                                if (uint_val <= 0xff) {
                                     if (!validator)
-                                        *(uint8_t *)storage_ptr = int_val;
+                                        *(uint8_t *)storage_ptr = uint_val;
                                     found = 1;
-                                    data_ptr = &int_val;
+                                    data_ptr = &uint_val;
                                 } else
                                     rc = -1;
                             } else
@@ -1188,12 +1189,12 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_UINT16:
                             storage_ptr = &item->u.u16;
-                            if (virStrToLong_i(prop, NULL, 10, &int_val) >= 0) {
-                                if (int_val >= 0 && int_val <= 0xffff) {
+                            if (virStrToLong_ui(prop, NULL, 10, &uint_val) >= 0) {
+                                if (uint_val <= 0xffff) {
                                     if (!validator)
-                                        *(uint16_t *)storage_ptr = int_val;
+                                        *(uint16_t *)storage_ptr = uint_val;
                                     found = 1;
-                                    data_ptr = &int_val;
+                                    data_ptr = &uint_val;
                                 } else
                                     rc = -1;
                             } else
@@ -1211,13 +1212,13 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_IPMASK:
                             storage_ptr = &item->u.u8;
-                            if (virStrToLong_i(prop, NULL, 10, &int_val) == 0) {
-                                if (int_val >= 0 && int_val <= 32) {
+                            if (virStrToLong_ui(prop, NULL, 10, &uint_val) == 0) {
+                                if (uint_val <= 32) {
                                     if (!validator)
                                         *(uint8_t *)storage_ptr =
-                                               (uint8_t)int_val;
+                                               (uint8_t)uint_val;
                                     found = 1;
-                                    data_ptr = &int_val;
+                                    data_ptr = &uint_val;
                                 } else
                                     rc = -1;
                             } else {
@@ -1265,13 +1266,13 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
                         case DATATYPE_IPV6MASK:
                             storage_ptr = &item->u.u8;
-                            if (virStrToLong_i(prop, NULL, 10, &int_val) == 0) {
-                                if (int_val >= 0 && int_val <= 128) {
+                            if (virStrToLong_ui(prop, NULL, 10, &uint_val) == 0) {
+                                if (uint_val <= 128) {
                                     if (!validator)
                                         *(uint8_t *)storage_ptr =
-                                               (uint8_t)int_val;
+                                               (uint8_t)uint_val;
                                     found = 1;
-                                    data_ptr = &int_val;
+                                    data_ptr = &uint_val;
                                 } else
                                     rc = -1;
                             } else {
