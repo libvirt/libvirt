@@ -634,7 +634,7 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 
         if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
             lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Unable to get cgroup for %s\n"), vm->def->name);
+                     _("Unable to get cgroup for %s"), vm->def->name);
             goto cleanup;
         }
 

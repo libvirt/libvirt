@@ -1288,7 +1288,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     }
     if (len != 1 || buf[0] != '\1') {
         error (conn, VIR_ERR_RPC,
-               _("server verification (of our certificate or IP address) failed\n"));
+               _("server verification (of our certificate or IP address) failed"));
         return NULL;
     }
 

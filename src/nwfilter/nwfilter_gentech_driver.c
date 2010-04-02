@@ -310,7 +310,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
             (*insts)[(*nEntries)++] = inst;
 
         } else if (inc) {
-            VIR_DEBUG("Instantiating filter %s\n", inc->filterref);
+            VIR_DEBUG("Instantiating filter %s", inc->filterref);
             obj = virNWFilterPoolObjFindByName(&driver->pools,
                                                inc->filterref);
             if (obj) {
@@ -514,7 +514,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
         return 1;
     }
 
-    VIR_DEBUG("filter name: %s\n", net->filter);
+    VIR_DEBUG("filter name: %s", net->filter);
 
     obj = virNWFilterPoolObjFindByName(&driver->pools, net->filter);
     if (!obj) {

@@ -2308,7 +2308,7 @@ static void *qemudRunLoop(void *opaque) {
         virMutexUnlock(&server->lock);
         if (qemudOneLoop() < 0) {
             virMutexLock(&server->lock);
-            DEBUG0("Loop iteration error, exiting\n");
+            DEBUG0("Loop iteration error, exiting");
             break;
         }
         virMutexLock(&server->lock);
@@ -2482,7 +2482,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
         for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
                 VIR_ERROR(_("remoteReadConfigFile: %s: %s:"
-                            " must be a string or list of strings\n"),
+                            " must be a string or list of strings"),
                           filename, key);
                 VIR_FREE(list);
                 return -1;
@@ -2505,7 +2505,7 @@ remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
 
     default:
         VIR_ERROR(_("remoteReadConfigFile: %s: %s:"
-                    " must be a string or list of strings\n"),
+                    " must be a string or list of strings"),
                   filename, key);
         return -1;
     }
@@ -2521,7 +2521,7 @@ checkType (virConfValuePtr p, const char *filename,
 {
     if (p->type != required_type) {
         VIR_ERROR(_("remoteReadConfigFile: %s: %s: invalid type:"
-                    " got %s; expected %s\n"), filename, key,
+                    " got %s; expected %s"), filename, key,
                   virConfTypeName (p->type),
                   virConfTypeName (required_type));
         return -1;

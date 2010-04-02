@@ -140,7 +140,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
 #define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
         qemuReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                         "remoteReadConfigFile: %s: %s: expected type " #typ "\n", \
+                         "remoteReadConfigFile: %s: %s: expected type " #typ, \
                          filename, (name));                             \
         virConfFree(conf);                                              \
         return -1;                                                      \

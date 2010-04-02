@@ -217,7 +217,7 @@ retry:
         return (-1);
     }
 
-    DEBUG("connected to unix socket %s via %d\n", path, fd);
+    DEBUG("connected to unix socket %s via %d", path, fd);
 
     return (fd);
 }
@@ -395,14 +395,14 @@ retry:
         }
         if (ret != sizeof(virProxyPacket)) {
             virProxyError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("Communication error with proxy: got %d bytes of %d\n"),
+                          _("Communication error with proxy: got %d bytes of %d"),
                           ret, (int) sizeof(virProxyPacket));
             goto error;
         }
         res = request;
         if (res->len != sizeof(virProxyPacket)) {
             virProxyError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("Communication error with proxy: expected %d bytes got %d\n"),
+                          _("Communication error with proxy: expected %d bytes got %d"),
                           (int) sizeof(virProxyPacket), res->len);
             goto error;
         }
@@ -418,7 +418,7 @@ retry:
         }
         if (ret != sizeof(virProxyPacket)) {
             virProxyError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("Communication error with proxy: got %d bytes of %d\n"),
+                          _("Communication error with proxy: got %d bytes of %d"),
                           ret, (int) sizeof(virProxyPacket));
             goto error;
         }
@@ -426,7 +426,7 @@ retry:
         if ((res->len < sizeof(virProxyPacket)) ||
             (res->len > sizeof(virProxyFullPacket))) {
             virProxyError(conn, VIR_ERR_INTERNAL_ERROR,
-                          _("Communication error with proxy: got %d bytes packet\n"),
+                          _("Communication error with proxy: got %d bytes packet"),
                           res->len);
             goto error;
         }
@@ -436,7 +436,7 @@ retry:
                                             res->len - ret);
             if (ret != (int) (res->len - sizeof(virProxyPacket))) {
                 virProxyError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("Communication error with proxy: got %d bytes of %d\n"),
+                              _("Communication error with proxy: got %d bytes of %d"),
                               ret, (int) sizeof(virProxyPacket));
                 goto error;
             }
@@ -448,7 +448,7 @@ retry:
     if ((res->version != PROXY_PROTO_VERSION) ||
         (res->len < sizeof(virProxyPacket))) {
         virProxyError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
-                      _("Communication error with proxy: malformed packet\n"));
+                      _("Communication error with proxy: malformed packet"));
         goto error;
     }
     if (res->serial != serial) {

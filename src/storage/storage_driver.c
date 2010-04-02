@@ -1557,7 +1557,7 @@ storageVolumeZeroSparseFile(virStorageVolDefPtr vol,
     if (ret == -1) {
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
-                               "path '%s' to %ju bytes\n"),
+                               "path '%s' to %ju bytes"),
                              vol->target.path, (intmax_t)size);
     }
 

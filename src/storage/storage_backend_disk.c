@@ -455,7 +455,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
     unsigned long long cylinderSize = dev->geometry.heads *
                                       dev->geometry.sectors * SECTOR_SIZE;
 
-    DEBUG("find free area: allocation %llu,  cyl size %llu\n", allocation, cylinderSize);
+    DEBUG("find free area: allocation %llu, cyl size %llu", allocation, cylinderSize);
     int partType = virStorageBackendDiskPartTypeToCreate(pool);
 
     /* how many extra bytes we have since we allocate
@@ -508,7 +508,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    DEBUG("aligned alloc %llu\n", alignedAllocation);
+    DEBUG("aligned alloc %llu", alignedAllocation);
     *start = dev->freeExtents[smallestExtent].start;
 
     if (partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
@@ -524,7 +524,7 @@ virStorageBackendDiskPartBoundries(virStoragePoolObjPtr pool,
 
     /* counting in byte, we want the last byte of the current sector */
     *end -= 1;
-    DEBUG("final aligned start %llu, end %llu\n", *start, *end);
+    DEBUG("final aligned start %llu, end %llu", *start, *end);
     return 0;
 }
 

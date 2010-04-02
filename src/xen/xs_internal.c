@@ -342,7 +342,7 @@ xenStoreOpen(virConnectPtr conn,
                                            xenStoreWatchEvent,
                                            conn,
                                            NULL)) < 0)
-        DEBUG0("Failed to add event handle, disabling events\n");
+        DEBUG0("Failed to add event handle, disabling events");
 
 #endif //PROXY
     return 0;

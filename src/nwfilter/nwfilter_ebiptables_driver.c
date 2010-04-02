@@ -2116,7 +2116,7 @@ ebiptablesExecCLI(virBufferPtr buf,
 
     *status >>= 8;
 
-    VIR_DEBUG("rc = %d, status = %d\n",rc, *status);
+    VIR_DEBUG("rc = %d, status = %d",rc, *status);
 
     unlink(filename);
 

@@ -302,7 +302,7 @@ int get_physical_function_linux(const char *sysfs_path,
     char *device_link = NULL;
 
     VIR_DEBUG("Attempting to get SR IOV physical function for device "
-              "with sysfs path '%s'\n", sysfs_path);
+              "with sysfs path '%s'", sysfs_path);
 
     if (virBuildPath(&device_link, sysfs_path, "physfn") == -1) {
         virReportOOMError();
@@ -327,7 +327,7 @@ int get_virtual_functions_linux(const char *sysfs_path,
     char *device_link = NULL;
 
     VIR_DEBUG("Attempting to get SR IOV virtual functions for device"
-              "with sysfs path '%s'\n", sysfs_path);
+              "with sysfs path '%s'", sysfs_path);
 
     dir = opendir(sysfs_path);
     if (dir == NULL) {
