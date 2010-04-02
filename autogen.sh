@@ -75,7 +75,7 @@ bootstrap_hash()
 # Ensure that whenever we pull in a gnulib update or otherwise change to a
 # different version (i.e., when switching branches), we also rerun ./bootstrap.
 curr_status=.git-module-status
-t=$(bootstrap_hash)
+t=$(bootstrap_hash; git diff .gnulib)
 if test "$t" = "$(cat $curr_status 2>/dev/null)"; then
     : # good, it's up to date, all we need is autoreconf
     autoreconf -if

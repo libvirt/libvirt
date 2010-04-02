@@ -294,7 +294,8 @@ ifeq (0,$(MAKELEVEL))
   _submodule_hash = sed 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
       actual=$$(git submodule status | $(_submodule_hash);		\
-		git hash-object bootstrap.conf);			\
+		git hash-object bootstrap.conf;				\
+		git diff .gnulib);					\
       stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
       test "$$stamp" = "$$actual"; echo $$?)
   ifeq (1,$(_update_required))
@@ -303,9 +304,12 @@ Makefile: _autogen
   endif
 endif
 
+# It is necessary to call autogen any time gnulib changes.  Autogen
+# reruns configure, then we regenerate all Makefiles at once.
 .PHONY: _autogen
 _autogen:
 	$(srcdir)/autogen.sh
+	./config.status
 
 # Exempt @...@ uses of these symbols.
 _makefile_at_at_check_exceptions = ' && !/(SCHEMA|SYSCONF)DIR/'
