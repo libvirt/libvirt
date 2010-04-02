@@ -1,0 +1,12 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <esp srcmacaddr='01:02:03:04:05:06' dstipaddr='10.1.2.3' dstipmask='32' dscp='2'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <esp srcmacaddr='01:02:03:04:05:06' srcipaddr='10.1.2.3' srcipmask='22' dscp='33'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <esp srcmacaddr='01:02:03:04:05:06' srcipaddr='10.1.2.3' srcipmask='22' dscp='33'/>
+  </rule>
+</filter>

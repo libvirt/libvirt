@@ -1,0 +1,15 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <ip srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:ff' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff' srcipaddr='10.1.2.3' srcipmask='32' dstipaddr='10.1.2.3' dstipmask='32' protocol='udp' srcportstart='20' srcportend='22' dstportstart='100' dstportend='101'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <ip srcipaddr='10.1.2.3' srcipmask='17' dstipaddr='10.1.2.3' dstipmask='24' protocol='udp' dscp='63'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <ip srcipaddr='10.1.2.3' srcipmask='31' dstipaddr='10.1.2.3' dstipmask='25' protocol='255'/>
+  </rule>
+  <rule action='accept' direction='inout' priority='500'>
+    <ip srcipaddr='10.1.2.3' dstipaddr='10.1.2.3' dstipmask='31'/>
+  </rule>
+</filter>

@@ -1,0 +1,4 @@
+<filter name='testcase' chain='root'>
+  <uuid>83011800-f663-96d6-8841-fd836b4318c6</uuid>
+  <filterref filter='clean-traffic'/>
+</filter>

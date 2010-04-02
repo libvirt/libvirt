@@ -1,0 +1,12 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <udp-ipv6 srcmacaddr='01:02:03:04:05:06' dstipaddr='a:b:c::d:e:f' dstipmask='128' dscp='2'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <udp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipmask='128' dscp='33' srcportstart='20' srcportend='21' dstportstart='100' dstportend='1111'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <udp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='::10.1.2.3' dscp='63' srcportstart='255' srcportend='256' dstportstart='65535'/>
+  </rule>
+</filter>

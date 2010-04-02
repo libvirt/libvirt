@@ -1,0 +1,19 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <esp-ipv6 srcmacaddr='1:2:3:4:5:6'
+               dstipaddr='a:b:c::d:e:f' dstipmask='128'
+               srcipaddr='f:e:d::c:b:a' srcipmask='127'
+               dscp='2'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <esp-ipv6 srcmacaddr='1:2:3:4:5:6'
+               srcipaddr='a:b:c::' srcipmask='128'
+               dscp='33'/>
+  </rule>
+  <rule action='accept' direction='in'>
+     <esp-ipv6 srcmacaddr='1:2:3:4:5:6'
+               srcipaddr='::10.1.2.3' srcipmask='129'
+               dscp='33'/>
+  </rule>
+</filter>

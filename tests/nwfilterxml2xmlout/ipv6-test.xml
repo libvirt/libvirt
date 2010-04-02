@@ -1,0 +1,15 @@
+<filter name='testcase' chain='root'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out' priority='500'>
+    <ipv6 srcmacaddr='01:02:03:04:05:06' srcmacmask='ff:ff:ff:ff:ff:fe' dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:80' srcipaddr='::10.1.2.3' srcipmask='22' dstipaddr='::10.1.2.3' dstipmask='113' protocol='udp' srcportstart='20' srcportend='22' dstportstart='100' dstportend='101'/>
+  </rule>
+  <rule action='accept' direction='inout' priority='500'>
+    <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='tcp' srcportstart='20' srcportend='22' dstportstart='100' dstportend='101'/>
+  </rule>
+  <rule action='accept' direction='inout' priority='500'>
+    <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='tcp' srcportstart='255' srcportend='256' dstportstart='65535'/>
+  </rule>
+  <rule action='accept' direction='inout' priority='500'>
+    <ipv6 srcipaddr='1::2' srcipmask='128' dstipaddr='a:b:c::' dstipmask='65' protocol='18'/>
+  </rule>
+</filter>
