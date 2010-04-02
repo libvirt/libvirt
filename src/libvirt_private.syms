@@ -206,6 +206,16 @@ virDomainTimerTickpolicyTypeToString;
 virDomainTimerTickpolicyTypeFromString;
 virDomainTimerModeTypeToString;
 virDomainTimerModeTypeFromString;
+virDomainSnapshotObjListGetNames;
+virDomainSnapshotObjListNum;
+virDomainSnapshotFindByName;
+virDomainSnapshotObjListAdd;
+virDomainSnapshotObjListRemove;
+virDomainSnapshotHasChildren;
+virDomainSnapshotObjUnref;
+virDomainSnapshotDefParseString;
+virDomainSnapshotDefFormat;
+virDomainSnapshotAssignDef;
 
 
 # domain_event.h

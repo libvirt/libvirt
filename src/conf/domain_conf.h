@@ -741,6 +741,58 @@ struct _virDomainClockDef {
 
 # define VIR_DOMAIN_CPUMASK_LEN 1024
 
+
+/* Snapshot state */
+typedef struct _virDomainSnapshotDef virDomainSnapshotDef;
+typedef virDomainSnapshotDef *virDomainSnapshotDefPtr;
+struct _virDomainSnapshotDef {
+    char *name;
+    char *description;
+    char *parent;
+    time_t creationTime;
+    int state;
+
+    long active;
+};
+
+typedef struct _virDomainSnapshotObj virDomainSnapshotObj;
+typedef virDomainSnapshotObj *virDomainSnapshotObjPtr;
+struct _virDomainSnapshotObj {
+    int refs;
+
+    virDomainSnapshotDefPtr def;
+};
+
+typedef struct _virDomainSnapshotObjList virDomainSnapshotObjList;
+typedef virDomainSnapshotObjList *virDomainSnapshotObjListPtr;
+struct _virDomainSnapshotObjList {
+    /* name string -> virDomainSnapshotObj  mapping
+     * for O(1), lockless lookup-by-name */
+    virHashTable *objs;
+};
+
+virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
+                                                        int newSnapshot);
+void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
+char *virDomainSnapshotDefFormat(char *domain_uuid,
+                                 virDomainSnapshotDefPtr def,
+                                 int internal);
+virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
+                                                   const virDomainSnapshotDefPtr def);
+
+int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
+void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr objs);
+int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
+                                     char **const names, int maxnames);
+int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots);
+virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+                                                    const char *name);
+void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
+                                    virDomainSnapshotObjPtr snapshot);
+int virDomainSnapshotObjUnref(virDomainSnapshotObjPtr snapshot);
+int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
+                                virDomainSnapshotObjListPtr snapshots);
+
 /* Guest VM main configuration */
 typedef struct _virDomainDef virDomainDef;
 typedef virDomainDef *virDomainDefPtr;
@@ -827,6 +879,9 @@ struct _virDomainObj {
 
     virDomainDefPtr def; /* The current definition */
     virDomainDefPtr newDef; /* New definition to activate at shutdown */
+
+    virDomainSnapshotObjList snapshots;
+    virDomainSnapshotObjPtr current_snapshot;
 
     void *privateData;
     void (*privateDataFreeFunc)(void *);

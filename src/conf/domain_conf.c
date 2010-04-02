@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <sys/time.h>
 
 #include "virterror_internal.h"
 #include "datatypes.h"
@@ -43,6 +44,7 @@
 #include "network.h"
 #include "macvtap.h"
 #include "nwfilter_conf.h"
+#include "ignore-value.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -744,6 +746,8 @@ static void virDomainObjFree(virDomainObjPtr dom)
 
     virMutexDestroy(&dom->lock);
 
+    virDomainSnapshotObjListDeinit(&dom->snapshots);
+
     VIR_FREE(dom);
 }
 
@@ -795,6 +799,8 @@ static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     virDomainObjLock(domain);
     domain->state = VIR_DOMAIN_SHUTOFF;
     domain->refs = 1;
+
+    virDomainSnapshotObjListInit(&domain->snapshots);
 
     VIR_DEBUG("obj=%p", domain);
     return domain;
@@ -6557,5 +6563,364 @@ cleanup:
         VIR_FREE(data.names[i]);
     return -1;
 }
+
+/* Snapshot Def functions */
+void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->name);
+    VIR_FREE(def->description);
+    VIR_FREE(def->parent);
+    VIR_FREE(def);
+}
+
+virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
+                                                        int newSnapshot)
+{
+    xmlXPathContextPtr ctxt = NULL;
+    xmlDocPtr xml = NULL;
+    xmlNodePtr root;
+    virDomainSnapshotDefPtr def = NULL;
+    virDomainSnapshotDefPtr ret = NULL;
+    char *creation = NULL, *state = NULL;
+    struct timeval tv;
+
+    xml = virXMLParse(NULL, xmlStr, "domainsnapshot.xml");
+    if (!xml) {
+        virDomainReportError(VIR_ERR_XML_ERROR,
+                             "%s",_("failed to parse snapshot xml document"));
+        return NULL;
+    }
+
+    if ((root = xmlDocGetRootElement(xml)) == NULL) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("missing root element"));
+        goto cleanup;
+    }
+
+    if (!xmlStrEqual(root->name, BAD_CAST "domainsnapshot")) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("incorrect root element"));
+        goto cleanup;
+    }
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ctxt->node = root;
+
+    gettimeofday(&tv, NULL);
+
+    def->name = virXPathString("string(./name)", ctxt);
+    if (def->name == NULL)
+        ignore_value(virAsprintf(&def->name, "%ld", tv.tv_sec));
+
+    if (def->name == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    def->description = virXPathString("string(./description)", ctxt);
+
+    if (!newSnapshot) {
+        if (virXPathLong("string(./creationTime)", ctxt,
+                         &def->creationTime) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("missing creationTime from existing snapshot"));
+            goto cleanup;
+        }
+
+        def->parent = virXPathString("string(./parent/name)", ctxt);
+
+        state = virXPathString("string(./state)", ctxt);
+        if (state == NULL) {
+            /* there was no state in an existing snapshot; this
+             * should never happen
+             */
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("missing state from existing snapshot"));
+            goto cleanup;
+        }
+        def->state = virDomainStateTypeFromString(state);
+        if (def->state < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("Invalid state '%s' in domain snapshot XML"),
+                                 state);
+            goto cleanup;
+        }
+
+        if (virXPathLong("string(./active)", ctxt, &def->active) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                 _("Could not find 'active' element"));
+            goto cleanup;
+        }
+    }
+    else
+        def->creationTime = tv.tv_sec;
+
+    ret = def;
+
+cleanup:
+    VIR_FREE(creation);
+    VIR_FREE(state);
+    xmlXPathFreeContext(ctxt);
+    if (ret == NULL)
+        virDomainSnapshotDefFree(def);
+    xmlFreeDoc(xml);
+
+    return ret;
+}
+
+char *virDomainSnapshotDefFormat(char *domain_uuid,
+                                 virDomainSnapshotDefPtr def,
+                                 int internal)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "<domainsnapshot>\n");
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", def->name);
+    if (def->description)
+        virBufferVSprintf(&buf, "  <description>%s</description>\n",
+                          def->description);
+    virBufferVSprintf(&buf, "  <state>%s</state>\n",
+                      virDomainStateTypeToString(def->state));
+    if (def->parent) {
+        virBufferAddLit(&buf, "  <parent>\n");
+        virBufferVSprintf(&buf, "    <name>%s</name>\n", def->parent);
+        virBufferAddLit(&buf, "  </parent>\n");
+    }
+    virBufferVSprintf(&buf, "  <creationTime>%ld</creationTime>\n",
+                      def->creationTime);
+    virBufferAddLit(&buf, "  <domain>\n");
+    virBufferVSprintf(&buf, "    <uuid>%s</uuid>\n", domain_uuid);
+    virBufferAddLit(&buf, "  </domain>\n");
+    if (internal)
+        virBufferVSprintf(&buf, "  <active>%ld</active>\n", def->active);
+    virBufferAddLit(&buf, "</domainsnapshot>\n");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
+/* Snapshot Obj functions */
+static virDomainSnapshotObjPtr virDomainSnapshotObjNew(void)
+{
+    virDomainSnapshotObjPtr snapshot;
+
+    if (VIR_ALLOC(snapshot) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    snapshot->refs = 1;
+
+    VIR_DEBUG("obj=%p", snapshot);
+
+    return snapshot;
+}
+
+static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
+{
+    if (!snapshot)
+        return;
+
+    VIR_DEBUG("obj=%p", snapshot);
+
+    virDomainSnapshotDefFree(snapshot->def);
+}
+
+int virDomainSnapshotObjUnref(virDomainSnapshotObjPtr snapshot)
+{
+    snapshot->refs--;
+    VIR_DEBUG("obj=%p refs=%d", snapshot, snapshot->refs);
+    if (snapshot->refs == 0) {
+        virDomainSnapshotObjFree(snapshot);
+        return 0;
+    }
+    return snapshot->refs;
+}
+
+virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
+                                                   const virDomainSnapshotDefPtr def)
+{
+    virDomainSnapshotObjPtr snap;
+
+    if (virHashLookup(snapshots->objs, def->name) != NULL) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected domain snapshot %s already exists"),
+                             def->name);
+        return NULL;
+    }
+
+    if (!(snap = virDomainSnapshotObjNew()))
+        return NULL;
+    snap->def = def;
+
+    if (virHashAddEntry(snapshots->objs, snap->def->name, snap) < 0) {
+        VIR_FREE(snap);
+        virReportOOMError();
+        return NULL;
+    }
+
+    return snap;
+}
+
+/* Snapshot Obj List functions */
+int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr snapshots)
+{
+    snapshots->objs = virHashCreate(50);
+    if (!snapshots->objs) {
+        virReportOOMError();
+        return -1;
+    }
+    return 0;
+}
+
+static void virDomainSnapshotObjListDeallocator(void *payload,
+                                                const char *name ATTRIBUTE_UNUSED)
+{
+    virDomainSnapshotObjPtr obj = payload;
+
+    virDomainSnapshotObjUnref(obj);
+}
+
+void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
+{
+    if (snapshots->objs)
+        virHashFree(snapshots->objs, virDomainSnapshotObjListDeallocator);
+}
+
+struct virDomainSnapshotNameData {
+    int oom;
+    int numnames;
+    int maxnames;
+    char **const names;
+};
+
+static void virDomainSnapshotObjListCopyNames(void *payload,
+                                              const char *name ATTRIBUTE_UNUSED,
+                                              void *opaque)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct virDomainSnapshotNameData *data = opaque;
+
+    if (data->oom)
+        return;
+
+    if (data->numnames < data->maxnames) {
+        if (!(data->names[data->numnames] = strdup(obj->def->name)))
+            data->oom = 1;
+        else
+            data->numnames++;
+    }
+}
+
+int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
+                                     char **const names, int maxnames)
+{
+    struct virDomainSnapshotNameData data = { 0, 0, maxnames, names };
+    int i;
+
+    virHashForEach(snapshots->objs, virDomainSnapshotObjListCopyNames, &data);
+    if (data.oom) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    return data.numnames;
+
+cleanup:
+    for (i = 0; i < data.numnames; i++)
+        VIR_FREE(data.names[i]);
+    return -1;
+}
+
+static void virDomainSnapshotObjListCount(void *payload ATTRIBUTE_UNUSED,
+                                          const char *name ATTRIBUTE_UNUSED,
+                                          void *data)
+{
+    int *count = data;
+
+    (*count)++;
+}
+
+int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots)
+{
+    int count = 0;
+
+    virHashForEach(snapshots->objs, virDomainSnapshotObjListCount, &count);
+
+    return count;
+}
+
+static int virDomainSnapshotObjListSearchName(const void *payload,
+                                              const char *name ATTRIBUTE_UNUSED,
+                                              const void *data)
+{
+    virDomainSnapshotObjPtr obj = (virDomainSnapshotObjPtr)payload;
+    int want = 0;
+
+    if (STREQ(obj->def->name, (const char *)data))
+        want = 1;
+
+    return want;
+}
+
+virDomainSnapshotObjPtr virDomainSnapshotFindByName(const virDomainSnapshotObjListPtr snapshots,
+                                                    const char *name)
+{
+    return virHashSearch(snapshots->objs, virDomainSnapshotObjListSearchName, name);
+}
+
+void virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
+                                    virDomainSnapshotObjPtr snapshot)
+{
+    virHashRemoveEntry(snapshots->objs, snapshot->def->name,
+                       virDomainSnapshotObjListDeallocator);
+}
+
+struct snapshot_has_children {
+    char *name;
+    int number;
+};
+
+static void virDomainSnapshotCountChildren(void *payload,
+                                           const char *name ATTRIBUTE_UNUSED,
+                                           void *data)
+{
+    virDomainSnapshotObjPtr obj = payload;
+    struct snapshot_has_children *curr = data;
+
+    if (obj->def->parent && STREQ(obj->def->parent, curr->name))
+        curr->number++;
+}
+
+int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
+                                virDomainSnapshotObjListPtr snapshots)
+{
+    struct snapshot_has_children children;
+
+    children.name = snap->def->name;
+    children.number = 0;
+    virHashForEach(snapshots->objs, virDomainSnapshotCountChildren, &children);
+
+    return children.number;
+}
+
 
 #endif /* ! PROXY */
