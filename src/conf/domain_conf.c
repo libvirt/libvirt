@@ -1795,7 +1795,7 @@ cleanup:
 
 static bool
 isValidIfname(const char *ifname) {
-    return (strspn(ifname, VALID_IFNAME_CHARS) == strlen(ifname));
+    return ifname[strspn(ifname, VALID_IFNAME_CHARS)] == 0;
 }
 
 
