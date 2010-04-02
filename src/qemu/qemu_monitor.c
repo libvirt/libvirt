@@ -1491,3 +1491,42 @@ int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
         ret = qemuMonitorTextSetDrivePassphrase(mon, alias, passphrase);
     return ret;
 }
+
+int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+
+    DEBUG("mon=%p, name=%s",mon,name);
+
+    if (mon->json)
+        ret = qemuMonitorJSONCreateSnapshot(mon, name);
+    else
+        ret = qemuMonitorTextCreateSnapshot(mon, name);
+    return ret;
+}
+
+int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+
+    DEBUG("mon=%p, name=%s",mon,name);
+
+    if (mon->json)
+        ret = qemuMonitorJSONLoadSnapshot(mon, name);
+    else
+        ret = qemuMonitorTextLoadSnapshot(mon, name);
+    return ret;
+}
+
+int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+
+    DEBUG("mon=%p, name=%s",mon,name);
+
+    if (mon->json)
+        ret = qemuMonitorJSONDeleteSnapshot(mon, name);
+    else
+        ret = qemuMonitorTextDeleteSnapshot(mon, name);
+    return ret;
+}

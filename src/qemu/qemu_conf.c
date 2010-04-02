@@ -3373,7 +3373,9 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           const char ***retenv,
                           int **tapfds,
                           int *ntapfds,
-                          const char *migrateFrom) {
+                          const char *migrateFrom,
+                          virDomainSnapshotObjPtr current_snapshot)
+{
     int i;
     char memory[50];
     char boot[VIR_DOMAIN_BOOT_LAST];
@@ -4576,6 +4578,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
     } else if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
         ADD_ARG_LIT("-balloon");
         ADD_ARG_LIT("virtio");
+    }
+
+    if (current_snapshot && current_snapshot->def->active) {
+        ADD_ARG_LIT("-loadvm");
+        ADD_ARG_LIT(current_snapshot->def->name);
     }
 
     ADD_ARG(NULL);

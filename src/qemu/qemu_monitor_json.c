@@ -2156,3 +2156,69 @@ int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("savevm",
+                                     "s:name", name,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("loadvm",
+                                     "s:name", name,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("delvm",
+                                     "s:name", name,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

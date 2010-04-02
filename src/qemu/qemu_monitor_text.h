@@ -177,4 +177,8 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,
                                       const char *passphrase);
 
+int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name);
+int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name);
+int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name);
+
 #endif /* QEMU_MONITOR_TEXT_H */

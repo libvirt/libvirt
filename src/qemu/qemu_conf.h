@@ -121,6 +121,7 @@ struct qemud_driver {
     char *libDir;
     char *cacheDir;
     char *saveDir;
+    char *snapshotDir;
     unsigned int vncTLS : 1;
     unsigned int vncTLSx509verify : 1;
     unsigned int vncSASL : 1;
@@ -199,7 +200,8 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          const char ***retenv,
                                          int **tapfds,
                                          int *ntapfds,
-                                         const char *migrateFrom)
+                                         const char *migrateFrom,
+                                         virDomainSnapshotObjPtr current_snapshot)
     ATTRIBUTE_NONNULL(1);
 
 /* With vlan == -1, use netdev syntax, else old hostnet */
