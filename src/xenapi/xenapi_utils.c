@@ -405,7 +405,7 @@ createVifNetwork (virConnectPtr conn, xen_vm vm, char *device,
     vm_opt->u.handle = xvm;
     xen_network_set *net_set = NULL;
     xen_network_record *net_rec = NULL;
-    int cnt;
+    int cnt = 0;
     if (xen_network_get_all(session, &net_set)) {
         for(cnt = 0; cnt < net_set->size; cnt++) {
             if (xen_network_get_record(session, &net_rec, net_set->contents[cnt])) {
