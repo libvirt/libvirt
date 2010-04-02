@@ -138,10 +138,11 @@ printVar(virConnectPtr conn,
 
 
 static int
-printDataType(virConnectPtr conn,
-              virNWFilterHashTablePtr vars,
-              char *buf, int bufsize,
-              nwItemDescPtr item)
+_printDataType(virConnectPtr conn,
+               virNWFilterHashTablePtr vars,
+               char *buf, int bufsize,
+               nwItemDescPtr item,
+               bool asHex)
 {
     int done;
     char *data;
@@ -199,8 +200,18 @@ printDataType(virConnectPtr conn,
         virFormatMacAddr(item->u.macaddr.addr, buf);
     break;
 
-    case DATATYPE_UINT16:
+    case DATATYPE_IPV6MASK:
+    case DATATYPE_IPMASK:
         if (snprintf(buf, bufsize, "%d",
+                     item->u.u8) >= bufsize) {
+            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+                                   _("Buffer too small for uint8 type"));
+            return 1;
+        }
+    break;
+
+    case DATATYPE_UINT16:
+        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u16) >= bufsize) {
             virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint16 type"));
@@ -208,10 +219,8 @@ printDataType(virConnectPtr conn,
         }
     break;
 
-    case DATATYPE_IPV6MASK:
-    case DATATYPE_IPMASK:
     case DATATYPE_UINT8:
-        if (snprintf(buf, bufsize, "%d",
+        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u8) >= bufsize) {
             virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint8 type"));
@@ -227,6 +236,26 @@ printDataType(virConnectPtr conn,
     }
 
     return 0;
+}
+
+
+static int
+printDataType(virConnectPtr conn,
+              virNWFilterHashTablePtr vars,
+              char *buf, int bufsize,
+              nwItemDescPtr item)
+{
+    return _printDataType(conn, vars, buf, bufsize, item, 0);
+}
+
+
+static int
+printDataTypeAsHex(virConnectPtr conn,
+                   virNWFilterHashTablePtr vars,
+                   char *buf, int bufsize,
+                   nwItemDescPtr item)
+{
+    return _printDataType(conn, vars, buf, bufsize, item, 1);
 }
 
 
@@ -1270,6 +1299,12 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
+            const char *parm;
+            if (rule->prtclType == VIR_NWFILTER_RULE_PROTOCOL_ICMP)
+                parm = "--icmp-type";
+            else
+                parm = "--icmpv6-type";
+
             if (printDataType(conn,
                               vars,
                               number, sizeof(number),
@@ -1277,8 +1312,9 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                      " %s --icmp-type %s",
+                      " %s %s %s",
                       ENTRY_GET_NEG_SIGN(&rule->p.icmpHdrFilter.dataICMPType),
+                      parm,
                       number);
 
             if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPCode)) {
@@ -1293,6 +1329,30 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
                                    number);
             }
         }
+    break;
+
+    case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
+        virBufferVSprintf(&buf,
+                          CMD_DEF_PRE "%s -%%c %s %%s",
+                          iptables_cmd,
+                          chain);
+
+        virBufferAddLit(&buf, " -p igmp");
+
+        if (iptablesHandleSrcMacAddr(conn,
+                                     &buf,
+                                     vars,
+                                     &rule->p.igmpHdrFilter.dataSrcMACAddr,
+                                     directionIn))
+            goto err_exit;
+
+        if (iptablesHandleIpHdr(conn,
+                                &buf,
+                                vars,
+                                &rule->p.igmpHdrFilter.ipHdr,
+                                directionIn))
+            goto err_exit;
+
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
@@ -1490,10 +1550,10 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.ethHdrFilter.dataProtocolID)) {
-            if (printDataType(conn,
-                              vars,
-                              number, sizeof(number),
-                              &rule->p.ethHdrFilter.dataProtocolID))
+            if (printDataTypeAsHex(conn,
+                                   vars,
+                                   number, sizeof(number),
+                                   &rule->p.ethHdrFilter.dataProtocolID))
                 goto err_exit;
             virBufferVSprintf(&buf,
                           " -p %s %s",
@@ -1541,10 +1601,10 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataProtocolType)) {
-            if (printDataType(conn,
-                              vars,
-                              number, sizeof(number),
-                              &rule->p.arpHdrFilter.dataProtocolType))
+            if (printDataTypeAsHex(conn,
+                                   vars,
+                                   number, sizeof(number),
+                                   &rule->p.arpHdrFilter.dataProtocolType))
                 goto err_exit;
             virBufferVSprintf(&buf,
                           " --arp-ptype %s %s",

@@ -409,6 +409,8 @@ checkMacProtocolID(enum attrDatatype datatype, void *value,
             res = -1;
     } else if (datatype == DATATYPE_UINT16) {
         res = (uint32_t)*(uint16_t *)value;
+        if (res < 0x600)
+            res = -1;
     }
 
     if (res != -1) {
@@ -766,7 +768,7 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
     },
     {
         .name = "protocol",
-        .datatype = DATATYPE_STRING,
+        .datatype = DATATYPE_STRING | DATATYPE_UINT8,
         .dataIdx = offsetof(virNWFilterRuleDef, p.ipv6HdrFilter.ipHdr.dataProtocolID),
         .validator= checkIPProtocolID,
         .formatter= formatIPProtocolID,
@@ -1048,95 +1050,34 @@ struct _virAttributes {
     enum virNWFilterRuleProtocolType prtclType;
 };
 
+#define PROTOCOL_ENTRY(ID, ATT, PRTCLTYPE) \
+    { .id = ID, .att = ATT, .prtclType = PRTCLTYPE }
+#define PROTOCOL_ENTRY_LAST { .id = NULL }
+
 
 static const virAttributes virAttr[] = {
-    {
-        .id = "arp",
-        .att = arpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ARP,
-    }, {
-        .id = "mac",
-        .att = macAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_MAC,
-    }, {
-        .id = "ip",
-        .att = ipAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IP,
-    }, {
-        .id = "ipv6",
-        .att = ipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IPV6,
-    }, {
-        .id = "tcp",
-        .att = tcpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_TCP,
-    }, {
-        .id = "udp",
-        .att = udpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDP,
-    }, {
-        .id = "udplite",
-        .att = udpliteAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPLITE,
-    }, {
-        .id = "esp",
-        .att = espAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ESP,
-    }, {
-        .id = "ah",
-        .att = ahAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_AH,
-    }, {
-        .id = "sctp",
-        .att = sctpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_SCTP,
-    }, {
-        .id = "icmp",
-        .att = icmpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ICMP,
-    }, {
-        .id = "all", // = 'any'
-        .att = allAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ALL,
-    }, {
-        .id = "igmp",
-        .att = igmpAttributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_IGMP,
-    }, {
-        .id = "tcp-ipv6",
-        .att = tcpipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6,
-    }, {
-        .id = "udp-ipv6",
-        .att = udpipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6,
-    }, {
-        .id = "udplite-ipv6",
-        .att = udpliteipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6,
-    }, {
-        .id = "esp-ipv6",
-        .att = espipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6,
-    }, {
-        .id = "ah-ipv6",
-        .att = ahipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6,
-    }, {
-        .id = "sctp-ipv6",
-        .att = sctpipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6,
-    }, {
-        .id = "icmpv6",
-        .att = icmpv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ICMPV6,
-    }, {
-        .id = "all-ipv6", // = 'any'
-        .att = allipv6Attributes,
-        .prtclType = VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6,
-    }, {
-        .id = NULL,
-    }
+    PROTOCOL_ENTRY("arp"    , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ARP),
+    PROTOCOL_ENTRY("mac"    , macAttributes    , VIR_NWFILTER_RULE_PROTOCOL_MAC),
+    PROTOCOL_ENTRY("ip"     , ipAttributes     , VIR_NWFILTER_RULE_PROTOCOL_IP),
+    PROTOCOL_ENTRY("ipv6"   , ipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_IPV6),
+    PROTOCOL_ENTRY("tcp"    , tcpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_TCP),
+    PROTOCOL_ENTRY("udp"    , udpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_UDP),
+    PROTOCOL_ENTRY("udplite", udpliteAttributes, VIR_NWFILTER_RULE_PROTOCOL_UDPLITE),
+    PROTOCOL_ENTRY("esp"    , espAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ESP),
+    PROTOCOL_ENTRY("ah"     , ahAttributes     , VIR_NWFILTER_RULE_PROTOCOL_AH),
+    PROTOCOL_ENTRY("sctp"   , sctpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_SCTP),
+    PROTOCOL_ENTRY("icmp"   , icmpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_ICMP),
+    PROTOCOL_ENTRY("all"    , allAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ALL),
+    PROTOCOL_ENTRY("igmp"   , igmpAttributes   , VIR_NWFILTER_RULE_PROTOCOL_IGMP),
+    PROTOCOL_ENTRY("tcp-ipv6"    , tcpipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6),
+    PROTOCOL_ENTRY("udp-ipv6"    , udpipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6),
+    PROTOCOL_ENTRY("udplite-ipv6", udpliteipv6Attributes, VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6),
+    PROTOCOL_ENTRY("esp-ipv6"    , espipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6),
+    PROTOCOL_ENTRY("ah-ipv6"     , ahipv6Attributes     , VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6),
+    PROTOCOL_ENTRY("sctp-ipv6"   , sctpipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6),
+    PROTOCOL_ENTRY("icmpv6"      , icmpv6Attributes     , VIR_NWFILTER_RULE_PROTOCOL_ICMPV6),
+    PROTOCOL_ENTRY("all-ipv6"    , allipv6Attributes    , VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6),
+    PROTOCOL_ENTRY_LAST
 };
 
 
@@ -1176,7 +1117,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                             virNWFilterRuleDefPtr nwf,
                             const virXMLAttr2Struct *att)
 {
-    int rc = 0;
+    int rc = 0, g_rc = 0;
     int idx = 0;
     char *prop;
     int found = 0;
@@ -1194,7 +1135,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(match);
     match = NULL;
 
-    while (att[idx].name != NULL && rc == 0) {
+    while (att[idx].name != NULL) {
         prop = virXMLPropString(node, att[idx].name);
 
         item = (nwItemDesc *)((char *)nwf + att[idx].dataIdx);
@@ -1390,10 +1331,16 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
             VIR_FREE(prop);
         }
+
+        if (rc) {
+            g_rc = rc;
+            rc = 0;
+        }
+
         idx++;
     }
 
-    return rc;
+    return g_rc;
 }
 
 
@@ -2178,7 +2125,7 @@ virNWFilterPoolObjAssignDef(virConnectPtr conn,
 
     if (virNWFilterDefLoopDetect(conn, pools, def)) {
         virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
-                              "%s", _("filter would introduce loop"));
+                              "%s", _("filter would introduce a loop"));
         return NULL;
     }
 
