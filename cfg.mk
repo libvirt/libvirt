@@ -191,6 +191,7 @@ msg_gen_function += regerror
 msg_gen_function += remoteDispatchFormatError
 msg_gen_function += umlLog
 msg_gen_function += umlReportError
+msg_gen_function += vboxError
 msg_gen_function += virConfError
 msg_gen_function += virDomainReportError
 msg_gen_function += virSecurityReportError
