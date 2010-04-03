@@ -6585,11 +6585,9 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
                            host, sizeof(host),
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
-                       VIR_ERR_UNKNOWN_HOST, VIR_ERR_ERROR,
-                       NULL, NULL, NULL, 0, 0,
-                       _("Cannot resolve address %d: %s"),
-                       err, gai_strerror(err));
+        remoteError(VIR_ERR_UNKNOWN_HOST,
+                    _("Cannot resolve address %d: %s"),
+                    err, gai_strerror(err));
         return NULL;
     }
 
@@ -9170,11 +9168,9 @@ processCallDispatch(virConnectPtr conn, struct private_data *priv,
         break;
 
     default:
-         virRaiseError (in_open ? NULL : conn,
-                        NULL, NULL, VIR_FROM_REMOTE,
-                        VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        _("got unexpected RPC call %d from server"),
-                        hdr.proc);
+        remoteError(VIR_ERR_RPC,
+                    _("got unexpected RPC call %d from server"),
+                    hdr.proc);
         rv = -1;
         break;
     }
@@ -9185,8 +9181,9 @@ processCallDispatch(virConnectPtr conn, struct private_data *priv,
 
 
 static int
-processCallDispatchReply(virConnectPtr conn, struct private_data *priv,
-                         int in_open,
+processCallDispatchReply(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         struct private_data *priv,
+                         int in_open ATTRIBUTE_UNUSED,
                          remote_message_header *hdr,
                          XDR *xdr) {
     struct remote_thread_call *thecall;
@@ -9199,20 +9196,16 @@ processCallDispatchReply(virConnectPtr conn, struct private_data *priv,
         thecall = thecall->next;
 
     if (!thecall) {
-        virRaiseError (in_open ? NULL : conn,
-                       NULL, NULL, VIR_FROM_REMOTE,
-                       VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                       _("no call waiting for reply with serial %d"),
-                       hdr->serial);
+        remoteError(VIR_ERR_RPC,
+                    _("no call waiting for reply with serial %d"),
+                    hdr->serial);
         return -1;
     }
 
     if (hdr->proc != thecall->proc_nr) {
-        virRaiseError (in_open ? NULL : conn,
-                       NULL, NULL, VIR_FROM_REMOTE,
-                       VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                       _("unknown procedure (received %x, expected %x)"),
-                       hdr->proc, thecall->proc_nr);
+        remoteError(VIR_ERR_RPC,
+                    _("unknown procedure (received %x, expected %x)"),
+                    hdr->proc, thecall->proc_nr);
         return -1;
     }
 
