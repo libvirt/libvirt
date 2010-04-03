@@ -179,7 +179,7 @@ msg_gen_function += macvtapError
 msg_gen_function += VIR_FREE
 msg_gen_function += VIR_INFO
 msg_gen_function += VIR_USE_CPU
-msg_gen_function += errorf
+msg_gen_function += remoteError
 msg_gen_function += lxcError
 msg_gen_function += networkLog
 msg_gen_function += networkReportError
@@ -222,7 +222,6 @@ msg_gen_function += xenXMError
 # Uncomment the following and run "make syntax-check" to see diagnostics
 # that are not yet marked for translation, but that need to be rewritten
 # so that they are translatable.
-# msg_gen_function += error
 # msg_gen_function += fprintf
 # msg_gen_function += testError
 # msg_gen_function += virXenError
