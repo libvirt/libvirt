@@ -100,8 +100,7 @@ virCapsPtr umlCapsInit(void) {
 
 
 static int
-umlConnectTapDevice(virConnectPtr conn,
-                    virDomainNetDefPtr net,
+umlConnectTapDevice(virDomainNetDefPtr net,
                     const char *bridge)
 {
     brControl *brctl = NULL;
@@ -129,7 +128,7 @@ umlConnectTapDevice(virConnectPtr conn,
                         &net->ifname, BR_TAP_PERSIST, &tapfd))) {
         if (errno == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to add tap interface to bridge. "
                              "%s is not a bridge device"), bridge);
         } else if (template_ifname) {
@@ -179,24 +178,24 @@ umlBuildCommandLineNet(virConnectPtr conn,
         /* ethNNN=tuntap,tapname,macaddr,gateway */
         virBufferAddLit(&buf, "tuntap");
         if (def->data.ethernet.ipaddr) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("IP address not supported for ethernet inteface"));
             goto error;
         }
         if (def->data.ethernet.script) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("script execution not supported for ethernet inteface"));
             goto error;
         }
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("TCP server networking type not supported"));
         goto error;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("TCP client networking type not supported"));
         goto error;
 
@@ -211,7 +210,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
         virNetworkPtr network = virNetworkLookupByName(conn,
                                                        def->data.network.name);
         if (!network) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Network '%s' not found"),
                            def->data.network.name);
             goto error;
@@ -222,7 +221,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
             goto error;
         }
 
-        if (umlConnectTapDevice(conn, def, bridge) < 0) {
+        if (umlConnectTapDevice(def, bridge) < 0) {
             VIR_FREE(bridge);
             goto error;
         }
@@ -233,7 +232,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (umlConnectTapDevice(conn, def, def->data.bridge.brname) < 0)
+        if (umlConnectTapDevice(def, def->data.bridge.brname) < 0)
             goto error;
 
         /* ethNNN=tuntap,tapname,macaddr,gateway */
@@ -241,12 +240,12 @@ umlBuildCommandLineNet(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("internal networking type not supported"));
         goto error;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("direct networking type not supported"));
         goto error;
 
@@ -277,8 +276,7 @@ error:
 }
 
 static char *
-umlBuildCommandLineChr(virConnectPtr conn,
-                       virDomainChrDefPtr def,
+umlBuildCommandLineChr(virDomainChrDefPtr def,
                        const char *dev)
 {
     char *ret = NULL;
@@ -315,8 +313,8 @@ umlBuildCommandLineChr(virConnectPtr conn,
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         if (def->data.tcp.listen != 1) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("only TCP listen is supported for chr device"));
+            umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("only TCP listen is supported for chr device"));
             return NULL;
         }
 
@@ -335,7 +333,7 @@ umlBuildCommandLineChr(virConnectPtr conn,
     case VIR_DOMAIN_CHR_TYPE_UDP:
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     default:
-        umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+        umlReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported chr device type %d"), def->type);
         break;
     }
@@ -479,7 +477,7 @@ int umlBuildCommandLine(virConnectPtr conn,
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
         if (!STRPREFIX(disk->dst, "ubd")) {
-            umlReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+            umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unsupported disk type '%s'"), disk->dst);
             goto error;
         }
@@ -497,7 +495,7 @@ int umlBuildCommandLine(virConnectPtr conn,
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
         char *ret;
         if (i == 0 && vm->def->console)
-            ret = umlBuildCommandLineChr(conn, vm->def->console, "con");
+            ret = umlBuildCommandLineChr(vm->def->console, "con");
         else
             if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;
@@ -511,7 +509,7 @@ int umlBuildCommandLine(virConnectPtr conn,
             if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
-            ret = umlBuildCommandLineChr(conn, chr, "ssl");
+            ret = umlBuildCommandLineChr(chr, "ssl");
         else
             if (virAsprintf(&ret, "ssl%d=none", i) < 0)
                 goto no_memory;

@@ -62,8 +62,8 @@ struct uml_driver {
 };
 
 
-# define umlReportError(conn, dom, net, code, ...)                       \
-    virReportErrorHelper(conn, VIR_FROM_UML, code, __FILE__,            \
+# define umlReportError(code, ...)                                      \
+    virReportErrorHelper(NULL, VIR_FROM_UML, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 virCapsPtr  umlCapsInit               (void);
