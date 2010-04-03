@@ -33,10 +33,8 @@
 # include "domain_conf.h"
 # include "threads.h"
 
-enum { OPENVZ_WARN, OPENVZ_ERR };
-
-# define openvzError(conn, code, ...)                                       \
-        virReportErrorHelper(conn, VIR_FROM_OPENVZ, code, __FILE__,        \
+# define openvzError(code, ...)                                            \
+        virReportErrorHelper(NULL, VIR_FROM_OPENVZ, code, __FILE__,        \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 
@@ -56,8 +54,7 @@ struct openvz_driver {
 };
 
 int openvz_readline(int fd, char *ptr, int maxlen);
-int openvzExtractVersion(virConnectPtr conn,
-                         struct openvz_driver *driver);
+int openvzExtractVersion(struct openvz_driver *driver);
 int openvzReadVPSConfigParam(int vpsid ,const char * param, char *value, int maxlen);
 int openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value);
 int openvzCopyDefaultConfig(int vpsid);
