@@ -31,8 +31,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define eventReportError(conn, code, ...)                           \
-    virReportErrorHelper(conn, VIR_FROM_THIS, code, __FILE__,       \
+#define eventReportError(code, ...)                                 \
+    virReportErrorHelper(NULL, VIR_FROM_THIS, code, __FILE__,       \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virDomainMeta {
@@ -148,7 +148,7 @@ virDomainEventCallbackListRemove(virConnectPtr conn,
         }
     }
 
-    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("could not find event callback for removal"));
     return -1;
 }
@@ -193,7 +193,7 @@ virDomainEventCallbackListRemoveID(virConnectPtr conn,
         }
     }
 
-    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("could not find event callback for removal"));
     return -1;
 }
@@ -252,7 +252,7 @@ int virDomainEventCallbackListMarkDelete(virConnectPtr conn,
         }
     }
 
-    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("could not find event callback for deletion"));
     return -1;
 }
@@ -271,7 +271,7 @@ int virDomainEventCallbackListMarkDeleteID(virConnectPtr conn,
         }
     }
 
-    eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+    eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                      _("could not find event callback for deletion"));
     return -1;
 }
@@ -361,7 +361,7 @@ virDomainEventCallbackListAddID(virConnectPtr conn,
         if (cbList->callbacks[i]->cb == VIR_DOMAIN_EVENT_CALLBACK(callback) &&
             cbList->callbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE &&
             cbList->callbacks[i]->conn == conn) {
-            eventReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("event callback already tracked"));
             return -1;
         }
@@ -758,7 +758,7 @@ virDomainEventQueuePop(virDomainEventQueuePtr evtQueue)
     virDomainEventPtr ret;
 
     if (!evtQueue || evtQueue->count == 0 ) {
-        eventReportError(NULL, VIR_ERR_INTERNAL_ERROR, "%s",
+        eventReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                          _("event queue is empty, nothing to pop"));
         return NULL;
     }
