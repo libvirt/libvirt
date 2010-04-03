@@ -63,8 +63,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_PHYP
 
-#define PHYP_ERROR(conn, code, ...)                                           \
-    virReportErrorHelper(conn, VIR_FROM_PHYP, code, __FILE__, __FUNCTION__,   \
+#define PHYP_ERROR(code, ...)                                                 \
+    virReportErrorHelper(NULL, VIR_FROM_PHYP, code, __FILE__, __FUNCTION__,   \
                          __LINE__, __VA_ARGS__)
 
 /*
@@ -92,13 +92,13 @@ phypOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->server == NULL) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Missing server name in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
 
     if (conn->uri->path == NULL) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Missing managed system name in phyp:// URI"));
         return VIR_DRV_OPEN_ERROR;
     }
@@ -145,13 +145,13 @@ phypOpen(virConnectPtr conn,
         *char_ptr = '\0';
 
     if (escape_specialcharacters(conn->uri->path, string, len) == -1) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Error parsing 'path'. Invalid characters."));
         goto failure;
     }
 
     if ((session = openSSHSession(conn, auth, &internal_socket)) == NULL) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Error while opening SSH session."));
         goto failure;
     }
@@ -273,7 +273,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         }
     } else {
         if (auth == NULL || auth->cb == NULL) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
+            PHYP_ERROR(VIR_ERR_AUTH_FAILED,
                        "%s", _("No authentication callback provided."));
             goto err;
         }
@@ -281,7 +281,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         username = virRequestUsername(auth, NULL, conn->uri->server);
 
         if (username == NULL) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED, "Username request failed");
+            PHYP_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Username request failed"));
             goto err;
         }
     }
@@ -293,7 +293,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
     ret = getaddrinfo(hostname, "22", &hints, &ai);
     if (ret != 0) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    _("Error while getting %s address info"), hostname);
         goto err;
     }
@@ -310,7 +310,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         cur = cur->ai_next;
     }
 
-    PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+    PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                _("Failed to connect to %s"), hostname);
     freeaddrinfo(ai);
     goto err;
@@ -330,7 +330,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
     while ((rc = libssh2_session_startup(session, sock)) ==
            LIBSSH2_ERROR_EAGAIN) ;
     if (rc) {
-        PHYP_ERROR(conn, VIR_ERR_INTERNAL_ERROR,
+        PHYP_ERROR(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("Failure establishing SSH session."));
         goto disconnect;
     }
@@ -353,7 +353,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED
         || rc == LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
         if (auth == NULL || auth->cb == NULL) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
+            PHYP_ERROR(VIR_ERR_AUTH_FAILED,
                        "%s", _("No authentication callback provided."));
             goto disconnect;
         }
@@ -361,7 +361,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         password = virRequestPassword(auth, username, conn->uri->server);
 
         if (password == NULL) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED, "Password request failed");
+            PHYP_ERROR(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
             goto disconnect;
         }
 
@@ -371,7 +371,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
                LIBSSH2_ERROR_EAGAIN) ;
 
         if (rc) {
-            PHYP_ERROR(conn, VIR_ERR_AUTH_FAILED,
+            PHYP_ERROR(VIR_ERR_AUTH_FAILED,
                        "%s", _("Authentication failed"));
             goto disconnect;
         } else
