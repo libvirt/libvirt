@@ -2622,9 +2622,8 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
     format = vshCommandOptString(cmd, "format", NULL);
     configFile = vshCommandOptString(cmd, "config", NULL);
 
-    if (virFileReadAll(configFile, 1024*1024, &configData) < 0) {
+    if (virFileReadAll(configFile, 1024*1024, &configData) < 0)
         return FALSE;
-    }
 
     xmlData = virConnectDomainXMLFromNative(ctl->conn, format, configData, flags);
     if (xmlData != NULL) {
@@ -2668,9 +2667,8 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
     format = vshCommandOptString(cmd, "format", NULL);
     xmlFile = vshCommandOptString(cmd, "xml", NULL);
 
-    if (virFileReadAll(xmlFile, 1024*1024, &xmlData) < 0) {
+    if (virFileReadAll(xmlFile, 1024*1024, &xmlData) < 0)
         return FALSE;
-    }
 
     configData = virConnectDomainXMLToNative(ctl->conn, format, xmlData, flags);
     if (configData != NULL) {
@@ -4329,9 +4327,8 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return FALSE;
-    }
 
     dev = virNodeDeviceCreateXML(ctl->conn, buffer, 0);
     VIR_FREE(buffer);
@@ -5426,6 +5423,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virshReportError(ctl);
         virStoragePoolFree(pool);
         return FALSE;
     }
@@ -5487,6 +5485,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virshReportError(ctl);
         goto cleanup;
     }
 
@@ -6927,6 +6926,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virshReportError(ctl);
         virDomainFree(dom);
         return FALSE;
     }
@@ -6994,6 +6994,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virshReportError(ctl);
         virDomainFree(dom);
         return FALSE;
     }
@@ -7061,6 +7062,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virshReportError(ctl);
         virDomainFree(dom);
         return FALSE;
     }
