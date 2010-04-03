@@ -2375,7 +2375,7 @@ virNWFilterRuleDefDetailsFormat(virConnectPtr conn,
                                 const virXMLAttr2Struct *att,
                                 virNWFilterRuleDefPtr def)
 {
-    int i, j;
+    int i = 0, j;
     bool typeShown = 0;
     bool neverShown = 1;
     enum match {
