@@ -51,8 +51,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define nodeReportError(conn, code, ...)                                \
-    virReportErrorHelper(conn, VIR_FROM_NONE, code, __FILE__,           \
+#define nodeReportError(code, ...)                                      \
+    virReportErrorHelper(NULL, VIR_FROM_NONE, code, __FILE__,           \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #ifdef __linux__
@@ -60,7 +60,7 @@
 # define CPU_SYS_PATH "/sys/devices/system/cpu"
 
 /* NB, this is not static as we need to call it from the testsuite */
-int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
+int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              virNodeInfoPtr nodeinfo);
 
 static unsigned long count_thread_siblings(unsigned int cpu)
@@ -133,7 +133,7 @@ static int parse_socket(unsigned int cpu)
         goto cleanup;
     }
     if (virStrToLong_i(socket_str, &tmp, 10, &socket) < 0) {
-        nodeReportError(NULL, VIR_ERR_INTERNAL_ERROR,
+        nodeReportError(VIR_ERR_INTERNAL_ERROR,
                         _("could not convert '%s' to an integer"),
                         socket_str);
         goto cleanup;
@@ -146,7 +146,7 @@ cleanup:
     return socket;
 }
 
-int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
+int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              virNodeInfoPtr nodeinfo)
 {
     char line[1024];
@@ -178,7 +178,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':') {
-                nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("parsing cpuinfo processor"));
                 return -1;
             }
@@ -190,7 +190,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
-                nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("parsing cpuinfo cpu MHz"));
                 return -1;
             }
@@ -205,7 +205,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
             while (*buf && c_isspace(*buf))
                 buf++;
             if (*buf != ':' || !buf[1]) {
-                nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                nodeReportError(VIR_ERR_INTERNAL_ERROR,
                                 "parsing cpuinfo cpu cores %c", *buf);
                 return -1;
             }
@@ -217,7 +217,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
     }
 
     if (!nodeinfo->cpus) {
-        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        nodeReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("no cpus found"));
         return -1;
     }
@@ -257,12 +257,12 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
 
     /* there should always be at least one socket and one thread */
     if (nodeinfo->sockets == 0) {
-        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        nodeReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("no sockets found"));
         return -1;
     }
     if (nodeinfo->threads == 0) {
-        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        nodeReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("no threads found"));
         return -1;
     }
@@ -272,8 +272,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
 
 #endif
 
-int nodeGetInfo(virConnectPtr conn,
-                virNodeInfoPtr nodeinfo) {
+int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
     memset(nodeinfo, 0, sizeof(*nodeinfo));
 
 #ifdef HAVE_UNAME
@@ -296,7 +295,7 @@ int nodeGetInfo(virConnectPtr conn,
                              _("cannot open %s"), CPUINFO_PATH);
         return -1;
     }
-    ret = linuxNodeInfoCPUPopulate(conn, cpuinfo, nodeinfo);
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, nodeinfo);
     fclose(cpuinfo);
     if (ret < 0)
         return -1;
@@ -308,7 +307,7 @@ int nodeGetInfo(virConnectPtr conn,
     }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
-    nodeReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
+    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("node info not implemented on this platform"));
     return -1;
 #endif
@@ -380,7 +379,7 @@ cleanup:
 
 
 int
-nodeGetCellsFreeMemory(virConnectPtr conn,
+nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                        unsigned long long *freeMems,
                        int startCell,
                        int maxCells)
@@ -390,13 +389,13 @@ nodeGetCellsFreeMemory(virConnectPtr conn,
     int maxCell;
 
     if (numa_available() < 0) {
-        nodeReportError(conn, VIR_ERR_NO_SUPPORT,
+        nodeReportError(VIR_ERR_NO_SUPPORT,
                         "%s", _("NUMA not supported on this host"));
         goto cleanup;
     }
     maxCell = numa_max_node();
     if (startCell > maxCell) {
-        nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        nodeReportError(VIR_ERR_INTERNAL_ERROR,
                         _("start cell %d out of range (0-%d)"),
                         startCell, maxCell);
         goto cleanup;
@@ -408,7 +407,7 @@ nodeGetCellsFreeMemory(virConnectPtr conn,
     for (numCells = 0, n = startCell ; n <= lastCell ; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
-            nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            nodeReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("Failed to query NUMA free memory"));
             goto cleanup;
         }
@@ -421,13 +420,13 @@ cleanup:
 }
 
 unsigned long long
-nodeGetFreeMemory(virConnectPtr conn)
+nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     unsigned long long freeMem = 0;
     int n;
 
     if (numa_available() < 0) {
-        nodeReportError(conn, VIR_ERR_NO_SUPPORT,
+        nodeReportError(VIR_ERR_NO_SUPPORT,
                         "%s", _("NUMA not supported on this host"));
         goto cleanup;
     }
@@ -435,7 +434,7 @@ nodeGetFreeMemory(virConnectPtr conn)
     for (n = 0 ; n <= numa_max_node() ; n++) {
         long long mem;
         if (numa_node_size64(n, &mem) < 0) {
-            nodeReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            nodeReportError(VIR_ERR_INTERNAL_ERROR,
                             "%s", _("Failed to query NUMA free memory"));
             goto cleanup;
         }
@@ -456,14 +455,14 @@ int nodeGetCellsFreeMemory(virConnectPtr conn,
                               int startCell ATTRIBUTE_UNUSED,
                               int maxCells ATTRIBUTE_UNUSED)
 {
-    nodeReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
+    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("NUMA memory information not available on this platform"));
     return -1;
 }
 
 unsigned long long nodeGetFreeMemory(virConnectPtr conn)
 {
-    nodeReportError(conn, VIR_ERR_NO_SUPPORT, "%s",
+    nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("NUMA memory information not available on this platform"));
     return 0;
 }

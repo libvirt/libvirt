@@ -25,7 +25,7 @@ static char *abs_srcdir;
 
 # define MAX_FILE 4096
 
-extern int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr nodeinfo);
+extern int linuxNodeInfoCPUPopulate(FILE *cpuinfo, virNodeInfoPtr nodeinfo);
 
 static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile) {
     char actualData[MAX_FILE];
@@ -40,7 +40,7 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
     cpuinfo = fopen(cpuinfofile, "r");
     if (!cpuinfo)
         return -1;
-    if (linuxNodeInfoCPUPopulate(NULL, cpuinfo, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(cpuinfo, &nodeinfo) < 0) {
         fclose(cpuinfo);
         return -1;
     }
