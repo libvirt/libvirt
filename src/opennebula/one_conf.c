@@ -135,8 +135,7 @@ no_memory:
  * @return the OpenNebula ID for the new VM or -1 in case of error
  */
 
-int oneSubmitVM(virConnectPtr    conn,
-                one_driver_t*    driver ATTRIBUTE_UNUSED,
+int oneSubmitVM(one_driver_t*    driver ATTRIBUTE_UNUSED,
                 virDomainObjPtr  vm)
 {
     char* templ;
@@ -146,8 +145,8 @@ int oneSubmitVM(virConnectPtr    conn,
         return -1;
 
     if ((oneid = c_oneAllocateTemplate(templ)) < 0) {
-        oneError(conn, NULL, VIR_ERR_OPERATION_FAILED,
-                 "%s", _("Error submitting virtual machine to OpenNebula"));
+        oneError(VIR_ERR_OPERATION_FAILED, "%s",
+                 _("Error submitting virtual machine to OpenNebula"));
         VIR_FREE(templ);
         return -1;
     }

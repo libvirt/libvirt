@@ -117,7 +117,7 @@ static virDomainPtr oneDomainLookupByID(virConnectPtr conn,
     oneDriverUnlock(driver);
 
     if (!vm) {
-        oneError(conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        oneError(VIR_ERR_NO_DOMAIN, NULL);
         goto return_point;
     }
 
@@ -145,7 +145,7 @@ static virDomainPtr oneDomainLookupByUUID(virConnectPtr conn,
     vm = virDomainFindByUUID(&driver->domains, uuid);
     oneDriverUnlock(driver);
     if (!vm) {
-        oneError(conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        oneError(VIR_ERR_NO_DOMAIN, NULL);
         goto return_point;
     }
 
@@ -174,7 +174,7 @@ static virDomainPtr oneDomainLookupByName(virConnectPtr conn,
     oneDriverUnlock(driver);
 
     if (!vm) {
-        oneError(conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        oneError(VIR_ERR_NO_DOMAIN, NULL);
         goto return_point;
     }
 
@@ -279,14 +279,14 @@ static int oneDomainUndefine(virDomainPtr dom)
     oneDriverLock(driver);
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("no domain with matching uuid"));
+        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+                 _("no domain with matching uuid"));
         goto return_point;
     }
 
     if (!vm->persistent) {
-        oneError(dom->conn, dom, VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("cannot undefine transient domain"));
+        oneError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("cannot undefine transient domain"));
         goto return_point;
     }
     virDomainRemoveInactive(&driver->domains, vm);
@@ -310,14 +310,14 @@ static int oneDomainGetInfo(virDomainPtr dom,
     oneDriverUnlock(driver);
 
     if (!vm) {
-        oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("no domain with matching uuid"));
+        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+                 _("no domain with matching uuid"));
         return -1;
     }
 
     if(gettimeofday(&tv,NULL)<0) {
-        oneError(dom->conn,dom, VIR_ERR_INTERNAL_ERROR,
-                 "%s",_("getting time of day"));
+        oneError(VIR_ERR_INTERNAL_ERROR, "%s",
+                 _("getting time of day"));
         virDomainObjUnlock(vm);
         return -1;
     }
@@ -385,8 +385,8 @@ static char *oneGetOSType(virDomainPtr dom)
     vm =virDomainFindByUUID(&driver->domains, dom->uuid);
     oneDriverUnlock(driver);
     if (!vm) {
-        oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("no domain with matching uuid"));
+        oneError(VIR_ERR_INVALID_DOMAIN, "%s",
+                 _("no domain with matching uuid"));
         goto cleanup;
     }
 
@@ -412,11 +412,11 @@ static int oneDomainStart(virDomainPtr dom)
     vm = virDomainFindByName(&driver->domains, dom->name);
 
     if (!vm) {
-        oneError(conn, dom, VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_INVALID_DOMAIN,
                  _("no domain named %s"), dom->name);
         goto return_point;
     }
-    if((oneid = oneSubmitVM(dom->conn,driver,vm)) < 0) {
+    if((oneid = oneSubmitVM(driver, vm)) < 0) {
         goto return_point;
     }
     vm->pid=oneid;
@@ -449,7 +449,7 @@ oneDomainCreateAndStart(virConnectPtr conn,
 
     vm = virDomainFindByName(&driver->domains, def->name);
     if (vm) {
-        oneError(conn,NULL, VIR_ERR_OPERATION_FAILED,
+        oneError(VIR_ERR_OPERATION_FAILED,
                  _("Already an OpenNebula VM active with the name: '%s' id: %d "),
                  def->name,def->id);
         goto return_point;
@@ -460,7 +460,7 @@ oneDomainCreateAndStart(virConnectPtr conn,
         virDomainDefFree(def);
         goto return_point;
     }
-    if ((oneid = oneSubmitVM(conn, driver, vm)) < 0) {
+    if ((oneid = oneSubmitVM(driver, vm)) < 0) {
         virDomainRemoveInactive(&driver->domains, vm);
         vm=NULL;
         goto return_point;
@@ -492,14 +492,14 @@ static int oneDomainShutdown(virDomainPtr dom)
 
     oneDriverLock(driver);
     if (!(vm=virDomainFindByID(&driver->domains, dom->id))) {
-        oneError(dom->conn,dom, VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_INVALID_DOMAIN,
                  _("no domain with id %d"), dom->id);
         goto return_point;
     }
 
     if (c_oneShutdown(vm->pid)) {
-        oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                 "%s", _("Wrong state to perform action"));
+        oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                 _("Wrong state to perform action"));
         goto return_point;
     }
     vm->state=VIR_DOMAIN_SHUTDOWN;
@@ -527,15 +527,15 @@ static int oneDomainDestroy(virDomainPtr dom)
     oneDriverLock(driver);
     vm= virDomainFindByID(&driver->domains, dom->id);
     if (!vm) {
-        oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_INVALID_DOMAIN,
                  _("no domain with id %d"), dom->id);
         goto return_point;
     }
     if(c_oneCancel(vm->pid)) {
         /* VM not running, delete the instance at ONE DB */
         if(c_oneFinalize(vm->pid)){
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     "%s", _("Wrong state to perform action"));
+            oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("Wrong state to perform action"));
             goto return_point;
         }
     }
@@ -569,14 +569,14 @@ static int oneDomainSuspend(virDomainPtr dom)
                 ret=0;
                 goto return_point;
             }
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     "%s", _("Wrong state to perform action"));
+            oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("Wrong state to perform action"));
             goto return_point;
         }
-        oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
-                 "%s", _("domain is not running"));
+        oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                 _("domain is not running"));
     } else {
-        oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_INVALID_DOMAIN,
                  _("no domain with matching id %d"), dom->id);
     }
 
@@ -602,14 +602,14 @@ static int oneDomainResume(virDomainPtr dom)
                 ret=0;
                 goto return_point;
             }
-            oneError(dom->conn, dom, VIR_ERR_OPERATION_INVALID,
-                     "%s", _("Wrong state to perform action"));
+            oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                     _("Wrong state to perform action"));
             goto return_point;
         }
-        oneError(dom->conn,dom, VIR_ERR_OPERATION_INVALID,
-                 "%s", _("domain is not paused"));
+        oneError(VIR_ERR_OPERATION_INVALID, "%s",
+                 _("domain is not paused"));
     } else {
-        oneError(dom->conn, dom, VIR_ERR_INVALID_DOMAIN,
+        oneError(VIR_ERR_INVALID_DOMAIN,
                  _("no domain with matching id %d"), dom->id);
     }
 

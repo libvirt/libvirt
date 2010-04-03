@@ -43,12 +43,12 @@ typedef struct one_driver one_driver_t;
 
 virCapsPtr oneCapsInit(void);
 
-int oneSubmitVM(virConnectPtr conn ,one_driver_t* driver, virDomainObjPtr  vm);
+int oneSubmitVM(one_driver_t* driver, virDomainObjPtr  vm);
 
 char* xmlOneTemplate(virDomainDefPtr def);
 
-# define oneError(conn, dom, code, ...)                                  \
-    virReportErrorHelper(conn, VIR_FROM_ONE, code, __FILE__,            \
+# define oneError(code, ...)                                            \
+    virReportErrorHelper(NULL, VIR_FROM_ONE, code, __FILE__,            \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #endif /* ONE_CONF_H */
