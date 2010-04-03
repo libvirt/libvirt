@@ -1469,7 +1469,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    rc = openMacvtapTap(conn, net->ifname, net->mac, linkdev, brmode,
+    rc = openMacvtapTap(net->ifname, net->mac, linkdev, brmode,
                         &res_ifname, vnet_hdr);
     if (rc >= 0) {
         VIR_FREE(net->ifname);

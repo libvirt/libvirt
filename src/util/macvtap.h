@@ -28,8 +28,7 @@
 
 #  include "internal.h"
 
-int openMacvtapTap(virConnectPtr conn,
-                   const char *ifname,
+int openMacvtapTap(const char *ifname,
                    const unsigned char *macaddress,
                    const char *linkdev,
                    int mode,
