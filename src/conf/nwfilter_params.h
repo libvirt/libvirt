@@ -50,4 +50,10 @@ int virNWFilterHashTablePutAll(virConnectPtr conn,
                                virNWFilterHashTablePtr src,
                                virNWFilterHashTablePtr dest);
 
+# define VALID_VARNAME \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+
+# define VALID_VARVALUE \
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:"
+
 #endif /* NWFILTER_PARAMS_H */

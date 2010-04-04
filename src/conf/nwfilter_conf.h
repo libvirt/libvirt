@@ -568,9 +568,6 @@ void virNWFilterPoolObjUnlock(virNWFilterPoolObjPtr obj);
 int virNWFilterConfLayerInit(virHashIterator domUpdateCB);
 void virNWFilterConfLayerShutdown(void);
 
-int virNWFilterParamConfLayerInit(void);
-void virNWFilterParamConfLayerShutdown(void);
-
 # define virNWFilterReportError(conn, code, fmt...)                          \
         (void)conn;                                                          \
         virReportErrorHelper(NULL, VIR_FROM_NWFILTER, code, __FILE__,	\

@@ -2635,16 +2635,13 @@ int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
     if (virMutexInit(&updateMutex))
         return 1;
 
-    if (virNWFilterParamConfLayerInit())
-        return 1;
-
     return 0;
 }
 
 
 void virNWFilterConfLayerShutdown(void)
 {
-    virNWFilterParamConfLayerShutdown();
+    virMutexDestroy(&updateMutex);
 }
 
 

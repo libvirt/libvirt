@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
-
 #include "internal.h"
 
 #include "memory.h"
@@ -34,13 +32,6 @@
 
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
-
-/*
- * regular expressions for parameter names and values
- */
-static regex_t regex_nam;
-static regex_t regex_val;
-
 
 static void
 hashDealloc(void *payload, const char *name ATTRIBUTE_UNUSED)
@@ -215,6 +206,21 @@ err_exit:
 
 
 #ifndef PROXY
+
+static bool
+isValidVarName(const char *var)
+{
+    return var[strspn(var, VALID_VARNAME)] == 0;
+}
+
+
+static bool
+isValidVarValue(const char *value)
+{
+    return value[strspn(value, VALID_VARVALUE)] == 0;
+}
+
+
 virNWFilterHashTablePtr
 virNWFilterParseParamAttributes(xmlNodePtr cur)
 {
@@ -234,9 +240,9 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                 nam = virXMLPropString(cur, "name");
                 val = virXMLPropString(cur, "value");
                 if (nam != NULL && val != NULL) {
-                    if (regexec(&regex_nam, nam, 0, NULL, 0) != 0)
+                    if (!isValidVarName(nam))
                         goto skip_entry;
-                    if (regexec(&regex_val, val, 0, NULL, 0) != 0)
+                    if (!isValidVarValue(nam))
                         goto skip_entry;
                     if (virNWFilterHashTablePut(table, nam, val, 1)) {
                         VIR_FREE(nam);
@@ -295,26 +301,4 @@ virNWFilterFormatParamAttributes(virNWFilterHashTablePtr table,
     }
 
     return virBufferContentAndReset(&buf);
-}
-
-
-int virNWFilterParamConfLayerInit(void) {
-
-    if (regcomp(&regex_nam, "^[a-zA-Z0-9_]+$"  ,
-                            REG_NOSUB|REG_EXTENDED) != 0)
-        return 1;
-
-    if (regcomp(&regex_val, "^[a-zA-Z0-9_.:]+$",
-                            REG_NOSUB|REG_EXTENDED) != 0) {
-        regfree(&regex_nam);
-        return 1;
-    }
-
-    return 0;
-}
-
-
-void virNWFilterParamConfLayerShutdown(void) {
-    regfree(&regex_nam);
-    regfree(&regex_val);
 }
