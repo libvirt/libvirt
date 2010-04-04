@@ -204,7 +204,7 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_IPMASK:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
