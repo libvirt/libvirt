@@ -639,6 +639,55 @@ Output a list of UUIDs of known secrets to stdout.
 
 =back
 
+=head1 SNAPSHOT COMMMANDS
+
+The following commands manipulate domain snapshots.  Snapshots take the
+disk, memory, and device state of a domain at a point-of-time, and save it
+for future use.  They have many uses, from saving a "clean" copy of an OS
+image to saving a domain's state before a potentially destructive operation.
+Snapshots are identified with a unique name.  See
+L<http://libvirt.org/formatsnapshot.html> for documentation of the XML format
+used to represent properties of snapshots.
+
+=over 4
+
+=item B<snapshot-create> I<domain> I<xmlfile>
+
+Create a snapshot for domain I<domain> with the properties specified in
+I<xmlfile>.  The only properties settable for a domain snapshot are the
+<name> and <description>; the rest of the fields are ignored, and
+automatically filled in by libvirt.  If I<xmlfile> is completely omitted,
+then libvirt will choose a value for all fields.
+
+=item B<snapshot-current> I<domain>
+
+Output the snapshot XML for the domain's current snapshot (if any).
+
+=item B<snapshot-list> I<domain>
+
+List all of the available snapshots for the given domain.
+
+=item B<snapshot-dumpxml> I<domain> I<snapshot>
+
+Output the snapshot XML for the domain's snapshot named I<snapshot>.
+
+=item B<revert-to-snapshot> I<domain> I<snapshot>
+
+Revert the given domain to the snapshot specified by I<snapshot>.  Be aware
+that this is a destructive action; any changes in the domain since the
+snapshot was taken will be lost.  Also note that the state of the domain after
+revert-to-snapshot is complete will be the state of the domain at the time
+the original snapshot was taken.
+
+=item B<snapshot-delete> I<domain> I<snapshot> I<--children>
+
+Delete the snapshot for the domain named I<snapshot>.  If this snapshot
+has child snapshots, changes from this snapshot will be merged into the
+children.  If I<--children> is passed, then delete this snapshot and any
+children of this snapshot.
+
+=back
+
 =head1 ENVIRONMENT
 
 The following environment variables can be set to alter the behaviour
