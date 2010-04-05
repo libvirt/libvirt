@@ -483,7 +483,7 @@ AppArmorSetSecurityProcessLabel(virSecurityDriverPtr drv, virDomainObjPtr vm)
     }
 
     if (aa_change_profile(profile_name) < 0) {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("error calling aa_change_profile()"));
         goto clean;
     }
