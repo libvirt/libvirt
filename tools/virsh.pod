@@ -103,10 +103,12 @@ Will print the current directory.
 
 =item B<connect> I<URI> optional I<--readonly>
 
-(Re)-Connect to the hypervisor. This is a build-in command after shell
-start up, and usually get an I<URI> parameter specifying how to connect
-to the hypervisor. The documentation page at L<http://libvirt.org/uri.html>
-list the values supported but the most common are:
+(Re)-Connect to the hypervisor. When the shell is first started, this
+is automatically run with the I<URI> parameter requested by the C<-c>
+option on the command line. The I<URI> parameter specifies how to
+connect to the hypervisor. The documentation page at
+L<http://libvirt.org/uri.html> list the values supported, but the most
+common are:
 
 =over 4
 
@@ -116,11 +118,11 @@ this is used to connect to the local Xen hypervisor, this is the default
 
 =item qemu:///system
 
-allow to connect locally as root to the daemon supervising QEmu and KVM domains
+connect locally as root to the daemon supervising QEmu and KVM domains
 
 =item qemu:///session
 
-allow to connect locally as a normal user to his own set of QEmu and KVM domains
+connect locally as a normal user to his own set of QEmu and KVM domains
 
 =item lxc:///
 
@@ -252,7 +254,7 @@ I<domain-id> can be specified as an short integer, a name or a full UUID.
 
 Configure a domain to be automatically started at boot.
 
-The option I<--disable> disable autostarting.
+The option I<--disable> disables autostarting.
 
 =item B<console> I<domain-id>
 
@@ -260,11 +262,15 @@ Connect the virtual serial console for the guest.
 
 =item B<create> I<FILE>
 
-Create a domain from an XML <file>. An easy way to create the XML <file> is to use the B<dumpxml> command to obtain the definition of a pre-existing guest.
+Create a domain from an XML <file>. An easy way to create the XML
+<file> is to use the B<dumpxml> command to obtain the definition of a
+pre-existing guest.
 
 B<Example>
 
-virsh dumpxml <domain-id> > file.
+virsh dumpxml <domain-id> > domain.xml
+edit domain.xml
+virsh create < domain.xml
 
 =item B<define> I<FILE>
 
@@ -306,6 +312,14 @@ Convert a domain name (or UUID) to a domain id
 
 Returns basic information about the domain.
 
+=item B<domjobabort I<domain-id-or-uuid>
+
+Abort the currently running domain job.
+
+=item B<domjobinfo> I<domain-id-or-uuid>
+
+Returns information about jobs running on a domain.
+
 =item B<domname> I<domain-id-or-uuid>
 
 Convert a domain Id (or UUID) to domain name
@@ -314,22 +328,35 @@ Convert a domain Id (or UUID) to domain name
 
 Returns state about a running domain.
 
+=item B<domxml-from-native> I<format> I<config>
+
+Convert the file I<config> in the native guest configuration format
+named by I<format> to a domain XML format.
+
+=item B<domxml-to-native> I<format> I<xml>
+
+Convert the file I<xml> in domain XML format to the native guest
+configuration format named by I<format>.
+
 =item B<dump> I<domain-id> I<corefilepath>
 
 Dumps the core of a domain to a file for analysis.
 
 =item B<dumpxml> I<domain-id>
 
-Output the domain information as an XML dump to stdout, this format can be used by the B<create> command.
+Output the domain information as an XML dump to stdout, this format
+can be used by the B<create> command.
 
 =item B<edit> I<domain-id>
 
 Edit the XML configuration file for a domain.
 
 This is equivalent to:
+
  virsh dumpxml domain > domain.xml
  edit domain.xml
  virsh define domain.xml
+
 except that it does some error checking.
 
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
@@ -564,9 +591,11 @@ Output the virtual network information as an XML dump to stdout.
 Edit the XML configuration file for a network.
 
 This is equivalent to:
+
  virsh net-dumpxml network > network.xml
  edit network.xml
- virsh define network.xml
+ virsh net-define network.xml
+
 except that it does some error checking.
 
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
@@ -595,6 +624,124 @@ Undefine the configuration for an inactive network.
 Convert a network name to network UUID.
 
 =back
+
+=head1 STORAGE POOL COMMANDS
+
+The following commands manipulate storage pools. Libvirt has the
+capability to manage various storage solutions, including files, raw
+partitions, and domain-specific formats, used to provide the storage
+volumes visible as devices within virtual machines. For more detailed
+information about this feature, see the documentation at
+L<http://libvirt.org/formatstorage.html> . A lot of the commands for
+pools are similar to the ones used for domains.
+
+=over 4
+
+=item B<find-storage-pool-sources> I<type> optional I<srcSpec>
+
+Returns XML describing all storage pools of a given I<type> that could
+be found.  If I<srcSpec> is provided, it is a file that contains XML
+to further restrict the query for pools.
+
+=item B<find-storage-pool-sources> I<type> optional I<host> I<port>
+
+Returns XML describing all storage pools of a given I<type> that could
+be found.  If I<host> and I<port> are provided, they control where the
+query is performed.
+
+=item B<pool-autostart> I<pool-or-uuid> optional I<--disable>
+
+Configure whether I<pool> should automatically start at boot.
+
+=item B<pool-build> I<pool-or-uuid>
+
+Build a given pool.
+
+=item B<pool-create> I<file>
+
+Create and start a pool object from the XML I<file>.
+
+=item B<pool-create-as> I<name> I<--print-xml> I<type> optional I<source-host>
+I<source-path> I<source-dev> I<source-name> <target>
+
+Create and start a pool object I<name> from the raw parameters.  If
+I<--print-xml> is specified, then print the XML of the pool object
+without creating the pool.  Otherwise, the pool has the specified
+I<type>.
+
+=item B<pool-define> I<file>
+
+Create, but do not start, a pool object from the XML I<file>.
+
+=item B<pool-define-as> I<name> I<--print-xml> I<type> optional I<source-host>
+I<source-path> I<source-dev> I<source-name> <target>
+
+Create, but do not start, a pool object I<name> from the raw parameters.  If
+I<--print-xml> is specified, then print the XML of the pool object
+without defining the pool.  Otherwise, the pool has the specified
+I<type>.
+
+=item B<pool-destroy> I<pool-or-uuid>
+
+Destroy a given I<pool> object. Libvirt will no longer manage the
+storage described by the pool object, but the raw data contained in
+the pool is not changed, and can be later recovered with
+B<pool-create>.
+
+=item B<pool-delete> I<pool-or-uuid>
+
+Destroy the resources used by a given I<pool> object. This operation
+is non-recoverable.  The I<pool> object will still exist after this
+command.
+
+=item B<pool-dumpxml> I<pool-or-uuid>
+
+Returns the XML information about the I<pool> object.
+
+=item B<pool-edit> I<pool-or-uuid>
+
+Edit the XML configuration file for a storage pool.
+
+This is equivalent to:
+
+ virsh pool-dumpxml pool > pool.xml
+ edit pool.xml
+ virsh pool-define pool.xml
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
+=item B<pool-info> I<pool-or-uuid>
+
+Returns basic information about the I<pool> object.
+
+=item B<pool-list> optional I<--inactive> I<--all>
+
+List pool objects known to libvirt.  By default, only pools in use by
+active domains are listed; I<--inactive> lists just the inactive
+pools, and I<--all> lists all pools.
+
+=item B<pool-name> I<uuid>
+
+Convert the I<uuid> to a pool name.
+
+=item B<pool-refresh> I<pool-or-uuid>
+
+Refresh the list of volumes contained in I<pool>.
+
+=item B<pool-start> I<pool-or-uuid>
+
+Start the storage I<pool>, which is previously defined but inactive.
+
+=item B<pool-undefine> I<pool-or-uuid>
+
+Undefine the configuration for an inactive I<pool>.
+
+=item B<pool-uuid> I<pool>
+
+Returns the UUID of the named I<pool>.
 
 =head1 SECRET COMMMANDS
 
@@ -702,11 +849,11 @@ format as accepted by the B<connect> option.
 
 =item VISUAL
 
-The editor to use by the B<edit> and B<net-edit> options.
+The editor to use by the B<edit> and related options.
 
 =item EDITOR
 
-The editor to use by the B<edit> and B<net-edit> options, if C<VISUAL>
+The editor to use by the B<edit> and related options, if C<VISUAL>
 is not set.
 
 =item LIBVIRT_DEBUG=LEVEL
