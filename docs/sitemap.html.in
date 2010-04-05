@@ -114,6 +114,10 @@
                 <a href="formatsecret.html">Secrets</a>
                 <span>The secret XML format</span>
               </li>
+              <li>
+                <a href="formatsnapshot.html">Snapshots</a>
+                <span>The snapshot XML format</span>
+              </li>
             </ul>
           </li>
           <li>
