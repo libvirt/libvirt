@@ -39,7 +39,7 @@ static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
     if (!(dev = virNWFilterDefParseString(NULL, inXmlData)))
         goto fail;
 
-    if (!(actual = virNWFilterDefFormat(NULL, dev)))
+    if (!(actual = virNWFilterDefFormat(dev)))
         goto fail;
 
     if (STRNEQ(outXmlData, actual)) {

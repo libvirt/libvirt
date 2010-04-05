@@ -25,8 +25,7 @@
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 
-int virNWFilterRuleInstAddData(virConnectPtr conn,
-                               virNWFilterRuleInstPtr res,
+int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                                void *data);
 
 
@@ -48,8 +47,7 @@ int virNWFilterTearOldFilter(virConnectPtr conn,
 
 int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 
-virNWFilterHashTablePtr virNWFilterCreateVarHashmap(virConnectPtr conn,
-                                                     char *macaddr);
+virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr);
 
 void virNWFilterDomainFWUpdateCB(void *payload,
                                  const char *name ATTRIBUTE_UNUSED,

@@ -194,8 +194,8 @@ nwfilterLookupByUUID(virConnectPtr conn,
     nwfilterDriverUnlock(driver);
 
     if (!pool) {
-        virNWFilterReportError(conn, VIR_ERR_NO_NWFILTER,
-                              "%s", _("no pool with matching uuid"));
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
+                               "%s", _("no pool with matching uuid"));
         goto cleanup;
     }
 
@@ -220,8 +220,8 @@ nwfilterLookupByName(virConnectPtr conn,
     nwfilterDriverUnlock(driver);
 
     if (!pool) {
-        virNWFilterReportError(conn, VIR_ERR_NO_NWFILTER,
-                              _("no pool with matching name '%s'"), name);
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
+                               _("no pool with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -306,7 +306,7 @@ nwfilterDefine(virConnectPtr conn,
     if (!(pool = virNWFilterPoolObjAssignDef(conn, &driver->pools, def)))
         goto cleanup;
 
-    if (virNWFilterPoolObjSaveDef(conn, driver, pool, def) < 0) {
+    if (virNWFilterPoolObjSaveDef(driver, pool, def) < 0) {
         virNWFilterPoolObjRemove(&driver->pools, pool);
         def = NULL;
         goto cleanup;
@@ -333,19 +333,19 @@ nwfilterUndefine(virNWFilterPtr obj) {
     nwfilterDriverLock(driver);
     pool = virNWFilterPoolObjFindByUUID(&driver->pools, obj->uuid);
     if (!pool) {
-        virNWFilterReportError(obj->conn, VIR_ERR_INVALID_NWFILTER,
-                              "%s", _("no nwfilter pool with matching uuid"));
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+                               "%s", _("no nwfilter pool with matching uuid"));
         goto cleanup;
     }
 
     if (virNWFilterTestUnassignDef(obj->conn, pool)) {
-        virNWFilterReportError(obj->conn, VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                "%s",
                                _("nwfilter is in use"));
         goto cleanup;
     }
 
-    if (virNWFilterPoolObjDeleteDef(obj->conn, pool) < 0)
+    if (virNWFilterPoolObjDeleteDef(pool) < 0)
         goto cleanup;
 
     VIR_FREE(pool->configFile);
@@ -374,12 +374,12 @@ nwfilterDumpXML(virNWFilterPtr obj,
     nwfilterDriverUnlock(driver);
 
     if (!pool) {
-        virNWFilterReportError(obj->conn, VIR_ERR_INVALID_NWFILTER,
-                              "%s", _("no nwfilter pool with matching uuid"));
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
+                               "%s", _("no nwfilter pool with matching uuid"));
         goto cleanup;
     }
 
-    ret = virNWFilterDefFormat(obj->conn, pool->def);
+    ret = virNWFilterDefFormat(pool->def);
 
 cleanup:
     if (pool)

@@ -310,8 +310,7 @@ virNWFilterPoolObjListFree(virNWFilterPoolObjListPtr pools)
 
 
 static int
-virNWFilterRuleDefAddVar(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virNWFilterRuleDefPtr nwf,
+virNWFilterRuleDefAddVar(virNWFilterRuleDefPtr nwf,
                          nwItemDesc *item,
                          const char *var)
 {
@@ -1112,8 +1111,7 @@ virNWIPv6AddressParser(const char *input,
 
 
 static int
-virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            xmlNodePtr node,
+virNWFilterRuleDetailsParse(xmlNodePtr node,
                             virNWFilterRuleDefPtr nwf,
                             const virXMLAttr2Struct *att)
 {
@@ -1152,8 +1150,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
                 flags_set |= NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR;
                 storage_ptr = NULL;
 
-                if (virNWFilterRuleDefAddVar(conn,
-                                             nwf,
+                if (virNWFilterRuleDefAddVar(nwf,
                                              item,
                                              &prop[1]))
                     rc = -1;
@@ -1325,7 +1322,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
 
             if (!found || rc) {
-                virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("%s has illegal value %s"),
                                        att[idx].name, prop);
                 rc = -1;
@@ -1348,8 +1345,7 @@ virNWFilterRuleDetailsParse(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static virNWFilterIncludeDefPtr
-virNWFilterIncludeParse(virConnectPtr conn,
-                        xmlNodePtr cur)
+virNWFilterIncludeParse(xmlNodePtr cur)
 {
     virNWFilterIncludeDefPtr ret;
 
@@ -1360,7 +1356,7 @@ virNWFilterIncludeParse(virConnectPtr conn,
 
     ret->filterref = virXMLPropString(cur, "filter");
     if (!ret->filterref) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("rule node requires action attribute"));
         goto err_exit;
@@ -1548,8 +1544,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
 
 
 static virNWFilterRuleDefPtr
-virNWFilterRuleParse(virConnectPtr conn,
-                     xmlNodePtr node)
+virNWFilterRuleParse(xmlNodePtr node)
 {
     char *action;
     char *direction;
@@ -1571,28 +1566,28 @@ virNWFilterRuleParse(virConnectPtr conn,
     prio      = virXMLPropString(node, "priority");
 
     if (!action) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("rule node requires action attribute"));
         goto err_exit;
     }
 
     if ((ret->action = virNWFilterRuleActionTypeFromString(action)) < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("unknown rule action attribute value"));
         goto err_exit;
     }
 
     if (!direction) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("rule node requires direction attribute"));
         goto err_exit;
     }
 
     if ((ret->tt = virNWFilterRuleDirectionTypeFromString(direction)) < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("unknown rule direction attribute value"));
         goto err_exit;
@@ -1624,8 +1619,7 @@ virNWFilterRuleParse(virConnectPtr conn,
                     found = 1;
                     ret->prtclType = virAttr[i].prtclType;
 
-                    if (virNWFilterRuleDetailsParse(conn,
-                                                    cur,
+                    if (virNWFilterRuleDetailsParse(cur,
                                                     ret,
                                                     virAttr[i].att) < 0) {
                         /* we ignore malformed rules
@@ -1663,8 +1657,7 @@ err_exit:
 
 
 static virNWFilterDefPtr
-virNWFilterDefParseXML(virConnectPtr conn,
-                       xmlXPathContextPtr ctxt) {
+virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     virNWFilterDefPtr ret;
     xmlNodePtr curr = ctxt->node;
     char *uuid = NULL;
@@ -1678,7 +1671,7 @@ virNWFilterDefParseXML(virConnectPtr conn,
 
     ret->name = virXPathString("string(./@name)", ctxt);
     if (!ret->name) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("filter has no name"));
         goto cleanup;
     }
@@ -1688,7 +1681,7 @@ virNWFilterDefParseXML(virConnectPtr conn,
     if (chain) {
         if ((ret->chainsuffix =
              virNWFilterChainSuffixTypeFromString(chain)) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("unknown chain suffix '%s'"), chain);
             goto cleanup;
         }
@@ -1697,13 +1690,13 @@ virNWFilterDefParseXML(virConnectPtr conn,
     uuid = virXPathString("string(./uuid)", ctxt);
     if (uuid == NULL) {
         if (virUUIDGenerate(ret->uuid) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("unable to generate uuid"));
             goto cleanup;
         }
     } else {
         if (virUUIDParse(uuid, ret->uuid) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_XML_ERROR,
+            virNWFilterReportError(VIR_ERR_XML_ERROR,
                                   "%s", _("malformed uuid element"));
             goto cleanup;
         }
@@ -1721,9 +1714,9 @@ virNWFilterDefParseXML(virConnectPtr conn,
 
             /* ignore malformed rule and include elements */
             if (xmlStrEqual(curr->name, BAD_CAST "rule"))
-                entry->rule = virNWFilterRuleParse(conn, curr);
+                entry->rule = virNWFilterRuleParse(curr);
             else if (xmlStrEqual(curr->name, BAD_CAST "filterref"))
-                entry->include = virNWFilterIncludeParse(conn, curr);
+                entry->include = virNWFilterIncludeParse(curr);
 
             if (entry->rule || entry->include) {
                 if (VIR_REALLOC_N(ret->filterEntries, ret->nentries+1) < 0) {
@@ -1762,7 +1755,7 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
             conn->err.code == VIR_ERR_NONE &&
             ctxt->lastError.level == XML_ERR_FATAL &&
             ctxt->lastError.message != NULL) {
-            virNWFilterReportError(conn, VIR_ERR_XML_DETAIL,
+            virNWFilterReportError(VIR_ERR_XML_DETAIL,
                                    _("at line %d: %s"),
                                    ctxt->lastError.line,
                                    ctxt->lastError.message);
@@ -1772,14 +1765,13 @@ catchXMLError (void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 
 
 virNWFilterDefPtr
-virNWFilterDefParseNode(virConnectPtr conn,
-                        xmlDocPtr xml,
+virNWFilterDefParseNode(xmlDocPtr xml,
                         xmlNodePtr root) {
     xmlXPathContextPtr ctxt = NULL;
     virNWFilterDefPtr def = NULL;
 
     if (STRNEQ((const char *)root->name, "filter")) {
-        virNWFilterReportError(conn, VIR_ERR_XML_ERROR,
+        virNWFilterReportError(VIR_ERR_XML_ERROR,
                                "%s",
                                _("unknown root element for nw filter pool"));
         goto cleanup;
@@ -1792,7 +1784,7 @@ virNWFilterDefParseNode(virConnectPtr conn,
     }
 
     ctxt->node = root;
-    def = virNWFilterDefParseXML(conn, ctxt);
+    def = virNWFilterDefParseXML(ctxt);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -1802,8 +1794,8 @@ cleanup:
 
 static virNWFilterDefPtr
 virNWFilterDefParse(virConnectPtr conn,
-                     const char *xmlStr,
-                     const char *filename) {
+                    const char *xmlStr,
+                    const char *filename) {
     virNWFilterDefPtr ret = NULL;
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
@@ -1830,19 +1822,19 @@ virNWFilterDefParse(virConnectPtr conn,
 
     if (!xml) {
         if (conn && conn->err.code == VIR_ERR_NONE)
-              virNWFilterReportError(conn, VIR_ERR_XML_ERROR,
+              virNWFilterReportError(VIR_ERR_XML_ERROR,
                                      "%s",_("failed to parse xml document"));
         goto cleanup;
     }
 
     node = xmlDocGetRootElement(xml);
     if (node == NULL) {
-        virNWFilterReportError(conn, VIR_ERR_XML_ERROR,
+        virNWFilterReportError(VIR_ERR_XML_ERROR,
                                "%s", _("missing root element"));
         goto cleanup;
     }
 
-    ret = virNWFilterDefParseNode(conn, xml, node);
+    ret = virNWFilterDefParseNode(xml, node);
 
     xmlFreeParserCtxt (pctxt);
     xmlFreeDoc(xml);
@@ -1858,7 +1850,7 @@ virNWFilterDefParse(virConnectPtr conn,
 
 virNWFilterDefPtr
 virNWFilterDefParseString(virConnectPtr conn,
-                             const char *xmlStr)
+                          const char *xmlStr)
 {
     return virNWFilterDefParse(conn, xmlStr, NULL);
 }
@@ -1874,7 +1866,7 @@ virNWFilterDefParseFile(virConnectPtr conn,
 
 virNWFilterPoolObjPtr
 virNWFilterPoolObjFindByUUID(virNWFilterPoolObjListPtr pools,
-                            const unsigned char *uuid)
+                             const unsigned char *uuid)
 {
     unsigned int i;
 
@@ -1891,7 +1883,7 @@ virNWFilterPoolObjFindByUUID(virNWFilterPoolObjListPtr pools,
 
 virNWFilterPoolObjPtr
 virNWFilterPoolObjFindByName(virNWFilterPoolObjListPtr pools,
-                            const char *name)
+                             const char *name)
 {
     unsigned int i;
 
@@ -1906,8 +1898,7 @@ virNWFilterPoolObjFindByName(virNWFilterPoolObjListPtr pools,
 }
 
 
-int virNWFilterSaveXML(virConnectPtr conn,
-                       const char *configDir,
+int virNWFilterSaveXML(const char *configDir,
                        virNWFilterDefPtr def,
                        const char *xml)
 {
@@ -1916,7 +1907,7 @@ int virNWFilterSaveXML(virConnectPtr conn,
     size_t towrite;
     int err;
 
-    if ((configFile = virNWFilterConfigFile(conn, configDir, def->name)) == NULL)
+    if ((configFile = virNWFilterConfigFile(configDir, def->name)) == NULL)
         goto cleanup;
 
     if ((err = virFileMakePath(configDir))) {
@@ -1962,17 +1953,16 @@ int virNWFilterSaveXML(virConnectPtr conn,
 }
 
 
-int virNWFilterSaveConfig(virConnectPtr conn,
-                          const char *configDir,
+int virNWFilterSaveConfig(const char *configDir,
                           virNWFilterDefPtr def)
 {
     int ret = -1;
     char *xml;
 
-    if (!(xml = virNWFilterDefFormat(conn, def)))
+    if (!(xml = virNWFilterDefFormat(def)))
         goto cleanup;
 
-    if (virNWFilterSaveXML(conn, configDir, def, xml))
+    if (virNWFilterSaveXML(configDir, def, xml))
         goto cleanup;
 
     ret = 0;
@@ -2119,13 +2109,13 @@ virNWFilterTestUnassignDef(virConnectPtr conn,
 
 virNWFilterPoolObjPtr
 virNWFilterPoolObjAssignDef(virConnectPtr conn,
-                           virNWFilterPoolObjListPtr pools,
-                           virNWFilterDefPtr def)
+                            virNWFilterPoolObjListPtr pools,
+                            virNWFilterDefPtr def)
 {
     virNWFilterPoolObjPtr pool;
 
     if (virNWFilterDefLoopDetect(conn, pools, def)) {
-        virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                               "%s", _("filter would introduce a loop"));
         return NULL;
     }
@@ -2154,7 +2144,7 @@ virNWFilterPoolObjAssignDef(virConnectPtr conn,
     }
 
     if (virMutexInitRecursive(&pool->lock) < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("cannot initialize mutex"));
         VIR_FREE(pool);
         return NULL;
@@ -2178,9 +2168,9 @@ virNWFilterPoolObjAssignDef(virConnectPtr conn,
 
 static virNWFilterPoolObjPtr
 virNWFilterPoolObjLoad(virConnectPtr conn,
-                      virNWFilterPoolObjListPtr pools,
-                      const char *file,
-                      const char *path)
+                       virNWFilterPoolObjListPtr pools,
+                       const char *file,
+                       const char *path)
 {
     virNWFilterDefPtr def;
     virNWFilterPoolObjPtr pool;
@@ -2190,7 +2180,7 @@ virNWFilterPoolObjLoad(virConnectPtr conn,
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
             _("network filter pool config filename '%s' does not match pool name '%s'"),
             path, def->name);
         virNWFilterDefFree(def);
@@ -2215,8 +2205,8 @@ virNWFilterPoolObjLoad(virConnectPtr conn,
 
 int
 virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
-                             virNWFilterPoolObjListPtr pools,
-                             const char *configDir)
+                              virNWFilterPoolObjListPtr pools,
+                              const char *configDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -2242,7 +2232,7 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
 
         if (virFileBuildPath(configDir, entry->d_name,
                              NULL, path, PATH_MAX) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("config filename '%s/%s' is too long"),
                                    configDir, entry->d_name);
             continue;
@@ -2260,10 +2250,9 @@ virNWFilterPoolLoadAllConfigs(virConnectPtr conn,
 
 
 int
-virNWFilterPoolObjSaveDef(virConnectPtr conn,
-                         virNWFilterDriverStatePtr driver,
-                         virNWFilterPoolObjPtr pool,
-                         virNWFilterDefPtr def)
+virNWFilterPoolObjSaveDef(virNWFilterDriverStatePtr driver,
+                          virNWFilterPoolObjPtr pool,
+                          virNWFilterDefPtr def)
 {
     char *xml;
     int fd = -1, ret = -1;
@@ -2282,7 +2271,7 @@ virNWFilterPoolObjSaveDef(virConnectPtr conn,
 
         if (virFileBuildPath(driver->configDir, def->name, ".xml",
                              path, sizeof(path)) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                   "%s", _("cannot construct config file path"));
             return -1;
         }
@@ -2292,8 +2281,8 @@ virNWFilterPoolObjSaveDef(virConnectPtr conn,
         }
     }
 
-    if (!(xml = virNWFilterDefFormat(conn, def))) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+    if (!(xml = virNWFilterDefFormat(def))) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                               "%s", _("failed to generate XML"));
         return -1;
     }
@@ -2335,19 +2324,18 @@ virNWFilterPoolObjSaveDef(virConnectPtr conn,
 
 
 int
-virNWFilterPoolObjDeleteDef(virConnectPtr conn,
-                           virNWFilterPoolObjPtr pool)
+virNWFilterPoolObjDeleteDef(virNWFilterPoolObjPtr pool)
 {
     if (!pool->configFile) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("no config file for %s"), pool->def->name);
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("no config file for %s"), pool->def->name);
         return -1;
     }
 
     if (unlink(pool->configFile) < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot remove config for %s"),
-                              pool->def->name);
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot remove config for %s"),
+                               pool->def->name);
         return -1;
     }
 
@@ -2369,8 +2357,7 @@ virNWIPAddressFormat(virBufferPtr buf, nwIPAddressPtr ipaddr)
 
 
 static void
-virNWFilterRuleDefDetailsFormat(virConnectPtr conn,
-                                virBufferPtr buf,
+virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                                 const char *type,
                                 const virXMLAttr2Struct *att,
                                 virNWFilterRuleDefPtr def)
@@ -2420,7 +2407,7 @@ virNWFilterRuleDefDetailsFormat(virConnectPtr conn,
                               att[i].name);
             if (att[i].formatter) {
                if (!att[i].formatter(buf, def)) {
-                  virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                  virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                          _("formatter for %s %s reported error"),
                                          type,
                                          att[i].name);
@@ -2484,8 +2471,7 @@ err_exit:
 
 
 static char *
-virNWFilterRuleDefFormat(virConnectPtr conn,
-                         virNWFilterRuleDefPtr def)
+virNWFilterRuleDefFormat(virNWFilterRuleDefPtr def)
 {
     int i;
     virBuffer buf  = VIR_BUFFER_INITIALIZER;
@@ -2500,8 +2486,7 @@ virNWFilterRuleDefFormat(virConnectPtr conn,
     i = 0;
     while (virAttr[i].id) {
         if (virAttr[i].prtclType == def->prtclType) {
-            virNWFilterRuleDefDetailsFormat(conn,
-                                            &buf2,
+            virNWFilterRuleDefDetailsFormat(&buf2,
                                             virAttr[i].id,
                                             virAttr[i].att,
                                             def);
@@ -2563,18 +2548,16 @@ virNWFilterIncludeDefFormat(virNWFilterIncludeDefPtr inc)
 
 
 static char *
-virNWFilterEntryFormat(virConnectPtr conn,
-                       virNWFilterEntryPtr entry)
+virNWFilterEntryFormat(virNWFilterEntryPtr entry)
 {
     if (entry->rule)
-        return virNWFilterRuleDefFormat(conn, entry->rule);
+        return virNWFilterRuleDefFormat(entry->rule);
     return virNWFilterIncludeDefFormat(entry->include);
 }
 
 
 char *
-virNWFilterDefFormat(virConnectPtr conn,
-                     virNWFilterDefPtr def)
+virNWFilterDefFormat(virNWFilterDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -2590,7 +2573,7 @@ virNWFilterDefFormat(virConnectPtr conn,
     virBufferVSprintf(&buf,"  <uuid>%s</uuid>\n", uuid);
 
     for (i = 0; i < def->nentries; i++) {
-        xml = virNWFilterEntryFormat(conn, def->filterEntries[i]);
+        xml = virNWFilterEntryFormat(def->filterEntries[i]);
         if (!xml)
             goto err_exit;
         virBufferVSprintf(&buf, "%s", xml);
@@ -2613,8 +2596,7 @@ virNWFilterDefFormat(virConnectPtr conn,
 }
 
 
-char *virNWFilterConfigFile(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            const char *dir,
+char *virNWFilterConfigFile(const char *dir,
                             const char *name)
 {
     char *ret = NULL;

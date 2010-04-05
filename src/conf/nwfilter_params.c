@@ -153,7 +153,6 @@ virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
 struct addToTableStruct {
     virNWFilterHashTablePtr target;
     int errOccurred;
-    virConnectPtr conn;
 };
 
 
@@ -174,7 +173,7 @@ addToTable(void *payload, const char *name, void *data)
     }
 
     if (virNWFilterHashTablePut(atts->target, name, val, 1) != 0) {
-        virNWFilterReportError(atts->conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not put variable '%s' into hashmap"),
                                name);
         atts->errOccurred = 1;
@@ -184,14 +183,12 @@ addToTable(void *payload, const char *name, void *data)
 
 
 int
-virNWFilterHashTablePutAll(virConnectPtr conn,
-                           virNWFilterHashTablePtr src,
+virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
                            virNWFilterHashTablePtr dest)
 {
     struct addToTableStruct atts = {
         .target = dest,
         .errOccurred = 0,
-        .conn = conn,
     };
 
     virHashForEach(src->hashTable, addToTable, &atts);

@@ -46,8 +46,7 @@ int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                             int freeName);
 int virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
                                     const char *name);
-int virNWFilterHashTablePutAll(virConnectPtr conn,
-                               virNWFilterHashTablePtr src,
+int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
                                virNWFilterHashTablePtr dest);
 
 # define VALID_VARNAME \

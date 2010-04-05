@@ -62,7 +62,6 @@ virNWFilterTechDriverForName(const char *name) {
 
 /**
  * virNWFilterRuleInstAddData:
- * @conn : pointer to virConnect object
  * @res : pointer to virNWFilterRuleInst object collecting the instantiation
  *        data of a single firewall rule.
  * @data : the opaque data that the driver wants to add
@@ -77,8 +76,7 @@ virNWFilterTechDriverForName(const char *name) {
  * message attached to the virConnect object.
  */
 int
-virNWFilterRuleInstAddData(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           virNWFilterRuleInstPtr res,
+virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                            void *data)
 {
     if (VIR_REALLOC_N(res->data, res->ndata+1) < 0) {
@@ -107,7 +105,6 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 
 /**
  * virNWFilterVarHashmapAddStdValues:
- * @conn: Poijter to virConnect object
  * @tables: pointer to hash tabel to add values to
  * @macaddr: The string of the MAC address to add to the hash table,
  *    may be NULL
@@ -118,15 +115,14 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
  * Adds a couple of standard keys (MAC, IP) to the hash table.
  */
 static int
-virNWFilterVarHashmapAddStdValues(virConnectPtr conn,
-                                  virNWFilterHashTablePtr table,
+virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
                                   char *macaddr)
 {
     if (macaddr) {
         if (virHashAddEntry(table->hashTable,
                             NWFILTER_STD_VAR_MAC,
                             macaddr) < 0) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Could not add variable 'MAC' to hashmap"));
             return 1;
         }
@@ -138,7 +134,6 @@ virNWFilterVarHashmapAddStdValues(virConnectPtr conn,
 
 /**
  * virNWFilterCreateVarHashmap:
- * @conn: pointer to virConnect object
  * @macaddr: pointer to string containing formatted MAC address of interface
  *
  * Create a hashmap used for evaluating the firewall rules. Initializes
@@ -148,15 +143,14 @@ virNWFilterVarHashmapAddStdValues(virConnectPtr conn,
  * is attached to the virConnect object.
  */
 virNWFilterHashTablePtr
-virNWFilterCreateVarHashmap(virConnectPtr conn,
-                            char *macaddr) {
+virNWFilterCreateVarHashmap(char *macaddr) {
     virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
     if (!table) {
         virReportOOMError();
         return NULL;
     }
 
-    if (virNWFilterVarHashmapAddStdValues(conn, table, macaddr)) {
+    if (virNWFilterVarHashmapAddStdValues(table, macaddr)) {
         virNWFilterHashTableFree(table);
         return NULL;
     }
@@ -216,7 +210,6 @@ virNWFilterRuleInstantiate(virConnectPtr conn,
 
 /**
  * virNWFilterCreateVarsFrom:
- * @conn: pointer to virConnect object
  * @vars1: pointer to hash table
  * @vars2: pointer to hash table
  *
@@ -227,8 +220,7 @@ virNWFilterRuleInstantiate(virConnectPtr conn,
  * contents of var2 will overwrite those of var1.
  */
 static virNWFilterHashTablePtr
-virNWFilterCreateVarsFrom(virConnectPtr conn,
-                          virNWFilterHashTablePtr vars1,
+virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
                           virNWFilterHashTablePtr vars2)
 {
     virNWFilterHashTablePtr res = virNWFilterHashTableCreate(0);
@@ -237,10 +229,10 @@ virNWFilterCreateVarsFrom(virConnectPtr conn,
         return NULL;
     }
 
-    if (virNWFilterHashTablePutAll(conn, vars1, res))
+    if (virNWFilterHashTablePutAll(vars1, res))
         goto err_exit;
 
-    if (virNWFilterHashTablePutAll(conn, vars2, res))
+    if (virNWFilterHashTablePutAll(vars2, res))
         goto err_exit;
 
     return res;
@@ -324,7 +316,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
             if (obj) {
 
                 if (obj->wantRemoved) {
-                    virNWFilterReportError(conn, VIR_ERR_NO_NWFILTER,
+                    virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                            _("Filter '%s' is in use."),
                                            inc->filterref);
                     rc = 1;
@@ -334,8 +326,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
 
                 // create a temporary hashmap for depth-first tree traversal
                 virNWFilterHashTablePtr tmpvars =
-                                      virNWFilterCreateVarsFrom(conn,
-                                                                inc->params,
+                                      virNWFilterCreateVarsFrom(inc->params,
                                                                 vars);
                 if (!tmpvars) {
                     virReportOOMError();
@@ -373,7 +364,7 @@ _virNWFilterInstantiateRec(virConnectPtr conn,
                 if (rc)
                     break;
             } else {
-                virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("referenced filter '%s' is missing"),
                                        inc->filterref);
                 rc = 1;
@@ -516,7 +507,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
     techdriver = virNWFilterTechDriverForName(drvname);
 
     if (!techdriver) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not get access to ACL tech "
                                "driver '%s'"),
                                drvname);
@@ -527,14 +518,14 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
 
     obj = virNWFilterPoolObjFindByName(&driver->pools, net->filter);
     if (!obj) {
-        virNWFilterReportError(conn, VIR_ERR_NO_NWFILTER,
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                _("Could not find filter '%s'"),
                                net->filter);
         return 1;
     }
 
     if (obj->wantRemoved) {
-        virNWFilterReportError(conn, VIR_ERR_NO_NWFILTER,
+        virNWFilterReportError(VIR_ERR_NO_NWFILTER,
                                _("Filter '%s' is in use."),
                                net->filter);
         rc = 1;
@@ -549,8 +540,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
         goto err_exit;
     }
 
-    vars1 = virNWFilterCreateVarHashmap(conn,
-                                        str_macaddr);
+    vars1 = virNWFilterCreateVarHashmap(str_macaddr);
     if (!vars1) {
         rc = 1;
         goto err_exit;
@@ -558,8 +548,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
 
     str_macaddr = NULL;
 
-    vars = virNWFilterCreateVarsFrom(conn,
-                                     vars1,
+    vars = virNWFilterCreateVarsFrom(vars1,
                                      net->filterparams);
     if (!vars) {
         rc = 1;
@@ -630,7 +619,7 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
     virNWFilterTechDriverPtr techdriver;
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not get access to ACL tech "
                                "driver '%s'"),
                                drvname);
@@ -649,7 +638,7 @@ virNWFilterTearOldFilter(virConnectPtr conn,
     virNWFilterTechDriverPtr techdriver;
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not get access to ACL tech "
                                "driver '%s'"),
                                drvname);
@@ -668,12 +657,10 @@ virNWFilterTeardownFilter(const virDomainNetDefPtr net)
     techdriver = virNWFilterTechDriverForName(drvname);
 
     if (!techdriver) {
-#if 0
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not get access to ACL tech "
                                "driver '%s'"),
                                drvname);
-#endif
         return 1;
     }
 

@@ -106,8 +106,7 @@ static const char *supported_protocols[] = {
 
 
 static int
-printVar(virConnectPtr conn,
-         virNWFilterHashTablePtr vars,
+printVar(virNWFilterHashTablePtr vars,
          char *buf, int bufsize,
          nwItemDescPtr item,
          int *done)
@@ -117,14 +116,14 @@ printVar(virConnectPtr conn,
     if ((item->flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
         char *val = (char *)virHashLookup(vars->hashTable, item->var);
         if (!val) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                    _("cannot find value for '%s'"),
                                    item->var);
             return 1;
         }
 
         if (!virStrcpy(buf, val, bufsize)) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                    _("Buffer to small to print MAC address "
                                    "'%s' into"),
                                    item->var);
@@ -138,8 +137,7 @@ printVar(virConnectPtr conn,
 
 
 static int
-_printDataType(virConnectPtr conn,
-               virNWFilterHashTablePtr vars,
+_printDataType(virNWFilterHashTablePtr vars,
                char *buf, int bufsize,
                nwItemDescPtr item,
                bool asHex)
@@ -147,7 +145,7 @@ _printDataType(virConnectPtr conn,
     int done;
     char *data;
 
-    if (printVar(conn, vars, buf, bufsize, item, &done))
+    if (printVar(vars, buf, bufsize, item, &done))
         return 1;
 
     if (done)
@@ -157,13 +155,13 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_IPADDR:
         data = virSocketFormatAddr(&item->u.ipaddr.addr);
         if (!data) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv4 address representation "
                                      "is bad"));
             return 1;
         }
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IP address"));
             VIR_FREE(data);
             return 1;
@@ -174,14 +172,14 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_IPV6ADDR:
         data = virSocketFormatAddr(&item->u.ipaddr.addr);
         if (!data) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("internal IPv6 address representation "
                                      "is bad"));
             return 1;
         }
 
         if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+            virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("buffer too small for IPv6 address"));
             VIR_FREE(data);
             return 1;
@@ -192,7 +190,7 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_MACADDR:
     case DATATYPE_MACMASK:
         if (bufsize < VIR_MAC_STRING_BUFLEN) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for MAC address"));
             return 1;
         }
@@ -204,7 +202,7 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_IPMASK:
         if (snprintf(buf, bufsize, "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
@@ -213,7 +211,7 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_UINT16:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u16) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint16 type"));
             return 1;
         }
@@ -222,14 +220,14 @@ _printDataType(virConnectPtr conn,
     case DATATYPE_UINT8:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u8) >= bufsize) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER, "%s",
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
                                    _("Buffer too small for uint8 type"));
             return 1;
         }
     break;
 
     default:
-        virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                _("Unhandled datatype %x"), item->datatype);
         return 1;
     break;
@@ -240,22 +238,20 @@ _printDataType(virConnectPtr conn,
 
 
 static int
-printDataType(virConnectPtr conn,
-              virNWFilterHashTablePtr vars,
+printDataType(virNWFilterHashTablePtr vars,
               char *buf, int bufsize,
               nwItemDescPtr item)
 {
-    return _printDataType(conn, vars, buf, bufsize, item, 0);
+    return _printDataType(vars, buf, bufsize, item, 0);
 }
 
 
 static int
-printDataTypeAsHex(virConnectPtr conn,
-                   virNWFilterHashTablePtr vars,
+printDataTypeAsHex(virNWFilterHashTablePtr vars,
                    char *buf, int bufsize,
                    nwItemDescPtr item)
 {
-    return _printDataType(conn, vars, buf, bufsize, item, 1);
+    return _printDataType(vars, buf, bufsize, item, 1);
 }
 
 
@@ -271,8 +267,7 @@ ebiptablesRuleInstFree(ebiptablesRuleInstPtr inst)
 
 
 static int
-ebiptablesAddRuleInst(virConnectPtr conn,
-                      virNWFilterRuleInstPtr res,
+ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
                       char *commandTemplate,
                       enum virNWFilterChainSuffixType neededChain,
                       char chainprefix,
@@ -292,21 +287,19 @@ ebiptablesAddRuleInst(virConnectPtr conn,
     inst->priority = priority;
     inst->ruleType = ruleType;
 
-    return virNWFilterRuleInstAddData(conn, res, inst);
+    return virNWFilterRuleInstAddData(res, inst);
 }
 
 
 static int
-ebtablesHandleEthHdr(virConnectPtr conn,
-                     virBufferPtr buf,
+ebtablesHandleEthHdr(virBufferPtr buf,
                      virNWFilterHashTablePtr vars,
                      ethHdrDataDefPtr ethHdr)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (HAS_ENTRY_ITEM(&ethHdr->dataSrcMACAddr)) {
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           macaddr, sizeof(macaddr),
                           &ethHdr->dataSrcMACAddr))
             goto err_exit;
@@ -317,8 +310,7 @@ ebtablesHandleEthHdr(virConnectPtr conn,
                       macaddr);
 
         if (HAS_ENTRY_ITEM(&ethHdr->dataSrcMACMask)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               macaddr, sizeof(macaddr),
                               &ethHdr->dataSrcMACMask))
                 goto err_exit;
@@ -330,8 +322,7 @@ ebtablesHandleEthHdr(virConnectPtr conn,
     }
 
     if (HAS_ENTRY_ITEM(&ethHdr->dataDstMACAddr)) {
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           macaddr, sizeof(macaddr),
                           &ethHdr->dataDstMACAddr))
             goto err_exit;
@@ -342,8 +333,7 @@ ebtablesHandleEthHdr(virConnectPtr conn,
                       macaddr);
 
         if (HAS_ENTRY_ITEM(&ethHdr->dataDstMACMask)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               macaddr, sizeof(macaddr),
                               &ethHdr->dataDstMACMask))
                 goto err_exit;
@@ -365,8 +355,7 @@ ebtablesHandleEthHdr(virConnectPtr conn,
 
 /************************ iptables support ************************/
 
-static int iptablesLinkIPTablesBaseChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                         const char *iptables_cmd,
+static int iptablesLinkIPTablesBaseChain(const char *iptables_cmd,
                                          virBufferPtr buf,
                                          const char *udchain,
                                          const char *syschain,
@@ -407,8 +396,7 @@ static int iptablesLinkIPTablesBaseChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int iptablesCreateBaseChains(virConnectPtr conn,
-                                    const char *iptables_cmd,
+static int iptablesCreateBaseChains(const char *iptables_cmd,
                                     virBufferPtr buf)
 {
     virBufferVSprintf(buf,"%s -N " VIRT_IN_CHAIN      CMD_SEPARATOR
@@ -419,13 +407,13 @@ static int iptablesCreateBaseChains(virConnectPtr conn,
                           iptables_cmd,
                           iptables_cmd,
                           iptables_cmd);
-    iptablesLinkIPTablesBaseChain(conn, iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
                                   VIRT_IN_CHAIN     , "FORWARD", 1, 1);
-    iptablesLinkIPTablesBaseChain(conn, iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
                                   VIRT_OUT_CHAIN    , "FORWARD", 2, 1);
-    iptablesLinkIPTablesBaseChain(conn, iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
                                   VIRT_IN_POST_CHAIN, "FORWARD", 3, 1);
-    iptablesLinkIPTablesBaseChain(conn, iptables_cmd, buf,
+    iptablesLinkIPTablesBaseChain(iptables_cmd, buf,
                                   HOST_IN_CHAIN     , "INPUT"  , 1, 1);
 
     return 0;
@@ -433,8 +421,7 @@ static int iptablesCreateBaseChains(virConnectPtr conn,
 
 
 static int
-iptablesCreateTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           const char *iptables_cmd,
+iptablesCreateTmpRootChain(const char *iptables_cmd,
                            virBufferPtr buf,
                            char prefix,
                            int incoming, const char *ifname,
@@ -462,21 +449,19 @@ iptablesCreateTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesCreateTmpRootChains(virConnectPtr conn,
-                            const char *iptables_cmd,
+iptablesCreateTmpRootChains(const char *iptables_cmd,
                             virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesCreateTmpRootChain(conn, iptables_cmd, buf, 'F', 0, ifname, 1);
-    iptablesCreateTmpRootChain(conn, iptables_cmd, buf, 'F', 1, ifname, 1);
-    iptablesCreateTmpRootChain(conn, iptables_cmd, buf, 'H', 1, ifname, 1);
+    iptablesCreateTmpRootChain(iptables_cmd, buf, 'F', 0, ifname, 1);
+    iptablesCreateTmpRootChain(iptables_cmd, buf, 'F', 1, ifname, 1);
+    iptablesCreateTmpRootChain(iptables_cmd, buf, 'H', 1, ifname, 1);
     return 0;
 }
 
 
 static int
-_iptablesRemoveRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         const char *iptables_cmd,
+_iptablesRemoveRootChain(const char *iptables_cmd,
                          virBufferPtr buf,
                          char prefix,
                          int incoming, const char *ifname,
@@ -507,60 +492,55 @@ _iptablesRemoveRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesRemoveRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *iptables_cmd,
+iptablesRemoveRootChain(const char *iptables_cmd,
                         virBufferPtr buf,
                         char prefix,
                         int incoming,
                         const char *ifname)
 {
-    return _iptablesRemoveRootChain(conn, iptables_cmd,
+    return _iptablesRemoveRootChain(iptables_cmd,
                                     buf, prefix, incoming, ifname, 0);
 }
 
 
 static int
-iptablesRemoveTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           const char *iptables_cmd,
+iptablesRemoveTmpRootChain(const char *iptables_cmd,
                            virBufferPtr buf,
                            char prefix,
                            int incoming,
                            const char *ifname)
 {
-    return _iptablesRemoveRootChain(conn, iptables_cmd, buf, prefix,
+    return _iptablesRemoveRootChain(iptables_cmd, buf, prefix,
                                     incoming, ifname, 1);
 }
 
 
 static int
-iptablesRemoveTmpRootChains(virConnectPtr conn,
-                            const char *iptables_cmd,
+iptablesRemoveTmpRootChains(const char *iptables_cmd,
                             virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesRemoveTmpRootChain(conn, iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRemoveTmpRootChain(conn, iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRemoveTmpRootChain(conn, iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'F', 0, ifname);
+    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'F', 1, ifname);
+    iptablesRemoveTmpRootChain(iptables_cmd, buf, 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesRemoveRootChains(virConnectPtr conn,
-                         const char *iptables_cmd,
+iptablesRemoveRootChains(const char *iptables_cmd,
                          virBufferPtr buf,
                          const char *ifname)
 {
-    iptablesRemoveRootChain(conn, iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRemoveRootChain(conn, iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRemoveRootChain(conn, iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRemoveRootChain(iptables_cmd, buf, 'F', 0, ifname);
+    iptablesRemoveRootChain(iptables_cmd, buf, 'F', 1, ifname);
+    iptablesRemoveRootChain(iptables_cmd, buf, 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesLinkTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         const char *iptables_cmd,
+iptablesLinkTmpRootChain(const char *iptables_cmd,
                          virBufferPtr buf,
                          const char *basechain,
                          char prefix,
@@ -594,22 +574,20 @@ iptablesLinkTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesLinkTmpRootChains(virConnectPtr conn,
-                          const char *cmd,
+iptablesLinkTmpRootChains(const char *cmd,
                           virBufferPtr buf,
                           const char *ifname)
 {
-    iptablesLinkTmpRootChain(conn, cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname, 1);
-    iptablesLinkTmpRootChain(conn, cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname, 1);
-    iptablesLinkTmpRootChain(conn, cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname, 1);
+    iptablesLinkTmpRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname, 1);
+    iptablesLinkTmpRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname, 1);
+    iptablesLinkTmpRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname, 1);
 
     return 0;
 }
 
 
 static int
-iptablesSetupVirtInPost(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *iptables_cmd,
+iptablesSetupVirtInPost(const char *iptables_cmd,
                         virBufferPtr buf,
                         const char *ifname)
 {
@@ -634,8 +612,7 @@ iptablesSetupVirtInPost(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesClearVirtInPost(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *iptables_cmd,
+iptablesClearVirtInPost(const char *iptables_cmd,
                         virBufferPtr buf,
                         const char *ifname)
 {
@@ -649,13 +626,12 @@ iptablesClearVirtInPost(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-_iptablesUnlinkRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *iptables_cmd,
-                        virBufferPtr buf,
-                        const char *basechain,
-                        char prefix,
-                        int incoming, const char *ifname,
-                        int isTempChain)
+_iptablesUnlinkRootChain(const char *iptables_cmd,
+                         virBufferPtr buf,
+                         const char *basechain,
+                         char prefix,
+                         int incoming, const char *ifname,
+                         int isTempChain)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix[2] = {
@@ -684,61 +660,56 @@ _iptablesUnlinkRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesUnlinkRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        const char *iptables_cmd,
+iptablesUnlinkRootChain(const char *iptables_cmd,
                         virBufferPtr buf,
                         const char *basechain,
                         char prefix,
                         int incoming, const char *ifname)
 {
-    return _iptablesUnlinkRootChain(conn, iptables_cmd, buf,
+    return _iptablesUnlinkRootChain(iptables_cmd, buf,
                                     basechain, prefix, incoming, ifname, 0);
 }
 
 
 static int
-iptablesUnlinkTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           const char *iptables_cmd,
+iptablesUnlinkTmpRootChain(const char *iptables_cmd,
                            virBufferPtr buf,
                            const char *basechain,
                            char prefix,
                            int incoming, const char *ifname)
 {
-    return _iptablesUnlinkRootChain(conn, iptables_cmd, buf,
+    return _iptablesUnlinkRootChain(iptables_cmd, buf,
                                     basechain, prefix, incoming, ifname, 1);
 }
 
 
 static int
-iptablesUnlinkRootChains(virConnectPtr conn,
-                         const char *cmd,
+iptablesUnlinkRootChains(const char *cmd,
                          virBufferPtr buf,
                          const char *ifname)
 {
-    iptablesUnlinkRootChain(conn, cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkRootChain(conn, cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkRootChain(conn, cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
+    iptablesUnlinkRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
+    iptablesUnlinkRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
 
     return 0;
 }
 
 
 static int
-iptablesUnlinkTmpRootChains(virConnectPtr conn,
-                            const char *cmd,
+iptablesUnlinkTmpRootChains(const char *cmd,
                             virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesUnlinkTmpRootChain(conn, cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
-    iptablesUnlinkTmpRootChain(conn, cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
-    iptablesUnlinkTmpRootChain(conn, cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
+    iptablesUnlinkTmpRootChain(cmd, buf, VIRT_OUT_CHAIN, 'F', 0, ifname);
+    iptablesUnlinkTmpRootChain(cmd, buf, VIRT_IN_CHAIN , 'F', 1, ifname);
+    iptablesUnlinkTmpRootChain(cmd, buf, HOST_IN_CHAIN , 'H', 1, ifname);
     return 0;
 }
 
 
 static int
-iptablesRenameTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           const char *iptables_cmd,
+iptablesRenameTmpRootChain(const char *iptables_cmd,
                            virBufferPtr buf,
                            char prefix,
                            int incoming,
@@ -769,21 +740,19 @@ iptablesRenameTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesRenameTmpRootChains(virConnectPtr conn,
-                            const char *iptables_cmd,
+iptablesRenameTmpRootChains(const char *iptables_cmd,
                             virBufferPtr buf,
                             const char *ifname)
 {
-    iptablesRenameTmpRootChain(conn, iptables_cmd, buf, 'F', 0, ifname);
-    iptablesRenameTmpRootChain(conn, iptables_cmd, buf, 'F', 1, ifname);
-    iptablesRenameTmpRootChain(conn, iptables_cmd, buf, 'H', 1, ifname);
+    iptablesRenameTmpRootChain(iptables_cmd, buf, 'F', 0, ifname);
+    iptablesRenameTmpRootChain(iptables_cmd, buf, 'F', 1, ifname);
+    iptablesRenameTmpRootChain(iptables_cmd, buf, 'H', 1, ifname);
     return 0;
 }
 
 
 static void
-iptablesInstCommand(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    virBufferPtr buf,
+iptablesInstCommand(virBufferPtr buf,
                     const char *templ, char cmd, int pos,
                     int stopOnError)
 {
@@ -797,8 +766,7 @@ iptablesInstCommand(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-iptablesHandleSrcMacAddr(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virBufferPtr buf,
+iptablesHandleSrcMacAddr(virBufferPtr buf,
                          virNWFilterHashTablePtr vars,
                          nwItemDescPtr srcMacAddr,
                          int directionIn ATTRIBUTE_UNUSED)
@@ -806,8 +774,7 @@ iptablesHandleSrcMacAddr(virConnectPtr conn ATTRIBUTE_UNUSED,
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (HAS_ENTRY_ITEM(srcMacAddr)) {
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           macaddr, sizeof(macaddr),
                           srcMacAddr))
             goto err_exit;
@@ -828,8 +795,7 @@ err_exit:
 
 
 static int
-iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    virBufferPtr buf,
+iptablesHandleIpHdr(virBufferPtr buf,
                     virNWFilterHashTablePtr vars,
                     ipHdrDataDefPtr ipHdr,
                     int directionIn)
@@ -849,8 +815,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataSrcIPAddr)) {
 
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
                           &ipHdr->dataSrcIPAddr))
             goto err_exit;
@@ -863,8 +828,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (HAS_ENTRY_ITEM(&ipHdr->dataSrcIPMask)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &ipHdr->dataSrcIPMask))
                 goto err_exit;
@@ -875,8 +839,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     } else if (HAS_ENTRY_ITEM(&ipHdr->dataSrcIPFrom)) {
 
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
                           &ipHdr->dataSrcIPFrom))
             goto err_exit;
@@ -889,8 +852,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (HAS_ENTRY_ITEM(&ipHdr->dataSrcIPTo)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &ipHdr->dataSrcIPTo))
                 goto err_exit;
@@ -903,8 +865,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataDstIPAddr)) {
 
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
                           &ipHdr->dataDstIPAddr))
            goto err_exit;
@@ -917,8 +878,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (HAS_ENTRY_ITEM(&ipHdr->dataDstIPMask)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &ipHdr->dataDstIPMask))
                 goto err_exit;
@@ -930,8 +890,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     } else if (HAS_ENTRY_ITEM(&ipHdr->dataDstIPFrom)) {
 
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           ipaddr, sizeof(ipaddr),
                           &ipHdr->dataDstIPFrom))
             goto err_exit;
@@ -944,8 +903,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (HAS_ENTRY_ITEM(&ipHdr->dataDstIPTo)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &ipHdr->dataDstIPTo))
                 goto err_exit;
@@ -958,8 +916,7 @@ iptablesHandleIpHdr(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataDSCP)) {
 
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           number, sizeof(number),
                           &ipHdr->dataDSCP))
            goto err_exit;
@@ -980,8 +937,7 @@ err_exit:
 
 
 static int
-iptablesHandlePortData(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       virBufferPtr buf,
+iptablesHandlePortData(virBufferPtr buf,
                        virNWFilterHashTablePtr vars,
                        portDataDefPtr portData,
                        int directionIn)
@@ -995,8 +951,7 @@ iptablesHandlePortData(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (HAS_ENTRY_ITEM(&portData->dataSrcPortStart)) {
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           portstr, sizeof(portstr),
                           &portData->dataSrcPortStart))
             goto err_exit;
@@ -1008,8 +963,7 @@ iptablesHandlePortData(virConnectPtr conn ATTRIBUTE_UNUSED,
                           portstr);
 
         if (HAS_ENTRY_ITEM(&portData->dataSrcPortEnd)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               portstr, sizeof(portstr),
                               &portData->dataSrcPortEnd))
                 goto err_exit;
@@ -1021,8 +975,7 @@ iptablesHandlePortData(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (HAS_ENTRY_ITEM(&portData->dataDstPortStart)) {
-        if (printDataType(conn,
-                          vars,
+        if (printDataType(vars,
                           portstr, sizeof(portstr),
                           &portData->dataDstPortStart))
             goto err_exit;
@@ -1034,8 +987,7 @@ iptablesHandlePortData(virConnectPtr conn ATTRIBUTE_UNUSED,
                           portstr);
 
         if (HAS_ENTRY_ITEM(&portData->dataDstPortEnd)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               portstr, sizeof(portstr),
                               &portData->dataDstPortEnd))
                 goto err_exit;
@@ -1054,7 +1006,6 @@ err_exit:
 
 /*
  * _iptablesCreateRuleInstance:
- * @conn : Pointer to a virConnect object
  * @chainPrefix : The prefix to put in front of the name of the chain
  * @nwfilter : The filter
  * @rule: The rule of the filter to convert
@@ -1069,8 +1020,7 @@ err_exit:
  * virConnect object.
  */
 static int
-_iptablesCreateRuleInstance(virConnectPtr conn,
-                            int directionIn,
+_iptablesCreateRuleInstance(int directionIn,
                             const char *chainPrefix,
                             virNWFilterDefPtr nwfilter,
                             virNWFilterRuleDefPtr rule,
@@ -1099,30 +1049,26 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p tcp");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.tcpHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.tcpHdrFilter.ipHdr,
                                 directionIn))
             goto err_exit;
 
-        if (iptablesHandlePortData(conn,
-                                   &buf,
+        if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.tcpHdrFilter.portData,
                                    directionIn))
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.tcpHdrFilter.dataTCPOption)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.tcpHdrFilter.dataTCPOption))
                 goto err_exit;
@@ -1144,22 +1090,19 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p udp");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.udpHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.udpHdrFilter.ipHdr,
                                 directionIn))
             goto err_exit;
 
-        if (iptablesHandlePortData(conn,
-                                   &buf,
+        if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.udpHdrFilter.portData,
                                    directionIn))
@@ -1175,15 +1118,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p udplite");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.udpliteHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.udpliteHdrFilter.ipHdr,
                                 directionIn))
@@ -1200,15 +1141,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p esp");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.espHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.espHdrFilter.ipHdr,
                                 directionIn))
@@ -1225,15 +1164,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p ah");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.ahHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.ahHdrFilter.ipHdr,
                                 directionIn))
@@ -1250,22 +1187,19 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p sctp");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.sctpHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.sctpHdrFilter.ipHdr,
                                 directionIn))
             goto err_exit;
 
-        if (iptablesHandlePortData(conn,
-                                   &buf,
+        if (iptablesHandlePortData(&buf,
                                    vars,
                                    &rule->p.sctpHdrFilter.portData,
                                    directionIn))
@@ -1284,15 +1218,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
         else
             virBufferAddLit(&buf, " -p icmpv6");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.icmpHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.icmpHdrFilter.ipHdr,
                                 directionIn))
@@ -1305,8 +1237,7 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
             else
                 parm = "--icmpv6-type";
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.icmpHdrFilter.dataICMPType))
                 goto err_exit;
@@ -1318,8 +1249,7 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
                       number);
 
             if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPCode)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.icmpHdrFilter.dataICMPCode))
                     goto err_exit;
@@ -1339,15 +1269,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p igmp");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.igmpHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.igmpHdrFilter.ipHdr,
                                 directionIn))
@@ -1364,15 +1292,13 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
 
         virBufferAddLit(&buf, " -p all");
 
-        if (iptablesHandleSrcMacAddr(conn,
-                                     &buf,
+        if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.allHdrFilter.dataSrcMACAddr,
                                      directionIn))
             goto err_exit;
 
-        if (iptablesHandleIpHdr(conn,
-                                &buf,
+        if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.allHdrFilter.ipHdr,
                                 directionIn))
@@ -1403,8 +1329,7 @@ _iptablesCreateRuleInstance(virConnectPtr conn,
         return -1;
     }
 
-    return ebiptablesAddRuleInst(conn,
-                                 res,
+    return ebiptablesAddRuleInst(res,
                                  virBufferContentAndReset(&buf),
                                  nwfilter->chainsuffix,
                                  '\0',
@@ -1421,8 +1346,7 @@ err_exit:
 
 
 static int
-iptablesCreateRuleInstance(virConnectPtr conn,
-                           virNWFilterDefPtr nwfilter,
+iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
                            virNWFilterHashTablePtr vars,
@@ -1443,8 +1367,7 @@ iptablesCreateRuleInstance(virConnectPtr conn,
     chainPrefix[0] = 'F';
 
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
-    rc = _iptablesCreateRuleInstance(conn,
-                                     directionIn,
+    rc = _iptablesCreateRuleInstance(directionIn,
                                      chainPrefix,
                                      nwfilter,
                                      rule,
@@ -1459,8 +1382,7 @@ iptablesCreateRuleInstance(virConnectPtr conn,
         return rc;
 
     chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
-    rc = _iptablesCreateRuleInstance(conn,
-                                     !directionIn,
+    rc = _iptablesCreateRuleInstance(!directionIn,
                                      chainPrefix,
                                      nwfilter,
                                      rule,
@@ -1476,8 +1398,7 @@ iptablesCreateRuleInstance(virConnectPtr conn,
 
     chainPrefix[0] = 'H';
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
-    rc = _iptablesCreateRuleInstance(conn,
-                                     directionIn,
+    rc = _iptablesCreateRuleInstance(directionIn,
                                      chainPrefix,
                                      nwfilter,
                                      rule,
@@ -1498,7 +1419,6 @@ iptablesCreateRuleInstance(virConnectPtr conn,
 
 /*
  * ebtablesCreateRuleInstance:
- * @conn : Pointer to a virConnect object
  * @chainPrefix : The prefix to put in front of the name of the chain
  * @nwfilter : The filter
  * @rule: The rule of the filter to convert
@@ -1513,8 +1433,7 @@ iptablesCreateRuleInstance(virConnectPtr conn,
  * virConnect object.
  */
 static int
-ebtablesCreateRuleInstance(virConnectPtr conn,
-                           char chainPrefix,
+ebtablesCreateRuleInstance(char chainPrefix,
                            virNWFilterDefPtr nwfilter,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
@@ -1543,15 +1462,13 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           EBTABLES_DEFAULT_TABLE, chain);
 
 
-        if (ebtablesHandleEthHdr(conn,
-                                 &buf,
+        if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ethHdrFilter.ethHdr))
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.ethHdrFilter.dataProtocolID)) {
-            if (printDataTypeAsHex(conn,
-                                   vars,
+            if (printDataTypeAsHex(vars,
                                    number, sizeof(number),
                                    &rule->p.ethHdrFilter.dataProtocolID))
                 goto err_exit;
@@ -1568,8 +1485,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           CMD_DEF_PRE EBTABLES_CMD " -t %s -%%c %s %%s",
                           EBTABLES_DEFAULT_TABLE, chain);
 
-        if (ebtablesHandleEthHdr(conn,
-                                 &buf,
+        if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.arpHdrFilter.ethHdr))
             goto err_exit;
@@ -1577,10 +1493,9 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         virBufferAddLit(&buf, " -p arp");
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataHWType)) {
-             if (printDataType(conn,
-                              vars,
-                              number, sizeof(number),
-                              &rule->p.arpHdrFilter.dataHWType))
+             if (printDataType(vars,
+                               number, sizeof(number),
+                               &rule->p.arpHdrFilter.dataHWType))
                 goto err_exit;
            virBufferVSprintf(&buf,
                           " --arp-htype %s %s",
@@ -1589,8 +1504,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataOpcode)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.arpHdrFilter.dataOpcode))
                 goto err_exit;
@@ -1601,8 +1515,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataProtocolType)) {
-            if (printDataTypeAsHex(conn,
-                                   vars,
+            if (printDataTypeAsHex(vars,
                                    number, sizeof(number),
                                    &rule->p.arpHdrFilter.dataProtocolType))
                 goto err_exit;
@@ -1613,8 +1526,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcIPAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &rule->p.arpHdrFilter.dataARPSrcIPAddr))
                 goto err_exit;
@@ -1626,8 +1538,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstIPAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &rule->p.arpHdrFilter.dataARPDstIPAddr))
                 goto err_exit;
@@ -1639,8 +1550,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPSrcMACAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               macaddr, sizeof(macaddr),
                               &rule->p.arpHdrFilter.dataARPSrcMACAddr))
                 goto err_exit;
@@ -1652,8 +1562,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataARPDstMACAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               macaddr, sizeof(macaddr),
                               &rule->p.arpHdrFilter.dataARPDstMACAddr))
                 goto err_exit;
@@ -1670,8 +1579,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           CMD_DEF_PRE EBTABLES_CMD " -t %s -%%c %s %%s",
                           EBTABLES_DEFAULT_TABLE, chain);
 
-        if (ebtablesHandleEthHdr(conn,
-                                 &buf,
+        if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ipHdrFilter.ethHdr))
             goto err_exit;
@@ -1680,8 +1588,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                         " -p ipv4");
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr))
                 goto err_exit;
@@ -1692,8 +1599,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           ipaddr);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataSrcIPMask)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipHdrFilter.ipHdr.dataSrcIPMask))
                     goto err_exit;
@@ -1705,8 +1611,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDstIPAddr)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipaddr, sizeof(ipaddr),
                               &rule->p.ipHdrFilter.ipHdr.dataDstIPAddr))
                 goto err_exit;
@@ -1717,8 +1622,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           ipaddr);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDstIPMask)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipHdrFilter.ipHdr.dataDstIPMask))
                     goto err_exit;
@@ -1729,8 +1633,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataProtocolID)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipHdrFilter.ipHdr.dataProtocolID))
                 goto err_exit;
@@ -1743,8 +1646,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataSrcPortStart)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipHdrFilter.portData.dataSrcPortStart))
                 goto err_exit;
@@ -1755,8 +1657,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           number);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataSrcPortEnd)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipHdrFilter.portData.dataSrcPortEnd))
                     goto err_exit;
@@ -1769,8 +1670,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataDstPortStart)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipHdrFilter.portData.dataDstPortStart))
                 goto err_exit;
@@ -1781,8 +1681,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           number);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.portData.dataDstPortEnd)) {
-                if (printDataType(conn,
-                                vars,
+                if (printDataType(vars,
                                 number, sizeof(number),
                                 &rule->p.ipHdrFilter.portData.dataDstPortEnd))
                     goto err_exit;
@@ -1794,8 +1693,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDSCP)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipHdrFilter.ipHdr.dataDSCP))
                 goto err_exit;
@@ -1812,8 +1710,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           CMD_DEF_PRE EBTABLES_CMD " -t %s -%%c %s %%s",
                           EBTABLES_DEFAULT_TABLE, chain);
 
-        if (ebtablesHandleEthHdr(conn,
-                                 &buf,
+        if (ebtablesHandleEthHdr(&buf,
                                  vars,
                                  &rule->p.ipv6HdrFilter.ethHdr))
             goto err_exit;
@@ -1822,8 +1719,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                         " -p ipv6");
 
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipv6addr, sizeof(ipv6addr),
                               &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr))
                 goto err_exit;
@@ -1834,8 +1730,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           ipv6addr);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipv6HdrFilter.ipHdr.dataSrcIPMask))
                     goto err_exit;
@@ -1847,8 +1742,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               ipv6addr, sizeof(ipv6addr),
                               &rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr))
                 goto err_exit;
@@ -1859,8 +1753,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           ipv6addr);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipv6HdrFilter.ipHdr.dataDstIPMask))
                     goto err_exit;
@@ -1871,8 +1764,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.ipHdr.dataProtocolID)) {
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipv6HdrFilter.ipHdr.dataProtocolID))
                 goto err_exit;
@@ -1885,8 +1777,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataSrcPortStart)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipv6HdrFilter.portData.dataSrcPortStart))
                 goto err_exit;
@@ -1897,8 +1788,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           number);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataSrcPortEnd)) {
-                if (printDataType(conn,
-                                  vars,
+                if (printDataType(vars,
                                   number, sizeof(number),
                                   &rule->p.ipv6HdrFilter.portData.dataSrcPortEnd))
                     goto err_exit;
@@ -1911,8 +1801,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
 
         if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataDstPortStart)) {
 
-            if (printDataType(conn,
-                              vars,
+            if (printDataType(vars,
                               number, sizeof(number),
                               &rule->p.ipv6HdrFilter.portData.dataDstPortStart))
                 goto err_exit;
@@ -1923,10 +1812,9 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
                           number);
 
             if (HAS_ENTRY_ITEM(&rule->p.ipv6HdrFilter.portData.dataDstPortEnd)) {
-                if (printDataType(conn,
-                                vars,
-                                number, sizeof(number),
-                                &rule->p.ipv6HdrFilter.portData.dataDstPortEnd))
+                if (printDataType(vars,
+                                  number, sizeof(number),
+                                  &rule->p.ipv6HdrFilter.portData.dataDstPortEnd))
                     goto err_exit;
 
                 virBufferVSprintf(&buf,
@@ -1957,8 +1845,7 @@ ebtablesCreateRuleInstance(virConnectPtr conn,
         return -1;
     }
 
-    return ebiptablesAddRuleInst(conn,
-                                 res,
+    return ebiptablesAddRuleInst(res,
                                  virBufferContentAndReset(&buf),
                                  nwfilter->chainsuffix,
                                  chainPrefix,
@@ -1988,7 +1875,7 @@ err_exit:
  * virConnect object.
  */
 static int
-ebiptablesCreateRuleInstance(virConnectPtr conn,
+ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
                              enum virDomainNetType nettype,
                              virNWFilterDefPtr nwfilter,
                              virNWFilterRuleDefPtr rule,
@@ -2008,8 +1895,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
 
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
-            rc = ebtablesCreateRuleInstance(conn,
-                                            CHAINPREFIX_HOST_IN_TEMP,
+            rc = ebtablesCreateRuleInstance(CHAINPREFIX_HOST_IN_TEMP,
                                             nwfilter,
                                             rule,
                                             ifname,
@@ -2021,8 +1907,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
 
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN ||
             rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT) {
-            rc = ebtablesCreateRuleInstance(conn,
-                                            CHAINPREFIX_HOST_OUT_TEMP,
+            rc = ebtablesCreateRuleInstance(CHAINPREFIX_HOST_OUT_TEMP,
                                             nwfilter,
                                             rule,
                                             ifname,
@@ -2041,15 +1926,14 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
     case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
     case VIR_NWFILTER_RULE_PROTOCOL_ALL:
         if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                           _("'%s' protocol not support for net type '%s'"),
                           virNWFilterRuleProtocolTypeToString(rule->prtclType),
                           virDomainNetTypeToString(nettype));
             return 1;
         }
         isIPv6 = 0;
-        rc = iptablesCreateRuleInstance(conn,
-                                        nwfilter,
+        rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
                                         ifname,
                                         vars,
@@ -2066,15 +1950,14 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
     case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
     case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         if (nettype == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+            virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                           _("'%s' protocol not support for net type '%s'"),
                           virNWFilterRuleProtocolTypeToString(rule->prtclType),
                           virDomainNetTypeToString(nettype));
             return 1;
         }
         isIPv6 = 1;
-        rc = iptablesCreateRuleInstance(conn,
-                                        nwfilter,
+        rc = iptablesCreateRuleInstance(nwfilter,
                                         rule,
                                         ifname,
                                         vars,
@@ -2083,7 +1966,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn,
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_LAST:
-        virNWFilterReportError(conn, VIR_ERR_INVALID_NWFILTER,
+        virNWFilterReportError(VIR_ERR_INVALID_NWFILTER,
                                "%s", _("illegal protocol type"));
         rc = 1;
     break;
@@ -2115,7 +1998,6 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 /**
  * ebiptablesWriteToTempFile:
- * @conn: pointer to virConnect object
  * @string : the string to write into the file
  *
  * Returns the tempory filename where the string was written into,
@@ -2128,8 +2010,7 @@ ebiptablesDisplayRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
  * set so that the file can be run as an executable script.
  */
 static char *
-ebiptablesWriteToTempFile(virConnectPtr conn,
-                          const char *string) {
+ebiptablesWriteToTempFile(const char *string) {
     char filename[] = "/tmp/virtdXXXXXX";
     int len;
     char *filnam;
@@ -2139,14 +2020,14 @@ ebiptablesWriteToTempFile(virConnectPtr conn,
     int fd = mkstemp(filename);
 
     if (fd < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("cannot create temporary file"));
         return NULL;
     }
 
     if (fchmod(fd, S_IXUSR| S_IRUSR | S_IWUSR) < 0) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("cannot change permissions on temp. file"));
         goto err_exit;
@@ -2155,7 +2036,7 @@ ebiptablesWriteToTempFile(virConnectPtr conn,
     len = strlen(header);
     written = safewrite(fd, header, len);
     if (written != len) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("cannot write string to file"));
         goto err_exit;
@@ -2164,7 +2045,7 @@ ebiptablesWriteToTempFile(virConnectPtr conn,
     len = strlen(string);
     written = safewrite(fd, string, len);
     if (written != len) {
-        virNWFilterReportError(conn, VIR_ERR_INTERNAL_ERROR,
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s",
                                _("cannot write string to file"));
         goto err_exit;
@@ -2188,7 +2069,6 @@ err_exit:
 
 /**
  * ebiptablesExecCLI:
- * @conn : pointer to virConnect object
  * @buf : pointer to virBuffer containing the string with the commands to
  *        execute.
  * @status: Pointer to an integer for returning the status of the
@@ -2202,8 +2082,7 @@ err_exit:
  * script and return the status of the execution.
  */
 static int
-ebiptablesExecCLI(virConnectPtr conn,
-                  virBufferPtr buf,
+ebiptablesExecCLI(virBufferPtr buf,
                   int *status)
 {
     char *cmds;
@@ -2226,7 +2105,7 @@ ebiptablesExecCLI(virConnectPtr conn,
     if (!cmds)
         return 0;
 
-    filename = ebiptablesWriteToTempFile(conn, cmds);
+    filename = ebiptablesWriteToTempFile(cmds);
     VIR_FREE(cmds);
 
     if (!filename)
@@ -2248,8 +2127,7 @@ ebiptablesExecCLI(virConnectPtr conn,
 
 
 static int
-ebtablesCreateTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                           virBufferPtr buf,
+ebtablesCreateTmpRootChain(virBufferPtr buf,
                            int incoming, const char *ifname,
                            int stopOnError)
 {
@@ -2271,8 +2149,7 @@ ebtablesCreateTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebtablesLinkTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virBufferPtr buf,
+ebtablesLinkTmpRootChain(virBufferPtr buf,
                          int incoming, const char *ifname,
                          int stopOnError)
 {
@@ -2299,8 +2176,7 @@ ebtablesLinkTmpRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-_ebtablesRemoveRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virBufferPtr buf,
+_ebtablesRemoveRootChain(virBufferPtr buf,
                          int incoming, const char *ifname,
                          int isTempChain)
 {
@@ -2326,26 +2202,23 @@ _ebtablesRemoveRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebtablesRemoveRootChain(virConnectPtr conn,
-                        virBufferPtr buf,
+ebtablesRemoveRootChain(virBufferPtr buf,
                         int incoming, const char *ifname)
 {
-    return _ebtablesRemoveRootChain(conn, buf, incoming, ifname, 0);
+    return _ebtablesRemoveRootChain(buf, incoming, ifname, 0);
 }
 
 
 static int
-ebtablesRemoveTmpRootChain(virConnectPtr conn,
-                           virBufferPtr buf,
+ebtablesRemoveTmpRootChain(virBufferPtr buf,
                            int incoming, const char *ifname)
 {
-    return _ebtablesRemoveRootChain(conn, buf, incoming, ifname, 1);
+    return _ebtablesRemoveRootChain(buf, incoming, ifname, 1);
 }
 
 
 static int
-_ebtablesUnlinkRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virBufferPtr buf,
+_ebtablesUnlinkRootChain(virBufferPtr buf,
                          int incoming, const char *ifname,
                          int isTempChain)
 {
@@ -2375,26 +2248,23 @@ _ebtablesUnlinkRootChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebtablesUnlinkRootChain(virConnectPtr conn,
-                        virBufferPtr buf,
+ebtablesUnlinkRootChain(virBufferPtr buf,
                         int incoming, const char *ifname)
 {
-    return _ebtablesUnlinkRootChain(conn, buf, incoming, ifname, 0);
+    return _ebtablesUnlinkRootChain(buf, incoming, ifname, 0);
 }
 
 
 static int
-ebtablesUnlinkTmpRootChain(virConnectPtr conn,
-                           virBufferPtr buf,
+ebtablesUnlinkTmpRootChain(virBufferPtr buf,
                            int incoming, const char *ifname)
 {
-    return _ebtablesUnlinkRootChain(conn, buf, incoming, ifname, 1);
+    return _ebtablesUnlinkRootChain(buf, incoming, ifname, 1);
 }
 
 
 static int
-ebtablesCreateTmpSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                          virBufferPtr buf,
+ebtablesCreateTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
                           const char *protocol,
@@ -2430,8 +2300,7 @@ ebtablesCreateTmpSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-_ebtablesRemoveSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                        virBufferPtr buf,
+_ebtablesRemoveSubChain(virBufferPtr buf,
                         int incoming,
                         const char *ifname,
                         const char *protocol,
@@ -2467,26 +2336,24 @@ _ebtablesRemoveSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebtablesRemoveSubChain(virConnectPtr conn,
-                       virBufferPtr buf,
+ebtablesRemoveSubChain(virBufferPtr buf,
                        int incoming,
                        const char *ifname,
                        const char *protocol)
 {
-    return _ebtablesRemoveSubChain(conn, buf,
+    return _ebtablesRemoveSubChain(buf,
                                    incoming, ifname, protocol, 0);
 }
 
 
 static int
-ebtablesRemoveSubChains(virConnectPtr conn,
-                          virBufferPtr buf,
-                          const char *ifname)
+ebtablesRemoveSubChains(virBufferPtr buf,
+                        const char *ifname)
 {
     int i;
     for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRemoveSubChain(conn, buf, 1, ifname, supported_protocols[i]);
-        ebtablesRemoveSubChain(conn, buf, 0, ifname, supported_protocols[i]);
+        ebtablesRemoveSubChain(buf, 1, ifname, supported_protocols[i]);
+        ebtablesRemoveSubChain(buf, 0, ifname, supported_protocols[i]);
     }
 
     return 0;
@@ -2494,27 +2361,25 @@ ebtablesRemoveSubChains(virConnectPtr conn,
 
 
 static int
-ebtablesRemoveTmpSubChain(virConnectPtr conn,
-                          virBufferPtr buf,
+ebtablesRemoveTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
                           const char *protocol)
 {
-    return _ebtablesRemoveSubChain(conn, buf,
+    return _ebtablesRemoveSubChain(buf,
                                    incoming, ifname, protocol, 1);
 }
 
 
 static int
-ebtablesRemoveTmpSubChains(virConnectPtr conn,
-                           virBufferPtr buf,
+ebtablesRemoveTmpSubChains(virBufferPtr buf,
                            const char *ifname)
 {
     int i;
     for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRemoveTmpSubChain(conn, buf, 1, ifname,
+        ebtablesRemoveTmpSubChain(buf, 1, ifname,
                                   supported_protocols[i]);
-        ebtablesRemoveTmpSubChain(conn, buf, 0, ifname,
+        ebtablesRemoveTmpSubChain(buf, 0, ifname,
                                   supported_protocols[i]);
     }
 
@@ -2523,8 +2388,7 @@ ebtablesRemoveTmpSubChains(virConnectPtr conn,
 
 
 static int
-ebtablesRenameTmpSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
-                          virBufferPtr buf,
+ebtablesRenameTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
                           const char *protocol)
@@ -2553,15 +2417,14 @@ ebtablesRenameTmpSubChain(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-ebtablesRenameTmpSubChains(virConnectPtr conn,
-                           virBufferPtr buf,
+ebtablesRenameTmpSubChains(virBufferPtr buf,
                            const char *ifname)
 {
     int i;
     for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRenameTmpSubChain (conn, buf, 1, ifname,
+        ebtablesRenameTmpSubChain (buf, 1, ifname,
                                    supported_protocols[i]);
-        ebtablesRenameTmpSubChain (conn, buf, 0, ifname,
+        ebtablesRenameTmpSubChain (buf, 0, ifname,
                                    supported_protocols[i]);
     }
 
@@ -2570,18 +2433,16 @@ ebtablesRenameTmpSubChains(virConnectPtr conn,
 
 
 static int
-ebtablesRenameTmpRootChain(virConnectPtr conn,
-                           virBufferPtr buf,
+ebtablesRenameTmpRootChain(virBufferPtr buf,
                            int incoming,
                            const char *ifname)
 {
-    return ebtablesRenameTmpSubChain(conn, buf, incoming, ifname, NULL);
+    return ebtablesRenameTmpSubChain(buf, incoming, ifname, NULL);
 }
 
 
 static void
-ebiptablesInstCommand(virConnectPtr conn ATTRIBUTE_UNUSED,
-                      virBufferPtr buf,
+ebiptablesInstCommand(virBufferPtr buf,
                       const char *templ, char cmd, int pos,
                       int stopOnError)
 {
@@ -2604,7 +2465,7 @@ ebiptablesRuleOrderSort(const void *a, const void *b)
 
 
 static int
-ebiptablesApplyNewRules(virConnectPtr conn,
+ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                         const char *ifname,
                         int nruleInstances,
                         void **_inst)
@@ -2630,41 +2491,41 @@ ebiptablesApplyNewRules(virConnectPtr conn,
         }
     }
 
-    ebtablesUnlinkTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesUnlinkTmpRootChain(conn, &buf, 0, ifname);
-    ebtablesRemoveTmpSubChains(conn, &buf, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 0, ifname);
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
+    ebiptablesExecCLI(&buf, &cli_status);
 
     if (chains_in != 0)
-        ebtablesCreateTmpRootChain(conn, &buf, 1, ifname, 1);
+        ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     if (chains_out != 0)
-        ebtablesCreateTmpRootChain(conn, &buf, 0, ifname, 1);
+        ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(conn, &buf, 1, ifname, "ipv4", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, "ipv4", 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(conn, &buf, 0, ifname, "ipv4", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, "ipv4", 1);
 
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(conn, &buf, 1, ifname, "ipv6", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, "ipv6", 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(conn, &buf, 0, ifname, "ipv6", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, "ipv6", 1);
 
     // keep arp as last
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(conn, &buf, 1, ifname, "arp", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, "arp", 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(conn, &buf, 0, ifname, "arp", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, "arp", 1);
 
-    if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
 
     for (i = 0; i < nruleInstances; i++)
         switch (inst[i]->ruleType) {
         case RT_EBTABLES:
-            ebiptablesInstCommand(conn, &buf,
+            ebiptablesInstCommand(&buf,
                                   inst[i]->commandTemplate,
                                   'A', -1, 1);
         break;
@@ -2676,68 +2537,68 @@ ebiptablesApplyNewRules(virConnectPtr conn,
         break;
         }
 
-    if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
 
     // FIXME: establishment of iptables user define table tree goes here
 
     if (haveIptables) {
-        iptablesUnlinkTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
-        iptablesRemoveTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
+        iptablesUnlinkTmpRootChains(IPTABLES_CMD, &buf, ifname);
+        iptablesRemoveTmpRootChains(IPTABLES_CMD, &buf, ifname);
 
-        iptablesCreateBaseChains(conn, IPTABLES_CMD, &buf);
+        iptablesCreateBaseChains(IPTABLES_CMD, &buf);
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
             goto tear_down_tmpebchains;
 
-        iptablesCreateTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
+        iptablesCreateTmpRootChains(IPTABLES_CMD, &buf, ifname);
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpiptchains;
 
-        iptablesLinkTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
-        iptablesSetupVirtInPost(conn, IPTABLES_CMD, &buf, ifname);
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        iptablesLinkTmpRootChains(IPTABLES_CMD, &buf, ifname);
+        iptablesSetupVirtInPost(IPTABLES_CMD, &buf, ifname);
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpiptchains;
 
         for (i = 0; i < nruleInstances; i++) {
             if (inst[i]->ruleType == RT_IPTABLES)
-                iptablesInstCommand(conn, &buf,
+                iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
                                     'A', -1, 1);
         }
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpiptchains;
     }
 
     if (haveIp6tables) {
-        iptablesUnlinkTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-        iptablesRemoveTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+        iptablesUnlinkTmpRootChains(IP6TABLES_CMD, &buf, ifname);
+        iptablesRemoveTmpRootChains(IP6TABLES_CMD, &buf, ifname);
 
-        iptablesCreateBaseChains(conn, IP6TABLES_CMD, &buf);
+        iptablesCreateBaseChains(IP6TABLES_CMD, &buf);
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
             goto tear_down_tmpiptchains;
 
-        iptablesCreateTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+        iptablesCreateTmpRootChains(IP6TABLES_CMD, &buf, ifname);
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpip6tchains;
 
-        iptablesLinkTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-        iptablesSetupVirtInPost(conn, IP6TABLES_CMD, &buf, ifname);
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        iptablesLinkTmpRootChains(IP6TABLES_CMD, &buf, ifname);
+        iptablesSetupVirtInPost(IP6TABLES_CMD, &buf, ifname);
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpip6tchains;
 
         for (i = 0; i < nruleInstances; i++) {
             if (inst[i]->ruleType == RT_IP6TABLES)
-                iptablesInstCommand(conn, &buf,
+                iptablesInstCommand(&buf,
                                     inst[i]->commandTemplate,
                                     'A', -1, 1);
         }
 
-        if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+        if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
            goto tear_down_tmpip6tchains;
     }
 
@@ -2745,39 +2606,39 @@ ebiptablesApplyNewRules(virConnectPtr conn,
     // END IPTABLES stuff
 
     if (chains_in != 0)
-        ebtablesLinkTmpRootChain(conn, &buf, 1, ifname, 1);
+        ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
     if (chains_out != 0)
-        ebtablesLinkTmpRootChain(conn, &buf, 0, ifname, 1);
+        ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
 
-    if (ebiptablesExecCLI(conn, &buf, &cli_status) || cli_status != 0)
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_ebsubchains_and_unlink;
 
     return 0;
 
 tear_down_ebsubchains_and_unlink:
-    ebtablesUnlinkTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesUnlinkTmpRootChain(conn, &buf, 0, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
 
 tear_down_tmpip6tchains:
     if (haveIp6tables) {
-        iptablesUnlinkTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-        iptablesRemoveTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+        iptablesUnlinkTmpRootChains(IP6TABLES_CMD, &buf, ifname);
+        iptablesRemoveTmpRootChains(IP6TABLES_CMD, &buf, ifname);
     }
 
 tear_down_tmpiptchains:
     if (haveIptables) {
-        iptablesUnlinkTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
-        iptablesRemoveTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
+        iptablesUnlinkTmpRootChains(IPTABLES_CMD, &buf, ifname);
+        iptablesRemoveTmpRootChains(IPTABLES_CMD, &buf, ifname);
     }
 
 tear_down_tmpebchains:
-    ebtablesRemoveTmpSubChains(conn, &buf, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
 
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    ebiptablesExecCLI(&buf, &cli_status);
 
-    virNWFilterReportError(conn, VIR_ERR_BUILD_FIREWALL,
+    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                            "%s",
                            _("Some rules could not be created."));
 
@@ -2786,64 +2647,64 @@ tear_down_tmpebchains:
 
 
 static int
-ebiptablesTearNewRules(virConnectPtr conn,
+ebiptablesTearNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                        const char *ifname)
 {
     int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    iptablesUnlinkTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
-    iptablesRemoveTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
+    iptablesUnlinkTmpRootChains(IPTABLES_CMD, &buf, ifname);
+    iptablesRemoveTmpRootChains(IPTABLES_CMD, &buf, ifname);
 
-    iptablesUnlinkTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-    iptablesRemoveTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+    iptablesUnlinkTmpRootChains(IP6TABLES_CMD, &buf, ifname);
+    iptablesRemoveTmpRootChains(IP6TABLES_CMD, &buf, ifname);
 
-    ebtablesUnlinkTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesUnlinkTmpRootChain(conn, &buf, 0, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
 
-    ebtablesRemoveTmpSubChains(conn, &buf, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesRemoveTmpRootChain(conn, &buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
 
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    ebiptablesExecCLI(&buf, &cli_status);
 
     return 0;
 }
 
 
 static int
-ebiptablesTearOldRules(virConnectPtr conn,
+ebiptablesTearOldRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                        const char *ifname)
 {
     int cli_status;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     // switch to new iptables user defined chains
-    iptablesUnlinkRootChains(conn, IPTABLES_CMD, &buf, ifname);
-    iptablesRemoveRootChains(conn, IPTABLES_CMD, &buf, ifname);
+    iptablesUnlinkRootChains(IPTABLES_CMD, &buf, ifname);
+    iptablesRemoveRootChains(IPTABLES_CMD, &buf, ifname);
 
-    iptablesRenameTmpRootChains(conn, IPTABLES_CMD, &buf, ifname);
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    iptablesRenameTmpRootChains(IPTABLES_CMD, &buf, ifname);
+    ebiptablesExecCLI(&buf, &cli_status);
 
-    iptablesUnlinkRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-    iptablesRemoveRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+    iptablesUnlinkRootChains(IP6TABLES_CMD, &buf, ifname);
+    iptablesRemoveRootChains(IP6TABLES_CMD, &buf, ifname);
 
-    iptablesRenameTmpRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    iptablesRenameTmpRootChains(IP6TABLES_CMD, &buf, ifname);
+    ebiptablesExecCLI(&buf, &cli_status);
 
-    ebtablesUnlinkRootChain(conn, &buf, 1, ifname);
-    ebtablesUnlinkRootChain(conn, &buf, 0, ifname);
+    ebtablesUnlinkRootChain(&buf, 1, ifname);
+    ebtablesUnlinkRootChain(&buf, 0, ifname);
 
-    ebtablesRemoveSubChains(conn, &buf, ifname);
+    ebtablesRemoveSubChains(&buf, ifname);
 
-    ebtablesRemoveRootChain(conn, &buf, 1, ifname);
-    ebtablesRemoveRootChain(conn, &buf, 0, ifname);
+    ebtablesRemoveRootChain(&buf, 1, ifname);
+    ebtablesRemoveRootChain(&buf, 0, ifname);
 
-    ebtablesRenameTmpSubChains(conn, &buf, ifname);
-    ebtablesRenameTmpRootChain(conn, &buf, 1, ifname);
-    ebtablesRenameTmpRootChain(conn, &buf, 0, ifname);
+    ebtablesRenameTmpSubChains(&buf, ifname);
+    ebtablesRenameTmpRootChain(&buf, 1, ifname);
+    ebtablesRenameTmpRootChain(&buf, 0, ifname);
 
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    ebiptablesExecCLI(&buf, &cli_status);
 
     return 0;
 }
@@ -2862,7 +2723,7 @@ ebiptablesTearOldRules(virConnectPtr conn,
  * commands failed.
  */
 static int
-ebiptablesRemoveRules(virConnectPtr conn,
+ebiptablesRemoveRules(virConnectPtr conn ATTRIBUTE_UNUSED,
                       const char *ifname ATTRIBUTE_UNUSED,
                       int nruleInstances,
                       void **_inst)
@@ -2874,16 +2735,16 @@ ebiptablesRemoveRules(virConnectPtr conn,
     ebiptablesRuleInstPtr *inst = (ebiptablesRuleInstPtr *)_inst;
 
     for (i = 0; i < nruleInstances; i++)
-        ebiptablesInstCommand(conn, &buf,
+        ebiptablesInstCommand(&buf,
                               inst[i]->commandTemplate,
                               'D', -1,
                               0);
 
-    if (ebiptablesExecCLI(conn, &buf, &cli_status))
+    if (ebiptablesExecCLI(&buf, &cli_status))
         goto err_exit;
 
     if (cli_status) {
-        virNWFilterReportError(conn, VIR_ERR_BUILD_FIREWALL,
+        virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                                "%s",
                                _("error while executing CLI commands"));
         rc = 1;
@@ -2908,25 +2769,24 @@ ebiptablesAllTeardown(const char *ifname)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int cli_status;
-    virConnectPtr conn = NULL;
 
-    iptablesUnlinkRootChains(conn, IPTABLES_CMD, &buf, ifname);
-    iptablesClearVirtInPost (conn, IPTABLES_CMD, &buf, ifname);
-    iptablesRemoveRootChains(conn, IPTABLES_CMD, &buf, ifname);
+    iptablesUnlinkRootChains(IPTABLES_CMD, &buf, ifname);
+    iptablesClearVirtInPost (IPTABLES_CMD, &buf, ifname);
+    iptablesRemoveRootChains(IPTABLES_CMD, &buf, ifname);
 
-    iptablesUnlinkRootChains(conn, IP6TABLES_CMD, &buf, ifname);
-    iptablesClearVirtInPost (conn, IP6TABLES_CMD, &buf, ifname);
-    iptablesRemoveRootChains(conn, IP6TABLES_CMD, &buf, ifname);
+    iptablesUnlinkRootChains(IP6TABLES_CMD, &buf, ifname);
+    iptablesClearVirtInPost (IP6TABLES_CMD, &buf, ifname);
+    iptablesRemoveRootChains(IP6TABLES_CMD, &buf, ifname);
 
-    ebtablesUnlinkRootChain(conn, &buf, 1, ifname);
-    ebtablesUnlinkRootChain(conn, &buf, 0, ifname);
+    ebtablesUnlinkRootChain(&buf, 1, ifname);
+    ebtablesUnlinkRootChain(&buf, 0, ifname);
 
-    ebtablesRemoveRootChain(conn, &buf, 1, ifname);
-    ebtablesRemoveRootChain(conn, &buf, 0, ifname);
+    ebtablesRemoveRootChain(&buf, 1, ifname);
+    ebtablesRemoveRootChain(&buf, 0, ifname);
 
-    ebtablesRemoveSubChains(conn, &buf, ifname);
+    ebtablesRemoveSubChains(&buf, ifname);
 
-    ebiptablesExecCLI(conn, &buf, &cli_status);
+    ebiptablesExecCLI(&buf, &cli_status);
 
     return 0;
 }
