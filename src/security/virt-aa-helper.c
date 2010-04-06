@@ -36,6 +36,7 @@
 #include "uuid.h"
 #include "hostusb.h"
 #include "pci.h"
+#include "storage_file.h"
 
 static char *progname;
 
@@ -809,6 +810,33 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->ndisks; i++)
         if (ctl->def->disks[i] && ctl->def->disks[i]->src) {
             int ret;
+            const char *path;
+
+            path = ctl->def->disks[i]->src;
+            do {
+                virStorageFileMetadata meta;
+
+                memset(&meta, 0, sizeof(meta));
+
+                ret = virStorageFileGetMetadata(path, &meta);
+
+                if (path != ctl->def->disks[i]->src)
+                    VIR_FREE(path);
+                path = NULL;
+
+                if (ret < 0) {
+                    vah_warning("skipping backingStore check (open failed)");
+                    continue;
+                }
+
+                if (meta.backingStore != NULL &&
+                    (ret = vah_add_file(&buf, meta.backingStore, "rw")) != 0) {
+                    VIR_FREE(meta.backingStore);
+                    goto clean;
+                }
+
+                path = meta.backingStore;
+            } while (path != NULL);
 
             if (ctl->def->disks[i]->readonly)
                 ret = vah_add_file(&buf, ctl->def->disks[i]->src, "r");
