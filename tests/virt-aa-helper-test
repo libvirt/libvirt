@@ -204,7 +204,8 @@ if [ "$test_hostdev" = "yes" ]; then
     cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><hostdev mode='subsystem' type='usb'><source><address bus='002' device='004'/></source></hostdev>,g" > "$test_xml"
     testme "0" "create hostdev (USB)" "-c -u $valid_uuid" "$test_xml"
 
-    cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><hostdev mode='subsystem' type='pci'><source><address bus='0x00' slot='0x00' function='0x0'/></source></hostdev>,g" > "$test_xml"
+    cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><hostdev mode='subsystem' type='pci'><source><address bus='0x00' slot='0x19' function='0x0'/></source></hostdev>,g" > "$test_xml"
+
     testme "0" "create hostdev (PCI)" "-c -u $valid_uuid" "$test_xml"
 fi
 
@@ -264,6 +265,9 @@ testme "0" "initrd is /initrd/ramdisk" "-r -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</os>,<initrd>/initrd.img</initrd></os>,g" > "$test_xml"
 testme "0" "initrd is /initrd.img" "-r -u $valid_uuid" "$test_xml"
+
+cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,<graphics*,<graphics type='sdl' display=':0.0' xauth='/home/myself/.Xauthority'/>,g" > "$test_xml"
+testme "0" "sdl Xauthority" "-r -u $valid_uuid" "$test_xml"
 
 testme "0" "help" "-h"
 
