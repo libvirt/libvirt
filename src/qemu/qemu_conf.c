@@ -3249,9 +3249,16 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int i;
 
-    if (def->cpu && def->cpu->model
-        && qemudProbeCPUModels(emulator, ut->machine, &ncpus, &cpus) < 0)
-        goto cleanup;
+    if (def->cpu && def->cpu->model) {
+        if (qemudProbeCPUModels(emulator, ut->machine, &ncpus, &cpus) < 0)
+            goto cleanup;
+
+        if (!ncpus || !host) {
+            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                            _("CPU specification not supported by hypervisor"));
+            goto cleanup;
+        }
+    }
 
     if (ncpus > 0 && host) {
         virCPUCompareResult cmp;
