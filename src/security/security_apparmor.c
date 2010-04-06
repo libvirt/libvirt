@@ -174,19 +174,19 @@ load_profile(const char *profile, virDomainObjPtr vm,
             VIRT_AA_HELPER, "-c", "-u", profile, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_CLEAR_CAPS);
+                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
     } else if (disk && disk->src) {
         const char *const argv[] = {
             VIRT_AA_HELPER, "-r", "-u", profile, "-f", disk->src, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_CLEAR_CAPS);
+                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
     } else {
         const char *const argv[] = {
             VIRT_AA_HELPER, "-r", "-u", profile, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
-                      pipefd[0], NULL, NULL, VIR_EXEC_CLEAR_CAPS);
+                      pipefd[0], NULL, NULL, VIR_EXEC_NONE);
     }
     if (ret < 0)
         goto clean;
