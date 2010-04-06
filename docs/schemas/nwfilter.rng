@@ -569,7 +569,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">[\\$]{1}[a-zA-Z0-9_]+</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="string">
@@ -582,7 +582,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">[\\$]{1}[a-zA-Z0-9_]+</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="string">
@@ -595,7 +595,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="string">
@@ -608,7 +608,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -626,7 +626,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -644,7 +644,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -658,7 +658,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -678,7 +678,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -692,7 +692,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -706,7 +706,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
@@ -725,7 +725,7 @@
     <choice>
       <!-- variable -->
       <data type="string">
-        <param name="pattern">^[\\$]{1}[a-zA-Z0-9_]+$</param>
+        <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
       <data type="int">
