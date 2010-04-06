@@ -450,7 +450,7 @@ int nodeCapsInitNUMA(virCapsPtr caps ATTRIBUTE_UNUSED) {
     return 0;
 }
 
-int nodeGetCellsFreeMemory(virConnectPtr conn,
+int nodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                               unsigned long long *freeMems ATTRIBUTE_UNUSED,
                               int startCell ATTRIBUTE_UNUSED,
                               int maxCells ATTRIBUTE_UNUSED)
@@ -460,7 +460,7 @@ int nodeGetCellsFreeMemory(virConnectPtr conn,
     return -1;
 }
 
-unsigned long long nodeGetFreeMemory(virConnectPtr conn)
+unsigned long long nodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     nodeReportError(VIR_ERR_NO_SUPPORT, "%s",
                     _("NUMA memory information not available on this platform"));
