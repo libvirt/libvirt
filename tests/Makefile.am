@@ -74,6 +74,7 @@ EXTRA_DIST =		\
 	xml2vmxdata \
 	nwfilterxml2xmlout \
 	nwfilterxml2xmlin \
+	nwfilterschematest \
 	$(patsubst %,qemuhelpdata/%,$(qemuhelpdata))
 
 noinst_PROGRAMS = virshtest conftest \
@@ -120,7 +121,8 @@ test_scripts = \
 	storagepoolschematest \
 	storagevolschematest \
 	domainschematest \
-	nodedevschematest
+	nodedevschematest \
+	nwfilterschematest
 
 if WITH_LIBVIRTD
 test_scripts +=				\

@@ -10,6 +10,7 @@ schema_DATA = \
 	storagepool.rng \
 	storagevol.rng \
 	nodedev.rng \
-	capability.rng
+	capability.rng \
+	nwfilter.rng
 
 EXTRA_DIST = $(schema_DATA)

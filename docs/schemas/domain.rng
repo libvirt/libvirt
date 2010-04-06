@@ -894,6 +894,11 @@
       <optional>
         <ref name="address"/>
       </optional>
+      <optional>
+        <element name="filterref">
+          <ref name="filterref-node-attributes"/>
+        </element>
+      </optional>
     </interleave>
   </define>
   <!--
@@ -1577,6 +1582,22 @@
     </element>
   </define>
 
+  <define name="filterref-node-attributes">
+    <attribute name="filter">
+      <data type="NCName"/>
+    </attribute>
+    <optional>
+      <element name="parameter">
+        <attribute name="name">
+          <ref name="filter-param-name"/>
+        </attribute>
+        <attribute name="value">
+          <ref name="filter-param-value"/>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
   <!--
        Type library
 
@@ -1735,6 +1756,16 @@
   <define name="timeZone">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.\+\-/]+</param>
+    </data>
+  </define>
+  <define name="filter-param-name">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_]+</param>
+    </data>
+  </define>
+  <define name="filter-param-value">
+    <data type="string">
+      <param name="pattern">[a-zA-Z0-9_\.:]+</param>
     </data>
   </define>
 </grammar>

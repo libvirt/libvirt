@@ -1,0 +1,10 @@
+#!/bin/sh
+
+: ${srcdir=.}
+. $srcdir/test-lib.sh
+. $abs_srcdir/schematestutils.sh
+
+DIRS="nwfilterxml2xmlout"
+SCHEMA="nwfilter.rng"
+
+check_schema "$DIRS" "$SCHEMA"
