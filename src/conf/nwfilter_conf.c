@@ -392,7 +392,9 @@ struct _virXMLAttr2Struct
 static const struct int_map macProtoMap[] = {
     INTMAP_ENTRY(ETHERTYPE_ARP , "arp"),
     INTMAP_ENTRY(ETHERTYPE_IP  , "ipv4"),
+#ifdef ETHERTYPE_IPV6
     INTMAP_ENTRY(ETHERTYPE_IPV6, "ipv6"),
+#endif
     INTMAP_ENTRY_LAST
 };
 
@@ -547,7 +549,6 @@ static const struct int_map ipProtoMap[] = {
 #ifdef IPPROTO_SCTP
     INTMAP_ENTRY(IPPROTO_SCTP, "sctp"),
 #endif
-    INTMAP_ENTRY(IPPROTO_IPV6, "ipv6"),
     INTMAP_ENTRY(IPPROTO_ICMPV6, "icmpv6"),
     INTMAP_ENTRY_LAST
 };
@@ -1124,7 +1125,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
     nwItemDesc *item;
     int int_val;
     unsigned int uint_val;
-    void *data_ptr, *storage_ptr;
+    void *data_ptr = NULL, *storage_ptr;
     valueValidator validator;
     char *match = virXMLPropString(node, "match");
     nwIPAddress ipaddr;
@@ -1550,7 +1551,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     char *direction;
     char *prio;
     int found;
-    int found_i;
+    int found_i = 0;
     unsigned int priority;
 
     xmlNodePtr cur;
