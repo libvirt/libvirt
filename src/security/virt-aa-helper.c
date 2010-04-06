@@ -775,7 +775,7 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
 
     virBufferVSprintf(buf, "  \"%s\" %s,\n", tmp, perms);
     if (readonly) {
-        virBufferVSprintf(buf, "  # don't audit writes to readonly media\n");
+        virBufferVSprintf(buf, "  # don't audit writes to readonly files\n");
         virBufferVSprintf(buf, "  deny \"%s\" w,\n", tmp);
     }
 
@@ -872,16 +872,22 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->console->data.file.path, "w") != 0)
             goto clean;
 
-    if (ctl->def->os.kernel && ctl->def->os.kernel)
+    if (ctl->def->os.kernel)
         if (vah_add_file(&buf, ctl->def->os.kernel, "r") != 0)
             goto clean;
 
-    if (ctl->def->os.initrd && ctl->def->os.initrd)
+    if (ctl->def->os.initrd)
         if (vah_add_file(&buf, ctl->def->os.initrd, "r") != 0)
             goto clean;
 
     if (ctl->def->os.loader && ctl->def->os.loader)
         if (vah_add_file(&buf, ctl->def->os.loader, "r") != 0)
+            goto clean;
+
+    if (ctl->def->ngraphics == 1 &&
+        ctl->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)
+        if (vah_add_file(&buf, ctl->def->graphics[0]->data.sdl.xauth,
+                         "r") != 0)
             goto clean;
 
     for (i = 0; i < ctl->def->nhostdevs; i++)
