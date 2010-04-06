@@ -1,4 +1,4 @@
-# Last Modified: Wed Sep 23 23:23:58 2009
+# Last Modified: Mon Apr  5 15:03:58 2010
 #include <tunables/global>
 @{LIBVIRT}="libvirt"
 
@@ -21,6 +21,7 @@
   capability chown,
   capability setpcap,
   capability mknod,
+  capability fsetid,
 
   network inet stream,
   network inet dgram,
@@ -35,7 +36,6 @@
   /sbin/* Ux,
   /usr/bin/* Ux,
   /usr/sbin/* Ux,
-  /usr/lib/libvirt/* Ux,
 
   # force the use of virt-aa-helper
   audit deny /sbin/apparmor_parser rwxl,
@@ -44,7 +44,7 @@
   audit deny /sys/kernel/security/apparmor/matching rwxl,
   audit deny /sys/kernel/security/apparmor/.* rwxl,
   /sys/kernel/security/apparmor/profiles r,
-  /usr/lib/libvirt/virt-aa-helper Pxr,
+  /usr/lib/libvirt/* PUxr,
 
   # allow changing to our UUID-based named profiles
   change_profile -> @{LIBVIRT}-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*,

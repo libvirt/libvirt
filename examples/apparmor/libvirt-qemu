@@ -1,4 +1,4 @@
-# Last Modified: Fri Nov  6 16:41:59 2009
+# Last Modified: Mon Apr  5 15:11:27 2010
 
   #include <abstractions/base>
   #include <abstractions/consoles>
@@ -16,13 +16,11 @@
   /dev/kvm rw,
   /dev/ptmx rw,
   /dev/kqemu rw,
+  @{PROC}/*/status r,
 
-  # WARNING: uncommenting these gives the guest direct access to host hardware.
-  # This is required for USB pass through but is a security risk. You have been
-  # warned.
-  #/sys/bus/usb/devices/ r,
-  #/sys/devices/*/*/usb[0-9]*/** r,
-  #/dev/bus/usb/*/[0-9]* rw,
+  # For hostdev access. The actual devices will be added dynamically
+  /sys/bus/usb/devices/ r,
+  /sys/devices/*/*/usb[0-9]*/** r,
 
   # WARNING: this gives the guest direct access to host hardware and specific
   # portions of shared memory. This is required for sound using ALSA with kvm,
@@ -37,6 +35,9 @@
   # 'kill' is not required for sound and is a security risk. Do not enable
   # unless you absolutely need it.
   deny capability kill,
+
+  # Uncomment the following if you need access to /dev/fb*
+  #/dev/fb* rw,
 
   /etc/pulse/client.conf r,
   @{HOME}/.pulse-cookie rwk,
@@ -56,6 +57,10 @@
   /usr/share/openhackware/** r,
   /usr/share/proll/** r,
   /usr/share/vgabios/** r,
+  /usr/share/seabios/** r,
+
+  # access PKI infrastructure
+  /etc/pki/libvirt-vnc/** r,
 
   # the various binaries
   /usr/bin/kvm rmix,
@@ -99,11 +104,3 @@
   /bin/dash rmix,
   /bin/dd rmix,
   /bin/cat rmix,
-
-  # The svirt driver does not relabel the state file
-  # (https://bugzilla.redhat.com/show_bug.cgi?id=529363) resulting in denied
-  # messages. Uncommenting these lines can work around this somewhat by
-  # allowing users to save state files in the specified directory. We use
-  # 'owner' to make sure we don't overwrite the user's files.
-  #owner @{HOME}/libvirt-state-files/ r,
-  #owner @{HOME}/libvirt-state-files/** rw,
