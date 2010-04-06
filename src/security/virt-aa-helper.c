@@ -700,7 +700,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
-    ctl->def = virDomainDefParseString(ctl->caps, xmlStr, 0);
+    ctl->def = virDomainDefParseString(ctl->caps, xmlStr,
+                                       VIR_DOMAIN_XML_INACTIVE);
     if (ctl->def == NULL) {
         vah_error(ctl, 0, "could not parse XML");
         goto exit;
