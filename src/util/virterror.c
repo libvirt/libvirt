@@ -1,7 +1,7 @@
 /*
  * virterror.c: implements error handling and reporting code for libvirt
  *
- * Copy:  Copyright (C) 2006, 2008, 2009 Red Hat, Inc.
+ * Copy:  Copyright (C) 2006, 2008-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -1150,6 +1150,7 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("Failed to make domain persistent after migration");
             else
                 errmsg = _("Failed to make domain persistent after migration: %s");
+            break;
         case VIR_ERR_HOOK_SCRIPT_FAILED:
             if (info == NULL)
                 errmsg = _("Hook script execution failed");
