@@ -301,7 +301,8 @@ ifeq (0,$(MAKELEVEL))
 		git diff .gnulib);					\
       stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
       test "$$stamp" = "$$actual"; echo $$?)
-  ifeq (1,$(_update_required))
+  _clean_requested = $(filter %clean,$(MAKECMDGOALS))
+  ifeq (1,$(_update_required)$(_clean_requested))
     $(info INFO: gnulib update required; running ./autogen.sh first)
 Makefile: _autogen
   endif
