@@ -294,7 +294,8 @@ ebiptablesAddRuleInst(virNWFilterRuleInstPtr res,
 static int
 ebtablesHandleEthHdr(virBufferPtr buf,
                      virNWFilterHashTablePtr vars,
-                     ethHdrDataDefPtr ethHdr)
+                     ethHdrDataDefPtr ethHdr,
+                     bool reverse)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
@@ -305,7 +306,8 @@ ebtablesHandleEthHdr(virBufferPtr buf,
             goto err_exit;
 
         virBufferVSprintf(buf,
-                      " -s %s %s",
+                      " %s %s %s",
+                      reverse ? "-d" : "-s",
                       ENTRY_GET_NEG_SIGN(&ethHdr->dataSrcMACAddr),
                       macaddr);
 
@@ -328,7 +330,8 @@ ebtablesHandleEthHdr(virBufferPtr buf,
             goto err_exit;
 
         virBufferVSprintf(buf,
-                      " -d %s %s",
+                      " %s %s %s",
+                      reverse ? "-s" : "-d",
                       ENTRY_GET_NEG_SIGN(&ethHdr->dataDstMACAddr),
                       macaddr);
 
@@ -1425,6 +1428,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
  * @ifname : The name of the interface to apply the rule to
  * @vars : A map containing the variables to resolve
  * @res : The data structure to store the result(s) into
+ * @reverse : Whether to reverse src and dst attributes
  *
  * Convert a single rule into its representation for later instantiation
  *
@@ -1438,7 +1442,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                            virNWFilterRuleDefPtr rule,
                            const char *ifname,
                            virNWFilterHashTablePtr vars,
-                           virNWFilterRuleInstPtr res)
+                           virNWFilterRuleInstPtr res,
+                           bool reverse)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN],
          ipaddr[INET_ADDRSTRLEN],
@@ -1464,7 +1469,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
-                                 &rule->p.ethHdrFilter.ethHdr))
+                                 &rule->p.ethHdrFilter.ethHdr,
+                                 reverse))
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.ethHdrFilter.dataProtocolID)) {
@@ -1487,7 +1493,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
-                                 &rule->p.arpHdrFilter.ethHdr))
+                                 &rule->p.arpHdrFilter.ethHdr,
+                                 reverse))
             goto err_exit;
 
         virBufferAddLit(&buf, " -p arp");
@@ -1532,7 +1539,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --arp-ip-src %s %s",
+                          " %s %s %s",
+                          reverse ? "--arp-ip-dst" : "--arp-ip-src",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPSrcIPAddr),
                           ipaddr);
         }
@@ -1544,7 +1552,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --arp-ip-dst %s %s",
+                          " %s %s %s",
+                          reverse ? "--arp-ip-src" : "--arp-ip-dst",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPDstIPAddr),
                           ipaddr);
         }
@@ -1556,7 +1565,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --arp-mac-src %s %s",
+                          " %s %s %s",
+                          reverse ? "--arp-mac-dst" : "--arp-mac-src",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPSrcMACAddr),
                           macaddr);
         }
@@ -1568,7 +1578,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --arp-mac-dst %s %s",
+                          " %s %s %s",
+                          reverse ? "--arp-mac-src" : "--arp-mac-dst",
                           ENTRY_GET_NEG_SIGN(&rule->p.arpHdrFilter.dataARPDstMACAddr),
                           macaddr);
         }
@@ -1581,7 +1592,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
-                                 &rule->p.ipHdrFilter.ethHdr))
+                                 &rule->p.ipHdrFilter.ethHdr,
+                                 reverse))
             goto err_exit;
 
         virBufferAddLit(&buf,
@@ -1594,7 +1606,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip-source %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip-destination" : "--ip-source",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipHdrFilter.ipHdr.dataSrcIPAddr),
                           ipaddr);
 
@@ -1617,7 +1630,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip-destination %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip-source" : "--ip-destination",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipHdrFilter.ipHdr.dataDstIPAddr),
                           ipaddr);
 
@@ -1652,7 +1666,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip-source-port %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip-destination-port" : "--ip-source-port",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipHdrFilter.portData.dataSrcPortStart),
                           number);
 
@@ -1676,7 +1691,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip-destination-port %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip-source-port" : "--ip-destination-port",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipHdrFilter.portData.dataDstPortStart),
                           number);
 
@@ -1712,7 +1728,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
 
         if (ebtablesHandleEthHdr(&buf,
                                  vars,
-                                 &rule->p.ipv6HdrFilter.ethHdr))
+                                 &rule->p.ipv6HdrFilter.ethHdr,
+                                 reverse))
             goto err_exit;
 
         virBufferAddLit(&buf,
@@ -1725,7 +1742,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip6-source %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip6-destination" : "--ip6-source",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.ipHdr.dataSrcIPAddr),
                           ipv6addr);
 
@@ -1748,7 +1766,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip6-destination %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip6-source" : "--ip6-destination",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.ipHdr.dataDstIPAddr),
                           ipv6addr);
 
@@ -1783,7 +1802,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip6-source-port %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip6-destination-port" : "--ip6-source-port",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.portData.dataSrcPortStart),
                           number);
 
@@ -1807,7 +1827,8 @@ ebtablesCreateRuleInstance(char chainPrefix,
                 goto err_exit;
 
             virBufferVSprintf(&buf,
-                          " --ip6-destination-port %s %s",
+                          " %s %s %s",
+                          reverse ? "--ip6-source-port" : "--ip6-destination-port",
                           ENTRY_GET_NEG_SIGN(&rule->p.ipv6HdrFilter.portData.dataDstPortStart),
                           number);
 
@@ -1900,7 +1921,8 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
                                             rule,
                                             ifname,
                                             vars,
-                                            res);
+                                            res,
+                                            rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
             if (rc)
                 return rc;
         }
@@ -1912,7 +1934,8 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
                                             rule,
                                             ifname,
                                             vars,
-                                            res);
+                                            res,
+                                            false);
         }
     break;
 
