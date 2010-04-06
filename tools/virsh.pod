@@ -342,10 +342,15 @@ configuration format named by I<format>.
 
 Dumps the core of a domain to a file for analysis.
 
-=item B<dumpxml> I<domain-id>
+=item B<dumpxml> I<domain-id> optional I<--inactive> I<--security-info> I<--update-cpu>
 
-Output the domain information as an XML dump to stdout, this format
-can be used by the B<create> command.
+Output the domain information as an XML dump to stdout, this format can be used
+by the B<create> command. Additional options affecting the XML dump may be
+used. I<--inactive> tells virsh to dump domain configuration that will be used
+on next start of the domain as opposed to the current domain configuration.
+Using I<--security-info> security sensitive information will also be included
+in the XML dump. I<--update-cpu> updates domain CPU requirements according to
+host CPU.
 
 =item B<edit> I<domain-id>
 
