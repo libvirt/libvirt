@@ -182,6 +182,8 @@ parserCommand(const char *profile_name, const char cmd)
 {
     char flag[3];
     char profile[PATH_MAX];
+    int status;
+    int ret;
 
     if (strchr("arR", cmd) == NULL) {
         vah_error(NULL, 0, "invalid flag");
@@ -203,9 +205,17 @@ parserCommand(const char *profile_name, const char cmd)
         const char * const argv[] = {
             "/sbin/apparmor_parser", flag, profile, NULL
         };
-        if (virRun(argv, NULL) != 0) {
-            vah_error(NULL, 0, "failed to run apparmor_parser");
-            return -1;
+        if ((ret = virRun(argv, &status)) != 0 ||
+            (WIFEXITED(status) && WEXITSTATUS(status) != 0)) {
+            if (ret != 0) {
+                vah_error(NULL, 0, "failed to run apparmor_parser");
+                return -1;
+            } else if (cmd == 'R' && WIFEXITED(status) && WEXITSTATUS(status) == 234) {
+                vah_warning("unable to unload already unloaded profile (non-fatal)");
+            } else {
+                vah_error(NULL, 0, "apparmor_parser exited with error");
+                return -1;
+            }
         }
     }
 
