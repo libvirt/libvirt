@@ -490,7 +490,7 @@ static int
 valid_path(const char *path, const bool readonly)
 {
     struct stat sb;
-    int npaths;
+    int npaths, opaths;
     const char * const restricted[] = {
         "/bin/",
         "/etc/",
@@ -515,6 +515,10 @@ valid_path(const char *path, const bool readonly)
         "/vmlinuz",
         "/initrd",
         "/initrd.img"
+    };
+    /* override the above with these */
+    const char * const override[] = {
+        "/sys/devices/pci"	/* for hostdev pci devices */
     };
 
     if (path == NULL || strlen(path) > PATH_MAX - 1) {
@@ -553,9 +557,12 @@ valid_path(const char *path, const bool readonly)
         }
     }
 
+    opaths = sizeof(override)/sizeof *(override);
+
     npaths = sizeof(restricted)/sizeof *(restricted);
-    if (array_starts_with(path, restricted, npaths) == 0)
-        return 1;
+    if (array_starts_with(path, restricted, npaths) == 0 &&
+        array_starts_with(path, override, opaths) != 0)
+            return 1;
 
     npaths = sizeof(restricted_rw)/sizeof *(restricted_rw);
     if (!readonly) {
@@ -779,8 +786,16 @@ vah_add_file(virBufferPtr buf, const char *path, const char *perms)
 }
 
 static int
-file_iterate_cb(usbDevice *dev ATTRIBUTE_UNUSED,
-                const char *file, void *opaque)
+file_iterate_hostdev_cb(usbDevice *dev ATTRIBUTE_UNUSED,
+                        const char *file, void *opaque)
+{
+    virBufferPtr buf = opaque;
+    return vah_add_file(buf, file, "rw");
+}
+
+static int
+file_iterate_pci_cb(pciDevice *dev ATTRIBUTE_UNUSED,
+                        const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;
     return vah_add_file(buf, file, "rw");
@@ -825,7 +840,7 @@ get_files(vahControl * ctl)
                 path = NULL;
 
                 if (ret < 0) {
-                    vah_warning("skipping backingStore check (open failed)");
+                    vah_warning("could not open path, skipping");
                     continue;
                 }
 
@@ -880,13 +895,13 @@ get_files(vahControl * ctl)
                 if (usb == NULL)
                     continue;
 
-                rc = usbDeviceFileIterate(usb, file_iterate_cb, &buf);
+                rc = usbDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
                 usbFreeDevice(usb);
                 if (rc != 0)
                     goto clean;
                 break;
             }
-/* TODO: update so files in /sys are readonly
+
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
                 pciDevice *pci = pciGetDevice(
                            dev->source.subsys.u.pci.domain,
@@ -897,12 +912,12 @@ get_files(vahControl * ctl)
                 if (pci == NULL)
                     continue;
 
-                rc = pciDeviceFileIterate(NULL, pci, file_iterate_cb, &buf);
+                rc = pciDeviceFileIterate(pci, file_iterate_pci_cb, &buf);
                 pciFreeDevice(pci);
 
                 break;
             }
-*/
+
             default:
                 rc = 0;
                 break;
