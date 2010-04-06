@@ -2682,7 +2682,7 @@ char *
 virGetUserDirectory(uid_t uid ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserDirectory is not avialable"));
+                 "%s", _("virGetUserDirectory is not available"));
 
     return NULL;
 }
@@ -2691,7 +2691,7 @@ char *
 virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserName is not avialable"));
+                 "%s", _("virGetUserName is not available"));
 
     return NULL;
 }
@@ -2700,7 +2700,7 @@ int virGetUserID(const char *name ATTRIBUTE_UNUSED,
                  uid_t *uid ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetUserID is not avialable"));
+                 "%s", _("virGetUserID is not available"));
 
     return 0;
 }
@@ -2710,7 +2710,7 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
                   gid_t *gid ATTRIBUTE_UNUSED)
 {
     virUtilError(VIR_ERR_INTERNAL_ERROR,
-                 "%s", _("virGetGroupID is not avialable"));
+                 "%s", _("virGetGroupID is not available"));
 
     return 0;
 }
