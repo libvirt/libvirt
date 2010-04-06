@@ -832,7 +832,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr, size_t len)
 {
     char conf_file[PATH_MAX];
     char line[1024];
-    char *saveptr;
+    char *saveptr = NULL;
     char *uuidbuf;
     char *iden;
     int fd, ret;
