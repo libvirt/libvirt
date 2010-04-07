@@ -2622,7 +2622,6 @@ cleanup:
  */
 virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     virDomainPtr ret;
-    virDomainPtr olddomain;
     char filename[PATH_MAX];
     const char * oldfilename;
     virDomainDefPtr def = NULL;
@@ -2687,10 +2686,6 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
                        "%s", _("can't retrieve config entry for domain to overwrite"));
             goto error;
         }
-
-        /* XXX wtf.com is this line for - it appears to be amemory leak */
-        if (!(olddomain = virGetDomain(conn, def->name, entry->def->uuid)))
-            goto error;
 
         /* Remove the name -> filename mapping */
         if (virHashRemoveEntry(priv->nameConfigMap, def->name, NULL) < 0) {
