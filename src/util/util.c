@@ -2394,6 +2394,9 @@ char *virGetHostnameLocalhost(int allow_localhost)
         return NULL;
     }
 
+    /* Tell static analyzers about getaddrinfo semantics.  */
+    sa_assert (info);
+
     /* if we aren't allowing localhost, then we iterate through the
      * list and make sure none of the IPv4 addresses are 127.0.0.1 and
      * that none of the IPv6 addresses are ::1
