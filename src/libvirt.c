@@ -12262,7 +12262,7 @@ error:
  * @dom: pointer to the domain
  * @flags: optional flags currently unused
  *
- * Remove any managed save image as for this domain.
+ * Remove any managed save image for this domain.
  *
  * Returns 0 in case of success, and -1 in case of error
  */
