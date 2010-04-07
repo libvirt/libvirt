@@ -308,12 +308,11 @@ static int createRawFileOpHook(int fd, void *data) {
                  * update every 9s is a fair-enough trade-off
                  */
                 unsigned long long bytes = 512 * 1024 * 1024;
-                int r;
 
                 if (bytes > remain)
                     bytes = remain;
-                if ((r = safezero(fd, 0, hdata->vol->allocation - remain,
-                                  bytes)) != 0) {
+                if (safezero(fd, 0, hdata->vol->allocation - remain,
+                             bytes) != 0) {
                     ret = errno;
                     virReportSystemError(errno, _("cannot fill file '%s'"),
                                          hdata->vol->target.path);
@@ -322,9 +321,7 @@ static int createRawFileOpHook(int fd, void *data) {
                 remain -= bytes;
             }
         } else { /* No progress bars to be shown */
-            int r;
-
-            if ((r = safezero(fd, 0, 0, remain)) != 0) {
+            if (safezero(fd, 0, 0, remain) != 0) {
                 ret = errno;
                 virReportSystemError(errno, _("cannot fill file '%s'"),
                                      hdata->vol->target.path);
