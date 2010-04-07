@@ -1354,7 +1354,6 @@ static void qemuDomainSnapshotLoad(void *payload,
     char *xmlStr;
     int ret;
     char *fullpath;
-    virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotDefPtr def = NULL;
     char ebuf[1024];
 
@@ -1406,7 +1405,7 @@ static void qemuDomainSnapshotLoad(void *payload,
             continue;
         }
 
-        snap = virDomainSnapshotAssignDef(&vm->snapshots, def);
+        virDomainSnapshotAssignDef(&vm->snapshots, def);
 
         VIR_FREE(xmlStr);
     }
