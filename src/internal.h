@@ -9,6 +9,14 @@
 # include <limits.h>
 # include <verify.h>
 
+# if STATIC_ANALYSIS
+#  undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */
+#  include <assert.h>
+#  define sa_assert(expr) assert (expr)
+# else
+#  define sa_assert(expr) /* empty */
+# endif
+
 # ifdef HAVE_SYS_SYSLIMITS_H
 #  include <sys/syslimits.h>
 # endif
