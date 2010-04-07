@@ -964,7 +964,8 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
     int count = 0;
 
     if (ids == NULL || maxids < 0) {
-        goto failure;
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
+        return -1;
     }
 
     if (maxids == 0) {
@@ -2255,7 +2256,8 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     int i;
 
     if (names == NULL || maxnames < 0) {
-        goto failure;
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
+        return -1;
     }
 
     if (maxnames == 0) {
