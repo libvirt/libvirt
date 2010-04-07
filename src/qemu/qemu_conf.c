@@ -892,9 +892,10 @@ qemudCapsInitGuest(virCapsPtr caps,
 
     guest->arch.defaultInfo.emulator_mtime = binary_mtime;
 
-    if (qemudProbeCPUModels(binary, info->arch, &ncpus, NULL) == 0
-        && ncpus > 0
-        && !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
+    if (caps->host.cpu &&
+        qemudProbeCPUModels(binary, info->arch, &ncpus, NULL) == 0 &&
+        ncpus > 0 &&
+        !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
 
     if (hvm) {
