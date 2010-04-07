@@ -6851,7 +6851,7 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
 {
     int i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainControllerDefPtr cont;
+    virDomainControllerDefPtr cont = NULL;
     char *drivestr = NULL;
     char *devstr = NULL;
     int ret = -1;
@@ -6893,6 +6893,11 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
         if (!cont)
             goto error;
     }
+
+    /* Tell clang that "cont" is non-NULL.
+       This is because disk->info.addr.driver.controller is unsigned,
+       and hence the above loop must iterate at least once.  */
+    sa_assert (cont);
 
     if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
