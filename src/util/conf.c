@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006, 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -473,6 +473,13 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
             SKIP_BLANKS_AND_EOL;
         }
         while ((ctxt->cur < ctxt->end) && (CUR != ']')) {
+
+            /* Tell Clang that when execution reaches this point
+               "lst" is guaranteed to be non-NULL.  This stops it
+               from issuing an invalid NULL-dereference warning about
+               "prev = lst; while (prev->next..." below.  */
+            sa_assert (lst);
+
             if (CUR != ',') {
                 virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
                              _("expecting a separator in list"));
