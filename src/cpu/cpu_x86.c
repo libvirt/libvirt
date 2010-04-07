@@ -963,8 +963,8 @@ x86Compute(virCPUDefPtr host,
     x86ModelSubtract(diff, cpu_disable);
     x86ModelSubtract(diff, cpu_force);
 
-    for (i = 0; i < host_model->ncpuid; i++) {
-        if (!x86cpuidMatch(host_model->cpuid + i, &cpuid_zero)) {
+    for (i = 0; i < diff->ncpuid; i++) {
+        if (!x86cpuidMatch(diff->cpuid + i, &cpuid_zero)) {
             ret = VIR_CPU_COMPARE_SUPERSET;
             break;
         }
