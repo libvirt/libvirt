@@ -5564,7 +5564,6 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
 {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     virDomainObjPtr vm;
-    const char *type;
     int ret = -1;
 
     qemuDriverLock(driver);
@@ -5580,7 +5579,7 @@ static int qemudDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr sec
         goto cleanup;
     }
 
-    if (!(type = virDomainVirtTypeToString(vm->def->virtType))) {
+    if (!virDomainVirtTypeToString(vm->def->virtType)) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("unknown virt type in domain definition '%d'"),
                         vm->def->virtType);
