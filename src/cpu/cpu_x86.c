@@ -901,7 +901,7 @@ x86Compute(virCPUDefPtr host,
     struct x86_model *guest_model = NULL;
     virCPUCompareResult ret;
     enum compare_result result;
-    int i;
+    unsigned int i;
 
     if (cpu->arch != NULL) {
         bool found = false;
@@ -919,35 +919,14 @@ x86Compute(virCPUDefPtr host,
         }
     }
 
-    if ((map = x86LoadMap()) == NULL)
+    if (!(map = x86LoadMap()) ||
+        !(host_model = x86ModelFromCPU(host, map, 0)) ||
+        !(cpu_force = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORCE)) ||
+        !(cpu_require = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_REQUIRE)) ||
+        !(cpu_optional = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_OPTIONAL)) ||
+        !(cpu_disable = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)) ||
+        !(cpu_forbid = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORBID)))
         goto error;
-
-    if (!(host_model = x86ModelFromCPU(host, map, 0)))
-        goto error;
-
-    if (!(cpu_force = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORCE)))
-        goto error;
-
-    if (!(cpu_require = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_REQUIRE)))
-        goto error;
-
-    if (!(cpu_optional = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_OPTIONAL)))
-        goto error;
-
-    if (!(cpu_disable = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
-        goto error;
-
-    if (!(cpu_forbid = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORBID)))
-        goto error;
-
-    x86ModelSubtract(cpu_require, cpu_disable);
-
-    if ((diff = x86ModelCopy(host_model)) == NULL)
-        goto no_memory;
-
-    x86ModelSubtract(diff, cpu_require);
-    x86ModelSubtract(diff, cpu_optional);
-    x86ModelSubtract(diff, cpu_force);
 
     for (i = 0; i < cpu_forbid->ncpuid; i++) {
         const struct cpuX86cpuid *cpuid1;
@@ -966,6 +945,7 @@ x86Compute(virCPUDefPtr host,
         }
     }
 
+    x86ModelSubtract(cpu_require, cpu_disable);
     result = x86ModelCompare(host_model, cpu_require);
     if (result == SUBSET || result == UNRELATED) {
         VIR_DEBUG0("Host CPU does not provide all required features");
@@ -974,6 +954,14 @@ x86Compute(virCPUDefPtr host,
     }
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
+
+    if ((diff = x86ModelCopy(host_model)) == NULL)
+        goto no_memory;
+
+    x86ModelSubtract(diff, cpu_optional);
+    x86ModelSubtract(diff, cpu_require);
+    x86ModelSubtract(diff, cpu_disable);
+    x86ModelSubtract(diff, cpu_force);
 
     for (i = 0; i < host_model->ncpuid; i++) {
         if (!x86cpuidMatch(host_model->cpuid + i, &cpuid_zero)) {
