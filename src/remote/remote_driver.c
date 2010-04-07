@@ -271,7 +271,7 @@ void remoteDomainEventQueueFlush(int timer, void *opaque);
 static char *get_transport_from_scheme (char *scheme);
 
 /* GnuTLS functions used by remoteOpen. */
-static int initialise_gnutls (virConnectPtr conn);
+static int initialize_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, struct private_data *priv, int no_verify);
 
 #ifdef WITH_LIBVIRTD
@@ -425,7 +425,7 @@ doRemoteOpen (virConnectPtr conn,
         transport = trans_unix;
     }
 
-    /* Local variables which we will initialise. These can
+    /* Local variables which we will initialize. These can
      * get freed in the failed: path.
      */
     char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
@@ -579,7 +579,7 @@ doRemoteOpen (virConnectPtr conn,
     /* Connect to the remote service. */
     switch (transport) {
     case trans_tls:
-        if (initialise_gnutls (conn) == -1) goto failed;
+        if (initialize_gnutls (conn) == -1) goto failed;
         priv->uses_tls = 1;
         priv->is_secure = 1;
 
@@ -1140,12 +1140,12 @@ check_cert_file(const char *type, const char *file)
 
 
 static int
-initialise_gnutls (virConnectPtr conn)
+initialize_gnutls (virConnectPtr conn)
 {
-    static int initialised = 0;
+    static int initialized = 0;
     int err;
 
-    if (initialised) return 0;
+    if (initialized) return 0;
 
     gnutls_global_init ();
 
@@ -1193,7 +1193,7 @@ initialise_gnutls (virConnectPtr conn)
         return -1;
     }
 
-    initialised = 1;
+    initialized = 1;
     return 0;
 }
 

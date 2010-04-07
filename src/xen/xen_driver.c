@@ -297,7 +297,7 @@ xenUnifiedOpen (virConnectPtr conn, virConnectAuthPtr auth, int flags)
     }
     if (virMutexInit(&priv->lock) < 0) {
         xenUnifiedError(VIR_ERR_INTERNAL_ERROR,
-                        "%s", _("cannot initialise mutex"));
+                        "%s", _("cannot initialize mutex"));
         VIR_FREE(priv);
         return VIR_DRV_OPEN_ERROR;
     }
@@ -1892,7 +1892,7 @@ out:
 }
 
 
-/*----- Register with libvirt.c, and initialise Xen drivers. -----*/
+/*----- Register with libvirt.c, and initialize Xen drivers. -----*/
 
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenUnifiedDriver = {

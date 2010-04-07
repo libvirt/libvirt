@@ -1,7 +1,7 @@
 /*
  * network.c: network helper APIs for libvirt
  *
- * Copyright (C) 2009-2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -116,7 +116,7 @@ virSocketParseIpv6Addr(const char *val, virSocketAddrPtr addr) {
 
 /*
  * virSocketFormatAddr:
- * @addr: an initialised virSocketAddrPtr
+ * @addr: an initialized virSocketAddrPtr
  *
  * Returns a string representation of the given address
  * Returns NULL on any error
@@ -158,7 +158,7 @@ virSocketFormatAddr(virSocketAddrPtr addr) {
 
 /*
  * virSocketSetPort:
- * @addr: an initialised virSocketAddrPtr
+ * @addr: an initialized virSocketAddrPtr
  * @port: the port number to set
  *
  * Set the transport layer port of the given virtSocketAddr
@@ -189,7 +189,7 @@ virSocketSetPort(virSocketAddrPtr addr, int port) {
 
 /*
  * virSocketGetPort:
- * @addr: an initialised virSocketAddrPtr
+ * @addr: an initialized virSocketAddrPtr
  *
  * Returns the transport layer port of the given virtSocketAddr
  * Returns -1 if @addr is invalid
