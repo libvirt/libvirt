@@ -138,6 +138,23 @@
 #   endif
 #  endif
 
+/**
+ * ATTRIBUTE_PACKED
+ *
+ * force a structure to be packed, i.e. not following architecture and
+ * compiler best alignments for its sub components. It's needed for example
+ * for the network filetering code when defining the content of raw
+ * ethernet packets.
+ * Others compiler than gcc may use something different e.g. #pragma pack(1)
+ */
+#  ifndef ATTRIBUTE_PACKED
+#   if __GNUC_PREREQ (3, 3)
+#    define ATTRIBUTE_PACKED __attribute__((packed))
+#   else
+#    error "Need an __attribute__((packed)) equivalent"
+#   endif
+#  endif
+
 #  ifndef ATTRIBUTE_NONNULL
 #   if __GNUC_PREREQ (3, 3)
 #    define ATTRIBUTE_NONNULL(m) __attribute__((__nonnull__(m)))

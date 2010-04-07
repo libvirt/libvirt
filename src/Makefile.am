@@ -308,7 +308,9 @@ NWFILTER_DRIVER_SOURCES =					\
 		nwfilter/nwfilter_gentech_driver.c			\
 		nwfilter/nwfilter_gentech_driver.h			\
 		nwfilter/nwfilter_ebiptables_driver.c			\
-		nwfilter/nwfilter_ebiptables_driver.h
+		nwfilter/nwfilter_ebiptables_driver.h			\
+		nwfilter/nwfilter_learnipaddr.c				\
+		nwfilter/nwfilter_learnipaddr.h
 
 
 # Security framework and drivers for various models
@@ -764,10 +766,11 @@ else
 libvirt_la_LIBADD += libvirt_driver_nwfilter.la
 noinst_LTLIBRARIES += libvirt_driver_nwfilter.la
 endif
-libvirt_driver_nwfilter_la_CFLAGS = \
+libvirt_driver_nwfilter_la_CFLAGS = $(LIBPCAP_CFLAGS) \
 		-I@top_srcdir@/src/conf
+libvirt_driver_nwfilter_la_LDFLAGS = $(LIBPCAP_LIBS)
 if WITH_DRIVER_MODULES
-libvirt_driver_nwfilter_la_LDFLAGS = -module -avoid-version ../gnulib/lib/libgnu.la
+libvirt_driver_nwfilter_la_LDFLAGS += -module -avoid-version ../gnulib/lib/libgnu.la
 endif
 libvirt_driver_nwfilter_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
 endif
@@ -912,6 +915,7 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)libvirt.syms \
                      -version-info $(LIBVIRT_VERSION_INFO) \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
                     $(LIBXML_LIBS) \
+                    $(LIBPCAP_LIBS) \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
@@ -960,8 +964,8 @@ libvirt_lxc_SOURCES =						\
 		$(NODE_INFO_SOURCES)				\
 		$(ENCRYPTION_CONF_SOURCES)			\
 		$(DOMAIN_CONF_SOURCES)				\
-		$(NWFILTER_PARAM_CONF_SOURCES)			\
-		$(CPU_CONF_SOURCES)
+		$(CPU_CONF_SOURCES)				\
+		$(NWFILTER_PARAM_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS) $(YAJL_LIBS)
 libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\

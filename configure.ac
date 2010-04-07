@@ -41,6 +41,7 @@ XMLRPC_REQUIRED=1.14.0
 HAL_REQUIRED=0.5.0
 DEVMAPPER_REQUIRED=1.0.0
 LIBCURL_REQUIRED="7.18.0"
+LIBPCAP_REQUIRED="1.0.0"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -1043,6 +1044,39 @@ fi
 AM_CONDITIONAL([HAVE_NUMACTL], [test "$with_numactl" != "no"])
 AC_SUBST([NUMACTL_CFLAGS])
 AC_SUBST([NUMACTL_LIBS])
+
+
+dnl pcap lib
+LIBPCAP_CONFIG="pcap-config"
+LIBPCAP_CFLAGS=""
+LIBPCAP_LIBS=""
+LIBPCAP_FOUND="no"
+
+AC_ARG_WITH([libpcap], AC_HELP_STRING([--with-libpcap=@<:@PFX@:>@], [libpcap location]))
+if test "$with_qemu" = "yes"; then
+    if test "x$with_libpcap" != "xno" ; then
+        if test "x$with_libpcap" != "x" ; then
+            LIBPCAP_CONFIG=$with_libpcap/bin/$LIBPCAP_CONFIG
+        fi
+        AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
+        if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
+	    AC_MSG_RESULT(no)
+	else
+            LIBPCAP_LIBS="`$LIBPCAP_CONFIG --libs`"
+            LIBPCAP_CFLAGS="`$LIBPCAP_CONFIG --cflags`"
+            LIBPCAP_FOUND="yes"
+            AC_MSG_RESULT(yes)
+        fi
+    fi
+fi
+
+if test "x$LIBPCAP_FOUND" = "xyes"; then
+  AC_DEFINE_UNQUOTED([HAVE_LIBPCAP], 1, [whether libpcap can be used])
+fi
+
+AC_SUBST([LIBPCAP_CFLAGS])
+AC_SUBST([LIBPCAP_LIBS])
+
 
 
 dnl
@@ -2128,6 +2162,11 @@ if test "$with_one" = "yes" ; then
 AC_MSG_NOTICE([  xmlrpc: $XMLRPC_CFLAGS $XMLRPC_LIBS])
 else
 AC_MSG_NOTICE([  xmlrpc: no])
+fi
+if test "$with_qemu" = "yes" ; then
+AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
+else
+AC_MSG_NOTICE([    pcap: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

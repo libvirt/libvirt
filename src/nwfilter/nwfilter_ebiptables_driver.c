@@ -2519,6 +2519,242 @@ ebiptablesInstCommand(virBufferPtr buf,
 }
 
 
+/**
+ * ebtablesApplyBasicRules
+ *
+ * @conn: virConnect object
+ * @ifname: name of the backend-interface to which to apply the rules
+ * @macaddr: MAC address the VM is using in packets sent through the
+ *    interface
+ *
+ * Returns 0 on success, 1 on failure with the rules removed
+ *
+ * Apply basic filtering rules on the given interface
+ * - filtering for MAC address spoofing
+ * - allowing IPv4 & ARP traffic
+ */
+int
+ebtablesApplyBasicRules(const char *ifname,
+                        const unsigned char *macaddr)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int cli_status;
+    char chain[MAX_CHAINNAME_LENGTH];
+    char chainPrefix = CHAINPREFIX_HOST_IN_TEMP;
+    char macaddr_str[VIR_MAC_STRING_BUFLEN];
+
+    virFormatMacAddr(macaddr, macaddr_str);
+
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
+    ebiptablesExecCLI(&buf, &cli_status);
+
+    ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
+
+    PRINT_ROOT_CHAIN(chain, chainPrefix, ifname);
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -s ! %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain,
+                      macaddr_str,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -p IPv4 -j ACCEPT") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -p ARP -j ACCEPT") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain,
+                      CMD_STOPONERR(1));
+
+    ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
+
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
+        goto tear_down_tmpebchains;
+
+    return 0;
+
+tear_down_tmpebchains:
+    ebtablesRemoveBasicRules(ifname);
+
+    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
+                           "%s",
+                           _("Some rules could not be created."));
+
+    return 1;
+}
+
+
+/**
+ * ebtablesApplyDHCPOnlyRules
+ *
+ * @ifname: name of the backend-interface to which to apply the rules
+ * @macaddr: MAC address the VM is using in packets sent through the
+ *    interface
+ * @dhcpserver: The DHCP server from which the VM may receive traffic
+ *    from; may be NULL
+ *
+ * Returns 0 on success, 1 on failure with the rules removed
+ *
+ * Apply filtering rules so that the VM can only send and receive
+ * DHCP traffic and nothing else.
+ */
+int
+ebtablesApplyDHCPOnlyRules(const char *ifname,
+                           const unsigned char *macaddr,
+                           const char *dhcpserver)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int cli_status;
+    char chain_in [MAX_CHAINNAME_LENGTH],
+         chain_out[MAX_CHAINNAME_LENGTH];
+    char macaddr_str[VIR_MAC_STRING_BUFLEN];
+    char *srcIPParam = NULL;
+
+    if (dhcpserver) {
+        virBufferVSprintf(&buf, " --ip-src %s", dhcpserver);
+        if (virBufferError(&buf))
+            return 1;
+        srcIPParam = virBufferContentAndReset(&buf);
+    }
+
+    virFormatMacAddr(macaddr, macaddr_str);
+
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
+    ebiptablesExecCLI(&buf, &cli_status);
+
+    ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
+    ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
+
+    PRINT_ROOT_CHAIN(chain_in , CHAINPREFIX_HOST_IN_TEMP , ifname);
+    PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s"
+                              " -s %s -d Broadcast "
+                              " -p ipv4 --ip-protocol udp"
+                              " --ip-src 0.0.0.0 --ip-dst 255.255.255.255"
+                              " --ip-sport 68 --ip-dport 67"
+                              " -j ACCEPT") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain_in,
+                      macaddr_str,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain_in,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s"
+                              " -d %s"
+                              " -p ipv4 --ip-protocol udp"
+                              " %s"
+                              " --ip-sport 67 --ip-dport 68"
+                              " -j ACCEPT") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain_out,
+                      macaddr_str,
+                      srcIPParam != NULL ? srcIPParam : "",
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF(EBTABLES_CMD
+                              " -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      EBTABLES_DEFAULT_TABLE,
+                      chain_out,
+                      CMD_STOPONERR(1));
+
+    ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
+    ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
+
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
+        goto tear_down_tmpebchains;
+
+    VIR_FREE(srcIPParam);
+
+    return 0;
+
+tear_down_tmpebchains:
+    ebtablesRemoveBasicRules(ifname);
+
+    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
+                           "%s",
+                           _("Some rules could not be created."));
+
+    VIR_FREE(srcIPParam);
+
+    return 1;
+}
+
+
+int
+ebtablesRemoveBasicRules(const char *ifname)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int cli_status;
+
+    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
+    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
+    ebtablesRemoveTmpSubChains(&buf, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
+    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
+
+    ebiptablesExecCLI(&buf, &cli_status);
+    return 0;
+}
+
+
 static int
 ebiptablesRuleOrderSort(const void *a, const void *b)
 {

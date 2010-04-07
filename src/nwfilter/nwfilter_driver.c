@@ -37,6 +37,8 @@
 #include "nwfilter_gentech_driver.h"
 
 
+#include "nwfilter_learnipaddr.h"
+
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 #define nwfilterLog(msg...) fprintf(stderr, msg)
@@ -65,8 +67,11 @@ static int
 nwfilterDriverStartup(int privileged) {
     char *base = NULL;
 
-    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
+    if (virNWFilterLearnInit() < 0)
         return -1;
+
+    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB) < 0)
+        goto conf_init_err;
 
     if (VIR_ALLOC(driverState) < 0)
         goto alloc_err_exit;
@@ -119,6 +124,9 @@ error:
 
 alloc_err_exit:
     virNWFilterConfLayerShutdown();
+
+conf_init_err:
+    virNWFilterLearnShutdown();
 
     return -1;
 }
@@ -413,5 +421,6 @@ static virStateDriver stateDriver = {
 int nwfilterRegister(void) {
     virRegisterNWFilterDriver(&nwfilterDriver);
     virRegisterStateDriver(&stateDriver);
+    virNWFilterLearnInit();
     return 0;
 }

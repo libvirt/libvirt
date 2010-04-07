@@ -558,6 +558,9 @@ virNWFilterDefPtr virNWFilterDefParseFile(virConnectPtr conn,
 void virNWFilterPoolObjLock(virNWFilterPoolObjPtr obj);
 void virNWFilterPoolObjUnlock(virNWFilterPoolObjPtr obj);
 
+void virNWFilterLockFilterUpdates(void);
+void virNWFilterUnlockFilterUpdates(void);
+
 int virNWFilterConfLayerInit(virHashIterator domUpdateCB);
 void virNWFilterConfLayerShutdown(void);
 

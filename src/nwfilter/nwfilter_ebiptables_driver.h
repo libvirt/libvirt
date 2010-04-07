@@ -45,4 +45,12 @@ extern virNWFilterTechDriver ebiptables_driver;
 
 # define EBIPTABLES_DRIVER_ID "ebiptables"
 
+
+int ebtablesApplyBasicRules(const char *ifname,
+                            const unsigned char *macaddr);
+int ebtablesApplyDHCPOnlyRules(const char *ifname,
+                               const unsigned char *macaddr,
+                               const char *dhcpServer);
+int ebtablesRemoveBasicRules(const char *ifname);
+
 #endif

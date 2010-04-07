@@ -499,6 +499,8 @@ virNWFilterRegisterCallbackDriver;
 virNWFilterTestUnassignDef;
 virNWFilterConfLayerInit;
 virNWFilterConfLayerShutdown;
+virNWFilterLockFilterUpdates;
+virNWFilterUnlockFilterUpdates;
 
 
 #nwfilter_params.h
@@ -512,6 +514,16 @@ virNWFilterHashTableRemoveEntry;
 # nwfilter_gentech_driver.h
 virNWFilterInstantiateFilter;
 virNWFilterTeardownFilter;
+
+
+#nwfilter_learnipaddr.h
+ipAddressMap;
+ipAddressMapLock;
+pendingLearnReq;
+pendingLearnReqLock;
+virNWFilterGetIpAddrForIfname;
+virNWFilterDelIpAddrForIfname;
+virNWFilterLookupLearnReq;
 
 
 # pci.h

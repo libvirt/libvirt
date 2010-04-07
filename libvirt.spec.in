@@ -61,6 +61,7 @@
 %define with_udev          0%{!?_without_udev:0}
 %define with_hal           0%{!?_without_hal:0}
 %define with_yajl          0%{!?_without_yajl:0}
+%define with_libpcap       0%{!?_without_libpcap:0}
 
 # Non-server/HV driver defaults which are always enabled
 %define with_python        0%{!?_without_python:1}
@@ -145,6 +146,11 @@
 # Enable yajl library for JSON mode with QEMU
 %if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
 %define with_yajl     0%{!?_without_yajl:%{server_drivers}}
+%endif
+
+# Enable libpcap library
+%if %{with_qemu}
+%define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
 %endif
 
 # Force QEMU to run as non-root
@@ -265,6 +271,9 @@ BuildRequires: libpciaccess-devel >= 0.10.9
 %endif
 %if %{with_yajl}
 BuildRequires: yajl-devel
+%endif
+%if %{with_libpcap}
+BuildRequires: libpcap-devel
 %endif
 %if %{with_avahi}
 BuildRequires: avahi-devel

@@ -45,12 +45,24 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
 int virNWFilterTearOldFilter(virConnectPtr conn,
                              const virDomainNetDefPtr net);
 
+int virNWFilterInstantiateFilterLate(virConnectPtr conn,
+                                     const char *ifname,
+                                     const char *linkdev,
+                                     enum virDomainNetType nettype,
+                                     const unsigned char *macaddr,
+                                     const char *filtername,
+                                     virNWFilterHashTablePtr filterparams,
+                                     virNWFilterDriverStatePtr driver);
+
 int virNWFilterTeardownFilter(const virDomainNetDefPtr net);
 
-virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr);
+virNWFilterHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
+                                                    char *ipaddr);
 
 void virNWFilterDomainFWUpdateCB(void *payload,
                                  const char *name ATTRIBUTE_UNUSED,
                                  void *data);
+
+int checkIf(const char *ifname, const unsigned char *macaddr);
 
 #endif

@@ -114,15 +114,16 @@ struct int_map {
  */
 static virMutex updateMutex;
 
-static void
+void
 virNWFilterLockFilterUpdates(void) {
     virMutexLock(&updateMutex);
 }
 
-static void
+void
 virNWFilterUnlockFilterUpdates(void) {
     virMutexUnlock(&updateMutex);
 }
+
 
 
 /*
@@ -2615,7 +2616,7 @@ int virNWFilterConfLayerInit(virHashIterator domUpdateCB)
 {
     virNWFilterDomainFWUpdateCB = domUpdateCB;
 
-    if (virMutexInit(&updateMutex))
+    if (virMutexInitRecursive(&updateMutex))
         return 1;
 
     return 0;
