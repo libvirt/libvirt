@@ -3159,7 +3159,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     int pos = -1;
     char ebuf[1024];
     char *pidfile = NULL;
-    int logfile;
+    int logfile = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     struct qemudHookData hookData;
