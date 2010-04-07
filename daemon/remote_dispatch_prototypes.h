@@ -282,6 +282,14 @@ static int remoteDispatchDomainGetVcpus(
     remote_error *err,
     remote_domain_get_vcpus_args *args,
     remote_domain_get_vcpus_ret *ret);
+static int remoteDispatchDomainHasCurrentSnapshot(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_has_current_snapshot_args *args,
+    remote_domain_has_current_snapshot_ret *ret);
 static int remoteDispatchDomainHasManagedSaveImage(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -458,6 +466,14 @@ static int remoteDispatchDomainResume(
     remote_error *err,
     remote_domain_resume_args *args,
     void *ret);
+static int remoteDispatchDomainRevertToSnapshot(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_revert_to_snapshot_args *args,
+    void *ret);
 static int remoteDispatchDomainSave(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -522,6 +538,22 @@ static int remoteDispatchDomainSnapshotCreateXml(
     remote_error *err,
     remote_domain_snapshot_create_xml_args *args,
     remote_domain_snapshot_create_xml_ret *ret);
+static int remoteDispatchDomainSnapshotCurrent(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_snapshot_current_args *args,
+    remote_domain_snapshot_current_ret *ret);
+static int remoteDispatchDomainSnapshotDelete(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_snapshot_delete_args *args,
+    void *ret);
 static int remoteDispatchDomainSnapshotDumpXml(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -530,14 +562,6 @@ static int remoteDispatchDomainSnapshotDumpXml(
     remote_error *err,
     remote_domain_snapshot_dump_xml_args *args,
     remote_domain_snapshot_dump_xml_ret *ret);
-static int remoteDispatchDomainSnapshotNum(
-    struct qemud_server *server,
-    struct qemud_client *client,
-    virConnectPtr conn,
-    remote_message_header *hdr,
-    remote_error *err,
-    remote_domain_snapshot_num_args *args,
-    remote_domain_snapshot_num_ret *ret);
 static int remoteDispatchDomainSnapshotListNames(
     struct qemud_server *server,
     struct qemud_client *client,
@@ -554,38 +578,14 @@ static int remoteDispatchDomainSnapshotLookupByName(
     remote_error *err,
     remote_domain_snapshot_lookup_by_name_args *args,
     remote_domain_snapshot_lookup_by_name_ret *ret);
-static int remoteDispatchDomainHasCurrentSnapshot(
+static int remoteDispatchDomainSnapshotNum(
     struct qemud_server *server,
     struct qemud_client *client,
     virConnectPtr conn,
     remote_message_header *hdr,
     remote_error *err,
-    remote_domain_has_current_snapshot_args *args,
-    remote_domain_has_current_snapshot_ret *ret);
-static int remoteDispatchDomainSnapshotCurrent(
-    struct qemud_server *server,
-    struct qemud_client *client,
-    virConnectPtr conn,
-    remote_message_header *hdr,
-    remote_error *err,
-    remote_domain_snapshot_current_args *args,
-    remote_domain_snapshot_current_ret *ret);
-static int remoteDispatchDomainRevertToSnapshot(
-    struct qemud_server *server,
-    struct qemud_client *client,
-    virConnectPtr conn,
-    remote_message_header *hdr,
-    remote_error *err,
-    remote_domain_revert_to_snapshot_args *args,
-    void *ret);
-static int remoteDispatchDomainSnapshotDelete(
-    struct qemud_server *server,
-    struct qemud_client *client,
-    virConnectPtr conn,
-    remote_message_header *hdr,
-    remote_error *err,
-    remote_domain_snapshot_delete_args *args,
-    void *ret);
+    remote_domain_snapshot_num_args *args,
+    remote_domain_snapshot_num_ret *ret);
 static int remoteDispatchDomainSuspend(
     struct qemud_server *server,
     struct qemud_client *client,
