@@ -233,6 +233,24 @@ int esxVI_LookupNumberOfDomainsByPowerState
 int esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
                                     int *id, char **name, unsigned char *uuid);
 
+int esxVI_GetNumberOfSnapshotTrees
+      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList);
+
+int esxVI_GetSnapshotTreeNames
+      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, char **names,
+       int nameslen);
+
+int esxVI_GetSnapshotTreeByName
+      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, const char *name,
+       esxVI_VirtualMachineSnapshotTree **snapshotTree,
+       esxVI_VirtualMachineSnapshotTree **snapshotTreeParent,
+       esxVI_Occurrence occurrence);
+
+int esxVI_GetSnapshotTreeBySnapshot
+      (esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
+       esxVI_ManagedObjectReference *snapshot,
+       esxVI_VirtualMachineSnapshotTree **snapshotTree);
+
 int esxVI_LookupResourcePoolByHostSystem
       (esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
        esxVI_ManagedObjectReference **resourcePool);
@@ -273,6 +291,15 @@ int esxVI_LookupPendingTaskInfoListByVirtualMachine
 int esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                                 const unsigned char *uuid,
                                                 esxVI_Boolean autoAnswer);
+
+int esxVI_LookupRootSnapshotTreeList
+      (esxVI_Context *ctx, const unsigned char *virtualMachineUuid,
+       esxVI_VirtualMachineSnapshotTree **rootSnapshotTreeList);
+
+int esxVI_LookupCurrentSnapshotTree
+      (esxVI_Context *ctx, const unsigned char *virtualMachineUuid,
+       esxVI_VirtualMachineSnapshotTree **currentSnapshotTree,
+       esxVI_Occurrence occurrence);
 
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,

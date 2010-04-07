@@ -80,6 +80,20 @@ int esxVI_RegisterVM_Task(esxVI_Context *ctx,
                           esxVI_ManagedObjectReference *host,
                           esxVI_ManagedObjectReference **task);
 
+int esxVI_CreateSnapshot_Task(esxVI_Context *ctx,
+                              esxVI_ManagedObjectReference *virtualMachine,
+                              const char *name, const char *description,
+                              esxVI_Boolean memory, esxVI_Boolean quiesce,
+                              esxVI_ManagedObjectReference **task);
+
+int esxVI_RevertToSnapshot_Task
+      (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachineSnapshot,
+       esxVI_ManagedObjectReference *host, esxVI_ManagedObjectReference **task);
+
+int esxVI_RemoveSnapshot_Task
+      (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachineSnapshot,
+       esxVI_Boolean removeChildren, esxVI_ManagedObjectReference **task);
+
 int esxVI_CancelTask(esxVI_Context *ctx, esxVI_ManagedObjectReference *task);
 
 int esxVI_UnregisterVM(esxVI_Context *ctx,

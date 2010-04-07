@@ -11,6 +11,7 @@
 # include "testutils.h"
 # include "util.h"
 # include "esx/esx_util.h"
+# include "esx/esx_vi_types.h"
 
 static char *progname;
 
@@ -164,6 +165,64 @@ testParseDatastoreRelatedPath(const void *data ATTRIBUTE_UNUSED)
 
 
 
+struct testDateTime {
+    const char *dateTime;
+    time_t calendarTime;
+};
+
+static struct testDateTime times[] = {
+    /* different timezones */
+    { "2010-04-08T05:45:11-07:00", 1270730711 },
+    { "2010-04-08T07:45:11-05:00", 1270730711 },
+    { "2010-04-08T12:45:11+00:00", 1270730711 },
+    { "2010-04-08T14:45:11+02:00", 1270730711 },
+    { "2010-04-08T22:15:11+09:30", 1270730711 },
+    { "2010-04-09T01:30:11+12:45", 1270730711 },
+
+    /* optional parts */
+    { "2010-04-08T12:45:11Z", 1270730711 },
+    { "2010-04-08T12:45:11", 1270730711 },
+    { "-2010-04-08T14:45:11+02:00", 0 },
+    { "2010-04-08T14:45:11.529576+02:00", 1270730711 },
+
+    /* borders */
+    { "1970-01-01T00:00:00+00:00", 0 },
+    { "2038-01-19T03:14:07+00:00", 2147483647 },
+
+    /* random */
+    { "1999-08-02T01:19:55+02:00", 933549595 },
+    { "2004-03-07T23:23:55+02:00", 1078694635 },
+    { "1984-10-27T14:33:45+02:00", 467728425 },
+    { "1970-01-12T16:11:04+02:00", 1001464 },
+    { "2014-07-20T13:35:38+02:00", 1405856138 },
+    { "2032-06-24T17:04:49+02:00", 1971702289 },
+};
+
+static int
+testConvertDateTimeToCalendarTime(const void *data ATTRIBUTE_UNUSED)
+{
+    int i;
+    esxVI_DateTime dateTime;
+    time_t calendarTime;
+
+    for (i = 0; i < ARRAY_CARDINALITY(times); ++i) {
+        dateTime.value = (char *)times[i].dateTime;
+
+        if (esxVI_DateTime_ConvertToCalendarTime(&dateTime,
+                                                 &calendarTime) < 0) {
+            return -1;
+        }
+
+        if (times[i].calendarTime != calendarTime) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+
 static int
 mymain(int argc, char **argv)
 {
@@ -194,6 +253,7 @@ mymain(int argc, char **argv)
     DO_TEST(IndexToDiskName);
     DO_TEST(DiskNameToIndex);
     DO_TEST(ParseDatastoreRelatedPath);
+    DO_TEST(ConvertDateTimeToCalendarTime);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

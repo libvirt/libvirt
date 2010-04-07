@@ -424,3 +424,15 @@ object VirtualMachineQuestionInfo
     ChoiceOption                             choice                         r
     VirtualMachineMessage                    message                        i
 end
+
+
+object VirtualMachineSnapshotTree
+    ManagedObjectReference                   snapshot                       r
+    ManagedObjectReference                   vm                             r
+    String                                   name                           r
+    String                                   description                    r
+    DateTime                                 createTime                     r
+    VirtualMachinePowerState                 state                          r
+    Boolean                                  quiesced                       r
+    VirtualMachineSnapshotTree               childSnapshotList              ol
+end

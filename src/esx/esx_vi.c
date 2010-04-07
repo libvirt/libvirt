@@ -1719,6 +1719,152 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
 
 
 int
+esxVI_GetNumberOfSnapshotTrees
+  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList)
+{
+    int count = 0;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree;
+
+    for (snapshotTree = snapshotTreeList; snapshotTree != NULL;
+         snapshotTree = snapshotTree->_next) {
+        count += 1 + esxVI_GetNumberOfSnapshotTrees
+                       (snapshotTree->childSnapshotList);
+    }
+
+    return count;
+}
+
+
+
+int
+esxVI_GetSnapshotTreeNames(esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
+                           char **names, int nameslen)
+{
+    int count = 0;
+    int result;
+    int i;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree;
+
+    for (snapshotTree = snapshotTreeList;
+         snapshotTree != NULL && count < nameslen;
+         snapshotTree = snapshotTree->_next) {
+        names[count] = strdup(snapshotTree->name);
+
+        if (names[count] == NULL) {
+            virReportOOMError();
+            goto failure;
+        }
+
+        count++;
+
+        if (count >= nameslen) {
+            break;
+        }
+
+        result = esxVI_GetSnapshotTreeNames(snapshotTree->childSnapshotList,
+                                            names + count, nameslen - count);
+
+        if (result < 0) {
+            goto failure;
+        }
+
+        count += result;
+    }
+
+    return count;
+
+  failure:
+    for (i = 0; i < count; ++i) {
+        VIR_FREE(names[i]);
+    }
+
+    return -1;
+}
+
+
+
+int
+esxVI_GetSnapshotTreeByName
+  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList, const char *name,
+   esxVI_VirtualMachineSnapshotTree **snapshotTree,
+   esxVI_VirtualMachineSnapshotTree **snapshotTreeParent,
+   esxVI_Occurrence occurrence)
+{
+    esxVI_VirtualMachineSnapshotTree *candidate;
+
+    if (snapshotTree == NULL || *snapshotTree != NULL ||
+        snapshotTreeParent == NULL || *snapshotTreeParent != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (candidate = snapshotTreeList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STREQ(candidate->name, name)) {
+            *snapshotTree = candidate;
+            *snapshotTreeParent = NULL;
+            return 1;
+        }
+
+        if (esxVI_GetSnapshotTreeByName(candidate->childSnapshotList, name,
+                                        snapshotTree, snapshotTreeParent,
+                                        occurrence) > 0) {
+            if (*snapshotTreeParent == NULL) {
+                *snapshotTreeParent = candidate;
+            }
+
+            return 1;
+        }
+    }
+
+    if (occurrence == esxVI_Occurrence_OptionalItem) {
+        return 0;
+    } else {
+        ESX_VI_ERROR(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                     _("Could not find snapshot with name '%s'"), name);
+
+        return -1;
+    }
+}
+
+
+
+int
+esxVI_GetSnapshotTreeBySnapshot
+  (esxVI_VirtualMachineSnapshotTree *snapshotTreeList,
+   esxVI_ManagedObjectReference *snapshot,
+   esxVI_VirtualMachineSnapshotTree **snapshotTree)
+{
+    esxVI_VirtualMachineSnapshotTree *candidate;
+
+    if (snapshotTree == NULL || *snapshotTree != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (candidate = snapshotTreeList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STREQ(candidate->snapshot->value, snapshot->value)) {
+            *snapshotTree = candidate;
+            return 0;
+        }
+
+        if (esxVI_GetSnapshotTreeBySnapshot(candidate->childSnapshotList,
+                                            snapshot, snapshotTree) >= 0) {
+            return 0;
+        }
+    }
+
+    ESX_VI_ERROR(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                 _("Could not find domain snapshot with internal name '%s'"),
+                 snapshot->value);
+
+    return -1;
+}
+
+
+
+int
 esxVI_LookupResourcePoolByHostSystem
   (esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
    esxVI_ManagedObjectReference **resourcePool)
@@ -2336,6 +2482,149 @@ esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
 
 
 int
+esxVI_LookupRootSnapshotTreeList
+  (esxVI_Context *ctx, const unsigned char *virtualMachineUuid,
+   esxVI_VirtualMachineSnapshotTree **rootSnapshotTreeList)
+{
+    int result = 0;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (rootSnapshotTreeList == NULL || *rootSnapshotTreeList != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "snapshot.rootSnapshotList") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(ctx, virtualMachineUuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = virtualMachine->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "snapshot.rootSnapshotList")) {
+            if (esxVI_VirtualMachineSnapshotTree_CastListFromAnyType
+                  (dynamicProperty->val, rootSnapshotTreeList) < 0) {
+                goto failure;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    if (*rootSnapshotTreeList == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not lookup root snapshot list"));
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+
+    return result;
+
+  failure:
+    esxVI_VirtualMachineSnapshotTree_Free(rootSnapshotTreeList);
+
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
+esxVI_LookupCurrentSnapshotTree
+  (esxVI_Context *ctx, const unsigned char *virtualMachineUuid,
+   esxVI_VirtualMachineSnapshotTree **currentSnapshotTree,
+   esxVI_Occurrence occurrence)
+{
+    int result = 0;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_ManagedObjectReference *currentSnapshot = NULL;
+    esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+    esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
+
+    if (currentSnapshotTree == NULL || *currentSnapshotTree != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueListToList(&propertyNameList,
+                                           "snapshot.currentSnapshot\0"
+                                           "snapshot.rootSnapshotList\0") < 0 ||
+        esxVI_LookupVirtualMachineByUuid(ctx, virtualMachineUuid,
+                                         propertyNameList, &virtualMachine,
+                                         esxVI_Occurrence_RequiredItem) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = virtualMachine->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "snapshot.currentSnapshot")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (dynamicProperty->val, &currentSnapshot) < 0) {
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "snapshot.rootSnapshotList")) {
+            if (esxVI_VirtualMachineSnapshotTree_CastListFromAnyType
+                  (dynamicProperty->val, &rootSnapshotTreeList) < 0) {
+                goto failure;
+            }
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    if (currentSnapshot == NULL) {
+        if (occurrence == esxVI_Occurrence_OptionalItem) {
+            return 0;
+        } else {
+            ESX_VI_ERROR(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
+                         _("Domain has no current snapshot"));
+            goto failure;
+        }
+    }
+
+    if (rootSnapshotTreeList == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not lookup root snapshot list"));
+        goto failure;
+    }
+
+    if (esxVI_GetSnapshotTreeBySnapshot(rootSnapshotTreeList, currentSnapshot,
+                                        &snapshotTree) < 0 ||
+        esxVI_VirtualMachineSnapshotTree_DeepCopy(currentSnapshotTree,
+                                                  snapshotTree) < 0) {
+        goto failure;
+    }
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&virtualMachine);
+    esxVI_ManagedObjectReference_Free(&currentSnapshot);
+    esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
+
+    return result;
+
+  failure:
+    result = -1;
+
+    goto cleanup;
+}
+
+
+
+int
 esxVI_HandleVirtualMachineQuestion
   (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,
    esxVI_VirtualMachineQuestionInfo *questionInfo,
@@ -2422,9 +2711,7 @@ esxVI_HandleVirtualMachineQuestion
     return result;
 
   failure:
-    if (possibleAnswers == NULL) {
-        possibleAnswers = virBufferContentAndReset(&buffer);
-    }
+    virBufferFreeAndReset(&buffer);
 
     result = -1;
 

@@ -1177,6 +1177,12 @@ ESX_VI__TEMPLATE__VALIDATE(DateTime,
     ESX_VI__TEMPLATE__PROPERTY__REQUIRE(value);
 })
 
+/* esxVI_DateTime_DeepCopy */
+ESX_VI__TEMPLATE__DEEP_COPY(DateTime,
+{
+    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_VALUE(String, value)
+})
+
 /* esxVI_DateTime_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(DateTime,
 {
@@ -1211,6 +1217,104 @@ esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
     esxVI_DateTime_Free(dateTime);
 
     return -1;
+}
+
+int
+esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
+                                     time_t *secondsSinceEpoch)
+{
+    char value[64] = "";
+    char *tmp;
+    struct tm tm;
+    int milliseconds;
+    char sign;
+    int tz_hours;
+    int tz_minutes;
+    int tz_offset = 0;
+
+    if (dateTime == NULL || secondsSinceEpoch == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (virStrcpyStatic(value, dateTime->value) == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("xsd:dateTime value '%s' too long for destination"),
+                     dateTime->value);
+        return -1;
+    }
+
+    /*
+     * expected format: [-]CCYY-MM-DDTHH:MM:SS[.ssssss][((+|-)HH:MM|Z)]
+     * typical example: 2010-04-05T12:13:55.316789+02:00
+     *
+     * see http://www.w3.org/TR/xmlschema-2/#dateTime
+     *
+     * map negative years to 0, since the base for time_t is the year 1970.
+     */
+    if (*value == '-') {
+        *secondsSinceEpoch = 0;
+        return 0;
+    }
+
+    tmp = strptime(value, "%Y-%m-%dT%H:%M:%S", &tm);
+
+    if (tmp == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("xsd:dateTime value '%s' has unexpected format"),
+                     dateTime->value);
+        return -1;
+    }
+
+    if (*tmp != '\0') {
+        /* skip .ssssss part if present */
+        if (*tmp == '.' &&
+            virStrToLong_i(tmp + 1, &tmp, 10, &milliseconds) < 0) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("xsd:dateTime value '%s' has unexpected format"),
+                         dateTime->value);
+            return -1;
+        }
+
+        /* parse timezone offset if present. if missing assume UTC */
+        if (*tmp == '+' || *tmp == '-') {
+            sign = *tmp;
+
+            if (virStrToLong_i(tmp + 1, &tmp, 10, &tz_hours) < 0 ||
+                *tmp != ':' ||
+                virStrToLong_i(tmp + 1, NULL, 10, &tz_minutes) < 0) {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                             _("xsd:dateTime value '%s' has unexpected format"),
+                             dateTime->value);
+                return -1;
+            }
+
+            tz_offset = tz_hours * 60 * 60 + tz_minutes * 60;
+
+            if (sign == '-') {
+                tz_offset = -tz_offset;
+            }
+        } else if (STREQ(tmp, "Z")) {
+            /* Z refers to UTC. tz_offset is already initialized to zero */
+        } else {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("xsd:dateTime value '%s' has unexpected format"),
+                         dateTime->value);
+            return -1;
+        }
+    }
+
+    /*
+     * xsd:dateTime represents local time relative to the optional timezone
+     * given as offset. pretend the local time is in UTC and use timegm in
+     * order to avoid interference with the timezone to this computer.
+     * apply timezone correction afterwards, because it's simpler than
+     * handling all the possible over- and underflows when trying to apply
+     * it to the tm struct.
+     */
+    *secondsSinceEpoch = timegm(&tm) - tz_offset;
+
+    return 0;
 }
 
 
@@ -1344,4 +1448,31 @@ esxVI_ManagedObjectReference_Deserialize
     return -1;
 }
 
+
+
 #include "esx_vi_types.generated.c"
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Enum: VirtualMachinePowerState (Additions)
+ */
+
+int
+esxVI_VirtualMachinePowerState_ConvertToLibvirt
+  (esxVI_VirtualMachinePowerState powerState)
+{
+    switch (powerState) {
+      case esxVI_VirtualMachinePowerState_PoweredOff:
+        return VIR_DOMAIN_SHUTOFF;
+
+      case esxVI_VirtualMachinePowerState_PoweredOn:
+        return VIR_DOMAIN_RUNNING;
+
+      case esxVI_VirtualMachinePowerState_Suspended:
+        return VIR_DOMAIN_PAUSED;
+
+      default:
+        return VIR_DOMAIN_NOSTATE;
+    }
+}

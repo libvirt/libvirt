@@ -491,6 +491,92 @@ ESX_VI__METHOD(RegisterVM_Task,
 
 
 
+/* esxVI_CreateSnapshot_Task */
+ESX_VI__METHOD(CreateSnapshot_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachine,
+                const char *name, const char *description,
+                esxVI_Boolean memory, esxVI_Boolean quiesce,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(name)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(memory)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(quiesce)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachine)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, name)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, description)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, memory)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, quiesce)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
+        goto failure;
+    }
+})
+
+
+
+/* esxVI_RevertToSnapshot_Task */
+ESX_VI__METHOD(RevertToSnapshot_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachineSnapshot,
+                esxVI_ManagedObjectReference *host,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachineSnapshot)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachineSnapshot)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
+        goto failure;
+    }
+})
+
+
+
+/* esxVI_RemoveSnapshot_Task */
+ESX_VI__METHOD(RemoveSnapshot_Task,
+               (esxVI_Context *ctx,
+                esxVI_ManagedObjectReference *virtualMachineSnapshot,
+                esxVI_Boolean removeChildren,
+                esxVI_ManagedObjectReference **task),
+               RequiredItem,
+{
+    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
+},
+{
+    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachineSnapshot)
+    ESX_VI__METHOD__PARAMETER__REQUIRE(removeChildren)
+},
+{
+    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
+                                              virtualMachineSnapshot)
+    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, removeChildren)
+},
+{
+    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
+        goto failure;
+    }
+})
+
+
+
 /* esxVI_CancelTask */
 ESX_VI__METHOD(CancelTask,
                (esxVI_Context *ctx,

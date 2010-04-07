@@ -230,9 +230,12 @@ struct _esxVI_DateTime {
 int esxVI_DateTime_Alloc(esxVI_DateTime **dateTime);
 void esxVI_DateTime_Free(esxVI_DateTime **dateTime);
 int esxVI_DateTime_Validate(esxVI_DateTime *dateTime);
+int esxVI_DateTime_DeepCopy(esxVI_DateTime **dest, esxVI_DateTime *src);
 int esxVI_DateTime_Serialize(esxVI_DateTime *dateTime, const char *element,
                              virBufferPtr output);
 int esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime);
+int esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
+                                         time_t *secondsSinceEpoch);
 
 
 
@@ -294,5 +297,14 @@ int esxVI_ManagedObjectReference_Deserialize
 
 
 # include "esx_vi_types.generated.h"
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Enum: VirtualMachinePowerState (Additions)
+ */
+
+int esxVI_VirtualMachinePowerState_ConvertToLibvirt
+      (esxVI_VirtualMachinePowerState powerState);
 
 #endif /* __ESX_VI_TYPES_H__ */

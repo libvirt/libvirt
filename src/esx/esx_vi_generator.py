@@ -95,6 +95,8 @@ class Property:
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_LIST(%s, %s)\n" % (self.type, self.name)
         elif self.type == "String":
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_VALUE(String, %s)\n" % self.name
+        elif self.is_enum():
+            return "    (*dest)->%s = src->%s;\n" % (self.name, self.name)
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY(%s, %s)\n" % (self.type, self.name)
 
@@ -841,17 +843,19 @@ additional_object_features = { "Event"                      : Object.FEATURE__LI
                                "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
                                "TaskInfo"                   : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "UserSession"                : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE }
+                               "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
+                               "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY | Object.FEATURE__ANY_TYPE }
 
 
-removed_object_features = { "DynamicProperty"          : Object.FEATURE__SERIALIZE,
-                            "ObjectContent"            : Object.FEATURE__SERIALIZE,
-                            "ObjectUpdate"             : Object.FEATURE__SERIALIZE,
-                            "PropertyChange"           : Object.FEATURE__SERIALIZE,
-                            "PropertyFilterUpdate"     : Object.FEATURE__SERIALIZE,
-                            "TaskInfo"                 : Object.FEATURE__SERIALIZE,
-                            "UpdateSet"                : Object.FEATURE__SERIALIZE,
-                            "VirtualMachineConfigInfo" : Object.FEATURE__SERIALIZE }
+removed_object_features = { "DynamicProperty"            : Object.FEATURE__SERIALIZE,
+                            "ObjectContent"              : Object.FEATURE__SERIALIZE,
+                            "ObjectUpdate"               : Object.FEATURE__SERIALIZE,
+                            "PropertyChange"             : Object.FEATURE__SERIALIZE,
+                            "PropertyFilterUpdate"       : Object.FEATURE__SERIALIZE,
+                            "TaskInfo"                   : Object.FEATURE__SERIALIZE,
+                            "UpdateSet"                  : Object.FEATURE__SERIALIZE,
+                            "VirtualMachineConfigInfo"   : Object.FEATURE__SERIALIZE,
+                            "VirtualMachineSnapshotTree" : Object.FEATURE__SERIALIZE }
 
 
 
@@ -948,7 +952,8 @@ for obj in objects_by_name.values():
     if obj.features & Object.FEATURE__DEEP_COPY:
         for property in obj.properties:
             if property.occurrence != Property.OCCURRENCE__IGNORED and \
-               property.type not in predefined_objects:
+               property.type not in predefined_objects and \
+               property.type in objects_by_name:
                 objects_by_name[property.type].features |= Object.FEATURE__DEEP_COPY
 
     # detect extended_by relation
