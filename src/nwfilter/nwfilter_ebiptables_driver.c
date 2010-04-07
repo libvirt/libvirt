@@ -772,11 +772,18 @@ static int
 iptablesHandleSrcMacAddr(virBufferPtr buf,
                          virNWFilterHashTablePtr vars,
                          nwItemDescPtr srcMacAddr,
-                         int directionIn ATTRIBUTE_UNUSED)
+                         int directionIn,
+                         bool *srcmacskipped)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
+    *srcmacskipped = false;
 
     if (HAS_ENTRY_ITEM(srcMacAddr)) {
+        if (directionIn) {
+            *srcmacskipped = true;
+            return 0;
+        }
+
         if (printDataType(vars,
                           macaddr, sizeof(macaddr),
                           srcMacAddr))
@@ -1039,6 +1046,8 @@ _iptablesCreateRuleInstance(int directionIn,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *target;
     const char *iptables_cmd = (isIPv6) ? IP6TABLES_CMD : IPTABLES_CMD;
+    unsigned int bufUsed;
+    bool srcMacSkipped = false;
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
@@ -1052,10 +1061,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p tcp");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.tcpHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1093,10 +1105,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p udp");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.udpHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1121,10 +1136,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p udplite");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.udpliteHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1144,10 +1162,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p esp");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.espHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1167,10 +1188,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p ah");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.ahHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1190,10 +1214,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p sctp");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.sctpHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1221,10 +1248,13 @@ _iptablesCreateRuleInstance(int directionIn,
         else
             virBufferAddLit(&buf, " -p icmpv6");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.icmpHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1272,10 +1302,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p igmp");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.igmpHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1295,10 +1328,13 @@ _iptablesCreateRuleInstance(int directionIn,
 
         virBufferAddLit(&buf, " -p all");
 
+        bufUsed = virBufferUse(&buf);
+
         if (iptablesHandleSrcMacAddr(&buf,
                                      vars,
                                      &rule->p.allHdrFilter.dataSrcMACAddr,
-                                     directionIn))
+                                     directionIn,
+                                     &srcMacSkipped))
             goto err_exit;
 
         if (iptablesHandleIpHdr(&buf,
@@ -1311,6 +1347,11 @@ _iptablesCreateRuleInstance(int directionIn,
 
     default:
         return -1;
+    }
+
+    if (srcMacSkipped && bufUsed == virBufferUse(&buf)) {
+        virBufferFreeAndReset(&buf);
+        return 0;
     }
 
     if (match)
