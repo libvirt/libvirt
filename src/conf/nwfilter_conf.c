@@ -26,9 +26,13 @@
 
 #include <config.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
-#include <net/ethernet.h>
+#if HAVE_NET_ETHERNET_H
+# include <net/ethernet.h>
+#endif
 
 #include "internal.h"
 
@@ -40,6 +44,22 @@
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
 
+
+/* XXX
+ * The config parser/structs should not be using platform specific
+ * constants. Win32 lacks these constants, breaking the parser,
+ * so temporarily define them until this can be re-written to use
+ * locally defined enums for all constants
+ */
+#ifndef ETHERTYPE_IP
+#define ETHERTYPE_IP            0x0800
+#endif
+#ifndef ETHERTYPE_ARP
+#define ETHERTYPE_ARP           0x0806
+#endif
+#ifndef ETHERTYPE_IPV6
+#define ETHERTYPE_IPV6          0x86dd
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

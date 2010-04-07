@@ -24,7 +24,9 @@
 #include <config.h>
 
 #include <sys/types.h>
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -188,6 +190,19 @@ virHookPresent(int driver) {
  * Returns: 0 if the execution succeeded, 1 if the script was not found or
  *          invalid parameters, and -1 if script returned an error
  */
+#ifdef WIN32
+int
+virHookCall(int driver ATTRIBUTE_UNUSED,
+            const char *id ATTRIBUTE_UNUSED,
+            int op ATTRIBUTE_UNUSED,
+            int sub_op ATTRIBUTE_UNUSED,
+            const char *extra ATTRIBUTE_UNUSED,
+            const char *input ATTRIBUTE_UNUSED) {
+    virReportSystemError(ENOSYS, "%s",
+                         _("spawning hooks not supported on this platform"));
+    return -1;
+}
+#else
 int
 virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
             const char *input) {
@@ -447,3 +462,4 @@ no_memory:
 #undef ADD_ENV_LIT
 #undef ADD_ENV_SPACE
 }
+#endif

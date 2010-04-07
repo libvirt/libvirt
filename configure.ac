@@ -112,7 +112,7 @@ dnl Availability of various not common threadsafe functions
 AC_CHECK_FUNCS([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h sched.h termios.h sys/poll.h syslog.h mntent.h])
+AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h sched.h termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.

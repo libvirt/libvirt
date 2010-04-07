@@ -414,6 +414,7 @@ out:
  */
 static int disconnected = 0; /* we may have been disconnected */
 
+#ifdef SIGPIPE
 /*
  * vshCatchDisconnect:
  *
@@ -442,6 +443,10 @@ vshSetupSignals(void) {
 
     sigaction(SIGPIPE, &sig_action, NULL);
 }
+#else
+static void
+vshSetupSignals(void) {}
+#endif
 
 /*
  * vshReconnect:
@@ -8425,7 +8430,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
                              &creation) < 0)
                 continue;
             localtime_r(&creation, &time_info);
-            strftime(timestr, sizeof(timestr), "%F %T %z", &time_info);
+            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z", &time_info);
 
             vshPrint(ctl, " %-20s %-25s %s\n", names[i], timestr, state);
         }

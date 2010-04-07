@@ -69,7 +69,7 @@ void virThreadOnExit(void)
 
 int virMutexInit(virMutexPtr m)
 {
-    virMutexInitRecursive(m);
+    return virMutexInitRecursive(m);
 }
 
 int virMutexInitRecursive(virMutexPtr m)
