@@ -209,7 +209,6 @@ virDomainTimerModeTypeFromString;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNum;
 virDomainSnapshotFindByName;
-virDomainSnapshotObjListAdd;
 virDomainSnapshotObjListRemove;
 virDomainSnapshotHasChildren;
 virDomainSnapshotObjUnref;
@@ -516,11 +515,7 @@ virNWFilterInstantiateFilter;
 virNWFilterTeardownFilter;
 
 
-#nwfilter_learnipaddr.h
-ipAddressMap;
-ipAddressMapLock;
-pendingLearnReq;
-pendingLearnReqLock;
+# nwfilter_learnipaddr.h
 virNWFilterGetIpAddrForIfname;
 virNWFilterDelIpAddrForIfname;
 virNWFilterLookupLearnReq;
