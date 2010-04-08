@@ -363,7 +363,7 @@ remoteDispatchClientRequest (struct qemud_server *server,
     int ret;
     remote_error rerr;
 
-    DEBUG("prog=%d ver=%d type=%d satus=%d serial=%d proc=%d",
+    DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
           msg->hdr.prog, msg->hdr.vers, msg->hdr.type,
           msg->hdr.status, msg->hdr.serial, msg->hdr.proc);
 
