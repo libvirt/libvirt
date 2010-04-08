@@ -1022,6 +1022,12 @@ err_exit:
  * @ifname : The name of the interface to apply the rule to
  * @vars : A map containing the variables to resolve
  * @res : The data structure to store the result(s) into
+ * @match : optional string for state match
+ * @accept_target : where to jump to on accepted traffic, i.e., "RETURN"
+ *    "ACCEPT"
+ * @isIPv6 : Whether this is an IPv6 rule
+ * @maySkipICMP : whether this rule may under certain circumstances skip
+ *           the ICMP rule from being created
  *
  * Convert a single rule into its representation for later instantiation
  *
@@ -1039,7 +1045,8 @@ _iptablesCreateRuleInstance(int directionIn,
                             virNWFilterRuleInstPtr res,
                             const char *match,
                             const char *accept_target,
-                            bool isIPv6)
+                            bool isIPv6,
+                            bool maySkipICMP)
 {
     char chain[MAX_CHAINNAME_LENGTH];
     char number[20];
@@ -1265,6 +1272,10 @@ _iptablesCreateRuleInstance(int directionIn,
 
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
             const char *parm;
+
+            if (maySkipICMP)
+                goto exit_no_error;
+
             if (rule->prtclType == VIR_NWFILTER_RULE_PROTOCOL_ICMP)
                 parm = "--icmp-type";
             else
@@ -1386,6 +1397,10 @@ err_exit:
 
     return -1;
 
+exit_no_error:
+    virBufferFreeAndReset(&buf);
+
+    return 0;
 }
 
 
@@ -1401,14 +1416,18 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     int directionIn = 0;
     char chainPrefix[2];
     int needState = 1;
+    bool maySkipICMP, inout = false;
 
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
         (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT)) {
         directionIn = 1;
         needState = 0;
+        inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
     }
 
     chainPrefix[0] = 'F';
+
+    maySkipICMP = directionIn || inout;
 
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
     rc = _iptablesCreateRuleInstance(directionIn,
@@ -1421,9 +1440,13 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      needState ? MATCH_STATE_OUT
                                                : NULL,
                                      "RETURN",
-                                     isIPv6);
+                                     isIPv6,
+                                     maySkipICMP);
     if (rc)
         return rc;
+
+
+    maySkipICMP = !directionIn || inout;
 
     chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
     rc = _iptablesCreateRuleInstance(!directionIn,
@@ -1436,9 +1459,12 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      needState ? MATCH_STATE_IN
                                                : NULL,
                                      "ACCEPT",
-                                     isIPv6);
+                                     isIPv6,
+                                     maySkipICMP);
     if (rc)
         return rc;
+
+    maySkipICMP = directionIn;
 
     chainPrefix[0] = 'H';
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
@@ -1451,9 +1477,8 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      res,
                                      NULL,
                                      "ACCEPT",
-                                     isIPv6);
-    if (rc)
-        return rc;
+                                     isIPv6,
+                                     maySkipICMP);
 
     return rc;
 }
@@ -1750,9 +1775,9 @@ ebtablesCreateRuleInstance(char chainPrefix,
         }
 
         if (HAS_ENTRY_ITEM(&rule->p.ipHdrFilter.ipHdr.dataDSCP)) {
-            if (printDataType(vars,
-                              number, sizeof(number),
-                              &rule->p.ipHdrFilter.ipHdr.dataDSCP))
+            if (printDataTypeAsHex(vars,
+                                   number, sizeof(number),
+                                   &rule->p.ipHdrFilter.ipHdr.dataDSCP))
                 goto err_exit;
 
             virBufferVSprintf(&buf,
