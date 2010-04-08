@@ -7420,15 +7420,12 @@ remoteDomainReadEventGraphics(virConnectPtr conn, XDR *xdr)
         !(remoteAddr->node = strdup(msg.remote.node)))
         goto no_memory;
 
-    fprintf(stderr, "Got %d\n", msg.subject.subject_len);
     if (VIR_ALLOC(subject) < 0)
         goto no_memory;
     if (VIR_ALLOC_N(subject->identities, msg.subject.subject_len) < 0)
         goto no_memory;
     subject->nidentity = msg.subject.subject_len;
     for (i = 0 ; i < subject->nidentity ; i++) {
-        fprintf(stderr, "  %s=%s\n", msg.subject.subject_val[i].type,
-                msg.subject.subject_val[i].name);
         if (!(subject->identities[i].type = strdup(msg.subject.subject_val[i].type)) ||
             !(subject->identities[i].name = strdup(msg.subject.subject_val[i].name)))
             goto no_memory;
