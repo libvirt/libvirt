@@ -1816,10 +1816,14 @@ AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([WIN32_EXTRA_CFLAGS])
 
-dnl Look for windres to build a Windows icon resource.
-AC_CHECK_TOOL([WINDRES], [windres], [no])
-AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != "no"])
 
+dnl Look for windres to build a Windows icon resource.
+case "$host" in
+  *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+    AC_CHECK_TOOL([WINDRES], [windres], [])
+    ;;
+esac
+AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 
 dnl Driver-Modules library
