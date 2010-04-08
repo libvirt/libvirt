@@ -629,6 +629,7 @@
       <choice>
         <value>stop</value>
         <value>ignore</value>
+        <value>enospace</value>
       </choice>
     </attribute>
   </define>

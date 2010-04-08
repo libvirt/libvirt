@@ -4938,6 +4938,8 @@ qemuParseCommandLineDisk(const char *val,
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_STOP;
             else if (STREQ(values[i], "ignore"))
                 def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_IGNORE;
+            else if (STREQ(values[i], "enospace"))
+                def->error_policy = VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE;
         } else if (STREQ(keywords[i], "index")) {
             if (virStrToLong_i(values[i], NULL, 10, &idx) < 0) {
                 virDomainDiskDefFree(def);
