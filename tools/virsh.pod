@@ -312,7 +312,7 @@ Convert a domain name (or UUID) to a domain id
 
 Returns basic information about the domain.
 
-=item B<domjobabort I<domain-id-or-uuid>
+=item B<domjobabort> I<domain-id-or-uuid>
 
 Abort the currently running domain job.
 
