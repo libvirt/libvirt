@@ -348,7 +348,7 @@ remoteDispatchClientCall (struct qemud_server *server,
  * @msg: the complete incoming message packet, with header already decoded
  *
  * This function gets called from qemud when it pulls a incoming
- * remote protocol messsage off the dispatch queue for processing.
+ * remote protocol message off the dispatch queue for processing.
  *
  * The @msg parameter must have had its header decoded already by
  * calling remoteDecodeClientMessageHeader
