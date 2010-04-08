@@ -5029,7 +5029,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBufferVSprintf(&opt, ":%d",
                               def->graphics[0]->data.vnc.port - 5900);
 
-            if (def->graphics[0]->data.vnc.passwd ||
+            if (def->graphics[0]->data.vnc.auth.passwd ||
                 driver->vncPassword)
                 virBufferAddLit(&opt, ",password");
 
@@ -5139,7 +5139,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* In the password case we set it via monitor command, to avoid
          * making it visible on CLI, so there's no use of password=XXX
          * in this bit of the code */
-        if (!def->graphics[0]->data.spice.passwd &&
+        if (!def->graphics[0]->data.spice.auth.passwd &&
             !driver->spicePassword)
             virBufferAddLit(&opt, ",disable-ticketing");
 

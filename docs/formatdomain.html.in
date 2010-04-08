@@ -1102,7 +1102,9 @@ qemu-kvm -net nic,model=? /dev/null
   The <code>listen</code> attribute is an IP address for the server to
   listen on. The <code>passwd</code> attribute provides a VNC password
   in clear text. The <code>keymap</code> attribute specifies the keymap
-  to use.
+  to use. It is possible to set a limit on the validity of the password
+  be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+  assumed to be in UTC. NB, this may not be supported by all hypervisors.
           </dd>
           <dt><code>"spice"</code></dt>
           <dd>
@@ -1114,7 +1116,9 @@ qemu-kvm -net nic,model=? /dev/null
   The <code>listen</code> attribute is an IP address for the server to
   listen on. The <code>passwd</code> attribute provides a SPICE password
   in clear text. The <code>keymap</code> attribute specifies the keymap
-  to use.
+  to use. It is possible to set a limit on the validity of the password
+  be giving an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+  assumed to be in UTC. NB, this may not be supported by all hypervisors.
           </dd>
           <dt><code>"rdp"</code></dt>
           <dd>

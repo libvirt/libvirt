@@ -2522,12 +2522,12 @@ qemuInitPasswords(virConnectPtr conn,
 
     if ((vm->def->ngraphics == 1) &&
         vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        (vm->def->graphics[0]->data.vnc.passwd || driver->vncPassword)) {
+        (vm->def->graphics[0]->data.vnc.auth.passwd || driver->vncPassword)) {
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorSetVNCPassword(priv->mon,
-                                        vm->def->graphics[0]->data.vnc.passwd ?
-                                        vm->def->graphics[0]->data.vnc.passwd :
+                                        vm->def->graphics[0]->data.vnc.auth.passwd ?
+                                        vm->def->graphics[0]->data.vnc.auth.passwd :
                                         driver->vncPassword);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
@@ -8890,19 +8890,19 @@ qemuDomainChangeGraphics(struct qemud_driver *driver,
             return -1;
         }
 
-        if (STRNEQ_NULLABLE(olddev->data.vnc.passwd, dev->data.vnc.passwd)) {
-            VIR_DEBUG("Updating password on VNC server %p %p", dev->data.vnc.passwd, driver->vncPassword);
+        if (STRNEQ_NULLABLE(olddev->data.vnc.auth.passwd, dev->data.vnc.auth.passwd)) {
+            VIR_DEBUG("Updating password on VNC server %p %p", dev->data.vnc.auth.passwd, driver->vncPassword);
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             ret = qemuMonitorSetVNCPassword(priv->mon,
-                                            dev->data.vnc.passwd ?
-                                            dev->data.vnc.passwd :
+                                            dev->data.vnc.auth.passwd ?
+                                            dev->data.vnc.auth.passwd :
                                             driver->vncPassword);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
 
             /* Steal the new dev's  char * reference */
-            VIR_FREE(olddev->data.vnc.passwd);
-            olddev->data.vnc.passwd = dev->data.vnc.passwd;
-            dev->data.vnc.passwd = NULL;
+            VIR_FREE(olddev->data.vnc.auth.passwd);
+            olddev->data.vnc.auth.passwd = dev->data.vnc.auth.passwd;
+            dev->data.vnc.auth.passwd = NULL;
         } else {
             ret = 0;
         }

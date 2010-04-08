@@ -1431,7 +1431,7 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
         esxUtil_GetConfigString(conf, "RemoteDisplay.vnc.keymap",
                                 &(*def)->data.vnc.keymap, true) < 0 ||
         esxUtil_GetConfigString(conf, "RemoteDisplay.vnc.password",
-                                &(*def)->data.vnc.passwd, true) < 0) {
+                                &(*def)->data.vnc.auth.passwd, true) < 0) {
         goto failure;
     }
 
@@ -2831,9 +2831,9 @@ esxVMX_FormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
                           def->data.vnc.keymap);
     }
 
-    if (def->data.vnc.passwd != NULL) {
+    if (def->data.vnc.auth.passwd != NULL) {
         virBufferVSprintf(buffer, "RemoteDisplay.vnc.password = \"%s\"\n",
-                          def->data.vnc.passwd);
+                          def->data.vnc.auth.passwd);
     }
 
     return 0;

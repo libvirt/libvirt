@@ -262,9 +262,9 @@ char* xmlOneTemplate(virDomainDefPtr def)
                 virBufferVSprintf(&buf,",\n  port = \"%d\"",
                     def->graphics[i]->data.vnc.port);
 
-            if (def->graphics[i]->data.vnc.passwd != NULL)
+            if (def->graphics[i]->data.vnc.auth.passwd != NULL)
                 virBufferVSprintf(&buf,",\n  passwd = \"%s\"",
-                    def->graphics[i]->data.vnc.passwd);
+                    def->graphics[i]->data.vnc.auth.passwd);
 
             virBufferAddLit(&buf," ]\n");
 

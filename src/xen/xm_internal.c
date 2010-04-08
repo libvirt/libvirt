@@ -1304,7 +1304,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
             }
             if (xenXMConfigCopyStringOpt(conf, "vnclisten", &graphics->data.vnc.listenAddr) < 0)
                 goto cleanup;
-            if (xenXMConfigCopyStringOpt(conf, "vncpasswd", &graphics->data.vnc.passwd) < 0)
+            if (xenXMConfigCopyStringOpt(conf, "vncpasswd", &graphics->data.vnc.auth.passwd) < 0)
                 goto cleanup;
             if (xenXMConfigCopyStringOpt(conf, "keymap", &graphics->data.vnc.keymap) < 0)
                 goto cleanup;
@@ -1376,7 +1376,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                         if (!(graphics->data.vnc.listenAddr = strdup(key + 10)))
                             goto no_memory;
                     } else if (STRPREFIX(key, "vncpasswd=")) {
-                        if (!(graphics->data.vnc.passwd = strdup(key + 10)))
+                        if (!(graphics->data.vnc.auth.passwd = strdup(key + 10)))
                             goto no_memory;
                     } else if (STRPREFIX(key, "keymap=")) {
                         if (!(graphics->data.vnc.keymap = strdup(key + 7)))
@@ -2541,9 +2541,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                     xenXMConfigSetString(conf, "vnclisten",
                                     def->graphics[0]->data.vnc.listenAddr) < 0)
                     goto no_memory;
-                if (def->graphics[0]->data.vnc.passwd &&
+                if (def->graphics[0]->data.vnc.auth.passwd &&
                     xenXMConfigSetString(conf, "vncpasswd",
-                                        def->graphics[0]->data.vnc.passwd) < 0)
+                                        def->graphics[0]->data.vnc.auth.passwd) < 0)
                     goto no_memory;
                 if (def->graphics[0]->data.vnc.keymap &&
                     xenXMConfigSetString(conf, "keymap",
@@ -2572,9 +2572,9 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
                 if (def->graphics[0]->data.vnc.listenAddr)
                     virBufferVSprintf(&buf, ",vnclisten=%s",
                                       def->graphics[0]->data.vnc.listenAddr);
-                if (def->graphics[0]->data.vnc.passwd)
+                if (def->graphics[0]->data.vnc.auth.passwd)
                     virBufferVSprintf(&buf, ",vncpasswd=%s",
-                                      def->graphics[0]->data.vnc.passwd);
+                                      def->graphics[0]->data.vnc.auth.passwd);
                 if (def->graphics[0]->data.vnc.keymap)
                     virBufferVSprintf(&buf, ",keymap=%s",
                                       def->graphics[0]->data.vnc.keymap);

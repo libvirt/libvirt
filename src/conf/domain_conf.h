@@ -517,6 +517,15 @@ enum virDomainGraphicsType {
     VIR_DOMAIN_GRAPHICS_TYPE_LAST,
 };
 
+typedef struct _virDomainGraphicsAuthDef virDomainGraphicsAuthDef;
+typedef virDomainGraphicsAuthDef *virDomainGraphicsAuthDefPtr;
+struct _virDomainGraphicsAuthDef {
+    char *passwd;
+    unsigned int expires: 1; /* Whether there is an expiry time set */
+    time_t validTo;  /* seconds since epoch */
+};
+
+
 typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
 typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
 struct _virDomainGraphicsDef {
@@ -527,7 +536,7 @@ struct _virDomainGraphicsDef {
             unsigned int autoport :1;
             char *listenAddr;
             char *keymap;
-            char *passwd;
+            virDomainGraphicsAuthDef auth;
         } vnc;
         struct {
             char *display;
@@ -550,7 +559,7 @@ struct _virDomainGraphicsDef {
             int tlsPort;
             char *listenAddr;
             char *keymap;
-            char *passwd;
+            virDomainGraphicsAuthDef auth;
             unsigned int autoport :1;
         } spice;
     } data;

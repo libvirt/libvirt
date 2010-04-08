@@ -1789,7 +1789,7 @@ xenDaemonParseSxprGraphicsOld(virConnectPtr conn,
             goto no_memory;
 
         if (vncPasswd &&
-            !(graphics->data.vnc.passwd = strdup(vncPasswd)))
+            !(graphics->data.vnc.auth.passwd = strdup(vncPasswd)))
             goto no_memory;
 
         if (keymap &&
@@ -1909,7 +1909,7 @@ xenDaemonParseSxprGraphicsNew(virConnectPtr conn,
                     goto no_memory;
 
                 if (vncPasswd &&
-                    !(graphics->data.vnc.passwd = strdup(vncPasswd)))
+                    !(graphics->data.vnc.auth.passwd = strdup(vncPasswd)))
                     goto no_memory;
 
                 if (keymap &&
@@ -5223,8 +5223,8 @@ xenDaemonFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
 
         if (def->data.vnc.listenAddr)
             virBufferVSprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
-        if (def->data.vnc.passwd)
-            virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.passwd);
+        if (def->data.vnc.auth.passwd)
+            virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
         if (def->data.vnc.keymap)
             virBufferVSprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
     }
@@ -5266,8 +5266,8 @@ xenDaemonFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
 
             if (def->data.vnc.listenAddr)
                 virBufferVSprintf(buf, "(vnclisten '%s')", def->data.vnc.listenAddr);
-            if (def->data.vnc.passwd)
-                virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.passwd);
+            if (def->data.vnc.auth.passwd)
+                virBufferVSprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
             if (def->data.vnc.keymap)
                 virBufferVSprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
 

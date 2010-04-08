@@ -428,6 +428,17 @@ virDomainObjPtr virDomainFindByName(const virDomainObjListPtr doms,
     return obj;
 }
 
+static void
+virDomainGraphicsAuthDefClear(virDomainGraphicsAuthDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def->passwd);
+
+    /* Don't free def */
+}
+
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 {
     if (!def)
@@ -437,7 +448,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         VIR_FREE(def->data.vnc.listenAddr);
         VIR_FREE(def->data.vnc.keymap);
-        VIR_FREE(def->data.vnc.passwd);
+        virDomainGraphicsAuthDefClear(&def->data.vnc.auth);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -456,7 +467,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         VIR_FREE(def->data.spice.listenAddr);
         VIR_FREE(def->data.spice.keymap);
-        VIR_FREE(def->data.spice.passwd);
+        virDomainGraphicsAuthDefClear(&def->data.spice.auth);
         break;
     }
 
@@ -3070,6 +3081,55 @@ error:
     goto cleanup;
 }
 
+
+static int
+virDomainGraphicsAuthDefParseXML(xmlNodePtr node, virDomainGraphicsAuthDefPtr def)
+{
+    char *validTo = NULL;
+
+    def->passwd = virXMLPropString(node, "passwd");
+
+    if (!def->passwd)
+        return 0;
+
+    validTo = virXMLPropString(node, "passwdValidTo");
+    if (validTo) {
+        char *tmp;
+        struct tm tm;
+        memset(&tm, 0, sizeof(tm));
+        /* Expect: YYYY-MM-DDTHH:MM:SS (%d-%d-%dT%d:%d:%d)  eg 2010-11-28T14:29:01 */
+        if (/* year */
+            virStrToLong_i(validTo, &tmp, 10, &tm.tm_year) < 0 || *tmp != '-' ||
+            /* month */
+            virStrToLong_i(tmp+1, &tmp, 10, &tm.tm_mon) < 0 || *tmp != '-' ||
+            /* day */
+            virStrToLong_i(tmp+1, &tmp, 10, &tm.tm_mday) < 0 || *tmp != 'T' ||
+            /* hour */
+            virStrToLong_i(tmp+1, &tmp, 10, &tm.tm_hour) < 0 || *tmp != ':' ||
+            /* minute */
+            virStrToLong_i(tmp+1, &tmp, 10, &tm.tm_min) < 0 || *tmp != ':' ||
+            /* second */
+            virStrToLong_i(tmp+1, &tmp, 10, &tm.tm_sec) < 0 || *tmp != '\0') {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"),
+                                 validTo);
+            VIR_FREE(validTo);
+            VIR_FREE(def->passwd);
+            return -1;
+        }
+        VIR_FREE(validTo);
+
+        tm.tm_year -= 1900; /* Human epoch starts at 0 BC, not 1900BC */
+        tm.tm_mon--; /* Humans start months at 1, computers at 0 */
+
+        def->validTo = timegm(&tm);
+        def->expires = 1;
+    }
+
+    return 0;
+}
+
+
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
 virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
@@ -3128,8 +3188,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         }
 
         def->data.vnc.listenAddr = virXMLPropString(node, "listen");
-        def->data.vnc.passwd = virXMLPropString(node, "passwd");
         def->data.vnc.keymap = virXMLPropString(node, "keymap");
+
+        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
+            goto error;
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *fullscreen = virXMLPropString(node, "fullscreen");
 
@@ -3253,8 +3315,9 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         }
 
         def->data.spice.listenAddr = virXMLPropString(node, "listen");
-        def->data.spice.passwd = virXMLPropString(node, "passwd");
         def->data.spice.keymap = virXMLPropString(node, "keymap");
+        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
+            goto error;
     }
 
 cleanup:
@@ -6482,6 +6545,27 @@ virDomainTimerDefFormat(virBufferPtr buf,
     return 0;
 }
 
+static void
+virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
+                                   virDomainGraphicsAuthDefPtr def,
+                                   unsigned int flags)
+{
+    if (!def->passwd)
+        return;
+
+    if (flags & VIR_DOMAIN_XML_SECURE)
+        virBufferEscapeString(buf, " passwd='%s'",
+                              def->passwd);
+
+    if (def->expires) {
+        char strbuf[100];
+        struct tm tmbuf, *tm;
+        tm = gmtime_r(&def->validTo, &tmbuf);
+        strftime(strbuf, sizeof(strbuf), "%Y-%m-%dT%H:%M:%S", tm);
+        virBufferVSprintf(buf, " passwdValidTo='%s'", strbuf);
+    }
+}
+
 static int
 virDomainGraphicsDefFormat(virBufferPtr buf,
                            virDomainGraphicsDefPtr def,
@@ -6517,11 +6601,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " keymap='%s'",
                                   def->data.vnc.keymap);
 
-        if (def->data.vnc.passwd &&
-            (flags & VIR_DOMAIN_XML_SECURE))
-            virBufferEscapeString(buf, " passwd='%s'",
-                                  def->data.vnc.passwd);
-
+        virDomainGraphicsAuthDefFormatAttr(buf, &def->data.vnc.auth, flags);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -6588,11 +6668,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, " keymap='%s'",
                                   def->data.spice.keymap);
 
-        if (def->data.spice.passwd &&
-            (flags & VIR_DOMAIN_XML_SECURE))
-            virBufferEscapeString(buf, " passwd='%s'",
-                                  def->data.spice.passwd);
-
+        virDomainGraphicsAuthDefFormatAttr(buf, &def->data.spice.auth, flags);
         break;
 
     }
