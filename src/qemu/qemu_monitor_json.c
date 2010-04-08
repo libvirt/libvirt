@@ -536,7 +536,7 @@ static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr da
     } else {
             actionID = VIR_DOMAIN_EVENT_WATCHDOG_NONE;
     }
-    qemuMonitorEmitRTCChange(mon, actionID);
+    qemuMonitorEmitWatchdog(mon, actionID);
 }
 
 VIR_ENUM_DECL(qemuMonitorIOErrorAction)

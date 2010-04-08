@@ -660,7 +660,7 @@ virDomainEventPtr virDomainEventIOErrorNewFromObj(virDomainObjPtr obj,
                                   obj->def->id, obj->def->name, obj->def->uuid);
 
     if (ev) {
-        ev->data.watchdog.action = action;
+        ev->data.ioError.action = action;
         if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
             !(ev->data.ioError.devAlias = strdup(devAlias))) {
             virDomainEventFree(ev);

@@ -43,7 +43,7 @@
             pass
 
     def dispatchDomainEventLifecycleCallback(self, dom, event, detail, cbData):
-        """Dispatches events to python user domain event callbacks
+        """Dispatches events to python user domain lifecycle event callbacks
         """
         cb = cbData["cb"]
         opaque = cbData["opaque"]
@@ -52,13 +52,61 @@
         return 0
 
     def dispatchDomainEventGenericCallback(self, dom, cbData):
-        """Dispatches events to python user domain event callbacks
+        """Dispatches events to python user domain generic event callbacks
         """
         try:
             cb = cbData["cb"]
             opaque = cbData["opaque"]
 
             cb(self, virDomain(self, _obj=dom), opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def dispatchDomainEventRTCChangeCallback(self, dom, offset, cbData):
+        """Dispatches events to python user domain RTC change event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), offset ,opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def dispatchDomainEventWatchdogCallback(self, dom, action, cbData):
+        """Dispatches events to python user domain watchdog event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), action, opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def dispatchDomainEventIOErrorCallback(self, dom, srcPath, devAlias, action, cbData):
+        """Dispatches events to python user domain IO error event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), opaque)
+            return 0
+        except AttributeError:
+            pass
+
+    def dispatchDomainEventGraphicsCallback(self, dom, phase, localAddr, remoteAddr, authScheme, subject, cbData):
+        """Dispatches events to python user domain graphics event callbacks
+        """
+        try:
+            cb = cbData["cb"]
+            opaque = cbData["opaque"]
+
+            cb(self, virDomain(self, _obj=dom), phase, localAddr, remoteAddr, authScheme, subject, opaque)
             return 0
         except AttributeError:
             pass
