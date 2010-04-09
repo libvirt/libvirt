@@ -5191,7 +5191,7 @@ static virDrvOpenStatus testSecretOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    conn->nwfilterPrivateData = conn->privateData;
+    conn->secretPrivateData = conn->privateData;
     return VIR_DRV_OPEN_SUCCESS;
 }
 
