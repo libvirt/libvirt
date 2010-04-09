@@ -64,6 +64,13 @@ struct f_arphdr {
 } ATTRIBUTE_PACKED;
 
 
+struct dhcp_option {
+    uint8_t code;
+    uint8_t len;
+    uint8_t value[0]; /* length varies */
+} ATTRIBUTE_PACKED;
+
+
 /* structure representing DHCP message */
 struct dhcp {
     uint8_t op;
@@ -78,9 +85,12 @@ struct dhcp {
     uint32_t siaddr;
     uint32_t giaddr;
     uint8_t chaddr[16];
-    /* omitted */
+    uint8_t zeroes[192];
+    uint32_t magic;
+    struct dhcp_option options[0];
 } ATTRIBUTE_PACKED;
 
+#define DHCP_MSGT_DHCPOFFER 2
 
 struct ether_vlan_header
 {
@@ -212,6 +222,40 @@ virNWFilterGetIpAddrForIfname(const char *ifname) {
 
 #ifdef HAVE_LIBPCAP
 
+static void
+procDHCPOpts(struct dhcp *dhcp, int dhcp_opts_len,
+             uint32_t *vmaddr, uint32_t *bcastaddr,
+             enum howDetect *howDetected) {
+    struct dhcp_option *dhcpopt = &dhcp->options[0];
+
+    while (dhcp_opts_len >= 2) {
+
+        switch (dhcpopt->code) {
+
+        case 28: /* Broadcast address */
+            if (dhcp_opts_len >= 6) {
+                uint32_t *tmp = (uint32_t *)&dhcpopt->value;
+                (*bcastaddr) = ntohl(*tmp);
+            }
+        break;
+
+        case 53: /* Message type */
+            if (dhcp_opts_len >= 3) {
+                uint8_t *val = (uint8_t *)&dhcpopt->value;
+                switch (*val) {
+                case DHCP_MSGT_DHCPOFFER:
+                    *vmaddr = dhcp->yiaddr;
+                    *howDetected = DETECT_DHCP;
+                break;
+                }
+            }
+        }
+        dhcp_opts_len -= (2 + dhcpopt->len);
+        dhcpopt = (struct dhcp_option*)((char *)dhcpopt + 2 + dhcpopt->len);
+    }
+}
+
+
 /**
  * learnIPAddressThread
  * arg: pointer to virNWFilterIPAddrLearnReq structure
@@ -236,12 +280,13 @@ learnIPAddressThread(void *arg)
     struct ether_header *ether_hdr;
     struct ether_vlan_header *vlan_hdr;
     virNWFilterIPAddrLearnReqPtr req = arg;
-    uint32_t vmaddr = 0;
+    uint32_t vmaddr = 0, bcastaddr = 0;
     unsigned int ethHdrSize;
     char *listen_if = (strlen(req->linkdev) != 0) ? req->linkdev
                                                   : req->ifname;
     int to_ms = (strlen(req->linkdev) != 0) ? 1000
                                             : 0;
+    int dhcp_opts_len;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *filter= NULL;
@@ -382,12 +427,18 @@ learnIPAddressThread(void *arg)
                                           sizeof(struct dhcp)) {
                             struct dhcp *dhcp = (struct dhcp *)
                                         ((char *)udphdr + sizeof(udphdr));
-                            if (dhcp->op == 2 /* DHCP OFFER */ &&
+                            if (dhcp->op == 2 /* BOOTREPLY */ &&
                                 !memcmp(&dhcp->chaddr[0],
                                         req->macaddr,
                                         6)) {
-                                vmaddr = dhcp->yiaddr;
-                                howDetected = DETECT_DHCP;
+                                dhcp_opts_len = header.len -
+                                    (ethHdrSize + iphdr->ihl * 4 +
+                                     sizeof(struct udphdr) +
+                                     sizeof(struct dhcp));
+                                procDHCPOpts(dhcp, dhcp_opts_len,
+                                             &vmaddr,
+                                             &bcastaddr,
+                                             &howDetected);
                             }
                         }
                     }
