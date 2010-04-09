@@ -907,6 +907,13 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    /* Could not open message indicates bad filename */
+    if (strstr(reply, "\nCould not open ")) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("could not change media on %s: %s"), devname, reply);
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
