@@ -649,7 +649,7 @@
     &lt;interface type='network'&gt;
       &lt;source network='default'/&gt;
       &lt;target dev='vnet7'/&gt;
-      &lt;mac address="11:22:33:44:55:66"/&gt;
+      &lt;mac address="00:11:22:33:44:55"/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -685,7 +685,7 @@
     &lt;interface type='bridge'&gt;
       &lt;source bridge='br0'/&gt;
       &lt;target dev='vnet7'/&gt;
-      &lt;mac address="11:22:33:44:55:66"/&gt;
+      &lt;mac address="00:11:22:33:44:55"/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -707,7 +707,7 @@
     &lt;interface type='user'/&gt;
     ...
     &lt;interface type='user'&gt;
-      &lt;mac address="11:22:33:44:55:66"/&gt;
+      &lt;mac address="00:11:22:33:44:55"/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
