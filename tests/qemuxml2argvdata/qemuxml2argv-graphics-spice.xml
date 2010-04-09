@@ -25,5 +25,8 @@
     <video>
       <model type='qxl' vram='65536' heads='1'/>
     </video>
+    <video>
+      <model type='qxl' vram='65536' heads='1'/>
+    </video>
   </devices>
 </domain>

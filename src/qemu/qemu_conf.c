@@ -3251,6 +3251,36 @@ error:
 }
 
 
+static char *
+qemuBuildVideoDevStr(virDomainVideoDefPtr video)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *model = qemuVideoTypeToString(video->type);
+
+    if (!model) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("invalid video model"));
+        goto error;
+    }
+
+    virBufferVSprintf(&buf, "%s", model);
+    virBufferVSprintf(&buf, ",id=%s", video->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, &video->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
 int
 qemudOpenPCIConfig(virDomainHostdevDefPtr dev)
 {
@@ -5171,13 +5201,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         goto error;
     }
 
-    if (def->nvideos) {
-        if (def->nvideos > 1) {
-            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            "%s", _("only one video card is currently supported"));
-            goto error;
-        }
-
+    if (def->nvideos > 0) {
         if (qemuCmdFlags & QEMUD_CMD_FLAG_VGA) {
             if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_XEN) {
                 /* nothing - vga has no effect on Xen pvfb */
@@ -5223,6 +5247,32 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
         }
+
+        if (def->nvideos > 1) {
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+                for (i = 1 ; i < def->nvideos ; i++) {
+                    char *str;
+                    if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+                        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                        _("video type %s is only valid as primary video card"),
+                                        virDomainVideoTypeToString(def->videos[0]->type));
+                        goto error;
+                    }
+
+                    ADD_ARG_LIT("-device");
+
+                    if (!(str = qemuBuildVideoDevStr(def->videos[i])))
+                        goto error;
+
+                    ADD_ARG(str);
+                }
+            } else {
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                "%s", _("only one video card is currently supported"));
+                goto error;
+            }
+        }
+
     } else {
         /* If we have -device, then we set -nodefault already */
         if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
