@@ -168,30 +168,19 @@ sc_prohibit_gethostby:
 # |grep -vE '^(qsort|if|close|assert|fputc|free|N_|vir.*GetName|.*Unlock|virNodeListDevices|virHashRemoveEntry|freeaddrinfo|.*[fF]ree|xdrmem_create|xmlXPathFreeObject|virUUIDFormat|openvzSetProgramSentinal|polkit_action_unref)$'
 
 msg_gen_function =
-msg_gen_function += DEBUG0
-msg_gen_function += DISABLE_fprintf
-msg_gen_function += ERROR
-msg_gen_function += ERROR0
 msg_gen_function += ESX_ERROR
 msg_gen_function += ESX_VI_ERROR
-msg_gen_function += REMOTE_DEBUG
 msg_gen_function += macvtapError
-msg_gen_function += VIR_FREE
-msg_gen_function += VIR_INFO
-msg_gen_function += VIR_USE_CPU
 msg_gen_function += remoteError
 msg_gen_function += lxcError
 msg_gen_function += networkLog
 msg_gen_function += networkReportError
 msg_gen_function += oneError
 msg_gen_function += openvzError
-msg_gen_function += openvzLog
 msg_gen_function += qemudDispatchClientFailure
-msg_gen_function += qemudLog
 msg_gen_function += qemudReportError
 msg_gen_function += regerror
 msg_gen_function += remoteDispatchFormatError
-msg_gen_function += umlLog
 msg_gen_function += umlReportError
 msg_gen_function += vboxError
 msg_gen_function += virConfError
@@ -200,7 +189,6 @@ msg_gen_function += virSecurityReportError
 msg_gen_function += virHashError
 msg_gen_function += virLibConnError
 msg_gen_function += virLibDomainError
-msg_gen_function += virLog
 msg_gen_function += virNetworkReportError
 msg_gen_function += virNodeDeviceReportError
 msg_gen_function += virProxyError
@@ -208,13 +196,11 @@ msg_gen_function += virRaiseError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
 msg_gen_function += virSexprError
-msg_gen_function += virStorageLog
 msg_gen_function += virStorageReportError
 msg_gen_function += virXMLError
 msg_gen_function += virXenInotifyError
 msg_gen_function += virXenStoreError
 msg_gen_function += virXendError
-msg_gen_function += vshCloseLogFile
 msg_gen_function += xenapiSessionErrorHandler
 msg_gen_function += xenUnifiedError
 msg_gen_function += xenXMError
@@ -238,7 +224,7 @@ func_re := ($(func_or))
 #    "%s", _("no storage vol w..."
 sc_libvirt_unmarked_diagnostics:
 	@grep -nE							\
-	    '\<$(func_re) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
+	    '\<$(func_re) *\([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT))	\
 	  | grep -v '_''(' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
