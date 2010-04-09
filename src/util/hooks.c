@@ -25,7 +25,7 @@
 
 #include <sys/types.h>
 #if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 #include <sys/stat.h>
 #include <unistd.h>
@@ -274,7 +274,7 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
     /*
      * Convenience macros borrowed from qemudBuildCommandLine()
      */
-#define ADD_ARG_SPACE                                                   \
+# define ADD_ARG_SPACE                                                   \
     do {                                                                \
         if (argc == arga) {                                             \
             arga += 10;                                                 \
@@ -283,20 +283,20 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
         }                                                               \
     } while (0)
 
-#define ADD_ARG(thisarg)                                                \
+# define ADD_ARG(thisarg)                                                \
     do {                                                                \
         ADD_ARG_SPACE;                                                  \
         argv[argc++] = thisarg;                                         \
     } while (0)
 
-#define ADD_ARG_LIT(thisarg)                                            \
+# define ADD_ARG_LIT(thisarg)                                            \
     do {                                                                \
         ADD_ARG_SPACE;                                                  \
         if ((argv[argc++] = strdup(thisarg)) == NULL)                   \
             goto no_memory;                                             \
     } while (0)
 
-#define ADD_ENV_SPACE                                                   \
+# define ADD_ENV_SPACE                                                   \
     do {                                                                \
         if (envc == enva) {                                             \
             enva += 10;                                                 \
@@ -305,20 +305,20 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
         }                                                               \
     } while (0)
 
-#define ADD_ENV(thisarg)                                                \
+# define ADD_ENV(thisarg)                                                \
     do {                                                                \
         ADD_ENV_SPACE;                                                  \
         env[envc++] = thisarg;                                          \
     } while (0)
 
-#define ADD_ENV_LIT(thisarg)                                            \
+# define ADD_ENV_LIT(thisarg)                                            \
     do {                                                                \
         ADD_ENV_SPACE;                                                  \
         if ((env[envc++] = strdup(thisarg)) == NULL)                    \
             goto no_memory;                                             \
     } while (0)
 
-#define ADD_ENV_PAIR(envname, val)                                      \
+# define ADD_ENV_PAIR(envname, val)                                      \
     do {                                                                \
         char *envval;                                                   \
         ADD_ENV_SPACE;                                                  \
@@ -327,7 +327,7 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
         env[envc++] = envval;                                           \
     } while (0)
 
-#define ADD_ENV_COPY(envname)                                           \
+# define ADD_ENV_COPY(envname)                                           \
     do {                                                                \
         char *val = getenv(envname);                                    \
         if (val != NULL) {                                              \
@@ -453,13 +453,13 @@ no_memory:
 
     goto cleanup;
 
-#undef ADD_ARG
-#undef ADD_ARG_LIT
-#undef ADD_ARG_SPACE
-#undef ADD_USBDISK
-#undef ADD_ENV
-#undef ADD_ENV_COPY
-#undef ADD_ENV_LIT
-#undef ADD_ENV_SPACE
+# undef ADD_ARG
+# undef ADD_ARG_LIT
+# undef ADD_ARG_SPACE
+# undef ADD_USBDISK
+# undef ADD_ENV
+# undef ADD_ENV_COPY
+# undef ADD_ENV_LIT
+# undef ADD_ENV_SPACE
 }
 #endif

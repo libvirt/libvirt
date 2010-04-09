@@ -52,13 +52,13 @@
  * locally defined enums for all constants
  */
 #ifndef ETHERTYPE_IP
-#define ETHERTYPE_IP            0x0800
+# define ETHERTYPE_IP            0x0800
 #endif
 #ifndef ETHERTYPE_ARP
-#define ETHERTYPE_ARP           0x0806
+# define ETHERTYPE_ARP           0x0806
 #endif
 #ifndef ETHERTYPE_IPV6
-#define ETHERTYPE_IPV6          0x86dd
+# define ETHERTYPE_IPV6          0x86dd
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
