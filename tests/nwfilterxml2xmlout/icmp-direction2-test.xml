@@ -1,0 +1,12 @@
+<filter name='testcase' chain='root'>
+  <uuid>d6b1a2af-def6-2898-9f8d-4a74e3c39558</uuid>
+  <rule action='accept' direction='in' priority='500'>
+    <icmp type='8'/>
+  </rule>
+  <rule action='accept' direction='out' priority='500'>
+    <icmp type='0'/>
+  </rule>
+  <rule action='drop' direction='inout' priority='600'>
+    <icmp/>
+  </rule>
+</filter>

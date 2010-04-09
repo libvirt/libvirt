@@ -114,6 +114,10 @@ mymain(int argc, char **argv)
 
     DO_TEST("ref-test");
     DO_TEST("ref-rule-test");
+    DO_TEST("ipt-no-macspoof-test");
+    DO_TEST("icmp-direction-test");
+    DO_TEST("icmp-direction2-test");
+    DO_TEST("icmp-direction3-test");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

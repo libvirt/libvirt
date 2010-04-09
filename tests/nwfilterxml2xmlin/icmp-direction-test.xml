@@ -1,0 +1,15 @@
+<filter name='testcase'>
+    <uuid>f4b3f745-d23d-2ee6-218a-d5671611229b</uuid>
+    <!-- allow incoming ICMP Echo Reply -->
+    <rule action='accept' direction='in' priority='500'>
+        <icmp type='0'/>
+    </rule>
+    <!-- allow outgoing ICMP Echo Request -->
+    <rule action='accept' direction='out' priority='500'>
+        <icmp type='8'/>
+    </rule>
+    <!-- drop all other ICMP traffic -->
+    <rule action='drop' direction='inout' priority='600'>
+        <icmp/>
+    </rule>
+</filter>

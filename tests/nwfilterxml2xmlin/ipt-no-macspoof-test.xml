@@ -1,0 +1,14 @@
+<filter name='testcase'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='drop' direction='inout'>
+     <!-- should use $MAC for MAC address, but tests would depend on VM's
+          MAC address -->
+     <all match='no' srcmacaddr='12:34:56:78:9a:bc'/>
+  </rule>
+
+  <rule action='drop' direction='in'>
+     <!-- not accepting incoming traffic from a certain MAC address -->
+     <all match='no' srcmacaddr='aa:aa:aa:aa:aa:aa'/>
+  </rule>
+
+</filter>
