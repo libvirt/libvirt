@@ -1093,6 +1093,27 @@
               <text/>
             </attribute>
           </optional>
+          <zeroOrMore>
+            <element name="channel">
+              <attribute name="name">
+                <choice>
+                  <value>main</value>
+                  <value>display</value>
+                  <value>inputs</value>
+                  <value>cursor</value>
+                  <value>playback</value>
+                  <value>record</value>
+                </choice>
+              </attribute>
+              <attribute name="mode">
+                <choice>
+                  <value>any</value>
+                  <value>secure</value>
+                  <value>insecure</value>
+                </choice>
+              </attribute>
+            </element>
+          </zeroOrMore>
         </group>
         <group>
           <attribute name="type">

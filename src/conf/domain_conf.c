@@ -271,6 +271,21 @@ VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "desktop",
               "spice")
 
+VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelName,
+              VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST,
+              "main",
+              "display",
+              "inputs",
+              "cursor",
+              "playback",
+              "record");
+
+VIR_ENUM_IMPL(virDomainGraphicsSpiceChannelMode,
+              VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST,
+              "any",
+              "secure",
+              "insecure");
+
 VIR_ENUM_IMPL(virDomainHostdevMode, VIR_DOMAIN_HOSTDEV_MODE_LAST,
               "subsystem",
               "capabilities")
@@ -3274,6 +3289,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
 
         def->data.desktop.display = virXMLPropString(node, "display");
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        xmlNodePtr cur;
         char *port = virXMLPropString(node, "port");
         char *tlsPort;
         char *autoport;
@@ -3318,6 +3334,40 @@ virDomainGraphicsDefParseXML(xmlNodePtr node, int flags) {
         def->data.spice.keymap = virXMLPropString(node, "keymap");
         if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth) < 0)
             goto error;
+
+        cur = node->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE) {
+                if (xmlStrEqual(cur->name, BAD_CAST "channel")) {
+                    const char *name, *mode;
+                    int nameval, modeval;
+                    name = virXMLPropString(cur, "name");
+                    mode = virXMLPropString(cur, "mode");
+
+                    if (!name || !mode) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                             _("spice channel missing name/mode"));
+                        goto error;
+                    }
+
+                    if ((nameval = virDomainGraphicsSpiceChannelNameTypeFromString(name)) < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("unknown spice channel name %s"),
+                                             name);
+                        goto error;
+                    }
+                    if ((modeval = virDomainGraphicsSpiceChannelModeTypeFromString(mode)) < 0) {
+                        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                             _("unknown spice channel mode %s"),
+                                             mode);
+                        goto error;
+                    }
+
+                    def->data.spice.channels[nameval] = modeval;
+                }
+            }
+            cur = cur->next;
+        }
     }
 
 cleanup:
@@ -6572,6 +6622,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                            int flags)
 {
     const char *type = virDomainGraphicsTypeToString(def->type);
+    int children = 0;
+    int i;
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6673,7 +6725,28 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
     }
 
-    virBufferAddLit(buf, "/>\n");
+    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+            int mode = def->data.spice.channels[i];
+            if (mode == VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY)
+                continue;
+
+            if (!children) {
+                virBufferAddLit(buf, ">\n");
+                children = 1;
+            }
+
+            virBufferVSprintf(buf, "      <channel name='%s' mode='%s'/>\n",
+                              virDomainGraphicsSpiceChannelNameTypeToString(i),
+                              virDomainGraphicsSpiceChannelModeTypeToString(mode));
+        }
+    }
+
+    if (children) {
+        virBufferAddLit(buf, "    </graphics>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     return 0;
 }

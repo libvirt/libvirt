@@ -5177,6 +5177,19 @@ int qemudBuildCommandLine(virConnectPtr conn,
             virBufferVSprintf(&opt, ",x509-dir=%s",
                               driver->spiceTLSx509certdir);
 
+        for (i = 0 ; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST ; i++) {
+            int mode = def->graphics[0]->data.spice.channels[i];
+            switch (mode) {
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+                virBufferVSprintf(&opt, ",tls-channel=%s",
+                                  virDomainGraphicsSpiceChannelNameTypeToString(i));
+                break;
+            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+                virBufferVSprintf(&opt, ",plaintext-channel=%s",
+                                  virDomainGraphicsSpiceChannelNameTypeToString(i));
+                break;
+            }
+        }
 
         if (virBufferError(&opt))
             goto no_memory;

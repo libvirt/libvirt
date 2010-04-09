@@ -525,6 +525,24 @@ struct _virDomainGraphicsAuthDef {
     time_t validTo;  /* seconds since epoch */
 };
 
+enum virDomainGraphicsSpiceChannelName {
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MAIN,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_DISPLAY,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_INPUT,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_CURSOR,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_PLAYBACK,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_RECORD,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST
+};
+
+enum virDomainGraphicsSpiceChannelMode {
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE,
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE,
+
+    VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST
+};
 
 typedef struct _virDomainGraphicsDef virDomainGraphicsDef;
 typedef virDomainGraphicsDef *virDomainGraphicsDefPtr;
@@ -561,6 +579,7 @@ struct _virDomainGraphicsDef {
             char *keymap;
             virDomainGraphicsAuthDef auth;
             unsigned int autoport :1;
+            int channels[VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST];
         } spice;
     } data;
 };
@@ -1234,6 +1253,8 @@ VIR_ENUM_DECL(virDomainHostdevSubsys)
 VIR_ENUM_DECL(virDomainInput)
 VIR_ENUM_DECL(virDomainInputBus)
 VIR_ENUM_DECL(virDomainGraphics)
+VIR_ENUM_DECL(virDomainGraphicsSpiceChannelName)
+VIR_ENUM_DECL(virDomainGraphicsSpiceChannelMode)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainSeclabel)
