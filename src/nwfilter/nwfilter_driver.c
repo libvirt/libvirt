@@ -176,6 +176,8 @@ nwfilterDriverShutdown(void) {
     if (!driverState)
         return -1;
 
+    virNWFilterLearnShutdown();
+
     nwfilterDriverLock(driverState);
 
     /* free inactive pools */
@@ -421,6 +423,5 @@ static virStateDriver stateDriver = {
 int nwfilterRegister(void) {
     virRegisterNWFilterDriver(&nwfilterDriver);
     virRegisterStateDriver(&stateDriver);
-    virNWFilterLearnInit();
     return 0;
 }
