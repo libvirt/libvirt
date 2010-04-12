@@ -836,6 +836,59 @@ children of this snapshot.
 
 =back
 
+=head1 NWFILTER COMMMANDS
+
+The following commands manipulate network filters. Network filters allow
+filtering of the network traffic coming from and going to virtual machines.
+Individual network traffic filters are written in XML and may contain
+references to other network filters, describe traffic filtering rules,
+or contain both. Network filters are referenced by virtual machines
+from within their interface description. A network filter may be referenced
+by multiple virtual machines' interfaces.
+
+=over 4
+
+=item B<nwfilter-define> I<xmlfile>
+
+Make a new network filter known to libvirt. If a network filter with
+the same name already exists, it will be replaced with the new XML.
+Any running virtual machine referencing this network filter will have
+its network traffic rules adapted. If for any reason the network traffic
+filtering rules cannot be instantiated by any of the running virtual
+machines, then the new XML will be rejected.
+
+=item B<nwfilter-undefine> I<nwfilter-name>
+
+Delete a network filter. The deletion will fail if any running virtual
+machine is currently using this network filter.
+
+=item B<nwfilter-list>
+
+List all of the available network filters.
+
+=item B<nwfilter-dumpxml> I<nwfilter-name>
+
+Output the network filter XML.
+
+=item B<nwfilter-edit> I<nwfilter-name>
+
+Edit the XML of a network filter.
+
+This is equivalent to:
+
+ virsh nwfilter-dumpxml myfilter > myfilter.xml
+ edit myfilter.xml
+ virsh nwfilter-define myfilter.xml
+
+except that it does some error checking.
+The new network filter may be rejected due to the same reason as
+mentioned in I<nwfilter-define>.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
+=back
+
 =head1 ENVIRONMENT
 
 The following environment variables can be set to alter the behaviour
