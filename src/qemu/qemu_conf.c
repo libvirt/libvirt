@@ -4407,7 +4407,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             } else {
                 const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
                 if (!vgastr || STREQ(vgastr, "")) {
-                    qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                    qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                     _("video type %s is not supported with QEMU"),
                                     virDomainVideoTypeToString(def->videos[0]->type));
                     goto error;
@@ -4433,8 +4433,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 break;
 
             default:
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("video type %s is not supported with QEMU"),
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                _("video type %s is not supported with this QEMU"),
                                 virDomainVideoTypeToString(def->videos[0]->type));
                 goto error;
             }
