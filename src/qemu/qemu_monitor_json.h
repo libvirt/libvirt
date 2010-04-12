@@ -46,6 +46,9 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long *currmem);
+int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
+                                  virDomainMemoryStatPtr stats,
+                                  unsigned int nr_stats);
 int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *devname,
                                      long long *rd_req,

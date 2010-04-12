@@ -60,7 +60,6 @@
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 #include "qemu_monitor.h"
-#include "qemu_monitor_text.h"
 #include "qemu_bridge_filter.h"
 #include "c-ctype.h"
 #include "event.h"
@@ -8699,7 +8698,7 @@ qemudDomainMemoryStats (virDomainPtr dom,
     if (virDomainObjIsActive(vm)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitor(vm);
-        ret = qemuMonitorTextGetMemoryStats(priv->mon, stats, nr_stats);
+        ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
         qemuDomainObjExitMonitor(vm);
     } else {
         qemuReportError(VIR_ERR_OPERATION_INVALID,

@@ -960,6 +960,21 @@ int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
+                              virDomainMemoryStatPtr stats,
+                              unsigned int nr_stats)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d stats=%p nstats=%u", mon, mon->fd, stats, nr_stats);
+
+    if (mon->json)
+        ret = qemuMonitorJSONGetMemoryStats(mon, stats, nr_stats);
+    else
+        ret = qemuMonitorTextGetMemoryStats(mon, stats, nr_stats);
+    return ret;
+}
+
+
 int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  const char *devname,
                                  long long *rd_req,
