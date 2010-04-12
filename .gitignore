@@ -44,4 +44,5 @@ stamp-h
 stamp-h.in
 stamp-h1
 tests/*.log
+tests/nwfilterxml2xmltest
 update.log

@@ -27,12 +27,14 @@ EXTRA_DIST = \
   .x-sc_prohibit_asprintf \
   .x-sc_prohibit_gethostby \
   .x-sc_prohibit_gethostname \
+  .x-sc_prohibit_gettext_noop \
   .x-sc_prohibit_have_config_h \
   .x-sc_prohibit_HAVE_MBRTOWC \
   .x-sc_prohibit_nonreentrant \
   .x-sc_prohibit_strcmp \
   .x-sc_prohibit_strcmp_and_strncmp \
   .x-sc_prohibit_strncpy \
+  .x-sc_prohibit_test_minus_ao \
   .x-sc_prohibit_VIR_ERR_NO_MEMORY \
   .x-sc_require_config_h \
   .x-sc_require_config_h_first \
