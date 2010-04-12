@@ -358,7 +358,7 @@ LIBVIRT_0.7.7 {
 	virDomainAbortJob;
 } LIBVIRT_0.7.5;
 
-LIBVIRT_0.7.8 {
+LIBVIRT_0.8.0 {
     global:
 	virStorageVolWipe;
         virDomainMigrateSetMaxDowntime;

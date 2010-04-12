@@ -837,6 +837,20 @@ fi
 %endif
 
 %changelog
+* Mon Apr 12 2010 Daniel Veillard <veillard@redhat.com> - 0.8.0-1
+- Snapshotting support (QEmu/VBox/ESX)
+- Network filtering API
+- XenAPI driver
+- new APIs for domain events
+- Libvirt managed save API
+- timer subselection for domain clock
+- synchronous hooks
+- API to update guest CPU to host CPU
+- virDomainUpdateDeviceFlags new API
+- migrate max downtime API
+- volume wiping API
+- and many bug fixes
+
 * Fri Mar  5 2010 Daniel Veillard <veillard@redhat.com> - 0.7.7-1
 - macvtap support
 - async job handling
