@@ -50,6 +50,10 @@
                 <a href="logging.html">Logging</a>
                 <span>The library and the daemon logging support</span>
               </li>
+              <li>
+                <a href="hooks.html">Hooks</a>
+                <span>Hooks for system specific management</span>
+              </li>
             </ul>
           </li>
           <li>

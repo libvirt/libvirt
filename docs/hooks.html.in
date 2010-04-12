@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h1>Hooks for specific system management</h1>
+    <p>Libvirt includes synchronous hooks, starting from version 0.8.0, as a
+       way to tie in specific tailored system actions at a specific time.
+       If these scripts are present on the host where the hypervisor
+       is running, then they are called when the libvirt daemon is doingi
+       some significant action.</p>
+    <p>The scripts are expected to execute quickly, return a zero exit
+       status if all conditions are set for the daemon to continue the
+       action (non zero will be considered a failure which may
+       be ignored but in general will stop the ongoing operation).
+       The script also should not call back into libvirt as the daemon
+       is waiting for the script exit and deadlock is likely to occur.</p>
+    <p>The scripts are stored in the directory <code>/etc/libvirt/hooks/</code>
+       when using a standard installation path
+       (<code>$SYSCONF_DIR/libvirt/hooks/</code> in general).</p>
+    <p>Each script is given the following command line arguments:</p>
+       <ul>
+         <li> the first argument is the name of the object involved in the
+              operation, or '-' if there is none.
+         <li> the second argument is the name of the operation.
+         <li> the third argument is a suboperation indication like 'start' or
+              'end', or '-' if there is none.
+         <li> the last argument is an extra argument string or '-' if there
+              is none.
+       </ul>
+    <p>There are currently scripts for 3 domains of operation:
+    <ul>
+      <li><p><code>/etc/libvirt/hooks/daemon</code> script if
+          present is called at 3 points in time:</p>
+          <p>at daemon startup, typically started with the following
+             arguments:</p>
+                <pre>/etc/libvirt/hooks/daemon - start - start</pre>
+            <p>at daemon shutdown when it is about to exit, with the following
+                arguments:</p>
+                <pre>/etc/libvirt/hooks/daemon - shutdown - shutdown</pre>
+            <p>When the daemon is asked to reload its driver state when
+                receiving the SIGHUP signal, arguments are:</p>
+                <pre>/etc/libvirt/hooks/daemon - reload begin SIGHUP</pre>
+          </li>
+      <li><p><code>/etc/libvirt/hooks/qemu</code> script and <br/>
+             <code>/etc/libvirt/hooks/lxc</code> associate hooks for domain
+             operation on the respective QEmu/KVM and LXC drivers.</p>
+          <p> The domain related hooks also receive the full XML description
+              for the concerned domain on their stdin, which allows them to get
+              all the information from the domain, including UUID or storage
+              if that is needed for the script operation.</p>
+          <p> Currently only domain startup and domain end operations
+              involve the hook, the first one just before the domain gets
+              created.
+              For example if starting a QEmu domain named <code>test</code>
+              the following script will get called:</p>
+              <pre>/etc/libvirt/hooks/qemu test start begin -</pre>
+          <p> note that a non-zero return value from the script will abort the
+              domain startup operation, and if an error string is passed on
+              stderr by the hook script, it will be provided back to the user
+              at the libvirt API level.</p>
+          <p> For domain shutdown, the script will be called just after the
+              domain has finished execution, and the script will get:</p>
+              <pre>/etc/libvirt/hooks/qemu test stopped end -</pre>
+          <p> It is expected that other operations will be associated to hooks
+              but at the time of 0.8.0 only those 2 are associated to the
+              domains life cycle</p>
+          </li>
+    </ul>
+    <p></p>
+  </body>
+</html>
