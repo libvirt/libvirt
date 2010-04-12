@@ -49,7 +49,7 @@ communications channels used to talk to the hypervisor.  Running as
 non root will return an error.
 
 Most B<virsh> commands act synchronously, except maybe shutdown,
-setvcpus and setmem. In those case the fact that the B<virsh>
+setvcpus and setmem. In those cases the fact that the B<virsh>
 program returned, may not mean the action is complete and you
 must poll periodically to detect that the guest completed the
 operation.
@@ -280,7 +280,7 @@ but not started.
 =item B<destroy> I<domain-id>
 
 Immediately terminate the domain domain-id.  This doesn't give the domain
-OS any chance to react, and it the equivalent of ripping the power
+OS any chance to react, and it's the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
 the B<shutdown> command instead.
 
@@ -307,10 +307,6 @@ Convert a domain name or id to domain UUID
 =item B<domid> I<domain-name-or-uuid>
 
 Convert a domain name (or UUID) to a domain id
-
-=item B<dominfo> I<domain-id>
-
-Returns basic information about the domain.
 
 =item B<domjobabort> I<domain-id-or-uuid>
 
