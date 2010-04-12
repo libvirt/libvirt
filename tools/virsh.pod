@@ -819,12 +819,12 @@ List all of the available snapshots for the given domain.
 
 Output the snapshot XML for the domain's snapshot named I<snapshot>.
 
-=item B<revert-to-snapshot> I<domain> I<snapshot>
+=item B<snapshot-revert> I<domain> I<snapshot>
 
 Revert the given domain to the snapshot specified by I<snapshot>.  Be aware
 that this is a destructive action; any changes in the domain since the
 snapshot was taken will be lost.  Also note that the state of the domain after
-revert-to-snapshot is complete will be the state of the domain at the time
+snapshot-revert is complete will be the state of the domain at the time
 the original snapshot was taken.
 
 =item B<snapshot-delete> I<domain> I<snapshot> I<--children>

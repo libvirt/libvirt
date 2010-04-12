@@ -8514,22 +8514,22 @@ cleanup:
 }
 
 /*
- * "revert-to-snapshot" command
+ * "snapshot-revert" command
  */
-static const vshCmdInfo info_revert_to_snapshot[] = {
+static const vshCmdInfo info_snapshot_revert[] = {
     {"help", N_("Revert a domain to a snapshot")},
     {"desc", N_("Revert domain to snapshot")},
     {NULL, NULL}
 };
 
-static const vshCmdOptDef opts_revert_to_snapshot[] = {
+static const vshCmdOptDef opts_snapshot_revert[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"snapshotname", VSH_OT_DATA, VSH_OFLAG_REQ, N_("snapshot name")},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdDomainRevertToSnapshot(vshControl *ctl, const vshCmd *cmd)
+cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     int ret = FALSE;
@@ -8786,7 +8786,7 @@ static const vshCmdDef commands[] = {
     {"snapshot-delete", cmdSnapshotDelete, opts_snapshot_delete, info_snapshot_delete},
     {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml, info_snapshot_dumpxml},
     {"snapshot-list", cmdSnapshotList, opts_snapshot_list, info_snapshot_list},
-    {"revert-to-snapshot", cmdDomainRevertToSnapshot, opts_revert_to_snapshot, info_revert_to_snapshot},
+    {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert, info_snapshot_revert},
 
     {NULL, NULL, NULL, NULL}
 };
