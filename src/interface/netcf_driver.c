@@ -511,6 +511,38 @@ cleanup:
     return ret;
 }
 
+static int interfaceIsActive(virInterfacePtr ifinfo)
+{
+    struct interface_driver *driver = ifinfo->conn->interfacePrivateData;
+    struct netcf_if *iface = NULL;
+    unsigned int flags = 0;
+    int ret = -1;
+
+    interfaceDriverLock(driver);
+
+    iface = interfaceDriverGetNetcfIF(driver->netcf, ifinfo);
+    if (!iface) {
+        /* helper already reported error */
+        goto cleanup;
+    }
+
+    if (ncf_if_status(iface, &flags) < 0) {
+        const char *errmsg, *details;
+        int errcode = ncf_error(driver->netcf, &errmsg, &details);
+        interfaceReportError(netcf_to_vir_err(errcode),
+                             "failed to get status of interface %s (netcf: %s - %s)",
+                             ifinfo->name, errmsg, details ? details : "");
+        goto cleanup;
+    }
+
+    ret = flags & NETCF_IFACE_ACTIVE ? 1 : 0;
+
+cleanup:
+    ncf_if_free(iface);
+    interfaceDriverUnlock(driver);
+    return ret;
+}
+
 static virInterfaceDriver interfaceDriver = {
     "Interface",
     interfaceOpenInterface,          /* open */
@@ -526,7 +558,7 @@ static virInterfaceDriver interfaceDriver = {
     interfaceUndefine,               /* interfaceUndefine */
     interfaceCreate,                 /* interfaceCreate */
     interfaceDestroy,                /* interfaceDestroy */
-    NULL,                            /* interfaceIsActive */
+    interfaceIsActive,               /* interfaceIsActive */
 };
 
 int interfaceRegister(void) {
