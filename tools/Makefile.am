@@ -45,6 +45,7 @@ virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(WARN_CFLAGS)					\
 		../src/libvirt.la				\
+		../src/libvirt-qemu.la				\
 		../gnulib/lib/libgnu.la				\
 		$(VIRSH_LIBS)
 virsh_CFLAGS =							\

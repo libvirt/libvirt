@@ -50,6 +50,7 @@
 #include "util.h"
 #include "memory.h"
 #include "xml.h"
+#include "libvirt/libvirt-qemu.h"
 
 static char *progname;
 
@@ -9808,6 +9809,58 @@ cleanup:
 }
 
 /*
+ * "qemu-monitor-command" command
+ */
+static const vshCmdInfo info_qemu_monitor_command[] = {
+    {"help", N_("Qemu Monitor Command")},
+    {"desc", N_("Qemu Monitor Command")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_qemu_monitor_command[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"cmd", VSH_OT_DATA, VSH_OFLAG_REQ, N_("command")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int ret = FALSE;
+    char *monitor_cmd;
+    char *result = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        goto cleanup;
+
+    dom = vshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+    monitor_cmd = vshCommandOptString(cmd, "cmd", NULL);
+    if (monitor_cmd == NULL) {
+        vshError(ctl, "%s", _("missing monitor command"));
+        goto cleanup;
+    }
+
+    if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, 0) < 0)
+        goto cleanup;
+
+    printf("%s\n", result);
+
+    ret = TRUE;
+
+cleanup:
+    VIR_FREE(result);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
+
+/*
  * Commands
  */
 static const vshCmdDef commands[] = {
@@ -9975,6 +10028,8 @@ static const vshCmdDef commands[] = {
     {"snapshot-dumpxml", cmdSnapshotDumpXML, opts_snapshot_dumpxml, info_snapshot_dumpxml},
     {"snapshot-list", cmdSnapshotList, opts_snapshot_list, info_snapshot_list},
     {"snapshot-revert", cmdDomainSnapshotRevert, opts_snapshot_revert, info_snapshot_revert},
+
+    {"qemu-monitor-command", cmdQemuMonitorCommand, opts_qemu_monitor_command, info_qemu_monitor_command},
 
     {NULL, NULL, NULL, NULL}
 };
