@@ -628,7 +628,9 @@ typedef int
                        const char ***retcpus);
 
 /* Format:
- * <arch> <model>
+ *      <arch> <model>
+ * qemu-0.13 encloses some model names in []:
+ *      <arch> [<model>]
  */
 static int
 qemudParseX86Models(const char *output,
@@ -661,15 +663,22 @@ qemudParseX86Models(const char *output,
             continue;
 
         if (retcpus) {
+            unsigned int len;
+
             if (VIR_REALLOC_N(cpus, count + 1) < 0)
                 goto error;
 
             if (next)
-                cpus[count] = strndup(p, next - p - 1);
+                len = next - p - 1;
             else
-                cpus[count] = strdup(p);
+                len = strlen(p);
 
-            if (!cpus[count])
+            if (len > 2 && *p == '[' && p[len - 1] == ']') {
+                p++;
+                len -= 2;
+            }
+
+            if (!(cpus[count] = strndup(p, len)))
                 goto error;
         }
         count++;
