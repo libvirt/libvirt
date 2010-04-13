@@ -63,6 +63,4 @@ void virNWFilterDomainFWUpdateCB(void *payload,
                                  const char *name ATTRIBUTE_UNUSED,
                                  void *data);
 
-int checkIf(const char *ifname, const unsigned char *macaddr);
-
 #endif

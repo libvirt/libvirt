@@ -67,6 +67,7 @@ UTIL_SOURCES =							\
 		util/processinfo.c util/processinfo.h		\
 		util/hostusb.c util/hostusb.h			\
 		util/network.c util/network.h			\
+		util/interface.c util/interface.h		\
 		util/qparams.c util/qparams.h			\
 		util/stats_linux.c util/stats_linux.h		\
 		util/storage_file.c util/storage_file.h		\

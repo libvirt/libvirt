@@ -43,6 +43,7 @@
 #include "memory.h"
 #include "logging.h"
 #include "datatypes.h"
+#include "interface.h"
 #include "virterror_internal.h"
 #include "threads.h"
 #include "conf/nwfilter_params.h"
@@ -339,7 +340,7 @@ learnIPAddressThread(void *arg)
                 break;
             }
             /* listening on linkdev, check whether VM's dev is still there */
-            if (checkIf(req->ifname, req->macaddr)) {
+            if (ifaceCheck(false, req->ifname, req->macaddr, -1)) {
                 req->status = ENODEV;
                 break;
             }

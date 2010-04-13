@@ -23,16 +23,11 @@
 
 #include <config.h>
 
-#include <stdint.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <linux/if.h>
-
 #include "internal.h"
 
 #include "memory.h"
 #include "logging.h"
-#include "datatypes.h"
+#include "interface.h"
 #include "domain_conf.h"
 #include "virterror_internal.h"
 #include "nwfilter_gentech_driver.h"
@@ -792,117 +787,6 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
 }
 
 
-// FIXME: move chgIfFlags, ifUp, checkIf into common file & share w/ macvtap.c
-
-/*
- * chgIfFlags: Change flags on an interface
- * @ifname : name of the interface
- * @flagclear : the flags to clear
- * @flagset : the flags to set
- *
- * The new flags of the interface will be calculated as
- * flagmask = (~0 ^ flagclear)
- * newflags = (curflags & flagmask) | flagset;
- *
- * Returns 0 on success, errno on failure.
- */
-static int chgIfFlags(const char *ifname, short flagclear, short flagset) {
-    struct ifreq ifr;
-    int rc = 0;
-    int flags;
-    short flagmask = (~0 ^ flagclear);
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-
-    if (fd < 0)
-        return errno;
-
-    if (virStrncpy(ifr.ifr_name,
-                   ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
-        rc = ENODEV;
-        goto err_exit;
-    }
-
-    if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
-        rc = errno;
-        goto err_exit;
-    }
-
-    flags = (ifr.ifr_flags & flagmask) | flagset;
-
-    if (ifr.ifr_flags != flags) {
-        ifr.ifr_flags = flags;
-
-        if (ioctl(fd, SIOCSIFFLAGS, &ifr) < 0)
-            rc = errno;
-    }
-
-err_exit:
-    close(fd);
-    return rc;
-}
-
-/*
- * ifUp
- * @name: name of the interface
- * @up: 1 for up, 0 for down
- *
- * Function to control if an interface is activated (up, 1) or not (down, 0)
- *
- * Returns 0 in case of success or an errno code in case of failure.
- */
-static int
-ifUp(const char *name, int up)
-{
-    return chgIfFlags(name,
-                      (up) ? 0      : IFF_UP,
-                      (up) ? IFF_UP : 0);
-}
-
-
-/**
- * checkIf
- *
- * @ifname: Name of the interface
- * @macaddr: expected MAC address of the interface
- *
- * FIXME: the interface's index is another good parameter to check
- *
- * Determine whether a given interface is still available. If so,
- * it must have the given MAC address.
- *
- * Returns an error code ENODEV in case the interface does not exist
- * anymore or its MAC address is different, 0 otherwise.
- */
-int
-checkIf(const char *ifname, const unsigned char *macaddr)
-{
-    struct ifreq ifr;
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-    int rc = 0;
-
-    if (fd < 0)
-        return errno;
-
-    if (virStrncpy(ifr.ifr_name,
-                   ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
-        rc = ENODEV;
-        goto err_exit;
-    }
-
-    if (ioctl(fd, SIOCGIFHWADDR, &ifr) < 0) {
-        rc = errno;
-        goto err_exit;
-    }
-
-    if (memcmp(&ifr.ifr_hwaddr.sa_data, macaddr, 6) != 0)
-        rc = ENODEV;
-
- err_exit:
-    close(fd);
-    return rc;
-}
-
-
 int
 virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                  const char *ifname,
@@ -926,7 +810,7 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                         driver);
     if (rc) {
         //something went wrong... 'DOWN' the interface
-        if (ifUp(ifname ,0)) {
+        if (ifaceDown(ifname)) {
             // assuming interface disappeared...
             _virNWFilterTeardownFilter(ifname);
         }

@@ -44,6 +44,7 @@
 # include "util.h"
 # include "memory.h"
 # include "macvtap.h"
+# include "interface.h"
 # include "conf/domain_conf.h"
 # include "virterror_internal.h"
 
@@ -193,109 +194,6 @@ nlAppend(struct nlmsghdr *nlm, int totlen, const void *data, int datalen)
 
 
 static int
-getIfIndex(bool reportError,
-           const char *ifname,
-           int *idx)
-{
-    int rc = 0;
-    struct ifreq ifreq;
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-
-    if (fd < 0)
-        return errno;
-
-    if (virStrncpy(ifreq.ifr_name, ifname, strlen(ifname),
-                   sizeof(ifreq.ifr_name)) == NULL) {
-        if (reportError)
-            macvtapError(VIR_ERR_INTERNAL_ERROR,
-                         _("invalid interface name %s"),
-                         ifname);
-        rc = EINVAL;
-        goto err_exit;
-    }
-    if (ioctl(fd, SIOCGIFINDEX, &ifreq) >= 0)
-        *idx = ifreq.ifr_ifindex;
-    else {
-        if (reportError)
-            macvtapError(VIR_ERR_INTERNAL_ERROR,
-                         _("interface %s does not exist"),
-                         ifname);
-        rc = ENODEV;
-    }
-
-err_exit:
-    close(fd);
-
-    return rc;
-}
-
-
-/*
- * chgIfFlags: Change flags on an interface
- * @ifname : name of the interface
- * @flagclear : the flags to clear
- * @flagset : the flags to set
- *
- * The new flags of the interface will be calculated as
- * flagmask = (~0 ^ flagclear)
- * newflags = (curflags & flagmask) | flagset;
- *
- * Returns 0 on success, errno on failure.
- */
-static int chgIfFlags(const char *ifname, short flagclear, short flagset) {
-    struct ifreq ifr;
-    int rc = 0;
-    int flags;
-    short flagmask = (~0 ^ flagclear);
-    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
-
-    if (fd < 0)
-        return errno;
-
-    if (virStrncpy(ifr.ifr_name,
-                   ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
-        rc = ENODEV;
-        goto err_exit;
-    }
-
-    if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
-        rc = errno;
-        goto err_exit;
-    }
-
-    flags = (ifr.ifr_flags & flagmask) | flagset;
-
-    if (ifr.ifr_flags != flags) {
-        ifr.ifr_flags = flags;
-
-        if (ioctl(fd, SIOCSIFFLAGS, &ifr) < 0)
-            rc = errno;
-    }
-
-err_exit:
-    close(fd);
-    return rc;
-}
-
-/*
- * ifUp
- * @name: name of the interface
- * @up: 1 for up, 0 for down
- *
- * Function to control if an interface is activated (up, 1) or not (down, 0)
- *
- * Returns 0 in case of success or an errno code in case of failure.
- */
-static int
-ifUp(const char *name, int up)
-{
-    return chgIfFlags(name,
-                      (up) ? 0      : IFF_UP,
-                      (up) ? IFF_UP : 0);
-}
-
-
-static int
 link_add(const char *type,
          const unsigned char *macaddress, int macaddrsize,
          const char *ifname,
@@ -314,7 +212,7 @@ link_add(const char *type,
     char *recvbuf = NULL;
     int recvbuflen;
 
-    if (getIfIndex(true, srcdev, &ifindex) != 0)
+    if (ifaceGetIndex(true, srcdev, &ifindex) != 0)
         return -1;
 
     *retry = 0;
@@ -708,7 +606,7 @@ openMacvtapTap(const char *tgifname,
     *res_ifname = NULL;
 
     if (tgifname) {
-        if(getIfIndex(false, tgifname, &ifindex) == 0) {
+        if(ifaceGetIndex(false, tgifname, &ifindex) == 0) {
             if (STRPREFIX(tgifname,
                           MACVTAP_NAME_PREFIX)) {
                 goto create_name;
@@ -727,7 +625,7 @@ create_name:
         retries = 5;
         for (c = 0; c < 8192; c++) {
             snprintf(ifname, sizeof(ifname), MACVTAP_NAME_PATTERN, c);
-            if (getIfIndex(false, ifname, &ifindex) == ENODEV) {
+            if (ifaceGetIndex(false, ifname, &ifindex) == ENODEV) {
                 rc = link_add(type, macaddress, 6, ifname, linkdev,
                               macvtapMode, &do_retry);
                 if (rc == 0)
@@ -741,7 +639,7 @@ create_name:
         cr_ifname = ifname;
     }
 
-    rc = ifUp(cr_ifname, 1);
+    rc = ifaceUp(cr_ifname);
     if (rc != 0) {
         virReportSystemError(errno,
                              _("cannot 'up' interface %s -- another "

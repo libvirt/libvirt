@@ -681,6 +681,10 @@ virFileWaitForDevices;
 virFileMatchesNameSuffix;
 virArgvToString;
 
+# interface.h
+ifaceCtrl;
+ifaceCheck;
+ifaceGetIndex;
 
 # usb.h
 usbGetDevice;

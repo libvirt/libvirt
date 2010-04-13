@@ -72,6 +72,7 @@ src/util/bridge.c
 src/util/conf.c
 src/util/hooks.c
 src/util/hostusb.c
+src/util/interface.c
 src/util/json.c
 src/util/logging.c
 src/util/macvtap.c
