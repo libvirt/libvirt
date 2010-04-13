@@ -8248,6 +8248,7 @@ virDriver NAME(Driver) = {
     vboxDomainSnapshotCurrent, /* domainSnapshotCurrent */
     vboxDomainRevertToSnapshot, /* domainRevertToSnapshot */
     vboxDomainSnapshotDelete, /* domainSnapshotDelete */
+    NULL, /* qemuDomainMonitorCommand */
 };
 
 virNetworkDriver NAME(NetworkDriver) = {

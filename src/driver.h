@@ -457,6 +457,11 @@ typedef int
     (*virDrvDomainSnapshotDelete)(virDomainSnapshotPtr snapshot,
                                   unsigned int flags);
 
+typedef int
+    (*virDrvQemuDomainMonitorCommand)(virDomainPtr domain, const char *cmd,
+                                      char **result, unsigned int flags);
+
+
 
 /**
  * _virDriver:
@@ -569,6 +574,7 @@ struct _virDriver {
     virDrvDomainSnapshotCurrent domainSnapshotCurrent;
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
+    virDrvQemuDomainMonitorCommand qemuDomainMonitorCommand;
 };
 
 typedef int

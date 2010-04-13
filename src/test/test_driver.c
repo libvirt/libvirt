@@ -5322,6 +5322,7 @@ static virDriver testDriver = {
     NULL, /* domainSnapshotCurrent */
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
+    NULL, /* qemuDomainMonitorCommand */
 };
 
 static virNetworkDriver testNetworkDriver = {

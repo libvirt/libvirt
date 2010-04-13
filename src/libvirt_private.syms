@@ -736,6 +736,7 @@ virReportSystemErrorFull;
 virReportOOMErrorFull;
 virStrerror;
 virSetError;
+virDispatchError;
 
 
 # xml.h

@@ -32,7 +32,7 @@ if WITH_NETWORK
 UUID=$(shell uuidgen 2>/dev/null)
 endif
 
-lib_LTLIBRARIES = libvirt.la
+lib_LTLIBRARIES = libvirt.la libvirt-qemu.la
 
 moddir = $(libdir)/libvirt/drivers
 mod_LTLIBRARIES =
@@ -1028,6 +1028,12 @@ libvirt_test_la_LIBADD = $(libvirt_la_LIBADD)
 libvirt_test_la_LDFLAGS = $(test_LDFLAGS)
 libvirt_test_la_CFLAGS = $(COVERAGE_CFLAGS)
 
+libvirt_qemu_la_SOURCES = libvirt-qemu.c
+libvirt_qemu_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
+                          -version-info $(LIBVIRT_VERSION_INFO) \
+                          $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
+libvirt_qemu_la_CFLAGS = $(COVERAGE_CFLAGS)
+libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 
 libexec_PROGRAMS =
 

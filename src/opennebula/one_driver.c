@@ -817,6 +817,7 @@ static virDriver oneDriver = {
     NULL, /* domainSnapshotCurrent */
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
+    NULL, /* qemuDomainMonitorCommand */
 };
 
 static virStateDriver oneStateDriver = {

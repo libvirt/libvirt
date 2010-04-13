@@ -2635,6 +2635,7 @@ static virDriver lxcDriver = {
     NULL, /* domainSnapshotCurrent */
     NULL, /* domainRevertToSnapshot */
     NULL, /* domainSnapshotDelete */
+    NULL, /* qemuDomainMonitorCommand */
 };
 
 static virStateDriver lxcStateDriver = {

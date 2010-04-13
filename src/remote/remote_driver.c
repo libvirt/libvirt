@@ -10302,6 +10302,7 @@ static virDriver remote_driver = {
     remoteDomainSnapshotCurrent, /* domainSnapshotCurrent */
     remoteDomainRevertToSnapshot, /* domainRevertToSnapshot */
     remoteDomainSnapshotDelete, /* domainSnapshotDelete */
+    NULL, /* qemuDomainMonitorCommand */
 };
 
 static virNetworkDriver network_driver = {
