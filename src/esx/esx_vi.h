@@ -43,6 +43,7 @@
 typedef enum _esxVI_APIVersion esxVI_APIVersion;
 typedef enum _esxVI_ProductVersion esxVI_ProductVersion;
 typedef enum _esxVI_Occurrence esxVI_Occurrence;
+typedef struct _esxVI_ParsedHostCpuIdInfo esxVI_ParsedHostCpuIdInfo;
 typedef struct _esxVI_Context esxVI_Context;
 typedef struct _esxVI_Response esxVI_Response;
 typedef struct _esxVI_Enumeration esxVI_Enumeration;
@@ -74,6 +75,14 @@ enum _esxVI_Occurrence {
     esxVI_Occurrence_OptionalItem,
     esxVI_Occurrence_OptionalList,
     esxVI_Occurrence_None
+};
+
+struct _esxVI_ParsedHostCpuIdInfo {
+    int level;
+    char eax[32];
+    char ebx[32];
+    char ecx[32];
+    char edx[32];
 };
 
 
@@ -312,5 +321,8 @@ int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                 const unsigned char *virtualMachineUuid,
                                 esxVI_Boolean autoAnswer,
                                 esxVI_TaskInfoState *finalState);
+
+int esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
+                             esxVI_HostCpuIdInfo *hostCpuIdInfo);
 
 #endif /* __ESX_VI_H__ */

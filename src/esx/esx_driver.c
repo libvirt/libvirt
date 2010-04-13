@@ -60,8 +60,8 @@ esxSupportsLongMode(esxPrivate *priv)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_HostCpuIdInfo *hostCpuIdInfoList = NULL;
     esxVI_HostCpuIdInfo *hostCpuIdInfo = NULL;
+    esxVI_ParsedHostCpuIdInfo parsedHostCpuIdInfo;
     char edxLongModeBit = '?';
-    char edxFirstBit = '?';
 
     if (priv->supportsLongMode != esxVI_Boolean_Undefined) {
         return priv->supportsLongMode;
@@ -96,23 +96,12 @@ esxSupportsLongMode(esxPrivate *priv)
             for (hostCpuIdInfo = hostCpuIdInfoList; hostCpuIdInfo != NULL;
                  hostCpuIdInfo = hostCpuIdInfo->_next) {
                 if (hostCpuIdInfo->level->value == -2147483647) { /* 0x80000001 */
-#define _SKIP4 "%*c%*c%*c%*c"
-#define _SKIP12 _SKIP4":"_SKIP4":"_SKIP4
-
-                    /* Expected format: "--X-:----:----:----:----:----:----:----" */
-                    if (sscanf(hostCpuIdInfo->edx,
-                               "%*c%*c%c%*c:"_SKIP12":"_SKIP12":%*c%*c%*c%c",
-                               &edxLongModeBit, &edxFirstBit) != 2) {
-                        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                  _("HostSystem property 'hardware.cpuFeature[].edx' "
-                                    "with value '%s' doesn't have expected format "
-                                    "'----:----:----:----:----:----:----:----'"),
-                                  hostCpuIdInfo->edx);
+                    if (esxVI_ParseHostCpuIdInfo(&parsedHostCpuIdInfo,
+                                                 hostCpuIdInfo) < 0) {
                         goto failure;
                     }
 
-#undef _SKIP4
-#undef _SKIP12
+                    edxLongModeBit = parsedHostCpuIdInfo.edx[29];
 
                     if (edxLongModeBit == '1') {
                         priv->supportsLongMode = esxVI_Boolean_True;

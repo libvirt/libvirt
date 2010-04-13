@@ -589,6 +589,9 @@ char *
 esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
                                           const char *absolutePath)
 {
+    char *copyOfAbsolutePath = NULL;
+    char *tmp = NULL;
+    char *saveptr = NULL;
     char *datastoreRelatedPath = NULL;
     char *preliminaryDatastoreName = NULL;
     char *directoryAndFileName = NULL;
@@ -596,8 +599,14 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
     esxVI_ObjectContent *datastore = NULL;
     const char *datastoreName = NULL;
 
-    if (sscanf(absolutePath, "/vmfs/volumes/%a[^/]/%a[^\n]",
-               &preliminaryDatastoreName, &directoryAndFileName) != 2) {
+    if (esxVI_String_DeepCopyValue(&copyOfAbsolutePath, absolutePath) < 0) {
+        goto failure;
+    }
+
+    /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
+    if ((tmp = STRSKIP(copyOfAbsolutePath, "/vmfs/volumes/")) == NULL ||
+        (preliminaryDatastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
+        (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Absolute path '%s' doesn't have expected format "
                     "'/vmfs/volumes/<datastore>/<path>'"), absolutePath);
@@ -652,8 +661,7 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
     /* FIXME: Check if referenced path/file really exists */
 
   cleanup:
-    VIR_FREE(preliminaryDatastoreName);
-    VIR_FREE(directoryAndFileName);
+    VIR_FREE(copyOfAbsolutePath);
     esxVI_ObjectContent_Free(&datastore);
 
     return datastoreRelatedPath;

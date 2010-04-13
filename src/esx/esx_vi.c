@@ -2886,3 +2886,53 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 
     goto cleanup;
 }
+
+
+
+int
+esxVI_ParseHostCpuIdInfo(esxVI_ParsedHostCpuIdInfo *parsedHostCpuIdInfo,
+                         esxVI_HostCpuIdInfo *hostCpuIdInfo)
+{
+    int expectedLength = 39; /* = strlen("----:----:----:----:----:----:----:----"); */
+    char *input[4] = { hostCpuIdInfo->eax, hostCpuIdInfo->ebx,
+                       hostCpuIdInfo->ecx, hostCpuIdInfo->edx };
+    char *output[4] = { parsedHostCpuIdInfo->eax, parsedHostCpuIdInfo->ebx,
+                        parsedHostCpuIdInfo->ecx, parsedHostCpuIdInfo->edx };
+    const char *name[4] = { "eax", "ebx", "ecx", "edx" };
+    int r, i, o;
+
+    memset(parsedHostCpuIdInfo, 0, sizeof (*parsedHostCpuIdInfo));
+
+    parsedHostCpuIdInfo->level = hostCpuIdInfo->level->value;
+
+    for (r = 0; r < 4; ++r) {
+        if (strlen(input[r]) != expectedLength) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("HostCpuIdInfo register '%s' has an unexpected length"),
+                         name[r]);
+            goto failure;
+        }
+
+        /* Strip the ':' and invert the "bit" order from 31..0 to 0..31 */
+        for (i = 0, o = 31; i < expectedLength; i += 5, o -= 4) {
+            output[r][o] = input[r][i];
+            output[r][o - 1] = input[r][i + 1];
+            output[r][o - 2] = input[r][i + 2];
+            output[r][o - 3] = input[r][i + 3];
+
+            if (i + 4 < expectedLength && input[r][i + 4] != ':') {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                             _("HostCpuIdInfo register '%s' has an unexpected format"),
+                             name[r]);
+                goto failure;
+            }
+        }
+    }
+
+    return 0;
+
+  failure:
+    memset(parsedHostCpuIdInfo, 0, sizeof (*parsedHostCpuIdInfo));
+
+    return -1;
+}

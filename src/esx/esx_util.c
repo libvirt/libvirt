@@ -203,6 +203,10 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
                                   char **directoryName, char **fileName)
 {
     int result = 0;
+    char *copyOfDatastoreRelatedPath = NULL;
+    char *tmp = NULL;
+    char *saveptr = NULL;
+    char *preliminaryDatastoreName = NULL;
     char *directoryAndFileName = NULL;
     char *separator = NULL;
 
@@ -213,36 +217,33 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
         return -1;
     }
 
-    /*
-     * Parse string as '[<datastore>] <path>'. '%as' is similar to '%s', but
-     * sscanf() will allocate the memory for the string, so the caller doesn't
-     * need to preallocate a buffer that's large enough.
-     *
-     * The s in '%as' can be replaced with a character set, e.g. [a-z].
-     *
-     * '%a[^]%]' matches <datastore>. '[^]%]' excludes ']' from the accepted
-     * characters, otherwise sscanf() wont match what it should.
-     *
-     * '%a[^\n]' matches <path>. '[^\n]' excludes '\n' from the accepted
-     * characters, otherwise sscanf() would only match up to the first space,
-     * but spaces are valid in <path>.
-     */
-    if (sscanf(datastoreRelatedPath, "[%a[^]%]] %a[^\n]", datastoreName,
-               &directoryAndFileName) != 2) {
+    if (esxVI_String_DeepCopyValue(&copyOfDatastoreRelatedPath,
+                                   datastoreRelatedPath) < 0) {
+        goto failure;
+    }
+
+    /* Expected format: '[<datastore>] <path>' */
+    if ((tmp = STRSKIP(copyOfDatastoreRelatedPath, "[")) == NULL ||
+        (preliminaryDatastoreName = strtok_r(tmp, "]", &saveptr)) == NULL ||
+        (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Datastore related path '%s' doesn't have expected format "
                     "'[<datastore>] <path>'"), datastoreRelatedPath);
         goto failure;
     }
 
+    if (esxVI_String_DeepCopyValue(datastoreName,
+                                   preliminaryDatastoreName) < 0) {
+        goto failure;
+    }
+
+    directoryAndFileName += strspn(directoryAndFileName, " ");
+
     /* Split <path> into <directory>/<file>, where <directory> is optional */
     separator = strrchr(directoryAndFileName, '/');
 
     if (separator != NULL) {
         *separator++ = '\0';
-
-        *directoryName = directoryAndFileName;
-        directoryAndFileName = NULL;
 
         if (*separator == '\0') {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -251,19 +252,19 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
             goto failure;
         }
 
-        *fileName = strdup(separator);
-
-        if (*fileName == NULL) {
-            virReportOOMError();
+        if (esxVI_String_DeepCopyValue(directoryName,
+                                       directoryAndFileName) < 0 ||
+            esxVI_String_DeepCopyValue(fileName, separator) < 0) {
             goto failure;
         }
     } else {
-        *fileName = directoryAndFileName;
-        directoryAndFileName = NULL;
+        if (esxVI_String_DeepCopyValue(fileName, directoryAndFileName) < 0) {
+            goto failure;
+        }
     }
 
   cleanup:
-    VIR_FREE(directoryAndFileName);
+    VIR_FREE(copyOfDatastoreRelatedPath);
 
     return result;
 
