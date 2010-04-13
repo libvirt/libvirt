@@ -27,25 +27,39 @@ import os.path
 
 
 
+OCCURRENCE__REQUIRED_ITEM = "r"
+OCCURRENCE__REQUIRED_LIST = "rl"
+OCCURRENCE__OPTIONAL_ITEM = "o"
+OCCURRENCE__OPTIONAL_LIST = "ol"
+OCCURRENCE__IGNORED = "i"
+
+valid_occurrences = [OCCURRENCE__REQUIRED_ITEM,
+                     OCCURRENCE__REQUIRED_LIST,
+                     OCCURRENCE__OPTIONAL_ITEM,
+                     OCCURRENCE__OPTIONAL_LIST,
+                     OCCURRENCE__IGNORED]
 
 
-class Property:
-    OCCURRENCE__REQUIRED_ITEM = "r"
-    OCCURRENCE__REQUIRED_LIST = "rl"
-    OCCURRENCE__OPTIONAL_ITEM = "o"
-    OCCURRENCE__OPTIONAL_LIST = "ol"
-    OCCURRENCE__IGNORED = "i"
 
-    valid_occurrences = [OCCURRENCE__REQUIRED_ITEM,
-                         OCCURRENCE__REQUIRED_LIST,
-                         OCCURRENCE__OPTIONAL_ITEM,
-                         OCCURRENCE__OPTIONAL_LIST,
-                         OCCURRENCE__IGNORED]
+
+
+
+class Parameter:
+    autobind_map = { "PerformanceManager" : "perfManager",
+                     "PropertyCollector"  : "propertyCollector",
+                     "SearchIndex"        : "searchIndex",
+                     "SessionManager"     : "sessionManager" }
 
     def __init__(self, type, name, occurrence):
         self.type = type
-        self.name = name
         self.occurrence = occurrence
+
+        if ':' in name and name.startswith("_this"):
+            self.name, self.autobind_type = name.split(":")
+        else:
+            self.name = name
+            self.autobind_type = None
+
 
     def is_enum(self):
         global predefined_enums
@@ -53,8 +67,207 @@ class Property:
 
         return self.type in predefined_enums or self.type in enums_by_name
 
+
+    def generate_parameter(self, is_last = False, is_header = True, offset = 0):
+        if self.occurrence == OCCURRENCE__IGNORED:
+            raise ValueError("invalid function parameter occurrence value '%s'" % self.occurrence)
+        elif self.autobind_type is not None:
+            return ""
+        else:
+            string = "       "
+            string += " " * offset
+            string += "%s%s" % (self.get_type_string(), self.name)
+
+            if is_last:
+                if is_header:
+                    string += "); "
+                else:
+                    string += "), "
+            else:
+                string += ", "
+
+            while len(string) < 59:
+                string += " "
+
+            return string + self.get_occurrence_comment() + "\n"
+
+
+    def generate_return(self, offset = 0, end_of_line = ";"):
+        if self.occurrence == OCCURRENCE__IGNORED:
+            raise ValueError("invalid function parameteroccurrence value '%s'" % self.occurrence)
+        else:
+            string = "       "
+            string += " " * offset
+            string += "%s*%s)%s" % (self.get_type_string(), self.name, end_of_line)
+
+            while len(string) < 59:
+                string += " "
+
+            return string + self.get_occurrence_comment() + "\n"
+
+
+    def generate_require_code(self):
+        if self.occurrence in [OCCURRENCE__REQUIRED_ITEM,
+                               OCCURRENCE__REQUIRED_LIST]:
+            return "    ESX_VI__METHOD__PARAMETER__REQUIRE(%s)\n" % self.name
+        else:
+            return ""
+
+
+    def generate_serialize_code(self):
+        if self.occurrence in [OCCURRENCE__REQUIRED_LIST,
+                               OCCURRENCE__OPTIONAL_LIST]:
+            return "    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(%s, %s)\n" % (self.type, self.name)
+        elif self.type == "String":
+            return "    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, %s)\n" % self.name
+        else:
+            return "    ESX_VI__METHOD__PARAMETER__SERIALIZE(%s, %s)\n" % (self.type, self.name)
+
+
+    def get_type_string(self):
+        if self.type == "String" and \
+           self.occurrence not in [OCCURRENCE__REQUIRED_LIST,
+                                   OCCURRENCE__OPTIONAL_LIST]:
+            return "const char *"
+        elif self.is_enum():
+            return "esxVI_%s " % self.type
+        else:
+            return "esxVI_%s *" % self.type
+
+
+    def get_occurrence_comment(self):
+        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
+            return "/* required */"
+        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
+            return "/* required, list */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
+            return "/* optional */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            return "/* optional, list */"
+
+        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
+
+
+    def get_occurrence_short_enum(self):
+        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
+            return "RequiredItem"
+        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
+            return "RequiredList"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
+            return "OptionalItem"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            return "OptionalList"
+
+        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
+
+
+
+class Method:
+    def __init__(self, name, parameters, returns):
+        self.name = name
+        self.parameters = []
+        self.autobind_parameter = None
+        self.returns = returns
+
+        for parameter in parameters:
+            if parameter.autobind_type is None:
+                self.parameters.append(parameter)
+            else:
+                self.autobind_parameter = parameter
+
+
+    def generate_header(self):
+        header = "int esxVI_%s\n" % self.name
+        header += "      (esxVI_Context *ctx"
+
+        if len(self.parameters) > 0 or self.returns is not None:
+            header += ",\n"
+
+            for parameter in self.parameters[:-1]:
+                header += parameter.generate_parameter()
+
+            if self.returns is None:
+                header += self.parameters[-1].generate_parameter(is_last = True)
+            else:
+                header += self.parameters[-1].generate_parameter()
+                header += self.returns.generate_return()
+        else:
+            header += ");\n"
+
+        header += "\n"
+
+        return header
+
+
+    def generate_source(self):
+        source = "/* esxVI_%s */\n" % self.name
+        source += "ESX_VI__METHOD(%s," % self.name
+
+        if self.autobind_parameter is not None:
+            source += " %s,\n" % Parameter.autobind_map[self.autobind_parameter.autobind_type]
+        else:
+            source += " /* explicit _this */,\n"
+
+        source += "               (esxVI_Context *ctx"
+
+        if len(self.parameters) > 0 or self.returns is not None:
+            source += ",\n"
+
+            for parameter in self.parameters[:-1]:
+                source += parameter.generate_parameter(is_header = False, offset = 9)
+
+            if self.returns is None:
+                source += self.parameters[-1].generate_parameter(is_last = True, is_header = False, offset = 9)
+            else:
+                source += self.parameters[-1].generate_parameter(is_header = False, offset = 9)
+                source += self.returns.generate_return(offset = 9, end_of_line = ",")
+        else:
+            source += "),\n"
+
+        if self.returns is None:
+            source += "               void, None,\n"
+        else:
+            source += "               %s, %s,\n" % (self.returns.type, self.returns.get_occurrence_short_enum())
+
+        source += "{\n"
+
+        if self.autobind_parameter is not None:
+            source += self.autobind_parameter.generate_require_code()
+
+        for parameter in self.parameters:
+            source += parameter.generate_require_code()
+
+        source += "},\n"
+        source += "{\n"
+
+        if self.autobind_parameter is not None:
+            source += self.autobind_parameter.generate_serialize_code()
+
+        for parameter in self.parameters:
+            source += parameter.generate_serialize_code()
+
+        source += "})\n\n\n\n"
+
+        return source
+
+
+
+class Property:
+    def __init__(self, type, name, occurrence):
+        self.type = type
+        self.name = name
+        self.occurrence = occurrence
+
+
+    def is_enum(self):
+        global predefined_enums
+        global enums_by_name
+
+        return self.type in predefined_enums or self.type in enums_by_name
+
+
     def generate_struct_member(self):
-        if self.occurrence == Property.OCCURRENCE__IGNORED:
+        if self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
         else:
             string = "    %s%s; " % (self.get_type_string(), self.name)
@@ -62,36 +275,39 @@ class Property:
             while len(string) < 59:
                 string += " "
 
-            return string + "/* %s */\n" % self.get_occurrence_string()
+            return string + self.get_occurrence_comment() + "\n"
+
 
     def generate_free_code(self):
         if self.type == "String" and \
-           self.occurrence not in [Property.OCCURRENCE__REQUIRED_LIST,
-                                   Property.OCCURRENCE__OPTIONAL_LIST,
-                                   Property.OCCURRENCE__IGNORED]:
+           self.occurrence not in [OCCURRENCE__REQUIRED_LIST,
+                                   OCCURRENCE__OPTIONAL_LIST,
+                                   OCCURRENCE__IGNORED]:
             return "    VIR_FREE(item->%s);\n" % self.name
         elif self.is_enum():
             return ""
         else:
-            if self.occurrence == Property.OCCURRENCE__IGNORED:
+            if self.occurrence == OCCURRENCE__IGNORED:
                 return "    /* FIXME: %s is currently ignored */\n" % self.name
             else:
                 return "    esxVI_%s_Free(&item->%s);\n" % (self.type, self.name)
 
+
     def generate_validate_code(self):
-        if self.occurrence in [Property.OCCURRENCE__REQUIRED_ITEM,
-                               Property.OCCURRENCE__REQUIRED_LIST]:
+        if self.occurrence in [OCCURRENCE__REQUIRED_ITEM,
+                               OCCURRENCE__REQUIRED_LIST]:
             return "    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(%s)\n" % self.name
-        elif self.occurrence == Property.OCCURRENCE__IGNORED:
+        elif self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
         else:
             return ""
 
+
     def generate_deep_copy_code(self):
-        if self.occurrence == Property.OCCURRENCE__IGNORED:
+        if self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
-        elif self.occurrence in [Property.OCCURRENCE__REQUIRED_LIST,
-                                 Property.OCCURRENCE__OPTIONAL_LIST]:
+        elif self.occurrence in [OCCURRENCE__REQUIRED_LIST,
+                                 OCCURRENCE__OPTIONAL_LIST]:
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_LIST(%s, %s)\n" % (self.type, self.name)
         elif self.type == "String":
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_VALUE(String, %s)\n" % self.name
@@ -100,54 +316,53 @@ class Property:
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY(%s, %s)\n" % (self.type, self.name)
 
+
     def generate_serialize_code(self):
-        if self.occurrence == Property.OCCURRENCE__IGNORED:
+        if self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
-        elif self.occurrence in [Property.OCCURRENCE__REQUIRED_LIST,
-                                 Property.OCCURRENCE__OPTIONAL_LIST]:
+        elif self.occurrence in [OCCURRENCE__REQUIRED_LIST,
+                                 OCCURRENCE__OPTIONAL_LIST]:
             return "    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(%s, %s)\n" % (self.type, self.name)
         elif self.type == "String":
             return "    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(String, %s)\n" % self.name
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(%s, %s)\n" % (self.type, self.name)
 
+
     def generate_deserialize_code(self):
-        if self.occurrence == Property.OCCURRENCE__IGNORED:
+        if self.occurrence == OCCURRENCE__IGNORED:
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(%s) /* FIXME */\n" % self.name
-        elif self.occurrence in [Property.OCCURRENCE__REQUIRED_LIST,
-                                 Property.OCCURRENCE__OPTIONAL_LIST]:
+        elif self.occurrence in [OCCURRENCE__REQUIRED_LIST,
+                                 OCCURRENCE__OPTIONAL_LIST]:
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(%s, %s)\n" % (self.type, self.name)
         elif self.type == "String":
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(String, %s)\n" % self.name
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(%s, %s)\n" % (self.type, self.name)
 
+
     def get_type_string(self):
         if self.type == "String" and \
-           self.occurrence not in [Property.OCCURRENCE__REQUIRED_LIST,
-                                   Property.OCCURRENCE__OPTIONAL_LIST]:
+           self.occurrence not in [OCCURRENCE__REQUIRED_LIST,
+                                   OCCURRENCE__OPTIONAL_LIST]:
             return "char *"
         elif self.is_enum():
             return "esxVI_%s " % self.type
         else:
             return "esxVI_%s *" % self.type
 
-    def get_occurrence_string(self):
-        if self.occurrence == Property.OCCURRENCE__REQUIRED_ITEM:
-            return "required"
-        elif self.occurrence == Property.OCCURRENCE__REQUIRED_LIST:
-            return "required, list"
-        elif self.occurrence == Property.OCCURRENCE__OPTIONAL_ITEM:
-            return "optional"
-        elif self.occurrence == Property.OCCURRENCE__OPTIONAL_LIST:
-            return "optional, list"
 
-        raise ValueError("unknown cardinality value '%s'" % self.cardinality)
+    def get_occurrence_comment(self):
+        if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
+            return "/* required */"
+        elif self.occurrence == OCCURRENCE__REQUIRED_LIST:
+            return "/* required, list */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_ITEM:
+            return "/* optional */"
+        elif self.occurrence == OCCURRENCE__OPTIONAL_LIST:
+            return "/* optional, list */"
 
-
-
-
-
+        raise ValueError("unknown occurrence value '%s'" % self.occurrence)
 
 
 
@@ -159,6 +374,7 @@ class Object:
     FEATURE__SERIALIZE    = (1 << 5)
     FEATURE__DESERIALIZE  = (1 << 6)
 
+
     def __init__(self, name, extends, properties, features = 0, extended_by = None):
         self.name = name
         self.extends = extends
@@ -166,10 +382,6 @@ class Object:
         self.properties = properties
         self.extended_by = extended_by
 
-        self.properties_by_name = {}
-
-        for property in self.properties:
-            self.properties_by_name[property.name] = property
 
     def generate_struct_members(self, add_banner = False, struct_gap = False):
         global objects_by_name
@@ -201,6 +413,7 @@ class Object:
 
         return members
 
+
     def generate_free_code(self, add_banner = False):
         global objects_by_name
         source = ""
@@ -225,6 +438,7 @@ class Object:
                 source += string
 
         return source
+
 
     def generate_validate_code(self, add_banner = False):
         global objects_by_name
@@ -251,6 +465,7 @@ class Object:
 
         return source
 
+
     def generate_dynamic_cast_code(self):
         global objects_by_name
         source = ""
@@ -265,6 +480,7 @@ class Object:
                 source += objects_by_name[extended_by].generate_dynamic_cast_code()
 
         return source
+
 
     def generate_deep_copy_code(self, add_banner = False):
         global objects_by_name
@@ -291,6 +507,7 @@ class Object:
 
         return source
 
+
     def generate_serialize_code(self, add_banner = False):
         global objects_by_name
         source = ""
@@ -308,6 +525,7 @@ class Object:
                 source += property.generate_serialize_code()
 
         return source
+
 
     def generate_deserialize_code(self, add_banner = False):
         global objects_by_name
@@ -327,11 +545,14 @@ class Object:
 
         return source
 
+
     def generate_typedef(self):
         return "typedef struct _esxVI_%s esxVI_%s;\n" % (self.name, self.name)
 
+
     def generate_typeenum(self):
         return "    esxVI_Type_%s,\n" % self.name
+
 
     def generate_typetostring(self):
         string = "          case esxVI_Type_%s:\n" % self.name
@@ -339,12 +560,14 @@ class Object:
 
         return string
 
+
     def generate_typefromstring(self):
         string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
         string += "               return esxVI_Type_%s;\n" % self.name
         string += "           }\n"
 
         return string
+
 
     def generate_header(self):
         header = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
@@ -423,6 +646,7 @@ class Object:
         header += "\n\n\n"
 
         return header
+
 
     def generate_source(self):
         source = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
@@ -601,11 +825,6 @@ class Object:
 
 
 
-
-
-
-
-
 class Enum:
     FEATURE__ANY_TYPE = (1 << 1)
     FEATURE__SERIALIZE = (1 << 2)
@@ -617,11 +836,14 @@ class Enum:
         self.values = values
         self.features = features | Enum.FEATURE__SERIALIZE | Enum.FEATURE__DESERIALIZE
 
+
     def generate_typedef(self):
         return "typedef enum _esxVI_%s esxVI_%s;\n" % (self.name, self.name)
 
+
     def generate_typeenum(self):
         return "    esxVI_Type_%s,\n" % self.name
+
 
     def generate_typetostring(self):
         string = "          case esxVI_Type_%s:\n" % self.name
@@ -629,12 +851,14 @@ class Enum:
 
         return string
 
+
     def generate_typefromstring(self):
         string =  "           else if (STREQ(type, \"%s\")) {\n" % self.name
         string += "               return esxVI_Type_%s;\n" % self.name
         string += "           }\n"
 
         return string
+
 
     def generate_header(self):
         header = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
@@ -663,6 +887,7 @@ class Enum:
         header += "\n\n\n"
 
         return header
+
 
     def generate_source(self):
         source = "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n"
@@ -698,17 +923,9 @@ class Enum:
 
 
 
-
-
 def report_error(message):
     print "error: " + message
     sys.exit(1)
-
-
-
-def usage():
-    print "%s <input-filename> <output-directory>" % sys.argv[0]
-    sys.exit(0)
 
 
 
@@ -744,7 +961,7 @@ def parse_object(block):
         if len(items) != 3:
             report_error("line %d: invalid property" % line[0])
 
-        if items[2] not in Property.valid_occurrences:
+        if items[2] not in valid_occurrences:
             report_error("line %d: invalid occurrence" % line[0])
 
         properties.append(Property(type = items[0], name = items[1],
@@ -772,6 +989,44 @@ def parse_enum(block):
         values.append(line[1])
 
     return Enum(name = name, values = values)
+
+
+
+def parse_method(block):
+    # expected format: method <name> [returns <type> <occurrence>]
+    header_items = block[0][1].split()
+
+    if len(header_items) < 2:
+        report_error("line %d: invalid block header" % (number))
+
+    assert header_items[0] == "method"
+
+    name = header_items[1]
+    returns = None
+
+    if len(header_items) > 2:
+        if header_items[2] != "returns":
+            report_error("line %d: invalid block header" % (number))
+        else:
+            returns = Parameter(type = header_items[3], name = "output",
+                                occurrence = header_items[4])
+
+    parameters = []
+
+    for line in block[1:]:
+        # expected format: <type> <name> <occurrence>
+        items = line[1].split()
+
+        if len(items) != 3:
+            report_error("line %d: invalid property" % line[0])
+
+        if items[2] not in valid_occurrences:
+            report_error("line %d: invalid occurrence" % line[0])
+
+        parameters.append(Parameter(type = items[0], name = items[1],
+                                    occurrence = items[2]))
+
+    return Method(name = name, parameters = parameters, returns = returns)
 
 
 
@@ -834,7 +1089,7 @@ additional_object_features = { "Event"                      : Object.FEATURE__LI
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
                                "ObjectContent"              : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST,
                                "PerfCounterInfo"            : Object.FEATURE__LIST,
-                               "PerfEntityMetric"           : Object.FEATURE__LIST,
+                               "PerfEntityMetric"           : Object.FEATURE__LIST |  Object.FEATURE__DYNAMIC_CAST,
                                "PerfQuerySpec"              : Object.FEATURE__LIST,
                                "PerfMetricIntSeries"        : Object.FEATURE__DYNAMIC_CAST,
                                "PropertyFilterSpec"         : Object.FEATURE__LIST,
@@ -859,7 +1114,6 @@ removed_object_features = { "DynamicProperty"            : Object.FEATURE__SERIA
 
 
 
-
 if "srcdir" in os.environ:
     input_filename = os.path.join(os.environ["srcdir"], "esx/esx_vi_generator.input")
     output_dirname = os.path.join(os.environ["srcdir"], "esx")
@@ -869,18 +1123,21 @@ else:
 
 
 
-typedef = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typedef"))
-typeenum = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typeenum"))
-typetostring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typetostring"))
-typefromstring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typefromstring"))
-header = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.h"))
-source = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.c"))
+types_typedef = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typedef"))
+types_typeenum = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typeenum"))
+types_typetostring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typetostring"))
+types_typefromstring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typefromstring"))
+types_header = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.h"))
+types_source = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.c"))
+methods_header = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.h"))
+methods_source = open_and_print(os.path.join(output_dirname, "esx_vi_methods.generated.c"))
 
 
 
 number = 0
 objects_by_name = {}
 enums_by_name = {}
+methods_by_name = {}
 block = None
 
 
@@ -896,7 +1153,7 @@ for line in file(input_filename, "rb").readlines():
     if len(line) < 1:
         continue
 
-    if line.startswith("object") or line.startswith("enum"):
+    if line.startswith("object") or line.startswith("enum") or line.startswith("method"):
         if block is not None:
             report_error("line %d: nested block found" % (number))
         else:
@@ -907,9 +1164,12 @@ for line in file(input_filename, "rb").readlines():
             if block[0][1].startswith("object"):
                 obj = parse_object(block)
                 objects_by_name[obj.name] = obj
-            else:
+            elif block[0][1].startswith("enum"):
                 enum = parse_enum(block)
                 enums_by_name[enum.name] = enum
+            else:
+                method = parse_method(block)
+                methods_by_name[method.name] = method
 
             block = None
         else:
@@ -926,7 +1186,7 @@ for enum in enums_by_name.values():
 
 for obj in objects_by_name.values():
     for property in obj.properties:
-        if property.occurrence != Property.OCCURRENCE__IGNORED and \
+        if property.occurrence != OCCURRENCE__IGNORED and \
            not is_known_type(property.type):
             report_error("object '%s' contains unknown property type '%s'" % (obj.name, property.type))
 
@@ -936,8 +1196,8 @@ for obj in objects_by_name.values():
 
     # detect list usage
     for property in obj.properties:
-        if (property.occurrence == Property.OCCURRENCE__REQUIRED_LIST or \
-            property.occurrence == Property.OCCURRENCE__OPTIONAL_LIST) and \
+        if (property.occurrence == OCCURRENCE__REQUIRED_LIST or \
+            property.occurrence == OCCURRENCE__OPTIONAL_LIST) and \
            property.type not in predefined_objects:
             objects_by_name[property.type].features |= Object.FEATURE__LIST
 
@@ -951,7 +1211,7 @@ for obj in objects_by_name.values():
     # spread deep copy onto properties
     if obj.features & Object.FEATURE__DEEP_COPY:
         for property in obj.properties:
-            if property.occurrence != Property.OCCURRENCE__IGNORED and \
+            if property.occurrence != OCCURRENCE__IGNORED and \
                property.type not in predefined_objects and \
                property.type in objects_by_name:
                 objects_by_name[property.type].features |= Object.FEATURE__DEEP_COPY
@@ -976,55 +1236,62 @@ for obj in objects_by_name.values():
 
 
 
-typedef.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
-typeenum.write("/* Generated by esx_vi_generator.py */\n\n")
-typetostring.write("/* Generated by esx_vi_generator.py */\n\n")
-typefromstring.write("/* Generated by esx_vi_generator.py */\n\n")
-header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
-source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+types_typedef.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+types_typeenum.write("/* Generated by esx_vi_generator.py */\n\n")
+types_typetostring.write("/* Generated by esx_vi_generator.py */\n\n")
+types_typefromstring.write("/* Generated by esx_vi_generator.py */\n\n")
+types_header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+types_source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+methods_header.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
+methods_source.write("/* Generated by esx_vi_generator.py */\n\n\n\n")
 
 
-typedef.write("/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
-              " * VI Enums\n" +
-              " */\n\n")
-
-
+# output enums
+types_typedef.write("/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
+                    " * VI Enums\n" +
+                    " */\n\n")
 
 names = enums_by_name.keys()
 names.sort()
 
-
 for name in names:
-    typedef.write(enums_by_name[name].generate_typedef())
-    typeenum.write(enums_by_name[name].generate_typeenum())
-    typetostring.write(enums_by_name[name].generate_typetostring())
-    typefromstring.write(enums_by_name[name].generate_typefromstring())
-    header.write(enums_by_name[name].generate_header())
-    source.write(enums_by_name[name].generate_source())
+    types_typedef.write(enums_by_name[name].generate_typedef())
+    types_typeenum.write(enums_by_name[name].generate_typeenum())
+    types_typetostring.write(enums_by_name[name].generate_typetostring())
+    types_typefromstring.write(enums_by_name[name].generate_typefromstring())
+    types_header.write(enums_by_name[name].generate_header())
+    types_source.write(enums_by_name[name].generate_source())
 
 
 
-typedef.write("\n\n\n" +
-              "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
-              " * VI Types\n" +
-              " */\n\n")
-
-typeenum.write("\n")
-
-typetostring.write("\n")
-
-typefromstring.write("\n")
+# output objects
+types_typedef.write("\n\n\n" +
+                    "/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n" +
+                    " * VI Types\n" +
+                    " */\n\n")
+types_typeenum.write("\n")
+types_typetostring.write("\n")
+types_typefromstring.write("\n")
 
 
 
 names = objects_by_name.keys()
 names.sort()
 
+for name in names:
+    types_typedef.write(objects_by_name[name].generate_typedef())
+    types_typeenum.write(objects_by_name[name].generate_typeenum())
+    types_typetostring.write(objects_by_name[name].generate_typetostring())
+    types_typefromstring.write(objects_by_name[name].generate_typefromstring())
+    types_header.write(objects_by_name[name].generate_header())
+    types_source.write(objects_by_name[name].generate_source())
+
+
+
+# output methods
+names = methods_by_name.keys()
+names.sort()
 
 for name in names:
-    typedef.write(objects_by_name[name].generate_typedef())
-    typeenum.write(objects_by_name[name].generate_typeenum())
-    typetostring.write(objects_by_name[name].generate_typetostring())
-    typefromstring.write(objects_by_name[name].generate_typefromstring())
-    header.write(objects_by_name[name].generate_header())
-    source.write(objects_by_name[name].generate_source())
+    methods_header.write(methods_by_name[name].generate_header())
+    methods_source.write(methods_by_name[name].generate_source())

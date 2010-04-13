@@ -28,7 +28,22 @@
 #  - ol for an optional list
 #  - i  for an ignored item or list
 #
-# Object member sequence has to match the WSDL sequence
+# Object member sequence has to match the WSDL sequence.
+#
+#
+# Method definition:
+#
+# method <name> [returns <type> <occurrence>]
+#     <type> <name> <occurrence>
+#     ...
+# end
+#
+# The _this parameter can have a type attached to it:
+#
+# _this:<type>
+#
+# The <type> refers to one of the ServiceContent members. This make the
+# generator auto-bind _this to the corresponding ServiceContent member.
 #
 
 
@@ -435,4 +450,178 @@ object VirtualMachineSnapshotTree
     VirtualMachinePowerState                 state                          r
     Boolean                                  quiesced                       r
     VirtualMachineSnapshotTree               childSnapshotList              ol
+end
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Methods
+#
+
+method AnswerVM
+    ManagedObjectReference                   _this                          r
+    String                                   questionId                     r
+    String                                   answerChoice                   r
+end
+
+
+method CancelTask
+    ManagedObjectReference                   _this                          r
+end
+
+
+method CreateFilter returns ManagedObjectReference r
+    ManagedObjectReference                   _this:PropertyCollector        r
+    PropertyFilterSpec                       spec                           r
+    Boolean                                  partialUpdates                 r
+end
+
+
+method CreateSnapshot_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    String                                   name                           r
+    String                                   description                    o
+    Boolean                                  memory                         r
+    Boolean                                  quiesce                        r
+end
+
+
+method DestroyPropertyFilter
+    ManagedObjectReference                   _this                          r
+end
+
+
+method FindByIp returns ManagedObjectReference o
+    ManagedObjectReference                   _this:SearchIndex              r
+    ManagedObjectReference                   datacenter                     o
+    String                                   ip                             r
+    Boolean                                  vmSearch                       r
+end
+
+
+method FindByUuid returns ManagedObjectReference o
+    ManagedObjectReference                   _this:SearchIndex              r
+    ManagedObjectReference                   datacenter                     o
+    String                                   uuid                           r
+    Boolean                                  vmSearch                       r
+end
+
+
+method Login returns UserSession r
+    ManagedObjectReference                   _this:SessionManager           r
+    String                                   userName                       r
+    String                                   password                       r
+    String                                   locale                         o
+end
+
+
+method Logout
+    ManagedObjectReference                   _this:SessionManager           r
+end
+
+
+method MigrateVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    ManagedObjectReference                   pool                           o
+    ManagedObjectReference                   host                           o
+    VirtualMachineMovePriority               priority                       r
+    VirtualMachinePowerState                 state                          o
+end
+
+
+method PowerOffVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+end
+
+
+method PowerOnVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    ManagedObjectReference                   host                           o
+end
+
+
+method QueryAvailablePerfMetric returns PerfMetricId ol
+    ManagedObjectReference                   _this:PerformanceManager       r
+    ManagedObjectReference                   entity                         r
+    DateTime                                 beginTime                      o
+    DateTime                                 endTime                        o
+    Int                                      intervalId                     o
+end
+
+
+method QueryPerf returns PerfEntityMetricBase ol
+    ManagedObjectReference                   _this:PerformanceManager       r
+    PerfQuerySpec                            querySpec                      rl
+end
+
+
+method QueryPerfCounter returns PerfCounterInfo ol
+    ManagedObjectReference                   _this:PerformanceManager       r
+    Int                                      counterId                      rl
+end
+
+
+method RebootGuest
+    ManagedObjectReference                   _this                          r
+end
+
+
+method ReconfigVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    VirtualMachineConfigSpec                 spec                           r
+end
+
+
+method RegisterVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    String                                   path                           r
+    String                                   name                           o
+    Boolean                                  asTemplate                     r
+    ManagedObjectReference                   pool                           o
+    ManagedObjectReference                   host                           o
+end
+
+
+method RemoveSnapshot_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    Boolean                                  removeChildren                 r
+end
+
+
+method RetrieveProperties returns ObjectContent ol
+    ManagedObjectReference                   _this:PropertyCollector        r
+    PropertyFilterSpec                       specSet                        rl
+end
+
+
+method RevertToSnapshot_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    ManagedObjectReference                   host                           o
+end
+
+
+method SessionIsActive returns Boolean r
+    ManagedObjectReference                   _this:SessionManager           r
+    String                                   sessionID                      r
+    String                                   userName                       r
+end
+
+
+method ShutdownGuest
+    ManagedObjectReference                   _this                          r
+end
+
+
+method SuspendVM_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+end
+
+
+method UnregisterVM
+    ManagedObjectReference                   _this                          r
+end
+
+
+method WaitForUpdates returns UpdateSet r
+    ManagedObjectReference                   _this:PropertyCollector        r
+    String                                   version                        o
 end

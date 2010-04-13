@@ -1333,7 +1333,8 @@ esxDomainResume(virDomainPtr domain)
         goto failure;
     }
 
-    if (esxVI_PowerOnVM_Task(priv->host, virtualMachine->obj, &task) < 0 ||
+    if (esxVI_PowerOnVM_Task(priv->host, virtualMachine->obj, NULL,
+                             &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->host, task, domain->uuid,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto failure;
@@ -1710,8 +1711,9 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     esxVI_PerfCounterInfo *perfCounterInfo = NULL;
     esxVI_PerfCounterInfo *perfCounterInfoList = NULL;
     esxVI_PerfQuerySpec *querySpec = NULL;
+    esxVI_PerfEntityMetricBase *perfEntityMetricBase = NULL;
+    esxVI_PerfEntityMetricBase *perfEntityMetricBaseList = NULL;
     esxVI_PerfEntityMetric *perfEntityMetric = NULL;
-    esxVI_PerfEntityMetric *perfEntityMetricList = NULL;
     esxVI_PerfMetricIntSeries *perfMetricIntSeries = NULL;
     esxVI_Long *value = NULL;
 
@@ -1883,16 +1885,25 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         querySpec->metricId->instance = (char *)"";
         querySpec->format = (char *)"normal";
 
-        if (esxVI_QueryPerf(priv->host, querySpec, &perfEntityMetricList) < 0) {
+        if (esxVI_QueryPerf(priv->host, querySpec,
+                            &perfEntityMetricBaseList) < 0) {
             querySpec->entity = NULL;
             querySpec->metricId->instance = NULL;
             querySpec->format = NULL;
             goto failure;
         }
 
-        for (perfEntityMetric = perfEntityMetricList; perfEntityMetric != NULL;
-             perfEntityMetric = perfEntityMetric->_next) {
+        for (perfEntityMetricBase = perfEntityMetricBaseList;
+             perfEntityMetricBase != NULL;
+             perfEntityMetricBase = perfEntityMetricBase->_next) {
             VIR_DEBUG0("perfEntityMetric ...");
+
+            perfEntityMetric =
+              esxVI_PerfEntityMetric_DynamicCast(perfEntityMetricBase);
+
+            if (perfMetricIntSeries == NULL) {
+                VIR_ERROR0("QueryPerf returned object with unexpected type");
+            }
 
             perfMetricIntSeries =
               esxVI_PerfMetricIntSeries_DynamicCast(perfEntityMetric->value);
@@ -1927,7 +1938,7 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     esxVI_Int_Free(&counterIdList);
     esxVI_PerfCounterInfo_Free(&perfCounterInfoList);
     esxVI_PerfQuerySpec_Free(&querySpec);
-    esxVI_PerfEntityMetric_Free(&perfEntityMetricList);
+    esxVI_PerfEntityMetricBase_Free(&perfEntityMetricBaseList);
 
     return result;
 
@@ -2367,7 +2378,8 @@ esxDomainCreate(virDomainPtr domain)
         goto failure;
     }
 
-    if (esxVI_PowerOnVM_Task(priv->host, virtualMachine->obj, &task) < 0 ||
+    if (esxVI_PowerOnVM_Task(priv->host, virtualMachine->obj, NULL,
+                             &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->host, task, domain->uuid,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto failure;

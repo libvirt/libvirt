@@ -51,18 +51,88 @@
 
 
 
-#define ESX_VI__METHOD(_name, _parameters, _occurrence, _prolog, _validate,   \
-                       _serialize, _deserialize)                              \
+#define ESX_VI__METHOD__CHECK_OUTPUT__None                                    \
+    /* nothing */
+
+
+
+#define ESX_VI__METHOD__CHECK_OUTPUT__NotNone                                 \
+    if (output == NULL || *output != 0) {                                     \
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));    \
+        return -1;                                                            \
+    }
+
+
+
+#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredItem                            \
+    ESX_VI__METHOD__CHECK_OUTPUT__NotNone
+
+
+
+#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredList                            \
+    ESX_VI__METHOD__CHECK_OUTPUT__NotNone
+
+
+
+#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalItem                            \
+    ESX_VI__METHOD__CHECK_OUTPUT__NotNone
+
+
+
+#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalList                            \
+    ESX_VI__METHOD__CHECK_OUTPUT__NotNone
+
+
+
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__None(_type)                       \
+    /* nothing */
+
+
+
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredItem(_type)               \
+    if (esxVI_##_type##_Deserialize(response->node, output) < 0) {            \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredList(_type)               \
+    if (esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalItem(_type)               \
+    if (response->node != NULL &&                                             \
+        esxVI_##_type##_Deserialize(response->node, output) < 0) {            \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalList(_type)               \
+    if (response->node != NULL &&                                             \
+        esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
+        goto failure;                                                         \
+    }
+
+
+
+#define ESX_VI__METHOD(_name, _this_from_service, _parameters, _output_type,  \
+                       _occurrence, _validate, _serialize)                    \
     int                                                                       \
     esxVI_##_name _parameters                                                 \
     {                                                                         \
         int result = 0;                                                       \
-        const char* method_name = #_name;                                     \
+        const char *methodName = #_name;                                      \
         virBuffer buffer = VIR_BUFFER_INITIALIZER;                            \
         char *request = NULL;                                                 \
         esxVI_Response *response = NULL;                                      \
                                                                               \
-        _prolog                                                               \
+        ESX_VI__METHOD__PARAMETER__THIS__##_this_from_service                 \
+                                                                              \
+        ESX_VI__METHOD__CHECK_OUTPUT__##_occurrence                           \
                                                                               \
         _validate                                                             \
                                                                               \
@@ -81,14 +151,12 @@
                                                                               \
         request = virBufferContentAndReset(&buffer);                          \
                                                                               \
-        if (esxVI_Context_Execute(ctx, #_name, request, &response,            \
+        if (esxVI_Context_Execute(ctx, methodName, request, &response,        \
                                   esxVI_Occurrence_##_occurrence) < 0) {      \
             goto failure;                                                     \
         }                                                                     \
                                                                               \
-        if (response->node != NULL) {                                         \
-            _deserialize                                                      \
-        }                                                                     \
+        ESX_VI__METHOD__DESERIALIZE_OUTPUT__##_occurrence(_output_type)       \
                                                                               \
       cleanup:                                                                \
         VIR_FREE(request);                                                    \
@@ -106,19 +174,44 @@
 
 
 
-#define ESX_VI__METHOD__CHECK_SERVICE()                                       \
+#define ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(_type, _name)            \
+    esxVI_##_type *_this = NULL;                                              \
+                                                                              \
     if (ctx->service == NULL) {                                               \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));        \
         return -1;                                                            \
-    }
+    }                                                                         \
+                                                                              \
+    _this = ctx->service->_name;
 
 
 
-#define ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(_name)                        \
-    if (_name == NULL || *_name != NULL) {                                    \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));    \
-        return -1;                                                            \
-    }
+#define ESX_VI__METHOD__PARAMETER__THIS__/* explicit _this */                 \
+    /* nothing */
+
+
+
+#define ESX_VI__METHOD__PARAMETER__THIS__perfManager                          \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 perfManager)
+
+
+
+#define ESX_VI__METHOD__PARAMETER__THIS__propertyCollector                    \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 propertyCollector)
+
+
+
+#define ESX_VI__METHOD__PARAMETER__THIS__searchIndex                          \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 searchIndex)
+
+
+
+#define ESX_VI__METHOD__PARAMETER__THIS__sessionManager                       \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 sessionManager)
 
 
 
@@ -132,17 +225,7 @@
     if (_name == 0) {                                                         \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
                      "Required parameter '%s' is missing for call to %s",     \
-                     #_name, method_name);                                    \
-        return -1;                                                            \
-    }
-
-
-
-#define ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(_name)                        \
-    if (_name == 0) {                                                         \
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
-                     "Required parameter '_this' is missing for call to %s",  \
-                     method_name);                                            \
+                     #_name, methodName);                                     \
         return -1;                                                            \
     }
 
@@ -164,13 +247,6 @@
 
 #define ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(_type, _name)              \
     if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) {         \
-        goto failure;                                                         \
-    }
-
-
-
-#define ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(_type, _name)               \
-    if (esxVI_##_type##_Serialize(_name, "_this", &buffer) < 0) {             \
         goto failure;                                                         \
     }
 
@@ -220,553 +296,16 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
 
 
 
-/* esxVI_Login */
-ESX_VI__METHOD(Login,
-               (esxVI_Context *ctx,
-                const char *userName, const char *password,
-                esxVI_UserSession **userSession),
-               RequiredItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(userSession)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(userName)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(password)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->sessionManager)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, userName)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, password)
-},
-{
-    if (esxVI_UserSession_Deserialize(response->node, userSession) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_Logout */
-ESX_VI__METHOD(Logout, (esxVI_Context *ctx), None,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->sessionManager)
-},
-{
-})
-
-
-
-/* esxVI_SessionIsActive */
-ESX_VI__METHOD(SessionIsActive,
-               (esxVI_Context *ctx, const char *sessionID,
-                const char *userName, esxVI_Boolean *active),
-               RequiredItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-
-    if (active == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->sessionManager)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(sessionID)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(userName)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->sessionManager)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, sessionID)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, userName)
-},
-{
-    if (esxVI_Boolean_Deserialize(response->node, active) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_RetrieveProperties */
-ESX_VI__METHOD(RetrieveProperties,
-               (esxVI_Context *ctx,
-                esxVI_PropertyFilterSpec *specSet, /* list */
-                esxVI_ObjectContent **objectContentList),
-               OptionalList,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(objectContentList)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(specSet)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(PropertyFilterSpec, specSet)
-},
-{
-    if (esxVI_ObjectContent_DeserializeList(response->node,
-                                            objectContentList) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_PowerOnVM_Task */
-ESX_VI__METHOD(PowerOnVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_PowerOffVM_Task */
-ESX_VI__METHOD(PowerOffVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_SuspendVM_Task */
-ESX_VI__METHOD(SuspendVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_MigrateVM_Task */
-ESX_VI__METHOD(MigrateVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                esxVI_ManagedObjectReference *pool,
-                esxVI_ManagedObjectReference *host,
-                esxVI_VirtualMachineMovePriority priority,
-                esxVI_VirtualMachinePowerState state,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(priority)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachineMovePriority, priority)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachinePowerState, state)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_ReconfigVM_Task */
-ESX_VI__METHOD(ReconfigVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                esxVI_VirtualMachineConfigSpec *spec,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(spec)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(VirtualMachineConfigSpec, spec)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_RegisterVM_Task */
-ESX_VI__METHOD(RegisterVM_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *folder,
-                const char *path, const char *name,
-                esxVI_Boolean asTemplate,
-                esxVI_ManagedObjectReference *pool,
-                esxVI_ManagedObjectReference *host,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(folder)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(path)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference, folder)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, path)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, name)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, asTemplate)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_CreateSnapshot_Task */
-ESX_VI__METHOD(CreateSnapshot_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                const char *name, const char *description,
-                esxVI_Boolean memory, esxVI_Boolean quiesce,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(name)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(memory)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(quiesce)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, name)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, description)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, memory)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, quiesce)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_RevertToSnapshot_Task */
-ESX_VI__METHOD(RevertToSnapshot_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachineSnapshot,
-                esxVI_ManagedObjectReference *host,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachineSnapshot)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachineSnapshot)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_RemoveSnapshot_Task */
-ESX_VI__METHOD(RemoveSnapshot_Task,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachineSnapshot,
-                esxVI_Boolean removeChildren,
-                esxVI_ManagedObjectReference **task),
-               RequiredItem,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachineSnapshot)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(removeChildren)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachineSnapshot)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, removeChildren)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node, task) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_CancelTask */
-ESX_VI__METHOD(CancelTask,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *task),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(task)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference, task)
-},
-{
-})
-
-
-
-/* esxVI_UnregisterVM */
-ESX_VI__METHOD(UnregisterVM,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-})
-
-
-
-/* esxVI_AnswerVM */
-ESX_VI__METHOD(AnswerVM,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine,
-                const char *questionId,
-                const char *answerChoice),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(questionId)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(answerChoice)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, questionId)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, answerChoice)
-},
-{
-})
-
-
-
-/* esxVI_CreateFilter */
-ESX_VI__METHOD(CreateFilter,
-               (esxVI_Context *ctx,
-                esxVI_PropertyFilterSpec *spec,
-                esxVI_Boolean partialUpdates,
-                esxVI_ManagedObjectReference **propertyFilter),
-               RequiredItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(propertyFilter)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(spec)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(partialUpdates)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(PropertyFilterSpec, spec)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, partialUpdates)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node,
-                                                 propertyFilter) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_DestroyPropertyFilter */
-ESX_VI__METHOD(DestroyPropertyFilter,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *propertyFilter),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(propertyFilter)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              propertyFilter)
-},
-{
-})
-
-
-
-/* esxVI_WaitForUpdates */
-ESX_VI__METHOD(WaitForUpdates,
-               (esxVI_Context *ctx,
-                const char *version,
-                esxVI_UpdateSet **updateSet),
-               RequiredItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(updateSet)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(version)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->propertyCollector)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, version)
-},
-{
-    if (esxVI_UpdateSet_Deserialize(response->node, updateSet) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_RebootGuest */
-ESX_VI__METHOD(RebootGuest,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-})
-
-
-
-/* esxVI_ShutdownGuest */
-ESX_VI__METHOD(ShutdownGuest,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *virtualMachine),
-               None,
-{
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(virtualMachine)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              virtualMachine)
-},
-{
-})
-
-
-
 /* esxVI_ValidateMigration */
-ESX_VI__METHOD(ValidateMigration,
+ESX_VI__METHOD(ValidateMigration, /* special _this */,
                (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *vm, /* list */
-                esxVI_VirtualMachinePowerState state,
-                esxVI_String *testType, /* list */
-                esxVI_ManagedObjectReference *pool,
-                esxVI_ManagedObjectReference *host,
-                esxVI_Event **eventList),
-               OptionalList,
-{
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(eventList)
-},
+                esxVI_ManagedObjectReference *vm,          /* required, list */
+                esxVI_VirtualMachinePowerState state,      /* optional */
+                esxVI_String *testType,                    /* optional, list */
+                esxVI_ManagedObjectReference *pool,        /* optional */
+                esxVI_ManagedObjectReference *host,        /* optional */
+                esxVI_Event **output),                     /* optional, list */
+               Event, OptionalList,
 {
     ESX_VI__METHOD__PARAMETER__REQUIRE(vm)
 },
@@ -781,165 +320,8 @@ ESX_VI__METHOD(ValidateMigration,
     ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(String, testType)
     ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, pool)
     ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, host)
-},
-{
-    if (esxVI_Event_DeserializeList(response->node, eventList) < 0) {
-        goto failure;
-    }
 })
 
 
 
-/* esxVI_FindByIp */
-ESX_VI__METHOD(FindByIp,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *datacenter,
-                const char *ip,
-                esxVI_Boolean vmSearch,
-                esxVI_ManagedObjectReference **managedObjectReference),
-               OptionalItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(managedObjectReference)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->searchIndex)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(ip)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(vmSearch)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->searchIndex)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, datacenter)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, ip)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node,
-                                                 managedObjectReference) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_FindByUuid */
-ESX_VI__METHOD(FindByUuid,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *datacenter,
-                const char *uuid, /* string */
-                esxVI_Boolean vmSearch,
-                esxVI_ManagedObjectReference **managedObjectReference),
-               OptionalItem,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(managedObjectReference)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->searchIndex)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(uuid)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(vmSearch)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->searchIndex)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, datacenter)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(String, uuid)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Boolean, vmSearch)
-},
-{
-    if (esxVI_ManagedObjectReference_Deserialize(response->node,
-                                                 managedObjectReference) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_QueryAvailablePerfMetric */
-ESX_VI__METHOD(QueryAvailablePerfMetric,
-               (esxVI_Context *ctx,
-                esxVI_ManagedObjectReference *entity,
-                esxVI_DateTime *beginTime,
-                esxVI_DateTime *endTime,
-                esxVI_Int *intervalId,
-                esxVI_PerfMetricId **perfMetricIdList),
-               OptionalList,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfMetricIdList)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(entity)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(ManagedObjectReference, entity)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(DateTime, beginTime)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(DateTime, endTime)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE(Int, intervalId)
-},
-{
-    if (esxVI_PerfMetricId_DeserializeList(response->node,
-                                           perfMetricIdList) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_QueryPerfCounter */
-ESX_VI__METHOD(QueryPerfCounter,
-               (esxVI_Context *ctx,
-                esxVI_Int *counterId, /* list */
-                esxVI_PerfCounterInfo **perfCounterInfoList),
-               OptionalList,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfCounterInfoList)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(counterId)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(Int, counterId)
-},
-{
-    if (esxVI_PerfCounterInfo_DeserializeList(response->node,
-                                              perfCounterInfoList) < 0) {
-        goto failure;
-    }
-})
-
-
-
-/* esxVI_QueryPerf */
-ESX_VI__METHOD(QueryPerf,
-               (esxVI_Context *ctx,
-                esxVI_PerfQuerySpec *querySpec, /* list */
-                esxVI_PerfEntityMetric **perfEntityMetricList),
-               OptionalList,
-{
-    ESX_VI__METHOD__CHECK_SERVICE()
-    ESX_VI__METHOD__PARAMETER__CHECK_OUTPUT(perfEntityMetricList)
-},
-{
-    ESX_VI__METHOD__PARAMETER__REQUIRE_THIS(ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__REQUIRE(querySpec)
-},
-{
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_THIS(ManagedObjectReference,
-                                              ctx->service->perfManager)
-    ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(PerfQuerySpec, querySpec)
-},
-{
-    if (esxVI_PerfEntityMetric_DeserializeList(response->node,
-                                               perfEntityMetricList) < 0) {
-        goto failure;
-    }
-})
+#include "esx_vi_methods.generated.c"

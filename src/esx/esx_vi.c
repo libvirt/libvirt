@@ -444,7 +444,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         goto failure;
     }
 
-    if (esxVI_Login(ctx, username, password, &ctx->session) < 0) {
+    if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0) {
         goto failure;
     }
 
@@ -1344,7 +1344,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     if (active != esxVI_Boolean_True) {
         esxVI_UserSession_Free(&ctx->session);
 
-        if (esxVI_Login(ctx, ctx->username, ctx->password,
+        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
                         &ctx->session) < 0) {
             return -1;
         }
@@ -1378,7 +1378,8 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     if (currentSession == NULL) {
         esxVI_UserSession_Free(&ctx->session);
 
-        if (esxVI_Login(ctx, ctx->username, ctx->password, &ctx->session) < 0) {
+        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
+                        &ctx->session) < 0) {
             goto failure;
         }
     } else if (STRNEQ(ctx->session->key, currentSession->key)) {
