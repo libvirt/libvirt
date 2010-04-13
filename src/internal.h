@@ -199,4 +199,30 @@
     fprintf(stderr, "Unimplemented block at %s:%d\n",			\
             __FILE__, __LINE__);
 
+/**
+ * virCheckFlags:
+ * @supported: an OR'ed set of supported flags
+ * @retval: return value in case unsupported flags were passed
+ *
+ * To avoid memory leaks this macro has to be used before any non-trivial
+ * code which could possibly allocate some memory.
+ *
+ * Returns nothing. Exits the caller function if unsupported flags were
+ * passed to it.
+ */
+# define virCheckFlags(supported, retval)                               \
+    do {                                                                \
+        if ((flags & ~(supported))) {                                   \
+            virReportErrorHelper(NULL,                                  \
+                                 VIR_FROM_THIS,                         \
+                                 VIR_ERR_INVALID_ARG,                   \
+                                 __FILE__,                              \
+                                 __FUNCTION__,                          \
+                                 __LINE__,                              \
+                                 _("%s: unsupported flags (0x%x)"),     \
+                                 __FUNCTION__, flags & ~(supported));   \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+
 #endif                          /* __VIR_INTERNAL_H__ */
