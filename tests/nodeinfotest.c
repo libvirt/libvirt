@@ -46,6 +46,11 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
     }
     fclose(cpuinfo);
 
+    /* 'nodes' is filled using libnuma.so from current machine
+     * topology, which makes it unsuitable for the test suite
+     * so blank it to a predictable value */
+    nodeinfo.nodes = 1;
+
     snprintf(actualData, MAX_FILE,
              "CPUs: %u, MHz: %u, Nodes: %u, Cores: %u\n",
              nodeinfo.cpus, nodeinfo.mhz, nodeinfo.nodes, nodeinfo.cores);
