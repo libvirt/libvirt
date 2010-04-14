@@ -287,7 +287,7 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool) {
 static int
 virStorageBackendFileSystemMount(virStoragePoolObjPtr pool) {
     char *src;
-    char *options;
+    char *options = NULL;
     const char **mntargv;
 
     /* 'mount -t auto' doesn't seem to auto determine nfs (or cifs),
