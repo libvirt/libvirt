@@ -169,7 +169,7 @@ int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
                              const char *devicestr);
 
 int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
-                             const char *devicestr);
+                             const char *devalias);
 
 int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
                             const char *drivestr);

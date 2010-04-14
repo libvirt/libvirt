@@ -1938,14 +1938,14 @@ int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
-                             const char *devicestr)
+                             const char *devalias)
 {
     int ret;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("device_del",
-                                     "s:config", devicestr,
+                                     "s:config", devalias,
                                      NULL);
     if (!cmd)
         return -1;

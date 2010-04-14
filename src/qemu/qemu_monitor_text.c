@@ -2133,14 +2133,14 @@ error:
 
 
 int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
-                             const char *devicestr)
+                             const char *devalias)
 {
     char *cmd = NULL;
     char *reply = NULL;
     char *safedev;
     int ret = -1;
 
-    if (!(safedev = qemuMonitorEscapeArg(devicestr))) {
+    if (!(safedev = qemuMonitorEscapeArg(devalias))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -2152,13 +2152,13 @@ int qemuMonitorTextDelDevice(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("cannot detach %s device"), devicestr);
+                        _("cannot detach %s device"), devalias);
         goto cleanup;
     }
 
     if (STRNEQ(reply, "")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("detaching %s device failed: %s"), devicestr, reply);
+                        _("detaching %s device failed: %s"), devalias, reply);
         goto cleanup;
     }
 

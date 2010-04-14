@@ -338,7 +338,7 @@ int qemuMonitorAddDevice(qemuMonitorPtr mon,
                          const char *devicestr);
 
 int qemuMonitorDelDevice(qemuMonitorPtr mon,
-                         const char *devicestr);
+                         const char *devalias);
 
 int qemuMonitorAddDrive(qemuMonitorPtr mon,
                         const char *drivestr);
