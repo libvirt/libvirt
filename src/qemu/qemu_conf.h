@@ -311,5 +311,11 @@ int qemuAssignDeviceDiskAlias(virDomainDiskDefPtr def, unsigned long long qemuCm
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr net, int idx);
 int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
 
+int
+qemuParseKeywords(const char *str,
+                  char ***retkeywords,
+                  char ***retvalues,
+                  int allowEmptyValue);
+
 
 #endif /* __QEMUD_CONF_H */

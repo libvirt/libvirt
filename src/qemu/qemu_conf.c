@@ -4771,11 +4771,11 @@ static const char *qemuFindEnv(const char **progenv,
  * the "=value" part is optional and if a key with no value is found,
  * NULL is be placed into corresponding place in retvalues.
  */
-static int
-qemuParseCommandLineKeywords(const char *str,
-                             char ***retkeywords,
-                             char ***retvalues,
-                             int allowEmptyValue)
+int
+qemuParseKeywords(const char *str,
+                  char ***retkeywords,
+                  char ***retvalues,
+                  int allowEmptyValue)
 {
     int keywordCount = 0;
     int keywordAlloc = 0;
@@ -4874,9 +4874,9 @@ qemuParseCommandLineDisk(const char *val,
     int busid = -1;
     int unitid = -1;
 
-    if ((nkeywords = qemuParseCommandLineKeywords(val,
-                                                  &keywords,
-                                                  &values, 0)) < 0)
+    if ((nkeywords = qemuParseKeywords(val,
+                                       &keywords,
+                                       &values, 0)) < 0)
         return NULL;
 
     if (VIR_ALLOC(def) < 0) {
@@ -5114,9 +5114,9 @@ qemuParseCommandLineNet(virCapsPtr caps,
     tmp = strchr(val, ',');
 
     if (tmp) {
-        if ((nkeywords = qemuParseCommandLineKeywords(tmp+1,
-                                                      &keywords,
-                                                      &values, 0)) < 0)
+        if ((nkeywords = qemuParseKeywords(tmp+1,
+                                           &keywords,
+                                           &values, 0)) < 0)
             return NULL;
     } else {
         nkeywords = 0;
@@ -5186,9 +5186,9 @@ qemuParseCommandLineNet(virCapsPtr caps,
     VIR_FREE(values);
 
     if (STRPREFIX(nic, "nic,")) {
-        if ((nkeywords = qemuParseCommandLineKeywords(nic + strlen("nic,"),
-                                                      &keywords,
-                                                      &values, 0)) < 0) {
+        if ((nkeywords = qemuParseKeywords(nic + strlen("nic,"),
+                                           &keywords,
+                                           &values, 0)) < 0) {
             virDomainNetDefFree(def);
             def = NULL;
             goto cleanup;
@@ -5596,7 +5596,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     char *end;
     int ret;
 
-    nkws = qemuParseCommandLineKeywords(val, &kws, &vals, 1);
+    nkws = qemuParseKeywords(val, &kws, &vals, 1);
     if (nkws < 0)
         return -1;
 
