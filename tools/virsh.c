@@ -9411,16 +9411,17 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 
     while (cmd) {
         struct timeval before, after;
+        bool enable_timing = ctl->timing;
 
         if ((ctl->conn == NULL) || (disconnected != 0))
             vshReconnect(ctl);
 
-        if (ctl->timing)
+        if (enable_timing)
             GETTIMEOFDAY(&before);
 
         ret = cmd->def->handler(ctl, cmd);
 
-        if (ctl->timing)
+        if (enable_timing)
             GETTIMEOFDAY(&after);
 
         if (ret == FALSE)
@@ -9440,7 +9441,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(cmd->def->name, "quit"))        /* hack ... */
             return ret;
 
-        if (ctl->timing)
+        if (enable_timing)
             vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"),
                      DIFF_MSEC(&after, &before));
         else
