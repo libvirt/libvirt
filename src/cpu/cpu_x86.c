@@ -27,6 +27,7 @@
 
 #include "logging.h"
 #include "memory.h"
+#include "util.h"
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
@@ -211,6 +212,27 @@ x86DataCopy(const union cpuData *data)
 }
 
 
+static void
+x86DataSubtract(union cpuData *data1,
+                const union cpuData *data2)
+{
+    unsigned int i;
+    unsigned int len;
+
+    len = MIN(data1->x86.basic_len, data2->x86.basic_len);
+    for (i = 0; i < len; i++) {
+        x86cpuidClearBits(data1->x86.basic + i,
+                          data2->x86.basic + i);
+    }
+
+    len = MIN(data1->x86.extended_len, data2->x86.extended_len);
+    for (i = 0; i < len; i++) {
+        x86cpuidClearBits(data1->x86.extended + i,
+                          data2->x86.extended + i);
+    }
+}
+
+
 static union cpuData *
 x86DataFromModel(const struct x86_model *model)
 {
@@ -282,24 +304,28 @@ x86DataToCPU(const union cpuData *data,
              const struct x86_map *map)
 {
     virCPUDefPtr cpu;
-    union cpuData *tmp = NULL;
-    unsigned int i;
+    union cpuData *copy = NULL;
+    union cpuData *modelData = NULL;
 
     if (VIR_ALLOC(cpu) < 0 ||
-        (cpu->model = strdup(model->name)) == NULL ||
-        (tmp = x86DataCopy(data)) == NULL)
+        !(cpu->model = strdup(model->name)) ||
+        !(copy = x86DataCopy(data)) ||
+        !(modelData = x86DataFromModel(model)))
         goto no_memory;
 
-    for (i = 0; i < model->ncpuid; i++) {
-        x86cpuidClearBits(x86DataCpuid(tmp, model->cpuid[i].function),
-                          model->cpuid + i);
-    }
+    x86DataSubtract(copy, modelData);
+    x86DataSubtract(modelData, data);
 
-    if (x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_REQUIRE, tmp, map))
+    /* because feature policy is ignored for host CPU */
+    cpu->type = VIR_CPU_TYPE_GUEST;
+
+    if (x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_REQUIRE, copy, map) ||
+        x86DataToCPUFeatures(cpu, VIR_CPU_FEATURE_DISABLE, modelData, map))
         goto error;
 
 cleanup:
-    x86DataFree(tmp);
+    x86DataFree(modelData);
+    x86DataFree(copy);
     return cpu;
 
 no_memory:
@@ -1045,8 +1071,7 @@ x86Decode(virCPUDefPtr cpu,
     const struct x86_model *candidate;
     virCPUDefPtr cpuCandidate;
     virCPUDefPtr cpuModel = NULL;
-    struct cpuX86cpuid *cpuid;
-    int i;
+    unsigned int i;
 
     if (data == NULL || (map = x86LoadMap()) == NULL)
         return -1;
@@ -1054,13 +1079,6 @@ x86Decode(virCPUDefPtr cpu,
     candidate = map->models;
     while (candidate != NULL) {
         bool allowed = (models == NULL);
-
-        for (i = 0; i < candidate->ncpuid; i++) {
-            cpuid = x86DataCpuid(data, candidate->cpuid[i].function);
-            if (cpuid == NULL
-                || !x86cpuidMatchMasked(cpuid, candidate->cpuid + i))
-                goto next;
-        }
 
         for (i = 0; i < nmodels; i++) {
             if (models && models[i] && STREQ(models[i], candidate->name)) {
@@ -1077,6 +1095,19 @@ x86Decode(virCPUDefPtr cpu,
 
         if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
             goto out;
+
+        if (cpu->type == VIR_CPU_TYPE_HOST) {
+            cpuCandidate->type = VIR_CPU_TYPE_HOST;
+            for (i = 0; i < cpuCandidate->nfeatures; i++) {
+                switch (cpuCandidate->features[i].policy) {
+                case VIR_CPU_FEATURE_DISABLE:
+                    virCPUDefFree(cpuCandidate);
+                    goto next;
+                default:
+                    cpuCandidate->features[i].policy = -1;
+                }
+            }
+        }
 
         if (cpuModel == NULL
             || cpuModel->nfeatures > cpuCandidate->nfeatures) {
@@ -1310,6 +1341,8 @@ x86Baseline(virCPUDefPtr *cpus,
     if (VIR_ALLOC(cpu) < 0 ||
         !(cpu->arch = strdup(cpus[0]->arch)))
         goto no_memory;
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->match = VIR_CPU_MATCH_EXACT;
 
     for (i = 1; i < ncpus; i++) {
         struct x86_model *model;

@@ -3309,12 +3309,20 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(ut->machine)))
             goto no_memory;
 
+        guest->type = VIR_CPU_TYPE_GUEST;
         if (cpuDecode(guest, data, cpus, ncpus) < 0)
             goto cleanup;
 
         virBufferVSprintf(&buf, "%s", guest->model);
-        for (i = 0; i < guest->nfeatures; i++)
-            virBufferVSprintf(&buf, ",+%s", guest->features[i].name);
+        for (i = 0; i < guest->nfeatures; i++) {
+            char sign;
+            if (guest->features[i].policy == VIR_CPU_FEATURE_DISABLE)
+                sign = '-';
+            else
+                sign = '+';
+
+            virBufferVSprintf(&buf, ",%c%s", sign, guest->features[i].name);
+        }
     }
     else {
         /*
