@@ -451,6 +451,9 @@ struct domUpdateCBStruct {
 };
 
 
+typedef int (*virNWFilterTechDrvInit)(void);
+typedef void (*virNWFilterTechDrvShutdown)(void);
+
 enum virDomainNetType;
 
 typedef int (*virNWFilterRuleCreateInstance)(virConnectPtr conn,
@@ -484,9 +487,16 @@ typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
 typedef int (*virNWFilterRuleDisplayInstanceData)(virConnectPtr conn,
                                                   void *_inst);
 
+enum techDrvFlags {
+    TECHDRV_FLAG_INITIALIZED = (1 << 0),
+};
 
 struct _virNWFilterTechDriver {
     const char *name;
+    enum techDrvFlags flags;
+
+    virNWFilterTechDrvInit init;
+    virNWFilterTechDrvShutdown shutdown;
 
     virNWFilterRuleCreateInstance createRuleInstance;
     virNWFilterRuleApplyNewRules applyNewRules;

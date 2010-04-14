@@ -28,6 +28,8 @@ virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 int virNWFilterRuleInstAddData(virNWFilterRuleInstPtr res,
                                void *data);
 
+void virNWFilterTechDriversInit(void);
+void virNWFilterTechDriversShutdown(void);
 
 enum instCase {
     INSTANTIATE_ALWAYS,

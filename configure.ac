@@ -295,23 +295,11 @@ if test x"$with_rhel5_api" = x"yes"; then
    AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
 fi
 
-AC_PATH_PROG([BASH_PATH], [bash], /bin/bash, [/bin:$PATH])
-AC_DEFINE_UNQUOTED([BASH_PATH], "$BASH_PATH", [path to bash binary])
-
 AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 
-AC_PATH_PROG([IP6TABLES_PATH], [ip6tables], /sbin/ip6tables, [/usr/sbin:$PATH])
-AC_DEFINE_UNQUOTED([IP6TABLES_PATH], "$IP6TABLES_PATH", [path to ip6tables binary])
-
 AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([EBTABLES_PATH], "$EBTABLES_PATH", [path to ebtables binary])
-
-AC_PATH_PROG([GREP_PATH], [grep], /bin/grep, [/bin:$PATH])
-AC_DEFINE_UNQUOTED([GREP_PATH], "$GREP_PATH", [path to grep binary])
-
-AC_PATH_PROG([GAWK_PATH], [gawk], /bin/gawk, [/bin:$PATH])
-AC_DEFINE_UNQUOTED([GAWK_PATH], "$GAWK_PATH", [path to gawk binary])
 
 
 if test "$with_openvz" = "yes"; then

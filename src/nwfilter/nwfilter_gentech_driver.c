@@ -50,12 +50,35 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 };
 
 
+void virNWFilterTechDriversInit() {
+    int i = 0;
+    while (filter_tech_drivers[i]) {
+        if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
+            filter_tech_drivers[i]->init();
+        i++;
+    }
+}
+
+
+void virNWFilterTechDriversShutdown() {
+    int i = 0;
+    while (filter_tech_drivers[i]) {
+        if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
+            filter_tech_drivers[i]->shutdown();
+        i++;
+    }
+}
+
+
 virNWFilterTechDriverPtr
 virNWFilterTechDriverForName(const char *name) {
     int i = 0;
     while (filter_tech_drivers[i]) {
-       if (STREQ(filter_tech_drivers[i]->name, name))
+       if (STREQ(filter_tech_drivers[i]->name, name)) {
+           if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED) == 0)
+               break;
            return filter_tech_drivers[i];
+       }
        i++;
     }
     return NULL;
