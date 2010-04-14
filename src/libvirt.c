@@ -12616,7 +12616,7 @@ error:
 }
 
 /**
- * virDomainRevertToSnapshot
+ * virDomainRevertToSnapshot:
  * @snapshot: a domain snapshot object
  * @flags: unused flag parameters; callers should pass 0
  *
@@ -12657,7 +12657,7 @@ error:
 }
 
 /**
- * virDomainSnapshotDelete
+ * virDomainSnapshotDelete:
  * @snapshot: a domain snapshot object
  * @flags: flag parameters
  *
