@@ -1591,272 +1591,72 @@ int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon)
 }
 
 
-static int qemuMonitorJSONAddUSB(qemuMonitorPtr mon,
-                                 const char *dev)
+int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                              const char *path ATTRIBUTE_UNUSED)
 {
-    int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("usb_add",
-                                                     "s:devname", dev,
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("usb_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon,
-                              const char *path)
+int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                     int bus ATTRIBUTE_UNUSED,
+                                     int dev ATTRIBUTE_UNUSED)
 {
-    int ret;
-    char *disk;
-
-    if (virAsprintf(&disk, "disk:%s", path) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    ret = qemuMonitorJSONAddUSB(mon, disk);
-
-    VIR_FREE(disk);
-
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("usb_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon,
-                                     int bus,
-                                     int dev)
+int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                     int vendor ATTRIBUTE_UNUSED,
+                                     int product ATTRIBUTE_UNUSED)
 {
-    int ret;
-    char *addr;
-
-    if (virAsprintf(&addr, "host:%.3d.%.3d", bus, dev) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    ret = qemuMonitorJSONAddUSB(mon, addr);
-
-    VIR_FREE(addr);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("usb_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
-                                     int vendor,
-                                     int product)
+int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                    virDomainDevicePCIAddress *hostAddr ATTRIBUTE_UNUSED,
+                                    virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
-    int ret;
-    char *addr;
-
-    if (virAsprintf(&addr, "host:%.4x:%.4x", vendor, product) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    ret = qemuMonitorJSONAddUSB(mon, addr);
-
-    VIR_FREE(addr);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("pci_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-static int
-qemuMonitorJSONGetGuestPCIAddress(virJSONValuePtr reply,
-                                  virDomainDevicePCIAddress *guestAddr)
+int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                              const char *path ATTRIBUTE_UNUSED,
+                              const char *bus ATTRIBUTE_UNUSED,
+                              virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
-    virJSONValuePtr addr;
-
-    addr = virJSONValueObjectGet(reply, "return");
-    if (!addr || addr->type != VIR_JSON_TYPE_OBJECT) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("pci_add reply was missing device address"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "domain", &guestAddr->domain) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("pci_add reply was missing device domain number"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "bus", &guestAddr->bus) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("pci_add reply was missing device bus number"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "slot", &guestAddr->slot) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("pci_add reply was missing device slot number"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberUint(addr, "function", &guestAddr->function) < 0) {
-        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("pci_add reply was missing device function number"));
-        return -1;
-    }
-
-    return 0;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("pci_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
-                                    virDomainDevicePCIAddress *hostAddr,
-                                    virDomainDevicePCIAddress *guestAddr)
+int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                 const char *nicstr ATTRIBUTE_UNUSED,
+                                 virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-    char *dev;
-
-    memset(guestAddr, 0, sizeof(*guestAddr));
-
-    /* XXX hostDomain */
-    if (virAsprintf(&dev, "host=%.2x:%.2x.%.1x",
-                    hostAddr->bus, hostAddr->slot, hostAddr->function) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cmd = qemuMonitorJSONMakeCommand("pci_add",
-                                     "s:pci_addr", "auto"
-                                     "s:type", "host",
-                                     "s:opts", dev,
-                                     NULL);
-    VIR_FREE(dev);
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret == 0 &&
-        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
-        ret = -1;
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("pci_add not suppported in JSON mode"));
+    return -1;
 }
 
 
-int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
-                              const char *path,
-                              const char *bus,
-                              virDomainDevicePCIAddress *guestAddr)
+int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                   virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-    char *dev;
-
-    memset(guestAddr, 0, sizeof(*guestAddr));
-
-    if (virAsprintf(&dev, "file=%s,if=%s", path, bus) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cmd = qemuMonitorJSONMakeCommand("pci_add",
-                                     "s:pci_addr", "auto",
-                                     "s:type", "storage",
-                                     "s:opts", dev,
-                                     NULL);
-    VIR_FREE(dev);
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret == 0 &&
-        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
-        ret = -1;
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
-int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
-                                 const char *nicstr,
-                                 virDomainDevicePCIAddress *guestAddr)
-{
-    int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("pci_add",
-                                                     "s:pci_addr", "auto",
-                                                     "s:type", "nic",
-                                                     "s:opts", nicstr,
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-
-    memset(guestAddr, 0, sizeof(*guestAddr));
-
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret == 0 &&
-        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
-        ret = -1;
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
-int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
-                                   virDomainDevicePCIAddress *guestAddr)
-{
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-    char *addr;
-
-    /* XXX what about function ? */
-    if (virAsprintf(&addr, "%.4x:%.2x:%.2x",
-                    guestAddr->domain, guestAddr->bus, guestAddr->slot) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cmd = qemuMonitorJSONMakeCommand("pci_del",
-                                     "s:pci_addr", addr,
-                                     NULL);
-    VIR_FREE(addr);
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("pci_del not suppported in JSON mode"));
+    return -1;
 }
 
 
@@ -2050,43 +1850,13 @@ int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
-                                           const char *bus,
-                                           virDomainDevicePCIAddress *guestAddr)
+int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                           const char *bus ATTRIBUTE_UNUSED,
+                                           virDomainDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
 {
-    int ret;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-    char *dev;
-
-    memset(guestAddr, 0, sizeof(*guestAddr));
-
-    if (virAsprintf(&dev, "if=%s", bus) < 0) {
-        virReportOOMError();
-        return -1;
-    }
-
-    cmd = qemuMonitorJSONMakeCommand("pci_add",
-                                     "s:pci_addr", "auto",
-                                     "s:type", "storage",
-                                     "s:opts", dev,
-                                     NULL);
-    VIR_FREE(dev);
-    if (!cmd)
-        return -1;
-
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret == 0 &&
-        qemuMonitorJSONGetGuestPCIAddress(reply, guestAddr) < 0)
-        ret = -1;
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                    _("pci_add not suppported in JSON mode"));
+    return -1;
 }
 
 
