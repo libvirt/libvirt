@@ -570,11 +570,12 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
 
         if (virtualDev[controller] == NULL) {
             virtualDev[controller] = disk->driverName;
-        } else if (STRCASENEQ(virtualDev[controller], disk->driverName)) {
+        } else if (disk->driverName == NULL ||
+                   STRCASENEQ(virtualDev[controller], disk->driverName)) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Inconsistent driver usage ('%s' is not '%s') on SCSI "
                         "controller index %d"), virtualDev[controller],
-                      disk->driverName, controller);
+                      disk->driverName ? disk->driverName : "?", controller);
             return -1;
         }
     }
