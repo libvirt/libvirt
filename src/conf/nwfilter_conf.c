@@ -33,6 +33,7 @@
 #if HAVE_NET_ETHERNET_H
 # include <net/ethernet.h>
 #endif
+#include <unistd.h>
 
 #include "internal.h"
 
