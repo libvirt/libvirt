@@ -2,7 +2,7 @@
 /*
  * esx_vi_methods.h: client for the VMware VI API 2.5 to manage ESX hosts
  *
- * Copyright (C) 2009 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009, 2010 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,6 @@ int esxVI_ValidateMigration
        esxVI_ManagedObjectReference *host,                 /* optional */
        esxVI_Event **output);                              /* optional, list */
 
-#include "esx_vi_methods.generated.h"
+# include "esx_vi_methods.generated.h"
 
 #endif /* __ESX_VI_METHODS_H__ */
