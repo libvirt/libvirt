@@ -79,10 +79,6 @@
 # define NSIG 32
 #endif
 
-#ifndef MIN
-# define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define virUtilError(code, ...)                                            \

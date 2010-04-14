@@ -32,6 +32,10 @@
 # include <sys/select.h>
 # include <sys/types.h>
 
+# ifndef MIN
+#  define MIN(a, b) ((a) < (b) ? (a) : (b))
+# endif
+
 int saferead(int fd, void *buf, size_t count) ATTRIBUTE_RETURN_CHECK;
 ssize_t safewrite(int fd, const void *buf, size_t count)
     ATTRIBUTE_RETURN_CHECK;
