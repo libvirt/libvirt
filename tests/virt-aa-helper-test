@@ -112,10 +112,10 @@ testme() {
         fi
     fi
 
-    echo -n "  $outstr: " >$output
-    echo -n " '$extra_args $args" >$output
+    printf %s "  $outstr: " >$output
+    printf %s " '$extra_args $args" >$output
     if [ -n "$input" ]; then
-        echo -n " < $input" >$output
+        printf %s " < $input" >$output
     fi
     echo "': " >$output
     set +e
@@ -131,7 +131,7 @@ testme() {
     else
         echo "FAIL: exited with '$rc'" >$output
         echo "FAIL: exited with '$rc'"
-        echo -n "  $outstr: "
+        printf %s "  $outstr: "
         echo " '$extra_args $args': "
         errors=$(($errors + 1))
         #exit $rc
