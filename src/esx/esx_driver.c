@@ -39,6 +39,7 @@
 #include "esx_storage_driver.h"
 #include "esx_device_monitor.h"
 #include "esx_secret_driver.h"
+#include "esx_nwfilter_driver.h"
 #include "esx_private.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
@@ -3834,7 +3835,8 @@ esxRegister(void)
         esxNetworkRegister() < 0 ||
         esxStorageRegister() < 0 ||
         esxDeviceRegister() < 0 ||
-        esxSecretRegister() < 0) {
+        esxSecretRegister() < 0 ||
+        esxNWFilterRegister() < 0) {
         return -1;
     }
 
