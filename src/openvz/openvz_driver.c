@@ -1384,14 +1384,15 @@ static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid) {
     int fd;
     char line[1024] ;
     unsigned long long usertime, systime, nicetime;
-    int readvps = 0, ret;
+    int readvps = vpsid + 1;  /* ensure readvps is initially different */
+    int ret;
 
 /* read statistic from /proc/vz/vestat.
 sample:
 Version: 2.2
-      VEID     user      nice     system     uptime                 idle   other..
-        33       78         0       1330   59454597      142650441835148   other..
-        55      178         0       5340   59424597      542650441835148   other..
+   VEID     user      nice     system     uptime                 idle   other..
+     33       78         0       1330   59454597      142650441835148   other..
+     55      178         0       5340   59424597      542650441835148   other..
 */
 
     if ((fd = open("/proc/vz/vestat", O_RDONLY)) == -1)
@@ -1400,15 +1401,18 @@ Version: 2.2
     /*search line with VEID=vpsid*/
     while(1) {
         ret = openvz_readline(fd, line, sizeof(line));
-        if(ret <= 0)
+        if (ret <= 0)
             break;
 
-        if (sscanf(line, "%d %llu %llu %llu",
-                          &readvps, &usertime, &nicetime, &systime) != 4)
-            continue;
-
-        if (readvps == vpsid)
-            break; /*found vpsid*/
+        if (sscanf (line, "%d %llu %llu %llu",
+                    &readvps, &usertime, &nicetime, &systime) == 4
+            && readvps == vpsid) { /*found vpsid*/
+            /* convert jiffies to nanoseconds */
+            *cpuTime = (1000ull * 1000ull * 1000ull
+                        * (usertime + nicetime  + systime)
+                        / (unsigned long long)sysconf(_SC_CLK_TCK));
+            break;
+        }
     }
 
     close(fd);
@@ -1417,10 +1421,6 @@ Version: 2.2
 
     if (readvps != vpsid) /*not found*/
         return -1;
-
-    /* convert jiffies to nanoseconds */
-    *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + nicetime  + systime)
-                                     / (unsigned long long)sysconf(_SC_CLK_TCK);
 
     return 0;
 }
