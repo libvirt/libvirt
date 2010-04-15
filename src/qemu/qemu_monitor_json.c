@@ -453,6 +453,65 @@ error:
 }
 
 
+static void
+qemuFreeKeywords(int nkeywords, char **keywords, char **values)
+{
+    int i;
+    for (i = 0 ; i < nkeywords ; i++) {
+        VIR_FREE(keywords[i]);
+        VIR_FREE(values[i]);
+    }
+    VIR_FREE(keywords);
+    VIR_FREE(values);
+}
+
+static virJSONValuePtr
+qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
+{
+    virJSONValuePtr ret = NULL;
+    char **keywords = NULL;
+    char **values = NULL;
+    int nkeywords = 0;
+    int i;
+
+    if (!(ret = virJSONValueNewObject()))
+        goto no_memory;
+
+    nkeywords = qemuParseKeywords(str, &keywords, &values, 1);
+
+    if (nkeywords < 0)
+        goto error;
+
+    for (i = 0 ; i < nkeywords ; i++) {
+        if (values[i] == NULL) {
+            if (i != 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("unexpected empty keyword in %s"), str);
+                goto error;
+            } else {
+                /* This 3rd arg isn't a typo - the way the parser works is
+                 * that the value ended up in the keyword field */
+                if (virJSONValueObjectAppendString(ret, firstkeyword, keywords[i]) < 0)
+                    goto no_memory;
+            }
+        } else {
+            if (virJSONValueObjectAppendString(ret, keywords[i], values[i]) < 0)
+                goto no_memory;
+        }
+    }
+
+    qemuFreeKeywords(nkeywords, keywords, values);
+    return ret;
+
+no_memory:
+    virReportOOMError();
+error:
+    qemuFreeKeywords(nkeywords, keywords, values);
+    virJSONValueFree(ret);
+    return NULL;
+}
+
+
 static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitShutdown(mon);
@@ -1754,6 +1813,63 @@ int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
 }
 
 
+int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
+                             const char *netdevstr)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr args = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("netdev_add", NULL);
+    if (!cmd)
+        return -1;
+
+    args = qemuMonitorJSONKeywordStringToJSON(netdevstr, "type");
+    if (!args)
+        goto cleanup;
+
+    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    args = NULL; /* obj owns reference to args now */
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+cleanup:
+    virJSONValueFree(args);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
+                                const char *alias)
+{
+    int ret;
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("netdev_del",
+                                                     "s:id", alias,
+                                                     NULL);
+    virJSONValuePtr reply = NULL;
+    if (!cmd)
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0)
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 /*
  * Example return data
  *
@@ -1961,65 +2077,6 @@ int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
-}
-
-
-static void
-qemuFreeKeywords(int nkeywords, char **keywords, char **values)
-{
-    int i;
-    for (i = 0 ; i < nkeywords ; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
-    }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
-}
-
-static virJSONValuePtr
-qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
-{
-    virJSONValuePtr ret = NULL;
-    char **keywords = NULL;
-    char **values = NULL;
-    int nkeywords = 0;
-    int i;
-
-    if (!(ret = virJSONValueNewObject()))
-        goto no_memory;
-
-    nkeywords = qemuParseKeywords(str, &keywords, &values, 1);
-
-    if (nkeywords < 0)
-        goto error;
-
-    for (i = 0 ; i < nkeywords ; i++) {
-        if (values[i] == NULL) {
-            if (i != 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("unexpected empty keyword in %s"), str);
-                goto error;
-            } else {
-                /* This 3rd arg isn't a typo - the way the parser works is
-                 * that the value ended up in the keyword field */
-                if (virJSONValueObjectAppendString(ret, firstkeyword, keywords[i]) < 0)
-                    goto no_memory;
-            }
-        } else {
-            if (virJSONValueObjectAppendString(ret, keywords[i], values[i]) < 0)
-                goto no_memory;
-        }
-    }
-
-    qemuFreeKeywords(nkeywords, keywords, values);
-    return ret;
-
-no_memory:
-    virReportOOMError();
-error:
-    qemuFreeKeywords(nkeywords, keywords, values);
-    virJSONValueFree(ret);
-    return NULL;
 }
 
 

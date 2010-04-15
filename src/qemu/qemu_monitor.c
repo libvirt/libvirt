@@ -1425,6 +1425,37 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
     return ret;
 }
 
+
+int qemuMonitorAddNetdev(qemuMonitorPtr mon,
+                         const char *netdevstr)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d netdevstr=%s",
+          mon, mon->fd, netdevstr);
+
+    if (mon->json)
+        ret = qemuMonitorJSONAddNetdev(mon, netdevstr);
+    else
+        ret = qemuMonitorTextAddNetdev(mon, netdevstr);
+    return ret;
+}
+
+
+int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
+                            const char *alias)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d alias=%s",
+          mon, mon->fd, alias);
+
+    if (mon->json)
+        ret = qemuMonitorJSONRemoveNetdev(mon, alias);
+    else
+        ret = qemuMonitorTextRemoveNetdev(mon, alias);
+    return ret;
+}
+
+
 int qemuMonitorGetPtyPaths(qemuMonitorPtr mon,
                            virHashTablePtr paths)
 {

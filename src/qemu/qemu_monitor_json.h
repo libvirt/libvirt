@@ -155,6 +155,12 @@ int qemuMonitorJSONRemoveHostNetwork(qemuMonitorPtr mon,
                                      int vlan,
                                      const char *netname);
 
+int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
+                             const char *netdevstr);
+
+int qemuMonitorJSONRemoveNetdev(qemuMonitorPtr mon,
+                                const char *alias);
+
 int qemuMonitorJSONGetPtyPaths(qemuMonitorPtr mon,
                                virHashTablePtr paths);
 

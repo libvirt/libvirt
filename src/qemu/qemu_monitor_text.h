@@ -154,6 +154,12 @@ int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
                                      int vlan,
                                      const char *netname);
 
+int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
+                             const char *netdevstr);
+
+int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
+                                const char *alias);
+
 int qemuMonitorTextGetPtyPaths(qemuMonitorPtr mon,
                                virHashTablePtr paths);
 

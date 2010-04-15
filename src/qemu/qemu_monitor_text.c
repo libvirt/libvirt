@@ -1820,6 +1820,64 @@ cleanup:
 }
 
 
+int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
+                             const char *netdevstr)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "netdev_add %s", netdevstr) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("failed to add netdev with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    /* XXX error messages here ? */
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
+int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
+                                const char *alias)
+{
+    char *cmd;
+    char *reply = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cmd, "netdev_del %s", alias) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("failed to remove netdev in qemu with '%s'"), cmd);
+        goto cleanup;
+    }
+
+    /* XXX error messages here ? */
+
+    ret = 0;
+
+cleanup:
+    VIR_FREE(cmd);
+    VIR_FREE(reply);
+    return ret;
+}
+
+
 /* Parse the output of "info chardev" and return a hash of pty paths.
  *
  * Output is:

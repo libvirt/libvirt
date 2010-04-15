@@ -7194,12 +7194,17 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &net->info) < 0)
         goto cleanup;
 
-    vlan = qemuDomainNetVLAN(net);
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        vlan = -1;
+    } else {
+        vlan = qemuDomainNetVLAN(net);
 
-    if (vlan < 0) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
-                        _("Unable to attach network devices without vlan"));
-        goto cleanup;
+        if (vlan < 0) {
+            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                            _("Unable to attach network devices without vlan"));
+            goto cleanup;
+        }
     }
 
     if (tapfd != -1) {
@@ -7227,9 +7232,17 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto try_tapfd_close;
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (qemuMonitorAddNetdev(priv->mon, netstr) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto try_tapfd_close;
+        }
+    } else {
+        if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto try_tapfd_close;
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -7286,7 +7299,20 @@ cleanup:
 
 try_remove:
     if (vlan < 0) {
-        VIR_WARN0(_("Unable to remove network backend"));
+        if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+            (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+            char *netdev_name;
+            if (virAsprintf(&netdev_name, "host%s", net->info.alias) < 0)
+                goto no_memory;
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            if (qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
+                VIR_WARN(_("Failed to remove network backend for netdev %s"),
+                         netdev_name);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            VIR_FREE(netdev_name);
+        } else {
+            VIR_WARN0(_("Unable to remove network backend"));
+        }
     } else {
         char *hostnet_name;
         if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
@@ -8137,9 +8163,17 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
         }
     }
 
-    if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto cleanup;
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto cleanup;
+        }
+    } else {
+        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto cleanup;
+        }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
