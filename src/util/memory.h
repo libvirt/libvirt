@@ -1,6 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -102,7 +103,7 @@ void virFree(void *ptrptr);
  * arithmetic overflow in the allocation size.  The check is
  * essentially the same as that in gnulib's xalloc_oversized.
  */
-#define VIR_ALLOC_VAR_OVERSIZED(M, N, S) ((((size_t)-1) - (M)) / (S) < (N))
+# define VIR_ALLOC_VAR_OVERSIZED(M, N, S) ((((size_t)-1) - (M)) / (S) < (N))
 
 /**
  * VIR_ALLOC_VAR:
@@ -121,7 +122,8 @@ void virFree(void *ptrptr);
 
  * Returns -1 on failure, 0 on success
  */
-#define VIR_ALLOC_VAR(ptr, type, count) virAllocVar(&(ptr), sizeof(*(ptr)), sizeof(type), (count))
+# define VIR_ALLOC_VAR(ptr, type, count) \
+    virAllocVar(&(ptr), sizeof(*(ptr)), sizeof(type), (count))
 
 /**
  * VIR_FREE:
