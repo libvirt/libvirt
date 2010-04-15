@@ -1699,6 +1699,26 @@ static int qemuAssignDeviceDiskAliasLegacy(virDomainDiskDefPtr disk)
 }
 
 
+char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
+                               unsigned long long qemudCmdFlags)
+{
+    char *ret;
+
+    if (qemudCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (virAsprintf(&ret, "%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+    } else {
+        if (!(ret = strdup(disk->info.alias))) {
+            virReportOOMError();
+            return NULL;
+        }
+    }
+    return ret;
+}
+
+
 /* Names used before -drive supported the id= option */
 static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
 {

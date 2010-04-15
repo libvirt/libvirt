@@ -220,6 +220,9 @@ char * qemuBuildNicStr(virDomainNetDefPtr net,
 char * qemuBuildNicDevStr(virDomainNetDefPtr net,
                           int vlan);
 
+char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
+                               unsigned long long qemudCmdFlags);
+
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
                         int bootable,

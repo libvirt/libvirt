@@ -6552,11 +6552,13 @@ cleanup:
 
 static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
                                            virDomainObjPtr vm,
-                                           virDomainDiskDefPtr disk)
+                                           virDomainDiskDefPtr disk,
+                                           unsigned long long qemuCmdFlags)
 {
     virDomainDiskDefPtr origdisk = NULL;
     int i;
     int ret;
+    char *driveAlias = NULL;
 
     origdisk = NULL;
     for (i = 0 ; i < vm->def->ndisks ; i++) {
@@ -6594,6 +6596,9 @@ static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
         driver->securityDriver->domainSetSecurityImageLabel(vm, disk) < 0)
         return -1;
 
+    if (!(driveAlias = qemuDeviceDriveHostAlias(origdisk, qemuCmdFlags)))
+        goto error;
+
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (disk->src) {
@@ -6605,10 +6610,10 @@ static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
                 format = origdisk->driverType;
         }
         ret = qemuMonitorChangeMedia(priv->mon,
-                                     origdisk->info.alias,
+                                     driveAlias,
                                      disk->src, format);
     } else {
-        ret = qemuMonitorEjectMedia(priv->mon, origdisk->info.alias);
+        ret = qemuMonitorEjectMedia(priv->mon, driveAlias);
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
@@ -6625,11 +6630,14 @@ static int qemudDomainChangeEjectableMedia(struct qemud_driver *driver,
     disk->src = NULL;
     origdisk->type = disk->type;
 
+    VIR_FREE(driveAlias);
+
     virDomainDiskDefFree(disk);
 
     return ret;
 
 error:
+    VIR_FREE(driveAlias);
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(vm, disk) < 0)
@@ -7434,7 +7442,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            ret = qemudDomainChangeEjectableMedia(driver, vm, dev->data.disk);
+            ret = qemudDomainChangeEjectableMedia(driver, vm,
+                                                  dev->data.disk,
+                                                  qemuCmdFlags);
             if (ret == 0)
                 dev->data.disk = NULL;
             break;
@@ -7679,7 +7689,9 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         switch (dev->data.disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
         case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            ret = qemudDomainChangeEjectableMedia(driver, vm, dev->data.disk);
+            ret = qemudDomainChangeEjectableMedia(driver, vm,
+                                                  dev->data.disk,
+                                                  qemuCmdFlags);
             if (ret == 0)
                 dev->data.disk = NULL;
             break;
