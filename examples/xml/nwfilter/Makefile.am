@@ -22,7 +22,7 @@ NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
 install-data-local:
 	$(MKDIR_P) "$(NWFILTER_DIR)"
 	for f in $(FILTERS); do \
-		$(INSTALL_DATA) $$f "$(NWFILTER_DIR)"; \
+		$(INSTALL_DATA) $(srcdir)/$$f "$(NWFILTER_DIR)"; \
 	done
 
 uninstall-local::
