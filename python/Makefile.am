@@ -34,7 +34,8 @@ all-local: libvirt.py
 
 pyexec_LTLIBRARIES = libvirtmod.la
 
-libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c libvirt.c libvirt.h
+libvirtmod_la_SOURCES = libvirt-override.c typewrappers.c
+nodist_libvirtmod_la_SOURCES = libvirt.c libvirt.h
 # Python <= 2.4 header files contain a redundant decl, hence we
 # need extra flags here
 libvirtmod_la_CFLAGS = $(WARN_PYTHON_CFLAGS)
