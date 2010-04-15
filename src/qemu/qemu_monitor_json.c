@@ -1945,7 +1945,7 @@ int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("device_del",
-                                     "s:config", devalias,
+                                     "s:id", devalias,
                                      NULL);
     if (!cmd)
         return -1;
