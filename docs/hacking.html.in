@@ -11,16 +11,15 @@
         early and listen to feedback.</li>
 
       <li><p>Post patches in unified diff format.  A command similar to this
-          should work:</p>
+        should work:</p>
         <pre>
-  diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch
-</pre>
+  diff -urp libvirt.orig/ libvirt.modified/ &gt; libvirt-myfeature.patch</pre>
         <p>
           or:
         </p>
         <pre>
-  git diff > libvirt-myfeature.patch
-</pre></li>
+  git diff > libvirt-myfeature.patch</pre>
+      </li>
       <li>Split large changes into a series of smaller patches, self-contained
         if possible, with an explanation of each patch and an explanation of how
         the sequence of patches fits together.</li>
@@ -29,16 +28,14 @@
       <li><p>Run the automated tests on your code before submitting any changes.
           In particular, configure with compile warnings set to -Werror:</p>
         <pre>
-  ./configure --enable-compile-warnings=error
-</pre>
+  ./configure --enable-compile-warnings=error</pre>
         <p>
           and run the tests:
         </p>
         <pre>
   make check
   make syntax-check
-  make -C tests valgrind
-</pre>
+  make -C tests valgrind</pre>
         <p>
           The latter test checks for memory leaks.
         </p>
@@ -60,6 +57,7 @@
 	<pre>
   ./qemuxml2xmltest</pre>
 
+      </li>
       <li>Update tests and/or documentation, particularly if you are adding
         a new feature or changing the output of a program.</li>
     </ol>
@@ -123,6 +121,123 @@
       anyhow.
     </p>
 
+
+    <h2><a name="curly_braces">Curly braces</a></h2>
+
+    <p>
+      Omit the curly braces around an "if", "while", "for" etc. body only
+      when that body occupies a single line.  In every other case we require
+      the braces.  This ensures that it is trivially easy to identify a
+      single-*statement* loop: each has only one *line* in its body.
+    </p>
+    <p>
+      Omitting braces with a single-line body is fine:
+    </p>
+
+    <pre>
+  while (expr) // one-line body -> omitting curly braces is ok
+      single_line_stmt ();</pre>
+
+    <p>
+      However, the moment your loop/if/else body extends onto a second
+      line, for whatever reason (even if it's just an added comment), then
+      you should add braces.  Otherwise, it would be too easy to insert a
+      statement just before that comment (without adding braces), thinking
+      it is already a multi-statement loop:
+    </p>
+
+    <pre>
+  while (true) // BAD! multi-line body with no braces
+      /* comment... */
+      single_line_stmt ();</pre>
+    <p>
+      Do this instead:
+    </p>
+    <pre>
+  while (true) { // Always put braces around a multi-line body.
+      /* comment... */
+      single_line_stmt ();
+  }</pre>
+    <p>
+      There is one exception: when the second body line is not at the same
+      indentation level as the first body line:
+    </p>
+    <pre>
+  if (expr)
+      die ("a diagnostic that would make this line"
+           " extend past the 80-column limit"));</pre>
+
+    <p>
+      It is safe to omit the braces in the code above, since the
+      further-indented second body line makes it obvious that this is still
+      a single-statement body.
+    </p>
+
+    <p>
+      To reiterate, don't do this:
+    </p>
+
+    <pre>
+  if (expr)            // BAD: no braces around...
+      while (expr_2) { // ... a multi-line body
+          ...
+      }</pre>
+
+    <p>
+      Do this, instead:
+    </p>
+
+    <pre>
+  if (expr) {
+      while (expr_2) {
+          ...
+      }
+  }</pre>
+
+    <p>
+      However, there is one exception in the other direction, when even a
+      one-line block should have braces.  That occurs when that one-line,
+      brace-less block is an "else" block, and the corresponding "then" block
+      *does* use braces.  In that case, either put braces around the "else"
+      block, or negate the "if"-condition and swap the bodies, putting the
+      one-line block first and making the longer, multi-line block be the
+      "else" block.
+    </p>
+
+    <pre>
+  if (expr) {
+      ...
+      ...
+  }
+  else
+      x = y;    // BAD: braceless "else" with braced "then"</pre>
+
+    <p>
+      This is preferred, especially when the multi-line body is more than a
+      few lines long, because it is easier to read and grasp the semantics of
+      an if-then-else block when the simpler block occurs first, rather than
+      after the more involved block:
+    </p>
+
+    <pre>
+  if (!expr)
+    x = y; // putting the smaller block first is more readable
+  else {
+      ...
+      ...
+  }</pre>
+
+    <p>
+      If you'd rather not negate the condition, then at least add braces:
+    </p>
+
+    <pre>
+  if (expr) {
+      ...
+      ...
+  } else {
+      x = y;
+  }</pre>
 
     <h2><a href="types">Preprocessor</a></h2>
 
