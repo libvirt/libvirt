@@ -4074,9 +4074,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
 
                 if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                    virNWFilterTearNWFilter(net);
                     close(tapfd);
                     goto no_memory;
                 }
+
+                last_good_net = i;
 
                 (*tapfds)[(*ntapfds)++] = tapfd;
 
@@ -4091,9 +4094,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
 
                 if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                    virNWFilterTearNWFilter(net);
                     close(tapfd);
                     goto no_memory;
                 }
+
+                last_good_net = i;
 
                 (*tapfds)[(*ntapfds)++] = tapfd;
 
@@ -4154,7 +4160,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
                 ADD_ARG(host);
             }
-            last_good_net = i;
         }
     }
 
@@ -4603,6 +4608,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
  no_memory:
     virReportOOMError();
  error:
+    for (i = 0; i <= last_good_net; i++)
+        virNWFilterTearNWFilter(def->nets[i]);
     if (tapfds &&
         *tapfds) {
         for (i = 0; i < *ntapfds; i++)
@@ -4619,11 +4626,6 @@ int qemudBuildCommandLine(virConnectPtr conn,
         for (i = 0 ; i < qenvc ; i++)
             VIR_FREE((qenv)[i]);
         VIR_FREE(qenv);
-    }
-    for (i = 0; i <= last_good_net; i++) {
-        virDomainNetDefPtr net = def->nets[i];
-        if ((net->filter) && (net->ifname))
-            virNWFilterTeardownFilter(net);
     }
     return -1;
 

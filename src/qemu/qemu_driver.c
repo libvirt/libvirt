@@ -3070,21 +3070,6 @@ cleanup:
 }
 
 
-static void
-qemuTearNWFilter(virDomainNetDefPtr net) {
-    if ((net->filter) && (net->ifname))
-        virNWFilterTeardownFilter(net);
-}
-
-
-static void
-qemuTearVMNWFilters(virDomainObjPtr vm) {
-    int i;
-    for (i = 0; i < vm->def->nnets; i++)
-        qemuTearNWFilter(vm->def->nets[i]);
-}
-
-
 struct qemudHookData {
     virConnectPtr conn;
     virDomainObjPtr vm;
@@ -3397,6 +3382,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
 
+    if (ret == -1) /* The VM failed to start; tear filters before taps */
+        virNWFilterTearVMNWFilters(vm);
+
     if (tapfds) {
         for (i = 0 ; i < ntapfds ; i++) {
             close(tapfds[i]);
@@ -3461,8 +3449,6 @@ cleanup:
     /* We jump here if we failed to start the VM for any reason
      * XXX investigate if we can kill this block and safely call
      * qemudShutdownVMDaemon even though no PID is running */
-    qemuTearVMNWFilters(vm);
-
     qemuDomainReAttachHostDevices(driver, vm->def);
 
     if (driver->securityDriver &&
@@ -3511,7 +3497,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
      * reporting so we don't squash a legit error. */
     orig_err = virSaveLastError();
 
-    qemuTearVMNWFilters(vm);
+    virNWFilterTearVMNWFilters(vm);
 
     if (driver->macFilter) {
         def = vm->def;
@@ -7158,7 +7144,8 @@ cleanup:
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &net->info) < 0)
         VIR_WARN0("Unable to release PCI address on NIC");
 
-    qemuTearNWFilter(net);
+    if (ret != 0)
+        virNWFilterTearNWFilter(net);
 
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
@@ -7958,6 +7945,8 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    virNWFilterTearNWFilter(detach);
+
 #if WITH_MACVTAP
     if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (detach->ifname)
@@ -7974,8 +7963,6 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
                                  detach->ifname);
         }
     }
-
-    qemuTearNWFilter(detach);
 
     if (vm->def->nnets > 1) {
         memmove(vm->def->nets + i,
