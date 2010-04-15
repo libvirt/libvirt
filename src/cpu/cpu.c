@@ -127,11 +127,13 @@ int
 cpuDecode(virCPUDefPtr cpu,
           const union cpuData *data,
           const char **models,
-          unsigned int nmodels)
+          unsigned int nmodels,
+          const char *preferred)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("cpu=%p, data=%p, nmodels=%u", cpu, data, nmodels);
+    VIR_DEBUG("cpu=%p, data=%p, nmodels=%u, preferred=%s",
+              cpu, data, nmodels, NULLSTR(preferred));
     if (models) {
         unsigned int i;
         for (i = 0; i < nmodels; i++)
@@ -160,7 +162,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, models, nmodels);
+    return driver->decode(cpu, data, models, nmodels, preferred);
 }
 
 

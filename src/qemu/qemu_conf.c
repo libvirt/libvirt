@@ -1029,7 +1029,7 @@ qemudCapsInitCPU(virCapsPtr caps,
     cpu->threads = nodeinfo.threads;
 
     if (!(data = cpuNodeData(arch))
-        || cpuDecode(cpu, data, NULL, 0) < 0)
+        || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
         goto error;
 
     caps->host.cpu = cpu;
@@ -3292,6 +3292,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
 
     if (ncpus > 0 && host) {
         virCPUCompareResult cmp;
+        const char *preferred;
 
         cmp = cpuGuestData(host, def->cpu, &data);
         switch (cmp) {
@@ -3309,8 +3310,13 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
         if (VIR_ALLOC(guest) < 0 || !(guest->arch = strdup(ut->machine)))
             goto no_memory;
 
+        if (def->cpu->match == VIR_CPU_MATCH_MINIMUM)
+            preferred = host->model;
+        else
+            preferred = def->cpu->model;
+
         guest->type = VIR_CPU_TYPE_GUEST;
-        if (cpuDecode(guest, data, cpus, ncpus) < 0)
+        if (cpuDecode(guest, data, cpus, ncpus, preferred) < 0)
             goto cleanup;
 
         virBufferVSprintf(&buf, "%s", guest->model);

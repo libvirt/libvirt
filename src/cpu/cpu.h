@@ -49,7 +49,8 @@ typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
                      const union cpuData *data,
                      const char **models,
-                     unsigned int nmodels);
+                     unsigned int nmodels,
+                     const char *preferred);
 
 typedef int
 (*cpuArchEncode)    (const virCPUDefPtr cpu,
@@ -108,7 +109,8 @@ extern int
 cpuDecode   (virCPUDefPtr cpu,
              const union cpuData *data,
              const char **models,
-             unsigned int nmodels);
+             unsigned int nmodels,
+             const char *preferred);
 
 extern int
 cpuEncode   (const char *arch,

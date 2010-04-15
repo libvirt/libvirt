@@ -1064,7 +1064,8 @@ static int
 x86Decode(virCPUDefPtr cpu,
           const union cpuData *data,
           const char **models,
-          unsigned int nmodels)
+          unsigned int nmodels,
+          const char *preferred)
 {
     int ret = -1;
     struct x86_map *map;
@@ -1107,6 +1108,12 @@ x86Decode(virCPUDefPtr cpu,
                     cpuCandidate->features[i].policy = -1;
                 }
             }
+        }
+
+        if (preferred && STREQ(cpuCandidate->model, preferred)) {
+            virCPUDefFree(cpuModel);
+            cpuModel = cpuCandidate;
+            break;
         }
 
         if (cpuModel == NULL
@@ -1356,7 +1363,7 @@ x86Baseline(virCPUDefPtr *cpus,
     if (!(data = x86DataFromModel(base_model)))
         goto no_memory;
 
-    if (x86Decode(cpu, data, models, nmodels) < 0)
+    if (x86Decode(cpu, data, models, nmodels, NULL) < 0)
         goto error;
 
 cleanup:
