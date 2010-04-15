@@ -2880,7 +2880,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
 
-    for (i = 0; i < nruleInstances; i++)
+    for (i = 0; i < nruleInstances; i++) {
         sa_assert (inst);
         switch (inst[i]->ruleType) {
         case RT_EBTABLES:
@@ -2895,6 +2895,7 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
             haveIp6tables = true;
         break;
         }
+    }
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
