@@ -1666,6 +1666,13 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    if (STRNEQ(reply, "")) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unable to send TAP file handle: %s"),
+                        reply);
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
@@ -1725,11 +1732,16 @@ int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("failed to close fd in qemu with '%s'"), cmd);
+                        _("failed to add host net with '%s'"), cmd);
         goto cleanup;
     }
 
-    /* XXX error messages here ? */
+    if (STRNEQ(reply, "")) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("unable to add host net: %s"),
+                        reply);
+        goto cleanup;
+    }
 
     ret = 0;
 
