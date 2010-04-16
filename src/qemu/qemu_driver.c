@@ -4982,12 +4982,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     int compressed;
 
-    if (flags != 0) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("unsupported flags (0x%x) passed to '%s'"),
-                        flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5048,12 +5043,7 @@ qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     char *name = NULL;
 
-    if (flags != 0) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("unsupported flags (0x%x) passed to '%s'"),
-                        flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -5087,12 +5077,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     char *name = NULL;
 
-    if (flags != 0) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("unsupported flags (0x%x) passed to '%s'"),
-                        flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -7630,6 +7615,10 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     unsigned long long qemuCmdFlags;
     virCgroupPtr cgroup = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_CURRENT |
+                  VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -10519,11 +10508,7 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     int ret = -1;
 
-    if (flags != 0) {
-        qemuReportError(VIR_ERR_INVALID_ARG,
-                        _("unsupported flags (0x%x) passed to '%s'"), flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -10682,7 +10667,7 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
 
 static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                         const char *xmlDesc,
-                                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                                        unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -10693,6 +10678,8 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     qemuDomainObjPrivatePtr priv;
     const char *qemuimgarg[] = { NULL, "snapshot", "-c", NULL, NULL, NULL };
     int i;
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
     virUUIDFormat(domain->uuid, uuidstr);
@@ -10799,11 +10786,13 @@ cleanup:
 
 static int qemuDomainSnapshotListNames(virDomainPtr domain, char **names,
                                        int nameslen,
-                                       unsigned int flags ATTRIBUTE_UNUSED)
+                                       unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int n = -1;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10825,11 +10814,13 @@ cleanup:
 }
 
 static int qemuDomainSnapshotNum(virDomainPtr domain,
-                                 unsigned int flags ATTRIBUTE_UNUSED)
+                                 unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     int n = -1;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10852,12 +10843,14 @@ cleanup:
 
 static virDomainSnapshotPtr qemuDomainSnapshotLookupByName(virDomainPtr domain,
                                                            const char *name,
-                                                           unsigned int flags ATTRIBUTE_UNUSED)
+                                                           unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10886,11 +10879,13 @@ cleanup:
 }
 
 static int qemuDomainHasCurrentSnapshot(virDomainPtr domain,
-                                        unsigned int flags ATTRIBUTE_UNUSED)
+                                        unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10912,11 +10907,13 @@ cleanup:
 }
 
 static virDomainSnapshotPtr qemuDomainSnapshotCurrent(virDomainPtr domain,
-                                                      unsigned int flags ATTRIBUTE_UNUSED)
+                                                      unsigned int flags)
 {
     struct qemud_driver *driver = domain->conn->privateData;
     virDomainObjPtr vm;
     virDomainSnapshotPtr snapshot = NULL;
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
@@ -10944,13 +10941,15 @@ cleanup:
 }
 
 static char *qemuDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                                       unsigned int flags ATTRIBUTE_UNUSED)
+                                       unsigned int flags)
 {
     struct qemud_driver *driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(0, NULL);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
@@ -10979,7 +10978,7 @@ cleanup:
 }
 
 static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
-                                      unsigned int flags ATTRIBUTE_UNUSED)
+                                      unsigned int flags)
 {
     struct qemud_driver *driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -10989,6 +10988,8 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
     int rc;
+
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
@@ -11214,6 +11215,8 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     struct snap_remove rem;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
 
     qemuDriverLock(driver);
     virUUIDFormat(snapshot->domain->uuid, uuidstr);

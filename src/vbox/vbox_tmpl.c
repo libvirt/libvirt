@@ -4877,6 +4877,10 @@ static int vboxDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
 static int vboxDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                                        unsigned int flags) {
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_CURRENT |
+                  VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         vboxError(VIR_ERR_OPERATION_INVALID, "%s",
                   _("cannot modify the persistent configuration of a domain"));
@@ -5166,7 +5170,7 @@ cleanup:
 static virDomainSnapshotPtr
 vboxDomainSnapshotCreateXML(virDomainPtr dom,
                             const char *xmlDesc,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
     virDomainSnapshotDefPtr def = NULL;
@@ -5184,6 +5188,8 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
 #else
     PRInt32 result;
 #endif
+
+    virCheckFlags(0, NULL);
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, 1)))
         goto cleanup;
@@ -5282,7 +5288,7 @@ cleanup:
 
 static char *
 vboxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                          unsigned int flags ATTRIBUTE_UNUSED)
+                          unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, char *, NULL);
@@ -5297,6 +5303,8 @@ vboxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
     PRInt64 timestamp;
     PRBool online = PR_FALSE;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(0, NULL);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(domiid) < 0) {
@@ -5399,13 +5407,15 @@ no_memory:
 
 static int
 vboxDomainSnapshotNum(virDomainPtr dom,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+                      unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIID *iid = NULL;
     IMachine *machine = NULL;
     nsresult rc;
     PRUint32 snapshotCount;
+
+    virCheckFlags(0, -1);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -5442,7 +5452,7 @@ static int
 vboxDomainSnapshotListNames(virDomainPtr dom,
                             char **names,
                             int nameslen,
-                            unsigned int flags ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIID *iid = NULL;
@@ -5451,6 +5461,8 @@ vboxDomainSnapshotListNames(virDomainPtr dom,
     ISnapshot **snapshots = NULL;
     int count = 0;
     int i;
+
+    virCheckFlags(0, -1);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -5512,13 +5524,15 @@ cleanup:
 static virDomainSnapshotPtr
 vboxDomainSnapshotLookupByName(virDomainPtr dom,
                                const char *name,
-                               unsigned int flags ATTRIBUTE_UNUSED)
+                               unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
     vboxIID *iid = NULL;
     IMachine *machine = NULL;
     ISnapshot *snapshot = NULL;
     nsresult rc;
+
+    virCheckFlags(0, NULL);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -5549,13 +5563,15 @@ cleanup:
 
 static int
 vboxDomainHasCurrentSnapshot(virDomainPtr dom,
-                             unsigned int flags ATTRIBUTE_UNUSED)
+                             unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     vboxIID *iid = NULL;
     IMachine *machine = NULL;
     ISnapshot *snapshot = NULL;
     nsresult rc;
+
+    virCheckFlags(0, -1);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -5592,7 +5608,7 @@ cleanup:
 
 static virDomainSnapshotPtr
 vboxDomainSnapshotCurrent(virDomainPtr dom,
-                          unsigned int flags ATTRIBUTE_UNUSED)
+                          unsigned int flags)
 {
     VBOX_OBJECT_CHECK(dom->conn, virDomainSnapshotPtr, NULL);
     vboxIID *iid = NULL;
@@ -5601,6 +5617,8 @@ vboxDomainSnapshotCurrent(virDomainPtr dom,
     PRUnichar *nameUtf16 = NULL;
     char *name = NULL;
     nsresult rc;
+
+    virCheckFlags(0, NULL);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -5763,7 +5781,7 @@ cleanup:
 
 static int
 vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     virDomainPtr dom = snapshot->domain;
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
@@ -5774,6 +5792,8 @@ vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     PRBool online = PR_FALSE;
     PRUint32 state;
     nsresult rc;
+
+    virCheckFlags(0, -1);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(domiid) < 0) {
@@ -5940,6 +5960,8 @@ vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     IConsole *console = NULL;
     PRUint32 state;
     nsresult rc;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(domiid) < 0) {

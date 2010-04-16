@@ -377,10 +377,12 @@ cleanup:
 
 static char *
 nwfilterDumpXML(virNWFilterPtr obj,
-                unsigned int flags ATTRIBUTE_UNUSED) {
+                unsigned int flags) {
     virNWFilterDriverStatePtr driver = obj->conn->nwfilterPrivateData;
     virNWFilterPoolObjPtr pool;
     char *ret = NULL;
+
+    virCheckFlags(0, NULL);
 
     nwfilterDriverLock(driver);
     pool = virNWFilterPoolObjFindByUUID(&driver->pools, obj->uuid);

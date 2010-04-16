@@ -4205,6 +4205,10 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char class[8], ref[80];
 
+    virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_CURRENT |
+                  VIR_DOMAIN_DEVICE_MODIFY_LIVE |
+                  VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         return -1;

@@ -3298,7 +3298,7 @@ esxDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
 
 static virDomainSnapshotPtr
 esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     virDomainSnapshotDefPtr def = NULL;
@@ -3309,6 +3309,8 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     virDomainSnapshotPtr snapshot = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto failure;
@@ -3371,7 +3373,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
 
 static char *
 esxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
-                         unsigned int flags ATTRIBUTE_UNUSED)
+                         unsigned int flags)
 {
     esxPrivate *priv = snapshot->domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotList = NULL;
@@ -3380,6 +3382,8 @@ esxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
     virDomainSnapshotDef def;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
     char *xml = NULL;
+
+    virCheckFlags(0, NULL);
 
     memset(&def, 0, sizeof (virDomainSnapshotDef));
 
@@ -3425,11 +3429,13 @@ esxDomainSnapshotDumpXML(virDomainSnapshotPtr snapshot,
 
 
 static int
-esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
+esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     int result = 0;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto failure;
@@ -3457,11 +3463,13 @@ esxDomainSnapshotNum(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 
 static int
 esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
-                           unsigned int flags ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
     int result = 0;
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
+
+    virCheckFlags(0, -1);
 
     if (names == NULL || nameslen < 0) {
         ESX_ERROR(VIR_ERR_INVALID_ARG, "%s", _("Invalid argument"));
@@ -3498,13 +3506,15 @@ esxDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
 
 static virDomainSnapshotPtr
 esxDomainSnapshotLookupByName(virDomainPtr domain, const char *name,
-                              unsigned int flags ATTRIBUTE_UNUSED)
+                              unsigned int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     esxVI_VirtualMachineSnapshotTree *snapshotTreeParent = NULL;
     virDomainSnapshotPtr snapshot = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto cleanup;
@@ -3535,12 +3545,7 @@ esxDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *currentSnapshotTree = NULL;
 
-    if (flags != 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  _("Unsupported flags (0x%x) passed to %s"),
-                  flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto failure;
@@ -3576,12 +3581,7 @@ esxDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_VirtualMachineSnapshotTree *currentSnapshotTree = NULL;
 
-    if (flags != 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  _("Unsupported flags (0x%x) passed to %s"),
-                  flags, __FUNCTION__);
-        return NULL;
-    }
+    virCheckFlags(0, NULL);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto cleanup;
@@ -3614,12 +3614,7 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
 
-    if (flags != 0) {
-        ESX_ERROR(VIR_ERR_INVALID_ARG,
-                  _("Unsupported flags (0x%x) passed to %s"),
-                  flags, __FUNCTION__);
-        return -1;
-    }
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto failure;
@@ -3671,6 +3666,8 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_Boolean removeChildren = esxVI_Boolean_False;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         goto failure;

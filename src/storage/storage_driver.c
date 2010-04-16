@@ -1681,11 +1681,7 @@ storageVolumeWipe(virStorageVolPtr obj,
     virStorageVolDefPtr vol = NULL;
     int ret = -1;
 
-    if (flags != 0) {
-        virStorageReportError(VIR_ERR_INVALID_ARG,
-                              _("Unsupported flags (0x%x) passed to '%s'"), flags, __FUNCTION__);
-        goto out;
-    }
+    virCheckFlags(0, -1);
 
     storageDriverLock(driver);
     pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
