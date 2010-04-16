@@ -41,6 +41,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainChrDef monitor_chr;
     virConnectPtr conn;
     char *log = NULL;
+    char *emulator = NULL;
 
     if (!(conn = virGetConnect()))
         goto fail;
@@ -51,6 +52,26 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(vmdef = virDomainDefParseFile(driver.caps, xml,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
+
+    /*
+     * For test purposes, we may want to fake emulator's output by providing
+     * our own script instead of a real emulator. For this to work we need to
+     * specify a relative path in <emulator/> element, which, however, is not
+     * allowed by RelaxNG schema for domain XML. To work around it we add an
+     * extra '/' at the beginning of relative emulator path so that it looks
+     * like, e.g., "/./qemu.sh" or "/../emulator/qemu.sh" instead of
+     * "./qemu.sh" or "../emulator/qemu.sh" respectively. The following code
+     * detects such paths, strips the extra '/' and makes the path absolute.
+     */
+    if (vmdef->emulator && STRPREFIX(vmdef->emulator, "/.")) {
+        if (!(emulator = strdup(vmdef->emulator + 1)))
+            goto fail;
+        free(vmdef->emulator);
+        vmdef->emulator = NULL;
+        if (virAsprintf(&vmdef->emulator, "%s/qemuxml2argvdata/%s",
+                        abs_srcdir, emulator) < 0)
+            goto fail;
+    }
 
     if (extraFlags & QEMUD_CMD_FLAG_DOMID)
         vmdef->id = 6;
@@ -104,6 +125,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
         virResetLastError();
     }
 
+    if (emulator && *argv) {
+        free(*(char**) argv);
+        *argv = emulator;
+        emulator = NULL;
+    }
+
     len = 1; /* for trailing newline */
     tmp = qenv;
     while (*tmp) {
@@ -144,6 +171,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
  fail:
     free(log);
+    free(emulator);
     free(actualargv);
     if (argv) {
         tmp = argv;
