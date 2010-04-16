@@ -25,6 +25,7 @@ src/esx/esx_vi_methods.c
 src/esx/esx_vi_types.c
 src/esx/esx_vmx.c
 src/interface/netcf_driver.c
+src/internal.h
 src/libvirt.c
 src/lxc/lxc_container.c
 src/lxc/lxc_controller.c
