@@ -1380,13 +1380,16 @@ _iptablesCreateRuleInstance(int directionIn,
         return 0;
     }
 
+    if (rule->action == VIR_NWFILTER_RULE_ACTION_ACCEPT)
+        target = accept_target;
+    else {
+        target = "DROP";
+        match = NULL;
+    }
+
     if (match)
         virBufferVSprintf(&buf, " %s", match);
 
-    if (rule->action == VIR_NWFILTER_RULE_ACTION_ACCEPT)
-        target = accept_target;
-    else
-        target = "DROP";
 
     virBufferVSprintf(&buf,
                       " -j %s" CMD_DEF_POST CMD_SEPARATOR
