@@ -15,11 +15,13 @@
 # include "testutils.h"
 # include "qemu/qemu_conf.h"
 # include "datatypes.h"
+# include "cpu/cpu_map.h"
 
 # include "testutilsqemu.h"
 
 static char *progname;
 static char *abs_srcdir;
+static const char *abs_top_srcdir;
 static struct qemud_driver driver;
 
 # define MAX_FILE 4096
@@ -221,6 +223,7 @@ mymain(int argc, char **argv)
 {
     int ret = 0;
     char cwd[PATH_MAX];
+    char map[PATH_MAX];
 
     progname = argv[0];
 
@@ -232,6 +235,10 @@ mymain(int argc, char **argv)
     abs_srcdir = getenv("abs_srcdir");
     if (!abs_srcdir)
         abs_srcdir = getcwd(cwd, sizeof(cwd));
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+        abs_top_srcdir = "..";
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
@@ -245,6 +252,10 @@ mymain(int argc, char **argv)
     if (!(driver.spiceTLSx509certdir = strdup("/etc/pki/libvirt-spice")))
         return EXIT_FAILURE;
     if (!(driver.spicePassword = strdup("123456")))
+        return EXIT_FAILURE;
+
+    snprintf(map, PATH_MAX, "%s/src/cpu/cpu_map.xml", abs_top_srcdir);
+    if (cpuMapOverride(map) < 0)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, extraFlags, migrateFrom, expectError)       \
@@ -451,6 +462,15 @@ mymain(int argc, char **argv)
     DO_TEST("qemu-ns", 0, false);
 
     DO_TEST("smp", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
+
+    DO_TEST("cpu-topology1", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
+    DO_TEST("cpu-topology2", QEMUD_CMD_FLAG_SMP_TOPOLOGY, false);
+    DO_TEST("cpu-topology3", 0, false);
+    DO_TEST("cpu-minimum1", 0, false);
+    DO_TEST("cpu-minimum2", 0, false);
+    DO_TEST("cpu-exact1", 0, false);
+    DO_TEST("cpu-exact2", 0, false);
+    DO_TEST("cpu-strict1", 0, false);
 
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
