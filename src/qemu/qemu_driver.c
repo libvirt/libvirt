@@ -7112,17 +7112,29 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         close(tapfd);
     tapfd = -1;
 
-    if (!(nicstr = qemuBuildNicStr(net, NULL, vlan)))
-        goto try_remove;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (!(nicstr = qemuBuildNicDevStr(net, vlan)))
+            goto try_remove;
+    } else {
+        if (!(nicstr = qemuBuildNicStr(net, NULL, vlan)))
+            goto try_remove;
+    }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
-                                 &guestAddr) < 0) {
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto try_remove;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        if (qemuMonitorAddDevice(priv->mon, nicstr) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto try_remove;
+        }
+    } else {
+        if (qemuMonitorAddPCINetwork(priv->mon, nicstr,
+                                     &guestAddr) < 0) {
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            goto try_remove;
+        }
+        net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        memcpy(&net->info.addr.pci, &guestAddr, sizeof(guestAddr));
     }
-    net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    memcpy(&net->info.addr.pci, &guestAddr, sizeof(guestAddr));
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     ret = 0;
