@@ -46,6 +46,8 @@
 #include <sys/ioctl.h>
 #include <sys/un.h>
 
+#include <libxml/xpathInternals.h>
+
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
@@ -83,6 +85,8 @@
 
 #define QEMU_VNC_PORT_MIN  5900
 #define QEMU_VNC_PORT_MAX  65535
+
+#define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
 
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
@@ -545,6 +549,168 @@ static void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
     qemuDriverLock(driver);
     virDomainObjLock(obj);
     virDomainObjUnref(obj);
+}
+
+static void qemuDomainDefNamespaceFree(void *nsdata)
+{
+    qemuDomainCmdlineDefPtr cmd = nsdata;
+    unsigned int i;
+
+    if (!cmd)
+        return;
+
+    for (i = 0; i < cmd->num_args; i++)
+        VIR_FREE(cmd->args[i]);
+    for (i = 0; i < cmd->num_env; i++) {
+        VIR_FREE(cmd->env_name[i]);
+        VIR_FREE(cmd->env_value[i]);
+    }
+    VIR_FREE(cmd->args);
+    VIR_FREE(cmd->env_name);
+    VIR_FREE(cmd->env_value);
+    VIR_FREE(cmd);
+}
+
+static int qemuDomainDefNamespaceParse(xmlDocPtr xml,
+                                       xmlNodePtr root,
+                                       xmlXPathContextPtr ctxt,
+                                       void **data)
+{
+    qemuDomainCmdlineDefPtr cmd = NULL;
+    xmlNsPtr ns;
+    xmlNodePtr *nodes = NULL;
+    int n, i;
+
+    ns = xmlSearchNs(xml, root, BAD_CAST "qemu");
+    if (!ns)
+        /* this is fine; it just means there was no qemu namespace listed */
+        return 0;
+
+    if (STRNEQ((const char *)ns->href, QEMU_NAMESPACE_HREF)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Found namespace '%s' doesn't match expected '%s'"),
+                        ns->href, QEMU_NAMESPACE_HREF);
+        return -1;
+    }
+
+    if (xmlXPathRegisterNs(ctxt, ns->prefix, ns->href) < 0) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Failed to register xml namespace '%s'"), ns->href);
+        return -1;
+    }
+
+    if (VIR_ALLOC(cmd) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    /* first handle the extra command-line arguments */
+    n = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes);
+    if (n < 0)
+        /* virXPathNodeSet already set the error */
+        goto error;
+
+    if (n && VIR_ALLOC_N(cmd->args, n) < 0)
+        goto no_memory;
+
+    for (i = 0; i < n; i++) {
+        cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");
+        if (cmd->args[cmd->num_args] == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("No qemu command-line argument specified"));
+            goto error;
+        }
+        cmd->num_args++;
+    }
+
+    VIR_FREE(nodes);
+
+    /* now handle the extra environment variables */
+    n = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes);
+    if (n < 0)
+        /* virXPathNodeSet already set the error */
+        goto error;
+
+    if (n && VIR_ALLOC_N(cmd->env_name, n) < 0)
+        goto no_memory;
+
+    if (n && VIR_ALLOC_N(cmd->env_value, n) < 0)
+        goto no_memory;
+
+    for (i = 0; i < n; i++) {
+        char *tmp;
+
+        tmp = virXMLPropString(nodes[i], "name");
+        if (tmp == NULL) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("No qemu environment name specified"));
+            goto error;
+        }
+        if (tmp[0] == '\0') {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Empty qemu environment name specified"));
+            goto error;
+        }
+        if (!c_isalpha(tmp[0]) && tmp[0] != '_') {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Invalid environment name, it must begin with a letter or underscore"));
+            goto error;
+        }
+        if (strspn(tmp, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(tmp)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            "%s", _("Invalid environment name, it must contain only alphanumerics and underscore"));
+            goto error;
+        }
+
+        cmd->env_name[cmd->num_env] = tmp;
+
+        cmd->env_value[cmd->num_env] = virXMLPropString(nodes[i], "value");
+        /* a NULL value for command is allowed, since it might be empty */
+        cmd->num_env++;
+    }
+
+    VIR_FREE(nodes);
+
+    *data = cmd;
+
+    return 0;
+
+no_memory:
+    virReportOOMError();
+
+error:
+    VIR_FREE(nodes);
+    qemuDomainDefNamespaceFree(cmd);
+    return -1;
+}
+
+static int qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
+                                           void *nsdata)
+{
+    qemuDomainCmdlineDefPtr cmd = nsdata;
+    unsigned int i;
+
+    if (!cmd->num_args && !cmd->num_env)
+        return 0;
+
+    virBufferAddLit(buf, "  <qemu:commandline>\n");
+    for (i = 0; i < cmd->num_args; i++)
+        virBufferEscapeString(buf, "    <qemu:arg value='%s'/>\n",
+                              cmd->args[i]);
+    for (i = 0; i < cmd->num_env; i++) {
+        virBufferVSprintf(buf, "    <qemu:env name='%s'", cmd->env_name[i]);
+        if (cmd->env_value[i])
+            virBufferEscapeString(buf, " value='%s'", cmd->env_value[i]);
+        virBufferAddLit(buf, "/>\n");
+    }
+    virBufferAddLit(buf, "  </qemu:commandline>\n");
+
+    return 0;
+}
+
+static const char *qemuDomainDefNamespaceHref(void)
+{
+    return "xmlns:qemu='" QEMU_NAMESPACE_HREF "'";
 }
 
 static int qemuCgroupControllerActive(struct qemud_driver *driver,
@@ -1395,6 +1561,12 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
                          "%s", _("cannot get the host uuid"));
         goto err_exit;
     }
+
+    /* Domain Namespace XML parser hooks */
+    caps->ns.parse = qemuDomainDefNamespaceParse;
+    caps->ns.free = qemuDomainDefNamespaceFree;
+    caps->ns.format = qemuDomainDefNamespaceFormatXML;
+    caps->ns.href = qemuDomainDefNamespaceHref;
 
     /* Security driver data */
     if (driver->securityPrimaryDriver) {

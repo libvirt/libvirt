@@ -166,6 +166,17 @@ struct qemud_driver {
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;
 typedef qemuDomainPCIAddressSet *qemuDomainPCIAddressSetPtr;
 
+typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
+typedef qemuDomainCmdlineDef *qemuDomainCmdlineDefPtr;
+struct _qemuDomainCmdlineDef {
+    unsigned int num_args;
+    char **args;
+
+    unsigned int num_env;
+    char **env_name;
+    char **env_value;
+};
+
 /* Port numbers used for KVM migration. */
 # define QEMUD_MIGRATION_FIRST_PORT 49152
 # define QEMUD_MIGRATION_NUM_PORTS 64

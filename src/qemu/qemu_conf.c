@@ -4882,6 +4882,20 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT(current_snapshot->def->name);
     }
 
+    if (def->namespaceData) {
+        qemuDomainCmdlineDefPtr cmd;
+
+        cmd = def->namespaceData;
+        for (i = 0; i < cmd->num_args; i++)
+            ADD_ARG_LIT(cmd->args[i]);
+        for (i = 0; i < cmd->num_env; i++) {
+            if (cmd->env_value[i])
+                ADD_ENV_PAIR(cmd->env_name[i], cmd->env_value[i]);
+            else
+                ADD_ENV_PAIR(cmd->env_name[i], "");
+        }
+    }
+
     ADD_ARG(NULL);
     ADD_ENV(NULL);
 
