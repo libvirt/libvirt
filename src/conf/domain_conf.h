@@ -889,6 +889,9 @@ struct _virDomainDef {
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
     virCPUDefPtr cpu;
+
+    void *namespaceData;
+    virDomainXMLNamespace ns;
 };
 
 /* Guest VM runtime state */

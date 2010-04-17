@@ -753,6 +753,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virCPUDefFree(def->cpu);
 
+    if (def->namespaceData && def->ns.free)
+        (def->ns.free)(def->namespaceData);
+
     VIR_FREE(def);
 }
 
@@ -4030,7 +4033,10 @@ static char *virDomainDefDefaultEmulator(virDomainDefPtr def,
 }
 
 static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
-                                            xmlXPathContextPtr ctxt, int flags)
+                                            xmlDocPtr xml,
+                                            xmlNodePtr root,
+                                            xmlXPathContextPtr ctxt,
+                                            int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
@@ -4734,6 +4740,16 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
     }
 
+    /* we have to make a copy of all of the callback pointers here since
+     * we won't have the virCaps structure available during free
+     */
+    def->ns = caps->ns;
+
+    if (def->ns.parse) {
+        if ((def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
+            goto error;
+    }
+
     /* Auto-add any implied controllers which aren't present
      */
     if (virDomainDefAddImplicitControllers(def) < 0)
@@ -4754,6 +4770,7 @@ no_memory:
 
 
 static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
+                                            xmlDocPtr xml,
                                             xmlXPathContextPtr ctxt)
 {
     char *tmp = NULL;
@@ -4773,7 +4790,7 @@ static virDomainObjPtr virDomainObjParseXML(virCapsPtr caps,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(caps, ctxt,
+    obj->def = virDomainDefParseXML(caps, xml, config, ctxt,
                                     VIR_DOMAIN_XML_INTERNAL_STATUS);
     ctxt->node = oldnode;
     if (!obj->def)
@@ -4864,7 +4881,7 @@ virDomainDefPtr virDomainDefParseNode(virCapsPtr caps,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(caps, ctxt, flags);
+    def = virDomainDefParseXML(caps, xml, root, ctxt, flags);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -4907,7 +4924,7 @@ virDomainObjPtr virDomainObjParseNode(virCapsPtr caps,
     }
 
     ctxt->node = root;
-    obj = virDomainObjParseXML(caps, ctxt);
+    obj = virDomainObjParseXML(caps, xml, ctxt);
 
 cleanup:
     xmlXPathFreeContext(ctxt);
@@ -6159,10 +6176,12 @@ char *virDomainDefFormat(virDomainDefPtr def,
     if (def->id == -1)
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
+    virBufferVSprintf(&buf, "<domain type='%s'", type);
     if (!(flags & VIR_DOMAIN_XML_INACTIVE))
-        virBufferVSprintf(&buf, "<domain type='%s' id='%d'>\n", type, def->id);
-    else
-        virBufferVSprintf(&buf, "<domain type='%s'>\n", type);
+        virBufferVSprintf(&buf, " id='%d'", def->id);
+    if (def->namespaceData && def->ns.href)
+        virBufferVSprintf(&buf, " %s", (def->ns.href)());
+    virBufferAddLit(&buf, ">\n");
 
     virBufferEscapeString(&buf, "  <name>%s</name>\n", def->name);
 
@@ -6420,6 +6439,11 @@ char *virDomainDefFormat(virDomainDefPtr def,
                                       def->seclabel.imagelabel);
             virBufferAddLit(&buf, "  </seclabel>\n");
         }
+    }
+
+    if (def->namespaceData && def->ns.format) {
+        if ((def->ns.format)(&buf, def->namespaceData) < 0)
+            goto cleanup;
     }
 
     virBufferAddLit(&buf, "</domain>\n");
