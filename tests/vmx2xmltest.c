@@ -145,6 +145,7 @@ mymain(int argc, char **argv)
     DO_TEST("floppy-device", "floppy-device", esxVI_APIVersion_25);
 
     DO_TEST("ethernet-e1000", "ethernet-e1000", esxVI_APIVersion_25);
+    DO_TEST("ethernet-vmxnet2", "ethernet-vmxnet2", esxVI_APIVersion_25);
 
     DO_TEST("ethernet-custom", "ethernet-custom", esxVI_APIVersion_25);
     DO_TEST("ethernet-bridged", "ethernet-bridged", esxVI_APIVersion_25);

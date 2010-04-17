@@ -307,10 +307,11 @@ ethernet0.checkMACAddress = "false"
         <dd>
             AMD PCnet32 network card for older guests.
         </dd>
-        <dt><code>vmxnet</code>, <code>vmxnet3</code></dt>
+        <dt><code>vmxnet</code>, <code>vmxnet2</code>, <code>vmxnet3</code></dt>
         <dd>
             Special VMware VMXnet network card, requires VMware tools inside
-            the guest.
+            the guest. See <a href="http://kb.vmware.com/kb/1001805">VMware KB1001805</a>
+            for details.
         </dd>
         <dt><code>e1000</code></dt>
         <dd>

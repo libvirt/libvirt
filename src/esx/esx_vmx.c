@@ -265,6 +265,7 @@ def->disks[0]...
 
 def->nets[0]...
 ->model = <model>                 <=>   ethernet0.virtualDev = "<model>"        # default depends on guestOS value
+                                        ethernet0.features = "15"               # if present and virtualDev is "vmxnet" => vmxnet2 (enhanced)
 
 
                                         ethernet0.addressType = "generated"     # default to "generated"
@@ -1705,6 +1706,9 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     char virtualDev_name[48] = "";
     char *virtualDev = NULL;
 
+    char features_name[48] = "";
+    long long features = 0;
+
     char vnet_name[48] = "";
     char *vnet = NULL;
 
@@ -1737,6 +1741,7 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     ESX_BUILD_VMX_NAME(generatedAddress);
     ESX_BUILD_VMX_NAME(address);
     ESX_BUILD_VMX_NAME(virtualDev);
+    ESX_BUILD_VMX_NAME(features);
     ESX_BUILD_VMX_NAME(networkName);
     ESX_BUILD_VMX_NAME(vnet);
 
@@ -1797,21 +1802,34 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         goto failure;
     }
 
-    /* vmx:virtualDev -> def:model */
-    if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev, 1) < 0) {
+    /* vmx:virtualDev, vmx:features -> def:model */
+    if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev, 1) < 0 ||
+        esxUtil_GetConfigLong(conf, features_name, &features, 0, 1) < 0) {
         goto failure;
     }
 
-    if (virtualDev != NULL &&
-        STRCASENEQ(virtualDev, "vlance") &&
-        STRCASENEQ(virtualDev, "vmxnet") &&
-        STRCASENEQ(virtualDev, "vmxnet3") &&
-        STRCASENEQ(virtualDev, "e1000")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                    "'vmxnet3' or 'e1000' but found '%s'"), virtualDev_name,
-                  virtualDev);
-        goto failure;
+    if (virtualDev != NULL) {
+        if (STRCASENEQ(virtualDev, "vlance") &&
+            STRCASENEQ(virtualDev, "vmxnet") &&
+            STRCASENEQ(virtualDev, "vmxnet3") &&
+            STRCASENEQ(virtualDev, "e1000")) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
+                        "'vmxnet3' or 'e1000' but found '%s'"), virtualDev_name,
+                      virtualDev);
+            goto failure;
+        }
+
+        if (STRCASEEQ(virtualDev, "vmxnet") && features == 15) {
+            VIR_FREE(virtualDev);
+
+            virtualDev = strdup("vmxnet2");
+
+            if (virtualDev == NULL) {
+                virReportOOMError();
+                goto failure;
+            }
+        }
     }
 
     /* vmx:networkName -> def:data.bridge.brname */
@@ -2744,21 +2762,29 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
 
     virBufferVSprintf(buffer, "ethernet%d.present = \"true\"\n", controller);
 
-    /* def:model -> vmx:virtualDev */
+    /* def:model -> vmx:virtualDev, vmx:features */
     if (def->model != NULL) {
         if (STRCASENEQ(def->model, "vlance") &&
             STRCASENEQ(def->model, "vmxnet") &&
+            STRCASENEQ(def->model, "vmxnet2") &&
             STRCASENEQ(def->model, "vmxnet3") &&
             STRCASENEQ(def->model, "e1000")) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML entry 'devices/interfase/model' "
-                        "to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
-                        "but found '%s'"), def->model);
+                        "to be 'vlance' or 'vmxnet' or 'vmxnet2' or 'vmxnet3' "
+                        "or 'e1000' but found '%s'"), def->model);
             return -1;
         }
 
-        virBufferVSprintf(buffer, "ethernet%d.virtualDev = \"%s\"\n",
-                          controller, def->model);
+        if (STRCASEEQ(def->model, "vmxnet2")) {
+            virBufferVSprintf(buffer, "ethernet%d.virtualDev = \"vmxnet\"\n",
+                              controller);
+            virBufferVSprintf(buffer, "ethernet%d.features = \"15\"\n",
+                              controller);
+        } else {
+            virBufferVSprintf(buffer, "ethernet%d.virtualDev = \"%s\"\n",
+                              controller, def->model);
+        }
     }
 
     /* def:type, def:ifname -> vmx:connectionType */
