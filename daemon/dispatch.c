@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include "dispatch.h"
 #include "remote.h"
@@ -339,10 +340,11 @@ cleanup:
 }
 
 
-int
+static int
 remoteDispatchClientCall (struct qemud_server *server,
                           struct qemud_client *client,
-                          struct qemud_client_message *msg);
+                          struct qemud_client_message *msg,
+                          bool qemu_protocol);
 
 
 /*
@@ -359,12 +361,13 @@ remoteDispatchClientCall (struct qemud_server *server,
  * Returns 0 if the message was dispatched, -1 upon fatal error
  */
 int
-remoteDispatchClientRequest (struct qemud_server *server,
-                             struct qemud_client *client,
-                             struct qemud_client_message *msg)
+remoteDispatchClientRequest(struct qemud_server *server,
+                            struct qemud_client *client,
+                            struct qemud_client_message *msg)
 {
     int ret;
     remote_error rerr;
+    bool qemu_call;
 
     DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
           msg->hdr.prog, msg->hdr.vers, msg->hdr.type,
@@ -373,22 +376,33 @@ remoteDispatchClientRequest (struct qemud_server *server,
     memset(&rerr, 0, sizeof rerr);
 
     /* Check version, etc. */
-    if (msg->hdr.prog != REMOTE_PROGRAM) {
+    if (msg->hdr.prog == REMOTE_PROGRAM)
+        qemu_call = false;
+    else if (msg->hdr.prog == QEMU_PROGRAM)
+        qemu_call = true;
+    else {
         remoteDispatchFormatError (&rerr,
-                                   _("program mismatch (actual %x, expected %x)"),
-                                   msg->hdr.prog, REMOTE_PROGRAM);
+                                   _("program mismatch (actual %x, expected %x or %x)"),
+                                   msg->hdr.prog, REMOTE_PROGRAM, QEMU_PROGRAM);
         goto error;
     }
-    if (msg->hdr.vers != REMOTE_PROTOCOL_VERSION) {
+
+    if (!qemu_call && msg->hdr.vers != REMOTE_PROTOCOL_VERSION) {
         remoteDispatchFormatError (&rerr,
                                    _("version mismatch (actual %x, expected %x)"),
                                    msg->hdr.vers, REMOTE_PROTOCOL_VERSION);
         goto error;
     }
+    else if (qemu_call && msg->hdr.vers != QEMU_PROTOCOL_VERSION) {
+        remoteDispatchFormatError (&rerr,
+                                   _("version mismatch (actual %x, expected %x)"),
+                                   msg->hdr.vers, QEMU_PROTOCOL_VERSION);
+        goto error;
+    }
 
     switch (msg->hdr.type) {
     case REMOTE_CALL:
-        return remoteDispatchClientCall(server, client, msg);
+        return remoteDispatchClientCall(server, client, msg, qemu_call);
 
     case REMOTE_STREAM:
         /* Since stream data is non-acked, async, we may continue to received
@@ -430,10 +444,11 @@ error:
  *
  * Returns 0 if the reply was sent, or -1 upon fatal error
  */
-int
+static int
 remoteDispatchClientCall (struct qemud_server *server,
                           struct qemud_client *client,
-                          struct qemud_client_message *msg)
+                          struct qemud_client_message *msg,
+                          bool qemu_protocol)
 {
     XDR xdr;
     remote_error rerr;
@@ -472,7 +487,10 @@ remoteDispatchClientCall (struct qemud_server *server,
         }
     }
 
-    data = remoteGetDispatchData(msg->hdr.proc);
+    if (qemu_protocol)
+        data = qemuGetDispatchData(msg->hdr.proc);
+    else
+        data = remoteGetDispatchData(msg->hdr.proc);
 
     if (!data) {
         remoteDispatchFormatError (&rerr, _("unknown procedure: %d"),

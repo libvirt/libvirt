@@ -45,6 +45,7 @@
 # include <rpc/types.h>
 # include <rpc/xdr.h>
 # include "remote_protocol.h"
+# include "qemu_protocol.h"
 # include "logging.h"
 # include "threads.h"
 

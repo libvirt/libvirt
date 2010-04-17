@@ -2249,7 +2249,7 @@ typedef enum remote_message_status remote_message_status;
 struct remote_message_header {
         u_int prog;
         u_int vers;
-        remote_procedure proc;
+        int proc;
         remote_message_type type;
         u_int serial;
         remote_message_status status;

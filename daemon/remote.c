@@ -57,6 +57,7 @@
 #include "memory.h"
 #include "util.h"
 #include "stream.h"
+#include "libvirt/libvirt-qemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 #define REMOTE_DEBUG(fmt, ...) DEBUG(fmt, __VA_ARGS__)
@@ -81,9 +82,14 @@ static void make_nonnull_domain_snapshot (remote_nonnull_domain_snapshot *snapsh
 
 
 #include "remote_dispatch_prototypes.h"
+#include "qemu_dispatch_prototypes.h"
 
 static const dispatch_data const dispatch_table[] = {
 #include "remote_dispatch_table.h"
+};
+
+static const dispatch_data const qemu_dispatch_table[] = {
+#include "qemu_dispatch_table.h"
 };
 
 const dispatch_data const *remoteGetDispatchData(int proc)
@@ -94,6 +100,16 @@ const dispatch_data const *remoteGetDispatchData(int proc)
     }
 
     return &(dispatch_table[proc]);
+}
+
+const dispatch_data const *qemuGetDispatchData(int proc)
+{
+    if (proc >= ARRAY_CARDINALITY(qemu_dispatch_table) ||
+        qemu_dispatch_table[proc].fn == NULL) {
+        return NULL;
+    }
+
+    return &(qemu_dispatch_table[proc]);
 }
 
 /* Prototypes */
@@ -6560,6 +6576,35 @@ remoteDispatchDomainGetBlockInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
     ret->physical = info.physical;
 
     virDomainFree(dom);
+
+    return 0;
+}
+
+static int
+qemuDispatchMonitorCommand (struct qemud_server *server ATTRIBUTE_UNUSED,
+                            struct qemud_client *client ATTRIBUTE_UNUSED,
+                            virConnectPtr conn,
+                            remote_message_header *hdr ATTRIBUTE_UNUSED,
+                            remote_error *rerr,
+                            qemu_monitor_command_args *args,
+                            qemu_monitor_command_ret *ret)
+{
+    virDomainPtr domain;
+
+    domain = get_nonnull_domain(conn, args->domain);
+    if (domain == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainQemuMonitorCommand(domain, args->cmd, &ret->result,
+                                    args->flags) == -1) {
+        virDomainFree(domain);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    virDomainFree(domain);
 
     return 0;
 }

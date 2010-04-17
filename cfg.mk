@@ -416,7 +416,7 @@ sc_prohibit_trailing_blank_lines:
 	test $$found = 0
 
 # Regex for grep -E that exempts generated files from style rules.
-preprocessor_exempt = (remote_(driver|protocol)\.h)$$
+preprocessor_exempt = ((qemu|remote)_(driver|protocol)\.h)$$
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then			\

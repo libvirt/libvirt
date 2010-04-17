@@ -155,7 +155,9 @@ REMOTE_DRIVER_SOURCES =						\
 		gnutls_1_0_compat.h			\
 		remote/remote_driver.c remote/remote_driver.h	\
 		remote/remote_protocol.c			\
-		remote/remote_protocol.h
+		remote/remote_protocol.h			\
+		remote/qemu_protocol.c				\
+		remote/qemu_protocol.h
 
 EXTRA_DIST += remote/remote_protocol.x remote/rpcgen_fix.pl
 
@@ -489,7 +491,7 @@ if HAVE_RPCGEN
 # Support for non-GLIB rpcgen is here as a convenience for
 # non-Linux people needing to test changes during dev.
 #
-rpcgen:
+rpcgen-normal:
 	rm -f rp.c-t rp.h-t rp.c-t1 rp.c-t2 rp.h-t1
 	$(RPCGEN) -h -o rp.h-t $(srcdir)/remote/remote_protocol.x
 	$(RPCGEN) -c -o rp.c-t $(srcdir)/remote/remote_protocol.x
@@ -506,6 +508,37 @@ else
 	mv -f rp.h-t $(srcdir)/remote/remote_protocol.h
 	mv -f rp.c-t $(srcdir)/remote/remote_protocol.c
 endif
+
+rpcgen-qemu:
+	rm -f rp_qemu.c-t rp_qemu.h-t rp_qemu.c-t1 rp_qemu.c-t2 rp_qemu.h-t1
+	$(RPCGEN) -h -o rp_qemu.h-t $(srcdir)/remote/qemu_protocol.x
+	$(RPCGEN) -c -o rp_qemu.c-t $(srcdir)/remote/qemu_protocol.x
+if HAVE_GLIBC_RPCGEN
+	perl -w $(srcdir)/remote/rpcgen_fix.pl rp_qemu.h-t > rp_qemu.h-t1
+	perl -w $(srcdir)/remote/rpcgen_fix.pl rp_qemu.c-t > rp_qemu.c-t1
+	(echo '#include <config.h>'; cat rp_qemu.c-t1) > rp_qemu.c-t2
+	chmod 0444 rp_qemu.c-t2 rp_qemu.h-t1
+	mv -f rp_qemu.h-t1 $(srcdir)/remote/qemu_protocol.h
+	mv -f rp_qemu.c-t2 $(srcdir)/remote/qemu_protocol.c
+	rm -f rp_qemu.c-t rp_qemu.h-t rp_qemu.c-t1
+else
+	chmod 0444 rp_qemu.c-t rp_qemu.h-t
+	mv -f rp_qemu.h-t $(srcdir)/remote/qemu_protocol.h
+	mv -f rp_qemu.c-t $(srcdir)/remote/qemu_protocol.c
+endif
+
+#
+# Maintainer-only target for re-generating the derived .c/.h source
+# files, which are actually derived from the .x file.
+#
+# For committing protocol changes to GIT, the GLIBC rpcgen *must*
+# be used.
+#
+# Support for non-GLIB rpcgen is here as a convenience for
+# non-Linux people needing to test changes during dev.
+#
+rpcgen: rpcgen-normal rpcgen-qemu
+
 endif
 
 remote/remote_protocol.c: remote/remote_protocol.h

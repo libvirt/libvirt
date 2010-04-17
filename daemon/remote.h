@@ -35,6 +35,13 @@ typedef union {
 # include "remote_dispatch_ret.h"
 } dispatch_ret;
 
+typedef union {
+# include "qemu_dispatch_args.h"
+} qemu_dispatch_args;
+
+typedef union {
+# include "qemu_dispatch_ret.h"
+} qemu_dispatch_ret;
 
 
 
@@ -67,6 +74,7 @@ typedef struct {
 
 
 const dispatch_data const *remoteGetDispatchData(int proc);
+const dispatch_data const *qemuGetDispatchData(int proc);
 
 
 

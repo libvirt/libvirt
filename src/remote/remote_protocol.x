@@ -2122,7 +2122,7 @@ const REMOTE_MESSAGE_HEADER_XDR_LEN = 4;
 struct remote_message_header {
     unsigned prog;              /* REMOTE_PROGRAM */
     unsigned vers;              /* REMOTE_PROTOCOL_VERSION */
-    remote_procedure proc;      /* REMOTE_PROC_x */
+    int proc;      /* REMOTE_PROC_x */
     remote_message_type type;
     unsigned serial;            /* Serial number of message. */
     remote_message_status status;
