@@ -129,6 +129,20 @@ virSecretFreeName(void *secret_, const char *name ATTRIBUTE_UNUSED)
 }
 
 /**
+ * virNWFilterPoolFreeName:
+ * @pool: a nwfilter pool object
+ *
+ * Destroy the nwfilter pool object, this is just used by the nwfilter pool hash callback.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+virNWFilterPoolFreeName(virNWFilterPtr pool, const char *name ATTRIBUTE_UNUSED)
+{
+    return (virUnrefNWFilter(pool));
+}
+
+/**
  * virDomainSnapshotFreeName:
  * @snapshot: a domain snapshotobject
  *
@@ -212,6 +226,8 @@ failed:
             virHashFree(ret->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
         if (ret->secrets != NULL)
             virHashFree(ret->secrets, virSecretFreeName);
+        if (ret->nwfilterPools != NULL)
+            virHashFree(ret->nwfilterPools, (virHashDeallocator) virNWFilterPoolFreeName);
 
         virMutexDestroy(&ret->lock);
         VIR_FREE(ret);
@@ -245,6 +261,8 @@ virReleaseConnect(virConnectPtr conn) {
         virHashFree(conn->nodeDevices, (virHashDeallocator) virNodeDeviceFree);
     if (conn->secrets != NULL)
         virHashFree(conn->secrets, virSecretFreeName);
+    if (conn->nwfilterPools != NULL)
+        virHashFree(conn->nwfilterPools, (virHashDeallocator) virNWFilterPoolFreeName);
 
     virResetError(&conn->err);
 
@@ -292,6 +310,8 @@ virUnrefConnect(virConnectPtr conn) {
             conn->deviceMonitor->close (conn);
         if (conn->secretDriver)
             conn->secretDriver->close (conn);
+        if (conn->nwfilterDriver)
+            conn->nwfilterDriver->close (conn);
         if (conn->driver)
             conn->driver->close (conn);
 
