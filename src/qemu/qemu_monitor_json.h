@@ -196,4 +196,8 @@ int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
+int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
+                                    const char *cmd_str,
+                                    char **reply_str);
+
 #endif /* QEMU_MONITOR_JSON_H */

@@ -389,4 +389,6 @@ int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
+int qemuMonitorArbitraryCommand(qemuMonitorPtr mon, const char *cmd, char **reply);
+
 #endif /* QEMU_MONITOR_H */

@@ -121,6 +121,7 @@ struct _qemuDomainObjPrivate {
     qemuMonitorPtr mon;
     virDomainChrDefPtr monConfig;
     int monJSON;
+    int monitor_warned;
 
     int nvcpupids;
     int *vcpupids;
@@ -3715,6 +3716,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     else
 #endif
         priv->monJSON = 0;
+
+    priv->monitor_warned = 0;
 
     if ((ret = virFileDeletePid(driver->stateDir, vm->def->name)) != 0) {
         virReportSystemError(ret,
@@ -12561,6 +12564,57 @@ cleanup:
     return ret;
 }
 
+static int qemuDomainMonitorCommand(virDomainPtr domain, const char *cmd,
+                                    char **result, unsigned int flags)
+{
+    struct qemud_driver *driver = domain->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, domain->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_OPERATION_INVALID,
+                        "%s", _("domain is not running"));
+        goto cleanup;
+   }
+
+    priv = vm->privateData;
+
+    if (!priv->monitor_warned) {
+        VIR_INFO("Qemu monitor command '%s' executed; libvirt results may be unpredictable!",
+                 cmd);
+        priv->monitor_warned = 1;
+    }
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        goto cleanup;
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+    if (qemuDomainObjEndJob(vm) == 0) {
+        vm = NULL;
+        goto cleanup;
+    }
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+    return ret;
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -12660,7 +12714,7 @@ static virDriver qemuDriver = {
     qemuDomainSnapshotCurrent, /* domainSnapshotCurrent */
     qemuDomainRevertToSnapshot, /* domainRevertToSnapshot */
     qemuDomainSnapshotDelete, /* domainSnapshotDelete */
-    NULL, /* qemuDomainMonitorCommand */
+    qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
 };
 
 

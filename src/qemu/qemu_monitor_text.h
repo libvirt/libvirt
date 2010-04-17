@@ -194,4 +194,7 @@ int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
+int qemuMonitorTextArbitraryCommand(qemuMonitorPtr mon, const char *cmd,
+                                    char **reply);
+
 #endif /* QEMU_MONITOR_TEXT_H */

@@ -2345,3 +2345,31 @@ int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     virJSONValueFree(reply);
     return ret;
 }
+
+int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
+                                    const char *cmd_str,
+                                    char **reply_str)
+{
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    cmd = virJSONValueFromString(cmd_str);
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    *reply_str = virJSONValueToString(reply);
+    if (!(*reply_str))
+        goto cleanup;
+
+    ret = 0;
+
+cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
+    return ret;
+}
