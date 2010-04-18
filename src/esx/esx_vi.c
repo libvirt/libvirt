@@ -1968,6 +1968,13 @@ esxVI_LookupHostSystemByIp(esxVI_Context *ctx, const char *ipAddress,
         goto failure;
     }
 
+    if (managedObjectReference == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find host system with IP address '%s'"),
+                     ipAddress);
+        goto failure;
+    }
+
     if (esxVI_LookupObjectContentByType(ctx, managedObjectReference,
                                         "HostSystem", propertyNameList,
                                         esxVI_Boolean_False, hostSystem) < 0) {
