@@ -38,38 +38,13 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-#define ESX_VI__SOAP__REQUEST_HEADER                                          \
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
-    "<soapenv:Envelope "                                                      \
-      "xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "          \
-      "xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" "          \
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "              \
-      "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"                       \
-    "<soapenv:Body>"
 
-#define ESX_VI__SOAP__REQUEST_FOOTER                                          \
-    "</soapenv:Body>"                                                         \
-    "</soapenv:Envelope>"
 
 #define ESX_VI__SOAP__RESPONSE_XPATH(_type)                                   \
     ((char *)"/soapenv:Envelope/soapenv:Body/"                                \
                "vim:"_type"Response/vim:returnval")
 
-#define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type)                       \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "<");                                        \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, " xmlns=\"urn:vim25\" xsi:type=\"");         \
-        virBufferAdd(_buffer, _type, -1);                                     \
-        virBufferAddLit(_buffer, "\">");                                      \
-    } while (0)
 
-#define ESV_VI__XML_TAG__CLOSE(_buffer, _element)                             \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "</");                                       \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, ">");                                        \
-    } while (0)
 
 #define ESX_VI__TEMPLATE__ALLOC(_type)                                        \
     int                                                                       \
@@ -77,6 +52,8 @@
     {                                                                         \
         return esxVI_Alloc((void **)ptrptr, sizeof(esxVI_##_type));           \
     }
+
+
 
 #define ESX_VI__TEMPLATE__FREE(_type, _body)                                  \
     void                                                                      \

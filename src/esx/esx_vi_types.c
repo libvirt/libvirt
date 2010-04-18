@@ -39,26 +39,6 @@
 
 
 
-#define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type)                       \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "<");                                        \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, " xmlns=\"urn:vim25\" xsi:type=\"");         \
-        virBufferAdd(_buffer, _type, -1);                                     \
-        virBufferAddLit(_buffer, "\">");                                      \
-    } while (0)
-
-
-
-#define ESV_VI__XML_TAG__CLOSE(_buffer, _element)                             \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "</");                                       \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, ">");                                        \
-    } while (0)
-
-
-
 #define ESX_VI__TEMPLATE__ALLOC(__type)                                       \
     int                                                                       \
     esxVI_##__type##_Alloc(esxVI_##__type **ptrptr)                           \

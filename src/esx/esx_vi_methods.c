@@ -34,23 +34,6 @@
 
 
 
-#define ESX_VI__SOAP__REQUEST_HEADER                                          \
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
-    "<soapenv:Envelope "                                                      \
-      "xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "          \
-      "xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" "          \
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "              \
-      "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"                       \
-    "<soapenv:Body>"
-
-
-
-#define ESX_VI__SOAP__REQUEST_FOOTER                                          \
-    "</soapenv:Body>"                                                         \
-    "</soapenv:Envelope>"
-
-
-
 #define ESX_VI__METHOD__CHECK_OUTPUT__None                                    \
     /* nothing */
 
