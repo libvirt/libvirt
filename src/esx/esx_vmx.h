@@ -58,7 +58,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
 virDomainDefPtr
 esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
                    const char *datastoreName, const char *directoryName,
-                   esxVI_APIVersion apiVersion);
+                   esxVI_ProductVersion productVersion);
 
 int
 esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
@@ -96,7 +96,7 @@ esxVMX_FormatFileName(esxVI_Context *ctx, const char *src);
 
 char *
 esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
-                    esxVI_APIVersion apiVersion);
+                    esxVI_ProductVersion productVersion);
 
 int
 esxVMX_FormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);

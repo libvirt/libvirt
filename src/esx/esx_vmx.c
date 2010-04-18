@@ -725,7 +725,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
 virDomainDefPtr
 esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
                    const char *datastoreName, const char *directoryName,
-                   esxVI_APIVersion apiVersion)
+                   esxVI_ProductVersion productVersion)
 {
     virConfPtr conf = NULL;
     virDomainDefPtr def = NULL;
@@ -775,34 +775,33 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
         goto failure;
     }
 
-    switch (apiVersion) {
-      case esxVI_APIVersion_25:
+    /*
+     * virtualHW.version compatibility matrix:
+     *
+     *              4 7    API
+     *   ESX 3.5    +      2.5
+     *   ESX 4.0    + +    4.0
+     *   GSX 2.0    + +    2.5
+     */
+    switch (productVersion) {
+      case esxVI_ProductVersion_ESX35:
         if (virtualHW_version != 4) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting VMX entry 'virtualHW.version' to be 4 for "
-                        "VI API version 2.5 but found %lld"),
+                      _("Expecting VMX entry 'virtualHW.version' to be 4 "
+                        "but found %lld"),
                       virtualHW_version);
             goto failure;
         }
 
         break;
 
-      case esxVI_APIVersion_40:
+      case esxVI_ProductVersion_GSX20:
+      case esxVI_ProductVersion_ESX40:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
-                        "for VI API version 4.0 but found %lld"),
+                        "but found %lld"),
                       virtualHW_version);
-            goto failure;
-        }
-
-        break;
-
-      case esxVI_APIVersion_Unknown:
-        if (virtualHW_version != 4 && virtualHW_version != 7) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
-                        "but found %lld"), virtualHW_version);
             goto failure;
         }
 
@@ -810,7 +809,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Expecting VI API version 2.5 or 4.0"));
+                  _("Unexpected product version"));
         goto failure;
     }
 
@@ -2207,7 +2206,7 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
 
 char *
 esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
-                    esxVI_APIVersion apiVersion)
+                    esxVI_ProductVersion productVersion)
 {
     int i;
     int sched_cpu_affinity_length;
@@ -2228,18 +2227,19 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
     virBufferAddLit(&buffer, "config.version = \"8\"\n");
 
     /* vmx:virtualHW.version */
-    switch (apiVersion) {
-      case esxVI_APIVersion_25:
+    switch (productVersion) {
+      case esxVI_ProductVersion_ESX35:
         virBufferAddLit(&buffer, "virtualHW.version = \"4\"\n");
         break;
 
-      case esxVI_APIVersion_40:
+      case esxVI_ProductVersion_GSX20:
+      case esxVI_ProductVersion_ESX40:
         virBufferAddLit(&buffer, "virtualHW.version = \"7\"\n");
         break;
 
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Expecting VI API version 2.5 or 4.0"));
+                  _("Unexpected product version"));
         goto failure;
     }
 

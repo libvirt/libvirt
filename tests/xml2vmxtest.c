@@ -65,7 +65,8 @@ testESXCapsInit(void)
 }
 
 static int
-testCompareFiles(const char *xml, const char *vmx, esxVI_APIVersion apiVersion)
+testCompareFiles(const char *xml, const char *vmx,
+                 esxVI_ProductVersion productVersion)
 {
     int result = -1;
     char xmlData[MAX_FILE];
@@ -89,7 +90,7 @@ testCompareFiles(const char *xml, const char *vmx, esxVI_APIVersion apiVersion)
         goto failure;
     }
 
-    formatted = esxVMX_FormatConfig(NULL, def, apiVersion);
+    formatted = esxVMX_FormatConfig(NULL, def, productVersion);
 
     if (formatted == NULL) {
         goto failure;
@@ -112,7 +113,7 @@ testCompareFiles(const char *xml, const char *vmx, esxVI_APIVersion apiVersion)
 struct testInfo {
     const char *input;
     const char *output;
-    esxVI_APIVersion version;
+    esxVI_ProductVersion version;
 };
 
 static int
@@ -170,52 +171,52 @@ mymain(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    DO_TEST("minimal", "minimal", esxVI_APIVersion_25);
-    DO_TEST("minimal-64bit", "minimal-64bit", esxVI_APIVersion_25);
+    DO_TEST("minimal", "minimal", esxVI_ProductVersion_ESX35);
+    DO_TEST("minimal-64bit", "minimal-64bit", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("graphics-vnc", "graphics-vnc", esxVI_APIVersion_25);
+    DO_TEST("graphics-vnc", "graphics-vnc", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("scsi-driver", "scsi-driver", esxVI_APIVersion_25);
-    DO_TEST("scsi-writethrough", "scsi-writethrough", esxVI_APIVersion_25);
+    DO_TEST("scsi-driver", "scsi-driver", esxVI_ProductVersion_ESX35);
+    DO_TEST("scsi-writethrough", "scsi-writethrough", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("harddisk-scsi-file", "harddisk-scsi-file", esxVI_APIVersion_25);
-    DO_TEST("harddisk-ide-file", "harddisk-ide-file", esxVI_APIVersion_25);
+    DO_TEST("harddisk-scsi-file", "harddisk-scsi-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("harddisk-ide-file", "harddisk-ide-file", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("cdrom-scsi-file", "cdrom-scsi-file", esxVI_APIVersion_25);
-    DO_TEST("cdrom-scsi-device", "cdrom-scsi-device", esxVI_APIVersion_25);
-    DO_TEST("cdrom-ide-file", "cdrom-ide-file", esxVI_APIVersion_25);
-    DO_TEST("cdrom-ide-device", "cdrom-ide-device", esxVI_APIVersion_25);
+    DO_TEST("cdrom-scsi-file", "cdrom-scsi-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("cdrom-scsi-device", "cdrom-scsi-device", esxVI_ProductVersion_ESX35);
+    DO_TEST("cdrom-ide-file", "cdrom-ide-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("cdrom-ide-device", "cdrom-ide-device", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("floppy-file", "floppy-file", esxVI_APIVersion_25);
-    DO_TEST("floppy-device", "floppy-device", esxVI_APIVersion_25);
+    DO_TEST("floppy-file", "floppy-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("floppy-device", "floppy-device", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("ethernet-e1000", "ethernet-e1000", esxVI_APIVersion_25);
-    DO_TEST("ethernet-vmxnet2", "ethernet-vmxnet2", esxVI_APIVersion_25);
+    DO_TEST("ethernet-e1000", "ethernet-e1000", esxVI_ProductVersion_ESX35);
+    DO_TEST("ethernet-vmxnet2", "ethernet-vmxnet2", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("ethernet-custom", "ethernet-custom", esxVI_APIVersion_25);
-    DO_TEST("ethernet-bridged", "ethernet-bridged", esxVI_APIVersion_25);
+    DO_TEST("ethernet-custom", "ethernet-custom", esxVI_ProductVersion_ESX35);
+    DO_TEST("ethernet-bridged", "ethernet-bridged", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("ethernet-generated", "ethernet-generated", esxVI_APIVersion_25);
-    DO_TEST("ethernet-static", "ethernet-static", esxVI_APIVersion_25);
-    DO_TEST("ethernet-vpx", "ethernet-vpx", esxVI_APIVersion_25);
-    DO_TEST("ethernet-other", "ethernet-other", esxVI_APIVersion_25);
+    DO_TEST("ethernet-generated", "ethernet-generated", esxVI_ProductVersion_ESX35);
+    DO_TEST("ethernet-static", "ethernet-static", esxVI_ProductVersion_ESX35);
+    DO_TEST("ethernet-vpx", "ethernet-vpx", esxVI_ProductVersion_ESX35);
+    DO_TEST("ethernet-other", "ethernet-other", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("serial-file", "serial-file", esxVI_APIVersion_25);
-    DO_TEST("serial-device", "serial-device", esxVI_APIVersion_25);
-    DO_TEST("serial-pipe", "serial-pipe", esxVI_APIVersion_25);
+    DO_TEST("serial-file", "serial-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("serial-device", "serial-device", esxVI_ProductVersion_ESX35);
+    DO_TEST("serial-pipe", "serial-pipe", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("parallel-file", "parallel-file", esxVI_APIVersion_25);
-    DO_TEST("parallel-device", "parallel-device", esxVI_APIVersion_25);
+    DO_TEST("parallel-file", "parallel-file", esxVI_ProductVersion_ESX35);
+    DO_TEST("parallel-device", "parallel-device", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("esx-in-the-wild-1", "esx-in-the-wild-1", esxVI_APIVersion_25);
-    DO_TEST("esx-in-the-wild-2", "esx-in-the-wild-2", esxVI_APIVersion_25);
-    DO_TEST("esx-in-the-wild-3", "esx-in-the-wild-3", esxVI_APIVersion_25);
-    DO_TEST("esx-in-the-wild-4", "esx-in-the-wild-4", esxVI_APIVersion_25);
+    DO_TEST("esx-in-the-wild-1", "esx-in-the-wild-1", esxVI_ProductVersion_ESX35);
+    DO_TEST("esx-in-the-wild-2", "esx-in-the-wild-2", esxVI_ProductVersion_ESX35);
+    DO_TEST("esx-in-the-wild-3", "esx-in-the-wild-3", esxVI_ProductVersion_ESX35);
+    DO_TEST("esx-in-the-wild-4", "esx-in-the-wild-4", esxVI_ProductVersion_ESX35);
 
-    DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1", esxVI_APIVersion_25);
-    DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2", esxVI_APIVersion_25);
-    DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3", esxVI_APIVersion_25);
-    DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4", esxVI_APIVersion_25);
+    DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1", esxVI_ProductVersion_ESX35);
+    DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2", esxVI_ProductVersion_ESX35);
+    DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3", esxVI_ProductVersion_ESX35);
+    DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4", esxVI_ProductVersion_ESX35);
 
     virCapabilitiesFree(caps);
 
