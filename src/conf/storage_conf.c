@@ -151,6 +151,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
     { .poolType = VIR_STORAGE_POOL_FS,
       .poolOptions = {
             .flags = (VIR_STORAGE_POOL_SOURCE_DEVICE),
+            .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
             .formatFromString = virStoragePoolFormatFileSystemTypeFromString,
             .formatToString = virStoragePoolFormatFileSystemTypeToString,
         },
@@ -164,7 +165,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
       .poolOptions = {
             .flags = (VIR_STORAGE_POOL_SOURCE_HOST |
                       VIR_STORAGE_POOL_SOURCE_DIR),
-            .defaultFormat = VIR_STORAGE_POOL_FS_AUTO,
+            .defaultFormat = VIR_STORAGE_POOL_NETFS_AUTO,
             .formatFromString = virStoragePoolFormatFileSystemNetTypeFromString,
             .formatToString = virStoragePoolFormatFileSystemNetTypeToString,
         },
