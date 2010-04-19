@@ -5969,6 +5969,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     const char **nics = NULL;
     int video = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
     int nvirtiodisk = 0;
+    qemuDomainCmdlineDefPtr cmd;
 
     if (!progargv[0]) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5977,6 +5978,10 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     }
 
     if (VIR_ALLOC(def) < 0)
+        goto no_memory;
+
+    /* allocate the cmdlinedef up-front; if it's unused, we'll free it later */
+    if (VIR_ALLOC(cmd) < 0)
         goto no_memory;
 
     virUUIDGenerate(def->uuid);
@@ -6403,12 +6408,17 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {
-            VIR_WARN("unknown QEMU argument '%s' during conversion", arg);
-#if 0
-            qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("unknown argument '%s'"), arg);
-            goto error;
-#endif
+            /* something we can't yet parse.  Add it to the qemu namespace
+             * cmdline/environment advanced options and hope for the best
+             */
+            VIR_WARN("unknown QEMU argument '%s', adding to the qemu namespace",
+                     arg);
+            if (VIR_REALLOC_N(cmd->args, cmd->num_args+1) < 0)
+                goto no_memory;
+            cmd->args[cmd->num_args] = strdup(arg);
+            if (cmd->args[cmd->num_args] == NULL)
+                goto no_memory;
+            cmd->num_args++;
         }
     }
 
@@ -6477,11 +6487,19 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
+    if (cmd->num_args || cmd->num_env) {
+        def->ns = caps->ns;
+        def->namespaceData = cmd;
+    }
+    else
+        VIR_FREE(cmd);
+
     return def;
 
 no_memory:
     virReportOOMError();
 error:
+    VIR_FREE(cmd);
     virDomainDefFree(def);
     VIR_FREE(nics);
     return NULL;
