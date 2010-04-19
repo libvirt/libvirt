@@ -164,9 +164,16 @@ nwfilterDriverReload(void) {
  */
 static int
 nwfilterDriverActive(void) {
-    if (!driverState->pools.count)
+    int ret;
+
+    if (!driverState)
         return 0;
-    return 1;
+
+    nwfilterDriverLock(driverState);
+    ret = driverState->pools.count ? 1 : 0;
+    nwfilterDriverUnlock(driverState);
+
+    return ret;
 }
 
 /**
