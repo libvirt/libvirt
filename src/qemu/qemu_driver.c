@@ -4924,19 +4924,20 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     }
 
 endjob:
-    if (ret != 0 && header.was_running) {
-        qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
-        qemuDomainObjExitMonitorWithDriver(driver, vm);
-        if (rc < 0)
-            VIR_WARN0("Unable to resume guest CPUs after save failure");
-        else
-            vm->state = VIR_DOMAIN_RUNNING;
-    }
+    if (vm) {
+        if (ret != 0 && header.was_running && priv->mon) {
+            qemuDomainObjEnterMonitorWithDriver(driver, vm);
+            rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
+            if (rc < 0)
+                VIR_WARN0("Unable to resume guest CPUs after save failure");
+            else
+                vm->state = VIR_DOMAIN_RUNNING;
+        }
 
-    if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
+        if (qemuDomainObjEndJob(vm) == 0)
             vm = NULL;
+    }
 
 cleanup:
     VIR_FREE(xml);
@@ -7110,9 +7111,16 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     }
 
     /* FIXME - need to support vhost-net here (5th arg) */
-    if (!(netstr = qemuBuildHostNetStr(net, ' ',
-                                       vlan, tapfd_name, 0)))
-        goto try_tapfd_close;
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        if (!(netstr = qemuBuildHostNetStr(net, ',',
+                                           -1, tapfd_name, 0)))
+            goto try_tapfd_close;
+    } else {
+        if (!(netstr = qemuBuildHostNetStr(net, ' ',
+                                           vlan, tapfd_name, 0)))
+            goto try_tapfd_close;
+    }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorAddHostNetwork(priv->mon, netstr) < 0) {
