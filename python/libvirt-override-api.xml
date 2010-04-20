@@ -243,5 +243,11 @@
       <arg name='xmlCPUs' type='const char **' info='array of XML descriptions of host CPUs'/>
       <arg name='flags' type='unsigned int' info='fine-tuning flags, currently unused, pass 0.'/>
     </function>
+    <function name='virDomainSnapshotListNames' file='python'>
+      <info>collect the list of snapshots for the given domain</info>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain'/>
+      <arg name='flags' type='unsigned int' info='flags, curently unused'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
   </symbols>
 </api>

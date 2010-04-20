@@ -243,6 +243,9 @@ py_types = {
     'const virStream *':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
 
     'virDomainSnapshotPtr':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
+    'const virDomainSnapshotPtr':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
+    'virDomainSnapshot *':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
+    'const virDomainSnapshot *':  ('O', "virDomainSnapshot", "virDomainSnapshotPtr", "virDomainSnapshotPtr"),
 }
 
 py_return_types = {
@@ -277,6 +280,7 @@ skip_impl = (
     'virConnectListDefinedStorageVols',
     'virConnectListDefinedInterfaces',
     'virConnectListNWFilters',
+    'virDomainSnapshotListNames',
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',
@@ -643,6 +647,8 @@ classes_type = {
     "virStream *": ("._o", "virStream(self, _obj=%s)", "virStream"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
     "virConnect *": ("._o", "virConnect(_obj=%s)", "virConnect"),
+    "virDomainSnapshotPtr": ("._o", "virDomainSnapshot(self,_obj=%s)", "virDomainSnapshot"),
+    "virDomainSnapshot *": ("._o", "virDomainSnapshot(self, _obj=%s)", "virDomainSnapshot"),
 }
 
 converter_type = {
@@ -651,7 +657,7 @@ converter_type = {
 primary_classes = ["virDomain", "virNetwork", "virInterface",
                    "virStoragePool", "virStorageVol",
                    "virConnect", "virNodeDevice", "virSecret",
-                   "virStream"]
+                   "virStream", "virDomainSnapshot"]
 
 classes_ancestor = {
 }
@@ -663,6 +669,7 @@ classes_destructors = {
     "virStorageVol": "virStorageVolFree",
     "virNodeDevice" : "virNodeDeviceFree",
     "virSecret": "virSecretFree",
+    "virDomainSnapshot": "virDomainSnapshotFree",
     # We hand-craft __del__ for this one
     #"virStream": "virStreamFree",
 }
@@ -766,6 +773,24 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == "virDomainGet":
         func = name[12:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:29] == "virDomainSnapshotLookupByName":
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:26] == "virDomainSnapshotListNames":
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:20] == "virDomainSnapshotNum":
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:26] == "virDomainSnapshotCreateXML":
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:24] == "virDomainSnapshotCurrent":
+        func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:17] == "virDomainSnapshot":
+        func = name[17:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:9] == "virDomain":
         func = name[9:]
