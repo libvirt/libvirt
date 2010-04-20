@@ -153,6 +153,7 @@ struct _ipHdrDataDef {
     nwItemDesc dataDstIPFrom;
     nwItemDesc dataDstIPTo;
     nwItemDesc dataDSCP;
+    nwItemDesc dataConnlimitAbove;
 };
 
 

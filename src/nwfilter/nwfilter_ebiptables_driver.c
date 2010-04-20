@@ -815,7 +815,8 @@ static int
 iptablesHandleIpHdr(virBufferPtr buf,
                     virNWFilterHashTablePtr vars,
                     ipHdrDataDefPtr ipHdr,
-                    int directionIn)
+                    int directionIn,
+                    bool *skipRule, bool *skipMatch)
 {
     char ipaddr[INET6_ADDRSTRLEN],
          number[20];
@@ -944,6 +945,24 @@ iptablesHandleIpHdr(virBufferPtr buf,
                           number);
     }
 
+    if (HAS_ENTRY_ITEM(&ipHdr->dataConnlimitAbove)) {
+        if (directionIn) {
+            // only support for limit in outgoing dir.
+            *skipRule = true;
+        } else {
+            if (printDataType(vars,
+                              number, sizeof(number),
+                              &ipHdr->dataConnlimitAbove))
+               goto err_exit;
+
+            virBufferVSprintf(buf,
+                              " -m connlimit %s --connlimit-above %s",
+                              ENTRY_GET_NEG_SIGN(&ipHdr->dataConnlimitAbove),
+                              number);
+            *skipMatch = true;
+        }
+    }
+
     return 0;
 
 err_exit:
@@ -1063,6 +1082,8 @@ _iptablesCreateRuleInstance(int directionIn,
                                         : iptables_cmd_path;
     unsigned int bufUsed;
     bool srcMacSkipped = false;
+    bool skipRule = false;
+    bool skipMatch = false;
 
     if (!iptables_cmd) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1096,7 +1117,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.tcpHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1140,7 +1162,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.udpHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1171,7 +1194,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.udpliteHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
     break;
@@ -1197,7 +1221,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.espHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
     break;
@@ -1223,7 +1248,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.ahHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
     break;
@@ -1249,7 +1275,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.sctpHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
         if (iptablesHandlePortData(&buf,
@@ -1283,7 +1310,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.icmpHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
         if (HAS_ENTRY_ITEM(&rule->p.icmpHdrFilter.dataICMPType)) {
@@ -1341,7 +1369,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.igmpHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
     break;
@@ -1367,7 +1396,8 @@ _iptablesCreateRuleInstance(int directionIn,
         if (iptablesHandleIpHdr(&buf,
                                 vars,
                                 &rule->p.allHdrFilter.ipHdr,
-                                directionIn))
+                                directionIn,
+                                &skipRule, &skipMatch))
             goto err_exit;
 
     break;
@@ -1376,7 +1406,8 @@ _iptablesCreateRuleInstance(int directionIn,
         return -1;
     }
 
-    if (srcMacSkipped && bufUsed == virBufferUse(&buf)) {
+    if ((srcMacSkipped && bufUsed == virBufferUse(&buf)) ||
+         skipRule) {
         virBufferFreeAndReset(&buf);
         return 0;
     }
@@ -1385,10 +1416,10 @@ _iptablesCreateRuleInstance(int directionIn,
         target = accept_target;
     else {
         target = "DROP";
-        match = NULL;
+        skipMatch = true;
     }
 
-    if (match)
+    if (match && !skipMatch)
         virBufferVSprintf(&buf, " %s", match);
 
 

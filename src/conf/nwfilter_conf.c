@@ -875,6 +875,11 @@ static const virXMLAttr2Struct ipv6Attributes[] = {
         .datatype = DATATYPE_UINT8,\
         .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataDSCP),\
         /*.validator = dscpValidator,*/\
+    },\
+    {\
+        .name = "connlimit-above",\
+        .datatype = DATATYPE_UINT16,\
+        .dataIdx = offsetof(virNWFilterRuleDef, p.STRUCT.ipHdr.dataConnlimitAbove),\
     }
 
 #define COMMON_PORT_PROPS(STRUCT) \
