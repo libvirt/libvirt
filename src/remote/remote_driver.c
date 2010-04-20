@@ -6475,16 +6475,9 @@ done:
 /*----------------------------------------------------------------------*/
 
 static int
-remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open
-#if !HAVE_SASL && !HAVE_POLKIT
-                    ATTRIBUTE_UNUSED
-#endif
-                    ,
-                    virConnectAuthPtr auth
-#if !HAVE_SASL && !HAVE_POLKIT
-                    ATTRIBUTE_UNUSED
-#endif
-                    ,
+remoteAuthenticate (virConnectPtr conn, struct private_data *priv,
+                    int in_open ATTRIBUTE_UNUSED,
+                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                     const char *authtype)
 {
     struct remote_auth_list_ret ret;
