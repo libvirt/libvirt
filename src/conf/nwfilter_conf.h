@@ -487,6 +487,17 @@ typedef int (*virNWFilterRuleFreeInstanceData)(void * _inst);
 typedef int (*virNWFilterRuleDisplayInstanceData)(virConnectPtr conn,
                                                   void *_inst);
 
+typedef int (*virNWFilterCanApplyBasicRules)(void);
+
+typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
+                                          const unsigned char *macaddr);
+
+typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
+                                             const unsigned char *macaddr,
+                                             const char *dhcpserver);
+
+typedef int (*virNWFilterRemoveBasicRules)(const char *ifname);
+
 enum techDrvFlags {
     TECHDRV_FLAG_INITIALIZED = (1 << 0),
 };
@@ -506,6 +517,11 @@ struct _virNWFilterTechDriver {
     virNWFilterRuleAllTeardown allTeardown;
     virNWFilterRuleFreeInstanceData freeRuleInstance;
     virNWFilterRuleDisplayInstanceData displayRuleInstance;
+
+    virNWFilterCanApplyBasicRules canApplyBasicRules;
+    virNWFilterApplyBasicRules applyBasicRules;
+    virNWFilterApplyDHCPOnlyRules applyDHCPOnlyRules;
+    virNWFilterRemoveBasicRules removeBasicRules;
 };
 
 

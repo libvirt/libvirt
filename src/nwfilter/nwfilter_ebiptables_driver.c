@@ -98,6 +98,7 @@ static const char *m_physdev_out_str = "-m physdev " PHYSDEV_OUT;
 #define MATCH_PHYSDEV_OUT  m_physdev_out_str
 
 
+static int ebtablesRemoveBasicRules(const char *ifname);
 static int ebiptablesDriverInit(void);
 static void ebiptablesDriverShutdown(void);
 
@@ -2578,6 +2579,18 @@ ebiptablesInstCommand(virBufferPtr buf,
 
 
 /**
+ * ebiptablesCanApplyBasicRules
+ *
+ * Determine whether this driver can apply the basic rules, meaning
+ * run ebtablesApplyBasicRules and ebtablesApplyDHCPOnlyRules.
+ * In case of this driver we need the ebtables tool available.
+ */
+static int
+ebiptablesCanApplyBasicRules(void) {
+    return (ebtables_cmd_path != NULL);
+}
+
+/**
  * ebtablesApplyBasicRules
  *
  * @conn: virConnect object
@@ -2591,7 +2604,7 @@ ebiptablesInstCommand(virBufferPtr buf,
  * - filtering for MAC address spoofing
  * - allowing IPv4 & ARP traffic
  */
-int
+static int
 ebtablesApplyBasicRules(const char *ifname,
                         const unsigned char *macaddr)
 {
@@ -2685,7 +2698,7 @@ tear_down_tmpebchains:
  * Apply filtering rules so that the VM can only send and receive
  * DHCP traffic and nothing else.
  */
-int
+static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
                            const unsigned char *macaddr,
                            const char *dhcpserver)
@@ -2794,7 +2807,7 @@ tear_down_tmpebchains:
 }
 
 
-int
+static int
 ebtablesRemoveBasicRules(const char *ifname)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3188,6 +3201,11 @@ virNWFilterTechDriver ebiptables_driver = {
     .removeRules         = ebiptablesRemoveRules,
     .freeRuleInstance    = ebiptablesFreeRuleInstance,
     .displayRuleInstance = ebiptablesDisplayRuleInstance,
+
+    .canApplyBasicRules  = ebiptablesCanApplyBasicRules,
+    .applyBasicRules     = ebtablesApplyBasicRules,
+    .applyDHCPOnlyRules  = ebtablesApplyDHCPOnlyRules,
+    .removeBasicRules    = ebtablesRemoveBasicRules,
 };
 
 

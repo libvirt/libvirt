@@ -593,7 +593,8 @@ virNWFilterInstantiate(virConnectPtr conn,
         if (virHashLookup(missing_vars->hashTable,
                           NWFILTER_STD_VAR_IP) != NULL) {
             if (virNWFilterLookupLearnReq(ifname) == NULL) {
-                rc = virNWFilterLearnIPAddress(ifname,
+                rc = virNWFilterLearnIPAddress(techdriver,
+                                               ifname,
                                                linkdev,
                                                nettype, macaddr,
                                                filter->name,

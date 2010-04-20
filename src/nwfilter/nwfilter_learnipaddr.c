@@ -293,6 +293,7 @@ learnIPAddressThread(void *arg)
     char *filter= NULL;
     uint16_t etherType;
     enum howDetect howDetected = 0;
+    virNWFilterTechDriverPtr techdriver = req->techdriver;
 
     req->status = 0;
 
@@ -458,7 +459,7 @@ learnIPAddressThread(void *arg)
     if (handle)
         pcap_close(handle);
 
-    ebtablesRemoveBasicRules(req->ifname);
+    techdriver->removeBasicRules(req->ifname);
 
     if (req->status == 0) {
         int ret;
@@ -493,7 +494,7 @@ learnIPAddressThread(void *arg)
 
 /**
  * virNWFilterLearnIPAddress
- * @conn: pointer to virConnect object
+ * @techdriver : driver to build firewalls
  * @ifname: the name of the interface
  * @linkdev : the name of the link device; currently only used in case of a
  *     macvtap device
@@ -513,7 +514,8 @@ learnIPAddressThread(void *arg)
  * firewall rules on the interface.
  */
 int
-virNWFilterLearnIPAddress(const char *ifname,
+virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
+                          const char *ifname,
                           const char *linkdev,
                           enum virDomainNetType nettype,
                           const unsigned char *macaddr,
@@ -569,6 +571,7 @@ virNWFilterLearnIPAddress(const char *ifname,
     req->filterparams = ht;
     ht = NULL;
     req->howDetect = howDetect;
+    req->techdriver = techdriver;
 
     rc = virNWFilterRegisterLearnReq(req);
 
@@ -577,14 +580,14 @@ virNWFilterLearnIPAddress(const char *ifname,
 
     switch (howDetect) {
     case DETECT_DHCP:
-        if (ebtablesApplyDHCPOnlyRules(ifname,
-                                       macaddr,
-                                       NULL))
+        if (techdriver->applyDHCPOnlyRules(ifname,
+                                           macaddr,
+                                           NULL))
             goto err_free_ht;
         break;
     default:
-        if (ebtablesApplyBasicRules(ifname,
-                                    macaddr))
+        if (techdriver->applyBasicRules(ifname,
+                                        macaddr))
             goto err_free_ht;
     }
 
@@ -598,7 +601,7 @@ virNWFilterLearnIPAddress(const char *ifname,
     return 0;
 
 err_remove_rules:
-    ebtablesRemoveBasicRules(ifname);
+    techdriver->removeBasicRules(ifname);
 err_free_ht:
     virNWFilterHashTableFree(ht);
 err_no_ht:
@@ -610,7 +613,8 @@ err_no_req:
 #else
 
 int
-virNWFilterLearnIPAddress(const char *ifname ATTRIBUTE_UNUSED,
+virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
+                          const char *ifname ATTRIBUTE_UNUSED,
                           const char *linkdev ATTRIBUTE_UNUSED,
                           enum virDomainNetType nettype ATTRIBUTE_UNUSED,
                           const unsigned char *macaddr ATTRIBUTE_UNUSED,

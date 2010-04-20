@@ -33,6 +33,7 @@ enum howDetect {
 typedef struct _virNWFilterIPAddrLearnReq virNWFilterIPAddrLearnReq;
 typedef virNWFilterIPAddrLearnReq *virNWFilterIPAddrLearnReqPtr;
 struct _virNWFilterIPAddrLearnReq {
+    virNWFilterTechDriverPtr techdriver;
     char ifname[IF_NAMESIZE];
     char linkdev[IF_NAMESIZE];
     enum virDomainNetType nettype;
@@ -46,7 +47,8 @@ struct _virNWFilterIPAddrLearnReq {
     pthread_t thread;
 };
 
-int virNWFilterLearnIPAddress(const char *ifname,
+int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
+                              const char *ifname,
                               const char *linkdev,
                               enum virDomainNetType nettype,
                               const unsigned char *macaddr,
