@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <arpa/inet.h>
 
 /* Windows socket compatibility functions. */
 #include <errno.h>
@@ -6570,21 +6571,36 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv,
 
 #if HAVE_SASL
 /*
- * NB, keep in sync with similar method in remote/remote.c
+ * NB, keep in sync with similar method in daemon/remote.c
  */
-static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
+static char *addrToString(struct sockaddr_storage *ss, socklen_t salen)
 {
     char host[NI_MAXHOST], port[NI_MAXSERV];
     char *addr;
     int err;
+    struct sockaddr *sa = (struct sockaddr *)ss;
 
-    if ((err = getnameinfo((struct sockaddr *)sa, salen,
+    if ((err = getnameinfo(sa, salen,
                            host, sizeof(host),
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        remoteError(VIR_ERR_UNKNOWN_HOST,
-                    _("Cannot resolve address %d: %s"),
-                    err, gai_strerror(err));
+        char ip[INET6_ADDRSTRLEN];
+        void *rawaddr;
+
+        if (sa->sa_family == AF_INET)
+            rawaddr = &((struct sockaddr_in *)sa)->sin_addr;
+        else
+            rawaddr = &((struct sockaddr_in6 *)sa)->sin6_addr;
+
+        if (inet_ntop(sa->sa_family, rawaddr, ip, sizeof ip)) {
+            remoteError(VIR_ERR_UNKNOWN_HOST,
+                        _("Cannot resolve address %s: %s"),
+                        ip, gai_strerror(err));
+        } else {
+            remoteError(VIR_ERR_UNKNOWN_HOST,
+                        _("Cannot resolve address: %s"),
+                        gai_strerror(err));
+        }
         return NULL;
     }
 

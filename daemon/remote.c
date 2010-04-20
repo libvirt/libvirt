@@ -1,7 +1,7 @@
 /*
  * remote.c: handlers for RPC method calls
  *
- * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2007-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fnmatch.h>
+#include <arpa/inet.h>
 #include "virterror_internal.h"
 
 #if HAVE_POLKIT0
@@ -3169,21 +3170,36 @@ remoteDispatchAuthList (struct qemud_server *server,
 
 #if HAVE_SASL
 /*
- * NB, keep in sync with similar method in src/remote_internal.c
+ * NB, keep in sync with similar method in src/remote/remote_driver.c
  */
 static char *addrToString(remote_error *rerr,
-                          struct sockaddr_storage *sa, socklen_t salen) {
-    char host[1024], port[20];
+                          struct sockaddr_storage *ss, socklen_t salen) {
+    char host[NI_MAXHOST], port[NI_MAXSERV];
     char *addr;
     int err;
+    struct sockaddr *sa = (struct sockaddr *)ss;
 
-    if ((err = getnameinfo((struct sockaddr *)sa, salen,
+    if ((err = getnameinfo(sa, salen,
                            host, sizeof(host),
                            port, sizeof(port),
                            NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
-        remoteDispatchFormatError(rerr,
-                                  _("Cannot resolve address %d: %s"),
-                                  err, gai_strerror(err));
+        char ip[INET6_ADDRSTRLEN];
+        void *rawaddr;
+
+        if (sa->sa_family == AF_INET)
+            rawaddr = &((struct sockaddr_in *)sa)->sin_addr;
+        else
+            rawaddr = &((struct sockaddr_in6 *)sa)->sin6_addr;
+
+        if (inet_ntop(sa->sa_family, rawaddr, ip, sizeof ip)) {
+            remoteDispatchFormatError(rerr,
+                                      _("Cannot resolve address %s: %s"),
+                                      ip, gai_strerror(err));
+        } else {
+            remoteDispatchFormatError(rerr,
+                                      _("Cannot resolve address: %s"),
+                                      gai_strerror(err));
+        }
         return NULL;
     }
 
