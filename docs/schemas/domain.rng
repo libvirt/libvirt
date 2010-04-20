@@ -41,6 +41,9 @@
         <optional>
           <ref name="seclabel"/>
         </optional>
+        <optional>
+          <ref name='qemucmdline'/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -1678,6 +1681,31 @@
         </attribute>
       </element>
     </optional>
+  </define>
+
+  <!--
+       Optional hypervisor extensions in their own namespace:
+         QEmu
+    -->
+  <define name="qemucmdline">
+    <element name="commandline" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <zeroOrMore>
+        <element name="arg">
+          <attribute name='value'/>
+        </element>
+      </zeroOrMore>
+      <zeroOrMore>
+        <element name="env">
+          <attribute name='name'>
+            <ref name="filter-param-name"/>
+          </attribute>
+          <optional>
+            <attribute name='value'/>
+          </optional>
+          <empty/>
+        </element>
+      </zeroOrMore>
+    </element>
   </define>
 
   <!--

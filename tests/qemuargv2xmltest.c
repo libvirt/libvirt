@@ -228,6 +228,8 @@ mymain(int argc, char **argv)
     DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "exec:cat");
     DO_TEST_FULL("migrate", QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP, "tcp:10.0.0.1:5000");
 
+    DO_TEST("qemu-ns-no-env", 0);
+
     free(driver.stateDir);
     virCapabilitiesFree(driver.caps);
 

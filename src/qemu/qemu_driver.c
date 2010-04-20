@@ -552,7 +552,7 @@ static void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
     virDomainObjUnref(obj);
 }
 
-static void qemuDomainDefNamespaceFree(void *nsdata)
+void qemuDomainDefNamespaceFree(void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
     unsigned int i;
@@ -572,10 +572,10 @@ static void qemuDomainDefNamespaceFree(void *nsdata)
     VIR_FREE(cmd);
 }
 
-static int qemuDomainDefNamespaceParse(xmlDocPtr xml,
-                                       xmlNodePtr root,
-                                       xmlXPathContextPtr ctxt,
-                                       void **data)
+int qemuDomainDefNamespaceParse(xmlDocPtr xml,
+                                xmlNodePtr root,
+                                xmlXPathContextPtr ctxt,
+                                void **data)
 {
     qemuDomainCmdlineDefPtr cmd = NULL;
     xmlNsPtr ns;
@@ -685,8 +685,8 @@ error:
     return -1;
 }
 
-static int qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
-                                           void *nsdata)
+int qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
+                                    void *nsdata)
 {
     qemuDomainCmdlineDefPtr cmd = nsdata;
     unsigned int i;
@@ -709,7 +709,7 @@ static int qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
     return 0;
 }
 
-static const char *qemuDomainDefNamespaceHref(void)
+const char *qemuDomainDefNamespaceHref(void)
 {
     return "xmlns:qemu='" QEMU_NAMESPACE_HREF "'";
 }

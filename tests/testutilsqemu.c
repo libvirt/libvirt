@@ -7,6 +7,7 @@
 # include "testutils.h"
 # include "memory.h"
 # include "cpu_conf.h"
+# include "qemu/qemu_driver.h"
 
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
 {
@@ -99,6 +100,11 @@ virCapsPtr testQemuCapsInit(void) {
     if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
         (machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
+
+    caps->ns.parse = qemuDomainDefNamespaceParse;
+    caps->ns.free = qemuDomainDefNamespaceFree;
+    caps->ns.format = qemuDomainDefNamespaceFormatXML;
+    caps->ns.href = qemuDomainDefNamespaceHref;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32,
                                          "/usr/bin/qemu", NULL,
