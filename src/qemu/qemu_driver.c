@@ -3081,10 +3081,12 @@ static int qemudSecurityHook(void *data) {
     /* This must take place before exec(), so that all QEMU
      * memory allocation is on the correct NUMA node
      */
-    if (qemudInitCpuAffinity(h->vm) < 0)
+    if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
         return -1;
 
-    if (qemuAddToCgroup(h->driver, h->vm->def) < 0)
+    /* This must be done after cgroup placement to avoid resetting CPU
+     * affinity */
+    if (qemudInitCpuAffinity(h->vm) < 0)
         return -1;
 
     if (h->driver->securityDriver &&
