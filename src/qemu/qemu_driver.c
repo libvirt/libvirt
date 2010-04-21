@@ -4716,6 +4716,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     struct stat sb;
     int is_reg = 0;
     unsigned long long offset;
+    virCgroupPtr cgroup = NULL;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -4923,6 +4924,23 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     }
 
 
+    if (!is_reg &&
+        qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to find cgroup for %s\n"),
+                            vm->def->name);
+            goto endjob;
+        }
+        rc = virCgroupAllowDevicePath(cgroup, path);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to allow device %s for %s"),
+                                 path, vm->def->name);
+            goto endjob;
+        }
+    }
+
     if ((!bypassSecurityDriver) &&
         driver->securityDriver &&
         driver->securityDriver->domainSetSavedStateLabel &&
@@ -4960,6 +4978,16 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
         driver->securityDriver->domainRestoreSavedStateLabel(vm, path) == -1)
         goto endjob;
 
+    if (cgroup != NULL) {
+        rc = virCgroupDenyDevicePath(cgroup, path);
+        if (rc != 0) {
+            virReportSystemError(-rc,
+                                 _("Unable to deny device %s for %s"),
+                                 path, vm->def->name);
+            goto endjob;
+        }
+    }
+
     ret = 0;
 
     /* Shut it down */
@@ -4986,6 +5014,16 @@ endjob:
                 vm->state = VIR_DOMAIN_RUNNING;
         }
 
+        if (ret != 0 && cgroup != NULL) {
+            rc = virCgroupDenyDevicePath(cgroup, path);
+            if (rc != 0) {
+                virReportSystemError(-rc,
+                                     _("Unable to deny device %s for %s"),
+                                     path, vm->def->name);
+                goto endjob;
+            }
+        }
+
         if (qemuDomainObjEndJob(vm) == 0)
             vm = NULL;
     }
@@ -4998,6 +5036,7 @@ cleanup:
         virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
+    virCgroupFree(&cgroup);
     qemuDriverUnlock(driver);
     return ret;
 }
