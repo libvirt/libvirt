@@ -37,7 +37,7 @@ void qemuSecurityDACSetDriver(struct qemud_driver *newdriver)
 static int
 qemuSecurityDACSetOwnership(const char *path, int uid, int gid)
 {
-    VIR_INFO("Setting DAC context on '%s' to '%d:%d'", path, uid, gid);
+    VIR_INFO("Setting DAC user and group on '%s' to '%d:%d'", path, uid, gid);
 
     if (chown(path, uid, gid) < 0) {
         struct stat sb;
@@ -51,24 +51,18 @@ qemuSecurityDACSetOwnership(const char *path, int uid, int gid)
             }
         }
 
-        /* if the error complaint is related to an image hosted on
-         * an nfs mount, or a usbfs/sysfs filesystem not supporting
-         * labelling, then just ignore it & hope for the best.
-         * The user hopefully set one of the necessary qemuSecurityDAC
-         * virt_use_{nfs,usb,pci}  boolean tunables to allow it...
-         */
         if (chown_errno == EOPNOTSUPP) {
-            VIR_INFO("Setting security context '%d:%d' on '%s' not supported by filesystem",
+            VIR_INFO("Setting user and group to '%d:%d' on '%s' not supported by filesystem",
                      uid, gid, path);
         } else if (chown_errno == EPERM) {
-            VIR_INFO("Setting security context '%d:%d' on '%s' not permitted",
+            VIR_INFO("Setting user and group to '%d:%d' on '%s' not permitted",
                      uid, gid, path);
         } else if (chown_errno == EROFS) {
-            VIR_INFO("Setting security context '%d:%d' on '%s' not possible on readonly filesystem",
+            VIR_INFO("Setting user and group to '%d:%d' on '%s' not possible on readonly filesystem",
                      uid, gid, path);
         } else {
             virReportSystemError(chown_errno,
-                                 _("unable to set security context '%d:%d' on '%s'"),
+                                 _("unable to set user and group to '%d:%d' on '%s'"),
                                  uid, gid, path);
             return -1;
         }
@@ -84,7 +78,7 @@ qemuSecurityDACRestoreSecurityFileLabel(const char *path)
     int err;
     char *newpath = NULL;
 
-    VIR_INFO("Restoring DAC context on '%s'", path);
+    VIR_INFO("Restoring DAC user and group on '%s'", path);
 
     if ((err = virFileResolveLink(path, &newpath)) < 0) {
         virReportSystemError(err,
