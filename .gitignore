@@ -7,6 +7,7 @@
 *~
 .git
 .git-module-status
+.sc-start-sc_*
 /GNUmakefile
 /maint.mk
 ABOUT-NLS

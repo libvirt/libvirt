@@ -34,6 +34,7 @@ local-checks-to-skip =			\
   sc_GPL_version			\
   sc_always_defined_macros		\
   sc_cast_of_alloca_return_value	\
+  sc_cross_check_PATH_usage_in_tests	\
   sc_dd_max_sym_length			\
   sc_error_exit_success			\
   sc_file_system			\
