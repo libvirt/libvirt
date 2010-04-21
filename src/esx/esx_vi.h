@@ -40,7 +40,7 @@
 
 
 
-#define ESX_VI__SOAP__REQUEST_HEADER                                          \
+# define ESX_VI__SOAP__REQUEST_HEADER                                         \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
     "<soapenv:Envelope\n"                                                     \
     " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"          \
@@ -51,13 +51,13 @@
 
 
 
-#define ESX_VI__SOAP__REQUEST_FOOTER                                          \
+# define ESX_VI__SOAP__REQUEST_FOOTER                                         \
     "</soapenv:Body>\n"                                                       \
     "</soapenv:Envelope>"
 
 
 
-#define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type)                       \
+# define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type)                      \
     do {                                                                      \
         virBufferAddLit(_buffer, "<");                                        \
         virBufferAdd(_buffer, _element, -1);                                  \
@@ -68,7 +68,7 @@
 
 
 
-#define ESV_VI__XML_TAG__CLOSE(_buffer, _element)                             \
+# define ESV_VI__XML_TAG__CLOSE(_buffer, _element)                            \
     do {                                                                      \
         virBufferAddLit(_buffer, "</");                                       \
         virBufferAdd(_buffer, _element, -1);                                  \
