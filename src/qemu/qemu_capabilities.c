@@ -809,6 +809,8 @@ qemuCapsComputeCmdFlags(const char *help,
             flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
         if (strstr(help, "readonly="))
             flags |= QEMUD_CMD_FLAG_DRIVE_READONLY;
+        if (strstr(help, "aio=threads|native"))
+            flags |= QEMUD_CMD_FLAG_DRIVE_AIO;
     }
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");

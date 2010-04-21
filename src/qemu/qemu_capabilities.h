@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.h: QEMU capabilities generation
  *
- * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
+ * Copyright (C) 2006-2011 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -85,6 +85,7 @@ enum qemuCapsFlags {
     QEMUD_CMD_FLAG_MIGRATE_QEMU_FD = (1LL << 48), /* -incoming fd:n */
     QEMUD_CMD_FLAG_BOOTINDEX     = (1LL << 49), /* -device bootindex property */
     QEMUD_CMD_FLAG_HDA_DUPLEX    = (1LL << 50), /* -device hda-duplex */
+    QEMUD_CMD_FLAG_DRIVE_AIO     = (1LL << 51), /* -drive aio= supported */
 };
 
 virCapsPtr qemuCapsInit(virCapsPtr old_caps);
