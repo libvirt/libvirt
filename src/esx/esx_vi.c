@@ -2503,12 +2503,6 @@ esxVI_LookupRootSnapshotTreeList
         }
     }
 
-    if (*rootSnapshotTreeList == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Could not lookup root snapshot list"));
-        goto failure;
-    }
-
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
