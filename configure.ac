@@ -869,14 +869,14 @@ if test "$with_selinux" != "no"; then
     AC_CHECK_HEADER([selinux/selinux.h],[],[fail=1])
     AC_CHECK_LIB([selinux], [fgetfilecon],[],[fail=1])
     test $fail = 1 &&
-      AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])
+      AC_MSG_ERROR([You must install the libselinux development package in order to compile libvirt with basic SELinux support])
   fi
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
 fi
 if test "$with_selinux" = "yes"; then
   SELINUX_LIBS="-lselinux"
-  AC_DEFINE_UNQUOTED([HAVE_SELINUX], 1, [whether SELinux is available for security])
+  AC_DEFINE_UNQUOTED([HAVE_SELINUX], 1, [whether basic SELinux functionality is available])
 fi
 AM_CONDITIONAL([HAVE_SELINUX], [test "$with_selinux" != "no"])
 AC_SUBST([SELINUX_CFLAGS])
@@ -891,8 +891,8 @@ AC_ARG_WITH([secdriver-selinux],
 if test "$with_selinux" != "yes" ; then
   if test "$with_secdriver_selinux" = "check" ; then
     with_secdriver_selinux=no
-  else
-    AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])
+  elif test "$with_secdriver_selinux" = "yes"; then
+        AC_MSG_ERROR([You must install the libselinux development package and enable SELinux with the --with-selinux=yes in order to compile libvirt --with-secdriver-selinux=yes])
   fi
 else
   old_cflags="$CFLAGS"
@@ -910,7 +910,7 @@ else
     if test "$with_secdriver_selinux" = "check" ; then
       with_secdriver_selinux=no
     else
-      AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])
+      AC_MSG_ERROR([You must install libselinux development package >= 2.0.82 in order to compile libvirt --with-secdriver-selinux=yes])
     fi
   else
     with_secdriver_selinux=yes
