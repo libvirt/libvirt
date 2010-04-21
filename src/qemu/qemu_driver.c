@@ -4713,6 +4713,8 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     int rc;
     virDomainEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
+    struct stat sb;
+    int is_reg = 0;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -4767,6 +4769,20 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     }
     header.xml_len = strlen(xml) + 1;
 
+    /* path might be a pre-existing block dev, in which case
+     * we need to skip the create step, and also avoid unlink
+     * in the failure case */
+    if (stat(path, &sb) < 0) {
+        /* Avoid throwing an error here, since it is possible
+         * that with NFS we can't actually stat() the file.
+         * The subsequent codepaths will still raise an error
+         * if a truely fatal problem is hit */
+        is_reg = 1;
+    } else {
+        is_reg = S_ISREG(sb.st_mode);
+    }
+
+
     /* Setup hook data needed by virFileOperation hook function */
     hdata.dom = dom;
     hdata.path = path;
@@ -4776,7 +4792,8 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     /* Write header to file, followed by XML */
 
     /* First try creating the file as root */
-    if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+    if (is_reg &&
+        (rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
                                S_IRUSR|S_IWUSR,
                                getuid(), getgid(),
                                qemudDomainSaveFileOpHook, &hdata,
@@ -4941,7 +4958,7 @@ endjob:
 
 cleanup:
     VIR_FREE(xml);
-    if (ret != 0)
+    if (ret != 0 && is_reg)
         unlink(path);
     if (vm)
         virDomainObjUnlock(vm);
