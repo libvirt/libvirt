@@ -1202,8 +1202,36 @@ int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
 
 int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
                                     int background,
-                                    const char * const *argv,
-                                    const char *target)
+                                    const char * const *argv)
+{
+    char *argstr;
+    char *dest = NULL;
+    int ret = -1;
+
+    argstr = virArgvToString(argv);
+    if (!argstr) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virAsprintf(&dest, "exec:%s", argstr) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    ret = qemuMonitorTextMigrate(mon, background, dest);
+
+cleanup:
+    VIR_FREE(argstr);
+    VIR_FREE(dest);
+    return ret;
+}
+
+int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
+                                 int background,
+                                 const char * const *argv,
+                                 const char *target,
+                                 unsigned long long offset)
 {
     char *argstr;
     char *dest = NULL;
@@ -1223,7 +1251,10 @@ int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (virAsprintf(&dest, "exec:%s >>%s 2>/dev/null", argstr, safe_target) < 0) {
+    if (virAsprintf(&dest, "exec:%s | dd of=%s bs=%llu seek=%llu",
+                    argstr, safe_target,
+                    QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS) < 0) {
         virReportOOMError();
         goto cleanup;
     }

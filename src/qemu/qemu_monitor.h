@@ -246,8 +246,15 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 int background,
-                                const char * const *argv,
-                                const char *target);
+                                const char * const *argv);
+
+# define QEMU_MONITOR_MIGRATE_TO_FILE_BS 512llu
+
+int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
+                             int background,
+                             const char * const *argv,
+                             const char *target,
+                             unsigned long long offset);
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
                              int background,

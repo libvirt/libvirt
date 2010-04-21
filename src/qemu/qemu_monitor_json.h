@@ -100,8 +100,13 @@ int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
 
 int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
                                     int background,
-                                    const char * const *argv,
-                                    const char *target);
+                                    const char * const *argv);
+
+int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
+                                 int background,
+                                 const char * const *argv,
+                                 const char *target,
+                                 unsigned long long offset);
 
 int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
                                  int background,

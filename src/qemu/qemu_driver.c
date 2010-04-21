@@ -4715,6 +4715,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     qemuDomainObjPrivatePtr priv;
     struct stat sb;
     int is_reg = 0;
+    unsigned long long offset;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
@@ -4788,104 +4789,137 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     hdata.path = path;
     hdata.xml = xml;
     hdata.header = &header;
+    offset = sizeof(header) + header.xml_len;
+
+    /* Due to way we append QEMU state on our header with dd,
+     * we need to ensure there's a 512 byte boundary. Unfortunately
+     * we don't have an explicit offset in the header, so we fake
+     * it by padding the XML string with NULLs */
+    if (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS) {
+        unsigned long long pad =
+            QEMU_MONITOR_MIGRATE_TO_FILE_BS -
+            (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS);
+
+        if (VIR_REALLOC_N(xml, header.xml_len + pad) < 0) {
+            virReportOOMError();
+            goto endjob;
+        }
+        memset(xml + header.xml_len, 0, pad);
+        offset += pad;
+        header.xml_len += pad;
+    }
 
     /* Write header to file, followed by XML */
 
     /* First try creating the file as root */
-    if (is_reg &&
-        (rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
-                               S_IRUSR|S_IWUSR,
-                               getuid(), getgid(),
-                               qemudDomainSaveFileOpHook, &hdata,
-                               0)) != 0) {
-
-        /* If we failed as root, and the error was permission-denied
-           (EACCES), assume it's on a network-connected share where
-           root access is restricted (eg, root-squashed NFS). If the
-           qemu user (driver->user) is non-root, just set a flag to
-           bypass security driver shenanigans, and retry the operation
-           after doing setuid to qemu user */
-
-        if ((rc != EACCES) ||
-            driver->user == getuid()) {
-            virReportSystemError(rc, _("Failed to create domain save file '%s'"),
-                                 path);
+    if (!is_reg) {
+        int fd = open(path, O_WRONLY | O_TRUNC);
+        if (fd < 0) {
+            virReportSystemError(errno, _("unable to open %s"), path);
             goto endjob;
         }
+        if ((rc = qemudDomainSaveFileOpHook(fd, &hdata)) != 0) {
+            close(fd);
+            goto endjob;
+        }
+        if (close(fd) < 0) {
+            virReportSystemError(errno, _("unable to close %s"), path);
+            goto endjob;
+        }
+    } else {
+        if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                  S_IRUSR|S_IWUSR,
+                                  getuid(), getgid(),
+                                  qemudDomainSaveFileOpHook, &hdata,
+                                  0)) != 0) {
+            /* If we failed as root, and the error was permission-denied
+               (EACCES), assume it's on a network-connected share where
+               root access is restricted (eg, root-squashed NFS). If the
+               qemu user (driver->user) is non-root, just set a flag to
+               bypass security driver shenanigans, and retry the operation
+               after doing setuid to qemu user */
+
+            if ((rc != EACCES) ||
+                driver->user == getuid()) {
+                virReportSystemError(rc, _("Failed to create domain save file '%s'"),
+                                     path);
+                goto endjob;
+            }
 
 #ifdef __linux__
-        /* On Linux we can also verify the FS-type of the directory. */
-        char *dirpath, *p;
-        struct statfs st;
-        int statfs_ret;
+            /* On Linux we can also verify the FS-type of the directory. */
+            char *dirpath, *p;
+            struct statfs st;
+            int statfs_ret;
 
-        if ((dirpath = strdup(path)) == NULL) {
-            virReportOOMError();
-            goto endjob;
-        }
+            if ((dirpath = strdup(path)) == NULL) {
+                virReportOOMError();
+                goto endjob;
+            }
 
-        do {
-            // Try less and less of the path until we get to a
-            // directory we can stat. Even if we don't have 'x'
-            // permission on any directory in the path on the NFS
-            // server (assuming it's NFS), we will be able to stat the
-            // mount point, and that will properly tell us if the
-            // fstype is NFS.
+            do {
+                // Try less and less of the path until we get to a
+                // directory we can stat. Even if we don't have 'x'
+                // permission on any directory in the path on the NFS
+                // server (assuming it's NFS), we will be able to stat the
+                // mount point, and that will properly tell us if the
+                // fstype is NFS.
 
-            if ((p = strrchr(dirpath, '/')) == NULL) {
-                qemuReportError(VIR_ERR_INVALID_ARG,
-                                _("Invalid relative path '%s' for domain save file"),
-                                path);
+                if ((p = strrchr(dirpath, '/')) == NULL) {
+                    qemuReportError(VIR_ERR_INVALID_ARG,
+                                    _("Invalid relative path '%s' for domain save file"),
+                                    path);
+                    VIR_FREE(dirpath);
+                    goto endjob;
+                }
+
+                if (p == dirpath)
+                    *(p+1) = '\0';
+                else
+                    *p = '\0';
+
+                statfs_ret = statfs(dirpath, &st);
+
+            } while ((statfs_ret == -1) && (p != dirpath));
+
+            if (statfs_ret == -1) {
+                virReportSystemError(errno,
+                                     _("Failed to create domain save file '%s'"
+                                       " statfs of all elements of path failed."),
+                                     path);
                 VIR_FREE(dirpath);
                 goto endjob;
             }
 
-            if (p == dirpath)
-                *(p+1) = '\0';
-            else
-                *p = '\0';
-
-            statfs_ret = statfs(dirpath, &st);
-
-        } while ((statfs_ret == -1) && (p != dirpath));
-
-        if (statfs_ret == -1) {
-            virReportSystemError(errno,
-                                 _("Failed to create domain save file '%s'"
-                                   " statfs of all elements of path failed."),
-                                 path);
+            if (st.f_type != NFS_SUPER_MAGIC) {
+                virReportSystemError(rc,
+                                     _("Failed to create domain save file '%s'"
+                                       " (fstype of '%s' is 0x%X"),
+                                     path, dirpath, (unsigned int) st.f_type);
+                VIR_FREE(dirpath);
+                goto endjob;
+            }
             VIR_FREE(dirpath);
-            goto endjob;
-        }
-
-        if (st.f_type != NFS_SUPER_MAGIC) {
-            virReportSystemError(rc,
-                                 _("Failed to create domain save file '%s'"
-                                   " (fstype of '%s' is 0x%X"),
-                                 path, dirpath, (unsigned int) st.f_type);
-            VIR_FREE(dirpath);
-            goto endjob;
-        }
-        VIR_FREE(dirpath);
 #endif
 
-        /* Retry creating the file as driver->user */
+            /* Retry creating the file as driver->user */
 
-        if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
-                                   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
-                                   driver->user, driver->group,
-                                   qemudDomainSaveFileOpHook, &hdata,
-                                   VIR_FILE_OP_AS_UID)) != 0) {
-            virReportSystemError(rc, _("Error from child process creating '%s'"),
+            if ((rc = virFileOperation(path, O_CREAT|O_TRUNC|O_WRONLY,
+                                       S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
+                                       driver->user, driver->group,
+                                       qemudDomainSaveFileOpHook, &hdata,
+                                       VIR_FILE_OP_AS_UID)) != 0) {
+                virReportSystemError(rc, _("Error from child process creating '%s'"),
                                  path);
-            goto endjob;
+                goto endjob;
+            }
+
+            /* Since we had to setuid to create the file, and the fstype
+               is NFS, we assume it's a root-squashing NFS share, and that
+               the security driver stuff would have failed anyway */
+
+            bypassSecurityDriver = 1;
         }
-
-        /* Since we had to setuid to create the file, and the fstype
-           is NFS, we assume it's a root-squashing NFS share, and that
-           the security driver stuff would have failed anyway */
-
-        bypassSecurityDriver = 1;
     }
 
 
@@ -4898,7 +4932,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
+        rc = qemuMonitorMigrateToFile(priv->mon, 1, args, path, offset);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
@@ -4908,7 +4942,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
             NULL
         };
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
+        rc = qemuMonitorMigrateToFile(priv->mon, 1, args, path, offset);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
@@ -5203,7 +5237,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
+    ret = qemuMonitorMigrateToFile(priv->mon, 1, args, path, 0);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0)
@@ -9896,7 +9930,7 @@ static int doTunnelMigrate(virDomainPtr dom,
         internalret = qemuMonitorMigrateToUnix(priv->mon, 1, unixfile);
     else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
-        internalret = qemuMonitorMigrateToCommand(priv->mon, 1, args, "/dev/null");
+        internalret = qemuMonitorMigrateToCommand(priv->mon, 1, args);
     } else {
         internalret = -1;
     }

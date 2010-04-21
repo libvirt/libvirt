@@ -1178,17 +1178,40 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 int background,
-                                const char * const *argv,
-                                const char *target)
+                                const char * const *argv)
 {
     int ret;
-    DEBUG("mon=%p, fd=%d argv=%p target=%s",
-          mon, mon->fd, argv, target);
+    DEBUG("mon=%p, fd=%d argv=%p",
+          mon, mon->fd, argv);
 
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToCommand(mon, background, argv, target);
+        ret = qemuMonitorJSONMigrateToCommand(mon, background, argv);
     else
-        ret = qemuMonitorTextMigrateToCommand(mon, background, argv, target);
+        ret = qemuMonitorTextMigrateToCommand(mon, background, argv);
+    return ret;
+}
+
+int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
+                             int background,
+                             const char * const *argv,
+                             const char *target,
+                             unsigned long long offset)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d argv=%p target=%s offset=%llu",
+          mon, mon->fd, argv, target, offset);
+
+    if (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("file offset must be a multiple of %llu"),
+                        QEMU_MONITOR_MIGRATE_TO_FILE_BS);
+        return -1;
+    }
+
+    if (mon->json)
+        ret = qemuMonitorJSONMigrateToFile(mon, background, argv, target, offset);
+    else
+        ret = qemuMonitorTextMigrateToFile(mon, background, argv, target, offset);
     return ret;
 }
 
