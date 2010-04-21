@@ -72,7 +72,7 @@ stop() {
     if [ $RETVAL -eq 0 ]; then
         rm -f @localstatedir@/lock/subsys/$SERVICE
         rm -f $PIDFILE
-	rm -rf @localstatedir@/cache/libvirt/*
+        rm -rf @localstatedir@/cache/libvirt/*
     fi
 }
 
@@ -101,13 +101,13 @@ case "$1" in
         ;;
     force-reload)
         reload
-	;;
+        ;;
     condrestart|try-restart)
         [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
         ;;
     *)
         echo $"Usage: $0 {start|stop|status|restart|condrestart|reload|force-reload|try-restart}"
-	exit 2
+        exit 2
         ;;
 esac
 exit $RETVAL

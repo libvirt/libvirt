@@ -147,35 +147,35 @@ then
     if [ ! -r $LIBVIRT/clientcert.pem ]
     then
         echo Client certificate $LIBVIRT/clientcert.pem should be world readable
-	echo "as root do: chown root:root $LIBVIRT/clientcert.pem ; chmod 644 $LIBVIRT/clientcert.pem"
+        echo "as root do: chown root:root $LIBVIRT/clientcert.pem ; chmod 644 $LIBVIRT/clientcert.pem"
     else
         S_ORG=`$CERTOOL -i --infile $LIBVIRT/clientcert.pem | grep Subject: | sed 's+.*O=\([a-zA-Z \._-]*\).*+\1+'`
-	if [ "$ORG" != "$S_ORG" ]
-	then
-	    echo The CA certificate and the client certificate do not match
-	    echo CA organization: $ORG
-	    echo Client organization: $S_ORG
-	fi
-	CLIENT=`$CERTOOL -i --infile $LIBVIRT/clientcert.pem | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
-	echo Found client certificate $LIBVIRT/clientcert.pem for $CLIENT
-	if [ ! -e $LIBVIRTP/clientkey.pem ]
-	then
-	    echo Missing client private key $LIBVIRTP/clientkey.pem
-	else
-	    echo Found client private key $LIBVIRTP/clientkey.pem
-	    OWN=`ls -l $LIBVIRTP/clientkey.pem | awk '{ print $3 }'`
-	    MOD=`ls -l $LIBVIRTP/clientkey.pem | awk '{ print $1 }'`
-	    if [ "$OWN" != "root" ]
-	    then
-	        echo The client private key should be owned by root
-		echo "as root do: chown root $LIBVIRTP/clientkey.pem"
-	    fi
-	    if [ "$MOD" != "-rw-r--r--" ]
-	    then
-	        echo The client private key need to be read by client tools
-		echo "as root do: chmod 644 $LIBVIRTP/clientkey.pem"
-	    fi
-	fi
+        if [ "$ORG" != "$S_ORG" ]
+        then
+            echo The CA certificate and the client certificate do not match
+            echo CA organization: $ORG
+            echo Client organization: $S_ORG
+        fi
+        CLIENT=`$CERTOOL -i --infile $LIBVIRT/clientcert.pem | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
+        echo Found client certificate $LIBVIRT/clientcert.pem for $CLIENT
+        if [ ! -e $LIBVIRTP/clientkey.pem ]
+        then
+            echo Missing client private key $LIBVIRTP/clientkey.pem
+        else
+            echo Found client private key $LIBVIRTP/clientkey.pem
+            OWN=`ls -l $LIBVIRTP/clientkey.pem | awk '{ print $3 }'`
+            MOD=`ls -l $LIBVIRTP/clientkey.pem | awk '{ print $1 }'`
+            if [ "$OWN" != "root" ]
+            then
+                echo The client private key should be owned by root
+                echo "as root do: chown root $LIBVIRTP/clientkey.pem"
+            fi
+            if [ "$MOD" != "-rw-r--r--" ]
+            then
+                echo The client private key need to be read by client tools
+                echo "as root do: chmod 644 $LIBVIRTP/clientkey.pem"
+            fi
+        fi
 
     fi
 else
@@ -193,41 +193,41 @@ then
     if [ ! -r $LIBVIRT/servercert.pem ]
     then
         echo Server certificate $LIBVIRT/servercert.pem should be world readable
-	echo "as root do: chown root:root $LIBVIRT/servercert.pem ; chmod 644 $LIBVIRT/servercert.pem"
+        echo "as root do: chown root:root $LIBVIRT/servercert.pem ; chmod 644 $LIBVIRT/servercert.pem"
     else
         S_ORG=`$CERTOOL -i --infile $LIBVIRT/servercert.pem | grep Subject: | sed 's+.*O=\([a-zA-Z\. _-]*\).*+\1+'`
-	if [ "$ORG" != "$S_ORG" ]
-	then
-	    echo The CA certificate and the server certificate do not match
-	    echo CA organization: $ORG
-	    echo Server organization: $S_ORG
-	fi
-	S_HOST=`$CERTOOL -i --infile $LIBVIRT/servercert.pem | grep Subject: | sed 's+.*CN=\([a-zA-Z\. _-]*\)+\1+'`
-	if test "$S_HOST" != "`hostname -s`" && test "$S_HOST" != "`hostname`"
-	then
-	    echo The server certificate does not seem to match the host name
-	    echo hostname: '"'`hostname`'"'
-	    echo Server certificate CN: '"'$S_HOST'"'
-	fi
-	echo Found server certificate $LIBVIRT/servercert.pem for $S_HOST
-	if [ ! -e $LIBVIRTP/serverkey.pem ]
-	then
-	    echo Missing server private key $LIBVIRTP/serverkey.pem
-	else
-	    echo Found server private key $LIBVIRTP/serverkey.pem
-	    OWN=`ls -l $LIBVIRTP/serverkey.pem | awk '{ print $3 }'`
-	    MOD=`ls -l $LIBVIRTP/serverkey.pem | awk '{ print $1 }'`
-	    if [ "$OWN" != "root" ]
-	    then
-	        echo The server private key should be owned by root
-		echo "as root do: chown root $LIBVIRTP/serverkey.pem"
-	    fi
-	    if [ "$MOD" != "-rw-------" ]
-	    then
-	        echo The server private key need to be read only by root
-		echo "as root do: chmod 600 $LIBVIRTP/serverkey.pem"
-	    fi
-	fi
+        if [ "$ORG" != "$S_ORG" ]
+        then
+            echo The CA certificate and the server certificate do not match
+            echo CA organization: $ORG
+            echo Server organization: $S_ORG
+        fi
+        S_HOST=`$CERTOOL -i --infile $LIBVIRT/servercert.pem | grep Subject: | sed 's+.*CN=\([a-zA-Z\. _-]*\)+\1+'`
+        if test "$S_HOST" != "`hostname -s`" && test "$S_HOST" != "`hostname`"
+        then
+            echo The server certificate does not seem to match the host name
+            echo hostname: '"'`hostname`'"'
+            echo Server certificate CN: '"'$S_HOST'"'
+        fi
+        echo Found server certificate $LIBVIRT/servercert.pem for $S_HOST
+        if [ ! -e $LIBVIRTP/serverkey.pem ]
+        then
+            echo Missing server private key $LIBVIRTP/serverkey.pem
+        else
+            echo Found server private key $LIBVIRTP/serverkey.pem
+            OWN=`ls -l $LIBVIRTP/serverkey.pem | awk '{ print $3 }'`
+            MOD=`ls -l $LIBVIRTP/serverkey.pem | awk '{ print $1 }'`
+            if [ "$OWN" != "root" ]
+            then
+                echo The server private key should be owned by root
+                echo "as root do: chown root $LIBVIRTP/serverkey.pem"
+            fi
+            if [ "$MOD" != "-rw-------" ]
+            then
+                echo The server private key need to be read only by root
+                echo "as root do: chmod 600 $LIBVIRTP/serverkey.pem"
+            fi
+        fi
 
     fi
 else
@@ -243,19 +243,19 @@ then
     if [ -r $(SYSCONFDIR)/sysconfig/libvirtd ]
     then
         if [ "`grep '^LIBVIRTD_ARGS' $(SYSCONFDIR)/sysconfig/libvirtd | grep -- '--listen'`" = "" ]
-	then
-	    echo Make sure $(SYSCONFDIR)/sysconfig/libvirtd is setup to listen to
-	    echo TCP/IP connections and restart the libvirtd service
-	fi
+        then
+            echo Make sure $(SYSCONFDIR)/sysconfig/libvirtd is setup to listen to
+            echo TCP/IP connections and restart the libvirtd service
+        fi
     fi
     if [ -r $(SYSCONFDIR)/sysconfig/iptables ]
     then
         if [ "`grep $PORT $(SYSCONFDIR)/sysconfig/iptables`" = "" ]
-	then
-	    echo Make sure $(SYSCONFDIR)/sysconfig/iptables is setup to allow
-	    echo incoming TCP/IP connections on port $PORT and
-	    echo restart the iptables service
-	fi
+        then
+            echo Make sure $(SYSCONFDIR)/sysconfig/iptables is setup to allow
+            echo incoming TCP/IP connections on port $PORT and
+            echo restart the iptables service
+        fi
     fi
 fi
 
