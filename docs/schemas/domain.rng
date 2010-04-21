@@ -696,6 +696,9 @@
       <optional>
         <ref name="driverErrorPolicy"/>
       </optional>
+      <optional>
+        <ref name="driverIO"/>
+      </optional>
       <empty/>
     </element>
   </define>
@@ -724,6 +727,14 @@
         <value>stop</value>
         <value>ignore</value>
         <value>enospace</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="driverIO">
+    <attribute name="io">
+      <choice>
+        <value>threads</value>
+        <value>native</value>
       </choice>
     </attribute>
   </define>

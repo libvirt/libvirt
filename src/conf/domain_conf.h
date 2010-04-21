@@ -180,6 +180,14 @@ struct _virDomainDiskHostDef {
     char *port;
 };
 
+enum  virDomainDiskIo {
+    VIR_DOMAIN_DISK_IO_DEFAULT,
+    VIR_DOMAIN_DISK_IO_NATIVE,
+    VIR_DOMAIN_DISK_IO_THREADS,
+
+    VIR_DOMAIN_DISK_IO_LAST
+};
+
 /* Stores the virtual disk configuration */
 typedef struct _virDomainDiskDef virDomainDiskDef;
 typedef virDomainDiskDef *virDomainDiskDefPtr;
@@ -198,6 +206,7 @@ struct _virDomainDiskDef {
     int cachemode;
     int error_policy;
     int bootIndex;
+    int iomode;
     unsigned int readonly : 1;
     unsigned int shared : 1;
     virDomainDeviceInfo info;
@@ -1286,6 +1295,7 @@ VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainDiskProtocol)
+VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModel)
 VIR_ENUM_DECL(virDomainFS)

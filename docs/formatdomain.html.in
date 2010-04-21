@@ -716,7 +716,7 @@
     &lt;/disk&gt;
       ...
     &lt;disk type='network'&gt;
-      &lt;driver name="qemu" type="raw"/&gt;
+      &lt;driver name="qemu" type="raw" io="threads"/&gt;
       &lt;source protocol="sheepdog" name="image_name"&gt;
         &lt;host name="hostname" port="7000"/&gt;
       &lt;/source&gt;
@@ -768,12 +768,38 @@
         <span class="since">Since 0.0.3; <code>bus</code> attribute since 0.4.3;
         "usb" attribute value since after 0.4.4</span></dd>
       <dt><code>driver</code></dt>
-      <dd>If the hypervisor supports multiple backend drivers, then the optional
-        <code>driver</code> element allows them to be selected. The <code>name</code>
-        attribute is the primary backend driver name, while the optional <code>type</code>
-        attribute provides the sub-type. The optional <code>cache</code> attribute
-        controls the cache mechanism, possible values are "default", "none",
-        "writethrough" and "writeback". <span class="since">Since 0.1.8</span>
+      <dd>
+        The optional driver element allows specifying further details
+        related to the hypervisor driver used to provide the disk.
+        <span class="since">Since 0.1.8; <code>io</code> attribute
+        since 0.8.8</span>
+        <ul>
+          <li>
+            If the hypervisor supports multiple backend drivers, then
+            the <code>name</code> attribute selects the primary
+            backend driver name, while the optional <code>type</code>
+            attribute provides the sub-type.  For example, xen
+            supports a name of "tap", "tap2", "phy", or "file", with a
+            type of "aio", while qemu only supports a name of "qemu",
+            but multiple types including "raw", "bochs", "qcow2", and
+            "qed".
+          </li>
+          <li>
+            The optional <code>cache</code> attribute controls the
+            cache mechanism, possible values are "default", "none",
+            "writethrough" and "writeback".
+          </li>
+          <li>
+            The optional <code>error_policy</code> attribute controls
+            how the hypervisor will behave on an error, possible
+            values are "stop", "ignore", and "enospace".
+          </li>
+          <li>
+            The optional <code>io</code> attribute controls specific
+            policies on I/O; qemu guests support "threads" and
+            "native".
+          </li>
+        </ul>
       </dd>
       <dt><code>boot</code></dt>
       <dd>Specifies that the disk is bootable. The <code>order</code>
