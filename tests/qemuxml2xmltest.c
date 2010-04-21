@@ -132,6 +132,7 @@ mymain(int argc, char **argv)
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
     DO_TEST("hugepages");
+    DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-floppy");
     DO_TEST("disk-many");

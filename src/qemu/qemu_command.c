@@ -1328,6 +1328,18 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
+    if (disk->iomode) {
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_AIO) {
+            virBufferVSprintf(&opt, ",aio=%s",
+                              virDomainDiskIoTypeToString(disk->iomode));
+        } else {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("disk aio mode not supported with this "
+                              "QEMU binary"));
+            goto error;
+        }
+    }
+
     if (virBufferError(&opt)) {
         virReportOOMError();
         goto error;
@@ -4545,6 +4557,11 @@ qemuParseCommandLineDisk(virCapsPtr caps,
         } else if (STREQ(keywords[i], "readonly")) {
             if ((values[i] == NULL) || STREQ(values[i], "on"))
                 def->readonly = 1;
+        } else if (STREQ(keywords[i], "aio")) {
+            if ((def->iomode = virDomainDiskIoTypeFromString(values[i])) < 0) {
+                qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                                _("cannot parse io mode '%s'"), values[i]);
+            }
         }
     }
 

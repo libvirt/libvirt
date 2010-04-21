@@ -320,6 +320,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
     DO_TEST("disk-scsi-device-auto", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG, false);
+    DO_TEST("disk-aio", QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DRIVE_AIO |
+            QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT, false);
     DO_TEST("graphics-vnc", 0, false);
     DO_TEST("graphics-vnc-socket", 0, false);
 
