@@ -16,8 +16,8 @@ PORT=16514
 CERTOOL=`which certtool 2>/dev/null`
 if [ ! -x $CERTOOL ]
 then
-    echo Could not locate the certtool program
-    echo make sure the gnutls-utils package is installed
+    echo "Could not locate the certtool program"
+    echo "make sure the gnutls-utils (or gnutls-bin) package is installed"
     exit 1
 fi
 echo Found $CERTOOL
@@ -25,7 +25,8 @@ echo Found $CERTOOL
 #
 # Check the directory structure
 #
-PKI="@SYSCONFDIR@/pki"
+SYSCONFDIR="@SYSCONFDIR@"
+PKI="$SYSCONFDIR/pki"
 if [ ! -d $PKI ]
 then
     echo the $PKI directory is missing, it is usually
@@ -129,8 +130,8 @@ then
     echo "as root do: chmod 644 $CA/cacert.pem"
     exit 1
 fi
-ORG=`$CERTOOL -i --infile $CA/cacert.pem | grep Issuer | sed 's+Issuer: CN=++'`
-if [ "$ORG" == "" ]
+ORG=`$CERTOOL -i --infile $CA/cacert.pem | sed -n '/Issuer/ s+Issuer: CN=++p'`
+if [ "$ORG" = "" ]
 then
     echo the CA certificate $CA/cacert.pem does not define the organization
     echo it should probably regenerated
@@ -240,19 +241,24 @@ fi
 
 if [ "$SERVER" = "1" ]
 then
-    if [ -r $(SYSCONFDIR)/sysconfig/libvirtd ]
+    if [ -r "$SYSCONFDIR"/sysconfig/libvirtd ]
     then
-        if [ "`grep '^LIBVIRTD_ARGS' $(SYSCONFDIR)/sysconfig/libvirtd | grep -- '--listen'`" = "" ]
+        if grep "^LIBVIRTD_ARGS.*--listen" "$SYSCONFDIR"/sysconfig/libvirtd \
+            >/dev/null 2>&1
         then
-            echo Make sure $(SYSCONFDIR)/sysconfig/libvirtd is setup to listen to
+            :
+        else
+            echo Make sure "$SYSCONFDIR"/sysconfig/libvirtd is setup to listen to
             echo TCP/IP connections and restart the libvirtd service
         fi
     fi
-    if [ -r $(SYSCONFDIR)/sysconfig/iptables ]
+    if [ -r "$SYSCONFDIR"/sysconfig/iptables ]
     then
-        if [ "`grep $PORT $(SYSCONFDIR)/sysconfig/iptables`" = "" ]
+        if grep $PORT "$SYSCONFDIR"/sysconfig/iptables >/dev/null 2>&1
         then
-            echo Make sure $(SYSCONFDIR)/sysconfig/iptables is setup to allow
+            :
+        else
+            echo Make sure "$SYSCONFDIR"/sysconfig/iptables is setup to allow
             echo incoming TCP/IP connections on port $PORT and
             echo restart the iptables service
         fi
