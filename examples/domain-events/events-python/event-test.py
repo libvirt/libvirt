@@ -396,21 +396,34 @@ def virEventLoopPureStart():
 # Everything that now follows is a simple demo of domain lifecycle events
 ##########################################################################
 def eventToString(event):
-    eventStrings = ( "Added",
-                     "Removed",
+    eventStrings = ( "Defined",
+                     "Undefined",
                      "Started",
                      "Suspended",
                      "Resumed",
-                     "Stopped",
-                     "Saved",
-                     "Restored" );
+                     "Stopped" );
     return eventStrings[event];
 
+def detailToString(event, detail):
+    eventStrings = (
+        ( "Added", "Updated" ),
+        ( "Removed" ),
+        ( "Booted", "Migrated", "Restored", "Snapshot" ),
+        ( "Paused", "Migrated", "IOError", "Watchdog" ),
+        ( "Unpaused", "Migrated"),
+        ( "Shutdown", "Destroyed", "Crashed", "Migrated", "Saved", "Failed", "Snapshot")
+        )
+    return eventStrings[event][detail]
+
 def myDomainEventCallback1 (conn, dom, event, detail, opaque):
-    print "myDomainEventCallback1 EVENT: Domain %s(%s) %s %d" % (dom.name(), dom.ID(), eventToString(event), detail)
+    print "myDomainEventCallback1 EVENT: Domain %s(%s) %s %s" % (dom.name(), dom.ID(),
+                                                                 eventToString(event),
+                                                                 detailToString(event, detail))
 
 def myDomainEventCallback2 (conn, dom, event, detail, opaque):
-    print "myDomainEventCallback2 EVENT: Domain %s(%s) %s %d" % (dom.name(), dom.ID(), eventToString(event), detail)
+    print "myDomainEventCallback2 EVENT: Domain %s(%s) %s %s" % (dom.name(), dom.ID(),
+                                                                 eventToString(event),
+                                                                 detailToString(event, detail))
 
 def myDomainEventRebootCallback(conn, dom, opaque):
     print "myDomainEventRebootCallback: Domain %s(%s)" % (dom.name(), dom.ID())
