@@ -800,7 +800,7 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
 
 
 /*
- * Returns: 0 if balloon not supported, +1 if balloon adjust worked
+ * Returns: 0 if CPU hotplug not supported, +1 if CPU hotplug worked
  * or -1 on failure
  */
 int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
@@ -809,7 +809,7 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "set_cpu %d %s", cpu, online ? "online" : "offline") < 0) {
+    if (virAsprintf(&cmd, "cpu_set %d %s", cpu, online ? "online" : "offline") < 0) {
         virReportOOMError();
         return -1;
     }

@@ -1181,7 +1181,7 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
                           int cpu, int online)
 {
     int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("balloon",
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("cpu_set",
                                                      "U:cpu", (unsigned long long)cpu,
                                                      "s:state", online ? "online" : "offline",
                                                      NULL);
