@@ -58,8 +58,8 @@ virCapsPtr testQemuCapsInit(void) {
     struct utsname utsname;
     virCapsPtr caps;
     virCapsGuestPtr guest;
-    virCapsGuestMachinePtr *machines;
-    int nmachines;
+    virCapsGuestMachinePtr *machines = NULL;
+    int nmachines = 0;
     static const char *const xen_machines[] = {
         "xenner"
     };
