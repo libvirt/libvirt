@@ -10700,7 +10700,6 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotPtr snapshot = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainSnapshotDefPtr def;
-    qemuDomainObjPrivatePtr priv;
     const char *qemuimgarg[] = { NULL, "snapshot", "-c", NULL, NULL, NULL };
     int i;
 
@@ -10767,14 +10766,19 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
     }
     else {
+        qemuDomainObjPrivatePtr priv;
+        int ret;
+
+        if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+            goto cleanup;
         priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        if (qemuMonitorCreateSnapshot(priv->mon, def->name) < 0) {
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            goto cleanup;
-        }
+        ret = qemuMonitorCreateSnapshot(priv->mon, def->name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
-
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
+        if (ret < 0)
+            goto cleanup;
     }
 
     snap->def->state = vm->state;
@@ -11047,18 +11051,18 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             rc = qemuMonitorLoadSnapshot(priv->mon, snap->def->name);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
-                goto cleanup;
+                goto endjob;
         }
         else {
             if (qemuDomainSnapshotSetActive(vm, driver->snapshotDir) < 0)
-                goto cleanup;
+                goto endjob;
 
             rc = qemudStartVMDaemon(snapshot->domain->conn, driver, vm, NULL,
                                     -1);
             if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
-                goto cleanup;
+                goto endjob;
             if (rc < 0)
-                goto cleanup;
+                goto endjob;
         }
 
         if (snap->def->state == VIR_DOMAIN_PAUSED) {
@@ -11073,7 +11077,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0) {
                 vm->state = state;
-                goto cleanup;
+                goto endjob;
             }
         }
 
@@ -11097,20 +11101,26 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+            if (!vm->persistent) {
+                if (qemuDomainObjEndJob(vm) > 0)
+                    virDomainRemoveInactive(&driver->domains, vm);
+                vm = NULL;
+            }
         }
 
         if (qemuDomainSnapshotSetActive(vm, driver->snapshotDir) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     vm->state = snap->def->state;
 
     ret = 0;
 
-cleanup:
+endjob:
     if (vm && qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
 
+cleanup:
     if (event)
         qemuDomainEventQueue(driver, event);
     if (vm)
@@ -11264,6 +11274,9 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        goto cleanup;
+
     if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) {
         rem.driver = driver;
         rem.vm = vm;
@@ -11272,10 +11285,14 @@ static int qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         virHashForEach(vm->snapshots.objs, qemuDomainSnapshotDiscardChildren,
                        &rem);
         if (rem.err < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     ret = qemuDomainSnapshotDiscard(driver, vm, snap);
+
+endjob:
+    if (qemuDomainObjEndJob(vm) == 0)
+        vm = NULL;
 
 cleanup:
     if (vm)
