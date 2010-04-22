@@ -35,6 +35,7 @@ typedef virNWFilterIPAddrLearnReq *virNWFilterIPAddrLearnReqPtr;
 struct _virNWFilterIPAddrLearnReq {
     virNWFilterTechDriverPtr techdriver;
     char ifname[IF_NAMESIZE];
+    int ifindex;
     char linkdev[IF_NAMESIZE];
     enum virDomainNetType nettype;
     unsigned char macaddr[VIR_MAC_BUFLEN];
@@ -49,6 +50,7 @@ struct _virNWFilterIPAddrLearnReq {
 
 int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               const char *ifname,
+                              int ifindex,
                               const char *linkdev,
                               enum virDomainNetType nettype,
                               const unsigned char *macaddr,
@@ -57,11 +59,14 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               virNWFilterDriverStatePtr driver,
                               enum howDetect howDetect);
 
-virNWFilterIPAddrLearnReqPtr virNWFilterLookupLearnReq(const char *ifname);
+virNWFilterIPAddrLearnReqPtr virNWFilterLookupLearnReq(int ifindex);
 
 
 void virNWFilterDelIpAddrForIfname(const char *ifname);
 const char *virNWFilterGetIpAddrForIfname(const char *ifname);
+
+int virNWFilterLockIface(const char *ifname) ATTRIBUTE_RETURN_CHECK;
+void virNWFilterUnlockIface(const char *ifname);
 
 int virNWFilterLearnInit(void);
 void virNWFilterLearnShutdown(void);

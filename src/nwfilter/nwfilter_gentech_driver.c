@@ -557,6 +557,7 @@ virNWFilterInstantiate(virConnectPtr conn,
                        enum virDomainNetType nettype,
                        virNWFilterDefPtr filter,
                        const char *ifname,
+                       int ifindex,
                        const char *linkdev,
                        virNWFilterHashTablePtr vars,
                        enum instCase useNewFilter, int *foundNewFilter,
@@ -592,9 +593,10 @@ virNWFilterInstantiate(virConnectPtr conn,
     if (virHashSize(missing_vars->hashTable) == 1) {
         if (virHashLookup(missing_vars->hashTable,
                           NWFILTER_STD_VAR_IP) != NULL) {
-            if (virNWFilterLookupLearnReq(ifname) == NULL) {
+            if (virNWFilterLookupLearnReq(ifindex) == NULL) {
                 rc = virNWFilterLearnIPAddress(techdriver,
                                                ifname,
+                                               ifindex,
                                                linkdev,
                                                nettype, macaddr,
                                                filter->name,
@@ -639,10 +641,21 @@ virNWFilterInstantiate(virConnectPtr conn,
         if (rc)
             goto err_exit;
 
+        if (virNWFilterLockIface(ifname))
+            goto err_exit;
+
         rc = techdriver->applyNewRules(conn, ifname, nptrs, ptrs);
 
         if (teardownOld && rc == 0)
             techdriver->tearOldRules(conn, ifname);
+
+        if (rc == 0 && ifaceCheck(false, ifname, NULL, ifindex)) {
+            /* interface changed/disppeared */
+            techdriver->allTeardown(ifname);
+            rc = 1;
+        }
+
+        virNWFilterUnlockIface(ifname);
 
         VIR_FREE(ptrs);
     }
@@ -666,6 +679,7 @@ static int
 __virNWFilterInstantiateFilter(virConnectPtr conn,
                                bool teardownOld,
                                const char *ifname,
+                               int ifindex,
                                const char *linkdev,
                                enum virDomainNetType nettype,
                                const unsigned char *macaddr,
@@ -767,6 +781,7 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
                                 nettype,
                                 filter,
                                 ifname,
+                                ifindex,
                                 linkdev,
                                 vars,
                                 useNewFilter, &foundNewFilter,
@@ -798,9 +813,15 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
     const char *linkdev = (net->type == VIR_DOMAIN_NET_TYPE_DIRECT)
                           ? net->data.direct.linkdev
                           : NULL;
+    int ifindex;
+
+    if (ifaceGetIndex(true, net->ifname, &ifindex))
+        return 1;
+
     return __virNWFilterInstantiateFilter(conn,
                                           teardownOld,
                                           net->ifname,
+                                          ifindex,
                                           linkdev,
                                           net->type,
                                           net->mac,
@@ -814,6 +835,7 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
 int
 virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                  const char *ifname,
+                                 int ifindex,
                                  const char *linkdev,
                                  enum virDomainNetType nettype,
                                  const unsigned char *macaddr,
@@ -825,6 +847,7 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
     rc = __virNWFilterInstantiateFilter(conn,
                                         1,
                                         ifname,
+                                        ifindex,
                                         linkdev,
                                         nettype,
                                         macaddr,
@@ -834,7 +857,8 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                         driver);
     if (rc) {
         //something went wrong... 'DOWN' the interface
-        if (ifaceDown(ifname)) {
+        if (ifaceCheck(false, ifname, NULL, ifindex) != 0 ||
+            ifaceDown(ifname)) {
             // assuming interface disappeared...
             _virNWFilterTeardownFilter(ifname);
         }

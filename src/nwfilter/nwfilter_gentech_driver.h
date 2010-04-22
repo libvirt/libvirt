@@ -49,6 +49,7 @@ int virNWFilterTearOldFilter(virConnectPtr conn,
 
 int virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                      const char *ifname,
+                                     int ifindex,
                                      const char *linkdev,
                                      enum virDomainNetType nettype,
                                      const unsigned char *macaddr,
@@ -77,6 +78,7 @@ virNWFilterTearNWFilter(virDomainNetDefPtr net) {
 static inline void
 virNWFilterTearVMNWFilters(virDomainObjPtr vm) {
     int i;
+
     for (i = 0; i < vm->def->nnets; i++)
         virNWFilterTearNWFilter(vm->def->nets[i]);
 }
