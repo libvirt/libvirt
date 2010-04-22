@@ -787,7 +787,7 @@ int qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
 
     /* If the command failed qemu prints: 'unknown command'
      * No message is printed on success it seems */
-    if (strstr(reply, "\nunknown command:")) {
+    if (strstr(reply, "unknown command:")) {
         /* Don't set error - it is expected memory balloon fails on many qemu */
         ret = 0;
     } else {
@@ -816,7 +816,7 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
     if (qemuMonitorCommand(mon, cmd, &reply) < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("could nt change CPU online status"));
+                        "%s", _("could not change CPU online status"));
         VIR_FREE(cmd);
         return -1;
     }
@@ -824,7 +824,7 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, int online)
 
     /* If the command failed qemu prints: 'unknown command'
      * No message is printed on success it seems */
-    if (strstr(reply, "\nunknown command:")) {
+    if (strstr(reply, "unknown command:")) {
         /* Don't set error - it is expected CPU onlining fails on many qemu - caller will handle */
         ret = 0;
     } else {
@@ -857,7 +857,7 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    if (strstr(reply, "\ndevice ")) {
+    if (strstr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("could not eject media on %s: %s"), devname, reply);
         goto cleanup;
@@ -901,14 +901,14 @@ int qemuMonitorTextChangeMedia(qemuMonitorPtr mon,
     /* If the command failed qemu prints:
      * device not found, device is locked ...
      * No message is printed on success it seems */
-    if (strstr(reply, "\ndevice ")) {
+    if (strstr(reply, "device ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("could not eject media on %s: %s"), devname, reply);
         goto cleanup;
     }
 
     /* Could not open message indicates bad filename */
-    if (strstr(reply, "\nCould not open ")) {
+    if (strstr(reply, "Could not open ")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("could not change media on %s: %s"), devname, reply);
         goto cleanup;
@@ -2291,7 +2291,7 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (strstr(reply, "\nunknown command:")) {
+    if (strstr(reply, "unknown command:")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("setting disk password is not supported"));
         goto cleanup;
