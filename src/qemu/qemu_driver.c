@@ -4524,7 +4524,7 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
 
     while (priv->jobInfo.type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* Poll every 50ms for progress & to allow cancellation */
-        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000ull };
+        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
         struct timeval now;
         int rc;
 
