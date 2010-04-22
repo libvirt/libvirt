@@ -228,7 +228,7 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
     }
 
     virUUIDFormat(secret->uuid, uuidstr);
-    virBufferVSprintf(buf, "      <secret type='%s' uuid='%s'/>\n", type, uuidstr);
+    virBufferVSprintf(buf, "        <secret type='%s' uuid='%s'/>\n", type, uuidstr);
     return 0;
 }
 
@@ -245,14 +245,14 @@ virStorageEncryptionFormat(virBufferPtr buf,
                               "%s", _("unexpected encryption format"));
         return -1;
     }
-    virBufferVSprintf(buf, "    <encryption format='%s'>\n", format);
+    virBufferVSprintf(buf, "      <encryption format='%s'>\n", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
         if (virStorageEncryptionSecretFormat(buf, enc->secrets[i]) < 0)
             return -1;
     }
 
-    virBufferAddLit(buf, "    </encryption>\n");
+    virBufferAddLit(buf, "      </encryption>\n");
 
     return 0;
 }
