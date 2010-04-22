@@ -4976,16 +4976,13 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
         driver->securityDriver &&
         driver->securityDriver->domainRestoreSavedStateLabel &&
         driver->securityDriver->domainRestoreSavedStateLabel(vm, path) == -1)
-        goto endjob;
+        VIR_WARN("failed to restore save state label on %s", path);
 
     if (cgroup != NULL) {
         rc = virCgroupDenyDevicePath(cgroup, path);
-        if (rc != 0) {
-            virReportSystemError(-rc,
-                                 _("Unable to deny device %s for %s"),
-                                 path, vm->def->name);
-            goto endjob;
-        }
+        if (rc != 0)
+            VIR_WARN("Unable to deny device %s for %s %d",
+                     path, vm->def->name, rc);
     }
 
     ret = 0;
@@ -5004,24 +5001,29 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
 
 endjob:
     if (vm) {
-        if (ret != 0 && header.was_running && priv->mon) {
-            qemuDomainObjEnterMonitorWithDriver(driver, vm);
-            rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
-            qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
-                VIR_WARN0("Unable to resume guest CPUs after save failure");
-            else
-                vm->state = VIR_DOMAIN_RUNNING;
-        }
-
-        if (ret != 0 && cgroup != NULL) {
-            rc = virCgroupDenyDevicePath(cgroup, path);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to deny device %s for %s"),
-                                     path, vm->def->name);
-                goto endjob;
+        if (ret != 0) {
+            if (header.was_running && priv->mon) {
+                qemuDomainObjEnterMonitorWithDriver(driver, vm);
+                rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+                if (rc < 0)
+                    VIR_WARN0("Unable to resume guest CPUs after save failure");
+                else
+                    vm->state = VIR_DOMAIN_RUNNING;
             }
+
+            if (cgroup != NULL) {
+                rc = virCgroupDenyDevicePath(cgroup, path);
+                if (rc != 0)
+                    VIR_WARN("Unable to deny device %s for %s: %d",
+                             path, vm->def->name, rc);
+            }
+
+            if ((!bypassSecurityDriver) &&
+                driver->securityDriver &&
+                driver->securityDriver->domainRestoreSavedStateLabel &&
+                driver->securityDriver->domainRestoreSavedStateLabel(vm, path) == -1)
+                VIR_WARN("failed to restore save state label on %s", path);
         }
 
         if (qemuDomainObjEndJob(vm) == 0)
