@@ -5165,18 +5165,18 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     /* Pause domain for non-live dump */
     if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
-            qemuDomainObjExitMonitor(vm);
+            qemuDomainObjExitMonitorWithDriver(driver, vm);
             goto endjob;
         }
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
         paused = 1;
     }
 
-    qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorMigrateToCommand(priv->mon, 1, args, path);
-    qemuDomainObjExitMonitor(vm);
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     if (ret < 0)
         goto endjob;
@@ -5205,13 +5205,13 @@ endjob:
        will support synchronous operations so we always get here after
        the migration is complete.  */
     else if (resume && paused) {
-        qemuDomainObjEnterMonitor(vm);
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("resuming after dump failed"));
         }
-        qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
     if (qemuDomainObjEndJob(vm) == 0)
