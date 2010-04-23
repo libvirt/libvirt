@@ -6747,6 +6747,7 @@ static void virDomainSnapshotObjFree(virDomainSnapshotObjPtr snapshot)
     VIR_DEBUG("obj=%p", snapshot);
 
     virDomainSnapshotDefFree(snapshot->def);
+    VIR_FREE(snapshot);
 }
 
 int virDomainSnapshotObjUnref(virDomainSnapshotObjPtr snapshot)
