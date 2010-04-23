@@ -1388,11 +1388,11 @@ static void qemuDomainSnapshotLoad(void *payload,
         }
 
         ret = virFileReadAll(fullpath, 1024*1024*1, &xmlStr);
-        VIR_FREE(fullpath);
         if (ret < 0) {
             /* Nothing we can do here, skip this one */
             VIR_ERROR("Failed to read snapshot file %s: %s", fullpath,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
+            VIR_FREE(fullpath);
             continue;
         }
 
@@ -1400,12 +1400,14 @@ static void qemuDomainSnapshotLoad(void *payload,
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
             VIR_ERROR("Failed to parse snapshot XML from file '%s'", fullpath);
+            VIR_FREE(fullpath);
             VIR_FREE(xmlStr);
             continue;
         }
 
         virDomainSnapshotAssignDef(&vm->snapshots, def);
 
+        VIR_FREE(fullpath);
         VIR_FREE(xmlStr);
     }
 
