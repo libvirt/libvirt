@@ -485,6 +485,9 @@ AC_CHECK_HEADERS([linux/kvm.h])
 dnl
 dnl check for sufficient headers for LXC
 dnl
+if test "$with_libvirtd" = "no" ; then
+  with_lxc=no
+fi
 if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
     AC_CHECK_HEADER([sched.h],
     dnl Header is there, check for unshare()
@@ -515,9 +518,6 @@ if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
 
     ])
 fi
-if test "$with_libvirtd" = "no" ; then
-  with_lxc=no
-fi
 if test "$with_lxc" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_LXC], 1, [whether LXC driver is enabled])
 fi
@@ -539,6 +539,9 @@ PKG_PROG_PKG_CONFIG
 dnl OpenNebula driver Compilation setting
 dnl
 
+if test "$with_libvirtd" = "no" ; then
+  with_one=no
+fi
 XMLRPC_CFLAGS=
 XMLRPC_LIBS=
 if test "x$with_one" = "xyes" || test "x$with_one" = "xcheck"; then
@@ -1072,6 +1075,9 @@ dnl
 dnl Checks for the UML driver
 dnl
 
+if test "$with_libvirtd" = "no" ; then
+  with_uml=no
+fi
 if test "$with_uml" = "yes" || test "$with_uml" = "check"; then
     AC_CHECK_HEADER([sys/inotify.h], [
         with_uml=yes
@@ -1083,9 +1089,6 @@ if test "$with_uml" = "yes" || test "$with_uml" = "check"; then
             AC_MSG_ERROR([The <sys/inotify.h> is required for the UML driver. Upgrade your libc6.])
         fi
     ])
-fi
-if test "$with_libvirtd" = "no" ; then
-  with_uml=no
 fi
 if test "$with_uml" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_UML], 1, [whether UML driver is enabled])
