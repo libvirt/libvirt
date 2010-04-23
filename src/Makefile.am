@@ -884,6 +884,10 @@ if WITH_LIBVIRTD
 USED_SYM_FILES += libvirt_daemon.syms
 endif
 
+if WITH_NWFILTER
+USED_SYM_FILES += libvirt_nwfilter.syms
+endif
+
 EXTRA_DIST += \
   libvirt_public.syms		\
   libvirt_private.syms		\
@@ -891,7 +895,8 @@ EXTRA_DIST += \
   libvirt_bridge.syms		\
   libvirt_linux.syms		\
   libvirt_macvtap.syms		\
-  libvirt_daemon.syms
+  libvirt_daemon.syms		\
+  libvirt_nwfilter.syms
 
 BUILT_SOURCES += libvirt.syms libvirt.def
 

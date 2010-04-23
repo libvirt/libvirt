@@ -502,23 +502,12 @@ virNWFilterLockFilterUpdates;
 virNWFilterUnlockFilterUpdates;
 
 
-#nwfilter_params.h
+# nwfilter_params.h
 virNWFilterHashTableCreate;
 virNWFilterHashTableFree;
 virNWFilterHashTablePut;
 virNWFilterHashTablePutAll;
 virNWFilterHashTableRemoveEntry;
-
-
-# nwfilter_gentech_driver.h
-virNWFilterInstantiateFilter;
-virNWFilterTeardownFilter;
-
-
-# nwfilter_learnipaddr.h
-virNWFilterGetIpAddrForIfname;
-virNWFilterDelIpAddrForIfname;
-virNWFilterLookupLearnReq;
 
 
 # pci.h

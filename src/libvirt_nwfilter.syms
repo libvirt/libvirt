@@ -1,0 +1,14 @@
+#
+# These symbols are dependent on WITH_NWFILTER.
+#
+
+
+# nwfilter_gentech_driver.h
+virNWFilterInstantiateFilter;
+virNWFilterTeardownFilter;
+
+
+# nwfilter_learnipaddr.h
+virNWFilterGetIpAddrForIfname;
+virNWFilterDelIpAddrForIfname;
+virNWFilterLookupLearnReq;
