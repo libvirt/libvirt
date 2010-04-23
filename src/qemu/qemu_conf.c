@@ -114,7 +114,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         return -1;
     }
 
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
     /* For privileged driver, try and find hugepage mount automatically.
      * Non-privileged driver requires admin to create a dir for the
      * user, chown it, and then let user configure it manually */

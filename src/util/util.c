@@ -61,7 +61,7 @@
 #if HAVE_CAPNG
 # include <cap-ng.h>
 #endif
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # include <mntent.h>
 #endif
 
@@ -2716,7 +2716,7 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
 #endif /* HAVE_GETPWUID_R */
 
 
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /* search /proc/mounts for mount point of *type; return pointer to
  * malloc'ed string of the path if found, otherwise return NULL
  * with errno set to an appropriate value.
@@ -2748,7 +2748,7 @@ cleanup:
     return ret;
 }
 
-#else /* HAVE_MNTENT_H */
+#else /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
 char *
 virFileFindMountPoint(const char *type ATTRIBUTE_UNUSED)
@@ -2758,7 +2758,7 @@ virFileFindMountPoint(const char *type ATTRIBUTE_UNUSED)
     return NULL;
 }
 
-#endif /* HAVE_MNTENT_H */
+#endif /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
 #ifndef PROXY
 # if defined(UDEVADM) || defined(UDEVSETTLE)

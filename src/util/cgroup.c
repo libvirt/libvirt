@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # include <mntent.h>
 #endif
 #include <fcntl.h>
@@ -69,7 +69,7 @@ void virCgroupFree(virCgroupPtr *group)
     VIR_FREE(*group);
 }
 
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -403,7 +403,7 @@ out:
 }
 
 
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
 {
     int i;
@@ -628,7 +628,7 @@ int virCgroupAddTask(virCgroupPtr group, pid_t pid)
  *
  * Returns 0 on success
  */
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupForDriver(const char *name,
                        virCgroupPtr *group,
                        int privileged,
@@ -682,7 +682,7 @@ int virCgroupForDriver(const char *name ATTRIBUTE_UNUSED,
  *
  * Returns 0 on success
  */
-#ifdef HAVE_MNTENT_H
+#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 int virCgroupForDomain(virCgroupPtr driver,
                        const char *name,
                        virCgroupPtr *group,
