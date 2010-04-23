@@ -387,6 +387,11 @@
           <ref name="sixbitrange"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="connlimit-above">
+          <ref name="uint16range"/>
+        </attribute>
+      </optional>
     </interleave>
   </define>
 

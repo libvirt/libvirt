@@ -119,6 +119,8 @@ mymain(int argc, char **argv)
     DO_TEST("icmp-direction2-test");
     DO_TEST("icmp-direction3-test");
 
+    DO_TEST("conntrack-test");
+
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
