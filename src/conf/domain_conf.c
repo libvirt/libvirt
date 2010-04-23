@@ -6606,8 +6606,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
     }
 
     if (!xmlStrEqual(root->name, BAD_CAST "domainsnapshot")) {
-        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("incorrect root element"));
+        virDomainReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
         goto cleanup;
     }
 
