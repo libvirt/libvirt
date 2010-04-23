@@ -356,37 +356,6 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
     return STREQ(klass, thisklass);
 }
 
-static int
-qemuMonitorJSONCommandAddTimestamp(virJSONValuePtr obj)
-{
-    struct timeval tv;
-    virJSONValuePtr timestamp = NULL;
-
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot query time of day"));
-        return -1;
-    }
-
-    if (!(timestamp = virJSONValueNewObject()))
-        goto no_memory;
-
-    if (virJSONValueObjectAppendNumberLong(timestamp, "seconds", tv.tv_sec) < 0)
-        goto no_memory;
-    if (virJSONValueObjectAppendNumberLong(timestamp, "microseconds", tv.tv_usec) < 0)
-        goto no_memory;
-
-    if (virJSONValueObjectAppend(obj, "timestamp", timestamp) < 0)
-        goto no_memory;
-
-    return 0;
-
-no_memory:
-    virReportOOMError();
-    virJSONValueFree(timestamp);
-    return -1;
-}
-
 static virJSONValuePtr ATTRIBUTE_SENTINEL
 qemuMonitorJSONMakeCommand(const char *cmdname,
                            ...)
@@ -403,9 +372,6 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
 
     if (virJSONValueObjectAppendString(obj, "execute", cmdname) < 0)
         goto no_memory;
-
-    if (qemuMonitorJSONCommandAddTimestamp(obj) < 0)
-        goto error;
 
     while ((key = va_arg(args, char *)) != NULL) {
         int ret;
