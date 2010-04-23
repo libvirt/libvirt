@@ -8360,7 +8360,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     int ret = FALSE;
     int numsnaps;
     char **names = NULL;
-    int actual;
+    int actual = 0;
     int i;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -8447,6 +8447,8 @@ cleanup:
     if (xml)
         xmlFreeDoc(xml);
     VIR_FREE(doc);
+    for (i = 0; i < actual; i++)
+        VIR_FREE(names[i]);
     VIR_FREE(names);
     if (dom)
         virDomainFree(dom);
