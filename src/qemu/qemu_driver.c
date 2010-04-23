@@ -10780,8 +10780,8 @@ static int qemuDomainSnapshotIsAllowed(virDomainObjPtr vm)
             (!vm->def->disks[i]->driverType ||
              STRNEQ(vm->def->disks[i]->driverType, "qcow2"))) {
             qemuReportError(VIR_ERR_OPERATION_INVALID,
-                            _("Disk device '%s' does not support snapshotting"),
-                            vm->def->disks[i]->info.alias);
+                            _("Disk '%s' does not support snapshotting"),
+                            vm->def->disks[i]->src);
             return 0;
         }
     }
