@@ -782,7 +782,6 @@ virDomainSnapshotObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr s
                                                    const virDomainSnapshotDefPtr def);
 
 int virDomainSnapshotObjListInit(virDomainSnapshotObjListPtr objs);
-void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr objs);
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
                                      char **const names, int maxnames);
 int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots);

@@ -733,6 +733,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
 #ifndef PROXY
 
+static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots);
 static void virDomainObjFree(virDomainObjPtr dom)
 {
     if (!dom)
@@ -6803,7 +6804,7 @@ static void virDomainSnapshotObjListDeallocator(void *payload,
     virDomainSnapshotObjUnref(obj);
 }
 
-void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
+static void virDomainSnapshotObjListDeinit(virDomainSnapshotObjListPtr snapshots)
 {
     if (snapshots->objs)
         virHashFree(snapshots->objs, virDomainSnapshotObjListDeallocator);
