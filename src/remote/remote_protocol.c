@@ -4,9 +4,18 @@
  * It was generated using rpcgen.
  */
 
-#include "./remote/remote_protocol.h"
+#include "remote_protocol.h"
 #include "internal.h"
 #include <arpa/inet.h>
+#ifdef HAVE_XDR_U_INT64_T
+# define xdr_uint64_t xdr_u_int64_t
+#endif
+#ifndef IXDR_PUT_INT32
+# define IXDR_PUT_INT32 IXDR_PUT_LONG
+#endif
+#ifndef IXDR_GET_INT32
+# define IXDR_GET_INT32 IXDR_GET_LONG
+#endif
 
 bool_t
 xdr_remote_nonnull_string (XDR *xdrs, remote_nonnull_string *objp)

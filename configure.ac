@@ -124,6 +124,9 @@ AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
 		[AC_MSG_ERROR([Cannot find a XDR library])])
 	])
 
+dnl check for cygwin's variation in xdr function names
+AC_CHECK_FUNCS([xdr_u_int64_t],[],[],[#include <rpc/xdr.h>])
+
 AC_CHECK_LIB([intl],[gettext],[])
 
 dnl Do we have rpcgen?

@@ -15,6 +15,15 @@ extern "C" {
 
 #include "internal.h"
 #include <arpa/inet.h>
+#ifdef HAVE_XDR_U_INT64_T
+# define xdr_uint64_t xdr_u_int64_t
+#endif
+#ifndef IXDR_PUT_INT32
+# define IXDR_PUT_INT32 IXDR_PUT_LONG
+#endif
+#ifndef IXDR_GET_INT32
+# define IXDR_GET_INT32 IXDR_GET_LONG
+#endif
 #define REMOTE_MESSAGE_MAX 262144
 #define REMOTE_MESSAGE_HEADER_MAX 24
 #define REMOTE_MESSAGE_PAYLOAD_MAX 262120
