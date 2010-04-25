@@ -27,7 +27,10 @@
 
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#include <linux/if.h>
+
+#ifdef __linux__
+# include <linux/if.h>
+#endif
 
 #include "internal.h"
 
@@ -40,7 +43,7 @@
                              __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /*
- * chgIfFlags: Change flags on an interface
+ * chgIfaceFlags: Change flags on an interface
  *
  * @ifname : name of the interface
  * @flagclear : the flags to clear
@@ -52,6 +55,7 @@
  *
  * Returns 0 on success, errno on failure.
  */
+#ifdef __linux__
 static int chgIfaceFlags(const char *ifname, short flagclear, short flagset) {
     struct ifreq ifr;
     int rc = 0;
@@ -105,6 +109,15 @@ ifaceCtrl(const char *name, bool up)
                          (up) ? IFF_UP : 0);
 }
 
+#else
+
+int
+ifaceCtrl(const char *name ATTRIBUTE_UNUSED, bool up ATTRIBUTE_UNUSED)
+{
+    return ENOSYS;
+}
+
+#endif /* __linux__ */
 
 /**
  * ifaceCheck
@@ -123,6 +136,7 @@ ifaceCtrl(const char *name, bool up)
  *            index is different than the one passed
  *   EINVAL : if interface name is invalid (too long)
  */
+#ifdef __linux__
 int
 ifaceCheck(bool reportError, const char *ifname,
            const unsigned char *macaddr, int ifindex)
@@ -175,6 +189,19 @@ ifaceCheck(bool reportError, const char *ifname,
     return rc;
 }
 
+#else
+
+int
+ifaceCheck(bool reportError ATTRIBUTE_UNUSED,
+           const char *ifname ATTRIBUTE_UNUSED,
+           const unsigned char *macaddr ATTRIBUTE_UNUSED,
+           int ifindex ATTRIBUTE_UNUSED)
+{
+    return ENOSYS;
+}
+
+#endif /* __linux__ */
+
 
 /**
  * ifaceGetIndex
@@ -189,6 +216,7 @@ ifaceCheck(bool reportError, const char *ifname,
  *   ENODEV : if interface with given name does not exist
  *   EINVAL : if interface name is invalid (too long)
  */
+#ifdef __linux__
 int
 ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
 {
@@ -224,3 +252,20 @@ err_exit:
 
     return rc;
 }
+
+#else
+
+int
+ifaceGetIndex(bool reportError,
+              const char *ifname ATTRIBUTE_UNUSED,
+              int *ifindex ATTRIBUTE_UNUSED)
+{
+    if (reportError) {
+        ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("ifaceGetIndex is not supported on non-linux platforms"));
+    }
+
+    return ENOSYS;
+}
+
+#endif /* __linux__ */
