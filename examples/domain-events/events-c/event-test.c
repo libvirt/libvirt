@@ -380,10 +380,11 @@ int main(int argc, char **argv)
     int callback5ret = -1;
     int callback6ret = -1;
     int callback7ret = -1;
+    struct sigaction action_stop;
 
-    struct sigaction action_stop = {
-        .sa_handler = stop
-    };
+    memset(&action_stop, 0, sizeof action_stop);
+
+    action_stop.sa_handler = stop;
 
     if(argc > 1 && STREQ(argv[1],"--help")) {
         usage(argv[0]);
