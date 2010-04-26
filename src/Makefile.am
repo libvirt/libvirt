@@ -255,6 +255,8 @@ ESX_DRIVER_SOURCES =						\
 		esx/esx_vmx.c esx/esx_vmx.h
 
 ESX_DRIVER_GENERATED =							\
+		esx/esx_vi_methods.generated.c				\
+		esx/esx_vi_methods.generated.h				\
 		esx/esx_vi_types.generated.c				\
 		esx/esx_vi_types.generated.h				\
 		esx/esx_vi_types.generated.typedef			\
