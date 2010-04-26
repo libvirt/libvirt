@@ -57,9 +57,12 @@
 #include "iptables.h"
 #include "bridge.h"
 #include "logging.h"
+#include "dnsmasq.h"
 
 #define NETWORK_PID_DIR LOCAL_STATE_DIR "/run/libvirt/network"
 #define NETWORK_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/network"
+
+#define DNSMASQ_STATE_DIR LOCAL_STATE_DIR "/lib/libvirt/network"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -361,6 +364,29 @@ networkShutdown(void) {
 
 
 static int
+networkSaveDnsmasqHostsfile(virNetworkObjPtr network,
+                            dnsmasqContext *dctx,
+                            bool force)
+{
+    unsigned int i;
+
+    if (! force && virFileExists(dctx->hostsfile->path))
+        return 1;
+
+    for (i = 0 ; i < network->def->nhosts ; i++) {
+        virNetworkDHCPHostDefPtr host = &(network->def->hosts[i]);
+        if ((host->mac) && (host->ip))
+            dnsmasqAddDhcpHost(dctx, host->mac, host->ip, host->name);
+    }
+
+    if (dnsmasqSave(dctx) < 0)
+        return 0;
+
+    return 1;
+}
+
+
+static int
 networkBuildDnsmasqArgv(virNetworkObjPtr network,
                         const char *pidfile,
                         const char ***argv) {
@@ -401,8 +427,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /* --dhcp-lease-max=xxx if needed */
         (network->def->nranges ? 0 : 1) +
-        /*  --dhcp-host 01:23:45:67:89:0a,hostname,10.0.0.3 */
-        (2 * network->def->nhosts) +
+        /* --dhcp-hostsfile=/var/lib/dnsmasq/$NAME.hostsfile */
+        (network->def->nhosts > 0 ? 1 : 0) +
         /* --enable-tftp --tftp-root /srv/tftp */
         (network->def->tftproot ? 3 : 0) +
         /* --dhcp-boot pxeboot.img[,,12.34.56.78] */
@@ -473,22 +499,22 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         APPEND_ARG(*argv, i++, buf);
     }
 
-    for (r = 0 ; r < network->def->nhosts ; r++) {
-        virNetworkDHCPHostDefPtr host = &(network->def->hosts[r]);
-        if ((host->mac) && (host->name)) {
-            snprintf(buf, sizeof(buf), "%s,%s,%s",
-                     host->mac, host->name, host->ip);
-        } else if (host->mac) {
-            snprintf(buf, sizeof(buf), "%s,%s",
-                     host->mac, host->ip);
-        } else if (host->name) {
-            snprintf(buf, sizeof(buf), "%s,%s",
-                     host->name, host->ip);
-        } else
-            continue;
+    if (network->def->nhosts > 0) {
+        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+        char *hostsfileArg;
 
-        APPEND_ARG(*argv, i++, "--dhcp-host");
-        APPEND_ARG(*argv, i++, buf);
+        if (dctx == NULL)
+            goto no_memory;
+
+        if (networkSaveDnsmasqHostsfile(network, dctx, false)) {
+            if (virAsprintf(&hostsfileArg, "--dhcp-hostsfile=%s", dctx->hostsfile->path) < 0) {
+                dnsmasqContextFree(dctx);
+                goto no_memory;
+            }
+            APPEND_ARG_LIT(*argv, i++, hostsfileArg);
+        }
+
+        dnsmasqContextFree(dctx);
     }
 
     if (network->def->tftproot) {
@@ -1294,6 +1320,15 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
         goto cleanup;
     }
 
+    if (network->def->nhosts > 0) {
+        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+        if (dctx == NULL)
+            goto cleanup;
+
+        networkSaveDnsmasqHostsfile(network, dctx, true);
+        dnsmasqContextFree(dctx);
+    }
+
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
 cleanup:
@@ -1328,6 +1363,15 @@ static int networkUndefine(virNetworkPtr net) {
                                driver->networkAutostartDir,
                                network) < 0)
         goto cleanup;
+
+    if (network->def->nhosts > 0) {
+        dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
+        if (dctx == NULL)
+            goto cleanup;
+
+        dnsmasqDelete(dctx);
+        dnsmasqContextFree(dctx);
+    }
 
     virNetworkRemoveInactive(&driver->networks,
                              network);
