@@ -65,15 +65,17 @@ enum virNWFilterEntryItemFlags {
 enum attrDatatype {
     DATATYPE_UINT16           = (1 << 0),
     DATATYPE_UINT8            = (1 << 1),
-    DATATYPE_MACADDR          = (1 << 2),
-    DATATYPE_MACMASK          = (1 << 3),
-    DATATYPE_IPADDR           = (1 << 4),
-    DATATYPE_IPMASK           = (1 << 5),
-    DATATYPE_STRING           = (1 << 6),
-    DATATYPE_IPV6ADDR         = (1 << 7),
-    DATATYPE_IPV6MASK         = (1 << 8),
+    DATATYPE_UINT16_HEX       = (1 << 2),
+    DATATYPE_UINT8_HEX        = (1 << 3),
+    DATATYPE_MACADDR          = (1 << 4),
+    DATATYPE_MACMASK          = (1 << 5),
+    DATATYPE_IPADDR           = (1 << 6),
+    DATATYPE_IPMASK           = (1 << 7),
+    DATATYPE_STRING           = (1 << 8),
+    DATATYPE_IPV6ADDR         = (1 << 9),
+    DATATYPE_IPV6MASK         = (1 << 10),
 
-    DATATYPE_LAST             = (1 << 9),
+    DATATYPE_LAST             = (1 << 11),
 };
 
 

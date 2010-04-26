@@ -215,6 +215,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     break;
 
     case DATATYPE_UINT16:
+    case DATATYPE_UINT16_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u16) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",
@@ -224,6 +225,7 @@ _printDataType(virNWFilterHashTablePtr vars,
     break;
 
     case DATATYPE_UINT8:
+    case DATATYPE_UINT8_HEX:
         if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
                      item->u.u8) >= bufsize) {
             virNWFilterReportError(VIR_ERR_INVALID_NWFILTER, "%s",

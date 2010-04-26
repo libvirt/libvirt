@@ -121,6 +121,8 @@ mymain(int argc, char **argv)
 
     DO_TEST("conntrack-test");
 
+    DO_TEST("hex-data-test");
+
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 

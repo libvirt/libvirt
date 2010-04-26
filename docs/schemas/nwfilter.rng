@@ -647,6 +647,10 @@
 
   <define name="sixbitrange">
     <choice>
+      <data type="string">
+        <param name="pattern">0x([0-3][0-9a-fA-F]|[0-9a-fA-F])</param>
+      </data>
+
       <!-- variable -->
       <data type="string">
         <param name="pattern">$[a-zA-Z0-9_]+</param>
@@ -664,6 +668,10 @@
       <!-- variable -->
       <data type="string">
         <param name="pattern">$[a-zA-Z0-9_]+</param>
+      </data>
+
+      <data type="string">
+        <param name="pattern">0x([6-9a-fA-F][0-9a-fA-F]{2}|[0-9a-fA-F]{4})</param>
       </data>
 
       <data type="int">
@@ -686,6 +694,10 @@
         <param name="pattern">$[a-zA-Z0-9_]+</param>
       </data>
 
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
+      </data>
+
       <data type="int">
         <param name="minInclusive">0</param>
         <param name="maxInclusive">255</param>
@@ -698,6 +710,10 @@
       <!-- variable -->
       <data type="string">
         <param name="pattern">$[a-zA-Z0-9_]+</param>
+      </data>
+
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,4}</param>
       </data>
 
       <data type="int">
@@ -731,6 +747,10 @@
       <!-- variable -->
       <data type="string">
         <param name="pattern">$[a-zA-Z0-9_]+</param>
+      </data>
+
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
       </data>
 
       <data type="int">
