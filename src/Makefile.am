@@ -59,6 +59,7 @@ UTIL_SOURCES =							\
 		util/hooks.c util/hooks.h			\
 		util/iptables.c util/iptables.h			\
 		util/ebtables.c util/ebtables.h			\
+		util/dnsmasq.c util/dnsmasq.h                   \
 		util/json.c util/json.h				\
 		util/logging.c util/logging.h			\
 		util/macvtap.c util/macvtap.h			\

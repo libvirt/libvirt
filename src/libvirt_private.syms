@@ -326,6 +326,15 @@ iptablesRemoveTcpInput;
 iptablesRemoveUdpInput;
 
 
+# dnsmasq.h
+dnsmasqContextNew;
+dnsmasqContextFree;
+dnsmasqAddDhcpHost;
+dnsmasqSave;
+dnsmasqDelete;
+dnsmasqReload;
+
+
 # libvirt_internal.h
 virDrvSupportsFeature;
 virDomainMigratePrepare;
