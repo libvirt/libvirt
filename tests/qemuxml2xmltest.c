@@ -138,6 +138,8 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");
 
+    DO_TEST("encrypted-disk");
+
     virCapabilitiesFree(driver.caps);
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

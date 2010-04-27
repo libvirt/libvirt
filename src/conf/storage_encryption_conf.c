@@ -215,7 +215,8 @@ virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
 
 static int
 virStorageEncryptionSecretFormat(virBufferPtr buf,
-                                 virStorageEncryptionSecretPtr secret)
+                                 virStorageEncryptionSecretPtr secret,
+                                 unsigned int indent)
 {
     const char *type;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -228,13 +229,15 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
     }
 
     virUUIDFormat(secret->uuid, uuidstr);
-    virBufferVSprintf(buf, "        <secret type='%s' uuid='%s'/>\n", type, uuidstr);
+    virBufferVSprintf(buf, "%*s<secret type='%s' uuid='%s'/>\n",
+                      indent, "", type, uuidstr);
     return 0;
 }
 
 int
 virStorageEncryptionFormat(virBufferPtr buf,
-                           virStorageEncryptionPtr enc)
+                           virStorageEncryptionPtr enc,
+                           unsigned int indent)
 {
     const char *format;
     size_t i;
@@ -245,14 +248,15 @@ virStorageEncryptionFormat(virBufferPtr buf,
                               "%s", _("unexpected encryption format"));
         return -1;
     }
-    virBufferVSprintf(buf, "      <encryption format='%s'>\n", format);
+    virBufferVSprintf(buf, "%*s<encryption format='%s'>\n",
+                      indent, "", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
-        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i]) < 0)
+        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i], indent + 2) < 0)
             return -1;
     }
 
-    virBufferAddLit(buf, "      </encryption>\n");
+    virBufferVSprintf(buf, "%*s</encryption>\n", indent, "");
 
     return 0;
 }

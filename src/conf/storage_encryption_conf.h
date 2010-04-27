@@ -67,7 +67,8 @@ void virStorageEncryptionFree(virStorageEncryptionPtr enc);
 virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root);
 int virStorageEncryptionFormat(virBufferPtr buf,
-                               virStorageEncryptionPtr enc);
+                               virStorageEncryptionPtr enc,
+                               unsigned int indent);
 
 /* A helper for VIR_STORAGE_ENCRYPTION_FORMAT_QCOW */
 enum {
