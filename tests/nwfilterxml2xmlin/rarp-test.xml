@@ -1,0 +1,33 @@
+<filter name='testcase'>
+  <uuid>5c6d49af-b071-6127-b4ec-6f8ed4b55335</uuid>
+  <rule action='accept' direction='out'>
+     <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           protocolid='rarp'
+           dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:ff'
+           hwtype='12'
+           protocoltype='34'
+           opcode='Request'
+           arpsrcmacaddr='1:2:3:4:5:6'
+           arpdstmacaddr='a:b:c:d:e:f'/>
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           opcode='1' hwtype='255' protocoltype='255'/>
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           opcode='11' hwtype='256' protocoltype='256'/>
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           opcode='65535' hwtype='65535' protocoltype='65535' />
+  </rule>
+
+  <rule action='accept' direction='out'>
+     <rarp srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:ff'
+           opcode='65536' hwtype='65536' protocoltype='65536' />
+  </rule>
+</filter>

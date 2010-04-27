@@ -90,6 +90,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("mac-test");
     DO_TEST("arp-test");
+    DO_TEST("rarp-test");
     DO_TEST("ip-test");
     DO_TEST("ipv6-test");
 

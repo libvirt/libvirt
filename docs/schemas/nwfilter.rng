@@ -39,6 +39,15 @@
           </optional>
           <optional>
             <zeroOrMore>
+              <element name="rarp">
+                <ref name="match-attribute"/>
+                <ref name="common-l2-attributes"/>
+                <ref name="arp-attributes"/> <!-- same as arp -->
+              </element>
+            </zeroOrMore>
+          </optional>
+          <optional>
+            <zeroOrMore>
               <element name="ip">
                 <ref name="match-attribute"/>
                 <ref name="common-l2-attributes"/>

@@ -46,22 +46,6 @@
 #include "domain_conf.h"
 
 
-/* XXX
- * The config parser/structs should not be using platform specific
- * constants. Win32 lacks these constants, breaking the parser,
- * so temporarily define them until this can be re-written to use
- * locally defined enums for all constants
- */
-#ifndef ETHERTYPE_IP
-# define ETHERTYPE_IP            0x0800
-#endif
-#ifndef ETHERTYPE_ARP
-# define ETHERTYPE_ARP           0x0806
-#endif
-#ifndef ETHERTYPE_IPV6
-# define ETHERTYPE_IPV6          0x86dd
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 
@@ -90,6 +74,7 @@ VIR_ENUM_IMPL(virNWFilterEbtablesTable, VIR_NWFILTER_EBTABLES_TABLE_LAST,
 VIR_ENUM_IMPL(virNWFilterChainSuffix, VIR_NWFILTER_CHAINSUFFIX_LAST,
               "root",
               "arp",
+              "rarp",
               "ipv4",
               "ipv6");
 
@@ -97,6 +82,7 @@ VIR_ENUM_IMPL(virNWFilterRuleProtocol, VIR_NWFILTER_RULE_PROTOCOL_LAST,
               "none",
               "mac",
               "arp",
+              "rarp",
               "ip",
               "ipv6",
               "tcp",
@@ -412,11 +398,10 @@ struct _virXMLAttr2Struct
 
 
 static const struct int_map macProtoMap[] = {
-    INTMAP_ENTRY(ETHERTYPE_ARP , "arp"),
-    INTMAP_ENTRY(ETHERTYPE_IP  , "ipv4"),
-#ifdef ETHERTYPE_IPV6
-    INTMAP_ENTRY(ETHERTYPE_IPV6, "ipv6"),
-#endif
+    INTMAP_ENTRY(ETHERTYPE_ARP   , "arp"),
+    INTMAP_ENTRY(ETHERTYPE_REVARP, "rarp"),
+    INTMAP_ENTRY(ETHERTYPE_IP    , "ipv4"),
+    INTMAP_ENTRY(ETHERTYPE_IPV6  , "ipv6"),
     INTMAP_ENTRY_LAST
 };
 
@@ -1096,6 +1081,7 @@ struct _virAttributes {
 
 static const virAttributes virAttr[] = {
     PROTOCOL_ENTRY("arp"    , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_ARP),
+    PROTOCOL_ENTRY("rarp"   , arpAttributes    , VIR_NWFILTER_RULE_PROTOCOL_RARP),
     PROTOCOL_ENTRY("mac"    , macAttributes    , VIR_NWFILTER_RULE_PROTOCOL_MAC),
     PROTOCOL_ENTRY("ip"     , ipAttributes     , VIR_NWFILTER_RULE_PROTOCOL_IP),
     PROTOCOL_ENTRY("ipv6"   , ipv6Attributes   , VIR_NWFILTER_RULE_PROTOCOL_IPV6),
@@ -1450,6 +1436,7 @@ virNWFilterRuleDefFixup(virNWFilterRuleDefPtr rule)
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
+    case VIR_NWFILTER_RULE_PROTOCOL_RARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
     break;
 

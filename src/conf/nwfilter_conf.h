@@ -35,6 +35,24 @@
 # include "xml.h"
 # include "network.h"
 
+/* XXX
+ * The config parser/structs should not be using platform specific
+ * constants. Win32 lacks these constants, breaking the parser,
+ * so temporarily define them until this can be re-written to use
+ * locally defined enums for all constants
+ */
+# ifndef ETHERTYPE_IP
+#  define ETHERTYPE_IP            0x0800
+# endif
+# ifndef ETHERTYPE_ARP
+#  define ETHERTYPE_ARP           0x0806
+# endif
+# ifndef ETHERTYPE_REVARP
+#  define ETHERTYPE_REVARP        0x8035
+# endif
+# ifndef ETHERTYPE_IPV6
+#  define ETHERTYPE_IPV6          0x86dd
+# endif
 
 /**
  * Chain suffix size is:
@@ -292,6 +310,7 @@ enum virNWFilterRuleProtocolType {
     VIR_NWFILTER_RULE_PROTOCOL_NONE = 0,
     VIR_NWFILTER_RULE_PROTOCOL_MAC,
     VIR_NWFILTER_RULE_PROTOCOL_ARP,
+    VIR_NWFILTER_RULE_PROTOCOL_RARP,
     VIR_NWFILTER_RULE_PROTOCOL_IP,
     VIR_NWFILTER_RULE_PROTOCOL_IPV6,
     VIR_NWFILTER_RULE_PROTOCOL_TCP,
@@ -336,7 +355,7 @@ struct _virNWFilterRuleDef {
     enum virNWFilterRuleProtocolType prtclType;
     union {
         ethHdrFilterDef  ethHdrFilter;
-        arpHdrFilterDef  arpHdrFilter;
+        arpHdrFilterDef  arpHdrFilter; /* also used for rarp */
         ipHdrFilterDef   ipHdrFilter;
         ipv6HdrFilterDef ipv6HdrFilter;
         tcpHdrFilterDef  tcpHdrFilter;
@@ -373,6 +392,7 @@ struct _virNWFilterEntry {
 enum virNWFilterChainSuffixType {
     VIR_NWFILTER_CHAINSUFFIX_ROOT = 0,
     VIR_NWFILTER_CHAINSUFFIX_ARP,
+    VIR_NWFILTER_CHAINSUFFIX_RARP,
     VIR_NWFILTER_CHAINSUFFIX_IPv4,
     VIR_NWFILTER_CHAINSUFFIX_IPv6,
 

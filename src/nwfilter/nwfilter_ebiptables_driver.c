@@ -32,6 +32,7 @@
 #include "logging.h"
 #include "virterror_internal.h"
 #include "domain_conf.h"
+#include "nwfilter_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
 
@@ -103,11 +104,28 @@ static int ebiptablesDriverInit(void);
 static void ebiptablesDriverShutdown(void);
 
 
-static const char *supported_protocols[] = {
-    "ipv4",
-    "ipv6",
-    "arp",
-    NULL,
+struct ushort_map {
+    unsigned short attr;
+    const char *val;
+};
+
+
+enum l3_proto_idx {
+    L3_PROTO_IPV4_IDX = 0,
+    L3_PROTO_IPV6_IDX,
+    L3_PROTO_ARP_IDX,
+    L3_PROTO_RARP_IDX,
+    L3_PROTO_LAST_IDX
+};
+
+#define USHORTMAP_ENTRY_IDX(IDX, ATT, VAL) [IDX] = { .attr = ATT, .val = VAL }
+
+static const struct ushort_map l3_protocols[] = {
+    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV4_IDX, ETHERTYPE_IP    , "ipv4"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_IPV6_IDX, ETHERTYPE_IPV6  , "ipv6"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_ARP_IDX , ETHERTYPE_ARP   , "arp"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_RARP_IDX, ETHERTYPE_REVARP, "rarp"),
+    USHORTMAP_ENTRY_IDX(L3_PROTO_LAST_IDX, 0               , NULL),
 };
 
 
@@ -1611,6 +1629,7 @@ ebtablesCreateRuleInstance(char chainPrefix,
     break;
 
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
+    case VIR_NWFILTER_RULE_PROTOCOL_RARP:
 
         virBufferVSprintf(&buf,
                           CMD_DEF_PRE "%s -t %s -%%c %s %%s",
@@ -1622,7 +1641,10 @@ ebtablesCreateRuleInstance(char chainPrefix,
                                  reverse))
             goto err_exit;
 
-        virBufferAddLit(&buf, " -p arp");
+        virBufferVSprintf(&buf, " -p 0x%x",
+                          (rule->prtclType == VIR_NWFILTER_RULE_PROTOCOL_ARP)
+                           ? l3_protocols[L3_PROTO_ARP_IDX].attr
+                           : l3_protocols[L3_PROTO_RARP_IDX].attr);
 
         if (HAS_ENTRY_ITEM(&rule->p.arpHdrFilter.dataHWType)) {
              if (printDataType(vars,
@@ -2036,6 +2058,7 @@ ebiptablesCreateRuleInstance(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_NWFILTER_RULE_PROTOCOL_IP:
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
     case VIR_NWFILTER_RULE_PROTOCOL_ARP:
+    case VIR_NWFILTER_RULE_PROTOCOL_RARP:
     case VIR_NWFILTER_RULE_PROTOCOL_NONE:
     case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
 
@@ -2427,7 +2450,7 @@ static int
 ebtablesCreateTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
-                          const char *protocol,
+                          enum l3_proto_idx protoidx,
                           int stopOnError)
 {
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
@@ -2435,13 +2458,13 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
                                   : CHAINPREFIX_HOST_OUT_TEMP;
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
-    PRINT_CHAIN(chain, chainPrefix, ifname, protocol);
+    PRINT_CHAIN(chain, chainPrefix, ifname, l3_protocols[protoidx].val);
 
     virBufferVSprintf(buf,
                       CMD_DEF("%s -t %s -N %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s"
-                      CMD_DEF("%s -t %s -A %s -p %s -j %s") CMD_SEPARATOR
+                      CMD_DEF("%s -t %s -A %s -p 0x%x -j %s") CMD_SEPARATOR
                       CMD_EXEC
                       "%s",
 
@@ -2450,7 +2473,7 @@ ebtablesCreateTmpSubChain(virBufferPtr buf,
                       CMD_STOPONERR(stopOnError),
 
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
-                      rootchain, protocol, chain,
+                      rootchain, l3_protocols[protoidx].attr, chain,
 
                       CMD_STOPONERR(stopOnError));
 
@@ -2462,11 +2485,12 @@ static int
 _ebtablesRemoveSubChain(virBufferPtr buf,
                         int incoming,
                         const char *ifname,
-                        const char *protocol,
+                        enum l3_proto_idx protoidx,
                         int isTempChain)
 {
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix;
+
     if (isTempChain) {
         chainPrefix =(incoming) ? CHAINPREFIX_HOST_IN_TEMP
                                 : CHAINPREFIX_HOST_OUT_TEMP;
@@ -2476,14 +2500,14 @@ _ebtablesRemoveSubChain(virBufferPtr buf,
     }
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
-    PRINT_CHAIN(chain, chainPrefix, ifname, protocol);
+    PRINT_CHAIN(chain, chainPrefix, ifname, l3_protocols[protoidx].val);
 
     virBufferVSprintf(buf,
-                      "%s -t %s -D %s -p %s -j %s" CMD_SEPARATOR
+                      "%s -t %s -D %s -p 0x%x -j %s" CMD_SEPARATOR
                       "%s -t %s -F %s" CMD_SEPARATOR
                       "%s -t %s -X %s" CMD_SEPARATOR,
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE,
-                      rootchain, protocol, chain,
+                      rootchain, l3_protocols[protoidx].attr, chain,
 
                       ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain,
 
@@ -2497,10 +2521,10 @@ static int
 ebtablesRemoveSubChain(virBufferPtr buf,
                        int incoming,
                        const char *ifname,
-                       const char *protocol)
+                       enum l3_proto_idx protoidx)
 {
     return _ebtablesRemoveSubChain(buf,
-                                   incoming, ifname, protocol, 0);
+                                   incoming, ifname, protoidx, 0);
 }
 
 
@@ -2508,10 +2532,11 @@ static int
 ebtablesRemoveSubChains(virBufferPtr buf,
                         const char *ifname)
 {
-    int i;
-    for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRemoveSubChain(buf, 1, ifname, supported_protocols[i]);
-        ebtablesRemoveSubChain(buf, 0, ifname, supported_protocols[i]);
+    enum l3_proto_idx i;
+
+    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
+        ebtablesRemoveSubChain(buf, 1, ifname, i);
+        ebtablesRemoveSubChain(buf, 0, ifname, i);
     }
 
     return 0;
@@ -2522,10 +2547,10 @@ static int
 ebtablesRemoveTmpSubChain(virBufferPtr buf,
                           int incoming,
                           const char *ifname,
-                          const char *protocol)
+                          enum l3_proto_idx protoidx)
 {
     return _ebtablesRemoveSubChain(buf,
-                                   incoming, ifname, protocol, 1);
+                                   incoming, ifname, protoidx, 1);
 }
 
 
@@ -2533,12 +2558,11 @@ static int
 ebtablesRemoveTmpSubChains(virBufferPtr buf,
                            const char *ifname)
 {
-    int i;
-    for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRemoveTmpSubChain(buf, 1, ifname,
-                                  supported_protocols[i]);
-        ebtablesRemoveTmpSubChain(buf, 0, ifname,
-                                  supported_protocols[i]);
+    enum l3_proto_idx i;
+
+    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
+        ebtablesRemoveTmpSubChain(buf, 1, ifname, i);
+        ebtablesRemoveTmpSubChain(buf, 0, ifname, i);
     }
 
     return 0;
@@ -2576,12 +2600,11 @@ static int
 ebtablesRenameTmpSubChains(virBufferPtr buf,
                            const char *ifname)
 {
-    int i;
-    for (i = 0; supported_protocols[i]; i++) {
-        ebtablesRenameTmpSubChain (buf, 1, ifname,
-                                   supported_protocols[i]);
-        ebtablesRenameTmpSubChain (buf, 0, ifname,
-                                   supported_protocols[i]);
+    enum l3_proto_idx i;
+
+    for (i = 0; i < L3_PROTO_LAST_IDX; i++) {
+        ebtablesRenameTmpSubChain (buf, 1, ifname, l3_protocols[i].val);
+        ebtablesRenameTmpSubChain (buf, 0, ifname, l3_protocols[i].val);
     }
 
     return 0;
@@ -2911,20 +2934,24 @@ ebiptablesApplyNewRules(virConnectPtr conn ATTRIBUTE_UNUSED,
         ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
 
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, "ipv4", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_IPV4_IDX, 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv4))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, "ipv4", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_IPV4_IDX, 1);
 
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, "ipv6", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_IPV6_IDX, 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_IPv6))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, "ipv6", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_IPV6_IDX, 1);
 
-    // keep arp as last
+    // keep arp,rarp as last
     if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(&buf, 1, ifname, "arp", 1);
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_ARP_IDX, 1);
     if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_ARP))
-        ebtablesCreateTmpSubChain(&buf, 0, ifname, "arp", 1);
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_ARP_IDX, 1);
+    if (chains_in  & (1 << VIR_NWFILTER_CHAINSUFFIX_RARP))
+        ebtablesCreateTmpSubChain(&buf, 1, ifname, L3_PROTO_RARP_IDX, 1);
+    if (chains_out & (1 << VIR_NWFILTER_CHAINSUFFIX_RARP))
+        ebtablesCreateTmpSubChain(&buf, 0, ifname, L3_PROTO_RARP_IDX, 1);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
