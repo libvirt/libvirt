@@ -1045,6 +1045,53 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domblkinfo" command
+ */
+static const vshCmdInfo info_domblkinfo[] = {
+    {"help", N_("domain block device size information")},
+    {"desc", N_("Get block device size info for a domain.")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_domblkinfo[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, N_("block device")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainBlockInfo info;
+    virDomainPtr dom;
+    int ret = TRUE;
+    const char *device;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return FALSE;
+
+    if (!(device = vshCommandOptString (cmd, "device", NULL))) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virDomainGetBlockInfo(dom, device, &info, 0) < 0) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
+    vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
+    vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info.physical);
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "suspend" command
  */
 static const vshCmdInfo info_suspend[] = {
@@ -8661,6 +8708,7 @@ static const vshCmdDef commands[] = {
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
     {"dommemstat", cmdDomMemStat, opts_dommemstat, info_dommemstat},
+    {"domblkinfo", cmdDomblkinfo, opts_domblkinfo, info_domblkinfo},
     {"domxml-from-native", cmdDomXMLFromNative, opts_domxmlfromnative, info_domxmlfromnative},
     {"domxml-to-native", cmdDomXMLToNative, opts_domxmltonative, info_domxmltonative},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
