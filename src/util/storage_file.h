@@ -51,6 +51,10 @@ typedef struct _virStorageFileMetadata {
     bool encrypted;
 } virStorageFileMetadata;
 
+# ifndef DEV_BSIZE
+#  define DEV_BSIZE 512
+# endif
+
 int virStorageFileGetMetadata(const char *path,
                               virStorageFileMetadata *meta);
 int virStorageFileGetMetadataFromFD(const char *path,

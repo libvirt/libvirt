@@ -73,10 +73,6 @@
 # include "storage_backend_fs.h"
 #endif
 
-#ifndef DEV_BSIZE
-# define DEV_BSIZE 512
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static virStorageBackendPtr backends[] = {

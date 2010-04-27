@@ -84,6 +84,7 @@
 #include "macvtap.h"
 #include "nwfilter/nwfilter_gentech_driver.h"
 #include "hooks.h"
+#include "storage_file.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -9001,6 +9002,120 @@ cleanup:
 }
 
 
+static int qemuDomainGetBlockInfo(virDomainPtr dom,
+                                  const char *path,
+                                  virDomainBlockInfoPtr info,
+                                  unsigned int flags) {
+    struct qemud_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+    int fd = -1;
+    off_t end;
+    virStorageFileMetadata meta;
+    struct stat sb;
+    int i;
+
+    virCheckFlags(0, -1);
+
+    qemuDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    qemuDriverUnlock(driver);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!path || path[0] == '\0') {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        "%s", _("NULL or empty path"));
+        goto cleanup;
+    }
+
+    /* Check the path belongs to this domain. */
+    for (i = 0 ; i < vm->def->ndisks ; i++) {
+        if (vm->def->disks[i]->src != NULL &&
+            STREQ (vm->def->disks[i]->src, path)) {
+            ret = 0;
+            break;
+        }
+    }
+
+    if (ret != 0) {
+        qemuReportError(VIR_ERR_INVALID_ARG,
+                        _("invalid path %s not assigned to domain"), path);
+        goto cleanup;
+    }
+
+    ret = -1;
+
+    /* The path is correct, now try to open it and get its size. */
+    fd = open (path, O_RDONLY);
+    if (fd == -1) {
+        virReportSystemError(errno,
+                             _("failed to open path '%s'"), path);
+        goto cleanup;
+    }
+
+    /* Probe for magic formats */
+    memset(&meta, 0, sizeof(meta));
+    if (virStorageFileGetMetadataFromFD(path, fd, &meta) < 0)
+        goto cleanup;
+
+    /* Get info for normal formats */
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"), path);
+        goto cleanup;
+    }
+
+    if (S_ISREG(sb.st_mode)) {
+#ifndef __MINGW32__
+        info->physical = (unsigned long long)sb.st_blocks *
+            (unsigned long long)DEV_BSIZE;
+#else
+        info->physical = sb.st_size;
+#endif
+        /* Regular files may be sparse, so logical size (capacity) is not same
+         * as actual physical above
+         */
+        info->capacity = sb.st_size;
+    } else {
+        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
+         * be 64 bits on all platforms.
+         */
+        end = lseek (fd, 0, SEEK_END);
+        if (end == (off_t)-1) {
+            virReportSystemError(errno,
+                                 _("failed to seek to end of %s"), path);
+            goto cleanup;
+        }
+        info->physical = end;
+        info->capacity = end;
+    }
+
+    /* If the file we probed has a capacity set, then override
+     * what we calculated from file/block extents */
+    if (meta.capacity)
+        info->capacity = meta.capacity;
+
+    /* XXX allocation will need to be pulled from QEMU for
+     * the qcow inside LVM case */
+    info->allocation = info->physical;
+
+    ret = 0;
+
+cleanup:
+    if (fd != -1)
+        close(fd);
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+
 static int
 qemuDomainEventRegister(virConnectPtr conn,
                         virConnectDomainEventCallback callback,
@@ -11467,7 +11582,7 @@ static virDriver qemuDriver = {
     qemudDomainMemoryStats, /* domainMemoryStats */
     qemudDomainBlockPeek, /* domainBlockPeek */
     qemudDomainMemoryPeek, /* domainMemoryPeek */
-    NULL, /* domainBlockInfo */
+    qemuDomainGetBlockInfo, /* domainGetBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     nodeGetFreeMemory,  /* getFreeMemory */
     qemuDomainEventRegister, /* domainEventRegister */
