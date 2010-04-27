@@ -4117,13 +4117,16 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         }
         if (vm->state != VIR_DOMAIN_PAUSED) {
             int rc;
+            int state = vm->state;
 
+            vm->state = VIR_DOMAIN_PAUSED;
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             rc = qemuMonitorStopCPUs(priv->mon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
+            if (rc < 0) {
+                vm->state = state;
                 goto endjob;
-            vm->state = VIR_DOMAIN_PAUSED;
+            }
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
@@ -4491,8 +4494,10 @@ qemuDomainMigrateOffline(struct qemud_driver *driver,
                          virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    int state = vm->state;
     int ret;
 
+    vm->state = VIR_DOMAIN_PAUSED;
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorStopCPUs(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -4500,13 +4505,13 @@ qemuDomainMigrateOffline(struct qemud_driver *driver,
     if (ret == 0) {
         virDomainEventPtr event;
 
-        vm->state = VIR_DOMAIN_PAUSED;
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
         if (event)
             qemuDomainEventQueue(driver, event);
-    }
+    } else
+        vm->state = state;
 
     return ret;
 }
@@ -4743,13 +4748,14 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     /* Pause */
     if (vm->state == VIR_DOMAIN_RUNNING) {
         header.was_running = 1;
+        vm->state = VIR_DOMAIN_PAUSED;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            vm->state = VIR_DOMAIN_RUNNING;
             goto endjob;
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
-        vm->state = VIR_DOMAIN_PAUSED;
     }
 
     /* Get XML for the domain */
@@ -5167,9 +5173,11 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
     /* Pause domain for non-live dump */
     if (!(flags & VIR_DUMP_LIVE) && vm->state == VIR_DOMAIN_RUNNING) {
+        vm->state = VIR_DOMAIN_PAUSED;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStopCPUs(priv->mon) < 0) {
             qemuDomainObjExitMonitorWithDriver(driver, vm);
+            vm->state = VIR_DOMAIN_RUNNING;
             goto endjob;
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -5214,6 +5222,7 @@ endjob:
                                 "%s", _("resuming after dump failed"));
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+        vm->state = VIR_DOMAIN_RUNNING;
     }
 
     if (qemuDomainObjEndJob(vm) == 0)
@@ -11056,12 +11065,16 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* qemu unconditionally starts the domain running again after
              * loadvm, so let's pause it to keep consistency
              */
+            int state = vm->state;
             priv = vm->privateData;
+            vm->state = VIR_DOMAIN_PAUSED;
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             rc = qemuMonitorStopCPUs(priv->mon);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
-            if (rc < 0)
+            if (rc < 0) {
+                vm->state = state;
                 goto cleanup;
+            }
         }
 
         event = virDomainEventNewFromObj(vm,
