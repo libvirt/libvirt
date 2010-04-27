@@ -73,9 +73,10 @@ AC_LIBTOOL_WIN32_DLL
 
 AM_PROG_LIBTOOL
 AM_PROG_CC_C_O
+AM_PROG_LD
 
 VERSION_SCRIPT_FLAGS=-Wl,--version-script=
-`/usr/bin/ld --help 2>&1 | grep -- --version-script >/dev/null` || \
+`$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
 AC_SUBST(VERSION_SCRIPT_FLAGS)
 
@@ -1816,9 +1817,17 @@ case "$host" in
     if test "x$enable_shared" = "xno"; then
       WIN32_EXTRA_CFLAGS="-DLIBVIRT_STATIC"
     fi
+esac
+case "$host" in
+  *-*-mingw* | *-*-msvc* )
     # Also set the symbol file to .def, so src/Makefile generates libvirt.def
     # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the linker
     LIBVIRT_SYMBOL_FILE=libvirt.def
+    # mingw's ld has the --version-script parameter, but it requires a .def file
+    # instead to work properly, therefore clear --version-script here
+    # cygwin's ld has the --version-script parameter too, but for some reason
+    # it's working there as expected
+    VERSION_SCRIPT_FLAGS=
     ;;
 esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
