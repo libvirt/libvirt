@@ -43,19 +43,6 @@
 
       <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a>
     </pre>
-        <h2>CVS repository access (Deprecated) </h2>
-        <p>
-      The master source repository used to be under <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a>
-      with anonymous access at:
-       </p>
-        <pre>
-
-      # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt
-    </pre>
-      <p> The server is maintainened temporarilly for existing uses, but all
-      changes are only commited to git now and we expect to deprecate the CVS
-      server during summer 2009. </p>
-
        <h2>Building from a source code checkout</h2>
     <p> The libvirt build process uses GNU autotools, so after obtaining a
     checkout it is necessary to generate the configure script and Makefile.in
@@ -68,27 +55,5 @@
       make
       make install
     </pre>
-
-    <h2>GIT repository mirror</h2>
-
-    <p>
-      Jim Mereying was maintaining a CVS to git mirror on
-      <a href="http://git.et.redhat.com/?p=libvirt.git">git.et.redhat.com</a>.
-      Existing users should migrate to the new libvirt.org git server, as the
-      old one is now deprecated.  For the sake of old links including now-
-      rewritten SHA1s, we'll leave the old repository on-line for some time.
-      It is available as:
-    </p>
-    <pre>
-
-      git clone git://git.et.redhat.com/libvirt.git
-    </pre>
-    <p>
-      It can also be browsed at
-    </p>
-    <pre>
-      <a href="http://git.et.redhat.com/?p=libvirt.git;a=summary">http://git.et.redhat.com/?p=libvirt.git;a=summary</a>
-    </pre>
-
   </body>
 </html>
