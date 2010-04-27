@@ -166,7 +166,7 @@ char *qemuMonitorEscapeShell(const char *in)
 }
 
 
-#if QEMU_DEBUG_RAW_IO
+#if DEBUG_RAW_IO
 # include <c-ctype.h>
 static char * qemuMonitorEscapeNonPrintable(const char *text)
 {
