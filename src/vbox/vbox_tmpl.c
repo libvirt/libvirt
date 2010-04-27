@@ -8164,6 +8164,7 @@ virDriver NAME(Driver) = {
     NULL, /* domainMemoryStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
+    NULL, /* domainGetBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     nodeGetFreeMemory,  /* getFreeMemory */
 #if VBOX_API_VERSION == 2002

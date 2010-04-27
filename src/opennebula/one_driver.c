@@ -771,6 +771,7 @@ static virDriver oneDriver = {
     NULL, /* domainMemoryStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
+    NULL, /* domainGetBlockInfo */
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
     NULL, /* domainEventRegister */

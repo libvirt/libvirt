@@ -1762,6 +1762,7 @@ static virDriver xenapiDriver = {
     NULL, /* domainMemoryStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
+    NULL, /* domainGetBlockInfo */
     xenapiNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     xenapiNodeGetFreeMemory, /* getFreeMemory */
     NULL, /* domainEventRegister */

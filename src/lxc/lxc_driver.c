@@ -2517,6 +2517,7 @@ static virDriver lxcDriver = {
     NULL, /* domainMemoryStats */
     NULL, /* domainBlockPeek */
     NULL, /* domainMemoryPeek */
+    NULL, /* domainGetBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     nodeGetFreeMemory,  /* getFreeMemory */
     lxcDomainEventRegister, /* domainEventRegister */

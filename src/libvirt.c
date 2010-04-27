@@ -4625,6 +4625,55 @@ error:
 }
 
 
+/**
+ * virDomainGetBlockInfo:
+ * @domain: a domain object
+ * @path: path to the block device or file
+ * @info: pointer to a virDomainBlockInfo structure allocated by the user
+ * @flags: currently unused, pass zero
+ *
+ * Extract information about a domain's block device.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetBlockInfo(virDomainPtr domain, const char *path, virDomainBlockInfoPtr info, unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, info=%p flags=%u", domain, info, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    if (info == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        goto error;
+    }
+
+    memset(info, 0, sizeof(virDomainBlockInfo));
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetBlockInfo) {
+        int ret;
+        ret = conn->driver->domainGetBlockInfo (domain, path, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
 /************************************************************************
  *									*
  *		Handling of defined but not running domains		*

@@ -3776,6 +3776,7 @@ static virDriver esxDriver = {
     NULL,                            /* domainMemoryStats */
     NULL,                            /* domainBlockPeek */
     NULL,                            /* domainMemoryPeek */
+    NULL,                            /* domainGetBlockInfo */
     NULL,                            /* nodeGetCellsFreeMemory */
     esxNodeGetFreeMemory,            /* nodeGetFreeMemory */
     NULL,                            /* domainEventRegister */

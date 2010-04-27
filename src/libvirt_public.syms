@@ -394,4 +394,9 @@ LIBVIRT_0.8.0 {
 } LIBVIRT_0.7.7;
 
 
+LIBVIRT_0.8.1 {
+    global:
+        virDomainGetBlockInfo;
+} LIBVIRT_0.8.0;
+
 # .... define new API here using predicted next version number ....

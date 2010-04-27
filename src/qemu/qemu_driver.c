@@ -11467,6 +11467,7 @@ static virDriver qemuDriver = {
     qemudDomainMemoryStats, /* domainMemoryStats */
     qemudDomainBlockPeek, /* domainBlockPeek */
     qemudDomainMemoryPeek, /* domainMemoryPeek */
+    NULL, /* domainBlockInfo */
     nodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     nodeGetFreeMemory,  /* getFreeMemory */
     qemuDomainEventRegister, /* domainEventRegister */
