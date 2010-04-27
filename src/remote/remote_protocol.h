@@ -389,6 +389,20 @@ struct remote_domain_memory_peek_ret {
 };
 typedef struct remote_domain_memory_peek_ret remote_domain_memory_peek_ret;
 
+struct remote_domain_get_block_info_args {
+        remote_nonnull_domain dom;
+        remote_nonnull_string path;
+        u_int flags;
+};
+typedef struct remote_domain_get_block_info_args remote_domain_get_block_info_args;
+
+struct remote_domain_get_block_info_ret {
+        uint64_t allocation;
+        uint64_t capacity;
+        uint64_t physical;
+};
+typedef struct remote_domain_get_block_info_ret remote_domain_get_block_info_ret;
+
 struct remote_list_domains_args {
         int maxids;
 };
@@ -2191,6 +2205,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT = 191,
         REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
         REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
+        REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2277,6 +2292,8 @@ extern  bool_t xdr_remote_domain_block_peek_args (XDR *, remote_domain_block_pee
 extern  bool_t xdr_remote_domain_block_peek_ret (XDR *, remote_domain_block_peek_ret*);
 extern  bool_t xdr_remote_domain_memory_peek_args (XDR *, remote_domain_memory_peek_args*);
 extern  bool_t xdr_remote_domain_memory_peek_ret (XDR *, remote_domain_memory_peek_ret*);
+extern  bool_t xdr_remote_domain_get_block_info_args (XDR *, remote_domain_get_block_info_args*);
+extern  bool_t xdr_remote_domain_get_block_info_ret (XDR *, remote_domain_get_block_info_ret*);
 extern  bool_t xdr_remote_list_domains_args (XDR *, remote_list_domains_args*);
 extern  bool_t xdr_remote_list_domains_ret (XDR *, remote_list_domains_ret*);
 extern  bool_t xdr_remote_num_of_domains_ret (XDR *, remote_num_of_domains_ret*);
@@ -2607,6 +2624,8 @@ extern bool_t xdr_remote_domain_block_peek_args ();
 extern bool_t xdr_remote_domain_block_peek_ret ();
 extern bool_t xdr_remote_domain_memory_peek_args ();
 extern bool_t xdr_remote_domain_memory_peek_ret ();
+extern bool_t xdr_remote_domain_get_block_info_args ();
+extern bool_t xdr_remote_domain_get_block_info_ret ();
 extern bool_t xdr_remote_list_domains_args ();
 extern bool_t xdr_remote_list_domains_ret ();
 extern bool_t xdr_remote_num_of_domains_ret ();

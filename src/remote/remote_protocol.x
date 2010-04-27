@@ -484,6 +484,18 @@ struct remote_domain_memory_peek_ret {
     opaque buffer<REMOTE_DOMAIN_MEMORY_PEEK_BUFFER_MAX>;
 };
 
+struct remote_domain_get_block_info_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+    unsigned flags;
+};
+
+struct remote_domain_get_block_info_ret {
+    unsigned hyper allocation;
+    unsigned hyper capacity;
+    unsigned hyper physical;
+};
+
 struct remote_list_domains_args {
     int maxids;
 };
@@ -1983,7 +1995,8 @@ enum remote_procedure {
 
     REMOTE_PROC_DOMAIN_SNAPSHOT_CURRENT = 191,
     REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
-    REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193
+    REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
+    REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

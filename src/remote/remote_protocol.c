@@ -726,6 +726,32 @@ xdr_remote_domain_memory_peek_ret (XDR *xdrs, remote_domain_memory_peek_ret *obj
 }
 
 bool_t
+xdr_remote_domain_get_block_info_args (XDR *xdrs, remote_domain_get_block_info_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_remote_nonnull_string (xdrs, &objp->path))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_get_block_info_ret (XDR *xdrs, remote_domain_get_block_info_ret *objp)
+{
+
+         if (!xdr_uint64_t (xdrs, &objp->allocation))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->capacity))
+                 return FALSE;
+         if (!xdr_uint64_t (xdrs, &objp->physical))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_list_domains_args (XDR *xdrs, remote_list_domains_args *objp)
 {
 

@@ -972,3 +972,8 @@
     .args_filter = (xdrproc_t) xdr_remote_domain_snapshot_delete_args,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainGetBlockInfo => 194 */
+    .fn = (dispatch_fn) remoteDispatchDomainGetBlockInfo,
+    .args_filter = (xdrproc_t) xdr_remote_domain_get_block_info_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_get_block_info_ret,
+},

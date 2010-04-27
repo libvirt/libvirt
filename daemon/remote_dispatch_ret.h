@@ -133,3 +133,4 @@
     remote_domain_snapshot_lookup_by_name_ret val_remote_domain_snapshot_lookup_by_name_ret;
     remote_domain_has_current_snapshot_ret val_remote_domain_has_current_snapshot_ret;
     remote_domain_snapshot_current_ret val_remote_domain_snapshot_current_ret;
+    remote_domain_get_block_info_ret val_remote_domain_get_block_info_ret;

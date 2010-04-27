@@ -210,6 +210,14 @@ static int remoteDispatchDomainGetAutostart(
     remote_error *err,
     remote_domain_get_autostart_args *args,
     remote_domain_get_autostart_ret *ret);
+static int remoteDispatchDomainGetBlockInfo(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_get_block_info_args *args,
+    remote_domain_get_block_info_ret *ret);
 static int remoteDispatchDomainGetInfo(
     struct qemud_server *server,
     struct qemud_client *client,

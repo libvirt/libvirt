@@ -3622,6 +3622,40 @@ done:
 }
 
 static int
+remoteDomainGetBlockInfo (virDomainPtr domain,
+                          const char *path,
+                          virDomainBlockInfoPtr info,
+                          unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_block_info_args args;
+    remote_domain_get_block_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.path = (char*)path;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_BLOCK_INFO,
+              (xdrproc_t) xdr_remote_domain_get_block_info_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_block_info_ret, (char *) &ret) == -1)
+        goto done;
+
+    info->allocation = ret.allocation;
+    info->capacity = ret.capacity;
+    info->physical = ret.physical;
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainManagedSave (virDomainPtr domain, unsigned int flags)
 {
     int rv = -1;
@@ -10144,7 +10178,7 @@ static virDriver remote_driver = {
     remoteDomainMemoryStats, /* domainMemoryStats */
     remoteDomainBlockPeek, /* domainBlockPeek */
     remoteDomainMemoryPeek, /* domainMemoryPeek */
-    NULL, /* domainBlockInfo */
+    remoteDomainGetBlockInfo, /* domainGetBlockInfo */
     remoteNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     remoteNodeGetFreeMemory, /* getFreeMemory */
     remoteDomainEventRegister, /* domainEventRegister */

@@ -6434,6 +6434,40 @@ remoteDispatchNumOfNwfilters (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchDomainGetBlockInfo (struct qemud_server *server ATTRIBUTE_UNUSED,
+                                  struct qemud_client *client ATTRIBUTE_UNUSED,
+                                  virConnectPtr conn,
+                                  remote_message_header *hdr ATTRIBUTE_UNUSED,
+                                  remote_error *rerr,
+                                  remote_domain_get_block_info_args *args,
+                                  remote_domain_get_block_info_ret *ret)
+{
+    virDomainPtr dom;
+    virDomainBlockInfo info;
+
+    dom = get_nonnull_domain (conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (virDomainGetBlockInfo (dom, args->path, &info, args->flags) == -1) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    ret->capacity = info.capacity;
+    ret->allocation = info.allocation;
+    ret->physical = info.physical;
+
+    virDomainFree(dom);
+
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
