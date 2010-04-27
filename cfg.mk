@@ -24,6 +24,9 @@ gnu_rel_host = $(gnu_ftp_host-$(RELEASE_TYPE))
 url_dir_list = \
   ftp://$(gnu_rel_host)/gnu/coreutils
 
+# We use .gnulib, not gnulib.
+gnulib_dir = $(srcdir)/.gnulib
+
 # Tests not to run as part of "make distcheck".
 local-checks-to-skip =			\
   changelog-check			\
@@ -282,6 +285,7 @@ ifeq (0,$(MAKELEVEL))
   # b653eda3ac4864de205419d9f41eec267cb89eeb
   _submodule_hash = sed 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
+      cd '$(srcdir)';							\
       actual=$$(git submodule status | $(_submodule_hash);		\
 		git hash-object bootstrap.conf;				\
 		git diff .gnulib);					\
