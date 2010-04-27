@@ -1,0 +1,13 @@
+<filter name='qemu-announce-self' chain='root'>
+    <!-- as of 4/26/2010 qemu sends out a bogus packet with
+         wrong rarp protocol ID -->
+    <!-- accept what is being sent now -->
+    <rule action='accept' direction='out'>
+        <mac protocolid='0x835'/>
+    </rule>
+
+    <!-- accept if it was changed to rarp -->
+    <filterref filter='qemu-announce-self-rarp'/>
+    <filterref filter='no-other-rarp-traffic'/>
+
+</filter>

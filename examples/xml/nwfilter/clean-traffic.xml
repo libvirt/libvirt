@@ -14,4 +14,7 @@
    <!-- preventing any other traffic than IPv4 and ARP -->
    <filterref filter='no-other-l2-traffic'/>
 
+   <!-- allow qemu to send a self-announce upon migration end -->
+   <filterref filter='qemu-announce-self'/>
+
 </filter>

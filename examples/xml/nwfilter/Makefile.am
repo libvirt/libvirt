@@ -11,7 +11,10 @@ FILTERS = \
 	no-ip-spoofing.xml \
 	no-mac-broadcast.xml \
 	no-mac-spoofing.xml \
-	no-other-l2-traffic.xml
+	no-other-l2-traffic.xml \
+	no-other-rarp-traffic.xml \
+	qemu-announce-self.xml \
+	qemu-announce-self-rarp.xml
 
 EXTRA_DIST=$(FILTERS)
 

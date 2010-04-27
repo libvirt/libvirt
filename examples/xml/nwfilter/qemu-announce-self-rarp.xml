@@ -1,0 +1,14 @@
+<filter name='qemu-announce-self-rarp' chain='rarp'>
+  <rule action='accept' direction='out' priority='500'>
+    <rarp opcode='Request_Reverse'
+          srcmacaddr='$MAC' dstmacaddr='ff:ff:ff:ff:ff:ff'
+          arpsrcmacaddr='$MAC' arpdstmacaddr='$MAC'
+          arpsrcipaddr='0.0.0.0' arpdstipaddr='0.0.0.0'/>
+  </rule>
+  <rule action='accept' direction='in' priority='500'>
+    <rarp opcode='Request_Reverse'
+          dstmacaddr='ff:ff:ff:ff:ff:ff'
+          arpsrcmacaddr='$MAC' arpdstmacaddr='$MAC'
+          arpsrcipaddr='0.0.0.0' arpdstipaddr='0.0.0.0'/>
+  </rule>
+</filter>
