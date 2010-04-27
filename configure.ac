@@ -209,6 +209,18 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
+dnl lxc and qemu drivers require linux headers
+if test `uname -s` != "Linux"
+then
+    if test "x$with_lxc" != "xyes"
+    then
+        with_lxc=no
+    fi
+    if test "x$with_qemu" != "xyes"
+    then
+        with_qemu=no
+    fi
+fi
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
