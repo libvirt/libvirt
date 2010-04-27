@@ -10875,8 +10875,10 @@ static virDomainSnapshotPtr qemuDomainSnapshotCreateXML(virDomainPtr domain,
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorCreateSnapshot(priv->mon, def->name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
-        if (qemuDomainObjEndJob(vm) == 0)
+        if (qemuDomainObjEndJob(vm) == 0) {
             vm = NULL;
+            goto cleanup;
+        }
         if (ret < 0)
             goto cleanup;
     }
@@ -11205,6 +11207,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 if (qemuDomainObjEndJob(vm) > 0)
                     virDomainRemoveInactive(&driver->domains, vm);
                 vm = NULL;
+                goto cleanup;
             }
         }
 
