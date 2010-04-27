@@ -4047,7 +4047,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
             virDomainRemoveInactive(&driver->domains,
                                     vm);
         vm = NULL;
-        goto endjob;
+        goto cleanup;
     }
 
     event = virDomainEventNewFromObj(vm,
