@@ -2110,7 +2110,7 @@ void qemuDomainPCIAddressSetFree(qemuDomainPCIAddressSetPtr addrs)
         return;
 
     virHashFree(addrs->used, qemuDomainPCIAddressSetFreeEntry);
-    addrs->used = NULL;
+    VIR_FREE(addrs);
 }
 
 
