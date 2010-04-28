@@ -288,6 +288,7 @@ skip_impl = (
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',
+    'virDomainGetBlockInfo',
     'virDomainGetJobInfo',
     'virNodeGetInfo',
     'virDomainGetUUID',

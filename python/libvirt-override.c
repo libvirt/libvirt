@@ -1015,6 +1015,32 @@ libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 }
 
 static PyObject *
+libvirt_virDomainGetBlockInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    virDomainBlockInfo info;
+    const char *path;
+    unsigned int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"Ozi:virDomainGetInfo", &pyobj_domain, &path, &flags))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetBlockInfo(domain, path, &info, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+    py_retval = PyList_New(3);
+    PyList_SetItem(py_retval, 0, libvirt_ulonglongWrap(info.capacity));
+    PyList_SetItem(py_retval, 1, libvirt_ulonglongWrap(info.allocation));
+    PyList_SetItem(py_retval, 2, libvirt_ulonglongWrap(info.physical));
+    return(py_retval);
+}
+
+static PyObject *
 libvirt_virNodeGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
@@ -3393,6 +3419,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectDomainEventRegisterAny", libvirt_virConnectDomainEventRegisterAny, METH_VARARGS, NULL},
     {(char *) "virConnectDomainEventDeregisterAny", libvirt_virConnectDomainEventDeregisterAny, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
+    {(char *) "virDomainGetBlockInfo", libvirt_virDomainGetBlockInfo, METH_VARARGS, NULL},
     {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUIDString", libvirt_virDomainGetUUIDString, METH_VARARGS, NULL},
