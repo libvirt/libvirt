@@ -764,6 +764,9 @@ findDomainDiskByAlias(virDomainObjPtr vm,
 {
     int i;
 
+    if (STRPREFIX(alias, QEMU_DRIVE_HOST_PREFIX))
+        alias += strlen(QEMU_DRIVE_HOST_PREFIX);
+
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk;
 
