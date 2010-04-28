@@ -2929,6 +2929,102 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
+static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
+                               virDomainObjPtr vm,
+                               virDomainDiskDefPtr disk)
+{
+    char *path = disk->src;
+    int ret = -1;
+
+    while (path != NULL) {
+        virStorageFileMetadata meta;
+        int rc;
+
+        VIR_DEBUG("Process path %s for disk", path);
+        rc = virCgroupAllowDevicePath(cgroup, path);
+        if (rc != 0) {
+            /* Get this for non-block devices */
+            if (rc == -EINVAL) {
+                VIR_DEBUG("Ignoring EINVAL for %s", path);
+            } else {
+                virReportSystemError(-rc,
+                                     _("Unable to allow device %s for %s"),
+                                     path, vm->def->name);
+                if (path != disk->src)
+                    VIR_FREE(path);
+                goto cleanup;
+            }
+        }
+
+        memset(&meta, 0, sizeof(meta));
+
+        rc = virStorageFileGetMetadata(path, &meta);
+
+        if (path != disk->src)
+            VIR_FREE(path);
+        path = NULL;
+
+        if (rc < 0)
+            goto cleanup;
+
+        path = meta.backingStore;
+    } while (path != NULL);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
+static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
+                                  virDomainObjPtr vm,
+                                  virDomainDiskDefPtr disk)
+{
+    char *path = disk->src;
+    int ret = -1;
+
+    while (path != NULL) {
+        virStorageFileMetadata meta;
+        int rc;
+
+        VIR_DEBUG("Process path %s for disk", path);
+        rc = virCgroupDenyDevicePath(cgroup, path);
+        if (rc != 0) {
+            /* Get this for non-block devices */
+            if (rc == -EINVAL) {
+                VIR_DEBUG("Ignoring EINVAL for %s", path);
+            } else {
+                virReportSystemError(-rc,
+                                     _("Unable to deny device %s for %s"),
+                                     path, vm->def->name);
+                if (path != disk->src)
+                    VIR_FREE(path);
+                goto cleanup;
+            }
+        }
+
+        memset(&meta, 0, sizeof(meta));
+
+        rc = virStorageFileGetMetadata(path, &meta);
+
+        if (path != disk->src)
+            VIR_FREE(path);
+        path = NULL;
+
+        if (rc < 0)
+            goto cleanup;
+
+        path = meta.backingStore;
+    } while (path != NULL);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+
 static int qemuSetupCgroup(struct qemud_driver *driver,
                            virDomainObjPtr vm)
 {
@@ -2965,18 +3061,8 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (vm->def->disks[i]->type != VIR_DOMAIN_DISK_TYPE_BLOCK ||
-                vm->def->disks[i]->src == NULL)
-                continue;
-
-            rc = virCgroupAllowDevicePath(cgroup,
-                                          vm->def->disks[i]->src);
-            if (rc != 0) {
-                virReportSystemError(-rc,
-                                     _("Unable to allow device %s for %s"),
-                                     vm->def->disks[i]->src, vm->def->name);
+            if (qemuSetupDiskCgroup(cgroup, vm, vm->def->disks[i]) < 0)
                 goto cleanup;
-            }
         }
 
         rc = virCgroupAllowDeviceMajor(cgroup, 'c', DEVICE_PTY_MAJOR);
@@ -7576,15 +7662,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (dev->data.disk->src != NULL &&
-                dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
-                virCgroupAllowDevicePath(cgroup,
-                                         dev->data.disk->src) < 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("unable to allow device %s"),
-                                dev->data.disk->src);
+            if (qemuSetupDiskCgroup(cgroup, vm, dev->data.disk) < 0)
                 goto endjob;
-            }
         }
 
         switch (dev->data.disk->device) {
@@ -7628,8 +7707,9 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             /* Fallthrough */
         }
         if (ret != 0 && cgroup) {
-            virCgroupDenyDevicePath(cgroup,
-                                    dev->data.disk->src);
+            if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+                VIR_WARN("Failed to teardown cgroup for disk path %s",
+                         NULLSTR(dev->data.disk->src));
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
@@ -7827,15 +7907,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (dev->data.disk->src != NULL &&
-                dev->data.disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
-                virCgroupAllowDevicePath(cgroup,
-                                         dev->data.disk->src) < 0) {
-                qemuReportError(VIR_ERR_INTERNAL_ERROR,
-                                _("unable to allow device %s"),
-                                dev->data.disk->src);
+            if (qemuSetupDiskCgroup(cgroup, vm, dev->data.disk) < 0)
                 goto endjob;
-            }
         }
 
         switch (dev->data.disk->device) {
@@ -7857,8 +7930,9 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         }
 
         if (ret != 0 && cgroup) {
-            virCgroupDenyDevicePath(cgroup,
-                                    dev->data.disk->src);
+            if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+                VIR_WARN("Failed to teardown cgroup for disk path %s",
+                         NULLSTR(dev->data.disk->src));
         }
         break;
 
@@ -7930,6 +8004,7 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup = NULL;
 
     i = qemudFindDisk(vm->def, dev->data.disk->dst);
 
@@ -7940,6 +8015,15 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
 
     detach = vm->def->disks[i];
+
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to find cgroup for %s\n"),
+                            vm->def->name);
+            goto cleanup;
+        }
+    }
 
     if (!virDomainDeviceAddressIsValid(&detach->info,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
@@ -7965,10 +8049,18 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
 
     qemudShrinkDisks(vm->def, i);
 
+    virDomainDiskDefFree(detach);
+
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(vm, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
+
+    if (cgroup != NULL) {
+        if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            VIR_WARN("Failed to teardown cgroup for disk path %s",
+                     NULLSTR(dev->data.disk->src));
+    }
 
     ret = 0;
 
@@ -7984,6 +8076,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     int i, ret = -1;
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup = NULL;
 
     i = qemudFindDisk(vm->def, dev->data.disk->dst);
 
@@ -8001,6 +8094,15 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
 
     detach = vm->def->disks[i];
 
+    if (qemuCgroupControllerActive(driver, VIR_CGROUP_CONTROLLER_DEVICES)) {
+        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to find cgroup for %s\n"),
+                            vm->def->name);
+            goto cleanup;
+        }
+    }
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
         qemuDomainObjExitMonitor(vm);
@@ -8016,6 +8118,12 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         driver->securityDriver->domainRestoreSecurityImageLabel &&
         driver->securityDriver->domainRestoreSecurityImageLabel(vm, dev->data.disk) < 0)
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
+
+    if (cgroup != NULL) {
+        if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            VIR_WARN("Failed to teardown cgroup for disk path %s",
+                     NULLSTR(dev->data.disk->src));
+    }
 
     ret = 0;
 
