@@ -1035,6 +1035,7 @@ if WITH_UML
 endif
 if WITH_NETWORK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart"
 	$(INSTALL_DATA) $(srcdir)/network/default.xml \
