@@ -815,13 +815,6 @@ static int udevProcessDisk(struct udev_device *device,
     union _virNodeDevCapData *data = &def->caps->data;
     int ret = 0;
 
-    data->storage.drive_type = strdup("disk");
-    if (data->storage.drive_type == NULL) {
-        virReportOOMError();
-        ret = -1;
-        goto out;
-    }
-
     if (udevGetUint64SysfsAttr(device,
                                "size",
                                &data->storage.num_blocks) == PROPERTY_ERROR) {
