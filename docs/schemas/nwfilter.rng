@@ -6,248 +6,248 @@
   <define name="filter">
     <element name="filter">
       <ref name="filter-node-attributes"/>
+      <optional>
+        <element name="uuid">
+          <ref name="UUID"/>
+        </element>
+      </optional>
       <zeroOrMore>
         <choice>
           <element name="filterref">
             <ref name="filterref-node-attributes"/>
           </element>
-          <element name="uuid">
-            <ref name="UUID"/>
+          <element name="rule">
+          <ref name="rule-node-attributes"/>
+            <optional>
+              <zeroOrMore>
+                <element name="mac">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="mac-attributes"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="arp">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="arp-attributes"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="rarp">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="arp-attributes"/> <!-- same as arp -->
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="ip">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="ip-attributes"/>
+                  <ref name="dscp-attribute"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="common-l2-attributes"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="ip-attributes"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="tcp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="udp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="sctp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="icmp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                  <ref name="icmp-attributes"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="igmp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="all">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="esp">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="ah">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="udplite">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ip-attributes-p1"/>
+                  <ref name="common-ip-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="tcp-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="udp-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="sctp-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-port-attributes"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="icmpv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                  <ref name="icmp-attributes"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="all-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="esp-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="ah-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
+            <optional>
+              <zeroOrMore>
+                <element name="udplite-ipv6">
+                  <ref name="match-attribute"/>
+                  <ref name="srcmac-attribute"/>
+                  <ref name="common-ipv6-attributes-p1"/>
+                  <ref name="common-ipv6-attributes-p2"/>
+                </element>
+              </zeroOrMore>
+            </optional>
           </element>
         </choice>
-      </zeroOrMore>
-      <zeroOrMore>
-        <element name="rule">
-        <ref name="rule-node-attributes"/>
-          <optional>
-            <zeroOrMore>
-              <element name="mac">
-                <ref name="match-attribute"/>
-                <ref name="common-l2-attributes"/>
-                <ref name="mac-attributes"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="arp">
-                <ref name="match-attribute"/>
-                <ref name="common-l2-attributes"/>
-                <ref name="arp-attributes"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="rarp">
-                <ref name="match-attribute"/>
-                <ref name="common-l2-attributes"/>
-                <ref name="arp-attributes"/> <!-- same as arp -->
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="ip">
-                <ref name="match-attribute"/>
-                <ref name="common-l2-attributes"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-port-attributes"/>
-                <ref name="ip-attributes"/>
-                <ref name="dscp-attribute"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="ipv6">
-                <ref name="match-attribute"/>
-                <ref name="common-l2-attributes"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-port-attributes"/>
-                <ref name="ip-attributes"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="tcp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="udp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="sctp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="icmp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-                <ref name="icmp-attributes"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="igmp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="all">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="esp">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="ah">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="udplite">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ip-attributes-p1"/>
-                <ref name="common-ip-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="tcp-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="udp-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="sctp-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-port-attributes"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="icmpv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-                <ref name="icmp-attributes"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="all-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="esp-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="ah-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-          <optional>
-            <zeroOrMore>
-              <element name="udplite-ipv6">
-                <ref name="match-attribute"/>
-                <ref name="srcmac-attribute"/>
-                <ref name="common-ipv6-attributes-p1"/>
-                <ref name="common-ipv6-attributes-p2"/>
-              </element>
-            </zeroOrMore>
-          </optional>
-        </element>
       </zeroOrMore>
     </element>
   </define>
@@ -263,6 +263,7 @@
         <choice>
           <value>root</value>
           <value>arp</value>
+          <value>rarp</value>
           <value>ipv4</value>
           <value>ipv6</value>
         </choice>
@@ -690,6 +691,7 @@
 
       <choice>
         <value>arp</value>
+        <value>rarp</value>
         <value>ipv4</value>
         <value>ipv6</value>
       </choice>
