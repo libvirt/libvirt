@@ -8348,6 +8348,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     ret = 0;
 
 cleanup:
+    virCgroupFree(&cgroup);
     return ret;
 }
 
