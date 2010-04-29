@@ -4057,7 +4057,6 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom) dom->id = vm->def->id;
 
-endjob:
     if (vm &&
         qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
