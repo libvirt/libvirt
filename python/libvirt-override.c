@@ -1957,6 +1957,126 @@ libvirt_virSecretSetValue(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virNWFilterGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virNWFilterPtr nwfilter;
+    PyObject *pyobj_nwfilter;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virNWFilterGetUUID", &pyobj_nwfilter))
+        return(NULL);
+    nwfilter = (virNWFilterPtr) PyvirNWFilter_Get(pyobj_nwfilter);
+
+    if (nwfilter == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNWFilterGetUUID(nwfilter, &uuid[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+    py_retval = PyString_FromStringAndSize((char *) &uuid[0], VIR_UUID_BUFLEN);
+
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virNWFilterGetUUIDString(PyObject *self ATTRIBUTE_UNUSED,
+                                 PyObject *args) {
+    PyObject *py_retval;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virNWFilterPtr nwfilter;
+    PyObject *pyobj_nwfilter;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virNWFilterGetUUIDString",
+                          &pyobj_nwfilter))
+        return(NULL);
+    nwfilter = (virNWFilterPtr) PyvirNWFilter_Get(pyobj_nwfilter);
+
+    if (nwfilter == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNWFilterGetUUIDString(nwfilter, &uuidstr[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromString((char *) &uuidstr[0]);
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virNWFilterLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    virNWFilterPtr c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    unsigned char * uuid;
+    int len;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oz#:virNWFilterLookupByUUID", &pyobj_conn, &uuid, &len))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    if ((uuid == NULL) || (len != VIR_UUID_BUFLEN))
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNWFilterLookupByUUID(conn, uuid);
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_virNWFilterPtrWrap((virNWFilterPtr) c_retval);
+    return(py_retval);
+}
+
+
+static PyObject *
+libvirt_virConnectListNWFilters(PyObject *self ATTRIBUTE_UNUSED,
+                                PyObject *args) {
+    PyObject *py_retval;
+    char **uuids = NULL;
+    virConnectPtr conn;
+    int c_retval, i;
+    PyObject *pyobj_conn;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectListNWFilters", &pyobj_conn))
+        return NULL;
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virConnectNumOfNWFilters(conn);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        uuids = malloc(sizeof(*uuids) * c_retval);
+        if (!uuids)
+            return VIR_PY_NONE;
+        LIBVIRT_BEGIN_ALLOW_THREADS;
+        c_retval = virConnectListNWFilters(conn, uuids, c_retval);
+        LIBVIRT_END_ALLOW_THREADS;
+        if (c_retval < 0) {
+            free(uuids);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+
+    if (uuids) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(uuids[i]));
+            free(uuids[i]);
+        }
+        free(uuids);
+    }
+
+    return py_retval;
+}
+
+static PyObject *
 libvirt_virConnectListInterfaces(PyObject *self ATTRIBUTE_UNUSED,
                                  PyObject *args) {
     PyObject *py_retval;
@@ -3316,6 +3436,10 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectListSecrets", libvirt_virConnectListSecrets, METH_VARARGS, NULL},
     {(char *) "virSecretGetValue", libvirt_virSecretGetValue, METH_VARARGS, NULL},
     {(char *) "virSecretSetValue", libvirt_virSecretSetValue, METH_VARARGS, NULL},
+    {(char *) "virNWFilterGetUUID", libvirt_virNWFilterGetUUID, METH_VARARGS, NULL},
+    {(char *) "virNWFilterGetUUIDString", libvirt_virNWFilterGetUUIDString, METH_VARARGS, NULL},
+    {(char *) "virNWFilterLookupByUUID", libvirt_virNWFilterLookupByUUID, METH_VARARGS, NULL},
+    {(char *) "virConnectListNWFilters", libvirt_virConnectListNWFilters, METH_VARARGS, NULL},
     {(char *) "virConnectListInterfaces", libvirt_virConnectListInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedInterfaces", libvirt_virConnectListDefinedInterfaces, METH_VARARGS, NULL},
     {(char *) "virConnectBaselineCPU", libvirt_virConnectBaselineCPU, METH_VARARGS, NULL},

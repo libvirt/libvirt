@@ -175,7 +175,6 @@ skipped_types = {
      'virConnectDomainEventIOErrorCallback': "No function types in python",
      'virConnectDomainEventGraphicsCallback': "No function types in python",
      'virEventAddHandleFunc': "No function types in python",
-     'virNWFilterPtr': "No function types in python",
 }
 
 #######################################################################
@@ -236,6 +235,11 @@ py_types = {
     'const virSecretPtr':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
     'const virSecret *':  ('O', "virSecret", "virSecretPtr", "virSecretPtr"),
+
+    'virNWFilterPtr':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
+    'const virNWFilterPtr':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
+    'virNWFilter *':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
+    'const virNWFilter *':  ('O', "virNWFilter", "virNWFilterPtr", "virNWFilterPtr"),
 
     'virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
     'const virStreamPtr':  ('O', "virStream", "virStreamPtr", "virStreamPtr"),
@@ -308,6 +312,9 @@ skip_impl = (
     'virSecretGetUUID',
     'virSecretGetUUIDString',
     'virSecretLookupByUUID',
+    'virNWFilterGetUUID',
+    'virNWFilterGetUUIDString',
+    'virNWFilterLookupByUUID',
     'virStreamRecv',
     'virStreamSend',
     'virStoragePoolGetUUID',
@@ -361,6 +368,7 @@ skip_function = (
     "virNetworkRef",
     "virNodeDeviceRef",
     "virSecretRef",
+    "virNWFilterRef",
     "virStoragePoolRef",
     "virStorageVolRef",
 
@@ -371,6 +379,7 @@ skip_function = (
     "virInterfaceGetConnect",
     "virNetworkGetConnect",
     "virSecretGetConnect",
+    "virNWFilterGetConnect",
     "virStoragePoolGetConnect",
     "virStorageVolGetConnect",
 )
@@ -643,6 +652,8 @@ classes_type = {
     "virNodeDevice *": ("._o", "virNodeDevice(self, _obj=%s)", "virNodeDevice"),
     "virSecretPtr": ("._o", "virSecret(self, _obj=%s)", "virSecret"),
     "virSecret *": ("._o", "virSecret(self, _obj=%s)", "virSecret"),
+    "virNWFilterPtr": ("._o", "virNWFilter(self, _obj=%s)", "virNWFilter"),
+    "virNWFilter *": ("._o", "virNWFilter(self, _obj=%s)", "virNWFilter"),
     "virStreamPtr": ("._o", "virStream(self, _obj=%s)", "virStream"),
     "virStream *": ("._o", "virStream(self, _obj=%s)", "virStream"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
@@ -657,7 +668,7 @@ converter_type = {
 primary_classes = ["virDomain", "virNetwork", "virInterface",
                    "virStoragePool", "virStorageVol",
                    "virConnect", "virNodeDevice", "virSecret",
-                   "virStream", "virDomainSnapshot"]
+                   "virNWFilter", "virStream", "virDomainSnapshot"]
 
 classes_ancestor = {
 }
@@ -669,6 +680,7 @@ classes_destructors = {
     "virStorageVol": "virStorageVolFree",
     "virNodeDevice" : "virNodeDeviceFree",
     "virSecret": "virSecretFree",
+    "virNWFilter": "virNWFilterFree",
     "virDomainSnapshot": "virDomainSnapshotFree",
     # We hand-craft __del__ for this one
     #"virStream": "virStreamFree",
@@ -691,6 +703,7 @@ functions_noexcept = {
     'virNodeDeviceGetParent': True,
     'virSecretGetUsageType': True,
     'virSecretGetUsageID': True,
+    'virNWFilterGetName': True,
 }
 
 reference_keepers = {
@@ -756,6 +769,12 @@ def nameFixup(name, classe, type, file):
     elif name[0:15] == "virSecretLookup":
         func = name[3:]
         func = string.lower(func[0:1]) + func[1:]
+    elif name[0:17] == "virNWFilterDefine":
+        func = name[3:]
+        func = string.lower(func[0:3]) + func[3:]
+    elif name[0:17] == "virNWFilterLookup":
+        func = name[3:]
+        func = string.lower(func[0:3]) + func[3:]
     elif name[0:20] == "virStoragePoolDefine":
         func = name[3:]
         func = string.lower(func[0:1]) + func[1:]
@@ -812,6 +831,12 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:9] == 'virSecret':
         func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:14] == 'virNWFilterGet':
+        func = name[14:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:11] == 'virNWFilter':
+        func = name[11:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == 'virStreamNew':
         func = "newStream"
@@ -1099,7 +1124,8 @@ def buildWrappers():
 	    else:
 		classes.write("class %s:\n" % (classname))
                 if classname in [ "virDomain", "virNetwork", "virInterface", "virStoragePool",
-                                  "virStorageVol", "virNodeDevice", "virSecret","virStream" ]:
+                                  "virStorageVol", "virNodeDevice", "virSecret","virStream",
+                                  "virNWFilter" ]:
                     classes.write("    def __init__(self, conn, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
@@ -1108,7 +1134,8 @@ def buildWrappers():
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
                 if classname in [ "virDomain", "virNetwork", "virInterface",
-                                  "virNodeDevice", "virSecret", "virStream" ]:
+                                  "virNodeDevice", "virSecret", "virStream",
+                                  "virNWFilter" ]:
                     classes.write("        self._conn = conn\n")
                 elif classname in [ "virStorageVol", "virStoragePool" ]:
                     classes.write("        self._conn = conn\n" + \
