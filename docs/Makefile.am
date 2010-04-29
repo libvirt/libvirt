@@ -91,44 +91,49 @@ ChangeLog.xml: ../ChangeLog ChangeLog.awk
 	awk -f ChangeLog.awk < $< > $@
 
 ChangeLog.html.in: ChangeLog.xml ChangeLog.xsl
-	@(if [ -x $(XSLTPROC) ] ; then \
+	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ || (rm $@ && exit 1) ; fi )
+	  $(XSLTPROC) --nonet $(top_srcdir)/docs/ChangeLog.xsl $< > $@ \
+	    || { rm $@ && exit 1; }; fi
 
 %.png: %.fig
 	convert -rotate 90 $< $@
 
 %.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in
-	@(if [ -x $(XSLTPROC) ] ; then \
+	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --stringparam pagename $$name --nonet --html $(top_srcdir)/docs/site.xsl $< > $@ || (rm $@ && exit 1) ; fi )
+	  $(XSLTPROC) --stringparam pagename $$name --nonet --html \
+	    $(top_srcdir)/docs/site.xsl $< > $@ \
+	    || { rm $@ && exit 1; }; fi
 
 %.html: %.html.tmp
-	@(if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
-	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
+	@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
+	  if $(XMLCATALOG) /etc/xml/catalog \
+	    "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
 	  echo "Validating $@" ; \
-	  $(XMLLINT) --nonet --format --valid $< > $@ || (rm $@ && exit 1) ; \
-	  else echo "missing XHTML1 DTD" ; fi ; fi );
+	  $(XMLLINT) --nonet --format --valid $< > $@ \
+	  || { rm $@ && exit 1; }; \
+	  else echo "missing XHTML1 DTD" ; fi ; fi
 
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
-	-@(if [ -x $(XSLTPROC) ] ; then \
+	-@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Rebuilding the HTML pages from the XML API" ; \
-	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi )
-	-@(if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
+	  $(XSLTPROC) --nonet $(srcdir)/newapi.xsl libvirt-api.xml ; fi
+	-@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
 	  if $(XMLCATALOG) /etc/xml/catalog "-//W3C//DTD XHTML 1.0 Strict//EN" \
 	    > /dev/null ; then \
 	  echo "Validating the resulting XHTML pages" ; \
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
-	  else echo "missing XHTML1 DTD" ; fi ; fi );
+	  else echo "missing XHTML1 DTD" ; fi ; fi
 
 $(devhelphtml): libvirt-api.xml $(devhelpxsl)
-	-@(echo Rebuilding devhelp files)
-	-@(if [ -x $(XSLTPROC) ] ; then \
+	-@echo Rebuilding devhelp files
+	-@if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp \
-          $(top_srcdir)/docs/devhelp/devhelp.xsl libvirt-api.xml ; fi );
+	  $(top_srcdir)/docs/devhelp/devhelp.xsl libvirt-api.xml ; fi
 
 html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: $(srcdir)/apibuild.py
 	-srcdir=$(srcdir) $(srcdir)/apibuild.py
