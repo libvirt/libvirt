@@ -130,7 +130,12 @@ then
     echo "as root do: chmod 644 $CA/cacert.pem"
     exit 1
 fi
-ORG=`$CERTOOL -i --infile $CA/cacert.pem | sed -n '/Issuer/ s+Issuer: CN=++p'`
+sed_get_org='/Issuer:/ {
+  s/.*Issuer:.*CN=//
+  s/,.*//
+  p
+}'
+ORG=`$CERTOOL -i --infile $CA/cacert.pem | sed -n "$sed_get_org"`
 if [ "$ORG" = "" ]
 then
     echo the CA certificate $CA/cacert.pem does not define the organization
