@@ -48,20 +48,10 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
 
-AC_OBJEXT
-
-dnl gl_INIT uses m4_foreach_w, yet that is not defined in autoconf-2.59.
-dnl In order to accommodate developers with such old tools, here's a
-dnl replacement definition.
-m4_ifndef([m4_foreach_w],
-  [m4_define([m4_foreach_w],
-    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
-
 gl_EARLY
 gl_INIT
 
 AM_PROG_CC_STDC
-AC_C_CONST
 AC_TYPE_UID_T
 
 dnl Make sure we have an ANSI compiler
@@ -101,16 +91,12 @@ fi
 AC_MSG_RESULT([$have_cpuid])
 
 
-dnl Support large files / 64 bit seek offsets.
-dnl Use --disable-largefile if you don't want this.
-AC_SYS_LARGEFILE
-
 dnl Availability of various common functions (non-fatal if missing).
 AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid \
  posix_fallocate mmap])
 
 dnl Availability of various not common threadsafe functions
-AC_CHECK_FUNCS_ONCE([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])
+AC_CHECK_FUNCS_ONCE([strerror_r getmntent_r getgrnam_r getpwuid_r])
 
 dnl Availability of pthread functions (if missing, win32 threading is
 dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
