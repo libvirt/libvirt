@@ -29,9 +29,7 @@
 # include <regex.h>
 #endif
 #include <sys/types.h>
-#if HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
+#include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdint.h>

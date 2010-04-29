@@ -24,9 +24,7 @@
 #include <config.h>
 
 #include <sys/types.h>
-#if HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>

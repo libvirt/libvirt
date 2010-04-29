@@ -122,7 +122,7 @@ LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h \
-  sys/wait.h sched.h termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
+  sched.h termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.

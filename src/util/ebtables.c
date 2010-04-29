@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 IBM Corp.
  * Copyright (C) 2007-2010 Red Hat, Inc.
+ * Copyright (C) 2009 IBM Corp.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,10 +33,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
+#include <sys/wait.h>
 
 #ifdef HAVE_PATHS_H
 # include <paths.h>

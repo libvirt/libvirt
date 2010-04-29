@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
+#include <sys/wait.h>
 
 /* Windows socket compatibility functions. */
 #include <errno.h>
@@ -43,10 +44,6 @@
 # include <net/if.h>
 # include <netinet/in.h>
 # include <netinet/tcp.h>
-#endif
-
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
 #endif
 
 #ifdef HAVE_PWD_H
