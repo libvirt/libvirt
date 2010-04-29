@@ -1,7 +1,7 @@
 /*
  * threads.c: basic thread synchronization primitives
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
 
 #include "threads.h"
 
-#ifdef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_MUTEXATTR_INIT
 # include "threads-pthread.c"
 #else
 # ifdef WIN32

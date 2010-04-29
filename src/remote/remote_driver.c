@@ -9556,7 +9556,7 @@ remoteIOEventLoop(virConnectPtr conn,
         struct remote_thread_call *tmp = priv->waitDispatch;
         struct remote_thread_call *prev;
         char ignore;
-#ifdef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_SIGMASK
         sigset_t oldmask, blockedsigs;
 #endif
 
@@ -9585,7 +9585,7 @@ remoteIOEventLoop(virConnectPtr conn,
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
-#ifdef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_SIGMASK
         sigemptyset (&blockedsigs);
         sigaddset (&blockedsigs, SIGWINCH);
         sigaddset (&blockedsigs, SIGCHLD);
@@ -9598,7 +9598,7 @@ remoteIOEventLoop(virConnectPtr conn,
         if (ret < 0 && errno == EAGAIN)
             goto repoll;
 
-#ifdef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_SIGMASK
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 #endif
 

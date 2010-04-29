@@ -984,7 +984,8 @@ libvirt_lxc_SOURCES =						\
 		$(CPU_CONF_SOURCES)				\
 		$(NWFILTER_PARAM_CONF_SOURCES)
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS) $(CAPNG_LIBS) $(YAJL_LIBS)
-libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) ../gnulib/lib/libgnu.la
+libvirt_lxc_LDADD = $(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
+		../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\

@@ -106,10 +106,19 @@ dnl Use --disable-largefile if you don't want this.
 AC_SYS_LARGEFILE
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([cfmakeraw regexec uname sched_getaffinity getuid getgid posix_fallocate mmap])
+AC_CHECK_FUNCS_ONCE([cfmakeraw regexec uname sched_getaffinity getuid getgid \
+ posix_fallocate mmap])
 
 dnl Availability of various not common threadsafe functions
-AC_CHECK_FUNCS([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])
+AC_CHECK_FUNCS_ONCE([strerror_r strtok_r getmntent_r getgrnam_r getpwuid_r])
+
+dnl Availability of pthread functions (if missing, win32 threading is
+dnl assumed).  Because of $LIB_PTHREAD, we cannot use AC_CHECK_FUNCS_ONCE.
+dnl LIB_PTHREAD was set during gl_INIT by gnulib.
+old_LIBS=$LIBS
+LIBS="$LIBS $LIB_PTHREAD"
+AC_CHECK_FUNCS([pthread_sigmask pthread_mutexattr_init])
+LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h \
@@ -136,14 +145,6 @@ dnl Is this GLIBC's buggy rpcgen?
 AM_CONDITIONAL([HAVE_GLIBC_RPCGEN],
 	       [test "x$ac_cv_path_RPCGEN" != "xno" &&
 	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
-
-dnl pthread?
-AC_CHECK_HEADER([pthread.h],
-	[AC_CHECK_LIB([pthread],[pthread_join],[
-		AC_DEFINE([HAVE_LIBPTHREAD],[],[Define if pthread (-lpthread)])
-		AC_DEFINE([HAVE_PTHREAD_H],[],[Define if <pthread.h>])
-		LIBS="-lpthread $LIBS"
-	])])
 
 dnl Miscellaneous external programs.
 AC_PATH_PROG([RM], [rm], [/bin/rm])

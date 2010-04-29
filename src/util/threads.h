@@ -1,7 +1,7 @@
 /*
  * threads.h: basic thread synchronization primitives
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@ int virThreadLocalInit(virThreadLocalPtr l,
 void *virThreadLocalGet(virThreadLocalPtr l);
 void virThreadLocalSet(virThreadLocalPtr l, void*);
 
-# ifdef HAVE_PTHREAD_H
+# ifdef HAVE_PTHREAD_MUTEXATTR_INIT
 #  include "threads-pthread.h"
 # else
 #  ifdef WIN32

@@ -316,7 +316,7 @@ static int virClearCapabilities(void)
 
  */
 int virFork(pid_t *pid) {
-#  ifdef HAVE_PTHREAD_H
+#  ifdef HAVE_PTHREAD_SIGMASK
     sigset_t oldmask, newmask;
 #  endif
     struct sigaction sig_action;
@@ -328,7 +328,7 @@ int virFork(pid_t *pid) {
      * Need to block signals now, so that child process can safely
      * kill off caller's signal handlers without a race.
      */
-#  ifdef HAVE_PTHREAD_H
+#  ifdef HAVE_PTHREAD_SIGMASK
     sigfillset(&newmask);
     if (pthread_sigmask(SIG_SETMASK, &newmask, &oldmask) != 0) {
         saved_errno = errno;
@@ -349,7 +349,7 @@ int virFork(pid_t *pid) {
     virLogUnlock();
 
     if (*pid < 0) {
-#  ifdef HAVE_PTHREAD_H
+#  ifdef HAVE_PTHREAD_SIGMASK
         /* attempt to restore signal mask, but ignore failure, to
            avoid obscuring the fork failure */
         ignore_value (pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
@@ -363,7 +363,7 @@ int virFork(pid_t *pid) {
 
         /* parent process */
 
-#  ifdef HAVE_PTHREAD_H
+#  ifdef HAVE_PTHREAD_SIGMASK
         /* Restore our original signal mask now that the child is
            safely running */
         if (pthread_sigmask(SIG_SETMASK, &oldmask, NULL) != 0) {
@@ -407,7 +407,7 @@ int virFork(pid_t *pid) {
             sigaction(i, &sig_action, NULL);
         }
 
-#  ifdef HAVE_PTHREAD_H
+#  ifdef HAVE_PTHREAD_SIGMASK
         /* Unmask all signals in child, since we've no idea
            what the caller's done with their signal mask
            and don't want to propagate that to children */
