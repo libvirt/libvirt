@@ -29,14 +29,11 @@
 #include <stdint.h>
 #include <errno.h>
 #include <dirent.h>
+#include <sys/utsname.h>
 
 #if HAVE_NUMACTL
 # define NUMA_VERSION1_COMPATIBILITY 1
 # include <numa.h>
-#endif
-
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
 #endif
 
 #include "c-ctype.h"
@@ -273,18 +270,13 @@ int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 #endif
 
 int nodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED, virNodeInfoPtr nodeinfo) {
-    memset(nodeinfo, 0, sizeof(*nodeinfo));
-
-#ifdef HAVE_UNAME
-    {
     struct utsname info;
 
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
     uname(&info);
 
     if (virStrcpyStatic(nodeinfo->model, info.machine) == NULL)
         return -1;
-    }
-#endif /* !HAVE_UNAME */
 
 #ifdef __linux__
     {

@@ -106,7 +106,7 @@ dnl Use --disable-largefile if you don't want this.
 AC_SYS_LARGEFILE
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS_ONCE([cfmakeraw regexec uname sched_getaffinity getuid getgid \
+AC_CHECK_FUNCS_ONCE([cfmakeraw regexec sched_getaffinity getuid getgid \
  posix_fallocate mmap])
 
 dnl Availability of various not common threadsafe functions
@@ -121,7 +121,7 @@ AC_CHECK_FUNCS([pthread_sigmask pthread_mutexattr_init])
 LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h sys/utsname.h \
+AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h \
   sys/wait.h sched.h termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
 
 dnl Where are the XDR functions?
