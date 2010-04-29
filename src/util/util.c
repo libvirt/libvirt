@@ -74,10 +74,14 @@
 #include "util.h"
 #include "memory.h"
 #include "threads.h"
+#include "verify.h"
 
 #ifndef NSIG
 # define NSIG 32
 #endif
+
+verify(sizeof(gid_t) <= sizeof (unsigned int) &&
+       sizeof(uid_t) <= sizeof (unsigned int));
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -1277,7 +1281,7 @@ static int virFileOperationNoFork(const char *path, int openflags, mode_t mode,
         && (fchown(fd, uid, gid) < 0)) {
         ret = errno;
         virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                             path, uid, gid);
+                             path, (unsigned int) uid, (unsigned int) gid);
         goto error;
     }
     if ((flags & VIR_FILE_OP_FORCE_PERMS)
@@ -1328,7 +1332,7 @@ static int virDirCreateNoFork(const char *path, mode_t mode, uid_t uid, gid_t gi
         && (chown(path, uid, gid) < 0)) {
         ret = errno;
         virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                             path, uid, gid);
+                             path, (unsigned int) uid, (unsigned int) gid);
         goto error;
     }
     if ((flags & VIR_DIR_CREATE_FORCE_PERMS)
@@ -1407,14 +1411,14 @@ parenterror:
         ret = errno;
         virReportSystemError(errno,
                              _("cannot set gid %u creating '%s'"),
-                             gid, path);
+                             (unsigned int) gid, path);
         goto childerror;
     }
     if  ((uid != 0) && (setuid(uid) != 0)) {
         ret = errno;
         virReportSystemError(errno,
                              _("cannot set uid %u creating '%s'"),
-                             uid, path);
+                             (unsigned int) uid, path);
         goto childerror;
     }
     if ((fd = open(path, openflags, mode)) < 0) {
@@ -1436,7 +1440,7 @@ parenterror:
         && (fchown(fd, -1, gid) < 0)) {
         ret = errno;
         virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
-                             path, uid, gid);
+                             path, (unsigned int) uid, (unsigned int) gid);
         goto childerror;
     }
     if ((flags & VIR_FILE_OP_FORCE_PERMS)
@@ -1517,13 +1521,13 @@ parenterror:
     if ((gid != 0) && (setgid(gid) != 0)) {
         ret = errno;
         virReportSystemError(errno, _("cannot set gid %u creating '%s'"),
-                             gid, path);
+                             (unsigned int) gid, path);
         goto childerror;
     }
     if  ((uid != 0) && (setuid(uid) != 0)) {
         ret = errno;
         virReportSystemError(errno, _("cannot set uid %u creating '%s'"),
-                             uid, path);
+                             (unsigned int) uid, path);
         goto childerror;
     }
     if (mkdir(path, mode) < 0) {
@@ -1547,7 +1551,7 @@ parenterror:
         ret = errno;
         virReportSystemError(errno,
                              _("cannot chown '%s' to group %u"),
-                             path, gid);
+                             path, (unsigned int) gid);
         goto childerror;
     }
     if ((flags & VIR_DIR_CREATE_FORCE_PERMS)
@@ -2563,8 +2567,8 @@ static char *virGetUserEnt(uid_t uid,
      */
     if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
         virReportSystemError(errno,
-                             _("Failed to find user record for uid '%d'"),
-                             uid);
+                             _("Failed to find user record for uid '%u'"),
+                             (unsigned int) uid);
         VIR_FREE(strbuf);
         return NULL;
     }
