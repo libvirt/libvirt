@@ -4822,7 +4822,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
             virReportSystemError(errno, _("unable to open %s"), path);
             goto endjob;
         }
-        if ((rc = qemudDomainSaveFileOpHook(fd, &hdata)) != 0) {
+        if (qemudDomainSaveFileOpHook(fd, &hdata) != 0) {
             close(fd);
             goto endjob;
         }
