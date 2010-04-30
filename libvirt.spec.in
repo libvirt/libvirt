@@ -850,6 +850,11 @@ fi
 %endif
 
 %changelog
+* Fri Apr 30 2010 Daniel Veillard <veillard@redhat.com> - 0.8.1-1
+- Starts dnsmasq from libvirtd with --dhcp-hostsfile
+- Add virDomainGetBlockInfo API to query disk sizing
+- a lot of bug fixes and cleanups
+
 * Mon Apr 12 2010 Daniel Veillard <veillard@redhat.com> - 0.8.0-1
 - Snapshotting support (QEmu/VBox/ESX)
 - Network filtering API
