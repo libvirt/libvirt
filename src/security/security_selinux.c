@@ -364,12 +364,20 @@ SELinuxRestoreSecurityFileLabel(const char *path)
         goto err;
     }
 
-    if (stat(newpath, &buf) != 0)
+    if (stat(newpath, &buf) != 0) {
+        virReportSystemError(errno,
+                             _("cannot stat %s"), newpath);
         goto err;
+    }
 
     if (matchpathcon(newpath, buf.st_mode, &fcon) == 0)  {
         rc = SELinuxSetFilecon(newpath, fcon);
+    } else {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot restore selinux file label for %s"),
+                               newpath);
     }
+
 err:
     VIR_FREE(fcon);
     VIR_FREE(newpath);
