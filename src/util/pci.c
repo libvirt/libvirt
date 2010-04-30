@@ -1046,6 +1046,14 @@ pciGetDevice(unsigned domain,
     snprintf(dev->path, sizeof(dev->path),
              PCI_SYSFS "devices/%s/config", dev->name);
 
+    if (access(dev->path, F_OK) != 0) {
+        virReportSystemError(errno,
+                             _("Device %s not found: could not access %s"),
+                             dev->name, dev->path);
+        pciFreeDevice(dev);
+        return NULL;
+    }
+
     vendor  = pciReadDeviceID(dev, "vendor");
     product = pciReadDeviceID(dev, "device");
 
