@@ -98,6 +98,11 @@ struct dhcp {
 } ATTRIBUTE_PACKED;
 
 #define DHCP_MSGT_DHCPOFFER 2
+#define DHCP_MSGT_DHCPACK   5
+
+
+#define DHCP_OPT_BCASTADDRESS 28
+#define DHCP_OPT_MESSAGETYPE  53
 
 struct ether_vlan_header
 {
@@ -336,17 +341,18 @@ procDHCPOpts(struct dhcp *dhcp, int dhcp_opts_len,
 
         switch (dhcpopt->code) {
 
-        case 28: /* Broadcast address */
+        case DHCP_OPT_BCASTADDRESS: /* Broadcast address */
             if (dhcp_opts_len >= 6) {
                 uint32_t *tmp = (uint32_t *)&dhcpopt->value;
                 (*bcastaddr) = ntohl(*tmp);
             }
         break;
 
-        case 53: /* Message type */
+        case DHCP_OPT_MESSAGETYPE: /* Message type */
             if (dhcp_opts_len >= 3) {
                 uint8_t *val = (uint8_t *)&dhcpopt->value;
                 switch (*val) {
+                case DHCP_MSGT_DHCPACK:
                 case DHCP_MSGT_DHCPOFFER:
                     *vmaddr = dhcp->yiaddr;
                     *howDetected = DETECT_DHCP;
