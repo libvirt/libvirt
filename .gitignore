@@ -26,6 +26,7 @@
 /autom4te.cache
 /build-aux
 /build-aux/
+/build/
 /config.cache
 /config.guess
 /config.h

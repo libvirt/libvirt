@@ -11,11 +11,11 @@ test -n "$1" && RESULTS=$1 || RESULTS=results.log
 test -f Makefile && make -k distclean || :
 rm -rf coverage
 
-#rm -rf build
-#mkdir build
-#cd build
+rm -rf build
+mkdir build
+cd build
 
-./autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
+../autogen.sh --prefix="$AUTOBUILD_INSTALL_ROOT" \
   --enable-test-coverage \
   --enable-compile-warnings=error
 
@@ -66,7 +66,7 @@ if [ -x /usr/bin/i686-pc-mingw32-gcc ]; then
 
   PKG_CONFIG_PATH="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw/lib/pkgconfig" \
   CC="i686-pc-mingw32-gcc" \
-  ./configure \
+  ../configure \
     --build=$(uname -m)-pc-linux \
     --host=i686-pc-mingw32 \
     --prefix="$AUTOBUILD_INSTALL_ROOT/i686-pc-mingw32/sys-root/mingw" \
