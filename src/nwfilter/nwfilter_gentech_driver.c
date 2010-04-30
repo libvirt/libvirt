@@ -937,9 +937,17 @@ _virNWFilterTeardownFilter(const char *ifname)
                                drvname);
         return 1;
     }
+
+    virNWFilterTerminateLearnReq(ifname);
+
+    if (virNWFilterLockIface(ifname))
+       return 1;
+
     techdriver->allTeardown(ifname);
 
     virNWFilterDelIpAddrForIfname(ifname);
+
+    virNWFilterUnlockIface(ifname);
 
     return 0;
 }

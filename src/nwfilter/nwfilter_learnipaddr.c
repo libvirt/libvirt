@@ -243,7 +243,32 @@ virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReqPtr req) {
     return res;
 }
 
+
 #endif
+
+int
+virNWFilterTerminateLearnReq(const char *ifname) {
+    int rc = 1;
+    int ifindex;
+    virNWFilterIPAddrLearnReqPtr req;
+
+    if (ifaceGetIndex(false, ifname, &ifindex) == 0) {
+
+        IFINDEX2STR(ifindex_str, ifindex);
+
+        virMutexLock(&pendingLearnReqLock);
+
+        req = virHashLookup(pendingLearnReq, ifindex_str);
+        if (req) {
+            rc = 0;
+            req->terminate = true;
+        }
+
+        virMutexUnlock(&pendingLearnReqLock);
+    }
+
+    return rc;
+}
 
 
 virNWFilterIPAddrLearnReqPtr
@@ -472,7 +497,7 @@ learnIPAddressThread(void *arg)
 
         if (!packet) {
 
-            if (threadsTerminate) {
+            if (threadsTerminate || req->terminate) {
                 req->status = ECANCELED;
                 showError = false;
                 break;

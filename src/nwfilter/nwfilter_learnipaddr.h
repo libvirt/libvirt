@@ -46,6 +46,7 @@ struct _virNWFilterIPAddrLearnReq {
 
     int status;
     pthread_t thread;
+    volatile bool terminate;
 };
 
 int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
