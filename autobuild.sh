@@ -6,6 +6,7 @@ set -v
 # Make things clean.
 
 test -n "$1" && RESULTS=$1 || RESULTS=results.log
+: ${AUTOBUILD_INSTALL_ROOT=$HOME/builder}
 
 test -f Makefile && make -k distclean || :
 rm -rf coverage
