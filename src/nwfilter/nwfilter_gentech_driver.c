@@ -610,6 +610,8 @@ virNWFilterInstantiate(virConnectPtr conn,
     } else if (virHashSize(missing_vars->hashTable) > 1) {
         rc = 1;
         goto err_exit;
+    } else if (virNWFilterLookupLearnReq(ifindex) == NULL) {
+        goto err_exit;
     }
 
     rc = _virNWFilterInstantiateRec(conn,
@@ -890,7 +892,9 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
                                     const virDomainNetDefPtr net)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
+    int ifindex;
     virNWFilterTechDriverPtr techdriver;
+
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
@@ -899,6 +903,11 @@ int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
                                drvname);
         return 1;
     }
+
+    /* don't tear anything while the address is being learned */
+    if (ifaceGetIndex(true, net->ifname, &ifindex) == 0 &&
+        virNWFilterLookupLearnReq(ifindex) != NULL)
+        return 0;
 
     return techdriver->tearNewRules(conn, net->ifname);
 }
@@ -909,7 +918,9 @@ virNWFilterTearOldFilter(virConnectPtr conn,
                          virDomainNetDefPtr net)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
+    int ifindex;
     virNWFilterTechDriverPtr techdriver;
+
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
         virNWFilterReportError(VIR_ERR_INTERNAL_ERROR,
@@ -918,6 +929,11 @@ virNWFilterTearOldFilter(virConnectPtr conn,
                                drvname);
         return 1;
     }
+
+    /* don't tear anything while the address is being learned */
+    if (ifaceGetIndex(true, net->ifname, &ifindex) == 0 &&
+        virNWFilterLookupLearnReq(ifindex) != NULL)
+        return 0;
 
     return techdriver->tearOldRules(conn, net->ifname);
 }
