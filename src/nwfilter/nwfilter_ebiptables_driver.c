@@ -102,6 +102,7 @@ static const char *m_physdev_out_str = "-m physdev " PHYSDEV_OUT;
 static int ebtablesRemoveBasicRules(const char *ifname);
 static int ebiptablesDriverInit(void);
 static void ebiptablesDriverShutdown(void);
+static int ebtablesCleanAll(const char *ifname);
 
 
 struct ushort_map {
@@ -2679,12 +2680,7 @@ ebtablesApplyBasicRules(const char *ifname,
 
     virFormatMacAddr(macaddr, macaddr_str);
 
-    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
-    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
-    ebtablesRemoveTmpSubChains(&buf, ifname);
-    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
-    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
-    ebiptablesExecCLI(&buf, &cli_status);
+    ebtablesCleanAll(ifname);
 
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
 
@@ -2723,6 +2719,7 @@ ebtablesApplyBasicRules(const char *ifname,
                       CMD_STOPONERR(1));
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
+    ebtablesRenameTmpRootChain(&buf, 1, ifname);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
@@ -2730,7 +2727,7 @@ ebtablesApplyBasicRules(const char *ifname,
     return 0;
 
 tear_down_tmpebchains:
-    ebtablesRemoveBasicRules(ifname);
+    ebtablesCleanAll(ifname);
 
     virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                            "%s",
@@ -2782,12 +2779,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     virFormatMacAddr(macaddr, macaddr_str);
 
-    ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
-    ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
-    ebtablesRemoveTmpSubChains(&buf, ifname);
-    ebtablesRemoveTmpRootChain(&buf, 1, ifname);
-    ebtablesRemoveTmpRootChain(&buf, 0, ifname);
-    ebiptablesExecCLI(&buf, &cli_status);
+    ebtablesCleanAll(ifname);
 
     ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
     ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
@@ -2842,6 +2834,8 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
 
     ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
     ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
+    ebtablesRenameTmpRootChain(&buf, 1, ifname);
+    ebtablesRenameTmpRootChain(&buf, 0, ifname);
 
     if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
         goto tear_down_tmpebchains;
@@ -2851,7 +2845,7 @@ ebtablesApplyDHCPOnlyRules(const char *ifname,
     return 0;
 
 tear_down_tmpebchains:
-    ebtablesRemoveBasicRules(ifname);
+    ebtablesCleanAll(ifname);
 
     virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
                            "%s",
@@ -2863,14 +2857,95 @@ tear_down_tmpebchains:
 }
 
 
+/**
+ * ebtablesApplyDropAllRules
+ *
+ * @ifname: name of the backend-interface to which to apply the rules
+ *
+ * Returns 0 on success, 1 on failure with the rules removed
+ *
+ * Apply filtering rules so that the VM cannot receive or send traffic.
+ */
+static int
+ebtablesApplyDropAllRules(const char *ifname)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int cli_status;
+    char chain_in [MAX_CHAINNAME_LENGTH],
+         chain_out[MAX_CHAINNAME_LENGTH];
+
+    if (!ebtables_cmd_path) {
+        virNWFilterReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot create rules since ebtables tool is "
+                                 "missing."));
+        return 1;
+    }
+
+    ebtablesCleanAll(ifname);
+
+    ebtablesCreateTmpRootChain(&buf, 1, ifname, 1);
+    ebtablesCreateTmpRootChain(&buf, 0, ifname, 1);
+
+    PRINT_ROOT_CHAIN(chain_in , CHAINPREFIX_HOST_IN_TEMP , ifname);
+    PRINT_ROOT_CHAIN(chain_out, CHAINPREFIX_HOST_OUT_TEMP, ifname);
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_in,
+                      CMD_STOPONERR(1));
+
+    virBufferVSprintf(&buf,
+                      CMD_DEF("%s -t %s -A %s -j DROP") CMD_SEPARATOR
+                      CMD_EXEC
+                      "%s",
+
+                      ebtables_cmd_path, EBTABLES_DEFAULT_TABLE, chain_out,
+                      CMD_STOPONERR(1));
+
+    ebtablesLinkTmpRootChain(&buf, 1, ifname, 1);
+    ebtablesLinkTmpRootChain(&buf, 0, ifname, 1);
+    ebtablesRenameTmpRootChain(&buf, 1, ifname);
+    ebtablesRenameTmpRootChain(&buf, 0, ifname);
+
+    if (ebiptablesExecCLI(&buf, &cli_status) || cli_status != 0)
+        goto tear_down_tmpebchains;
+
+    return 0;
+
+tear_down_tmpebchains:
+    ebtablesCleanAll(ifname);
+
+    virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
+                           "%s",
+                           _("Some rules could not be created."));
+
+    return 1;
+}
+
+
 static int
 ebtablesRemoveBasicRules(const char *ifname)
+{
+    return ebtablesCleanAll(ifname);
+}
+
+
+static int ebtablesCleanAll(const char *ifname)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int cli_status;
 
     if (!ebtables_cmd_path)
         return 0;
+
+    ebtablesUnlinkRootChain(&buf, 1, ifname);
+    ebtablesUnlinkRootChain(&buf, 0, ifname);
+    ebtablesRemoveSubChains(&buf, ifname);
+    ebtablesRemoveRootChain(&buf, 1, ifname);
+    ebtablesRemoveRootChain(&buf, 0, ifname);
 
     ebtablesUnlinkTmpRootChain(&buf, 1, ifname);
     ebtablesUnlinkTmpRootChain(&buf, 0, ifname);
@@ -3265,6 +3340,7 @@ virNWFilterTechDriver ebiptables_driver = {
     .canApplyBasicRules  = ebiptablesCanApplyBasicRules,
     .applyBasicRules     = ebtablesApplyBasicRules,
     .applyDHCPOnlyRules  = ebtablesApplyDHCPOnlyRules,
+    .applyDropAllRules   = ebtablesApplyDropAllRules,
     .removeBasicRules    = ebtablesRemoveBasicRules,
 };
 

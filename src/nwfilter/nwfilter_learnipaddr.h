@@ -60,7 +60,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               enum howDetect howDetect);
 
 virNWFilterIPAddrLearnReqPtr virNWFilterLookupLearnReq(int ifindex);
-
+int virNWFilterTerminateLearnReq(const char *ifname);
 
 void virNWFilterDelIpAddrForIfname(const char *ifname);
 const char *virNWFilterGetIpAddrForIfname(const char *ifname);

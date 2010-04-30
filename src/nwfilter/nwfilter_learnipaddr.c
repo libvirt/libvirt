@@ -598,8 +598,6 @@ learnIPAddressThread(void *arg)
     if (handle)
         pcap_close(handle);
 
-    techdriver->removeBasicRules(req->ifname);
-
     if (req->status == 0) {
         int ret;
         char inetaddr[INET_ADDRSTRLEN];
@@ -624,6 +622,8 @@ learnIPAddressThread(void *arg)
                                  _("encountered an error on interface %s "
                                    "index %d"),
                                  req->ifname, req->ifindex);
+
+        techdriver->applyDropAllRules(req->ifname);
     }
 
     memset(&req->thread, 0x0, sizeof(req->thread));

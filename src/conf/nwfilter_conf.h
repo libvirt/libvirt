@@ -521,6 +521,8 @@ typedef int (*virNWFilterApplyDHCPOnlyRules)(const char *ifname,
 
 typedef int (*virNWFilterRemoveBasicRules)(const char *ifname);
 
+typedef int (*virNWFilterDropAllRules)(const char *ifname);
+
 enum techDrvFlags {
     TECHDRV_FLAG_INITIALIZED = (1 << 0),
 };
@@ -544,6 +546,7 @@ struct _virNWFilterTechDriver {
     virNWFilterCanApplyBasicRules canApplyBasicRules;
     virNWFilterApplyBasicRules applyBasicRules;
     virNWFilterApplyDHCPOnlyRules applyDHCPOnlyRules;
+    virNWFilterDropAllRules applyDropAllRules;
     virNWFilterRemoveBasicRules removeBasicRules;
 };
 
