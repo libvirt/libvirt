@@ -1153,7 +1153,7 @@ int virFileHasSuffix(const char *str,
     if (len < suffixlen)
         return 0;
 
-    return STREQ(str + len - suffixlen, suffix);
+    return STRCASEEQ(str + len - suffixlen, suffix);
 }
 
 # define SAME_INODE(Stat_buf_1, Stat_buf_2) \
