@@ -3248,9 +3248,6 @@ cmdInterfaceEdit (vshControl *ctl, const vshCmd *cmd)
     doc_edited = editReadBackFile (ctl, tmp);
     if (!doc_edited) goto cleanup;
 
-    unlink (tmp);
-    tmp = NULL;
-
     /* Compare original XML with edited.  Has it changed at all? */
     if (STREQ (doc, doc_edited)) {
         vshPrint (ctl, _("Interface %s XML configuration not changed.\n"),
@@ -4192,9 +4189,6 @@ cmdNWFilterEdit (vshControl *ctl, const vshCmd *cmd)
     /* Read back the edited file. */
     doc_edited = editReadBackFile (ctl, tmp);
     if (!doc_edited) goto cleanup;
-
-    unlink (tmp);
-    tmp = NULL;
 
     /* Compare original XML with edited.  Has it changed at all? */
     if (STREQ (doc, doc_edited)) {
