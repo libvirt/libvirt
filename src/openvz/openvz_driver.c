@@ -1,6 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -33,7 +34,6 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
-#include <strings.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>

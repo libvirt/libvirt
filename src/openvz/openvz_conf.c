@@ -1,6 +1,7 @@
 /*
  * openvz_conf.c: config functions for managing OpenVZ VEs
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -33,7 +34,6 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <strings.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <unistd.h>

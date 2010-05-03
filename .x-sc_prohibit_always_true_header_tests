@@ -1,0 +1,4 @@
+ChangeLog*
+docs/news.html.in
+python/libvirt-override.c
+python/typewrappers.c

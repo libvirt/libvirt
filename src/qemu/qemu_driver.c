@@ -31,7 +31,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <strings.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>

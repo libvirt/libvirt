@@ -29,7 +29,6 @@
 #include <sys/stat.h>
 #include <limits.h>
 #include <string.h>
-#include <strings.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

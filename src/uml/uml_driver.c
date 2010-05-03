@@ -29,7 +29,6 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
-#include <strings.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
