@@ -40,7 +40,8 @@ enum instCase {
 int virNWFilterInstantiateFilter(virConnectPtr conn,
                                  const virDomainNetDefPtr net);
 int virNWFilterUpdateInstantiateFilter(virConnectPtr conn,
-                                       const virDomainNetDefPtr net);
+                                       const virDomainNetDefPtr net,
+                                       bool *skipIface);
 int virNWFilterRollbackUpdateFilter(virConnectPtr conn,
                                     const virDomainNetDefPtr net);
 

@@ -471,6 +471,7 @@ struct domUpdateCBStruct {
     virConnectPtr conn;
     enum UpdateStep step;
     int err;
+    virHashTablePtr skipInterfaces;
 };
 
 

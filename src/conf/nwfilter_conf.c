@@ -2088,7 +2088,13 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
         .conn = conn,
         .err = 0,
         .step = STEP_APPLY_NEW,
+        .skipInterfaces = virHashCreate(0),
     };
+
+    if (!cb.skipInterfaces) {
+        virReportOOMError();
+        return 1;
+    }
 
     for (i = 0; i < nCallbackDriver; i++) {
         callbackDrvArray[i]->vmFilterRebuild(conn,
@@ -2114,6 +2120,8 @@ virNWFilterTriggerVMFilterRebuild(virConnectPtr conn)
                                                  virNWFilterDomainFWUpdateCB,
                                                  &cb);
     }
+
+    virHashFree(cb.skipInterfaces, NULL);
 
     return err;
 }
