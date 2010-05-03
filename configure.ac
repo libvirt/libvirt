@@ -78,7 +78,6 @@ AM_PROG_LD
 VERSION_SCRIPT_FLAGS=-Wl,--version-script=
 `$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
     VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
-AC_SUBST(VERSION_SCRIPT_FLAGS)
 
 LIBVIRT_COMPILE_WARNINGS([maximum])
 
@@ -1824,10 +1823,11 @@ case "$host" in
     # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the linker
     LIBVIRT_SYMBOL_FILE=libvirt.def
     # mingw's ld has the --version-script parameter, but it requires a .def file
-    # instead to work properly, therefore clear --version-script here
+    # instead to work properly, therefore clear --version-script here and use
+    # -Wl, to pass the .def file to the linker
     # cygwin's ld has the --version-script parameter too, but for some reason
     # it's working there as expected
-    VERSION_SCRIPT_FLAGS=
+    VERSION_SCRIPT_FLAGS="-Wl,"
     ;;
 esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
@@ -1836,6 +1836,7 @@ AC_SUBST([CYGWIN_EXTRA_PYTHON_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([WIN32_EXTRA_CFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
+AC_SUBST([VERSION_SCRIPT_FLAGS])
 
 
 dnl Look for windres to build a Windows icon resource.
