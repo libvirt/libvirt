@@ -472,8 +472,10 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group, int creat
                 (i == VIR_CGROUP_CONTROLLER_CPUSET ||
                  STREQ(group->controllers[i].mountPoint, group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint))) {
                 rc = virCgroupCpuSetInherit(parent, group);
-                if (rc != 0)
+                if (rc != 0) {
+                    VIR_FREE(path);
                     break;
+                }
             }
         }
 
