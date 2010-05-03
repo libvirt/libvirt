@@ -200,7 +200,8 @@ static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
     lxcDriverUnlock(driver);
 
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN, NULL);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching id %d"), id);
         goto cleanup;
     }
 
@@ -226,7 +227,10 @@ static virDomainPtr lxcDomainLookupByUUID(virConnectPtr conn,
     lxcDriverUnlock(driver);
 
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -251,7 +255,8 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
     vm = virDomainFindByName(&driver->domains, name);
     lxcDriverUnlock(driver);
     if (!vm) {
-        lxcError(VIR_ERR_NO_DOMAIN, NULL);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -276,7 +281,10 @@ static int lxcDomainIsActive(virDomainPtr dom)
     obj = virDomainFindByUUID(&driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!obj) {
-        lxcError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = virDomainObjIsActive(obj);
@@ -298,7 +306,10 @@ static int lxcDomainIsPersistent(virDomainPtr dom)
     obj = virDomainFindByUUID(&driver->domains, dom->uuid);
     lxcDriverUnlock(driver);
     if (!obj) {
-        lxcError(VIR_ERR_NO_DOMAIN, NULL);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
     ret = obj->persistent;
@@ -424,8 +435,10 @@ static int lxcDomainUndefine(virDomainPtr dom)
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("No domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -475,8 +488,10 @@ static int lxcDomainGetInfo(virDomainPtr dom,
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
 
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("No domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -528,8 +543,10 @@ static char *lxcGetOSType(virDomainPtr dom)
     lxcDriverUnlock(driver);
 
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("No domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -668,8 +685,10 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
     lxcDriverUnlock(driver);
 
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 "%s", _("No domain with matching uuid"));
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1341,10 +1360,12 @@ static int lxcDomainStart(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByName(&driver->domains, dom->name);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 _("No domain named %s"), dom->name);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1450,10 +1471,12 @@ static int lxcDomainShutdown(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 _("No domain with id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1627,10 +1650,12 @@ static int lxcDomainDestroy(virDomainPtr dom)
     int ret = -1;
 
     lxcDriverLock(driver);
-    vm = virDomainFindByID(&driver->domains, dom->id);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
-        lxcError(VIR_ERR_INVALID_DOMAIN,
-                 _("No domain with id %d"), dom->id);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -1996,8 +2021,10 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("No such domain %s"), domain->uuid);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
@@ -2054,8 +2081,10 @@ static int lxcGetSchedulerParameters(virDomainPtr domain,
     vm = virDomainFindByUUID(&driver->domains, domain->uuid);
 
     if (vm == NULL) {
-        lxcError(VIR_ERR_INTERNAL_ERROR,
-                 _("No such domain %s"), domain->uuid);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuidstr);
+        lxcError(VIR_ERR_NO_DOMAIN,
+                 _("No domain with matching uuid '%s'"), uuidstr);
         goto cleanup;
     }
 
