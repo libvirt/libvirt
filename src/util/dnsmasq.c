@@ -84,12 +84,12 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
 
     if (name) {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s,%s",
-                mac, ip, name) < 0) {
+                        mac, ip, name) < 0) {
             goto alloc_error;
         }
     } else {
         if (virAsprintf(&hostsfile->hosts[hostsfile->nhosts].host, "%s,%s",
-                mac, ip) < 0) {
+                        mac, ip) < 0) {
             goto alloc_error;
         }
     }
@@ -99,9 +99,8 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
     return 0;
 
  alloc_error:
-    virReportSystemError(ENOMEM,
-        _("Failed to add dhcp host entry: mac=%s, ip=%s, name=%s\n"),
-        mac, ip, (name ? name : "(null)"));
+    virReportOOMError();
+
     return -1;
 }
 
@@ -112,20 +111,23 @@ hostsfileNew(const char *name,
     int err;
     dnsmasqHostsfile *hostsfile;
 
-    if (VIR_ALLOC(hostsfile) < 0)
+    if (VIR_ALLOC(hostsfile) < 0) {
+        virReportOOMError();
         return NULL;
+    }
 
     hostsfile->hosts = NULL;
     hostsfile->nhosts = 0;
 
     if (virAsprintf(&hostsfile->path, "%s/%s.%s", config_dir, name,
-            DNSMASQ_HOSTSFILE_SUFFIX) < 0) {
+                    DNSMASQ_HOSTSFILE_SUFFIX) < 0) {
+        virReportOOMError();
         goto error;
     }
 
     if ((err = virFileMakePath(config_dir))) {
         virReportSystemError(err, _("cannot create config directory '%s'"),
-            config_dir);
+                             config_dir);
         goto error;
     }
 
@@ -201,11 +203,11 @@ static int
 hostsfileSave(dnsmasqHostsfile *hostsfile)
 {
     int err = hostsfileWrite(hostsfile->path, hostsfile->hosts,
-        hostsfile->nhosts);
+                             hostsfile->nhosts);
 
     if (err < 0) {
         virReportSystemError(err, _("cannot write config file '%s'"),
-            hostsfile->path);
+                             hostsfile->path);
         return -1;
     }
 
@@ -220,7 +222,7 @@ hostsfileDelete(dnsmasqHostsfile *hostsfile)
 
     if (unlink(hostsfile->path) < 0) {
         virReportSystemError(errno, _("cannot remove config file '%s'"),
-            hostsfile->path);
+                             hostsfile->path);
         return -1;
     }
 
@@ -240,8 +242,10 @@ dnsmasqContextNew(const char *network_name,
 {
     dnsmasqContext *ctx;
 
-    if (VIR_ALLOC(ctx) < 0)
+    if (VIR_ALLOC(ctx) < 0) {
+        virReportOOMError();
         return NULL;
+    }
 
     if (!(ctx->hostsfile = hostsfileNew(network_name, config_dir)))
         goto error;
