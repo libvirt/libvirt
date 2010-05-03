@@ -332,14 +332,16 @@ dnsmasqDelete(const dnsmasqContext *ctx)
  * Reloads all the configurations associated to a context
  */
 int
-dnsmasqReload(pid_t pid)
+dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
 {
+#ifndef WIN32
     if (kill(pid, SIGHUP) != 0) {
         virReportSystemError(errno,
-            _("Failed to make dnsmasq (PID: %d) reload config files.\n"),
+            _("Failed to make dnsmasq (PID: %d) reload config files."),
             pid);
         return -1;
     }
+#endif /* WIN32 */
 
     return 0;
 }
