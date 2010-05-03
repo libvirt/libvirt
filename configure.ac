@@ -210,8 +210,11 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
 fi
 
 dnl lxc and qemu drivers require linux headers
-if test `uname -s` != "Linux"
-then
+case "$host" in
+  *-*-linux*)
+    # match linux here so the *) case will match anything non-linux
+    ;;
+  *)
     if test "x$with_lxc" != "xyes"
     then
         with_lxc=no
@@ -220,7 +223,8 @@ then
     then
         with_qemu=no
     fi
-fi
+    ;;
+esac
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH([xen],
@@ -1983,7 +1987,13 @@ then
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
-AM_CONDITIONAL([WITH_LINUX], [test `uname -s` = "Linux"])
+with_linux=no
+case "$host" in
+  *-*-linux*)
+    with_linux=yes
+    ;;
+esac
+AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 
 
 AC_ARG_WITH([qemu-user],
