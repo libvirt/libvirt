@@ -786,14 +786,15 @@ static int lxcSetupInterfaces(virConnectPtr conn,
 {
     int rc = -1, i;
     char *bridge = NULL;
-    char parentVeth[PATH_MAX] = "";
-    char containerVeth[PATH_MAX] = "";
     brControl *brctl = NULL;
 
     if (brInit(&brctl) != 0)
         return -1;
 
     for (i = 0 ; i < def->nnets ; i++) {
+        char parentVeth[PATH_MAX] = "";
+        char containerVeth[PATH_MAX] = "";
+
         switch (def->nets[i]->type) {
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
