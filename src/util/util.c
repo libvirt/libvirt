@@ -786,86 +786,6 @@ int virExecDaemonize(const char *const*argv,
     return ret;
 }
 
-int
-virPipeReadUntilEOF(int outfd, int errfd,
-                    char **outbuf, char **errbuf) {
-
-    struct pollfd fds[2];
-    int i;
-    int finished[2];
-
-    fds[0].fd = outfd;
-    fds[0].events = POLLIN;
-    finished[0] = 0;
-    fds[1].fd = errfd;
-    fds[1].events = POLLIN;
-    finished[1] = 0;
-
-    while(!(finished[0] && finished[1])) {
-
-        if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
-            if ((errno == EAGAIN) || (errno == EINTR))
-                continue;
-            goto pollerr;
-        }
-
-        for (i = 0; i < ARRAY_CARDINALITY(fds); ++i) {
-            char data[1024], **buf;
-            int got, size;
-
-            if (!(fds[i].revents))
-                continue;
-            else if (fds[i].revents & POLLHUP)
-                finished[i] = 1;
-
-            if (!(fds[i].revents & POLLIN)) {
-                if (fds[i].revents & POLLHUP)
-                    continue;
-
-                virUtilError(VIR_ERR_INTERNAL_ERROR,
-                             "%s", _("Unknown poll response."));
-                goto error;
-            }
-
-            got = read(fds[i].fd, data, sizeof(data));
-
-            if (got == 0) {
-                finished[i] = 1;
-                continue;
-            }
-            if (got < 0) {
-                if (errno == EINTR)
-                    continue;
-                if (errno == EAGAIN)
-                    break;
-                goto pollerr;
-            }
-
-            buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
-            size = (*buf ? strlen(*buf) : 0);
-            if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
-                virReportOOMError();
-                goto error;
-            }
-            memmove(*buf+size, data, got);
-            (*buf)[size+got] = '\0';
-        }
-        continue;
-
-    pollerr:
-        virReportSystemError(errno,
-                             "%s", _("poll error"));
-        goto error;
-    }
-
-    return 0;
-
-error:
-    VIR_FREE(*outbuf);
-    VIR_FREE(*errbuf);
-    return -1;
-}
-
 /**
  * @argv NULL terminated argv to run
  * @status optional variable to return exit status in
@@ -1010,6 +930,86 @@ virExecDaemonize(const char *const*argv ATTRIBUTE_UNUSED,
 }
 
 # endif /* WIN32 */
+
+int
+virPipeReadUntilEOF(int outfd, int errfd,
+                    char **outbuf, char **errbuf) {
+
+    struct pollfd fds[2];
+    int i;
+    int finished[2];
+
+    fds[0].fd = outfd;
+    fds[0].events = POLLIN;
+    finished[0] = 0;
+    fds[1].fd = errfd;
+    fds[1].events = POLLIN;
+    finished[1] = 0;
+
+    while(!(finished[0] && finished[1])) {
+
+        if (poll(fds, ARRAY_CARDINALITY(fds), -1) < 0) {
+            if ((errno == EAGAIN) || (errno == EINTR))
+                continue;
+            goto pollerr;
+        }
+
+        for (i = 0; i < ARRAY_CARDINALITY(fds); ++i) {
+            char data[1024], **buf;
+            int got, size;
+
+            if (!(fds[i].revents))
+                continue;
+            else if (fds[i].revents & POLLHUP)
+                finished[i] = 1;
+
+            if (!(fds[i].revents & POLLIN)) {
+                if (fds[i].revents & POLLHUP)
+                    continue;
+
+                virUtilError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("Unknown poll response."));
+                goto error;
+            }
+
+            got = read(fds[i].fd, data, sizeof(data));
+
+            if (got == 0) {
+                finished[i] = 1;
+                continue;
+            }
+            if (got < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno == EAGAIN)
+                    break;
+                goto pollerr;
+            }
+
+            buf = ((fds[i].fd == outfd) ? outbuf : errbuf);
+            size = (*buf ? strlen(*buf) : 0);
+            if (VIR_REALLOC_N(*buf, size+got+1) < 0) {
+                virReportOOMError();
+                goto error;
+            }
+            memmove(*buf+size, data, got);
+            (*buf)[size+got] = '\0';
+        }
+        continue;
+
+    pollerr:
+        virReportSystemError(errno,
+                             "%s", _("poll error"));
+        goto error;
+    }
+
+    return 0;
+
+error:
+    VIR_FREE(*outbuf);
+    VIR_FREE(*errbuf);
+    return -1;
+}
 
 int
 virRun(const char *const*argv,

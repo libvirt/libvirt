@@ -157,6 +157,16 @@ int virCondWait(virCondPtr c, virMutexPtr m)
     return 0;
 }
 
+int virCondWaitUntil(virCondPtr c ATTRIBUTE_UNUSED,
+                     virMutexPtr m ATTRIBUTE_UNUSED,
+                     unsigned long long whenms ATTRIBUTE_UNUSED)
+{
+    /* FIXME: this function is currently only used by the QEMU driver that
+     *        is not compiled on Windows, so it's okay for now to just
+     *        miss an implementation */
+    return -1;
+}
+
 void virCondSignal(virCondPtr c)
 {
     virMutexLock(&c->lock);
