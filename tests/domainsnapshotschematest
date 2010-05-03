@@ -1,0 +1,10 @@
+#!/bin/sh
+
+: ${srcdir=.}
+. $srcdir/test-lib.sh
+. $abs_srcdir/schematestutils.sh
+
+DIRS="domainsnapshotxml2xmlin domainsnapshotxml2xmlout"
+SCHEMA="domainsnapshot.rng"
+
+check_schema "$DIRS" "$SCHEMA"

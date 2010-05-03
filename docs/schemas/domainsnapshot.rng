@@ -1,0 +1,53 @@
+<!-- A Relax NG schema for the libvirt domain snapshot properties XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <start>
+    <ref name='domainsnapshot'/>
+  </start>
+
+  <define name='domainsnapshot'>
+    <element name='domainsnapshot'>
+      <interleave>
+        <optional>
+          <element name='name'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name='description'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name='state'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name='creationTime'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name='active'>
+            <text/>
+          </element>
+        </optional>
+        <optional>
+          <element name='domain'>
+            <element name='uuid'>
+              <text/>
+            </element>
+          </element>
+        </optional>
+        <optional>
+          <element name='parent'>
+            <element name='name'>
+              <text/>
+            </element>
+          </element>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+</grammar>
