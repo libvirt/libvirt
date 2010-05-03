@@ -642,27 +642,30 @@ static int lxcDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        if (driver->cgroup == NULL) {
-            lxcError(VIR_ERR_NO_SUPPORT,
-                     "%s", _("cgroups must be configured on the host"));
-            goto cleanup;
-        }
-
-        if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Unable to get cgroup for %s"), vm->def->name);
-            goto cleanup;
-        }
-
-        if (virCgroupSetMemory(cgroup, newmem) < 0) {
-            lxcError(VIR_ERR_OPERATION_FAILED,
-                     "%s", _("Failed to set memory for domain"));
-            goto cleanup;
-        }
-    } else {
-        vm->def->memory = newmem;
+    if (!virDomainObjIsActive(vm)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("Domain is not running"));
+        goto cleanup;
     }
+
+    if (driver->cgroup == NULL) {
+        lxcError(VIR_ERR_NO_SUPPORT,
+                 "%s", _("cgroups must be configured on the host"));
+        goto cleanup;
+    }
+
+    if (virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) != 0) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 _("Unable to get cgroup for %s"), vm->def->name);
+        goto cleanup;
+    }
+
+    if (virCgroupSetMemory(cgroup, newmem) < 0) {
+        lxcError(VIR_ERR_OPERATION_FAILED,
+                 "%s", _("Failed to set memory for domain"));
+        goto cleanup;
+    }
+
     ret = 0;
 
 cleanup:
