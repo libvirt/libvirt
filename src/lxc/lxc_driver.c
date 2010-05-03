@@ -1378,6 +1378,12 @@ static int lxcDomainStart(virDomainPtr dom)
         goto cleanup;
     }
 
+    if (virDomainObjIsActive(vm)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("Domain is already running"));
+        goto cleanup;
+    }
+
     ret = lxcVmStart(dom->conn, driver, vm);
 
     if (ret == 0)
@@ -1480,6 +1486,12 @@ static int lxcDomainShutdown(virDomainPtr dom)
         virUUIDFormat(dom->uuid, uuidstr);
         lxcError(VIR_ERR_NO_DOMAIN,
                  _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("Domain is not running"));
         goto cleanup;
     }
 
@@ -1659,6 +1671,12 @@ static int lxcDomainDestroy(virDomainPtr dom)
         virUUIDFormat(dom->uuid, uuidstr);
         lxcError(VIR_ERR_NO_DOMAIN,
                  _("No domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        lxcError(VIR_ERR_OPERATION_INVALID,
+                 "%s", _("Domain is not running"));
         goto cleanup;
     }
 
