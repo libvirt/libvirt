@@ -9080,7 +9080,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     if (S_ISREG(sb.st_mode)) {
-#ifndef __MINGW32__
+#ifndef WIN32
         info->physical = (unsigned long long)sb.st_blocks *
             (unsigned long long)DEV_BSIZE;
 #else

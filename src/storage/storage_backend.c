@@ -954,7 +954,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
 
     if (allocation) {
         if (S_ISREG(sb.st_mode)) {
-#ifndef __MINGW32__
+#ifndef WIN32
             *allocation = (unsigned long long)sb.st_blocks *
                           (unsigned long long)DEV_BSIZE;
 #else
@@ -1184,7 +1184,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
 }
 
 
-#ifndef __MINGW32__
+#ifndef WIN32
 /*
  * Run an external program.
  *
@@ -1466,7 +1466,7 @@ virStorageBackendRunProgNul(virStoragePoolObjPtr pool,
     return 0;
 }
 
-#else
+#else /* WIN32 */
 
 int
 virStorageBackendRunProgRegex(virConnectPtr conn,
@@ -1494,4 +1494,4 @@ virStorageBackendRunProgNul(virConnectPtr conn,
     virStorageReportError(VIR_ERR_INTERNAL_ERROR, _("%s not implemented on Win32"), __FUNCTION__);
     return -1;
 }
-#endif
+#endif /* WIN32 */

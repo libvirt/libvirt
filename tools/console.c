@@ -1,7 +1,7 @@
 /*
  * console.c: A dumb serial console client
  *
- * Copyright (C) 2007, 2008 Red Hat, Inc.
+ * Copyright (C) 2007, 2008, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#ifndef __MINGW32__
+#ifndef WIN32
 
 # include <stdio.h>
 # include <sys/types.h>
@@ -197,4 +197,4 @@ int vshRunConsole(const char *tty) {
     return ret;
 }
 
-#endif /* !__MINGW32__ */
+#endif /* !WIN32 */
