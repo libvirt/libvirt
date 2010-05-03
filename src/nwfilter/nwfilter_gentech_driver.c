@@ -543,6 +543,8 @@ virNWFilterRuleInstancesToArray(int nEntries,
  * @ifname: The name of the interface to apply the rules to
  * @vars: A map holding variable names and values used for instantiating
  *  the filter and its subfilters.
+ * @forceWithPendingReq: Ignore the check whether a pending learn request
+ *  is active; 'true' only when the rules are applied late
  *
  * Returns 0 on success, a value otherwise.
  *
@@ -563,7 +565,8 @@ virNWFilterInstantiate(virConnectPtr conn,
                        enum instCase useNewFilter, int *foundNewFilter,
                        bool teardownOld,
                        const unsigned char *macaddr,
-                       virNWFilterDriverStatePtr driver)
+                       virNWFilterDriverStatePtr driver,
+                       bool forceWithPendingReq)
 {
     int rc;
     int j, nptrs;
@@ -610,7 +613,8 @@ virNWFilterInstantiate(virConnectPtr conn,
     } else if (virHashSize(missing_vars->hashTable) > 1) {
         rc = 1;
         goto err_exit;
-    } else if (virNWFilterLookupLearnReq(ifindex) == NULL) {
+    } else if (!forceWithPendingReq &&
+               virNWFilterLookupLearnReq(ifindex) != NULL) {
         goto err_exit;
     }
 
@@ -688,7 +692,8 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
                                const char *filtername,
                                virNWFilterHashTablePtr filterparams,
                                enum instCase useNewFilter,
-                               virNWFilterDriverStatePtr driver)
+                               virNWFilterDriverStatePtr driver,
+                               bool forceWithPendingReq)
 {
     int rc;
     const char *drvname = EBIPTABLES_DRIVER_ID;
@@ -789,7 +794,8 @@ __virNWFilterInstantiateFilter(virConnectPtr conn,
                                 useNewFilter, &foundNewFilter,
                                 teardownOld,
                                 macaddr,
-                                driver);
+                                driver,
+                                forceWithPendingReq);
 
     virNWFilterHashTableFree(vars);
 
@@ -830,7 +836,8 @@ _virNWFilterInstantiateFilter(virConnectPtr conn,
                                           net->filter,
                                           net->filterparams,
                                           useNewFilter,
-                                          conn->nwfilterPrivateData);
+                                          conn->nwfilterPrivateData,
+                                          false);
 }
 
 
@@ -856,7 +863,8 @@ virNWFilterInstantiateFilterLate(virConnectPtr conn,
                                         filtername,
                                         filterparams,
                                         INSTANTIATE_ALWAYS,
-                                        driver);
+                                        driver,
+                                        true);
     if (rc) {
         //something went wrong... 'DOWN' the interface
         if (ifaceCheck(false, ifname, NULL, ifindex) != 0 ||
