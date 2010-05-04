@@ -3,6 +3,7 @@
 %define _use_internal_dependency_generator 0
 %define __find_requires %{_mingw32_findrequires}
 %define __find_provides %{_mingw32_findprovides}
+%define __debug_install_post %{_mingw32_debug_install_post}
 
 Name:           mingw32-libvirt
 Version:        @VERSION@
@@ -30,6 +31,7 @@ BuildRequires:  gettext
 
 BuildArch:      noarch
 
+%{?_mingw32_debug_package}
 
 %description
 MinGW Windows libvirt virtualization library.
@@ -95,8 +97,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_datadir}/libvirt/schemas/nodedev.rng
 %{_mingw32_datadir}/libvirt/schemas/capability.rng
 %{_mingw32_datadir}/libvirt/schemas/interface.rng
+%{_mingw32_datadir}/libvirt/schemas/nwfilter.rng
 %{_mingw32_datadir}/libvirt/schemas/secret.rng
 %{_mingw32_datadir}/libvirt/schemas/storageencryption.rng
+
+%{_mingw32_datadir}/libvirt/cpu_map.xml
 
 %{_mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 
