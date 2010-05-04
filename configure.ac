@@ -108,7 +108,7 @@ LIBS=$old_libs
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h \
-  sched.h termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
+  termios.h sys/poll.h syslog.h mntent.h net/ethernet.h])
 
 dnl Where are the XDR functions?
 dnl If portablexdr is installed, prefer that.
@@ -495,33 +495,19 @@ if test "$with_libvirtd" = "no" ; then
   with_lxc=no
 fi
 if test "$with_lxc" = "yes" || test "$with_lxc" = "check"; then
-    AC_CHECK_HEADER([sched.h],
-    dnl Header is there, check for unshare()
-    [
-        AC_TRY_LINK([#define _GNU_SOURCE
-            #include <sched.h>], [
-            unshare (1);
-	], [
-            with_lxc=yes
-	], [
-            if test "$with_lxc" = "check"; then
-	        with_lxc=no
-		AC_MSG_NOTICE([Function unshare() not present in <sched.h> header but required for LXC driver, disabling it])
-            else
-	        AC_MSG_ERROR([Function unshare() not present in <sched.h> header, but required for LXC driver])
-            fi
-
-        ])
-
-    dnl Header is not there
-    ],[
+    AC_TRY_LINK([#define _GNU_SOURCE
+        #include <sched.h>
+    ], [
+        unshare (1);
+    ], [
+        with_lxc=yes
+    ], [
         if test "$with_lxc" = "check"; then
             with_lxc=no
-            AC_MSG_NOTICE([Header <sched.h> not found but required for LXC driver, disabling it])
+            AC_MSG_NOTICE([Function unshare() not present in <sched.h> header but required for LXC driver, disabling it])
         else
-            AC_MSG_ERROR([Header <sched.h> not found but required for LXC driver])
+            AC_MSG_ERROR([Function unshare() not present in <sched.h> header, but required for LXC driver])
         fi
-
     ])
 fi
 if test "$with_lxc" = "yes" ; then
