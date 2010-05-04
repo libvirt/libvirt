@@ -241,25 +241,32 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
                                   unsigned long long *remaining,
                                   unsigned long long *total);
 
+typedef enum {
+  QEMU_MONITOR_MIGRATE_BACKGROUND 		= 1 << 0,
+  QEMU_MONITOR_MIGRATE_NON_SHARED_DISK  = 1 << 1, /* migration with non-shared storage with full disk copy */
+  QEMU_MONITOR_MIGRATE_NON_SHARED_INC   = 1 << 2, /* migration with non-shared storage with incremental copy */
+  QEMU_MONITOR_MIGRATION_FLAGS_LAST
+} QEMU_MONITOR_MIGRATE;
+
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char *hostname,
                              int port);
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                int background,
+                                unsigned int background,
                                 const char * const *argv);
 
 # define QEMU_MONITOR_MIGRATE_TO_FILE_BS 512llu
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char * const *argv,
                              const char *target,
                              unsigned long long offset);
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char *unixfile);
 
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);

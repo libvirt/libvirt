@@ -1161,7 +1161,7 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 
 
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char *hostname,
                              int port)
 {
@@ -1178,7 +1178,7 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                int background,
+                                unsigned int background,
                                 const char * const *argv)
 {
     int ret;
@@ -1193,7 +1193,7 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
 }
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char * const *argv,
                              const char *target,
                              unsigned long long offset)
@@ -1217,7 +1217,7 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
 }
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             int background,
+                             unsigned int background,
                              const char *unixfile)
 {
     int ret;

@@ -411,6 +411,10 @@ typedef enum {
     VIR_MIGRATE_PERSIST_DEST      = (1 << 3), /* persist the VM on the destination */
     VIR_MIGRATE_UNDEFINE_SOURCE   = (1 << 4), /* undefine the VM on the source */
     VIR_MIGRATE_PAUSED            = (1 << 5), /* pause on remote side */
+    VIR_MIGRATE_NON_SHARED_DISK   = (1 << 6), /* migration with non-shared storage with full disk copy */
+    VIR_MIGRATE_NON_SHARED_INC    = (1 << 7), /* migration with non-shared storage with incremental copy */
+                                              /* (same base image shared between source and destination) */
+
 } virDomainMigrateFlags;
 
 /* Domain migration. */

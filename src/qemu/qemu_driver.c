@@ -4958,7 +4958,9 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     if (header.compressed == QEMUD_SAVE_FORMAT_RAW) {
         const char *args[] = { "cat", NULL };
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToFile(priv->mon, 1, args, path, offset);
+        rc = qemuMonitorMigrateToFile(priv->mon,
+                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                      args, path, offset);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     } else {
         const char *prog = qemudSaveCompressionTypeToString(header.compressed);
@@ -4968,7 +4970,9 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
             NULL
         };
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
-        rc = qemuMonitorMigrateToFile(priv->mon, 1, args, path, offset);
+        rc = qemuMonitorMigrateToFile(priv->mon,
+                                      QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                      args, path, offset);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 
@@ -5286,9 +5290,10 @@ static int qemudDomainCoreDump(virDomainPtr dom,
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorMigrateToFile(priv->mon, 1, args, path, 0);
+    ret = qemuMonitorMigrateToFile(priv->mon,
+                                   QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                   args, path, 0);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
-
     if (ret < 0)
         goto endjob;
 
@@ -9885,13 +9890,17 @@ cleanup:
 static int doNativeMigrate(struct qemud_driver *driver,
                            virDomainObjPtr vm,
                            const char *uri,
-                           unsigned long flags ATTRIBUTE_UNUSED,
+                           unsigned int flags,
                            const char *dname ATTRIBUTE_UNUSED,
                            unsigned long resource)
 {
     int ret = -1;
     xmlURIPtr uribits = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned int background_flags = 0;
+
+    virCheckFlags(VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                  -1);
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
@@ -9919,7 +9928,14 @@ static int doNativeMigrate(struct qemud_driver *driver,
         goto cleanup;
     }
 
-    if (qemuMonitorMigrateToHost(priv->mon, 1, uribits->server, uribits->port) < 0) {
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK)
+        background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
+
+    if (flags & VIR_MIGRATE_NON_SHARED_INC)
+        background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+
+    if (qemuMonitorMigrateToHost(priv->mon, background_flags, uribits->server,
+                                 uribits->port) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         goto cleanup;
     }
@@ -10004,6 +10020,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     unsigned long long qemuCmdFlags;
     int status;
     unsigned long long transferred, remaining, total;
+    unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
 
     /*
      * The order of operations is important here to avoid touching
@@ -10089,11 +10106,17 @@ static int doTunnelMigrate(virDomainPtr dom,
 
     /*   3. start migration on source */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX)
-        internalret = qemuMonitorMigrateToUnix(priv->mon, 1, unixfile);
+    if (flags & VIR_MIGRATE_NON_SHARED_DISK)
+        background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
+    if (flags & VIR_MIGRATE_NON_SHARED_INC)
+        background_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_UNIX){
+        internalret = qemuMonitorMigrateToUnix(priv->mon, background_flags,
+                                               unixfile);
+    }
     else if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
         const char *args[] = { "nc", "-U", unixfile, NULL };
-        internalret = qemuMonitorMigrateToCommand(priv->mon, 1, args);
+        internalret = qemuMonitorMigrateToCommand(priv->mon, QEMU_MONITOR_MIGRATE_BACKGROUND, args);
     } else {
         internalret = -1;
     }

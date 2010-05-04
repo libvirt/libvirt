@@ -93,22 +93,22 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
                                       unsigned long long *total);
 
 int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char *hostname,
                                  int port);
 
 int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
-                                    int background,
+                                    unsigned int background,
                                     const char * const *argv);
 
 int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char * const *argv,
                                  const char *target,
                                  unsigned long long offset);
 
 int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char *unixfile);
 
 int qemuMonitorTextMigrateCancel(qemuMonitorPtr mon);

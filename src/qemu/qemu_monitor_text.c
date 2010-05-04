@@ -38,6 +38,7 @@
 #include "driver.h"
 #include "datatypes.h"
 #include "virterror_internal.h"
+#include "buf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1125,26 +1126,32 @@ cleanup:
 
 
 static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
-                                  int background,
+                                  unsigned int background,
                                   const char *dest)
 {
     char *cmd = NULL;
     char *info = NULL;
     int ret = -1;
     char *safedest = qemuMonitorEscapeArg(dest);
-    const char *extra;
+    virBuffer extra = VIR_BUFFER_INITIALIZER;
 
     if (!safedest) {
         virReportOOMError();
         return -1;
     }
 
-    if (background)
-        extra = "-d ";
-    else
-        extra = " ";
-
-    if (virAsprintf(&cmd, "migrate %s\"%s\"", extra, safedest) < 0) {
+    if (background & QEMU_MONITOR_MIGRATE_BACKGROUND)
+        virBufferAddLit(&extra, " -d");
+    if (background & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK)
+        virBufferAddLit(&extra, " -b");
+    if (background & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
+        virBufferAddLit(&extra, " -i");
+    if (virBufferError(&extra)) {
+        virBufferFreeAndReset(&extra);
+        virReportOOMError();
+        return -1;
+    }
+    if (virAsprintf(&cmd, "migrate %s\"%s\"", virBufferContentAndReset(&extra), safedest) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1180,7 +1187,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char *hostname,
                                  int port)
 {
@@ -1201,7 +1208,7 @@ int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
-                                    int background,
+                                    unsigned int background,
                                     const char * const *argv)
 {
     char *argstr;
@@ -1228,7 +1235,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char * const *argv,
                                  const char *target,
                                  unsigned long long offset)
@@ -1269,7 +1276,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int background,
                                  const char *unixfile)
 {
     char *dest = NULL;

@@ -2851,6 +2851,8 @@ static const vshCmdOptDef opts_migrate[] = {
     {"persistent", VSH_OT_BOOL, 0, N_("persist VM on destination")},
     {"undefinesource", VSH_OT_BOOL, 0, N_("undefine VM on source")},
     {"suspend", VSH_OT_BOOL, 0, N_("do not restart the domain on the destination host")},
+    {"copy-storage-all", VSH_OT_BOOL, 0, N_("migration with non-shared storage with full disk copy")},
+    {"copy-storage-inc", VSH_OT_BOOL, 0, N_("migration with non-shared storage with incremental copy (same base image shared between source and destination)")},
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
     {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, N_("connection URI of the destination host")},
     {"migrateuri", VSH_OT_DATA, 0, N_("migration URI, usually can be omitted")},
@@ -2897,6 +2899,12 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool (cmd, "suspend"))
         flags |= VIR_MIGRATE_PAUSED;
+
+    if (vshCommandOptBool (cmd, "copy-storage-all"))
+        flags |= VIR_MIGRATE_NON_SHARED_DISK;
+
+    if (vshCommandOptBool (cmd, "copy-storage-inc"))
+        flags |= VIR_MIGRATE_NON_SHARED_INC;
 
     if ((flags & VIR_MIGRATE_PEER2PEER) ||
         vshCommandOptBool (cmd, "direct")) {
