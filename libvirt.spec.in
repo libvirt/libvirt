@@ -184,7 +184,7 @@ URL: http://libvirt.org/
 BuildRequires: python-devel
 
 # The client side, i.e. shared libs and virsh are in a subpackage
-Requires: libvirt-client = %{version}-%{release}
+Requires: %{name}-client = %{version}-%{release}
 
 # Used by many of the drivers, so turn it on whenever the
 # daemon is present
@@ -347,6 +347,9 @@ BuildRequires: libssh2-devel
 %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.1.4
 %endif
+%if %{with_esx}
+BuildRequires: libcurl-devel
+%endif
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -378,7 +381,7 @@ virtualization capabilities of recent versions of Linux (and other OSes).
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
-Requires: libvirt-client = %{version}-%{release}
+Requires: %{name}-client = %{version}-%{release}
 Requires: pkgconfig
 %if %{with_xen}
 Requires: xen-devel
@@ -392,7 +395,7 @@ the virtualization capabilities of recent versions of Linux (and other OSes).
 %package python
 Summary: Python bindings for the libvirt library
 Group: Development/Libraries
-Requires: libvirt-client = %{version}-%{release}
+Requires: %{name}-client = %{version}-%{release}
 
 %description python
 The libvirt-python package contains a module that permits applications
@@ -556,7 +559,7 @@ gzip -9 ChangeLog
 rm -fr %{buildroot}
 
 %makeinstall
-for i in domain-events/events-c dominfo domsuspend hellolibvirt python
+for i in domain-events/events-c dominfo domsuspend hellolibvirt python xml/nwfilter
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -598,6 +601,10 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-python-%{version}
 
 %if %{client_only}
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version}
+%endif
+
+%if ! %{with_libvirtd}
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter
 %endif
 
 %if ! %{with_qemu}
