@@ -2799,7 +2799,7 @@ int virBuildPathInternal(char **path, ...)
     va_list ap;
     int ret = 0;
 
-    va_start(ap, *path);
+    va_start(ap, path);
 
     path_component = va_arg(ap, char *);
     virBufferAdd(&buf, path_component, -1);
