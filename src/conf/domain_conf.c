@@ -1889,7 +1889,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
                 if ((ifname != NULL) &&
-                    ((STRPREFIX((const char*)ifname, "vnet")) ||
+                    (((flags & VIR_DOMAIN_XML_INACTIVE) &&
+                      (STRPREFIX((const char*)ifname, "vnet"))) ||
                      (!isValidIfname(ifname)))) {
                     /* An auto-generated target name, blank it out */
                     /* blank out invalid interface names */
