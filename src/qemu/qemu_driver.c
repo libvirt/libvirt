@@ -7939,6 +7939,51 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
 
     qemudShrinkDisks(vm->def, i);
 
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSecurityImageLabel &&
+        driver->securityDriver->domainRestoreSecurityImageLabel(vm, dev->data.disk) < 0)
+        VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
+
+    ret = 0;
+
+cleanup:
+    return ret;
+}
+
+static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
+                                           virDomainObjPtr vm,
+                                           virDomainDeviceDefPtr dev,
+                                           unsigned long long qemuCmdFlags)
+{
+    int i, ret = -1;
+    virDomainDiskDefPtr detach = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    i = qemudFindDisk(vm->def, dev->data.disk->dst);
+
+    if (i < 0) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("disk %s not found"), dev->data.disk->dst);
+        goto cleanup;
+    }
+
+    if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("Underlying qemu does not support SCSI disk removal"));
+        goto cleanup;
+    }
+
+    detach = vm->def->disks[i];
+
+    qemuDomainObjEnterMonitorWithDriver(driver, vm);
+    if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+        qemuDomainObjExitMonitor(vm);
+        goto cleanup;
+    }
+    qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    qemudShrinkDisks(vm->def, i);
+
     virDomainDiskDefFree(detach);
 
     if (driver->securityDriver &&
@@ -8392,9 +8437,18 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
         goto endjob;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-        dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
-        ret = qemudDomainDetachPciDiskDevice(driver, vm, dev, qemuCmdFlags);
+        dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+        if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
+            ret = qemudDomainDetachPciDiskDevice(driver, vm, dev, qemuCmdFlags);
+        }
+        else if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            ret = qemudDomainDetachSCSIDiskDevice(driver, vm, dev,
+                                                  qemuCmdFlags);
+        }
+        else {
+            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                            _("This type of disk cannot be hot unplugged"));
+        }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         ret = qemudDomainDetachNetDevice(driver, vm, dev, qemuCmdFlags);
     } else if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
