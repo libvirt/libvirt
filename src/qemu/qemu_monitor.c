@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -374,6 +374,9 @@ qemuMonitorIOWriteWithFD(qemuMonitorPtr mon,
     msg.msg_controllen = sizeof(control);
 
     cmsg = CMSG_FIRSTHDR(&msg);
+    /* Some static analyzers, like clang 2.6-0.6.pre2, fail to see
+       that our use of CMSG_FIRSTHDR will not return NULL.  */
+    sa_assert(cmsg);
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
