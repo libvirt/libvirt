@@ -61,6 +61,7 @@
 %define with_udev          0%{!?_without_udev:0}
 %define with_hal           0%{!?_without_hal:0}
 %define with_yajl          0%{!?_without_yajl:0}
+%define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
 
 # Non-server/HV driver defaults which are always enabled
@@ -150,6 +151,7 @@
 
 # Enable libpcap library
 %if %{with_qemu}
+%define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
 %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
 %endif
 
@@ -194,6 +196,11 @@ Requires: bridge-utils
 %if %{with_network}
 Requires: dnsmasq
 Requires: iptables
+%endif
+%if %{with_nwfilter}
+Requires: ebtables
+Requires: iptables
+Requires: iptables-ipv6
 %endif
 # needed for device enumeration
 %if %{with_hal}
@@ -520,6 +527,10 @@ of recent versions of Linux (and other OSes).
 %define _without_yajl --without-yajl
 %endif
 
+%if ! %{with_libpcap}
+%define _without_libpcap --without-libpcap
+%endif
+
 %configure %{?_without_xen} \
            %{?_without_qemu} \
            %{?_without_openvz} \
@@ -548,6 +559,7 @@ of recent versions of Linux (and other OSes).
            %{?_without_hal} \
            %{?_without_udev} \
            %{?_without_yajl} \
+           %{?_without_libpcap} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
            --with-init-script=redhat \
