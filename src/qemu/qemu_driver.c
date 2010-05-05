@@ -7866,6 +7866,36 @@ cleanup:
 }
 
 
+static inline int qemudFindDisk(virDomainDefPtr def, char *dst)
+{
+    int i;
+
+    for (i = 0 ; i < def->ndisks ; i++) {
+        if (STREQ(def->disks[i]->dst, dst)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+static inline void qemudShrinkDisks(virDomainDefPtr def, int i)
+{
+    if (def->ndisks > 1) {
+        memmove(def->disks + i,
+                def->disks + i + 1,
+                sizeof(*def->disks) *
+                (def->ndisks - (i + 1)));
+        def->ndisks--;
+        if (VIR_REALLOC_N(def->disks, def->ndisks) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(def->disks);
+        def->ndisks = 0;
+    }
+}
+
 static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainDeviceDefPtr dev,
@@ -7875,18 +7905,15 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     virDomainDiskDefPtr detach = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (STREQ(vm->def->disks[i]->dst, dev->data.disk->dst)) {
-            detach = vm->def->disks[i];
-            break;
-        }
-    }
+    i = qemudFindDisk(vm->def, dev->data.disk->dst);
 
-    if (!detach) {
+    if (i < 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("disk %s not found"), dev->data.disk->dst);
         goto cleanup;
     }
+
+    detach = vm->def->disks[i];
 
     if (!virDomainDeviceAddressIsValid(&detach->info,
                                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
@@ -7910,19 +7937,8 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    if (vm->def->ndisks > 1) {
-        memmove(vm->def->disks + i,
-                vm->def->disks + i + 1,
-                sizeof(*vm->def->disks) *
-                (vm->def->ndisks - (i + 1)));
-        vm->def->ndisks--;
-        if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks) < 0) {
-            /* ignore, harmless */
-        }
-    } else {
-        VIR_FREE(vm->def->disks);
-        vm->def->ndisks = 0;
-    }
+    qemudShrinkDisks(vm->def, i);
+
     virDomainDiskDefFree(detach);
 
     if (driver->securityDriver &&
