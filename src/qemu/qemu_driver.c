@@ -7866,7 +7866,7 @@ cleanup:
 }
 
 
-static inline int qemudFindDisk(virDomainDefPtr def, char *dst)
+static inline int qemudFindDisk(virDomainDefPtr def, const char *dst)
 {
     int i;
 
@@ -7879,7 +7879,7 @@ static inline int qemudFindDisk(virDomainDefPtr def, char *dst)
     return -1;
 }
 
-static inline void qemudShrinkDisks(virDomainDefPtr def, int i)
+static inline void qemudShrinkDisks(virDomainDefPtr def, size_t i)
 {
     if (def->ndisks > 1) {
         memmove(def->disks + i,
