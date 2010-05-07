@@ -1016,7 +1016,7 @@ virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 virt_aa_helper_LDFLAGS = $(WARN_CFLAGS)
 virt_aa_helper_LDADD =						\
-		$(LIBXML_LIBS) $(LIB_PTHREAD)			\
+		$(LIBXML_LIBS)					\
 		libvirt_conf.la					\
 		libvirt_util.la					\
 		../gnulib/lib/libgnu.la
