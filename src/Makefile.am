@@ -1002,7 +1002,7 @@ libexec_PROGRAMS += virt-aa-helper
 
 virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
-virt_aa_helper_LDFLAGS = $(WARN_CFLAGS)
+virt_aa_helper_LDFLAGS = $(WARN_CFLAGS) $(LIB_PTHREAD)
 virt_aa_helper_LDADD =						\
 		$(WARN_CFLAGS)					\
 		$(LIBXML_LIBS)					\
