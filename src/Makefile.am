@@ -216,7 +216,7 @@ QEMU_DRIVER_SOURCES =						\
 		qemu/qemu_monitor_json.c			\
 		qemu/qemu_monitor_json.h			\
 		qemu/qemu_driver.c qemu/qemu_driver.h		\
-		qemu/qemu_bridge_filter.c 			\
+		qemu/qemu_bridge_filter.c			\
 		qemu/qemu_bridge_filter.h			\
 		qemu/qemu_security_stacked.h			\
 		qemu/qemu_security_stacked.c			\
@@ -350,7 +350,7 @@ CPU_SOURCES =							\
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
-EXTRA_DIST += 	$(pkgdata_DATA)
+EXTRA_DIST +=	$(pkgdata_DATA)
 
 #########################
 #
@@ -362,7 +362,7 @@ noinst_LTLIBRARIES = libvirt_util.la
 libvirt_la_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
-libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS) $(YAJL_CFLAGS)
+libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS)
 libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS) $(YAJL_LIBS) $(LIB_PTHREAD)
 
 
@@ -463,7 +463,7 @@ else
 noinst_LTLIBRARIES += libvirt_driver_xen.la
 libvirt_la_LIBADD += libvirt_driver_xen.la
 endif
-libvirt_driver_xen_la_CFLAGS = 					\
+libvirt_driver_xen_la_CFLAGS =					\
 		$(XEN_CFLAGS)					\
 		-I@top_srcdir@/src/conf
 libvirt_driver_xen_la_LDFLAGS = $(XEN_LIBS)
