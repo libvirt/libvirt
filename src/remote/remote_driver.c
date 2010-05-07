@@ -1138,15 +1138,28 @@ check_cert_file(const char *type, const char *file)
 }
 
 
+static void remote_debug_gnutls_log(int level, const char* str) {
+    DEBUG("%d %s", level, str);
+}
+
 static int
 initialize_gnutls(void)
 {
     static int initialized = 0;
     int err;
+    char *gnutlsdebug;
 
     if (initialized) return 0;
 
     gnutls_global_init ();
+
+    if ((gnutlsdebug = getenv("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
+        int val;
+        if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
+            val = 10;
+        gnutls_global_set_log_level(val);
+        gnutls_global_set_log_function(remote_debug_gnutls_log);
+    }
 
     /* X509 stuff */
     err = gnutls_certificate_allocate_credentials (&x509_cred);
