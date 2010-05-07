@@ -1,7 +1,7 @@
 /*
  * storage_encryption_conf.c: volume encryption information
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -216,7 +216,7 @@ virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
 static int
 virStorageEncryptionSecretFormat(virBufferPtr buf,
                                  virStorageEncryptionSecretPtr secret,
-                                 unsigned int indent)
+                                 int indent)
 {
     const char *type;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -237,7 +237,7 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
 int
 virStorageEncryptionFormat(virBufferPtr buf,
                            virStorageEncryptionPtr enc,
-                           unsigned int indent)
+                           int indent)
 {
     const char *format;
     size_t i;
@@ -252,7 +252,8 @@ virStorageEncryptionFormat(virBufferPtr buf,
                       indent, "", format);
 
     for (i = 0; i < enc->nsecrets; i++) {
-        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i], indent + 2) < 0)
+        if (virStorageEncryptionSecretFormat(buf, enc->secrets[i],
+                                             indent + 2) < 0)
             return -1;
     }
 

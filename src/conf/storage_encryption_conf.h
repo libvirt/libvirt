@@ -1,7 +1,7 @@
 /*
  * storage_encryption_conf.h: volume encryption information
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -68,7 +68,7 @@ virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root);
 int virStorageEncryptionFormat(virBufferPtr buf,
                                virStorageEncryptionPtr enc,
-                               unsigned int indent);
+                               int indent);
 
 /* A helper for VIR_STORAGE_ENCRYPTION_FORMAT_QCOW */
 enum {
