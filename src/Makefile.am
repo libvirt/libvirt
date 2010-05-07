@@ -157,6 +157,36 @@ REMOTE_DRIVER_SOURCES =						\
 
 EXTRA_DIST += remote/remote_protocol.x remote/rpcgen_fix.pl
 
+# Ensure that we don't change the struct or member names or member ordering
+# in remote_protocol.x  The embedded perl below needs a few comments, and
+# presumes you know what pdwtags output looks like:
+# * use -0777 -n to slurp the entire file into $_.
+# * the "split" splits on the /* DD */ comments, so that $p iterates
+#     through the struct definitions.
+# * process only "struct remote_..." entries
+# * remove comments and preceding TAB throughout
+# * remove empty lines throughout
+# * remove white space at end of buffer
+.PHONY: remote_protocol-structs
+remote_protocol-structs:
+	$(AM_V_GEN)if pdwtags --help > /dev/null 2>&1; then		\
+	  pdwtags libvirt_driver_remote_la-remote_protocol.$(OBJEXT)	\
+	    | perl -0777 -n						\
+		-e 'foreach my $$p (split m!\n\n/\* \d+ \*/\n!)'	\
+		-e '  { if ($$p =~ /^struct remote_/) {'		\
+		-e '      $$p =~ s!\t*/\*.*?\*/!!sg;'			\
+		-e '      $$p =~ s!\s+\n!\n!sg;'			\
+		-e '      $$p =~ s!\s+$$!!;'				\
+		-e '      print "$$p\n" } }'				\
+		> $@-t;							\
+	  diff -u $@-t $@; st=$$?; rm -f $@-t; exit $$st;		\
+	else								\
+	  echo 'WARNING: you lack pdwtags; skipping the $@ test';	\
+	  echo 'WARNING: install the dwarves package to get pdwtags';	\
+	fi
+EXTRA_DIST += remote_protocol-structs
+check-local: remote_protocol-structs
+
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
 		test/test_driver.c test/test_driver.h
