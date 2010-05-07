@@ -227,8 +227,6 @@ xdr_remote_error (XDR *xdrs, remote_error *objp)
                  return FALSE;
          if (!xdr_remote_network (xdrs, &objp->net))
                  return FALSE;
-         if (!xdr_remote_nwfilter (xdrs, &objp->nwfilter))
-                 return FALSE;
         return TRUE;
 }
 

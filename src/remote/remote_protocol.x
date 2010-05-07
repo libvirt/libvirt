@@ -266,7 +266,6 @@ struct remote_error {
     int int1;
     int int2;
     remote_network net;
-    remote_nwfilter nwfilter;
 };
 
 /* Authentication types available thus far.... */

@@ -143,7 +143,6 @@ struct remote_error {
         int int1;
         int int2;
         remote_network net;
-        remote_nwfilter nwfilter;
 };
 typedef struct remote_error remote_error;
 
