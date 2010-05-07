@@ -7968,7 +7968,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
     }
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
+        qemuReportError(VIR_ERR_OPERATION_FAILED, "%s",
                         _("Underlying qemu does not support SCSI disk removal"));
         goto cleanup;
     }
