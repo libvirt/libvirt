@@ -363,7 +363,7 @@ libvirt_la_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS =  $(CAPNG_CFLAGS) $(YAJL_CFLAGS)
-libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS) $(YAJL_LIBS)
+libvirt_util_la_LDFLAGS =  $(CAPNG_LIBS) $(YAJL_LIBS) $(LIB_PTHREAD)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
