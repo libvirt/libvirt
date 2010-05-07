@@ -20,7 +20,7 @@
     and stable layer to securely manage domains on a node. The node may be
     distant and libvirt should provide all APIs needed to provision, create,
     modify, monitor, control, migrate and stop the domains, within the limits
-    of the support of the hypervisor for those operations. Multiple mode may
+    of the support of the hypervisor for those operations. Multiple nodes may
     be accessed with libvirt simultaneously but the APIs are limited to
     single node operations.</p>
     <p>This implies the following sub-goals:</p>
