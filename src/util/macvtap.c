@@ -672,7 +672,7 @@ link_del_exit:
 
 
 /**
- * delMacvtapByName:
+ * delMacvtap:
  * @ifname : The name of the macvtap interface
  *
  * Delete an interface given its name.
