@@ -169,7 +169,7 @@ EXTRA_DIST += remote/remote_protocol.x remote/rpcgen_fix.pl
 # * remove white space at end of buffer
 .PHONY: remote_protocol-structs
 remote_protocol-structs:
-	$(AM_V_GEN)if pdwtags --help > /dev/null 2>&1; then		\
+	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
 	  pdwtags libvirt_driver_remote_la-remote_protocol.$(OBJEXT)	\
 	    | perl -0777 -n						\
 		-e 'foreach my $$p (split m!\n\n/\* \d+ \*/\n!)'	\

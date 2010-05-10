@@ -252,7 +252,7 @@ sc_prohibit_trailing_blank_lines:
 preprocessor_exempt = (remote_(driver|protocol)\.h)$$
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
-	@if (cppi --version >/dev/null 2>&1); then			\
+	@if cppi --version >/dev/null 2>&1; then			\
 	  $(VC_LIST_EXCEPT) | grep '\.[ch]$$'				\
 	    | grep -vE '$(preprocessor_exempt)' | xargs cppi -a -c	\
 	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2;	\
