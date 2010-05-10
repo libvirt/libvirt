@@ -179,7 +179,7 @@ remote_protocol-structs:
 		-e '      $$p =~ s!\s+$$!!;'				\
 		-e '      print "$$p\n" } }'				\
 		> $@-t;							\
-	  diff -u $@-t $@; st=$$?; rm -f $@-t; exit $$st;		\
+	  diff -u $@-t $(srcdir)/$@; st=$$?; rm -f $@-t; exit $$st;	\
 	else								\
 	  echo 'WARNING: you lack pdwtags; skipping the $@ test';	\
 	  echo 'WARNING: install the dwarves package to get pdwtags';	\
