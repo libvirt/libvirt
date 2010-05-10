@@ -1418,11 +1418,6 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 doRemoteClose (virConnectPtr conn, struct private_data *priv)
 {
-    if (call (conn, priv, 0, REMOTE_PROC_CLOSE,
-              (xdrproc_t) xdr_void, (char *) NULL,
-              (xdrproc_t) xdr_void, (char *) NULL) == -1)
-        return -1;
-
     if (priv->eventFlushTimer >= 0) {
         /* Remove timeout */
         virEventRemoveTimeout(priv->eventFlushTimer);
@@ -1430,6 +1425,11 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
         virEventRemoveHandle(priv->watch);
         priv->watch = -1;
     }
+
+    if (call (conn, priv, 0, REMOTE_PROC_CLOSE,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
 
     /* Close socket. */
     if (priv->uses_tls && priv->session) {
