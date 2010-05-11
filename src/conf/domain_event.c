@@ -671,7 +671,7 @@ static virDomainEventPtr virDomainEventIOErrorNewFromObjImpl(int event,
         ev->data.ioError.action = action;
         if (!(ev->data.ioError.srcPath = strdup(srcPath)) ||
             !(ev->data.ioError.devAlias = strdup(devAlias)) ||
-            !(ev->data.ioError.reason = strdup(reason))) {
+            (reason && !(ev->data.ioError.reason = strdup(reason)))) {
             virDomainEventFree(ev);
             ev = NULL;
         }
