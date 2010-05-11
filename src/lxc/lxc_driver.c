@@ -2054,18 +2054,23 @@ static int lxcSetSchedulerParameters(virDomainPtr domain,
 
     for (i = 0; i < nparams; i++) {
         virSchedParameterPtr param = &params[i];
-        if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
-            lxcError(VIR_ERR_INVALID_ARG, "%s",
-                     _("Invalid type for cpu_shares tunable, expected a 'ullong'"));
+
+        if (STRNEQ(param->field, "cpu_shares")) {
+            lxcError(VIR_ERR_INVALID_ARG,
+                     _("Invalid parameter `%s'"), param->field);
             goto cleanup;
         }
 
-        if (STREQ(param->field, "cpu_shares")) {
-            if (virCgroupSetCpuShares(group, params[i].value.ul) != 0)
-                goto cleanup;
-        } else {
-            lxcError(VIR_ERR_INVALID_ARG,
-                     _("Invalid parameter `%s'"), param->field);
+        if (param->type != VIR_DOMAIN_SCHED_FIELD_ULLONG) {
+            lxcError(VIR_ERR_INVALID_ARG, "%s",
+                 _("Invalid type for cpu_shares tunable, expected a 'ullong'"));
+            goto cleanup;
+        }
+
+        int rc = virCgroupSetCpuShares(group, params[i].value.ul);
+        if (rc != 0) {
+            virReportSystemError(-rc, _("failed to set cpu_shares=%llu"),
+                                 params[i].value.ul);
             goto cleanup;
         }
     }
