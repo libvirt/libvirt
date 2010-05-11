@@ -21,6 +21,7 @@
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <sys/wait.h>
 #include "c-ctype.h"
 #include <fcntl.h>
 #include <locale.h>
@@ -82,9 +83,6 @@ static char *progname;
 #define LVL_WARNING   "WARNING"
 #define LVL_ERROR     "ERROR"
 
-#ifndef WEXITSTATUS
-# define WEXITSTATUS(x) ((x) & 0xff)
-#endif
 /**
  * vshErrorLevel:
  *
@@ -9930,9 +9928,6 @@ vshInit(vshControl *ctl)
     return TRUE;
 }
 
-#ifndef O_SYNC
-# define O_SYNC 0
-#endif
 #define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT | O_SYNC)
 
 /**

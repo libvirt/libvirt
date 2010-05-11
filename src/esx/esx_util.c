@@ -38,12 +38,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
-/* AI_ADDRCONFIG is missing on some systems. */
-#ifndef AI_ADDRCONFIG
-# define AI_ADDRCONFIG 0
-#endif
-
-
 
 int
 esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,

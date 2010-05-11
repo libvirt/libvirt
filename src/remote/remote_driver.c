@@ -68,11 +68,6 @@
 
 #include <poll.h>
 
-/* AI_ADDRCONFIG is missing on some systems. */
-#ifndef AI_ADDRCONFIG
-# define AI_ADDRCONFIG 0
-#endif
-
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
