@@ -1594,6 +1594,16 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
             ret = virDomainGetSchedulerParameters(dom, params, &nparams);
             if (ret == -1)
                 goto cleanup;
+        } else {
+            /* See if we've tried to --set var=val.  If so, the fact that
+               we reach this point (with update == 0) means that "var" did
+               not match any of the settable parameters.  Report the error.  */
+            char *var_value_pair = vshCommandOptString(cmd, "set", NULL);
+            if (var_value_pair) {
+                vshError(ctl, _("invalid scheduler option: %s"),
+                         var_value_pair);
+                goto cleanup;
+            }
         }
 
         ret_val = TRUE;
