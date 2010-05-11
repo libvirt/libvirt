@@ -382,8 +382,8 @@ static int udevTranslatePCIIds(unsigned int vendor,
 
     /* pci_get_strings returns void */
     pci_get_strings(&m,
-                    &vendor_name,
                     &device_name,
+                    &vendor_name,
                     NULL,
                     NULL);
 
