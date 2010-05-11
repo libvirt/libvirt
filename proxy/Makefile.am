@@ -34,7 +34,7 @@ libvirt_proxy_SOURCES = libvirt_proxy.c \
             @top_srcdir@/src/xen/xs_internal.c
 libvirt_proxy_LDFLAGS = $(WARN_CFLAGS) $(XEN_LIBS)
 libvirt_proxy_DEPENDENCIES =
-libvirt_proxy_LDADD = ../gnulib/lib/libgnu.la
+libvirt_proxy_LDADD = ../gnulib/lib/libgnu.la $(LIB_PTHREAD)
 
 install-exec-hook:
 	chmod u+s $(DESTDIR)$(libexecdir)/libvirt_proxy
