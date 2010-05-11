@@ -88,7 +88,7 @@ static char *progname;
 /**
  * vshErrorLevel:
  *
- * Indicates the level of an log message
+ * Indicates the level of a log message
  */
 typedef enum {
     VSH_ERR_DEBUG = 0,
@@ -1510,7 +1510,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         case VIR_DOMAIN_SCHED_FIELD_LLONG:
             if (virStrToLong_ll(val, NULL, 10, &param->value.l) < 0) {
                 vshError(ctl, "%s",
-                         _("Invalid value for parameter, expecting an long long"));
+                         _("Invalid value for parameter, expecting a long long"));
                 return -1;
             }
             break;
