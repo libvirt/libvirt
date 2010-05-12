@@ -223,6 +223,14 @@ int qemuMonitorUnref(qemuMonitorPtr mon)
     return mon->refs;
 }
 
+static void
+qemuMonitorUnwatch(void *monitor)
+{
+    qemuMonitorPtr mon = monitor;
+
+    qemuMonitorLock(mon);
+    qemuMonitorUnref(mon);
+}
 
 static int
 qemuMonitorOpenUnix(const char *monitor)
@@ -648,11 +656,12 @@ qemuMonitorOpen(virDomainObjPtr vm,
                                         VIR_EVENT_HANDLE_ERROR |
                                         VIR_EVENT_HANDLE_READABLE,
                                         qemuMonitorIO,
-                                        mon, NULL)) < 0) {
+                                        mon, qemuMonitorUnwatch)) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("unable to register monitor events"));
         goto cleanup;
     }
+    qemuMonitorRef(mon);
 
     VIR_DEBUG("New mon %p fd =%d watch=%d", mon, mon->fd, mon->watch);
     qemuMonitorUnlock(mon);
