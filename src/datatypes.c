@@ -350,7 +350,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     }
     virMutexLock(&conn->lock);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
 
     ret = (virDomainPtr) virHashLookup(conn->domains, name);
     /* TODO check the UUID */
@@ -413,7 +413,7 @@ virReleaseDomain(virDomainPtr domain) {
     virConnectPtr conn = domain->conn;
     DEBUG("release domain %p %s", domain, domain->name);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->domains, domain->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -495,7 +495,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     }
     virMutexLock(&conn->lock);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
 
     ret = (virNetworkPtr) virHashLookup(conn->networks, name);
     /* TODO check the UUID */
@@ -553,7 +553,7 @@ virReleaseNetwork(virNetworkPtr network) {
     virConnectPtr conn = network->conn;
     DEBUG("release network %p %s", network, network->name);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->networks, network->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -815,7 +815,7 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
     }
     virMutexLock(&conn->lock);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
 
     ret = (virStoragePoolPtr) virHashLookup(conn->storagePools, name);
     /* TODO check the UUID */
@@ -874,7 +874,7 @@ virReleaseStoragePool(virStoragePoolPtr pool) {
     virConnectPtr conn = pool->conn;
     DEBUG("release pool %p %s", pool, pool->name);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->storagePools, pool->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1022,7 +1022,7 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     virConnectPtr conn = vol->conn;
     DEBUG("release vol %p %s", vol, vol->name);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->storageVols, vol->key, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1428,7 +1428,7 @@ virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     }
     virMutexLock(&conn->lock);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
 
     ret = (virNWFilterPtr) virHashLookup(conn->nwfilterPools, name);
     /* TODO check the UUID */
@@ -1487,7 +1487,7 @@ virReleaseNWFilterPool(virNWFilterPtr pool) {
     virConnectPtr conn = pool->conn;
     DEBUG("release pool %p %s", pool, pool->name);
 
-    /* TODO search by UUID first as they are better differenciators */
+    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->nwfilterPools, pool->name, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
