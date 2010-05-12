@@ -2849,17 +2849,34 @@ remoteDomainMigratePrepare2 (virConnectPtr dconn,
         goto done;
 
     if (ret.cookie.cookie_len > 0) {
+        if (!cookie || !cookielen) {
+            remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("caller ignores cookie or cookielen"));
+            goto error;
+        }
         *cookie = ret.cookie.cookie_val; /* Caller frees. */
         *cookielen = ret.cookie.cookie_len;
     }
-    if (ret.uri_out)
+    if (ret.uri_out) {
+        if (!uri_out) {
+            remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("caller ignores uri_out"));
+            goto error;
+        }
         *uri_out = *ret.uri_out; /* Caller frees. */
+    }
 
     rv = 0;
 
 done:
     remoteDriverUnlock(priv);
     return rv;
+error:
+    if (ret.cookie.cookie_len)
+        VIR_FREE(ret.cookie.cookie_val);
+    if (ret.uri_out)
+        VIR_FREE(*ret.uri_out);
+    goto done;
 }
 
 static virDomainPtr
