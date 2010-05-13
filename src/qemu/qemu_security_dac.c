@@ -407,7 +407,7 @@ static int
 qemuSecurityDACSetSavedStateLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                   const char *savefile)
 {
-    if (!driver->privileged || !driver->dynamicOwnership)
+    if (!driver->privileged)
         return 0;
 
     return qemuSecurityDACSetOwnership(savefile, driver->user, driver->group);
@@ -418,7 +418,7 @@ static int
 qemuSecurityDACRestoreSavedStateLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                       const char *savefile)
 {
-    if (!driver->privileged || !driver->dynamicOwnership)
+    if (!driver->privileged)
         return 0;
 
     return qemuSecurityDACRestoreSecurityFileLabel(savefile);
