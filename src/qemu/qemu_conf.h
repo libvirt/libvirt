@@ -1,7 +1,7 @@
 /*
  * qemu_conf.h: QEMU configuration management
  *
- * Copyright (C) 2006, 2007, 2009, 2010 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -64,7 +64,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_DRIVE_FORMAT      = (1 << 14), /* Is -drive format= avail */
     QEMUD_CMD_FLAG_VGA               = (1 << 15), /* Is -vga avail */
 
-    /* features added in qemu-0.10.0 */
+    /* features added in qemu-0.10.0 or later */
     QEMUD_CMD_FLAG_0_10         = (1 << 16),
     QEMUD_CMD_FLAG_NET_NAME     = QEMUD_CMD_FLAG_0_10, /* -net ...,name=str */
     QEMUD_CMD_FLAG_HOST_NET_ADD = QEMUD_CMD_FLAG_0_10, /* host_net_add monitor command */
@@ -83,8 +83,8 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_SMP_TOPOLOGY  = (1 << 28), /* Is sockets=s,cores=c,threads=t available for -smp? */
     QEMUD_CMD_FLAG_NETDEV        = (1 << 29), /* The -netdev flag & netdev_add/remove monitor commands */
     QEMUD_CMD_FLAG_RTC           = (1 << 30), /* The -rtc flag for clock options */
-    QEMUD_CMD_FLAG_VNET_HOST     = (1 << 31), /* vnet-host support is available in qemu */
-    QEMUD_CMD_FLAG_RTC_TD_HACK   = (1LL << 32), /* -rtd-td-hack available */
+    QEMUD_CMD_FLAG_VNET_HOST     = (1LL << 31), /* vnet-host support is available in qemu */
+    QEMUD_CMD_FLAG_RTC_TD_HACK   = (1LL << 32), /* -rtc-td-hack available */
     QEMUD_CMD_FLAG_NO_HPET       = (1LL << 33), /* -no-hpet flag is supported */
     QEMUD_CMD_FLAG_NO_KVM_PIT    = (1LL << 34), /* -no-kvm-pit-reinjection supported */
     QEMUD_CMD_FLAG_TDF           = (1LL << 35), /* -tdf flag (user-mode pit catchup) */
