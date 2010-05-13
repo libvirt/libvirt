@@ -385,8 +385,9 @@ err:
 }
 
 static int
-SELinuxRestoreSecurityImageLabel(virDomainObjPtr vm,
-                                 virDomainDiskDefPtr disk)
+SELinuxRestoreSecurityImageLabelInt(virDomainObjPtr vm,
+                                    virDomainDiskDefPtr disk,
+                                    int migrated)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
 
@@ -407,8 +408,33 @@ SELinuxRestoreSecurityImageLabel(virDomainObjPtr vm,
     if (!disk->src)
         return 0;
 
+    /* If we have a shared FS & doing migrated, we must not
+     * change ownership, because that kills access on the
+     * destination host which is sub-optimal for the guest
+     * VM's I/O attempts :-)
+     */
+    if (migrated) {
+        int rc = virStorageFileIsSharedFS(disk->src);
+        if (rc < 0)
+            return -1;
+        if (rc == 1) {
+            VIR_DEBUG("Skipping image label restore on %s because FS is shared",
+                      disk->src);
+            return 0;
+        }
+    }
+
     return SELinuxRestoreSecurityFileLabel(disk->src);
 }
+
+
+static int
+SELinuxRestoreSecurityImageLabel(virDomainObjPtr vm,
+                                 virDomainDiskDefPtr disk)
+{
+    return SELinuxRestoreSecurityImageLabelInt(vm, disk, 0);
+}
+
 
 static int
 SELinuxSetSecurityImageLabel(virDomainObjPtr vm,
@@ -603,7 +629,8 @@ done:
 }
 
 static int
-SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm)
+SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm,
+                               int migrated ATTRIBUTE_UNUSED)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
@@ -619,8 +646,9 @@ SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm)
             rc = -1;
     }
     for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (SELinuxRestoreSecurityImageLabel(vm,
-                                             vm->def->disks[i]) < 0)
+        if (SELinuxRestoreSecurityImageLabelInt(vm,
+                                                vm->def->disks[i],
+                                                migrated) < 0)
             rc = -1;
     }
 

@@ -46,7 +46,8 @@ typedef int (*virSecurityDomainGenLabel) (virDomainObjPtr sec);
 typedef int (*virSecurityDomainReserveLabel) (virDomainObjPtr sec);
 typedef int (*virSecurityDomainReleaseLabel) (virDomainObjPtr sec);
 typedef int (*virSecurityDomainSetAllLabel) (virDomainObjPtr sec);
-typedef int (*virSecurityDomainRestoreAllLabel) (virDomainObjPtr vm);
+typedef int (*virSecurityDomainRestoreAllLabel) (virDomainObjPtr vm,
+                                                 int migrated);
 typedef int (*virSecurityDomainGetProcessLabel) (virDomainObjPtr vm,
                                                  virSecurityLabelPtr sec);
 typedef int (*virSecurityDomainSetProcessLabel) (virSecurityDriverPtr drv,

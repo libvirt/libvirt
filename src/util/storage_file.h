@@ -61,4 +61,6 @@ int virStorageFileGetMetadataFromFD(const char *path,
                                     int fd,
                                     virStorageFileMetadata *meta);
 
+int virStorageFileIsSharedFS(const char *path);
+
 #endif /* __VIR_STORAGE_FILE_H__ */

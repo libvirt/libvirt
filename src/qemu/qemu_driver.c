@@ -150,7 +150,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               int stdin_fd);
 
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
-                                  virDomainObjPtr vm);
+                                  virDomainObjPtr vm,
+                                  int migrated);
 
 static int qemudDomainGetMaxVcpus(virDomainPtr dom);
 
@@ -723,7 +724,7 @@ qemuHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                      VIR_DOMAIN_EVENT_STOPPED_FAILED :
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-    qemudShutdownVMDaemon(driver, vm);
+    qemudShutdownVMDaemon(driver, vm, 0);
     if (!vm->persistent)
         virDomainRemoveInactive(&driver->domains, vm);
     else
@@ -1254,7 +1255,7 @@ error:
     /* We can't get the monitor back, so must kill the VM
      * to remove danger of it ending up running twice if
      * user tries to start it again later */
-    qemudShutdownVMDaemon(driver, obj);
+    qemudShutdownVMDaemon(driver, obj, 0);
     if (!obj->persistent)
         virDomainRemoveInactive(&driver->domains, obj);
     else
@@ -3550,7 +3551,7 @@ cleanup:
 
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityAllLabel)
-        driver->securityDriver->domainRestoreSecurityAllLabel(vm);
+        driver->securityDriver->domainRestoreSecurityAllLabel(vm, 0);
     if (driver->securityDriver &&
         driver->securityDriver->domainReleaseSecurityLabel)
         driver->securityDriver->domainReleaseSecurityLabel(vm);
@@ -3567,7 +3568,7 @@ cleanup:
 abort:
     /* We jump here if we failed to initialize the now running VM
      * killing it off and pretend we never started it */
-    qemudShutdownVMDaemon(driver, vm);
+    qemudShutdownVMDaemon(driver, vm, 0);
 
     if (logfile != -1)
         close(logfile);
@@ -3577,7 +3578,8 @@ abort:
 
 
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
-                                  virDomainObjPtr vm) {
+                                  virDomainObjPtr vm,
+                                  int migrated) {
     int ret;
     int retries = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -3588,7 +3590,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     if (!virDomainObjIsActive(vm))
         return;
 
-    VIR_DEBUG("Shutting down VM '%s'", vm->def->name);
+    VIR_DEBUG("Shutting down VM '%s' migrated=%d", vm->def->name, migrated);
 
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
@@ -3646,7 +3648,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     /* Reset Security Labels */
     if (driver->securityDriver &&
         driver->securityDriver->domainRestoreSecurityAllLabel)
-        driver->securityDriver->domainRestoreSecurityAllLabel(vm);
+        driver->securityDriver->domainRestoreSecurityAllLabel(vm, migrated);
     if (driver->securityDriver &&
         driver->securityDriver->domainReleaseSecurityLabel)
         driver->securityDriver->domainReleaseSecurityLabel(vm);
@@ -4370,7 +4372,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
         goto endjob;
     }
 
-    qemudShutdownVMDaemon(driver, vm);
+    qemudShutdownVMDaemon(driver, vm, 0);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -5085,7 +5087,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     ret = 0;
 
     /* Shut it down */
-    qemudShutdownVMDaemon(driver, vm);
+    qemudShutdownVMDaemon(driver, vm, 0);
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
@@ -5396,7 +5398,7 @@ static int qemudDomainCoreDump(virDomainPtr dom,
 
 endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
-        qemudShutdownVMDaemon(driver, vm);
+        qemudShutdownVMDaemon(driver, vm, 0);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -9868,7 +9870,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     qemust = qemuStreamMigOpen(st, unixfile);
     if (qemust == NULL) {
-        qemudShutdownVMDaemon(driver, vm);
+        qemudShutdownVMDaemon(driver, vm, 0);
         if (!vm->persistent) {
             if (qemuDomainObjEndJob(vm) > 0)
                 virDomainRemoveInactive(&driver->domains, vm);
@@ -10567,7 +10569,9 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     /* Clean up the source domain. */
-    qemudShutdownVMDaemon(driver, vm);
+    fprintf(stderr, "******************* MIG \n");
+    qemudShutdownVMDaemon(driver, vm, 1);
+    fprintf(stderr, "******************* YEEHAAA\n");
     resume = 0;
 
     event = virDomainEventNewFromObj(vm,
@@ -10709,7 +10713,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
         }
         virDomainSaveStatus(driver->caps, driver->stateDir, vm);
     } else {
-        qemudShutdownVMDaemon(driver, vm);
+        qemudShutdownVMDaemon(driver, vm, 0);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
@@ -11555,7 +11559,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          */
 
         if (virDomainObjIsActive(vm)) {
-            qemudShutdownVMDaemon(driver, vm);
+            qemudShutdownVMDaemon(driver, vm, 0);
             event = virDomainEventNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);

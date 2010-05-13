@@ -26,9 +26,14 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#ifdef __linux__
+# include <linux/magic.h>
+# include <sys/statfs.h>
+#endif
 #include "dirname.h"
 #include "memory.h"
 #include "virterror_internal.h"
+#include "logging.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -407,3 +412,48 @@ virStorageFileGetMetadata(const char *path,
 
     return ret;
 }
+
+
+#ifdef __linux__
+
+# ifndef OCFS2_SUPER_MAGIC
+#  define OCFS2_SUPER_MAGIC 0x7461636f
+# endif
+# ifndef GFS2_MAGIC
+#  define GFS2_MAGIC 0x01161970
+# endif
+# ifndef AFS_FS_MAGIC
+#  define AFS_FS_MAGIC 0x6B414653
+# endif
+
+
+int virStorageFileIsSharedFS(const char *path)
+{
+    struct statfs sb;
+
+    if (statfs(path, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot determine filesystem for '%s'"),
+                             path);
+        return -1;
+    }
+
+    VIR_DEBUG("Check if path %s with FS magic %lld is shared",
+              path, (long long int)sb.f_type);
+
+    if (sb.f_type == NFS_SUPER_MAGIC ||
+        sb.f_type == GFS2_MAGIC ||
+        sb.f_type == OCFS2_SUPER_MAGIC ||
+        sb.f_type == AFS_FS_MAGIC) {
+        return 1;
+    }
+
+    return 0;
+}
+#else
+int virStorageFileIsSharedFS(const char *path ATTRIBUTE_UNUSED)
+{
+    /* XXX implement me :-) */
+    return 0;
+}
+#endif

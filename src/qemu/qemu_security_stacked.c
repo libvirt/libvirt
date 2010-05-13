@@ -215,18 +215,19 @@ qemuSecurityStackedSetSecurityAllLabel(virDomainObjPtr vm)
 
 
 static int
-qemuSecurityStackedRestoreSecurityAllLabel(virDomainObjPtr vm)
+qemuSecurityStackedRestoreSecurityAllLabel(virDomainObjPtr vm,
+                                           int migrated)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainRestoreSecurityAllLabel &&
-        driver->securitySecondaryDriver->domainRestoreSecurityAllLabel(vm) < 0)
+        driver->securitySecondaryDriver->domainRestoreSecurityAllLabel(vm, migrated) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainRestoreSecurityAllLabel &&
-        driver->securityPrimaryDriver->domainRestoreSecurityAllLabel(vm) < 0)
+        driver->securityPrimaryDriver->domainRestoreSecurityAllLabel(vm, migrated) < 0)
         rc = -1;
 
     return rc;

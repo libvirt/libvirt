@@ -142,8 +142,9 @@ qemuSecurityDACSetSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
 
 
 static int
-qemuSecurityDACRestoreSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                         virDomainDiskDefPtr disk)
+qemuSecurityDACRestoreSecurityImageLabelInt(virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                            virDomainDiskDefPtr disk,
+                                            int migrated)
 {
     if (!driver->privileged || !driver->dynamicOwnership)
         return 0;
@@ -162,7 +163,31 @@ qemuSecurityDACRestoreSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
     if (!disk->src)
         return 0;
 
+    /* If we have a shared FS & doing migrated, we must not
+     * change ownership, because that kills access on the
+     * destination host which is sub-optimal for the guest
+     * VM's I/O attempts :-)
+     */
+    if (migrated) {
+        int rc = virStorageFileIsSharedFS(disk->src);
+        if (rc < 0)
+            return -1;
+        if (rc == 1) {
+            VIR_DEBUG("Skipping image label restore on %s because FS is shared",
+                      disk->src);
+            return 0;
+        }
+    }
+
     return qemuSecurityDACRestoreSecurityFileLabel(disk->src);
+}
+
+
+static int
+qemuSecurityDACRestoreSecurityImageLabel(virDomainObjPtr vm,
+                                         virDomainDiskDefPtr disk)
+{
+    return qemuSecurityDACRestoreSecurityImageLabelInt(vm, disk, 0);
 }
 
 
@@ -306,7 +331,8 @@ done:
 
 
 static int
-qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm)
+qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm,
+                                       int migrated)
 {
     int i;
     int rc = 0;
@@ -314,7 +340,8 @@ qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm)
     if (!driver->privileged || !driver->dynamicOwnership)
         return 0;
 
-    VIR_DEBUG("Restoring security label on %s", vm->def->name);
+    VIR_DEBUG("Restoring security label on %s migrated=%d",
+              vm->def->name, migrated);
 
     for (i = 0 ; i < vm->def->nhostdevs ; i++) {
         if (qemuSecurityDACRestoreSecurityHostdevLabel(vm,
@@ -322,8 +349,9 @@ qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm)
             rc = -1;
     }
     for (i = 0 ; i < vm->def->ndisks ; i++) {
-        if (qemuSecurityDACRestoreSecurityImageLabel(vm,
-                                                     vm->def->disks[i]) < 0)
+        if (qemuSecurityDACRestoreSecurityImageLabelInt(vm,
+                                                        vm->def->disks[i],
+                                                        migrated) < 0)
             rc = -1;
     }
 

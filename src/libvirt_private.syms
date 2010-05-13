@@ -613,6 +613,7 @@ virStorageFileFormatTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileGetMetadata;
 virStorageFileGetMetadataFromFD;
+virStorageFileIsSharedFS;
 
 # threads.h
 virMutexInit;

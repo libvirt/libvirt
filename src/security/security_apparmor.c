@@ -444,7 +444,8 @@ AppArmorReleaseSecurityLabel(virDomainObjPtr vm)
 
 
 static int
-AppArmorRestoreSecurityAllLabel(virDomainObjPtr vm)
+AppArmorRestoreSecurityAllLabel(virDomainObjPtr vm,
+                                int migrated ATTRIBUTE_UNUSED)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int rc = 0;
