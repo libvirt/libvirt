@@ -411,13 +411,18 @@
 
 <pre>
   ...
-  &lt;clock offset="localtime"/&gt;
+  &lt;clock offset="localtime"&gt;
+    &lt;timer name="rtc" tickpolicy="catchup" track="guest"&gt;
+      &lt;catchup threshold=123 slew=120 limit=10000/&gt;
+    &lt;/timer&gt;
+    &lt;timer name="pit" tickpolicy="none"/&gt;
+  &lt;/clock&gt;
   ...</pre>
 
     <dl>
       <dt><code>clock</code></dt>
       <dd>
-	<p>The <code>offset</code> attribute takes three possible
+	<p>The <code>offset</code> attribute takes four possible
 	  values, allowing fine grained control over how the guest
 	  clock is synchronized to the host. NB, not all hypervisors
 	  support all modes.</p>
@@ -435,6 +440,7 @@
 	  <dd>
 	    The guest clock will be synchronized to the requested timezone
 	    using the <code>timezone</code> attribute.
+	    <span class="since">Since 0.7.7</span>
 	  </dd>
 	  <dt><code>variable</code></dt>
 	  <dd>
@@ -444,13 +450,73 @@
 	    The guest is free to adjust the RTC over time an expect
 	    that it will be honoured at next reboot. This is in
 	    contrast to 'utc' mode, where the RTC adjustments are
-	    lost at each reboot.
+	    lost at each reboot. <span class="since">Since 0.7.7</span>
 	  </dd>
 	</dl>
 	<p>
-	  NB, at time of writing, only QEMU supports the variable
-	  clock mode, or custom timezones.
+	  A <code>clock</code> may have zero or more
+	  <code>timer</code>sub-elements. <span class="since">Since
+	  0.8.0</span>
 	</p>
+      </dd>
+      <dt><code>timer</code></dt>
+      <dd>
+	<p>
+	  Each timer element requires a <code>name</code> attribute,
+	  and has other optional attributes that depend on
+	  the <code>name</code> specified.  Various hypervisors
+	  support different combinations of attributes.
+	</p>
+	<dl>
+	  <dt><code>name</code></dt>
+	  <dd>
+	    The <code>name</code> attribute selects which timer is
+	    being modified, and can be one of "platform", "pit",
+	    "rtc", "hpet", or "tsc".
+	  </dd>
+	  <dt><code>track</code></dt>
+	  <dd>
+	    The <code>track</code> attribute specifies what the timer
+	    tracks, and can be "boot", "guest", or "wall".
+	    Only valid for <code>name="rtc"</code>
+	    or <code>name="platform"</code>.
+	  </dd>
+	  <dt><code>tickpolicy</code></dt>
+	  <dd>
+	    The <code>tickpolicy</code> attribute determines how
+	    missed ticks in the guest are handled, and can be "delay",
+	    "catchup", "merge", or "discard".  If the policy is
+	    "catchup", there can be further details in
+	    the <code>catchup</code> sub-element.
+	    <dl>
+	      <dt><code>catchup</code></dt>
+	      <dd>
+		The <code>catchup</code> element has three optional
+		attributes, each a positive integer.  The attributes
+		are <code>threshold</code>, <code>slew</code>,
+		and <code>limit</code>.
+	      </dd>
+	    </dl>
+	  </dd>
+	  <dt><code>frequency</code></dt>
+	  <dd>
+	    The <code>frequency</code> attribute is an unsigned
+	    integer specifying the frequency at
+	    which <code>name="tsc"</code> runs.
+	  </dd>
+	  <dt><code>mode</code></dt>
+	  <dd>
+	    The <code>mode</code> attribute controls how
+	    the <code>name="tsc"</code> timer is managed, and can be
+	    "auto", "native", "emulate", "paravirt", or "smpsafe".
+	    Other timers are always emulated.
+	  </dd>
+	  <dt><code>present</code></dt>
+	  <dd>
+	    The <code>present</code> attribute can be "yes" or "no" to
+	    specify whether a particular timer is available to the guest.
+	  </dd>
+	</dl>
       </dd>
     </dl>
 
