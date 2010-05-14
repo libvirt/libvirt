@@ -977,7 +977,7 @@ libvirt_la_LIBADD += $(LIBXML_LIBS) \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LIBADD) ../gnulib/lib/libgnu.la
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
-libvirt_la_DEPENDENCIES = ../gnulib/lib/libgnu.la $(LIBVIRT_SYMBOL_FILE)
+libvirt_la_DEPENDENCIES = $(libvirt_la_LIBADD) $(LIBVIRT_SYMBOL_FILE)
 
 # Create an automake "convenience library" version of libvirt_la,
 # just for testing, since the test harness requires access to internal
