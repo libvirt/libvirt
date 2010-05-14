@@ -1,7 +1,7 @@
 /*
  * storage_backend_disk.c: storage backend for disk handling
  *
- * Copyright (C) 2007-2008 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -612,13 +612,12 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     char *part_num = NULL;
-    int err;
     char *devpath = NULL;
     char *devname, *srcname;
     int rc = -1;
 
-    if ((err = virFileResolveLink(vol->target.path, &devpath)) < 0) {
-        virReportSystemError(err,
+    if (virFileResolveLink(vol->target.path, &devpath) < 0) {
+        virReportSystemError(errno,
                              _("Couldn't read volume target path '%s'"),
                              vol->target.path);
         goto cleanup;

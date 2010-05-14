@@ -75,13 +75,12 @@ qemuSecurityDACRestoreSecurityFileLabel(const char *path)
 {
     struct stat buf;
     int rc = -1;
-    int err;
     char *newpath = NULL;
 
     VIR_INFO("Restoring DAC user and group on '%s'", path);
 
-    if ((err = virFileResolveLink(path, &newpath)) < 0) {
-        virReportSystemError(err,
+    if (virFileResolveLink(path, &newpath) < 0) {
+        virReportSystemError(errno,
                              _("cannot resolve symlink %s"), path);
         goto err;
     }

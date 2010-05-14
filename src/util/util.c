@@ -1182,7 +1182,7 @@ int virFileLinkPointsTo(const char *checkLink,
  * real path
  *
  * Return 0 if path was not a symbolic, or the link was
- * resolved. Return -1 upon error
+ * resolved. Return -1 with errno set upon error
  */
 int virFileResolveLink(const char *linkpath,
                        char **resultpath)
@@ -1192,11 +1192,11 @@ int virFileResolveLink(const char *linkpath,
     *resultpath = NULL;
 
     if (lstat(linkpath, &st) < 0)
-        return errno;
+        return -1;
 
     if (!S_ISLNK(st.st_mode)) {
         if (!(*resultpath = strdup(linkpath)))
-            return -ENOMEM;
+            return -1;
         return 0;
     }
 

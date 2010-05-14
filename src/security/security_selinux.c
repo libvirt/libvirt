@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008,2009 Red Hat, Inc.
+ * Copyright (C) 2008-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -353,13 +353,12 @@ SELinuxRestoreSecurityFileLabel(const char *path)
     struct stat buf;
     security_context_t fcon = NULL;
     int rc = -1;
-    int err;
     char *newpath = NULL;
 
     VIR_INFO("Restoring SELinux context on '%s'", path);
 
-    if ((err = virFileResolveLink(path, &newpath)) < 0) {
-        virReportSystemError(err,
+    if (virFileResolveLink(path, &newpath) < 0) {
+        virReportSystemError(errno,
                              _("cannot resolve symlink %s"), path);
         goto err;
     }
