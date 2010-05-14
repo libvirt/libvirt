@@ -56,6 +56,9 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *wr_req,
                                      long long *wr_bytes,
                                      long long *errs);
+int qemuMonitorJSONGetBlockExtent(qemuMonitorPtr mon,
+                                  const char *devname,
+                                  unsigned long long *extent);
 
 
 int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,

@@ -55,7 +55,9 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *wr_req,
                                      long long *wr_bytes,
                                      long long *errs);
-
+int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
+                                  const char *devname,
+                                  unsigned long long *extent);
 
 int qemuMonitorTextSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password);

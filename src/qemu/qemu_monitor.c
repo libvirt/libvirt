@@ -1060,6 +1060,22 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
     return ret;
 }
 
+int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
+                              const char *devname,
+                              unsigned long long *extent)
+{
+    int ret;
+    DEBUG("mon=%p, fd=%d, devname=%p",
+          mon, mon->fd, devname);
+
+    if (mon->json)
+        ret = qemuMonitorJSONGetBlockExtent(mon, devname, extent);
+    else
+        ret = qemuMonitorTextGetBlockExtent(mon, devname, extent);
+
+    return ret;
+}
+
 
 int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
                               const char *password)

@@ -9453,6 +9453,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     int fd = -1;
     off_t end;
     virStorageFileMetadata meta;
+    virDomainDiskDefPtr disk = NULL;
     struct stat sb;
     int i;
 
@@ -9479,18 +9480,16 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         if (vm->def->disks[i]->src != NULL &&
             STREQ (vm->def->disks[i]->src, path)) {
-            ret = 0;
+            disk = vm->def->disks[i];
             break;
         }
     }
 
-    if (ret != 0) {
+    if (!disk) {
         qemuReportError(VIR_ERR_INVALID_ARG,
                         _("invalid path %s not assigned to domain"), path);
         goto cleanup;
     }
-
-    ret = -1;
 
     /* The path is correct, now try to open it and get its size. */
     fd = open (path, O_RDONLY);
@@ -9541,11 +9540,31 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     if (meta.capacity)
         info->capacity = meta.capacity;
 
-    /* XXX allocation will need to be pulled from QEMU for
-     * the qcow inside LVM case */
+    /* Set default value .. */
     info->allocation = info->physical;
 
-    ret = 0;
+    /* ..but if guest is running & not using raw
+       disk format and on a block device, then query
+       highest allocated extent from QEMU */
+    if (virDomainObjIsActive(vm) &&
+        disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
+        meta.format != VIR_STORAGE_FILE_RAW &&
+        S_ISBLK(sb.st_mode)) {
+        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (qemuDomainObjBeginJob(vm) < 0)
+            goto cleanup;
+
+        qemuDomainObjEnterMonitor(vm);
+        ret = qemuMonitorGetBlockExtent(priv->mon,
+                                        disk->info.alias,
+                                        &info->allocation);
+        qemuDomainObjExitMonitor(vm);
+
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
+    } else {
+        ret = 0;
+    }
 
 cleanup:
     if (fd != -1)
