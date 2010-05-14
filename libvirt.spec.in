@@ -830,6 +830,10 @@ fi
 
 %{_datadir}/libvirt/cpu_map.xml
 
+%{_sysconfdir}/rc.d/init.d/libvirt-guests
+%config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt
+
 %if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %endif
