@@ -9177,7 +9177,7 @@ qemudDomainMemoryPeek (virDomainPtr dom,
         goto endjob;
     }
 
-    if (virAsprintf(&tmp, driver->cacheDir,  "/qemu.mem.XXXXXX") < 0) {
+    if (virAsprintf(&tmp, "%s/qemu.mem.XXXXXX", driver->cacheDir) < 0) {
         virReportOOMError();
         goto endjob;
     }
