@@ -11874,11 +11874,15 @@ static virStateDriver qemuStateDriver = {
 };
 
 static int
-qemudVMFilterRebuild(virConnectPtr conn,
+qemudVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                      virHashIterator iter, void *data)
 {
-    (void)conn;
+    struct qemud_driver *driver = qemu_driver;
+
+    qemuDriverLock(driver);
     virHashForEach(qemu_driver->domains.objs, iter, data);
+    qemuDriverUnlock(driver);
+
     return 0;
 }
 
