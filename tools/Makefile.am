@@ -34,14 +34,14 @@ virsh_SOURCES =							\
 		console.c console.h				\
 		virsh.c
 
-virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
+virsh_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
 virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(WARN_CFLAGS)					\
 		../src/libvirt.la				\
 		../gnulib/lib/libgnu.la				\
 		$(VIRSH_LIBS)
-virsh_CFLAGS = 							\
+virsh_CFLAGS =							\
 		-I$(top_srcdir)/gnulib/lib -I../gnulib/lib	\
 		-I../include -I$(top_srcdir)/include		\
 		-I$(top_srcdir)/src				\

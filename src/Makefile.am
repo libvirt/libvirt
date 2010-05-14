@@ -1004,7 +1004,7 @@ if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
-libvirt_parthelper_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
+libvirt_parthelper_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
 libvirt_parthelper_LDADD = $(LIBPARTED_LIBS)
 libvirt_parthelper_CFLAGS =  $(LIBPARTED_CFLAGS)
 endif
@@ -1024,7 +1024,7 @@ libvirt_lxc_SOURCES =						\
 		$(DOMAIN_CONF_SOURCES)				\
 		$(CPU_CONF_SOURCES)				\
 		$(NWFILTER_PARAM_CONF_SOURCES)
-libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
+libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
 		../gnulib/lib/libgnu.la
@@ -1044,7 +1044,7 @@ libexec_PROGRAMS += virt-aa-helper
 
 virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
-virt_aa_helper_LDFLAGS = $(WARN_CFLAGS)
+virt_aa_helper_LDFLAGS = $(WARN_LDFLAGS)
 virt_aa_helper_LDADD =						\
 		$(LIBXML_LIBS)					\
 		libvirt_conf.la					\
