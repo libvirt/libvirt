@@ -5498,9 +5498,6 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     qemuDriverUnlock(driver);
 
-    if (qemuDomainObjBeginJob(vm) < 0)
-        goto cleanup;
-
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(dom->uuid, uuidstr);
@@ -5508,6 +5505,9 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
                         _("no domain with matching uuid '%s'"), uuidstr);
         goto endjob;
     }
+
+    if (qemuDomainObjBeginJob(vm) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
