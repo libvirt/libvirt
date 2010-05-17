@@ -4805,7 +4805,8 @@ static int qemudDomainSaveFileOpHook(int fd, void *data) {
     if (safewrite(fd, hdata->header, sizeof(*hdata->header)) != sizeof(*hdata->header)) {
         ret = errno;
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                         _("failed to write save header to '%s'"), hdata->path);
+                        _("failed to write header to domain save file '%s'"),
+                        hdata->path);
         goto endjob;
     }
 
@@ -5005,8 +5006,9 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
 
             if (statfs_ret == -1) {
                 virReportSystemError(errno,
-                                     _("Failed to create domain save file '%s'"
-                                       " statfs of all elements of path failed."),
+                                     _("Failed to create domain save file "
+                                       "'%s': statfs of all elements of path "
+                                       "failed"),
                                      path);
                 VIR_FREE(dirpath);
                 goto endjob;
