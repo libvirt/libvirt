@@ -5530,7 +5530,7 @@ static int qemudDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus) {
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto endjob;
+        goto cleanup;
     }
 
     if (qemuDomainObjBeginJob(vm) < 0)
