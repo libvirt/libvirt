@@ -3516,29 +3516,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Waiting for monitor to show up");
     if (qemudWaitForMonitor(driver, vm, pos) < 0)
-        goto abort;
+        goto cleanup;
 
     DEBUG0("Detecting VCPU PIDs");
     if (qemuDetectVcpuPIDs(driver, vm) < 0)
-        goto abort;
+        goto cleanup;
 
     DEBUG0("Setting any required VM passwords");
     if (qemuInitPasswords(conn, driver, vm, qemuCmdFlags) < 0)
-        goto abort;
+        goto cleanup;
 
     /* If we have -device, then addresses are assigned explicitly.
      * If not, then we have to detect dynamic ones here */
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
         DEBUG0("Determining domain device PCI addresses");
         if (qemuInitPCIAddresses(driver, vm) < 0)
-            goto abort;
+            goto cleanup;
     }
 
     DEBUG0("Setting initial memory amount");
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuMonitorSetBalloon(priv->mon, vm->def->memory) < 0) {
         qemuDomainObjExitMonitorWithDriver(driver, vm);
-        goto abort;
+        goto cleanup;
     }
 
     if (migrateFrom == NULL) {
@@ -3549,7 +3549,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 "%s", _("resume operation failed"));
             qemuDomainObjExitMonitorWithDriver(driver, vm);
-            goto abort;
+            goto cleanup;
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -3557,7 +3557,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     DEBUG0("Writing domain status to disk");
     if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0)
-        goto abort;
+        goto cleanup;
 
     if (logfile != -1)
         close(logfile);
@@ -3565,26 +3565,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     return 0;
 
 cleanup:
-    /* We jump here if we failed to start the VM for any reason
-     * XXX investigate if we can kill this block and safely call
-     * qemudShutdownVMDaemon even though no PID is running */
-    qemuDomainReAttachHostDevices(driver, vm->def);
-
-    if (driver->securityDriver &&
-        driver->securityDriver->domainRestoreSecurityAllLabel)
-        driver->securityDriver->domainRestoreSecurityAllLabel(vm, 0);
-    if (driver->securityDriver &&
-        driver->securityDriver->domainReleaseSecurityLabel)
-        driver->securityDriver->domainReleaseSecurityLabel(vm);
-    qemuRemoveCgroup(driver, vm, 1);
-    if (logfile != -1)
-        close(logfile);
-    vm->def->id = -1;
-    return -1;
-
-abort:
-    /* We jump here if we failed to initialize the now running VM
-     * killing it off and pretend we never started it */
+    /* We jump here if we failed to start the VM for any reason, or
+     * if we failed to initialize the now running VM. kill it off and
+     * pretend we never started it */
     qemudShutdownVMDaemon(driver, vm, 0);
 
     if (logfile != -1)
