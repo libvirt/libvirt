@@ -2306,8 +2306,10 @@ static int lxcFreezeContainer(lxc_driver_t *driver, virDomainObjPtr vm)
     virCgroupPtr cgroup = NULL;
 
     if (!(driver->cgroup &&
-        virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0))
+          virCgroupForDomain(driver->cgroup, vm->def->name, &cgroup, 0) == 0))
         return -1;
+
+    /* From here on, we know that cgroup != NULL.  */
 
     while (waited_time < timeout) {
         int r;
@@ -2381,8 +2383,7 @@ error:
     ret = -1;
 
 cleanup:
-    if (cgroup)
-        virCgroupFree(&cgroup);
+    virCgroupFree(&cgroup);
     VIR_FREE(state);
     return ret;
 }
