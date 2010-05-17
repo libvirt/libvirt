@@ -157,7 +157,7 @@ umlAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaqu
         if (umlStartVMDaemon(data->conn, data->driver, vm) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name, err->message);
+                      vm->def->name, err ? err->message : "");
         }
     }
     virDomainObjUnlock(vm);
