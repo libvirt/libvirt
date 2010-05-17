@@ -2994,7 +2994,7 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
             goto cleanup;
 
         path = meta.backingStore;
-    } while (path != NULL);
+    }
 
     ret = 0;
 
@@ -3042,7 +3042,7 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
             goto cleanup;
 
         path = meta.backingStore;
-    } while (path != NULL);
+    }
 
     ret = 0;
 
