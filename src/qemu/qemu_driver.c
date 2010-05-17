@@ -10569,9 +10569,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
     }
 
     /* Clean up the source domain. */
-    fprintf(stderr, "******************* MIG \n");
     qemudShutdownVMDaemon(driver, vm, 1);
-    fprintf(stderr, "******************* YEEHAAA\n");
     resume = 0;
 
     event = virDomainEventNewFromObj(vm,
