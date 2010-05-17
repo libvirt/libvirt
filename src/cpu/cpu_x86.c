@@ -614,7 +614,7 @@ x86ModelHasFeature(struct x86_model *model,
         cpuid = feature->cpuid + i;
         model_cpuid = x86cpuidFind(model->cpuid, model->ncpuid,
                                    cpuid->function);
-        if (!x86cpuidMatchMasked(model_cpuid, cpuid))
+        if (!model_cpuid || !x86cpuidMatchMasked(model_cpuid, cpuid))
             return false;
     }
 
