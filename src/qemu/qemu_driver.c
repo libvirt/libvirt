@@ -2034,39 +2034,47 @@ static void qemudFreePtyPath(void *payload, const char *name ATTRIBUTE_UNUSED)
     VIR_FREE(payload);
 }
 
+static void
+qemuReadLogFD(int logfd, char *buf, int maxlen, int off)
+{
+    int ret;
+    char *tmpbuf = buf + off;
+
+    ret = saferead(logfd, tmpbuf, maxlen - off - 1);
+    if (ret < 0) {
+        ret = 0;
+    }
+
+    tmpbuf[ret] = '\0';
+}
+
 static int
 qemudWaitForMonitor(struct qemud_driver* driver,
                     virDomainObjPtr vm, off_t pos)
 {
-    char buf[4096]; /* Plenty of space to get startup greeting */
+    char buf[4096] = ""; /* Plenty of space to get startup greeting */
     int logfd;
     int ret = -1;
+    virHashTablePtr paths = NULL;
 
-    if ((logfd = qemudLogReadFD(driver->logDir, vm->def->name, pos))
-        < 0)
+    if ((logfd = qemudLogReadFD(driver->logDir, vm->def->name, pos)) < 0)
         return -1;
 
-    ret = qemudReadLogOutput(vm, logfd, buf, sizeof(buf),
-                             qemudFindCharDevicePTYs,
-                             "console", 30);
-    if (close(logfd) < 0) {
-        char ebuf[4096];
-        VIR_WARN(_("Unable to close logfile: %s"),
-                 virStrerror(errno, ebuf, sizeof ebuf));
-    }
-
-    if (ret < 0)
-        return -1;
+    if (qemudReadLogOutput(vm, logfd, buf, sizeof(buf),
+                           qemudFindCharDevicePTYs,
+                           "console", 30) < 0)
+        goto closelog;
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(driver, vm) < 0)
-        return -1;
+    if (qemuConnectMonitor(driver, vm) < 0) {
+        goto cleanup;
+    }
 
     /* Try to get the pty path mappings again via the monitor. This is much more
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    virHashTablePtr paths = virHashCreate(0);
+    paths = virHashCreate(0);
     if (paths == NULL) {
         virReportOOMError();
         goto cleanup;
@@ -2085,6 +2093,23 @@ qemudWaitForMonitor(struct qemud_driver* driver,
 cleanup:
     if (paths) {
         virHashFree(paths, qemudFreePtyPath);
+    }
+
+    if (kill(vm->pid, 0) == -1 && errno == ESRCH) {
+        /* VM is dead, any other error raised in the interim is probably
+         * not as important as the qemu cmdline output */
+        qemuReadLogFD(logfd, buf, sizeof(buf), strlen(buf));
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("process exited while connecting to monitor: %s"),
+                        buf);
+        ret = -1;
+    }
+
+closelog:
+    if (close(logfd) < 0) {
+        char ebuf[4096];
+        VIR_WARN(_("Unable to close logfile: %s"),
+                 virStrerror(errno, ebuf, sizeof ebuf));
     }
 
     return ret;
