@@ -1118,6 +1118,7 @@ typedef enum {
   VIR_STORAGE_POOL_BUILDING = 1, /* Initializing pool, not available */
   VIR_STORAGE_POOL_RUNNING = 2,  /* Running normally */
   VIR_STORAGE_POOL_DEGRADED = 3, /* Running degraded */
+  VIR_STORAGE_POOL_INACCESSIBLE = 4, /* Running, but not accessible */
 } virStoragePoolState;
 
 

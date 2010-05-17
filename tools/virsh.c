@@ -5159,6 +5159,10 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("State:"),
                      _("degraded"));
             break;
+        case VIR_STORAGE_POOL_INACCESSIBLE:
+            vshPrint(ctl, "%-15s %s\n", _("State:"),
+                     _("inaccessible"));
+            break;
         }
 
         if (info.state == VIR_STORAGE_POOL_RUNNING ||
