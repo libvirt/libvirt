@@ -63,8 +63,7 @@ vahDeinit(vahControl * ctl)
         return -1;
 
     VIR_FREE(ctl->def);
-    if (ctl->caps)
-        virCapabilitiesFree(ctl->caps);
+    virCapabilitiesFree(ctl->caps);
     VIR_FREE(ctl->files);
     VIR_FREE(ctl->hvm);
     VIR_FREE(ctl->arch);

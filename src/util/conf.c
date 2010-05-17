@@ -902,9 +902,7 @@ virConfSetValue (virConfPtr conf,
             conf->entries = cur;
         }
     } else {
-        if (cur->value) {
-            virConfFreeValue(cur->value);
-        }
+        virConfFreeValue(cur->value);
         cur->value = value;
     }
     return (0);

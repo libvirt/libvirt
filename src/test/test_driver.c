@@ -4983,8 +4983,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     def = NULL;
 cleanup:
     testDriverUnlock(driver);
-    if (def)
-        virNodeDeviceDefFree(def);
+    virNodeDeviceDefFree(def);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return dev;

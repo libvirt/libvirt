@@ -157,8 +157,7 @@ virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
             virNetworkDefFree(network->def);
             network->def = def;
         } else {
-            if (network->newDef)
-                virNetworkDefFree(network->newDef);
+            virNetworkDefFree(network->newDef);
             network->newDef = def;
         }
 

@@ -1332,8 +1332,7 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
             virStoragePoolDefFree(pool->def);
             pool->def = def;
         } else {
-            if (pool->newDef)
-                virStoragePoolDefFree(pool->newDef);
+            virStoragePoolDefFree(pool->newDef);
             pool->newDef = def;
         }
         return pool;

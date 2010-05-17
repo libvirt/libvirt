@@ -486,8 +486,7 @@ static void dev_create(const char *udi)
     DEBUG("FAILED TO ADD dev %s", name);
 cleanup:
     VIR_FREE(privData);
-    if (def)
-        virNodeDeviceDefFree(def);
+    virNodeDeviceDefFree(def);
     nodeDeviceUnlock(driverState);
 }
 

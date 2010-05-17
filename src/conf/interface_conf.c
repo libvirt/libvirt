@@ -85,20 +85,18 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
     switch (def->type) {
         case VIR_INTERFACE_TYPE_BRIDGE:
             for (i = 0;i < def->data.bridge.nbItf;i++) {
-                if (def->data.bridge.itf[i] != NULL)
-                    virInterfaceDefFree(def->data.bridge.itf[i]);
-                else
+                if (def->data.bridge.itf[i] == NULL)
                     break; /* to cope with half parsed data on errors */
+                virInterfaceDefFree(def->data.bridge.itf[i]);
             }
             VIR_FREE(def->data.bridge.itf);
             break;
         case VIR_INTERFACE_TYPE_BOND:
             VIR_FREE(def->data.bond.target);
             for (i = 0;i < def->data.bond.nbItf;i++) {
-                if (def->data.bond.itf[i] != NULL)
-                    virInterfaceDefFree(def->data.bond.itf[i]);
-                else
+                if (def->data.bond.itf[i] == NULL)
                     break; /* to cope with half parsed data on errors */
+                virInterfaceDefFree(def->data.bond.itf[i]);
             }
             VIR_FREE(def->data.bond.itf);
             break;
@@ -1227,8 +1225,7 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
     virInterfaceObjPtr iface;
 
     if ((iface = virInterfaceFindByName(interfaces, def->name))) {
-        if (iface->def)
-            virInterfaceDefFree(iface->def);
+        virInterfaceDefFree(iface->def);
         iface->def = def;
 
         return iface;
