@@ -6489,7 +6489,7 @@ static int qemudDomainStart(virDomainPtr dom) {
          * We should still have a reference left to vm but
          * one should check for 0 anyway
          */
-        if (qemuDomainObjEndJob(vm) = 0) {
+        if (qemuDomainObjEndJob(vm) == 0) {
             vm = NULL;
             goto cleanup;
         }
