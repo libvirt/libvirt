@@ -66,6 +66,7 @@ local-checks-to-skip =			\
 
 useless_free_options =		\
   --name=sexpr_free		\
+  --name=virCgroupFree		\
   --name=VIR_FREE		\
   --name=xmlFree		\
   --name=xmlXPathFreeContext	\
