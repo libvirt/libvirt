@@ -27,7 +27,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #ifdef __linux__
-# include <linux/magic.h>
+# if HAVE_LINUX_MAGIC_H
+#  include <linux/magic.h>
+# endif
 # include <sys/statfs.h>
 #endif
 #include "dirname.h"
@@ -416,6 +418,9 @@ virStorageFileGetMetadata(const char *path,
 
 #ifdef __linux__
 
+# ifndef NFS_SUPER_MAGIC
+#  define NFS_SUPER_MAGIC 0x6969
+# endif
 # ifndef OCFS2_SUPER_MAGIC
 #  define OCFS2_SUPER_MAGIC 0x7461636f
 # endif
