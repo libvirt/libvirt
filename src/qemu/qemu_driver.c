@@ -3291,7 +3291,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (driver->securityDriver &&
         driver->securityDriver->domainGenSecurityLabel &&
         driver->securityDriver->domainGenSecurityLabel(vm) < 0)
-        return -1;
+        goto cleanup;
 
     DEBUG0("Generating setting domain security labels (if required)");
     if (driver->securityDriver &&
