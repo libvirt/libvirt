@@ -3577,10 +3577,6 @@ cleanup:
         driver->securityDriver->domainReleaseSecurityLabel)
         driver->securityDriver->domainReleaseSecurityLabel(vm);
     qemuRemoveCgroup(driver, vm, 1);
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport)
-        vm->def->graphics[0]->data.vnc.port = -1;
     if (logfile != -1)
         close(logfile);
     vm->def->id = -1;
