@@ -76,6 +76,13 @@ sed 's,^log_outputs.*,log_outputs="3:file:'"$(pwd)/log"'",' tmp.conf > k \
     || fail=1
 mv k tmp.conf || fail=1
 
+# Unix socket max path size is 108 on linux. If the generated sock path
+# exceeds this, the test will fail, so skip it if CWD is too long
+SOCKPATH=`pwd`/libvirt-sock
+if test 108 -lt `echo $SOCKPATH | wc -c`; then
+    skip_test_ "CWD too long"
+fi
+
 $abs_top_builddir/daemon/libvirtd --pid-file=pid-file --config=tmp.conf > log 2>&1 & pid=$!
 sleep $sleep_secs
 kill $pid
