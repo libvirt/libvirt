@@ -3604,10 +3604,8 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     virDomainDefPtr def;
     int i;
 
-    if (!virDomainObjIsActive(vm))
-        return;
-
-    VIR_DEBUG("Shutting down VM '%s' migrated=%d", vm->def->name, migrated);
+    VIR_DEBUG("Shutting down VM '%s' pid=%d migrated=%d",
+              vm->def->name, vm->pid, migrated);
 
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
@@ -3630,6 +3628,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
         }
     }
 
+    /* This will safely handle a non-running guest with pid=0 or pid=-1*/
     if (virKillProcess(vm->pid, 0) == 0 &&
         virKillProcess(vm->pid, SIGTERM) < 0)
         virReportSystemError(errno,
