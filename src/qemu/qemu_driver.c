@@ -4655,6 +4655,12 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
         struct timeval now;
         int rc;
 
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit during migration"));
+            goto cleanup;
+        }
+
         if (priv->jobSignals & QEMU_JOB_SIGNAL_CANCEL) {
             priv->jobSignals ^= QEMU_JOB_SIGNAL_CANCEL;
             VIR_DEBUG0("Cancelling migration at client request");
@@ -4680,6 +4686,15 @@ qemuDomainWaitForMigrationComplete(struct qemud_driver *driver, virDomainObjPtr 
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             if (rc < 0)
                 VIR_WARN0("Unable to set migration downtime");
+        }
+
+        /* Repeat check because the job signals might have caused
+         * guest to die
+         */
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit during migration"));
+            goto cleanup;
         }
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -4881,6 +4896,12 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
             goto endjob;
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto endjob;
+        }
     }
 
     /* Get XML for the domain */
@@ -5401,6 +5422,12 @@ static int qemudDomainCoreDump(virDomainPtr dom,
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         paused = 1;
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto endjob;
+        }
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -5434,7 +5461,7 @@ endjob:
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
        the migration is complete.  */
-    else if (resume && paused) {
+    else if (resume && paused && priv->mon) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
@@ -5471,15 +5498,15 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     int i, rc;
     int ret = -1;
 
+    qemuDomainObjEnterMonitor(vm);
+
     /* We need different branches here, because we want to offline
      * in reverse order to onlining, so any partial fail leaves us in a
      * reasonably sensible state */
     if (nvcpus > vm->def->vcpus) {
         for (i = vm->def->vcpus ; i < nvcpus ; i++) {
             /* Online new CPU */
-            qemuDomainObjEnterMonitor(vm);
             rc = qemuMonitorSetCPU(priv->mon, i, 1);
-            qemuDomainObjExitMonitor(vm);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
@@ -5490,9 +5517,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     } else {
         for (i = vm->def->vcpus - 1 ; i >= nvcpus ; i--) {
             /* Offline old CPU */
-            qemuDomainObjEnterMonitor(vm);
             rc = qemuMonitorSetCPU(priv->mon, i, 0);
-            qemuDomainObjExitMonitor(vm);
             if (rc == 0)
                 goto unsupported;
             if (rc < 0)
@@ -5505,6 +5530,7 @@ static int qemudDomainHotplugVcpus(virDomainObjPtr vm, unsigned int nvcpus)
     ret = 0;
 
 cleanup:
+    qemuDomainObjExitMonitor(vm);
     return ret;
 
 unsupported:
@@ -7054,6 +7080,15 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
         VIR_FREE(cont);
         return NULL;
     }
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        /* cont doesn't need freeing here, since the reference
+         * now held in def->controllers */
+        return NULL;
+    }
+
     return cont;
 }
 
@@ -7335,6 +7370,12 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto cleanup;
+        }
     }
 
     /* FIXME - need to support vhost-net here (5th arg) */
@@ -7367,6 +7408,12 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     if (tapfd != -1)
         close(tapfd);
     tapfd = -1;
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto cleanup;
+    }
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (!(nicstr = qemuBuildNicDevStr(net, vlan)))
@@ -7416,6 +7463,9 @@ cleanup:
     return ret;
 
 try_remove:
+    if (!priv->mon)
+        goto cleanup;
+
     if (vlan < 0) {
         if ((qemuCmdFlags & QEMUD_CMD_FLAG_NETDEV) &&
             (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
@@ -7445,6 +7495,9 @@ try_remove:
     goto cleanup;
 
 try_tapfd_close:
+    if (!priv->mon)
+        goto cleanup;
+
     if (tapfd_name) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
@@ -10370,6 +10423,12 @@ static int doTunnelMigrate(virDomainPtr dom,
         goto finish;
     }
 
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto cleanup;
+    }
+
     /* From this point onwards we *must* call cancel to abort the
      * migration on source if anything goes wrong */
 
@@ -10405,7 +10464,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     retval = doTunnelSendAll(st, client_sock);
 
 cancel:
-    if (retval != 0) {
+    if (retval != 0 && priv->mon) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         qemuMonitorMigrateCancel(priv->mon);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -10680,6 +10739,12 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
      * object, but if no, clean up the empty qemu process.
      */
     if (retcode == 0) {
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit"));
+            goto cleanup;
+        }
+
         if (flags & VIR_MIGRATE_PERSIST_DEST) {
             if (vm->persistent)
                 newVM = 0;
