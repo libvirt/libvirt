@@ -183,7 +183,7 @@
 
 
 
-#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type)                           \
+#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type, _dispatch)                \
     int                                                                       \
     esxVI_##_type##_CastFromAnyType(esxVI_AnyType *anyType,                   \
                                     esxVI_##_type **ptrptr)                   \
@@ -194,11 +194,16 @@
             return -1;                                                        \
         }                                                                     \
                                                                               \
-        if (anyType->type != esxVI_Type_##_type) {                            \
+        switch (anyType->type) {                                              \
+          _dispatch                                                           \
+                                                                              \
+          case esxVI_Type_##_type:                                            \
+            break;                                                            \
+                                                                              \
+          default:                                                            \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
-                         "Expecting type '%s' but found '%s'",                \
-                         esxVI_Type_ToString(esxVI_Type_##_type),             \
-                         anyType->other);                                     \
+                         _("Call to %s for unexpected type '%s'"),            \
+                         __FUNCTION__, anyType->other);                       \
             return -1;                                                        \
         }                                                                     \
                                                                               \
@@ -505,7 +510,7 @@
                                                                               \
       default:                                                                \
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                  \
-                     "Call to %s for unexpected type '%s'", __FUNCTION__,     \
+                     _("Call to %s for unexpected type '%s'"), __FUNCTION__,  \
                      esxVI_Type_ToString(item->_type));                       \
         return _error_return;                                                 \
     }
@@ -523,6 +528,13 @@
     case esxVI_Type_##_type:                                                  \
       return esxVI_##_type##_DeepCopy((esxVI_##_type **)dst,                  \
                                       (esxVI_##_type *)src);
+
+
+
+#define ESX_VI__TEMPLATE__DISPATCH__CAST_FROM_ANY_TYPE(_type)                 \
+    case esxVI_Type_##_type:                                                  \
+      return esxVI_##_type##_Deserialize(anyType->node,                       \
+                                         (esxVI_##_type **)ptrptr);
 
 
 
@@ -1359,7 +1371,9 @@ ESX_VI__TEMPLATE__DEEP_COPY(ManagedObjectReference,
 ESX_VI__TEMPLATE__LIST__APPEND(ManagedObjectReference)
 
 /* esxVI_ManagedObjectReference_CastFromAnyType */
-ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ManagedObjectReference)
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(ManagedObjectReference,
+{
+})
 
 /* esxVI_ManagedObjectReference_CastListFromAnyType */
 ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(ManagedObjectReference)

@@ -765,7 +765,18 @@ class Object:
         # cast from any type
         if self.features & Object.FEATURE__ANY_TYPE:
             source += "/* esxVI_%s_CastFromAnyType */\n" % self.name
-            source += "ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(%s)\n" % self.name
+            source += "ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(%s,\n" % self.name
+
+            if self.extended_by is None:
+                source += "{\n"
+                source += "})\n\n"
+            else:
+                source += "{\n"
+
+                for extended_by in self.extended_by:
+                    source += "    ESX_VI__TEMPLATE__DISPATCH__CAST_FROM_ANY_TYPE(%s)\n" % extended_by
+
+                source += "})\n\n"
 
             if self.features & Object.FEATURE__LIST:
                 source += "/* esxVI_%s_CastListFromAnyType */\n" % self.name
