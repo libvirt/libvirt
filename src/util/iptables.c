@@ -137,9 +137,12 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_start(args, arg);
 
-    while ((s = va_arg(args, const char *)))
-        if (!(argv[n++] = strdup(s)))
+    while ((s = va_arg(args, const char *))) {
+        if (!(argv[n++] = strdup(s))) {
+            va_end(args);
             goto error;
+        }
+    }
 
     va_end(args);
 
