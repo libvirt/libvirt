@@ -6941,9 +6941,15 @@ static int qemudDomainAttachPciDiskDevice(struct qemud_driver *driver,
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         ret = qemuMonitorAddDrive(priv->mon, drivestr);
-        if (ret == 0)
-            qemuMonitorAddDevice(priv->mon, devstr);
-            /* XXX remove the drive upon fail */
+        if (ret == 0) {
+            ret = qemuMonitorAddDevice(priv->mon, devstr);
+            if (ret < 0) {
+                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                         drivestr, devstr);
+                /* XXX should call 'drive_del' on error but this does not
+                   exist yet */
+            }
+        }
     } else {
         virDomainDevicePCIAddress guestAddr;
         ret = qemuMonitorAddPCIDisk(priv->mon,
@@ -7164,12 +7170,16 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        ret = qemuMonitorAddDrive(priv->mon,
-                                  drivestr);
-        if (ret == 0)
-            ret = qemuMonitorAddDevice(priv->mon,
-                                       devstr);
-            /* XXX should call 'drive_del' on error but this does not exist yet */
+        ret = qemuMonitorAddDrive(priv->mon, drivestr);
+        if (ret == 0) {
+            ret = qemuMonitorAddDevice(priv->mon, devstr);
+            if (ret < 0) {
+                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                         drivestr, devstr);
+                /* XXX should call 'drive_del' on error but this does not
+                   exist yet */
+            }
+        }
     } else {
         virDomainDeviceDriveAddress driveAddr;
         ret = qemuMonitorAttachDrive(priv->mon,
@@ -7253,12 +7263,16 @@ static int qemudDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        ret = qemuMonitorAddDrive(priv->mon,
-                                  drivestr);
-        if (ret == 0)
-            ret = qemuMonitorAddDevice(priv->mon,
-                                       devstr);
-            /* XXX should call 'drive_del' on error but this does not exist yet */
+        ret = qemuMonitorAddDrive(priv->mon, drivestr);
+        if (ret == 0) {
+            ret = qemuMonitorAddDevice(priv->mon, devstr);
+            if (ret < 0) {
+                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                         drivestr, devstr);
+                /* XXX should call 'drive_del' on error but this does not
+                   exist yet */
+            }
+        }
     } else {
         ret = qemuMonitorAddUSBDisk(priv->mon, disk->src);
     }
