@@ -96,13 +96,23 @@ enum _esxVI_APIVersion {
     esxVI_APIVersion_40
 };
 
+/*
+ * AAAABBBB: where AAAA0000 is the product and BBBB the version. this format
+ * allows simple bitmask testing for a product independent of the version
+ */
 enum _esxVI_ProductVersion {
     esxVI_ProductVersion_Undefined = 0,
-    esxVI_ProductVersion_GSX20,
-    esxVI_ProductVersion_ESX35,
-    esxVI_ProductVersion_ESX40,
-    esxVI_ProductVersion_VPX25,
-    esxVI_ProductVersion_VPX40
+
+    esxVI_ProductVersion_GSX   = (1 << 0) << 16,
+    esxVI_ProductVersion_GSX20 = esxVI_ProductVersion_GSX | 1,
+
+    esxVI_ProductVersion_ESX   = (1 << 1) << 16,
+    esxVI_ProductVersion_ESX35 = esxVI_ProductVersion_ESX | 1,
+    esxVI_ProductVersion_ESX40 = esxVI_ProductVersion_ESX | 2,
+
+    esxVI_ProductVersion_VPX   = (1 << 2) << 16,
+    esxVI_ProductVersion_VPX25 = esxVI_ProductVersion_VPX | 1,
+    esxVI_ProductVersion_VPX40 = esxVI_ProductVersion_VPX | 2
 };
 
 enum _esxVI_Occurrence {
@@ -271,6 +281,19 @@ int esxVI_GetVirtualMachinePowerState
 int esxVI_GetVirtualMachineQuestionInfo
       (esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachineQuestionInfo **questionInfo);
+
+int esxVI_GetBoolean(esxVI_ObjectContent *objectContent,
+                     const char *propertyName,
+                     esxVI_Boolean *value, esxVI_Occurrence occurence);
+
+int esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
+                         const char *propertyName,
+                         char **value, esxVI_Occurrence occurence);
+
+int esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
+                                    const char *propertyName,
+                                    esxVI_ManagedObjectReference **value,
+                                    esxVI_Occurrence occurence);
 
 int esxVI_LookupNumberOfDomainsByPowerState
       (esxVI_Context *ctx, esxVI_VirtualMachinePowerState powerState,

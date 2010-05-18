@@ -382,6 +382,9 @@ class Object:
         self.properties = properties
         self.extended_by = extended_by
 
+        if self.extended_by is not None:
+            self.extended_by.sort();
+
 
     def generate_struct_members(self, add_banner = False, struct_gap = False):
         global objects_by_name
@@ -1095,7 +1098,8 @@ additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE
                              "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
 
 
-additional_object_features = { "Event"                      : Object.FEATURE__LIST,
+additional_object_features = { "DatastoreInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
+                               "Event"                      : Object.FEATURE__LIST,
                                "HostCpuIdInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
                                "ObjectContent"              : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST,
@@ -1235,6 +1239,7 @@ for obj in objects_by_name.values():
             extended_obj.extended_by = [obj.name]
         else:
             extended_obj.extended_by.append(obj.name)
+            extended_obj.extended_by.sort()
 
 
 

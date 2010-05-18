@@ -1530,6 +1530,114 @@ esxVI_GetVirtualMachineQuestionInfo
 
 
 int
+esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
+                 esxVI_Boolean *value, esxVI_Occurrence occurence)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (value == NULL || *value != esxVI_Boolean_Undefined) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_Boolean) < 0) {
+                return -1;
+            }
+
+            *value = dynamicProperty->val->boolean;
+            break;
+        }
+    }
+
+    if (*value == esxVI_Boolean_Undefined &&
+        occurence == esxVI_Occurrence_RequiredItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Missing '%s' property"), propertyName);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
+esxVI_GetStringValue(esxVI_ObjectContent *objectContent,
+                     const char *propertyName,
+                     char **value, esxVI_Occurrence occurence)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (value == NULL || *value != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_String) < 0) {
+                return -1;
+            }
+
+            *value = dynamicProperty->val->string;
+            break;
+        }
+    }
+
+    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Missing '%s' property"), propertyName);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
+esxVI_GetManagedObjectReference(esxVI_ObjectContent *objectContent,
+                                const char *propertyName,
+                                esxVI_ManagedObjectReference **value,
+                                esxVI_Occurrence occurence)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (value == NULL || *value != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (dynamicProperty->val, value) < 0) {
+                return -1;
+            }
+
+            break;
+        }
+    }
+
+    if (*value == NULL && occurence == esxVI_Occurrence_RequiredItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Missing '%s' property"), propertyName);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
 esxVI_LookupNumberOfDomainsByPowerState(esxVI_Context *ctx,
                                         esxVI_VirtualMachinePowerState powerState,
                                         esxVI_Boolean inverse)
@@ -2161,7 +2269,7 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
     esxVI_ObjectContent *candidate = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_Boolean accessible = esxVI_Boolean_Undefined;
-    size_t offset = strlen("/vmfs/volumes/");
+    size_t offset = 14; /* = strlen("/vmfs/volumes/") */
     int numInaccessibleDatastores = 0;
 
     if (datastore == NULL || *datastore != NULL) {
@@ -2227,9 +2335,7 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
 
         for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
              dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "summary.accessible")) {
-                /* Ignore it */
-            } else if (STREQ(dynamicProperty->name, "summary.name")) {
+            if (STREQ(dynamicProperty->name, "summary.name")) {
                 if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                              esxVI_Type_String) < 0) {
                     goto failure;
@@ -2244,7 +2350,8 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                     /* Found datastore with matching name */
                     goto cleanup;
                 }
-            } else if (STREQ(dynamicProperty->name, "summary.url")) {
+            } else if (STREQ(dynamicProperty->name, "summary.url") &&
+                       ctx->productVersion & esxVI_ProductVersion_ESX) {
                 if (accessible == esxVI_Boolean_False) {
                     /*
                      * The 'summary.url' property of an inaccessible datastore
@@ -2276,8 +2383,6 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                     /* Found datastore with matching URL suffix */
                     goto cleanup;
                 }
-            } else {
-                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
             }
         }
     }
@@ -2309,9 +2414,10 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
 
 
 
-int esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
-                               esxVI_ManagedObjectReference *task,
-                               esxVI_TaskInfo **taskInfo)
+int
+esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
+                           esxVI_ManagedObjectReference *task,
+                           esxVI_TaskInfo **taskInfo)
 {
     int result = 0;
     esxVI_String *propertyNameList = NULL;

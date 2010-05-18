@@ -146,6 +146,14 @@ object ChoiceOption extends OptionType
 end
 
 
+object DatastoreInfo
+    String                                   name                           r
+    String                                   url                            r
+    Long                                     freeSpace                      r
+    Long                                     maxFileSize                    r
+end
+
+
 object Description
     String                                   label                          r
     String                                   summary                        r
@@ -183,6 +191,47 @@ object HostCpuIdInfo
     String                                   ebx                            o
     String                                   ecx                            o
     String                                   edx                            o
+end
+
+
+object HostFileSystemVolume
+    String                                   type                           r
+    String                                   name                           r
+    Long                                     capacity                       r
+end
+
+
+object HostNasVolume extends HostFileSystemVolume
+    String                                   remoteHost                     r
+    String                                   remotePath                     r
+    String                                   userName                       o
+end
+
+
+object HostScsiDiskPartition
+    String                                   diskName                       r
+    Int                                      partition                      r
+end
+
+
+object HostVmfsVolume extends HostFileSystemVolume
+    Int                                      blockSizeMb                    r
+    Int                                      maxBlocks                      r
+    Int                                      majorVersion                   r
+    String                                   version                        r
+    String                                   uuid                           r
+    HostScsiDiskPartition                    extent                         rl
+    Boolean                                  vmfsUpgradable                 r
+end
+
+
+object LocalDatastoreInfo extends DatastoreInfo
+    String                                   path                           o
+end
+
+
+object NasDatastoreInfo extends DatastoreInfo
+    HostNasVolume                            nas                            o
 end
 
 
@@ -453,6 +502,11 @@ object VirtualMachineSnapshotTree
 end
 
 
+object VmfsDatastoreInfo extends DatastoreInfo
+    HostVmfsVolume                           vmfs                           o
+end
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Methods
 #
@@ -568,6 +622,11 @@ end
 method ReconfigVM_Task returns ManagedObjectReference r
     ManagedObjectReference                   _this                          r
     VirtualMachineConfigSpec                 spec                           r
+end
+
+
+method RefreshDatastore
+    ManagedObjectReference                   _this                          r
 end
 
 
