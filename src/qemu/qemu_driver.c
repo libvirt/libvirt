@@ -6202,7 +6202,10 @@ static int qemudDomainRestore(virConnectPtr conn,
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         vm->state = VIR_DOMAIN_RUNNING;
-        virDomainSaveStatus(driver->caps, driver->stateDir, vm);
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+            goto endjob;
+        }
     }
     ret = 0;
 
