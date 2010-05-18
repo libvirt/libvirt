@@ -40,6 +40,8 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
     cpuinfo = fopen(cpuinfofile, "r");
     if (!cpuinfo)
         return -1;
+
+    memset(&nodeinfo, 0, sizeof(nodeinfo));
     if (linuxNodeInfoCPUPopulate(cpuinfo, &nodeinfo) < 0) {
         fclose(cpuinfo);
         return -1;
