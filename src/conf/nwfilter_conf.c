@@ -1767,6 +1767,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt) {
     return ret;
 
  cleanup:
+    virNWFilterDefFree(ret);
     VIR_FREE(chain);
     VIR_FREE(uuid);
     return NULL;
