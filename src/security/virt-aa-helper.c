@@ -830,8 +830,6 @@ get_files(vahControl * ctl)
             do {
                 virStorageFileMetadata meta;
 
-                memset(&meta, 0, sizeof(meta));
-
                 ret = virStorageFileGetMetadata(path, &meta);
 
                 if (path != ctl->def->disks[i]->src)

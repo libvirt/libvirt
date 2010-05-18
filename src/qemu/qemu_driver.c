@@ -2982,8 +2982,6 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
             }
         }
 
-        memset(&meta, 0, sizeof(meta));
-
         rc = virStorageFileGetMetadata(path, &meta);
 
         if (path != disk->src)
@@ -3029,8 +3027,6 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
                 goto cleanup;
             }
         }
-
-        memset(&meta, 0, sizeof(meta));
 
         rc = virStorageFileGetMetadata(path, &meta);
 
@@ -9386,7 +9382,6 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     /* Probe for magic formats */
-    memset(&meta, 0, sizeof(meta));
     if (virStorageFileGetMetadataFromFD(path, fd, &meta) < 0)
         goto cleanup;
 

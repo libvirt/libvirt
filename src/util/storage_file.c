@@ -275,6 +275,8 @@ virStorageFileGetMetadataFromFD(const char *path,
     unsigned char head[20*512]; /* vmdk4GetBackingStore needs this much. */
     int len, i;
 
+    memset(meta, 0, sizeof (*meta));
+
     /* If all else fails, call it a raw file */
     meta->format = VIR_STORAGE_FILE_RAW;
 
