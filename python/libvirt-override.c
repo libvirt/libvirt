@@ -3543,7 +3543,8 @@ initcygvirtmod
     if (initialized != 0)
         return;
 
-    virInitialize();
+    if (virInitialize() < 0)
+        return;
 
     /* initialize the python extension module */
     Py_InitModule((char *)
