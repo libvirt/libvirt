@@ -126,6 +126,12 @@
     <feature name='dca'> <!-- CPUID_EXT_DCA -->
       <cpuid function='0x00000001' ecx='0x00040000'/>
     </feature>
+    <feature name='sse4.1'> <!-- CPUID_EXT_SSE41 -->
+      <cpuid function='0x00000001' ecx='0x00080000'/>
+    </feature>
+    <feature name='sse4.2'> <!-- CPUID_EXT_SSE42 -->
+      <cpuid function='0x00000001' ecx='0x00100000'/>
+    </feature>
     <feature name='x2apic'> <!-- CPUID_EXT_X2APIC -->
       <cpuid function='0x00000001' ecx='0x00200000'/>
     </feature>
