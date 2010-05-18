@@ -2245,7 +2245,8 @@ ebiptablesWriteToTempFile(const char *string) {
 
 err_exit:
     VIR_FREE(header);
-    close(fd);
+    if (fd >= 0)
+        close(fd);
     unlink(filename);
     return NULL;
 }
