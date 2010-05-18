@@ -106,7 +106,8 @@ mymain(int argc, char **argv)
         return(EXIT_FAILURE);
     }
 
-    virInitialize();
+    if (virInitialize() < 0)
+        return EXIT_FAILURE;
 
     for (i = 0 ; i < ARRAY_CARDINALITY(nodeData); i++)
       if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
