@@ -540,6 +540,13 @@
 
 
 
+#define ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type)                        \
+    if (((esxVI_Object *)item)->_type == esxVI_Type_##__type) {               \
+        return item;                                                          \
+    }
+
+
+
 #define ESX_VI__TEMPLATE__DYNAMIC_CAST(__type, _accept)                       \
     esxVI_##__type *                                                          \
     esxVI_##__type##_DynamicCast(void *item)                                  \
@@ -550,16 +557,11 @@
             return NULL;                                                      \
         }                                                                     \
                                                                               \
+        ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type)                        \
+                                                                              \
         _accept                                                               \
                                                                               \
         return NULL;                                                          \
-    }
-
-
-
-#define ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type)                        \
-    if (((esxVI_Object *)item)->_type == esxVI_Type_##__type) {               \
-        return item;                                                          \
     }
 
 
