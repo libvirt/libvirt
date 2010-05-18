@@ -1905,6 +1905,7 @@ virDomainNetDefParseXML(virCapsPtr caps,
                 model = virXMLPropString(cur, "type");
             } else if (xmlStrEqual (cur->name, BAD_CAST "filterref")) {
                 filter = virXMLPropString(cur, "filter");
+                VIR_FREE(filterparams);
                 filterparams = virNWFilterParseParamAttributes(cur);
             } else if ((flags & VIR_DOMAIN_XML_INTERNAL_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
