@@ -1149,6 +1149,7 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     if (virBufferError(&extra)) {
         virBufferFreeAndReset(&extra);
         virReportOOMError();
+        free(safedest);
         return -1;
     }
     if (virAsprintf(&cmd, "migrate %s\"%s\"", virBufferContentAndReset(&extra), safedest) < 0) {
