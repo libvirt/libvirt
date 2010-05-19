@@ -38,6 +38,7 @@ module Libvirtd_qemu =
                  | str_entry "save_image_format"
                  | str_entry "hugetlbfs_mount"
                  | bool_entry "relaxed_acs_check"
+                 | bool_entry "vnc_allow_host_audio"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry

@@ -351,6 +351,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE ("relaxed_acs_check", VIR_CONF_LONG);
     if (p) driver->relaxedACS = p->l;
 
+    p = virConfGetValue (conf, "vnc_allow_host_audio");
+    CHECK_TYPE ("vnc_allow_host_audio", VIR_CONF_LONG);
+    if (p) driver->vncAllowHostAudio = p->l;
+
     virConfFree (conf);
     return 0;
 }
@@ -4399,12 +4403,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG_LIT(def->graphics[0]->data.vnc.keymap);
         }
 
-        /* QEMU implements a VNC extension for providing audio, so we
-         * set the audio backend to none, to prevent it opening the
-         * host OS audio devices since that causes security issues
-         * and is non-sensical when using VNC.
+        /* Unless user requested it, set the audio backend to none, to
+         * prevent it opening the host OS audio devices, since that causes
+         * security issues and might not work when using VNC.
          */
-        ADD_ENV_LIT("QEMU_AUDIO_DRV=none");
+        if (driver->vncAllowHostAudio) {
+            ADD_ENV_COPY("QEMU_AUDIO_DRV");
+        } else {
+            ADD_ENV_LIT("QEMU_AUDIO_DRV=none");
+        }
     } else if ((def->ngraphics == 1) &&
                def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
         char *xauth = NULL;

@@ -138,6 +138,8 @@ struct qemud_driver {
 
     unsigned int relaxedACS : 1;
 
+    unsigned int vncAllowHostAudio : 1;
+
     virCapsPtr caps;
 
     /* An array of callbacks */
