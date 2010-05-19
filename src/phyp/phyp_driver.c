@@ -1344,15 +1344,15 @@ phypDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     if ((info->maxMem =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0)
-        VIR_WARN("%s", "Unable to determine domain's max memory.");
+        VIR_WARN0("Unable to determine domain's max memory.");
 
     if ((info->memory =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0)
-        VIR_WARN("%s", "Unable to determine domain's memory.");
+        VIR_WARN0("Unable to determine domain's memory.");
 
     if ((info->nrVirtCpu =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0)
-        VIR_WARN("%s", "Unable to determine domain's CPU.");
+        VIR_WARN0("Unable to determine domain's CPU.");
 
     return 0;
 }
@@ -1416,14 +1416,14 @@ phypDomainCreateAndStart(virConnectPtr conn,
 
     /* checking if this name already exists on this system */
     if (phypGetLparID(session, managed_system, def->name, conn) == -1) {
-        VIR_WARN("%s", "LPAR name already exists.");
+        VIR_WARN0("LPAR name already exists.");
         goto err;
     }
 
     /* checking if ID or UUID already exists on this system */
     for (i = 0; i < uuid_table->nlpars; i++) {
         if (lpars[i]->id == def->id || lpars[i]->uuid == def->uuid) {
-            VIR_WARN("%s", "LPAR ID or UUID already exists.");
+            VIR_WARN0("LPAR ID or UUID already exists.");
             goto err;
         }
     }
@@ -1782,7 +1782,7 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
     int id;
 
     if ((fd = open(local_file, O_RDONLY)) == -1) {
-        VIR_WARN("%s", "Unable to write information to local file.");
+        VIR_WARN0("Unable to write information to local file.");
         goto err;
     }
 
