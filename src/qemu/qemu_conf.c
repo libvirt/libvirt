@@ -1296,13 +1296,13 @@ int qemudParseHelpStr(const char *qemu,
     ++p;
 
     minor = virParseNumber(&p);
-    if (major == -1 || *p != '.')
+    if (minor == -1 || *p != '.')
         goto fail;
 
     ++p;
 
     micro = virParseNumber(&p);
-    if (major == -1)
+    if (micro == -1)
         goto fail;
 
     SKIP_BLANKS(p);
