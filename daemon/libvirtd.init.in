@@ -45,6 +45,9 @@ KRB5_KTNAME=/etc/libvirt/krb5.tab
 
 test -f @sysconfdir@/sysconfig/libvirtd && . @sysconfdir@/sysconfig/libvirtd
 
+export QEMU_AUDIO_DRV
+export SDL_AUDIODRIVER
+
 LIBVIRTD_CONFIG_ARGS=
 if [ -n "$LIBVIRTD_CONFIG" ]
 then
