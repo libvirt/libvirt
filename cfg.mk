@@ -228,7 +228,7 @@ sc_avoid_write:
 	@prohibit='\<write *\('						\
 	in_vc_files='\.c$$'						\
 	halt='consider using safewrite instead of write'		\
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
 
 # Use STREQ rather than comparing strcmp == 0, or != 0.
 # Similarly, use STREQLEN or STRPREFIX rather than strncmp.
@@ -285,7 +285,7 @@ sc_prohibit_nonreentrant:
 sc_prohibit_ctype_h:
 	@prohibit='^# *include  *<ctype\.h>'				\
 	halt="don't use ctype.h; instead, use c-ctype.h"		\
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
 
 # Ensure that no C source file or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
@@ -294,7 +294,7 @@ sc_TAB_in_indentation:
 	@prohibit='^ *	'						\
 	in_vc_files='(\.(rng|[ch](\.in)?)|(daemon|tools)/.*\.in)$$'	\
 	halt='use spaces, not TAB, for indentation in C, sh, and RNG schemas' \
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
 
 ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 |isprint|ispunct|isspace|isupper|isxdigit|tolower|toupper
@@ -302,7 +302,7 @@ ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 sc_avoid_ctype_macros:
 	@prohibit='\b($(ctype_re)) *\('					\
 	halt="don't use ctype macros (use c-ctype.h)"			\
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
 
 sc_prohibit_virBufferAdd_with_string_literal:
 	@prohibit='\<virBufferAdd *\([^,]+, *"[^"]'			\
@@ -415,10 +415,17 @@ sc_copyright_format:
 	@require='Copyright .*Red 'Hat', Inc\.'				\
 	containing='Copyright .*Red 'Hat				\
 	halt='Red Hat copyright is missing Inc.'			\
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
 	@prohibit='Copyright [^(].*Red 'Hat				\
 	halt='consistently use (C) in Red Hat copyright'		\
-	 $(_sc_search_regexp)
+	  $(_sc_search_regexp)
+
+# Some functions/macros produce messages intended solely for developers
+# and maintainers.  Do not mark them for translation.
+sc_prohibit_gettext_markup:
+	@prohibit='\<VIR_WARN0? *\(_\('					\
+	halt='do not mark these strings for translation'		\
+	  $(_sc_search_regexp)
 
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
