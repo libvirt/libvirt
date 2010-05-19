@@ -74,14 +74,14 @@
 
 #define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredItem(_type)               \
     if (esxVI_##_type##_Deserialize(response->node, output) < 0) {            \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
 
 #define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredList(_type)               \
     if (esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
@@ -89,7 +89,7 @@
 #define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalItem(_type)               \
     if (response->node != NULL &&                                             \
         esxVI_##_type##_Deserialize(response->node, output) < 0) {            \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
@@ -97,7 +97,7 @@
 #define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalList(_type)               \
     if (response->node != NULL &&                                             \
         esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
@@ -107,7 +107,7 @@
     int                                                                       \
     esxVI_##_name _parameters                                                 \
     {                                                                         \
-        int result = 0;                                                       \
+        int result = -1;                                                      \
         const char *methodName = #_name;                                      \
         virBuffer buffer = VIR_BUFFER_INITIALIZER;                            \
         char *request = NULL;                                                 \
@@ -129,30 +129,29 @@
                                                                               \
         if (virBufferError(&buffer)) {                                        \
             virReportOOMError();                                              \
-            goto failure;                                                     \
+            goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         request = virBufferContentAndReset(&buffer);                          \
                                                                               \
         if (esxVI_Context_Execute(ctx, methodName, request, &response,        \
                                   esxVI_Occurrence_##_occurrence) < 0) {      \
-            goto failure;                                                     \
+            goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         ESX_VI__METHOD__DESERIALIZE_OUTPUT__##_occurrence(_output_type)       \
                                                                               \
+        result = 0;                                                           \
+                                                                              \
       cleanup:                                                                \
+        if (result < 0) {                                                     \
+            virBufferFreeAndReset(&buffer);                                   \
+        }                                                                     \
+                                                                              \
         VIR_FREE(request);                                                    \
         esxVI_Response_Free(&response);                                       \
                                                                               \
         return result;                                                        \
-                                                                              \
-      failure:                                                                \
-        virBufferFreeAndReset(&buffer);                                       \
-                                                                              \
-        result = -1;                                                          \
-                                                                              \
-        goto cleanup;                                                         \
     }
 
 
@@ -216,21 +215,21 @@
 
 #define ESX_VI__METHOD__PARAMETER__SERIALIZE(_type, _name)                    \
     if (esxVI_##_type##_Serialize(_name, #_name, &buffer) < 0) {              \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
 
 #define ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(_type, _name)               \
     if (esxVI_##_type##_SerializeList(_name, #_name, &buffer) < 0) {          \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
 
 #define ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(_type, _name)              \
     if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) {         \
-        goto failure;                                                         \
+        goto cleanup;                                                         \
     }
 
 
@@ -243,7 +242,7 @@ int
 esxVI_RetrieveServiceContent(esxVI_Context *ctx,
                              esxVI_ServiceContent **serviceContent)
 {
-    int result = 0;
+    int result = -1;
     const char *request = ESX_VI__SOAP__REQUEST_HEADER
                             "<RetrieveServiceContent xmlns=\"urn:vim25\">"
                               "<_this xmlns=\"urn:vim25\" "
@@ -263,18 +262,15 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
     if (esxVI_Context_Execute(ctx, "RetrieveServiceContent", request,
                               &response, esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_ServiceContent_Deserialize(response->node, serviceContent) < 0) {
-        goto failure;
+        goto cleanup;
     }
+
+    result = 0;
 
   cleanup:
     esxVI_Response_Free(&response);
 
     return result;
-
-  failure:
-    result = -1;
-
-    goto cleanup;
 }
 
 

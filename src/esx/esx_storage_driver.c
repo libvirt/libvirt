@@ -467,10 +467,6 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
     result = 0;
 
   cleanup:
-    if (result < 0) {
-        memset(info, 0, sizeof (*info));
-    }
-
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
 

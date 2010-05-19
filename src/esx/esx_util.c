@@ -43,7 +43,7 @@ int
 esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
                    int *noVerify, int *autoAnswer)
 {
-    int result = 0;
+    int result = -1;
     int i;
     struct qparam_set *queryParamSet = NULL;
     struct qparam *queryParam = NULL;
@@ -71,7 +71,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 #endif
 
     if (queryParamSet == NULL) {
-        goto failure;
+        return -1;
     }
 
     for (i = 0; i < queryParamSet->n; i++) {
@@ -86,14 +86,14 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 
             if (*transport == NULL) {
                 virReportOOMError();
-                goto failure;
+                goto cleanup;
             }
 
             if (STRNEQ(*transport, "http") && STRNEQ(*transport, "https")) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'transport' has unexpected value "
                             "'%s' (should be http|https)"), *transport);
-                goto failure;
+                goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
             if (vCenter == NULL) {
@@ -104,7 +104,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 
             if (*vCenter == NULL) {
                 virReportOOMError();
-                goto failure;
+                goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {
             if (noVerify == NULL) {
@@ -116,7 +116,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'no_verify' has unexpected value "
                             "'%s' (should be 0 or 1)"), queryParam->value);
-                goto failure;
+                goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
             if (autoAnswer == NULL) {
@@ -128,7 +128,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'auto_answer' has unexpected "
                             "value '%s' (should be 0 or 1)"), queryParam->value);
-                goto failure;
+                goto cleanup;
             }
         } else {
             VIR_WARN("Ignoring unexpected query parameter '%s'",
@@ -141,29 +141,28 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 
         if (*transport == NULL) {
             virReportOOMError();
-            goto failure;
+            goto cleanup;
         }
     }
 
+    result = 0;
+
   cleanup:
+    if (result < 0) {
+        if (transport != NULL) {
+            VIR_FREE(*transport);
+        }
+
+        if (vCenter != NULL) {
+            VIR_FREE(*vCenter);
+        }
+    }
+
     if (queryParamSet != NULL) {
         free_qparam_set(queryParamSet);
     }
 
     return result;
-
-  failure:
-    if (transport != NULL) {
-        VIR_FREE(*transport);
-    }
-
-    if (vCenter != NULL) {
-        VIR_FREE(*vCenter);
-    }
-
-    result = -1;
-
-    goto cleanup;
 }
 
 
@@ -196,7 +195,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
                                   char **datastoreName,
                                   char **directoryName, char **fileName)
 {
-    int result = 0;
+    int result = -1;
     char *copyOfDatastoreRelatedPath = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
@@ -213,7 +212,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
 
     if (esxVI_String_DeepCopyValue(&copyOfDatastoreRelatedPath,
                                    datastoreRelatedPath) < 0) {
-        goto failure;
+        goto cleanup;
     }
 
     /* Expected format: '[<datastore>] <path>' */
@@ -223,12 +222,12 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Datastore related path '%s' doesn't have expected format "
                     "'[<datastore>] <path>'"), datastoreRelatedPath);
-        goto failure;
+        goto cleanup;
     }
 
     if (esxVI_String_DeepCopyValue(datastoreName,
                                    preliminaryDatastoreName) < 0) {
-        goto failure;
+        goto cleanup;
     }
 
     directoryAndFileName += strspn(directoryAndFileName, " ");
@@ -243,33 +242,32 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Datastore related path '%s' doesn't reference a file"),
                       datastoreRelatedPath);
-            goto failure;
+            goto cleanup;
         }
 
         if (esxVI_String_DeepCopyValue(directoryName,
                                        directoryAndFileName) < 0 ||
             esxVI_String_DeepCopyValue(fileName, separator) < 0) {
-            goto failure;
+            goto cleanup;
         }
     } else {
         if (esxVI_String_DeepCopyValue(fileName, directoryAndFileName) < 0) {
-            goto failure;
+            goto cleanup;
         }
     }
 
+    result = 0;
+
   cleanup:
+    if (result < 0) {
+        VIR_FREE(*datastoreName);
+        VIR_FREE(*directoryName);
+        VIR_FREE(*fileName);
+    }
+
     VIR_FREE(copyOfDatastoreRelatedPath);
 
     return result;
-
-  failure:
-    VIR_FREE(*datastoreName);
-    VIR_FREE(*directoryName);
-    VIR_FREE(*fileName);
-
-    result = -1;
-
-    goto cleanup;
 }
 
 
@@ -282,7 +280,7 @@ esxUtil_ResolveHostname(const char *hostname,
     struct addrinfo *result = NULL;
     int errcode;
 
-    memset(&hints, 0, sizeof(struct addrinfo));
+    memset(&hints, 0, sizeof (hints));
 
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;

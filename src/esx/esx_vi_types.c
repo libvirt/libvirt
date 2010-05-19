@@ -297,7 +297,7 @@
     int                                                                       \
     esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **number)      \
     {                                                                         \
-        int result = 0;                                                       \
+        int result = -1;                                                      \
         char *string;                                                         \
         long long value;                                                      \
                                                                               \
@@ -317,35 +317,34 @@
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
                          "XML node doesn't contain text, expecting an "       \
                          _xsdType" value");                                   \
-            goto failure;                                                     \
+            goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         if (virStrToLong_ll(string, NULL, 10, &value) < 0) {                  \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
                          "Unknown value '%s' for "_xsdType, string);          \
-            goto failure;                                                     \
+            goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         if (value < (_min) || value > (_max)) {                               \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
                          "Value '%s' is not representable as "_xsdType,       \
                          (const char *)string);                               \
-            goto failure;                                                     \
+            goto cleanup;                                                     \
         }                                                                     \
                                                                               \
         (*number)->value = value;                                             \
                                                                               \
+        result = 0;                                                           \
+                                                                              \
       cleanup:                                                                \
+        if (result < 0) {                                                     \
+            esxVI_##_type##_Free(number);                                     \
+        }                                                                     \
+                                                                              \
         VIR_FREE(string);                                                     \
                                                                               \
         return result;                                                        \
-                                                                              \
-      failure:                                                                \
-        esxVI_##_type##_Free(number);                                         \
-                                                                              \
-        result = -1;                                                          \
-                                                                              \
-        goto cleanup;                                                         \
     }
 
 
@@ -930,7 +929,7 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
     esxVI_String *string = NULL;
 
     if (esxVI_String_Alloc(&string) < 0) {
-        goto failure;
+        return -1;
     }
 
     string->value = strdup(value);
