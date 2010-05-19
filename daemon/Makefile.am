@@ -29,6 +29,7 @@ EXTRA_DIST =						\
 	libvirtd.lxc.logrotate.in                       \
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug                               \
+	THREADING.txt					\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 

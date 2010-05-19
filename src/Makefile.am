@@ -610,7 +610,8 @@ augeas_DATA += qemu/libvirtd_qemu.aug
 augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
 endif
-EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug qemu/test_libvirtd_qemu.aug
+EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug \
+		qemu/test_libvirtd_qemu.aug qemu/THREADS.txt
 
 
 if WITH_LXC
