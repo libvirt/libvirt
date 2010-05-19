@@ -167,22 +167,44 @@ EXTRA_DIST += remote/remote_protocol.x remote/rpcgen_fix.pl
 # * remove comments and preceding TAB throughout
 # * remove empty lines throughout
 # * remove white space at end of buffer
+
+# With pdwtags 1.8, --verbose output includes separators like these:
+# /* 93 */
+# /* <0> (null):0 */
+# whereas with pdwtags 1.3, they look like this:
+# /* <2d2> /usr/include/libio.h:180 */
+# The concatenation of the following regexps matches both cases.
+r1 = (?:/\* \d+ \*/\n)?
+r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
+
 .PHONY: remote_protocol-structs
 remote_protocol-structs:
 	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  pdwtags libvirt_driver_remote_la-remote_protocol.$(OBJEXT)	\
+	  pdwtags --verbose libvirt_driver_remote_la-remote_protocol.$(OBJEXT) \
 	    | perl -0777 -n						\
-		-e 'foreach my $$p (split m!\n\n/\* \d+ \*/\n!)'	\
-		-e '  { if ($$p =~ /^struct remote_/) {'		\
-		-e '      $$p =~ s!\t*/\*.*?\*/!!sg;'			\
-		-e '      $$p =~ s!\s+\n!\n!sg;'			\
-		-e '      $$p =~ s!\s+$$!!;'				\
-		-e '      print "$$p\n" } }'				\
+		-e 'foreach my $$p (split m!\n\n$(r1)$(r2)\n!) {'	\
+		-e '  if ($$p =~ /^struct remote_/) {'			\
+		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
+		-e '    $$p =~ s!\s+\n!\n!sg;'				\
+		-e '    $$p =~ s!\s+$$!!;'				\
+		-e '    print "$$p\n";'					\
+		-e '    $$n++;'						\
+		-e '  }'						\
+		-e '}'							\
+		-e 'END {'						\
+		-e '  if ($$n < 300) {'					\
+		-e '    warn "WARNING: your pdwtags program is too old\n";' \
+		-e '    warn "WARNING: skipping the $@ test\n";'	\
+		-e '    warn "WARNING: install dwarves-1.3 or newer\n";' \
+		-e '    exit 8;'					\
+		-e '  }'						\
+		-e '}'							\
 		> $@-t;							\
+          case $$? in 8) exit 0;; 0) ;; *) exit 1;; esac;		\
 	  diff -u $@-t $(srcdir)/$@; st=$$?; rm -f $@-t; exit $$st;	\
 	else								\
-	  echo 'WARNING: you lack pdwtags; skipping the $@ test';	\
-	  echo 'WARNING: install the dwarves package to get pdwtags';	\
+	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
+	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
 EXTRA_DIST += remote_protocol-structs
 check-local: remote_protocol-structs
