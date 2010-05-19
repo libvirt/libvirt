@@ -3027,6 +3027,8 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
             /* Get this for non-block devices */
             if (rc == -EINVAL) {
                 VIR_DEBUG("Ignoring EINVAL for %s", path);
+            } else if (rc == -EACCES) { /* Get this for root squash NFS */
+                VIR_DEBUG("Ignoring EACCES for %s", path);
             } else {
                 virReportSystemError(-rc,
                                      _("Unable to allow device %s for %s"),
@@ -3038,13 +3040,15 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
         }
 
         rc = virStorageFileGetMetadata(path, &meta);
+        if (rc < 0)
+            VIR_WARN("Unable to lookup parent image for %s", path);
 
         if (path != disk->src)
             VIR_FREE(path);
         path = NULL;
 
         if (rc < 0)
-            goto cleanup;
+            break; /* Treating as non fatal */
 
         path = meta.backingStore;
     }
@@ -3073,6 +3077,8 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
             /* Get this for non-block devices */
             if (rc == -EINVAL) {
                 VIR_DEBUG("Ignoring EINVAL for %s", path);
+            } else if (rc == -EACCES) { /* Get this for root squash NFS */
+                VIR_DEBUG("Ignoring EACCES for %s", path);
             } else {
                 virReportSystemError(-rc,
                                      _("Unable to deny device %s for %s"),
@@ -3084,13 +3090,15 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
         }
 
         rc = virStorageFileGetMetadata(path, &meta);
+        if (rc < 0)
+            VIR_WARN("Unable to lookup parent image for %s", path);
 
         if (path != disk->src)
             VIR_FREE(path);
         path = NULL;
 
         if (rc < 0)
-            goto cleanup;
+            break; /* Treating as non fatal */
 
         path = meta.backingStore;
     }
