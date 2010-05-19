@@ -1798,15 +1798,13 @@ phypUUIDTable_ReadFile(virConnectPtr conn)
                 }
                 uuid_table->lpars[i]->id = id;
             } else {
-                VIR_WARN("%s",
-                         "Unable to read from information to local file.");
+                VIR_WARN0("Unable to read from information to local file.");
                 goto err;
             }
 
             rc = read(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN);
             if (rc != VIR_UUID_BUFLEN) {
-                VIR_WARN("%s",
-                         "Unable to read information to local file.");
+                VIR_WARN0("Unable to read information to local file.");
                 goto err;
             }
         }
@@ -1909,8 +1907,7 @@ phypUUIDTable_Init(virConnectPtr conn)
                 uuid_table->lpars[i]->id = ids[i];
 
                 if (virUUIDGenerate(uuid_table->lpars[i]->uuid) < 0)
-                    VIR_WARN("%s %d", "Unable to generate UUID for domain",
-                             ids[i]);
+                    VIR_WARN("Unable to generate UUID for domain %d", ids[i]);
             }
         } else {
             virReportOOMError();
@@ -2083,8 +2080,7 @@ phypUUIDTable_Pull(virConnectPtr conn)
             rc = libssh2_channel_read(channel, buffer, amount);
             if (rc > 0) {
                 if (safewrite(fd, buffer, rc) != rc)
-                    VIR_WARN("%s",
-                             "Unable to write information to local file.");
+                    VIR_WARN0("Unable to write information to local file.");
 
                 got += rc;
                 total += rc;

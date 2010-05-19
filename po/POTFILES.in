@@ -76,14 +76,12 @@ src/util/hooks.c
 src/util/hostusb.c
 src/util/interface.c
 src/util/json.c
-src/util/logging.c
 src/util/macvtap.c
 src/util/pci.c
 src/util/processinfo.c
 src/util/stats_linux.c
 src/util/storage_file.c
 src/util/util.c
-src/util/uuid.c
 src/util/virterror.c
 src/util/xml.c
 src/vbox/vbox_driver.c
