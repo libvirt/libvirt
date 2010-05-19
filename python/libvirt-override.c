@@ -988,6 +988,28 @@ libvirt_virDomainSnapshotListNames(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virDomainRevertToSnapshot(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args) {
+    int c_retval;
+    virDomainSnapshotPtr snap;
+    PyObject *pyobj_snap;
+    PyObject *pyobj_dom;
+    int flags;
+
+    if (!PyArg_ParseTuple(args, (char *)"OOi:virDomainRevertToSnapshot", &pyobj_dom, &pyobj_snap, &flags))
+        return(NULL);
+    snap = (virDomainSnapshotPtr) PyvirDomainSnapshot_Get(pyobj_snap);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainRevertToSnapshot(snap, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_INT_FAIL;
+
+    return PyInt_FromLong(c_retval);
+}
+
+static PyObject *
 libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
@@ -3527,6 +3549,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectBaselineCPU", libvirt_virConnectBaselineCPU, METH_VARARGS, NULL},
     {(char *) "virDomainGetJobInfo", libvirt_virDomainGetJobInfo, METH_VARARGS, NULL},
     {(char *) "virDomainSnapshotListNames", libvirt_virDomainSnapshotListNames, METH_VARARGS, NULL},
+    {(char *) "virDomainRevertToSnapshot", libvirt_virDomainRevertToSnapshot, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

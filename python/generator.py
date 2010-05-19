@@ -331,7 +331,7 @@ skip_impl = (
     'virNodeListDevices',
     'virNodeDeviceListCaps',
     'virConnectBaselineCPU',
-    'virDomainSnapshotListNames',
+    'virDomainRevertToSnapshot',
 )
 
 
@@ -383,6 +383,10 @@ skip_function = (
     "virNWFilterGetConnect",
     "virStoragePoolGetConnect",
     "virStorageVolGetConnect",
+)
+
+function_skip_index_one = (
+    "virDomainRevertToSnapshot",
 )
 
 
@@ -688,9 +692,13 @@ classes_destructors = {
 }
 
 class_skip_connect_impl = {
-    "virConnect" : True
+    "virConnect" : True,
+    "virDomainSnapshot": True,
 }
 
+class_domain_impl = {
+    "virDomainSnapshot": True,
+}
 
 functions_noexcept = {
     'virDomainGetID': True,
@@ -986,7 +994,7 @@ def buildWrappers():
 		info = (0, func, name, ret, args, file)
 		function_classes[classe].append(info)
 	    elif name[0:3] == "vir" and len(args) >= 2 and args[1][1] == type \
-	        and file != "python_accessor":
+	        and file != "python_accessor" and not name in function_skip_index_one:
 		found = 1
 		func = nameFixup(name, classe, type, file)
 		info = (1, func, name, ret, args, file)
@@ -1128,6 +1136,8 @@ def buildWrappers():
                                   "virStorageVol", "virNodeDevice", "virSecret","virStream",
                                   "virNWFilter" ]:
                     classes.write("    def __init__(self, conn, _obj=None):\n")
+                elif classname in [ 'virDomainSnapshot' ]:
+                    classes.write("    def __init__(self, dom, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")
 		if reference_keepers.has_key(classname):
@@ -1142,6 +1152,8 @@ def buildWrappers():
                     classes.write("        self._conn = conn\n" + \
                                   "        if not isinstance(conn, virConnect):\n" + \
                                   "            self._conn = conn._conn\n")
+                elif classname in [ "virDomainSnapshot" ]:
+                    classes.write("        self._dom = dom\n")
 		classes.write("        if _obj != None:self._o = _obj;return\n")
 		classes.write("        self._o = None\n\n");
 	    destruct=None
@@ -1157,6 +1169,10 @@ def buildWrappers():
                 # Build python safe 'connect' method
                 classes.write("    def connect(self):\n")
                 classes.write("        return self._conn\n\n")
+
+            if class_domain_impl.has_key(classname):
+                classes.write("    def domain(self):\n")
+                classes.write("        return self._dom\n\n")
 
 	    flist = function_classes[classname]
 	    flist.sort(functionCompare)
@@ -1251,6 +1267,10 @@ def buildWrappers():
                             elif classname == "virStorageVol":
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed', vol=self)\n" %
+                                              (name))
+                            elif classname == "virDomainSnapshot":
+                                classes.write(
+                     "        if ret is None:raise libvirtError('%s() failed', dom=self._dom)\n" %
                                               (name))
                             else:
                                 classes.write(

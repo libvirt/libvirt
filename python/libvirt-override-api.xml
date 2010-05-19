@@ -277,5 +277,12 @@
       <arg name='flags' type='unsigned int' info='flags, curently unused'/>
       <return type='str *' info='the list of Names of None in case of error'/>
     </function>
+    <function name='virDomainRevertToSnapshot' file='python'>
+      <info>revert the domain to the given snapshot</info>
+      <arg name='dom' type='virDomainPtr' info='dummy domain pointer'/>
+      <arg name='snap' type='virDomainSnapshotPtr' info='pointer to the snapshot'/>
+      <arg name='flags' type='unsigned int' info='flags, curently unused'/>
+      <return type='int' info="0 on success, -1 on error"/>
+    </function>
   </symbols>
 </api>
