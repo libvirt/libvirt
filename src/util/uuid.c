@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -101,8 +101,8 @@ virUUIDGenerate(unsigned char *uuid)
 
     if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN))) {
         char ebuf[1024];
-        VIR_WARN(_("Falling back to pseudorandom UUID,"
-                   " failed to generate random bytes: %s"),
+        VIR_WARN("Falling back to pseudorandom UUID,"
+                 " failed to generate random bytes: %s",
                  virStrerror(err, ebuf, sizeof ebuf));
         err = virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
     }
