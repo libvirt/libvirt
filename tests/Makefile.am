@@ -46,7 +46,8 @@ qemuhelpdata = \
 	qemu-0.10.5 \
 	qemu-0.12.1 \
 	qemu-kvm-0.10.5 \
-	qemu-kvm-0.11.0-rc2
+	qemu-kvm-0.11.0-rc2 \
+	qemu-kvm-0.12.3
 
 EXTRA_DIST =		\
         oomtrace.pl     \

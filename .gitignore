@@ -10,6 +10,7 @@
 .git-module-status
 .sc-start-sc_*
 /GNUmakefile
+/libvirt-[0-9]*
 /maint.mk
 ABOUT-NLS
 COPYING
