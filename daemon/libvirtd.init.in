@@ -9,7 +9,7 @@
 # Should-Start: $named
 # Should-Start: xend
 # Should-Start: hal
-# Should-Start: avahi
+# Should-Start: avahi-daemon
 # Required-Stop: $network messagebus
 # Should-Stop: $named
 # Default-Start: 3 4 5
@@ -24,8 +24,8 @@
 # libvirtd:   guest and virtual network management daemon
 #
 # chkconfig: 345 97 03
-# description:  This is a daemon for managing guest instances
-#               and libvirt virtual networks
+# description:  This is a daemon for managing guest instances \
+#               and libvirt virtual networks \
 #               See http://libvirt.org
 #
 # processname: libvirtd
