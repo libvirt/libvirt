@@ -995,14 +995,14 @@ static int networkStartNetworkDaemon(struct network_driver *driver,
  err_delbr1:
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
         char ebuf[1024];
-        VIR_WARN(_("Failed to bring down bridge '%s' : %s"),
+        VIR_WARN("Failed to bring down bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
         char ebuf[1024];
-        VIR_WARN(_("Failed to delete bridge '%s' : %s"),
+        VIR_WARN("Failed to delete bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
@@ -1035,12 +1035,12 @@ static int networkShutdownNetworkDaemon(struct network_driver *driver,
 
     char ebuf[1024];
     if ((err = brSetInterfaceUp(driver->brctl, network->def->bridge, 0))) {
-        VIR_WARN(_("Failed to bring down bridge '%s' : %s"),
+        VIR_WARN("Failed to bring down bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->def->bridge))) {
-        VIR_WARN(_("Failed to delete bridge '%s' : %s"),
+        VIR_WARN("Failed to delete bridge '%s' : %s",
                  network->def->bridge, virStrerror(err, ebuf, sizeof ebuf));
     }
 

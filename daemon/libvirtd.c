@@ -384,14 +384,14 @@ qemudDispatchSignalEvent(int watch ATTRIBUTE_UNUSED,
         virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                     VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL);
         if (virStateReload() < 0)
-            VIR_WARN0(_("Error while reloading drivers"));
+            VIR_WARN0("Error while reloading drivers");
 
         break;
 
     case SIGINT:
     case SIGQUIT:
     case SIGTERM:
-        VIR_WARN(_("Shutting down on signal %d"), siginfo.si_signo);
+        VIR_WARN("Shutting down on signal %d", siginfo.si_signo);
         server->quitEventThread = 1;
         break;
 
@@ -2761,7 +2761,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
         if (!server->privileged) {
-            VIR_WARN0(_("Cannot set group when not running as root"));
+            VIR_WARN0("Cannot set group when not running as root");
         } else {
             int ret;
             struct group grpdata, *grp;

@@ -1445,42 +1445,42 @@ qemuMonitorTextParsePciAddReply(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         s += strlen("domain ");
 
         if (virStrToLong_ui(s, &e, 10, &addr->domain) == -1) {
-            VIR_WARN(_("Unable to parse domain number '%s'"), s);
+            VIR_WARN("Unable to parse domain number '%s'", s);
             return -1;
         }
 
         if (!STRPREFIX(e, ", ")) {
-            VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'"), s);
+            VIR_WARN("Expected ', ' parsing pci_add reply '%s'", s);
             return -1;
         }
         s = e + 2;
     }
 
     if (!STRPREFIX(s, "bus ")) {
-        VIR_WARN(_("Expected 'bus ' parsing pci_add reply '%s'"), s);
+        VIR_WARN("Expected 'bus ' parsing pci_add reply '%s'", s);
         return -1;
     }
     s += strlen("bus ");
 
     if (virStrToLong_ui(s, &e, 10, &addr->bus) == -1) {
-        VIR_WARN(_("Unable to parse bus number '%s'"), s);
+        VIR_WARN("Unable to parse bus number '%s'", s);
         return -1;
     }
 
     if (!STRPREFIX(e, ", ")) {
-        VIR_WARN(_("Expected ', ' parsing pci_add reply '%s'"), s);
+        VIR_WARN("Expected ', ' parsing pci_add reply '%s'", s);
         return -1;
     }
     s = e + 2;
 
     if (!STRPREFIX(s, "slot ")) {
-        VIR_WARN(_("Expected 'slot ' parsing pci_add reply '%s'"), s);
+        VIR_WARN("Expected 'slot ' parsing pci_add reply '%s'", s);
         return -1;
     }
     s += strlen("slot ");
 
     if (virStrToLong_ui(s, &e, 10, &addr->slot) == -1) {
-        VIR_WARN(_("Unable to parse slot number '%s'"), s);
+        VIR_WARN("Unable to parse slot number '%s'", s);
         return -1;
     }
 
@@ -2029,25 +2029,25 @@ qemudParseDriveAddReply(const char *reply,
         s += strlen("bus ");
 
         if (virStrToLong_ui(s, &e, 10, &addr->bus) == -1) {
-            VIR_WARN(_("Unable to parse bus '%s'"), s);
+            VIR_WARN("Unable to parse bus '%s'", s);
             return -1;
         }
 
         if (!STRPREFIX(e, ", ")) {
-            VIR_WARN(_("Expected ', ' parsing drive_add reply '%s'"), s);
+            VIR_WARN("Expected ', ' parsing drive_add reply '%s'", s);
             return -1;
         }
         s = e + 2;
     }
 
     if (!STRPREFIX(s, "unit ")) {
-        VIR_WARN(_("Expected 'unit ' parsing drive_add reply '%s'"), s);
+        VIR_WARN("Expected 'unit ' parsing drive_add reply '%s'", s);
         return -1;
     }
     s += strlen("bus ");
 
     if (virStrToLong_ui(s, &e, 10, &addr->unit) == -1) {
-        VIR_WARN(_("Unable to parse unit number '%s'"), s);
+        VIR_WARN("Unable to parse unit number '%s'", s);
         return -1;
     }
 

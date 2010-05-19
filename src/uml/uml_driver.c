@@ -881,25 +881,25 @@ static int umlStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s"),
+            VIR_WARN("Unable to write envv to logfile: %s",
                    virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s"),
+            VIR_WARN("Unable to write envv to logfile: %s",
                    virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s"),
+            VIR_WARN("Unable to write argv to logfile: %s",
                    virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfd, " ", 1) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s"),
+            VIR_WARN("Unable to write argv to logfile: %s",
                    virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(logfd, "\n", 1) < 0)
-        VIR_WARN(_("Unable to write argv to logfile: %s"),
+        VIR_WARN("Unable to write argv to logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     priv->monitor = -1;
@@ -947,7 +947,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     priv->monitor = -1;
 
     if ((ret = waitpid(vm->pid, NULL, 0)) != vm->pid) {
-        VIR_WARN(_("Got unexpected pid %d != %d"),
+        VIR_WARN("Got unexpected pid %d != %d",
                ret, vm->pid);
     }
 

@@ -523,7 +523,7 @@ rewait:
      * as there's really no need to throw an error if we did
      * actually read a valid version number above */
     if (WEXITSTATUS(status) != 0) {
-        VIR_WARN(_("Unexpected exit status '%d', qemu probably failed"),
+        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
                  WEXITSTATUS(status));
     }
 
@@ -767,7 +767,7 @@ rewait:
      * as there's really no need to throw an error if we did
      * actually read a valid version number above */
     if (WEXITSTATUS(status) != 0) {
-        VIR_WARN(_("Unexpected exit status '%d', qemu probably failed"),
+        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
                  WEXITSTATUS(status));
     }
 
@@ -847,7 +847,7 @@ qemudCapsInitGuest(virCapsPtr caps,
         binary_mtime = st.st_mtime;
     } else {
         char ebuf[1024];
-        VIR_WARN(_("Failed to stat %s, most peculiar : %s"),
+        VIR_WARN("Failed to stat %s, most peculiar : %s",
                  binary, virStrerror(errno, ebuf, sizeof(ebuf)));
         binary_mtime = 0;
     }
@@ -932,7 +932,7 @@ qemudCapsInitGuest(virCapsPtr caps,
                 binary_mtime = st.st_mtime;
             } else {
                 char ebuf[1024];
-                VIR_WARN(_("Failed to stat %s, most peculiar : %s"),
+                VIR_WARN("Failed to stat %s, most peculiar : %s",
                          binary, virStrerror(errno, ebuf, sizeof(ebuf)));
                 binary_mtime = 0;
             }
@@ -1403,7 +1403,7 @@ rewait:
      * as there's really no need to throw an error if we did
      * actually read a valid version number above */
     if (WEXITSTATUS(status) != 0) {
-        VIR_WARN(_("Unexpected exit status '%d', qemu probably failed"),
+        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
                  WEXITSTATUS(status));
     }
 
@@ -6147,7 +6147,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-S")) {
             /* ignore, always added by libvirt */
         } else {
-            VIR_WARN(_("unknown QEMU argument '%s' during conversion"), arg);
+            VIR_WARN("unknown QEMU argument '%s' during conversion", arg);
 #if 0
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("unknown argument '%s'"), arg);

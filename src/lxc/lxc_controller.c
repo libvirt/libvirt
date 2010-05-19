@@ -259,7 +259,7 @@ static int lxcControllerClearCapabilities(void)
         return -1;
     }
 #else
-    VIR_WARN0(_("libcap-ng support not compiled in, unable to clear capabilities"));
+    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
 #endif
     return 0;
 }

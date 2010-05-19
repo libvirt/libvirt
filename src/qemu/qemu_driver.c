@@ -689,12 +689,12 @@ qemudRemoveDomainStatus(struct qemud_driver *driver,
     }
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
-        VIR_WARN(_("Failed to remove domain XML for %s: %s"),
+        VIR_WARN("Failed to remove domain XML for %s: %s",
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
     VIR_FREE(file);
 
     if (virFileDeletePid(driver->stateDir, vm->def->name) != 0)
-        VIR_WARN(_("Failed to remove PID file for %s: %s"),
+        VIR_WARN("Failed to remove PID file for %s: %s",
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
 
 
@@ -2108,7 +2108,7 @@ cleanup:
 closelog:
     if (close(logfd) < 0) {
         char ebuf[4096];
-        VIR_WARN(_("Unable to close logfile: %s"),
+        VIR_WARN("Unable to close logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
     }
 
@@ -3441,29 +3441,29 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     tmp = progenv;
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s"),
+            VIR_WARN("Unable to write envv to logfile: %s",
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN(_("Unable to write envv to logfile: %s"),
+            VIR_WARN("Unable to write envv to logfile: %s",
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     tmp = argv;
     while (*tmp) {
         if (safewrite(logfile, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s"),
+            VIR_WARN("Unable to write argv to logfile: %s",
                      virStrerror(errno, ebuf, sizeof ebuf));
         if (safewrite(logfile, " ", 1) < 0)
-            VIR_WARN(_("Unable to write argv to logfile: %s"),
+            VIR_WARN("Unable to write argv to logfile: %s",
                      virStrerror(errno, ebuf, sizeof ebuf));
         tmp++;
     }
     if (safewrite(logfile, "\n", 1) < 0)
-        VIR_WARN(_("Unable to write argv to logfile: %s"),
+        VIR_WARN("Unable to write argv to logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
-        VIR_WARN(_("Unable to seek to end of logfile: %s"),
+        VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
 
     for (i = 0 ; i < ntapfds ; i++)
@@ -6944,7 +6944,7 @@ static int qemudDomainAttachPciDiskDevice(struct qemud_driver *driver,
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
             if (ret < 0) {
-                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
                          drivestr, devstr);
                 /* XXX should call 'drive_del' on error but this does not
                    exist yet */
@@ -7174,7 +7174,7 @@ static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
             if (ret < 0) {
-                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
                          drivestr, devstr);
                 /* XXX should call 'drive_del' on error but this does not
                    exist yet */
@@ -7267,7 +7267,7 @@ static int qemudDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
         if (ret == 0) {
             ret = qemuMonitorAddDevice(priv->mon, devstr);
             if (ret < 0) {
-                VIR_WARN(_("qemuMonitorAddDevice failed on %s (%s)"),
+                VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
                          drivestr, devstr);
                 /* XXX should call 'drive_del' on error but this does not
                    exist yet */
@@ -7491,12 +7491,12 @@ try_remove:
                 goto no_memory;
             qemuDomainObjEnterMonitorWithDriver(driver, vm);
             if (qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
-                VIR_WARN(_("Failed to remove network backend for netdev %s"),
+                VIR_WARN("Failed to remove network backend for netdev %s",
                          netdev_name);
             qemuDomainObjExitMonitorWithDriver(driver, vm);
             VIR_FREE(netdev_name);
         } else {
-            VIR_WARN0(_("Unable to remove network backend"));
+            VIR_WARN0("Unable to remove network backend");
         }
     } else {
         char *hostnet_name;
@@ -7504,7 +7504,7 @@ try_remove:
             goto no_memory;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
-            VIR_WARN(_("Failed to remove network backend for vlan %d, net %s"),
+            VIR_WARN("Failed to remove network backend for vlan %d, net %s",
                      vlan, hostnet_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         VIR_FREE(hostnet_name);
@@ -7518,7 +7518,7 @@ try_tapfd_close:
     if (tapfd_name) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorCloseFileHandle(priv->mon, tapfd_name) < 0)
-            VIR_WARN(_("Failed to close tapfd with '%s'"), tapfd_name);
+            VIR_WARN("Failed to close tapfd with '%s'", tapfd_name);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
     }
 

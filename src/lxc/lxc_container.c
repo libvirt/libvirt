@@ -716,7 +716,7 @@ static int lxcContainerDropCapabilities(void)
      * be unmasked  - they can never escape the bounding set. */
 
 #else
-    VIR_WARN0(_("libcap-ng support not compiled in, unable to clear capabilities"));
+    VIR_WARN0("libcap-ng support not compiled in, unable to clear capabilities");
 #endif
     return 0;
 }
