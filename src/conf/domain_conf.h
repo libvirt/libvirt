@@ -1011,7 +1011,7 @@ int virDomainSaveConfig(const char *configDir,
                         virDomainDefPtr def);
 int virDomainSaveStatus(virCapsPtr caps,
                         const char *statusDir,
-                        virDomainObjPtr obj);
+                        virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
 
 typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,

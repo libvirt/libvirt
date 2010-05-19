@@ -10816,7 +10816,10 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                                              VIR_DOMAIN_EVENT_SUSPENDED,
                                              VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
         }
-        virDomainSaveStatus(driver->caps, driver->stateDir, vm);
+        if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+            goto endjob;
+        }
     } else {
         qemudShutdownVMDaemon(driver, vm, 0);
         event = virDomainEventNewFromObj(vm,
