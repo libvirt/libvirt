@@ -269,6 +269,17 @@ typedef struct _lxcTtyForwardFd_t {
     int active;
 } lxcTtyForwardFd_t;
 
+/* Return true if it is ok to ignore an accept-after-epoll syscall
+   that fails with the specified errno value.  Else false.  */
+static bool
+ignorable_epoll_accept_errno(int errnum)
+{
+  return (errnum == EINVAL
+          || errnum == ECONNABORTED
+          || errnum == EAGAIN
+          || errnum == EWOULDBLOCK);
+}
+
 /**
  * lxcControllerMain
  * @monitor: server socket fd to accept client requests
@@ -350,6 +361,18 @@ static int lxcControllerMain(int monitor,
         if (numEvents > 0) {
             if (epollEvent.data.fd == monitor) {
                 int fd = accept(monitor, NULL, 0);
+                if (fd < 0) {
+                    /* First reflex may be simply to declare accept failure
+                       to be a fatal error.  However, accept may fail when
+                       a client quits between the above epoll_wait and here.
+                       That case is not fatal, but rather to be expected,
+                       if not common, so ignore it.  */
+                    if (ignorable_epoll_accept_errno(errno))
+                        continue;
+                    virReportSystemError(errno, "%s",
+                                         _("accept(monitor,...) failed"));
+                    goto cleanup;
+                }
                 if (client != -1) { /* Already connected, so kick new one out */
                     close(fd);
                     continue;
