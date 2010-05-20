@@ -3253,8 +3253,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     const char **progenv = NULL;
     int i, ret;
     struct stat sb;
-    int *tapfds = NULL;
-    int ntapfds = 0;
+    int *vmfds = NULL;
+    int nvmfds = 0;
     unsigned long long qemuCmdFlags;
     fd_set keepfd;
     const char *emulator;
@@ -3411,7 +3411,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     vm->def->id = driver->nextvmid++;
     if (qemudBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                               priv->monJSON, qemuCmdFlags, &argv, &progenv,
-                              &tapfds, &ntapfds, migrateFrom,
+                              &vmfds, &nvmfds, migrateFrom,
                               vm->current_snapshot) < 0)
         goto cleanup;
 
@@ -3462,8 +3462,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof ebuf));
 
-    for (i = 0 ; i < ntapfds ; i++)
-        FD_SET(tapfds[i], &keepfd);
+    for (i = 0 ; i < nvmfds ; i++)
+        FD_SET(vmfds[i], &keepfd);
 
     ret = virExecDaemonize(argv, progenv, &keepfd, &child,
                            stdin_fd, &logfile, &logfile,
@@ -3504,11 +3504,11 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (ret == -1) /* The VM failed to start; tear filters before taps */
         virNWFilterTearVMNWFilters(vm);
 
-    if (tapfds) {
-        for (i = 0 ; i < ntapfds ; i++) {
-            close(tapfds[i]);
+    if (vmfds) {
+        for (i = 0 ; i < nvmfds ; i++) {
+            close(vmfds[i]);
         }
-        VIR_FREE(tapfds);
+        VIR_FREE(vmfds);
     }
 
     if (ret == -1) /* The VM failed to start */

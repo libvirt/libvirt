@@ -198,8 +198,8 @@ int         qemudBuildCommandLine       (virConnectPtr conn,
                                          unsigned long long qemuCmdFlags,
                                          const char ***retargv,
                                          const char ***retenv,
-                                         int **tapfds,
-                                         int *ntapfds,
+                                         int **vmfds,
+                                         int *nvmfds,
                                          const char *migrateFrom,
                                          virDomainSnapshotObjPtr current_snapshot)
     ATTRIBUTE_NONNULL(1);

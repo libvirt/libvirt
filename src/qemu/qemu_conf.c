@@ -3422,8 +3422,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                           unsigned long long qemuCmdFlags,
                           const char ***retargv,
                           const char ***retenv,
-                          int **tapfds,
-                          int *ntapfds,
+                          int **vmfds,
+                          int *nvmfds,
                           const char *migrateFrom,
                           virDomainSnapshotObjPtr current_snapshot)
 {
@@ -4116,7 +4116,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 if (tapfd < 0)
                     goto error;
 
-                if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                     virNWFilterTearNWFilter(net);
                     close(tapfd);
                     goto no_memory;
@@ -4124,7 +4124,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
                 last_good_net = i;
 
-                (*tapfds)[(*ntapfds)++] = tapfd;
+                (*vmfds)[(*nvmfds)++] = tapfd;
 
                 if (snprintf(tapfd_name, sizeof(tapfd_name), "%d", tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
@@ -4136,7 +4136,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 if (tapfd < 0)
                     goto error;
 
-                if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                     virNWFilterTearNWFilter(net);
                     close(tapfd);
                     goto no_memory;
@@ -4144,7 +4144,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
                 last_good_net = i;
 
-                (*tapfds)[(*ntapfds)++] = tapfd;
+                (*vmfds)[(*nvmfds)++] = tapfd;
 
                 if (snprintf(tapfd_name, sizeof(tapfd_name), "%d", tapfd) >= sizeof(tapfd_name))
                     goto no_memory;
@@ -4157,12 +4157,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
                    network device */
                 int vhostfd = qemudOpenVhostNet(net, qemuCmdFlags);
                 if (vhostfd >= 0) {
-                    if (VIR_REALLOC_N(*tapfds, (*ntapfds)+1) < 0) {
+                    if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
                         close(vhostfd);
                         goto no_memory;
                     }
 
-                    (*tapfds)[(*ntapfds)++] = vhostfd;
+                    (*vmfds)[(*nvmfds)++] = vhostfd;
                     if (snprintf(vhostfd_name, sizeof(vhostfd_name), "%d", vhostfd)
                         >= sizeof(vhostfd_name))
                         goto no_memory;
@@ -4653,12 +4653,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
  error:
     for (i = 0; i <= last_good_net; i++)
         virNWFilterTearNWFilter(def->nets[i]);
-    if (tapfds &&
-        *tapfds) {
-        for (i = 0; i < *ntapfds; i++)
-            close((*tapfds)[i]);
-        VIR_FREE(*tapfds);
-        *ntapfds = 0;
+    if (vmfds &&
+        *vmfds) {
+        for (i = 0; i < *nvmfds; i++)
+            close((*vmfds)[i]);
+        VIR_FREE(*vmfds);
+        *nvmfds = 0;
     }
     if (qargv) {
         for (i = 0 ; i < qargc ; i++)
