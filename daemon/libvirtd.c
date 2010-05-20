@@ -484,8 +484,8 @@ static int daemonForkIntoBackground(void) {
 
             if (ret == 1 && status != 0) {
                 fprintf(stderr,
-                        "error: %s. Check /var/log/messages or run without "
-                        "--daemon for more info.\n",
+                        _("error: %s. Check /var/log/messages or run without "
+                          "--daemon for more info.\n"),
                         virDaemonErrTypeToString(status));
             }
             _exit(ret == 1 && status == 0 ? 0 : 1);
@@ -2963,7 +2963,7 @@ static void
 usage (const char *argv0)
 {
     fprintf (stderr,
-             "\n\
+             _("\n\
 Usage:\n\
   %s [options]\n\
 \n\
@@ -2981,27 +2981,33 @@ libvirt management daemon:\n\
   Default paths:\n\
 \n\
     Configuration file (unless overridden by -f):\n\
-      " SYSCONF_DIR "/libvirt/libvirtd.conf\n\
+      %s/libvirt/libvirtd.conf\n\
 \n\
     Sockets (as root):\n\
-      " LOCAL_STATE_DIR "/run/libvirt/libvirt-sock\n\
-      " LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro\n\
+      %s/run/libvirt/libvirt-sock\n\
+      %s/run/libvirt/libvirt-sock-ro\n\
 \n\
     Sockets (as non-root):\n\
       $HOME/.libvirt/libvirt-sock (in UNIX abstract namespace)\n\
 \n\
     TLS:\n\
-      CA certificate:     " LIBVIRT_CACERT "\n\
-      Server certificate: " LIBVIRT_SERVERCERT "\n\
-      Server private key: " LIBVIRT_SERVERKEY "\n\
+      CA certificate:     %s\n\
+      Server certificate: %s\n\
+      Server private key: %s\n\
 \n\
     PID file (unless overridden by --pid-file):\n\
       %s\n\
-\n",
-             argv0,
-             REMOTE_PID_FILE[0] != '\0'
-               ? REMOTE_PID_FILE
-               : "(disabled in ./configure)");
+\n"),
+               argv0,
+               SYSCONF_DIR,
+               LOCAL_STATE_DIR,
+               LOCAL_STATE_DIR,
+               LIBVIRT_CACERT,
+               LIBVIRT_SERVERCERT,
+               LIBVIRT_SERVERKEY,
+               (REMOTE_PID_FILE[0] != '\0'
+                ? REMOTE_PID_FILE
+                : _("(disabled in ./configure)")));
 }
 
 enum {
@@ -3083,7 +3089,7 @@ int main(int argc, char **argv) {
             return 2;
 
         default:
-            fprintf (stderr, "libvirtd: internal error: unknown flag: %c\n",
+            fprintf (stderr, _("libvirtd: internal error: unknown flag: %c\n"),
                      c);
             exit (EXIT_FAILURE);
         }
