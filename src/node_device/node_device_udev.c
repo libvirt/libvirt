@@ -122,8 +122,8 @@ static int udevGetDeviceProperty(struct udev_device *udev_device,
      * of the function must also be changed. */
     *property_value = strdup(udev_value);
     if (*property_value == NULL) {
-        VIR_ERROR("Failed to allocate memory for property value for "
-                  "property key '%s' on device with sysname '%s'",
+        VIR_ERROR(_("Failed to allocate memory for property value for "
+                    "property key '%s' on device with sysname '%s'"),
                   property_key, udev_device_get_sysname(udev_device));
         virReportOOMError();
         ret = PROPERTY_ERROR;
@@ -211,8 +211,8 @@ static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
      * of the function must also be changed. */
     *attr_value = strdup(udev_value);
     if (*attr_value == NULL) {
-        VIR_ERROR("Failed to allocate memory for sysfs attribute value for "
-                  "sysfs attribute '%s' on device with sysname '%s'",
+        VIR_ERROR(_("Failed to allocate memory for sysfs attribute value for "
+                    "sysfs attribute '%s' on device with sysname '%s'"),
                   attr_name, udev_device_get_sysname(udev_device));
         virReportOOMError();
         ret = PROPERTY_ERROR;
@@ -329,8 +329,8 @@ static int udevGenerateDeviceName(struct udev_device *device,
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
-        VIR_ERROR("Buffer error when generating device name for device "
-                  "with sysname '%s'", udev_device_get_sysname(device));
+        VIR_ERROR(_("Buffer error when generating device name for device "
+                    "with sysname '%s'"), udev_device_get_sysname(device));
         ret = -1;
     }
 
@@ -639,8 +639,8 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
     filename = basename(def->sysfs_path);
 
     if (!STRPREFIX(filename, "host")) {
-        VIR_ERROR("SCSI host found, but its udev name '%s' does "
-                  "not begin with 'host'", filename);
+        VIR_ERROR(_("SCSI host found, but its udev name '%s' does "
+                    "not begin with 'host'"), filename);
         goto out;
     }
 
@@ -1401,8 +1401,8 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
     udev_fd = udev_monitor_get_fd(udev_monitor);
     if (fd != udev_fd) {
-        VIR_ERROR("File descriptor returned by udev %d does not "
-                  "match node device file descriptor %d", fd, udev_fd);
+        VIR_ERROR(_("File descriptor returned by udev %d does not "
+                    "match node device file descriptor %d"), fd, udev_fd);
         goto out;
     }
 
