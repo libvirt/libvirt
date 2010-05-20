@@ -432,7 +432,7 @@ nodeDeviceVportCreateDelete(const int parent_host,
         goto cleanup;
     }
 
-    VIR_DEBUG(_("Vport operation path is '%s'"), operation_path);
+    VIR_DEBUG("Vport operation path is '%s'", operation_path);
 
     if (virAsprintf(&vport_name,
                     "%s:%s",

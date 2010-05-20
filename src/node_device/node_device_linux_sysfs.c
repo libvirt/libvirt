@@ -53,7 +53,7 @@ static int open_wwn_file(const char *prefix,
 
     /* fd will be closed by caller */
     if ((*fd = open(wwn_path, O_RDONLY)) != -1) {
-        VIR_DEBUG(_("Opened WWN path '%s' for reading"),
+        VIR_DEBUG("Opened WWN path '%s' for reading",
                   wwn_path);
     } else {
         VIR_ERROR(_("Failed to open WWN path '%s' for reading"),
@@ -79,7 +79,7 @@ int read_wwn_linux(int host, const char *file, char **wwn)
     memset(buf, 0, sizeof(buf));
     if (saferead(fd, buf, sizeof(buf)) < 0) {
         retval = -1;
-        VIR_DEBUG(_("Failed to read WWN for host%d '%s'"),
+        VIR_DEBUG("Failed to read WWN for host%d '%s'",
                   host, file);
         goto out;
     }
@@ -117,7 +117,7 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
     int retval = 0;
     struct stat st;
 
-    VIR_DEBUG(_("Checking if host%d is an FC HBA"), d->scsi_host.host);
+    VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 
     if (virAsprintf(&sysfs_path, "%s/host%d",
                     LINUX_SYSFS_FC_HOST_PREFIX,

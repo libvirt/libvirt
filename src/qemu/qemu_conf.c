@@ -727,7 +727,7 @@ qemudProbeCPUModels(const char *qemu,
     if (STREQ(arch, "i686") || STREQ(arch, "x86_64"))
         parse = qemudParseX86Models;
     else {
-        VIR_DEBUG(_("don't know how to parse %s CPU models"), arch);
+        VIR_DEBUG("don't know how to parse %s CPU models", arch);
         return 0;
     }
 

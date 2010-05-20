@@ -146,7 +146,7 @@ index b84729f..4f73baf 100644
 +        goto cleanup;
 +    }
 +
-+    VIR_DEBUG(_("Vport operation path is '%s'"), operation_path);
++    VIR_DEBUG("Vport operation path is '%s'", operation_path);
 +
 +    fd = open(operation_path, O_WRONLY);
 +
@@ -959,7 +959,7 @@ index 0000000..1deb6d2
 +    char buf[64];
 +    struct stat st;
 +
-+    VIR_DEBUG(_("Checking if host%d is an FC HBA"), d->scsi_host.host);
++    VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 +
 +    if (virAsprintf(&sysfs_path, "%s/host%d",
 +                    LINUX_SYSFS_FC_HOST_PREFIX,
