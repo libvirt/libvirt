@@ -389,6 +389,20 @@ sc_libvirt_unmarked_diagnostics:
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
 
+# Like the above, but prohibit a newline at the end of a diagnostic.
+# This is subject to false positives partly because it naively looks for
+# `\n"', which may not be the end of the string, and also because it takes
+# two lines of context (the -A2) after the line with the function name.
+# FIXME: this rule might benefit from a separate function list, in case
+# there are functions to which this one applies but that do not get marked
+# diagnostics.
+sc_prohibit_newline_at_end_of_diagnostic:
+	@grep -A2 -nE							\
+	    '\<$(func_re) *\(' $$($(VC_LIST_EXCEPT))			\
+	    | grep '\\n"'						\
+	  && { echo '$(ME): newline at end of message(s)' 1>&2;		\
+	    exit 1; } || :
+
 # Disallow trailing blank lines.
 sc_prohibit_trailing_blank_lines:
 	@$(VC_LIST_EXCEPT) | xargs perl -ln -0777 -e			\
