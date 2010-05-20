@@ -2416,11 +2416,31 @@ char *virIndexToDiskName(int idx, const char *prefix)
 # define AI_CANONIDN 0
 #endif
 
-char *virGetHostnameLocalhost(int allow_localhost)
+/* Who knew getting a hostname could be so delicate.  In Linux (and Unices
+ * in general), many things depend on "hostname" returning a value that will
+ * resolve one way or another.  In the modern world where networks frequently
+ * come and go this is often being hard-coded to resolve to "localhost".  If
+ * it *doesn't* resolve to localhost, then we would prefer to have the FQDN.
+ * That leads us to 3 possibilities:
+ *
+ * 1)  gethostname() returns an FQDN (not localhost) - we return the string
+ *     as-is, it's all of the information we want
+ * 2)  gethostname() returns "localhost" - we return localhost; doing further
+ *     work to try to resolve it is pointless
+ * 3)  gethostname() returns a shortened hostname - in this case, we want to
+ *     try to resolve this to a fully-qualified name.  Therefore we pass it
+ *     to getaddrinfo().  There are two possible responses:
+ *     a)  getaddrinfo() resolves to a FQDN - return the FQDN
+ *     b)  getaddrinfo() resolves to localhost - in this case, the data we got
+ *         from gethostname() is actually more useful than what we got from
+ *         getaddrinfo().  Return the value from gethostname() and hope for
+ *         the best.
+ */
+char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     int r;
     char hostname[HOST_NAME_MAX+1], *result;
-    struct addrinfo hints, *info, *res;
+    struct addrinfo hints, *info;
 
     r = gethostname (hostname, sizeof(hostname));
     if (r == -1) {
@@ -2429,6 +2449,21 @@ char *virGetHostnameLocalhost(int allow_localhost)
         return NULL;
     }
     NUL_TERMINATE(hostname);
+
+    if (STRPREFIX(hostname, "localhost") || strchr(hostname, '.')) {
+        /* in this case, gethostname returned localhost (meaning we can't
+         * do any further canonicalization), or it returned an FQDN (and
+         * we don't need to do any further canonicalization).  Return the
+         * string as-is; it's up to callers to check whether "localhost"
+         * is allowed.
+         */
+        result = strdup(hostname);
+        goto check_and_return;
+    }
+
+    /* otherwise, it's a shortened, non-localhost, hostname.  Attempt to
+     * canonicalize the hostname by running it through getaddrinfo
+     */
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_flags = AI_CANONNAME|AI_CANONIDN;
@@ -2444,52 +2479,23 @@ char *virGetHostnameLocalhost(int allow_localhost)
     /* Tell static analyzers about getaddrinfo semantics.  */
     sa_assert (info);
 
-    /* if we aren't allowing localhost, then we iterate through the
-     * list and make sure none of the IPv4 addresses are 127.0.0.1 and
-     * that none of the IPv6 addresses are ::1
-     */
-    if (!allow_localhost) {
-        res = info;
-        while (res) {
-            if (res->ai_family == AF_INET) {
-                if (htonl(((struct sockaddr_in *)res->ai_addr)->sin_addr.s_addr) == INADDR_LOOPBACK) {
-                    virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("canonical hostname pointed to localhost, but this is not allowed"));
-                    freeaddrinfo(info);
-                    return NULL;
-                }
-            }
-            else if (res->ai_family == AF_INET6) {
-                if (IN6_IS_ADDR_LOOPBACK(&((struct sockaddr_in6 *)res->ai_addr)->sin6_addr)) {
-                    virUtilError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                 _("canonical hostname pointed to localhost, but this is not allowed"));
-                    freeaddrinfo(info);
-                    return NULL;
-                }
-            }
-            res = res->ai_next;
-        }
-    }
-
-    if (info->ai_canonname == NULL) {
-        virUtilError(VIR_ERR_INTERNAL_ERROR,
-                     "%s", _("could not determine canonical host name"));
-        freeaddrinfo(info);
-        return NULL;
-    }
-
-    /* Caller frees this string. */
-    result = strdup (info->ai_canonname);
-    if (!result)
-        virReportOOMError();
+    if (info->ai_canonname == NULL ||
+        STRPREFIX(info->ai_canonname, "localhost"))
+        /* in this case, we tried to canonicalize and we ended up back with
+         * localhost.  Ignore the canonicalized name and just return the
+         * original hostname
+         */
+        result = strdup(hostname);
+    else
+        /* Caller frees this string. */
+        result = strdup (info->ai_canonname);
 
     freeaddrinfo(info);
-    return result;
-}
 
-char *virGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
-{
-    return virGetHostnameLocalhost(1);
+check_and_return:
+    if (result == NULL)
+        virReportOOMError();
+    return result;
 }
 
 /* send signal to a single process */

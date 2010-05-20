@@ -10171,7 +10171,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     int this_port;
-    char *hostname;
+    char *hostname = NULL;
     char migrateFrom [64];
     const char *p;
     virDomainEventPtr event = NULL;
@@ -10220,8 +10220,14 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         if (port == QEMUD_MIGRATION_NUM_PORTS) port = 0;
 
         /* Get hostname */
-        if ((hostname = virGetHostnameLocalhost(0)) == NULL)
+        if ((hostname = virGetHostname(NULL)) == NULL)
             goto cleanup;
+
+        if (STRPREFIX(hostname, "localhost")) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("hostname on destination resolved to localhost, but migration requires an FQDN"));
+            goto cleanup;
+        }
 
         /* XXX this really should have been a properly well-formed
          * URI, but we can't add in tcp:// now without breaking
@@ -10230,7 +10236,6 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
          */
         /* Caller frees */
         internalret = virAsprintf(uri_out, "tcp:%s:%d", hostname, this_port);
-        VIR_FREE(hostname);
         if (internalret < 0) {
             virReportOOMError();
             goto cleanup;
@@ -10334,10 +10339,10 @@ endjob:
         vm = NULL;
 
 cleanup:
+    VIR_FREE(hostname);
     virDomainDefFree(def);
-    if (ret != 0) {
+    if (ret != 0)
         VIR_FREE(*uri_out);
-    }
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
