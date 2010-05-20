@@ -539,7 +539,7 @@ static int qemudListenUnix(struct qemud_server *server,
     char ebuf[1024];
 
     if (VIR_ALLOC(sock) < 0) {
-        VIR_ERROR("%s", _("Failed to allocate memory for struct qemud_socket"));
+        VIR_ERROR0(_("Failed to allocate memory for struct qemud_socket"));
         return -1;
     }
 
@@ -844,12 +844,12 @@ static struct qemud_server *qemudInitialize(void) {
     server->sigread = server->sigwrite = -1;
 
     if (virMutexInit(&server->lock) < 0) {
-        VIR_ERROR("%s", _("cannot initialize mutex"));
+        VIR_ERROR0(_("cannot initialize mutex"));
         VIR_FREE(server);
         return NULL;
     }
     if (virCondInit(&server->job) < 0) {
-        VIR_ERROR("%s", _("cannot initialize condition variable"));
+        VIR_ERROR0(_("cannot initialize condition variable"));
         virMutexDestroy(&server->lock);
         VIR_FREE(server);
         return NULL;
@@ -1359,7 +1359,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if (VIR_ALLOC(client) < 0)
         goto cleanup;
     if (virMutexInit(&client->lock) < 0) {
-        VIR_ERROR("%s", _("cannot initialize mutex"));
+        VIR_ERROR0(_("cannot initialize mutex"));
         VIR_FREE(client);
         goto cleanup;
     }
@@ -2771,7 +2771,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
                 maxbuf = 1024;
 
             if (VIR_ALLOC_N(buf, maxbuf) < 0) {
-                VIR_ERROR("%s", _("Failed to allocate memory for buffer"));
+                VIR_ERROR0(_("Failed to allocate memory for buffer"));
                 goto free_and_fail;
             }
 
@@ -2780,7 +2780,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
                                      &grp)) == ERANGE) {
                     maxbuf *= 2;
                     if (maxbuf > 65536 || VIR_REALLOC_N(buf, maxbuf) < 0) {
-                        VIR_ERROR("%s", _("Failed to reallocate enough memory for buffer"));
+                        VIR_ERROR0(_("Failed to reallocate enough memory for buffer"));
                         goto free_and_fail;
                     }
             }

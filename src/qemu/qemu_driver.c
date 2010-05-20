@@ -1453,7 +1453,7 @@ qemudStartup(int privileged) {
         return -1;
 
     if (virMutexInit(&qemu_driver->lock) < 0) {
-        VIR_ERROR("%s", _("cannot initialize mutex"));
+        VIR_ERROR0(_("cannot initialize mutex"));
         VIR_FREE(qemu_driver);
         return -1;
     }
