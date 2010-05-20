@@ -626,29 +626,31 @@ qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
 {
     virDomainObjPtr vm = payload;
     struct qemuAutostartData *data = opaque;
+    virErrorPtr err;
 
     virDomainObjLock(vm);
-    if (vm->autostart &&
-        !virDomainObjIsActive(vm)) {
-        int ret;
-
-        virResetLastError();
-        ret = qemudStartVMDaemon(data->conn, data->driver, vm, NULL, -1);
-        if (ret < 0) {
-            virErrorPtr err = virGetLastError();
+    virResetLastError();
+    if (qemuDomainObjBeginJobWithDriver(data->driver, vm) < 0) {
+        err = virGetLastError();
+        VIR_ERROR(_("Failed to start job on VM '%s': %s"),
+                  vm->def->name,
+                  err ? err->message : _("unknown error"));
+    } else {
+        if (vm->autostart &&
+            !virDomainObjIsActive(vm) &&
+            qemudDomainObjStart(data->conn, data->driver, vm) < 0) {
+            err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
                       err ? err->message : _("unknown error"));
-        } else {
-            virDomainEventPtr event =
-                virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_BOOTED);
-            if (event)
-                qemuDomainEventQueue(data->driver, event);
         }
+
+        if (qemuDomainObjEndJob(vm) == 0)
+            vm = NULL;
     }
-    virDomainObjUnlock(vm);
+
+    if (vm)
+        virDomainObjUnlock(vm);
 }
 
 static void
