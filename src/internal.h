@@ -212,15 +212,16 @@
  */
 # define virCheckFlags(supported, retval)                               \
     do {                                                                \
-        if ((flags & ~(supported))) {                                   \
+        unsigned long __unsuppflags = flags & ~(supported);             \
+        if (__unsuppflags) {                                            \
             virReportErrorHelper(NULL,                                  \
                                  VIR_FROM_THIS,                         \
                                  VIR_ERR_INVALID_ARG,                   \
                                  __FILE__,                              \
                                  __FUNCTION__,                          \
                                  __LINE__,                              \
-                                 _("%s: unsupported flags (0x%x)"),     \
-                                 __FUNCTION__, flags & ~(supported));   \
+                                 _("%s: unsupported flags (0x%lx)"),    \
+                                 __FUNCTION__, __unsuppflags);          \
             return retval;                                              \
         }                                                               \
     } while (0)

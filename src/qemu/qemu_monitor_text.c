@@ -1144,6 +1144,7 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     int ret = -1;
     char *safedest = qemuMonitorEscapeArg(dest);
     virBuffer extra = VIR_BUFFER_INITIALIZER;
+    char *extrastr = NULL;
 
     if (!safedest) {
         virReportOOMError();
@@ -1159,10 +1160,12 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     if (virBufferError(&extra)) {
         virBufferFreeAndReset(&extra);
         virReportOOMError();
-        free(safedest);
-        return -1;
+        goto cleanup;
     }
-    if (virAsprintf(&cmd, "migrate %s\"%s\"", virBufferContentAndReset(&extra), safedest) < 0) {
+
+    extrastr = virBufferContentAndReset(&extra);
+    if (virAsprintf(&cmd, "migrate %s\"%s\"", extrastr ? extrastr : "",
+                    safedest) < 0) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1191,6 +1194,7 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
     ret = 0;
 
 cleanup:
+    VIR_FREE(extrastr);
     VIR_FREE(safedest);
     VIR_FREE(info);
     VIR_FREE(cmd);

@@ -10174,6 +10174,15 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     int ret = -1;
     int internalret;
 
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
     *uri_out = NULL;
 
     qemuDriverLock(driver);
@@ -10349,9 +10358,6 @@ static int doNativeMigrate(struct qemud_driver *driver,
     xmlURIPtr uribits = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned int background_flags = 0;
-
-    virCheckFlags(VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
-                  -1);
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {
@@ -10773,6 +10779,15 @@ qemudDomainMigratePerform (virDomainPtr dom,
     int resume = 0;
     qemuDomainObjPrivatePtr priv;
 
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, -1);
+
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
     if (!vm) {
@@ -10875,6 +10890,15 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainEventPtr event = NULL;
     virErrorPtr orig_err;
     int newVM = 1;
+
+    virCheckFlags(VIR_MIGRATE_LIVE |
+                  VIR_MIGRATE_PEER2PEER |
+                  VIR_MIGRATE_TUNNELLED |
+                  VIR_MIGRATE_PERSIST_DEST |
+                  VIR_MIGRATE_UNDEFINE_SOURCE |
+                  VIR_MIGRATE_PAUSED |
+                  VIR_MIGRATE_NON_SHARED_DISK |
+                  VIR_MIGRATE_NON_SHARED_INC, NULL);
 
     /* Migration failed. Save the current error so nothing squashes it */
     orig_err = virSaveLastError();
