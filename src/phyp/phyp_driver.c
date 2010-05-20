@@ -1520,9 +1520,8 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
         goto err;
 
     if (nvcpus > phypGetLparCPUMAX(dom)) {
-        VIR_ERROR(_("%s"),
-                  "You are trying to set a number of CPUs bigger than "
-                  "the max possible..");
+        VIR_ERROR0(_("You are trying to set a number of CPUs bigger than "
+                     "the max possible.."));
         goto err;
     }
 
@@ -1547,9 +1546,8 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
     ret = phypExec(session, cmd, &exit_status, dom->conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("%s"),
-                  "Possibly you don't have IBM Tools installed in your LPAR."
-                  "Contact your support to enable this feature.");
+        VIR_ERROR0(_("Possibly you don't have IBM Tools installed in your LPAR."
+                     "Contact your support to enable this feature."));
         goto err;
     }
 
@@ -1690,7 +1688,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR(_("%s\"%s\""), "Unable to create LPAR. Reason: ", ret);
+        VIR_ERROR(_("Unable to create LPAR. Reason: '%s'"), ret);
         goto err;
     }
 
