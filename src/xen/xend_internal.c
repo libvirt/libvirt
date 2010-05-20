@@ -4731,7 +4731,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     VIR_FREE(sexpr);
     if (ret != 0) {
         virXendError(VIR_ERR_XEN_CALL,
-                     _("Failed to create inactive domain %s\n"), def->name);
+                     _("Failed to create inactive domain %s"), def->name);
         goto error;
     }
 

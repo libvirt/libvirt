@@ -642,7 +642,7 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
                                             network->def->network,
                                             network->def->forwardDev))) {
         virReportSystemError(err,
-                             _("failed to add iptables rule to enable masquerading to '%s'\n"),
+                             _("failed to add iptables rule to enable masquerading to '%s'"),
                              network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr3;
     }
