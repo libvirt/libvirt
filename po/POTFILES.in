@@ -18,6 +18,7 @@ src/cpu/cpu_generic.c
 src/cpu/cpu_map.c
 src/cpu/cpu_x86.c
 src/datatypes.c
+src/driver.c
 src/esx/esx_driver.c
 src/esx/esx_util.c
 src/esx/esx_vi.c
@@ -32,6 +33,7 @@ src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
 src/network/bridge_driver.c
 src/node_device/node_device_driver.c
+src/node_device/node_device_hal.c
 src/node_device/node_device_linux_sysfs.c
 src/node_device/node_device_udev.c
 src/nodeinfo.c
@@ -53,8 +55,8 @@ src/qemu/qemu_monitor_text.c
 src/qemu/qemu_security_dac.c
 src/remote/remote_driver.c
 src/secret/secret_driver.c
-src/security/security_driver.c
 src/security/security_apparmor.c
+src/security/security_driver.c
 src/security/security_selinux.c
 src/security/virt-aa-helper.c
 src/storage/storage_backend.c
@@ -70,6 +72,7 @@ src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/authhelper.c
 src/util/bridge.c
+src/util/cgroup.c
 src/util/conf.c
 src/util/dnsmasq.c
 src/util/hooks.c
@@ -87,10 +90,10 @@ src/util/xml.c
 src/vbox/vbox_driver.c
 src/vbox/vbox_tmpl.c
 src/xen/proxy_internal.c
-src/xen/xend_internal.c
 src/xen/xen_driver.c
 src/xen/xen_hypervisor.c
 src/xen/xen_inotify.c
+src/xen/xend_internal.c
 src/xen/xm_internal.c
 src/xen/xs_internal.c
 src/xenapi/xenapi_driver.c
