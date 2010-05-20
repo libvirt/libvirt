@@ -3029,7 +3029,10 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    virInitialize();
+    if (virInitialize() < 0) {
+        fprintf (stderr, _("libvirtd: initialization failed\n"));
+        exit (EXIT_FAILURE);
+    }
 
     while (1) {
         int optidx = 0;
