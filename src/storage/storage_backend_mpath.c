@@ -44,14 +44,11 @@ virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                           unsigned long long *capacity)
 {
     int ret = -1;
-    int fd = -1;
+    int fdret, fd = -1;
 
-    if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open volume '%s'"),
-                             target->path);
+    if ((fdret = virStorageBackendVolOpen(target->path)) < 0)
         goto out;
-    }
+    fd = fdret;
 
     if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,

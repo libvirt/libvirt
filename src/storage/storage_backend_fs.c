@@ -61,18 +61,16 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     if (encryption)
         *encryption = NULL;
 
-    if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open volume '%s'"),
-                             target->path);
-        return -1;
-    }
+    if ((ret = virStorageBackendVolOpenCheckMode(target->path,
+                                                 (VIR_STORAGE_VOL_OPEN_DEFAULT & ~VIR_STORAGE_VOL_OPEN_ERROR))) < 0)
+        return ret; /* Take care to propagate ret, it is not always -1 */
+    fd = ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd,
                                                       allocation,
                                                       capacity)) < 0) {
         close(fd);
-        return ret; /* Take care to propagate ret, it is not always -1 */
+        return -1;
     }
 
     memset(&meta, 0, sizeof(meta));

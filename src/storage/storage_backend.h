@@ -80,6 +80,27 @@ struct _virStorageBackend {
 
 virStorageBackendPtr virStorageBackendForType(int type);
 
+int virStorageBackendVolOpen(const char *path)
+ATTRIBUTE_RETURN_CHECK
+ATTRIBUTE_NONNULL(1);
+
+/* VolOpenCheckMode flags */
+enum {
+    VIR_STORAGE_VOL_OPEN_ERROR  = 1 << 0, /* warn if unexpected type
+                                           * encountered */
+    VIR_STORAGE_VOL_OPEN_REG    = 1 << 1, /* regular files okay */
+    VIR_STORAGE_VOL_OPEN_BLOCK  = 1 << 2, /* block files okay */
+    VIR_STORAGE_VOL_OPEN_CHAR   = 1 << 3, /* char files okay */
+};
+
+#define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_ERROR    |\
+                                      VIR_STORAGE_VOL_OPEN_REG      |\
+                                      VIR_STORAGE_VOL_OPEN_CHAR     |\
+                                      VIR_STORAGE_VOL_OPEN_BLOCK)
+
+int virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
+ATTRIBUTE_RETURN_CHECK
+ATTRIBUTE_NONNULL(1);
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    int withCapacity);

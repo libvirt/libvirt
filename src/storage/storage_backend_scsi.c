@@ -135,14 +135,12 @@ virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                          unsigned long long *allocation,
                                          unsigned long long *capacity)
 {
-    int fd, ret = -1;
+    int fdret, fd = -1;
+    int ret = -1;
 
-    if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open volume '%s'"),
-                             target->path);
-        return -1;
-    }
+    if ((fdret = virStorageBackendVolOpen(target->path)) < 0)
+        goto cleanup;
+    fd = fdret;
 
     if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,
@@ -155,8 +153,9 @@ virStorageBackendSCSIUpdateVolTargetInfo(virStorageVolTargetPtr target,
 
     ret = 0;
 
-  cleanup:
-    close(fd);
+cleanup:
+    if (fd >= 0)
+        close(fd);
 
     return ret;
 }

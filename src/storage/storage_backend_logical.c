@@ -559,7 +559,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
                                   virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol)
 {
-    int fd = -1;
+    int fdret, fd = -1;
     char size[100];
     const char *cmdargvnew[] = {
         LVCREATE, "--name", vol->name, "-L", size,
@@ -602,12 +602,9 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     if (virRun(cmdargv, NULL) < 0)
         return -1;
 
-    if ((fd = open(vol->target.path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot read path '%s'"),
-                             vol->target.path);
+    if ((fdret = virStorageBackendVolOpen(vol->target.path)) < 0)
         goto cleanup;
-    }
+    fd = fdret;
 
     /* We can only chown/grp if root */
     if (getuid() == 0) {

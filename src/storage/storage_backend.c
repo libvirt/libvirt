@@ -873,6 +873,60 @@ virStorageBackendForType(int type) {
 }
 
 
+/*
+ * Allows caller to silently ignore files with improper mode
+ *
+ * Returns -1 on error, -2 if file mode is unexpected.
+ */
+int
+virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
+{
+    int fd, mode = 0;
+    struct stat sb;
+
+    if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot open volume '%s'"),
+                             path);
+        return -1;
+    }
+
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat file '%s'"),
+                             path);
+        close(fd);
+        return -1;
+    }
+
+    if (S_ISREG(sb.st_mode))
+        mode = VIR_STORAGE_VOL_OPEN_REG;
+    else if (S_ISCHR(sb.st_mode))
+        mode = VIR_STORAGE_VOL_OPEN_CHAR;
+    else if (S_ISBLK(sb.st_mode))
+        mode = VIR_STORAGE_VOL_OPEN_BLOCK;
+
+    if (!(mode & flags)) {
+        close(fd);
+
+        if (mode & VIR_STORAGE_VOL_OPEN_ERROR) {
+            virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                                  _("unexpected storage mode for '%s'"), path);
+            return -1;
+        }
+
+        return -2;
+    }
+
+    return fd;
+}
+
+int virStorageBackendVolOpen(const char *path)
+{
+    return virStorageBackendVolOpenCheckMode(path,
+                                             VIR_STORAGE_VOL_OPEN_DEFAULT);
+}
+
 int
 virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                      unsigned long long *allocation,
@@ -880,13 +934,10 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolTargetPtr target,
 {
     int ret, fd;
 
-    if ((fd = open(target->path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot open volume '%s'"),
-                             target->path);
-        return -1;
-    }
+    if ((ret = virStorageBackendVolOpen(target->path)) < 0)
+        return ret;
 
+    fd = ret;
     ret = virStorageBackendUpdateVolTargetInfoFD(target,
                                                  fd,
                                                  allocation,
@@ -920,12 +971,11 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
  * virStorageBackendUpdateVolTargetInfoFD:
  * @conn: connection to report errors on
  * @target: target definition ptr of volume to update
- * @fd: fd of storage volume to update
+ * @fd: fd of storage volume to update, via virStorageBackendOpenVol*
  * @allocation: If not NULL, updated allocation information will be stored
  * @capacity: If not NULL, updated capacity info will be stored
  *
- * Returns 0 for success-1 on a legitimate error condition,
- *    -2 if passed FD isn't a regular, char, or block file.
+ * Returns 0 for success, -1 on a legitimate error condition.
  */
 int
 virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
@@ -944,11 +994,6 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                              target->path);
         return -1;
     }
-
-    if (!S_ISREG(sb.st_mode) &&
-        !S_ISCHR(sb.st_mode) &&
-        !S_ISBLK(sb.st_mode))
-        return -2;
 
     if (allocation) {
         if (S_ISREG(sb.st_mode)) {
