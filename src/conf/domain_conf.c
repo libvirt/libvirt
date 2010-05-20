@@ -1807,12 +1807,6 @@ cleanup:
 }
 
 
-static bool
-isValidIfname(const char *ifname) {
-    return ifname[strspn(ifname, VALID_IFNAME_CHARS)] == 0;
-}
-
-
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
@@ -1895,11 +1889,9 @@ virDomainNetDefParseXML(virCapsPtr caps,
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
                 ifname = virXMLPropString(cur, "dev");
                 if ((ifname != NULL) &&
-                    (((flags & VIR_DOMAIN_XML_INACTIVE) &&
-                      (STRPREFIX((const char*)ifname, "vnet"))) ||
-                     (!isValidIfname(ifname)))) {
+                    ((flags & VIR_DOMAIN_XML_INACTIVE) &&
+                      (STRPREFIX((const char*)ifname, "vnet")))) {
                     /* An auto-generated target name, blank it out */
-                    /* blank out invalid interface names */
                     VIR_FREE(ifname);
                 }
             } else if ((script == NULL) &&
