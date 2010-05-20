@@ -143,6 +143,10 @@ static void qemuDomainEventFlush(int timer, void *opaque);
 static void qemuDomainEventQueue(struct qemud_driver *driver,
                                  virDomainEventPtr event);
 
+static int qemudDomainObjStart(virConnectPtr conn,
+                               struct qemud_driver *driver,
+                               virDomainObjPtr vm);
+
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
@@ -6267,6 +6271,47 @@ cleanup:
     return ret;
 }
 
+static int qemudDomainObjRestore(virConnectPtr conn,
+                                 struct qemud_driver *driver,
+                                 virDomainObjPtr vm,
+                                 const char *path)
+{
+    virDomainDefPtr def = NULL;
+    int fd = -1;
+    pid_t read_pid = -1;
+    int ret = -1;
+    struct qemud_save_header header;
+
+    fd = qemudDomainSaveImageOpen(driver, path, &def, &header, &read_pid);
+    if (fd < 0)
+        goto cleanup;
+
+    if (STRNEQ(vm->def->name, def->name) ||
+        memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
+        char vm_uuidstr[VIR_UUID_STRING_BUFLEN];
+        char def_uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(vm->def->uuid, vm_uuidstr);
+        virUUIDFormat(def->uuid, def_uuidstr);
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        _("cannot restore domain '%s' uuid %s from a file"
+                          " which belongs to domain '%s' uuid %s"),
+                        vm->def->name, vm_uuidstr,
+                        def->name, def_uuidstr);
+        goto cleanup;
+    }
+
+    virDomainObjAssignDef(vm, def, true);
+    def = NULL;
+
+    ret = qemudDomainSaveImageStartVM(conn, driver, vm, fd,
+                                      read_pid, &header, path);
+
+cleanup:
+    virDomainDefFree(def);
+    qemudDomainSaveImageClose(fd, read_pid, NULL);
+    return ret;
+}
+
 
 static char *qemudVMDumpXML(struct qemud_driver *driver,
                             virDomainObjPtr vm,
@@ -6541,12 +6586,49 @@ static int qemudNumDefinedDomains(virConnectPtr conn) {
 }
 
 
+static int qemudDomainObjStart(virConnectPtr conn,
+                               struct qemud_driver *driver,
+                               virDomainObjPtr vm)
+{
+    int ret = -1;
+    char *managed_save;
+
+    /*
+     * If there is a managed saved state restore it instead of starting
+     * from scratch. In any case the old state is removed.
+     */
+    managed_save = qemuDomainManagedSavePath(driver, vm);
+    if ((managed_save) && (virFileExists(managed_save))) {
+        ret = qemudDomainObjRestore(conn, driver, vm, managed_save);
+
+        if (unlink(managed_save) < 0) {
+            VIR_WARN("Failed to remove the managed state %s", managed_save);
+        }
+
+        if (ret == 0)
+            goto cleanup;
+    }
+
+    ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
+    if (ret != -1) {
+        virDomainEventPtr event =
+            virDomainEventNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     VIR_DOMAIN_EVENT_STARTED_BOOTED);
+        if (event)
+            qemuDomainEventQueue(driver, event);
+    }
+
+cleanup:
+    VIR_FREE(managed_save);
+    return ret;
+}
+
 static int qemudDomainStart(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     virDomainEventPtr event = NULL;
-    char *managed_save = NULL;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6568,50 +6650,13 @@ static int qemudDomainStart(virDomainPtr dom) {
         goto endjob;
     }
 
-    /*
-     * If there is a managed saved state restore it instead of starting
-     * from scratch. In any case the old state is removed.
-     */
-    managed_save = qemuDomainManagedSavePath(driver, vm);
-    if ((managed_save) && (virFileExists(managed_save))) {
-        /*
-         * We should still have a reference left to vm but
-         * one should check for 0 anyway
-         */
-        if (qemuDomainObjEndJob(vm) == 0) {
-            vm = NULL;
-            goto cleanup;
-        }
-
-        virDomainObjUnlock(vm);
-        qemuDriverUnlock(driver);
-        ret = qemudDomainRestore(dom->conn, managed_save);
-
-        if (unlink(managed_save) < 0) {
-            VIR_WARN("Failed to remove the managed state %s", managed_save);
-        }
-
-        if (ret == 0) {
-            /* qemudDomainRestore should have sent the Started/Restore event */
-            VIR_FREE(managed_save);
-            return(ret);
-        }
-        qemuDriverLock(driver);
-        virDomainObjLock(vm);
-    }
-
-    ret = qemudStartVMDaemon(dom->conn, driver, vm, NULL, -1);
-    if (ret != -1)
-        event = virDomainEventNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_BOOTED);
+    ret = qemudDomainObjStart(dom->conn, driver, vm);
 
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
 
 cleanup:
-    VIR_FREE(managed_save);
     if (vm)
         virDomainObjUnlock(vm);
     if (event)
