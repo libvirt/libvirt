@@ -1050,8 +1050,8 @@ static struct diskType const disk_types[] = {
 
 
 int
-virStorageBackendUpdateVolTargetFormatFD(virStorageVolTargetPtr target,
-                                         int fd)
+virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
+                                        int fd)
 {
     int i;
     off_t start;

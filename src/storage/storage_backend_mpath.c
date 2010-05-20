@@ -59,7 +59,7 @@ virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                                capacity) < 0)
         goto out;
 
-    if (virStorageBackendUpdateVolTargetFormatFD(target, fd) < 0)
+    if (virStorageBackendDetectBlockVolFormatFD(target, fd) < 0)
         goto out;
 
     ret = 0;

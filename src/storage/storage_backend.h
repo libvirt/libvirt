@@ -92,8 +92,8 @@ int virStorageBackendUpdateVolTargetInfoFD(virStorageVolTargetPtr target,
                                            unsigned long long *allocation,
                                            unsigned long long *capacity);
 int
-virStorageBackendUpdateVolTargetFormatFD(virStorageVolTargetPtr target,
-                                         int fd);
+virStorageBackendDetectBlockVolFormatFD(virStorageVolTargetPtr target,
+                                        int fd);
 
 char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath);
