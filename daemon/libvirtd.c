@@ -190,6 +190,7 @@ static int max_client_requests = 5;
 
 static sig_atomic_t sig_errors = 0;
 static int sig_lasterrno = 0;
+static const char *argv0;
 
 enum {
     VIR_DAEMON_ERR_NONE = 0,
@@ -484,8 +485,8 @@ static int daemonForkIntoBackground(void) {
 
             if (ret == 1 && status != 0) {
                 fprintf(stderr,
-                        _("error: %s. Check /var/log/messages or run without "
-                          "--daemon for more info.\n"),
+                        _("%s: error: %s. Check /var/log/messages or run without "
+                          "--daemon for more info.\n"), argv0,
                         virDaemonErrTypeToString(status));
             }
             _exit(ret == 1 && status == 0 ? 0 : 1);
@@ -515,15 +516,15 @@ static int qemudWritePidFile(const char *pidFile) {
     }
 
     if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
-        VIR_ERROR(_("Failed to write to pid file '%s' : %s"),
-                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
+        VIR_ERROR(_("%s: Failed to write to pid file '%s' : %s"),
+                  argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         fclose(fh);
         return -1;
     }
 
     if (fclose(fh) == EOF) {
-        VIR_ERROR(_("Failed to close pid file '%s' : %s"),
-                  pidFile, virStrerror(errno, ebuf, sizeof ebuf));
+        VIR_ERROR(_("%s: Failed to close pid file '%s' : %s"),
+                  argv0, pidFile, virStrerror(errno, ebuf, sizeof ebuf));
         return -1;
     }
 
@@ -2868,7 +2869,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
 /* Display version information. */
 static void
-version (const char *argv0)
+version (void)
 {
     printf ("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
 }
@@ -2960,7 +2961,7 @@ error:
 
 /* Print command-line usage. */
 static void
-usage (const char *argv0)
+usage (void)
 {
     fprintf (stderr,
              _("\n\
@@ -3021,6 +3022,7 @@ int main(int argc, char **argv) {
     const char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
+    argv0 = argv[0];
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -3035,7 +3037,7 @@ int main(int argc, char **argv) {
     };
 
     if (virInitialize() < 0) {
-        fprintf (stderr, _("libvirtd: initialization failed\n"));
+        fprintf (stderr, _("%s: initialization failed\n"), argv0);
         exit (EXIT_FAILURE);
     }
 
@@ -3081,16 +3083,16 @@ int main(int argc, char **argv) {
             break;
 
         case OPT_VERSION:
-            version (argv[0]);
+            version ();
             return 0;
 
         case '?':
-            usage (argv[0]);
+            usage ();
             return 2;
 
         default:
-            fprintf (stderr, _("libvirtd: internal error: unknown flag: %c\n"),
-                     c);
+            fprintf (stderr, _("%s: internal error: unknown flag: %c\n"),
+                     argv0, c);
             exit (EXIT_FAILURE);
         }
     }
