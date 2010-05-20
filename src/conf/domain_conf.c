@@ -808,6 +808,26 @@ static virDomainObjPtr virDomainObjNew(virCapsPtr caps)
     return domain;
 }
 
+void virDomainObjAssignDef(virDomainObjPtr domain,
+                           const virDomainDefPtr def,
+                           bool live)
+{
+    if (!virDomainObjIsActive(domain)) {
+        if (live) {
+            /* save current configuration to be restored on domain shutdown */
+            if (!domain->newDef)
+                domain->newDef = domain->def;
+            domain->def = def;
+        } else {
+            virDomainDefFree(domain->def);
+            domain->def = def;
+        }
+    } else {
+        virDomainDefFree(domain->newDef);
+        domain->newDef = def;
+    }
+}
+
 virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
                                    virDomainObjListPtr doms,
                                    const virDomainDefPtr def,
@@ -817,21 +837,7 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((domain = virDomainFindByUUID(doms, def->uuid))) {
-        if (!virDomainObjIsActive(domain)) {
-            if (live) {
-                /* save current configuration to be restored on domain shutdown */
-                if (!domain->newDef)
-                    domain->newDef = domain->def;
-                domain->def = def;
-            } else {
-                virDomainDefFree(domain->def);
-                domain->def = def;
-            }
-        } else {
-            virDomainDefFree(domain->newDef);
-            domain->newDef = def;
-        }
-
+        virDomainObjAssignDef(domain, def, live);
         return domain;
     }
 

@@ -954,6 +954,9 @@ virDomainObjPtr virDomainAssignDef(virCapsPtr caps,
                                    virDomainObjListPtr doms,
                                    const virDomainDefPtr def,
                                    bool live);
+void virDomainObjAssignDef(virDomainObjPtr domain,
+                           const virDomainDefPtr def,
+                           bool live);
 void virDomainRemoveInactive(virDomainObjListPtr doms,
                              virDomainObjPtr dom);
 
