@@ -439,7 +439,7 @@ sc_copyright_format:
 # Some functions/macros produce messages intended solely for developers
 # and maintainers.  Do not mark them for translation.
 sc_prohibit_gettext_markup:
-	@prohibit='\<VIR_WARN0? *\(_\('					\
+	@prohibit='\<VIR_(WARN|DEBUG)0? *\(_\('				\
 	halt='do not mark these strings for translation'		\
 	  $(_sc_search_regexp)
 
