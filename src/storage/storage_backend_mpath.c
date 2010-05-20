@@ -43,39 +43,26 @@ virStorageBackendMpathUpdateVolTargetInfo(virStorageVolTargetPtr target,
                                           unsigned long long *allocation,
                                           unsigned long long *capacity)
 {
-    int ret = 0;
+    int ret = -1;
     int fd = -1;
 
     if ((fd = open(target->path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
                              _("cannot open volume '%s'"),
                              target->path);
-        ret = -1;
         goto out;
     }
 
     if (virStorageBackendUpdateVolTargetInfoFD(target,
                                                fd,
                                                allocation,
-                                               capacity) < 0) {
-
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                          _("Failed to update volume target info for '%s'"),
-                          target->path);
-
-        ret = -1;
+                                               capacity) < 0)
         goto out;
-    }
 
-    if (virStorageBackendUpdateVolTargetFormatFD(target, fd) < 0) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                          _("Failed to update volume target format for '%s'"),
-                          target->path);
-
-        ret = -1;
+    if (virStorageBackendUpdateVolTargetFormatFD(target, fd) < 0)
         goto out;
-    }
 
+    ret = 0;
 out:
     if (fd != -1) {
         close(fd);
@@ -112,10 +99,6 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     if (virStorageBackendMpathUpdateVolTargetInfo(&vol->target,
                                                   &vol->allocation,
                                                   &vol->capacity) < 0) {
-
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to update volume for '%s'"),
-                              vol->target.path);
         goto cleanup;
     }
 
@@ -230,7 +213,7 @@ static int
 virStorageBackendCreateVols(virStoragePoolObjPtr pool,
                             struct dm_names *names)
 {
-    int retval = 0, is_mpath = 0;
+    int retval = -1, is_mpath = 0;
     char *map_device = NULL;
     uint32_t minor = -1;
 
@@ -238,7 +221,6 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
         is_mpath = virStorageBackendIsMultipath(names->name);
 
         if (is_mpath < 0) {
-            retval = -1;
             goto out;
         }
 
@@ -246,18 +228,19 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
             if (virAsprintf(&map_device, "mapper/%s", names->name) < 0) {
                 virReportOOMError();
-                retval = -1;
                 goto out;
             }
 
             if (virStorageBackendGetMinorNumber(names->name, &minor) < 0) {
-                retval = -1;
+                virStorageReportError(VIR_ERR_INTERNAL_ERROR,
+                                      _("Failed to get %s minor number"),
+                                      names->name);
                 goto out;
             }
 
-            virStorageBackendMpathNewVol(pool,
-                                         minor,
-                                         map_device);
+            if (virStorageBackendMpathNewVol(pool, minor, map_device) < 0) {
+                goto out;
+            }
 
             VIR_FREE(map_device);
         }
@@ -268,6 +251,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
     } while (names->next);
 
+    retval = 0;
 out:
     return retval;
 }
