@@ -602,6 +602,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
     xmlNodePtr source_node;
     char *type = NULL;
     char *uuid = NULL;
+    char *tmppath;
 
     if (VIR_ALLOC(ret) < 0) {
         virReportOOMError();
@@ -699,11 +700,16 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt) {
         }
     }
 
-    if ((ret->target.path = virXPathString("string(./target/path)", ctxt)) == NULL) {
+    if ((tmppath = virXPathString("string(./target/path)", ctxt)) == NULL) {
         virStorageReportError(VIR_ERR_XML_ERROR,
                               "%s", _("missing storage pool target path"));
         goto cleanup;
     }
+    ret->target.path = virFileSanitizePath(tmppath);
+    VIR_FREE(tmppath);
+    if (!ret->target.path)
+        goto cleanup;
+
 
     if (virStorageDefParsePerms(ctxt, &ret->target.perms,
                                 "./target/permissions", 0700) < 0)

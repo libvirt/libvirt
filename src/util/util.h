@@ -118,6 +118,8 @@ char *virFindFileInPath(const char *file);
 
 int virFileExists(const char *path);
 
+char *virFileSanitizePath(const char *path);
+
 enum {
     VIR_FILE_OP_NONE        = 0,
     VIR_FILE_OP_AS_UID      = (1 << 0),

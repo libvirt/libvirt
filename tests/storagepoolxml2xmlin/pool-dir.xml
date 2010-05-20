@@ -7,7 +7,7 @@
   <source>
   </source>
   <target>
-    <path>/var/lib/libvirt/images</path>
+    <path>///var/////lib/libvirt/images//</path>
     <permissions>
       <mode>0700</mode>
       <owner>0</owner>

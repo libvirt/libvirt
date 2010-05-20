@@ -1921,6 +1921,55 @@ int virFileAbsPath(const char *path, char **abspath)
     return 0;
 }
 
+/* Remove spurious / characters from a path. The result must be freed */
+char *
+virFileSanitizePath(const char *path)
+{
+    const char *cur = path;
+    char *cleanpath;
+    int idx = 0;
+
+    cleanpath = strdup(path);
+    if (!cleanpath) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /* Need to sanitize:
+     * //           -> //
+     * ///          -> /
+     * /../foo      -> /../foo
+     * /foo///bar/  -> /foo/bar
+     */
+
+    /* Starting with // is valid posix, but ///foo == /foo */
+    if (cur[0] == '/' && cur[1] == '/' && cur[2] != '/') {
+        idx = 2;
+        cur += 2;
+    }
+
+    /* Sanitize path in place */
+    while (*cur != '\0') {
+        if (*cur != '/') {
+            cleanpath[idx++] = *cur++;
+            continue;
+        }
+
+        /* Skip all extra / */
+        while (*++cur == '/')
+            continue;
+
+        /* Don't add a trailing / */
+        if (idx != 0 && *cur == '\0')
+            break;
+
+        cleanpath[idx++] = '/';
+    }
+    cleanpath[idx] = '\0';
+
+    return cleanpath;
+}
+
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
    When END_PTR is NULL, the byte after the final valid digit must be NUL.

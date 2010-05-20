@@ -675,6 +675,7 @@ virFileReadLimFD;
 virFilePid;
 virFileReadPid;
 virFileLinkPointsTo;
+virFileSanitizePath;
 virParseNumber;
 virParseVersionString;
 virPipeReadUntilEOF;

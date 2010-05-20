@@ -1204,6 +1204,11 @@ storageVolumeLookupByPath(virConnectPtr conn,
     virStorageDriverStatePtr driver = conn->storagePrivateData;
     unsigned int i;
     virStorageVolPtr ret = NULL;
+    char *cleanpath;
+
+    cleanpath = virFileSanitizePath(path);
+    if (!cleanpath)
+        return NULL;
 
     storageDriverLock(driver);
     for (i = 0 ; i < driver->pools.count && !ret ; i++) {
@@ -1213,7 +1218,7 @@ storageVolumeLookupByPath(virConnectPtr conn,
             const char *stable_path;
 
             stable_path = virStorageBackendStablePath(driver->pools.objs[i],
-                                                      path);
+                                                      cleanpath);
             /*
              * virStorageBackendStablePath already does
              * virStorageReportError if it fails; we just need to keep
@@ -1242,6 +1247,7 @@ storageVolumeLookupByPath(virConnectPtr conn,
                               "%s", _("no storage vol with matching path"));
 
 cleanup:
+    VIR_FREE(cleanpath);
     storageDriverUnlock(driver);
     return ret;
 }
