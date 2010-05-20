@@ -1246,7 +1246,9 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
 
 /* We parse the output of 'qemu -help' to get the QEMU
  * version number. The first bit is easy, just parse
- * 'QEMU PC emulator version x.y.z'.
+ * 'QEMU PC emulator version x.y.z'
+ * or
+ * 'QEMU emulator version x.y.z'.
  *
  * With qemu-kvm, however, that is followed by a string
  * in parenthesis as follows:
@@ -1259,7 +1261,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
  * and later, we just need the QEMU version number and
  * whether it is KVM QEMU or mainline QEMU.
  */
-#define QEMU_VERSION_STR    "QEMU PC emulator version"
+#define QEMU_VERSION_STR_1  "QEMU emulator version"
+#define QEMU_VERSION_STR_2  "QEMU PC emulator version"
 #define QEMU_KVM_VER_PREFIX "(qemu-kvm-"
 #define KVM_VER_PREFIX      "(kvm-"
 
@@ -1277,10 +1280,12 @@ int qemudParseHelpStr(const char *qemu,
 
     *flags = *version = *is_kvm = *kvm_version = 0;
 
-    if (!STRPREFIX(p, QEMU_VERSION_STR))
+    if (STRPREFIX(p, QEMU_VERSION_STR_1))
+        p += strlen(QEMU_VERSION_STR_1);
+    else if (STRPREFIX(p, QEMU_VERSION_STR_2))
+        p += strlen(QEMU_VERSION_STR_2);
+    else
         goto fail;
-
-    p += strlen(QEMU_VERSION_STR);
 
     SKIP_BLANKS(p);
 
