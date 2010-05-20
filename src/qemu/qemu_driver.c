@@ -5992,29 +5992,44 @@ child_cleanup:
     _exit(exit_code);
 }
 
-/* TODO: check seclabel restore */
-static int qemudDomainRestore(virConnectPtr conn,
-                              const char *path) {
-    struct qemud_driver *driver = conn->privateData;
-    virDomainDefPtr def = NULL;
-    virDomainObjPtr vm = NULL;
-    int fd = -1;
-    pid_t read_pid = -1;
-    int ret = -1;
-    char *xml = NULL;
-    struct qemud_save_header header;
-    virDomainEventPtr event = NULL;
-    int intermediatefd = -1;
-    pid_t intermediate_pid = -1;
-    int childstat;
+static int qemudDomainSaveImageClose(int fd, pid_t read_pid, int *status)
+{
+    int ret = 0;
 
-    qemuDriverLock(driver);
-    /* Verify the header and read the XML */
+    if (fd != -1)
+        close(fd);
+
+    if (read_pid != -1) {
+        /* reap the process that read the file */
+        while ((ret = waitpid(read_pid, status, 0)) == -1
+               && errno == EINTR) {
+            /* empty */
+        }
+    } else if (status) {
+        *status = 0;
+    }
+
+    return ret;
+}
+
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
+qemudDomainSaveImageOpen(struct qemud_driver *driver,
+                                    const char *path,
+                                    virDomainDefPtr *ret_def,
+                                    struct qemud_save_header *ret_header,
+                                    pid_t *ret_read_pid)
+{
+    int fd;
+    pid_t read_pid = -1;
+    struct qemud_save_header header;
+    char *xml = NULL;
+    virDomainDefPtr def = NULL;
+
     if ((fd = open(path, O_RDONLY)) < 0) {
         if ((driver->user == 0) || (getuid() != 0)) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             "%s", _("cannot read domain image"));
-            goto cleanup;
+            goto error;
         }
 
         /* Opening as root failed, but qemu runs as a different user
@@ -6023,44 +6038,44 @@ static int qemudDomainRestore(virConnectPtr conn,
            have the necessary authority to read the file. */
         if ((fd = qemudOpenAsUID(path, driver->user, &read_pid)) < 0) {
             /* error already reported */
-            goto cleanup;
+            goto error;
         }
     }
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to read qemu header"));
-        goto cleanup;
+        goto error;
     }
 
     if (memcmp(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic)) != 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("image magic is incorrect"));
-        goto cleanup;
+        goto error;
     }
 
     if (header.version > QEMUD_SAVE_VERSION) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("image version is not supported (%d > %d)"),
                         header.version, QEMUD_SAVE_VERSION);
-        goto cleanup;
+        goto error;
     }
 
     if (header.xml_len <= 0) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("invalid XML length: %d"), header.xml_len);
-        goto cleanup;
+        goto error;
     }
 
     if (VIR_ALLOC_N(xml, header.xml_len) < 0) {
         virReportOOMError();
-        goto cleanup;
+        goto error;
     }
 
     if (saferead(fd, xml, header.xml_len) != header.xml_len) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to read XML"));
-        goto cleanup;
+        goto error;
     }
 
     /* Create a domain from this XML */
@@ -6068,35 +6083,54 @@ static int qemudDomainRestore(virConnectPtr conn,
                                         VIR_DOMAIN_XML_INACTIVE))) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         "%s", _("failed to parse XML"));
-        goto cleanup;
+        goto error;
     }
 
-    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
-        goto cleanup;
+    VIR_FREE(xml);
 
-    if (!(vm = virDomainAssignDef(driver->caps,
-                                  &driver->domains,
-                                  def, true))) {
-        qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        "%s", _("failed to assign new VM"));
-        goto cleanup;
-    }
-    def = NULL;
+    *ret_def = def;
+    *ret_header = header;
+    *ret_read_pid = read_pid;
 
-    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
-        goto cleanup;
+    return fd;
 
-    if (header.version == 2) {
+error:
+    virDomainDefFree(def);
+    VIR_FREE(xml);
+    qemudDomainSaveImageClose(fd, read_pid, NULL);
+
+    return -1;
+}
+
+/* TODO: check seclabel restore */
+static int ATTRIBUTE_NONNULL(6)
+qemudDomainSaveImageStartVM(virConnectPtr conn,
+                            struct qemud_driver *driver,
+                            virDomainObjPtr vm,
+                            int fd,
+                            pid_t read_pid,
+                            const struct qemud_save_header *header,
+                            const char *path)
+{
+    int ret = -1;
+    virDomainEventPtr event;
+    int intermediatefd = -1;
+    pid_t intermediate_pid = -1;
+    int childstat;
+    int wait_ret;
+    int status;
+
+    if (header->version == 2) {
         const char *intermediate_argv[3] = { NULL, "-dc", NULL };
-        const char *prog = qemudSaveCompressionTypeToString(header.compressed);
+        const char *prog = qemudSaveCompressionTypeToString(header->compressed);
         if (prog == NULL) {
             qemuReportError(VIR_ERR_OPERATION_FAILED,
                             _("Invalid compressed save format %d"),
-                            header.compressed);
-            goto endjob;
+                            header->compressed);
+            goto out;
         }
 
-        if (header.compressed != QEMUD_SAVE_FORMAT_RAW) {
+        if (header->compressed != QEMUD_SAVE_FORMAT_RAW) {
             intermediate_argv[0] = prog;
             intermediatefd = fd;
             fd = -1;
@@ -6105,29 +6139,27 @@ static int qemudDomainRestore(virConnectPtr conn,
                 qemuReportError(VIR_ERR_INTERNAL_ERROR,
                                 _("Failed to start decompression binary %s"),
                                 intermediate_argv[0]);
-                goto endjob;
+                goto out;
             }
         }
     }
+
     /* Set the migration source and start it up. */
     ret = qemudStartVMDaemon(conn, driver, vm, "stdio", fd);
+
     if (intermediate_pid != -1) {
         /* Wait for intermediate process to exit */
         while (waitpid(intermediate_pid, &childstat, 0) == -1 &&
-               errno == EINTR);
+               errno == EINTR) {
+            /* empty */
+        }
     }
     if (intermediatefd != -1)
         close(intermediatefd);
-    close(fd);
+
+    wait_ret = qemudDomainSaveImageClose(fd, read_pid, &status);
     fd = -1;
     if (read_pid != -1) {
-        int wait_ret;
-        int status;
-        /* reap the process that read the file */
-        while (((wait_ret = waitpid(read_pid, &status, 0)) == -1)
-               && (errno == EINTR)) {
-            /* empty */
-        }
         read_pid = -1;
         if (wait_ret == -1) {
             virReportSystemError(errno,
@@ -6149,22 +6181,19 @@ static int qemudDomainRestore(virConnectPtr conn,
             }
         }
     }
-    if (ret < 0) {
-        if (!vm->persistent) {
-            if (qemuDomainObjEndJob(vm) > 0)
-                virDomainRemoveInactive(&driver->domains,
-                                        vm);
-            vm = NULL;
-        }
-        goto endjob;
-    }
+
+    if (ret < 0)
+        goto out;
 
     event = virDomainEventNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+
 
     /* If it was running before, resume it now. */
-    if (header.was_running) {
+    if (header->was_running) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, conn) < 0) {
@@ -6172,38 +6201,68 @@ static int qemudDomainRestore(virConnectPtr conn,
                 qemuReportError(VIR_ERR_OPERATION_FAILED,
                                 "%s", _("failed to resume domain"));
             qemuDomainObjExitMonitorWithDriver(driver,vm);
-            goto endjob;
+            goto out;
         }
         qemuDomainObjExitMonitorWithDriver(driver, vm);
         vm->state = VIR_DOMAIN_RUNNING;
         if (virDomainSaveStatus(driver->caps, driver->stateDir, vm) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
-            goto endjob;
+            goto out;
         }
     }
+
     ret = 0;
 
-endjob:
-    if (vm &&
-        qemuDomainObjEndJob(vm) == 0)
+out:
+    return ret;
+}
+
+static int qemudDomainRestore(virConnectPtr conn,
+                              const char *path) {
+    struct qemud_driver *driver = conn->privateData;
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr vm = NULL;
+    int fd = -1;
+    pid_t read_pid = -1;
+    int ret = -1;
+    struct qemud_save_header header;
+
+    qemuDriverLock(driver);
+
+    fd = qemudDomainSaveImageOpen(driver, path, &def, &header, &read_pid);
+    if (fd < 0)
+        goto cleanup;
+
+    if (virDomainObjIsDuplicate(&driver->domains, def, 1) < 0)
+        goto cleanup;
+
+    if (!(vm = virDomainAssignDef(driver->caps,
+                                  &driver->domains,
+                                  def, true))) {
+        qemuReportError(VIR_ERR_OPERATION_FAILED,
+                        "%s", _("failed to assign new VM"));
+        goto cleanup;
+    }
+    def = NULL;
+
+    if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
+        goto cleanup;
+
+    ret = qemudDomainSaveImageStartVM(conn, driver, vm, fd,
+                                      read_pid, &header, path);
+
+    if (qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
+    else if (ret < 0 && !vm->persistent) {
+        virDomainRemoveInactive(&driver->domains, vm);
+        vm = NULL;
+    }
 
 cleanup:
     virDomainDefFree(def);
-    VIR_FREE(xml);
-    if (fd != -1)
-        close(fd);
-    if (read_pid != 0) {
-        /* reap the process that read the file */
-        while ((waitpid(read_pid, NULL, 0) == -1)
-               && (errno == EINTR)) {
-            /* empty */
-        }
-    }
+    qemudDomainSaveImageClose(fd, read_pid, NULL);
     if (vm)
         virDomainObjUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);
     return ret;
 }
