@@ -315,7 +315,7 @@ qemuMonitorIOProcess(qemuMonitorPtr mon)
 # if DEBUG_RAW_IO
     char *str1 = qemuMonitorEscapeNonPrintable(msg ? msg->txBuffer : "");
     char *str2 = qemuMonitorEscapeNonPrintable(mon->buffer);
-    VIR_ERROR("Process %d %p %p [[[[%s]]][[[%s]]]", (int)mon->bufferOffset, mon->msg, msg, str1, str2);
+    VIR_ERROR(_("Process %d %p %p [[[[%s]]][[[%s]]]"), (int)mon->bufferOffset, mon->msg, msg, str1, str2);
     VIR_FREE(str1);
     VIR_FREE(str2);
 # else
@@ -509,7 +509,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque) {
 #endif
 
     if (mon->fd != fd || mon->watch != watch) {
-        VIR_ERROR("event from unexpected fd %d!=%d / watch %d!=%d", mon->fd, fd, mon->watch, watch);
+        VIR_ERROR(_("event from unexpected fd %d!=%d / watch %d!=%d"), mon->fd, fd, mon->watch, watch);
         failed = 1;
     } else {
         if (!mon->lastErrno &&

@@ -260,7 +260,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
             }
             ctl = virCgroupControllerTypeFromString(pp->str);
             if (ctl < 0) {
-                VIR_ERROR("Unknown cgroup controller '%s'", pp->str);
+                VIR_ERROR(_("Unknown cgroup controller '%s'"), pp->str);
                 virConfFree(conf);
                 return -1;
             }

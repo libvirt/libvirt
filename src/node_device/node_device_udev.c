@@ -57,7 +57,7 @@ static int udevStrToLong_ull(char const *s,
 
     ret = virStrToLong_ull(s, end_ptr, base, result);
     if (ret != 0) {
-        VIR_ERROR("Failed to convert '%s' to unsigned long long", s);
+        VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), s);
     } else {
         VIR_DEBUG("Converted '%s' to unsigned long %llu", s, *result);
     }
@@ -75,7 +75,7 @@ static int udevStrToLong_ui(char const *s,
 
     ret = virStrToLong_ui(s, end_ptr, base, result);
     if (ret != 0) {
-        VIR_ERROR("Failed to convert '%s' to unsigned int", s);
+        VIR_ERROR(_("Failed to convert '%s' to unsigned int"), s);
     } else {
         VIR_DEBUG("Converted '%s' to unsigned int %u", s, *result);
     }
@@ -92,7 +92,7 @@ static int udevStrToLong_i(char const *s,
 
     ret = virStrToLong_i(s, end_ptr, base, result);
     if (ret != 0) {
-        VIR_ERROR("Failed to convert '%s' to int", s);
+        VIR_ERROR(_("Failed to convert '%s' to int"), s);
     } else {
         VIR_DEBUG("Converted '%s' to int %u", s, *result);
     }
@@ -737,7 +737,7 @@ static int udevGetSCSIType(unsigned int type, char **typestring)
             ret = -1;
             virReportOOMError();
         } else {
-            VIR_ERROR("Failed to find SCSI device type %d", type);
+            VIR_ERROR(_("Failed to find SCSI device type %d"), type);
         }
     }
 
@@ -802,7 +802,7 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 
 out:
     if (ret != 0) {
-        VIR_ERROR("Failed to process SCSI device with sysfs path '%s'",
+        VIR_ERROR(_("Failed to process SCSI device with sysfs path '%s'"),
                   def->sysfs_path);
     }
     return ret;
@@ -1165,7 +1165,7 @@ static int udevGetDeviceDetails(struct udev_device *device,
         ret = udevProcessStorage(device, def);
         break;
     default:
-        VIR_ERROR("Unknown device type %d", def->caps->type);
+        VIR_ERROR(_("Unknown device type %d"), def->caps->type);
         ret = -1;
         break;
     }
@@ -1286,7 +1286,7 @@ static int udevAddOneDevice(struct udev_device *device)
     nodeDeviceUnlock(driverState);
 
     if (dev == NULL) {
-        VIR_ERROR("Failed to create device for '%s'", def->name);
+        VIR_ERROR(_("Failed to create device for '%s'"), def->name);
         virNodeDeviceDefFree(def);
         goto out;
     }
@@ -1333,7 +1333,7 @@ static int udevEnumerateDevices(struct udev *udev)
 
     ret = udev_enumerate_scan_devices(udev_enumerate);
     if (0 != ret) {
-        VIR_ERROR("udev scan devices returned %d", ret);
+        VIR_ERROR(_("udev scan devices returned %d"), ret);
         goto out;
     }
 
@@ -1443,7 +1443,7 @@ udevGetDMIData(union _virNodeDevCapData *data)
     if (device == NULL) {
         device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
         if (device == NULL) {
-            VIR_ERROR("Failed to get udev device for syspath '%s' or '%s'",
+            VIR_ERROR(_("Failed to get udev device for syspath '%s' or '%s'"),
                       DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
             goto out;
         }
@@ -1534,7 +1534,7 @@ static int udevSetupSystemDev(void)
 
     dev = virNodeDeviceAssignDef(&driverState->devs, def);
     if (dev == NULL) {
-        VIR_ERROR("Failed to create device for '%s'", def->name);
+        VIR_ERROR(_("Failed to create device for '%s'"), def->name);
         goto out;
     }
 

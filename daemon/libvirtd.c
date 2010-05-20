@@ -817,7 +817,7 @@ static int qemudInitPaths(struct qemud_server *server,
 
  snprintf_error:
     if (ret)
-        VIR_ERROR("%s",
+        VIR_ERROR(_("%s"),
                   _("Resulting path too long for buffer in qemudInitPaths()"));
 
  cleanup:

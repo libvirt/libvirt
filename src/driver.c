@@ -64,7 +64,7 @@ virDriverLoadModule(const char *name)
 
     handle = dlopen(modfile, RTLD_NOW | RTLD_LOCAL);
     if (!handle) {
-        VIR_ERROR("failed to load module %s %s", modfile, dlerror());
+        VIR_ERROR(_("failed to load module %s %s"), modfile, dlerror());
         goto cleanup;
     }
 
@@ -74,12 +74,12 @@ virDriverLoadModule(const char *name)
 
     regsym = dlsym(handle, regfunc);
     if (!regsym) {
-        VIR_ERROR("Missing module registration symbol %s", regfunc);
+        VIR_ERROR(_("Missing module registration symbol %s"), regfunc);
         goto cleanup;
     }
 
     if ((*regsym)() < 0) {
-        VIR_ERROR("Failed module registration %s", regfunc);
+        VIR_ERROR(_("Failed module registration %s"), regfunc);
         goto cleanup;
     }
 

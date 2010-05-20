@@ -1367,7 +1367,7 @@ static void qemuDomainSnapshotLoad(void *payload,
 
     virDomainObjLock(vm);
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
-        VIR_ERROR("Failed to allocate memory for snapshot directory for domain %s",
+        VIR_ERROR(_("Failed to allocate memory for snapshot directory for domain %s"),
                    vm->def->name);
         goto cleanup;
     }
@@ -1377,7 +1377,7 @@ static void qemuDomainSnapshotLoad(void *payload,
 
     if (!(dir = opendir(snapDir))) {
         if (errno != ENOENT)
-            VIR_ERROR("Failed to open snapshot directory %s for domain %s: %s",
+            VIR_ERROR(_("Failed to open snapshot directory %s for domain %s: %s"),
                       snapDir, vm->def->name,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
         goto cleanup;
@@ -1399,7 +1399,7 @@ static void qemuDomainSnapshotLoad(void *payload,
         ret = virFileReadAll(fullpath, 1024*1024*1, &xmlStr);
         if (ret < 0) {
             /* Nothing we can do here, skip this one */
-            VIR_ERROR("Failed to read snapshot file %s: %s", fullpath,
+            VIR_ERROR(_("Failed to read snapshot file %s: %s"), fullpath,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
             VIR_FREE(fullpath);
             continue;
@@ -1408,7 +1408,7 @@ static void qemuDomainSnapshotLoad(void *payload,
         def = virDomainSnapshotDefParseString(xmlStr, 0);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
-            VIR_ERROR("Failed to parse snapshot XML from file '%s'", fullpath);
+            VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"), fullpath);
             VIR_FREE(fullpath);
             VIR_FREE(xmlStr);
             continue;

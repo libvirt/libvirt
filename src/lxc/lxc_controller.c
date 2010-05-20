@@ -313,7 +313,7 @@ static int lxcControllerMain(int monitor,
     fdArray[0].active = 0;
     fdArray[1].fd = contPty;
     fdArray[1].active = 0;
-    VIR_ERROR("monitor=%d client=%d appPty=%d contPty=%d", monitor,client, appPty, contPty);
+    VIR_ERROR(_("monitor=%d client=%d appPty=%d contPty=%d"), monitor,client, appPty, contPty);
     /* create the epoll fild descriptor */
     epollFd = epoll_create(2);
     if (0 > epollFd) {

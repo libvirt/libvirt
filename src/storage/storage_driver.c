@@ -73,7 +73,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
             !virStoragePoolObjIsActive(pool)) {
             virStorageBackendPtr backend;
             if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
-                VIR_ERROR("Missing backend %d", pool->def->type);
+                VIR_ERROR(_("Missing backend %d"), pool->def->type);
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -81,7 +81,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
             if (backend->startPool &&
                 backend->startPool(NULL, pool) < 0) {
                 virErrorPtr err = virGetLastError();
-                VIR_ERROR("Failed to autostart storage pool '%s': %s",
+                VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
                           "no error message found");
                 virStoragePoolObjUnlock(pool);
@@ -92,7 +92,7 @@ storageDriverAutostart(virStorageDriverStatePtr driver) {
                 virErrorPtr err = virGetLastError();
                 if (backend->stopPool)
                     backend->stopPool(NULL, pool);
-                VIR_ERROR("Failed to autostart storage pool '%s': %s",
+                VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
                           "no error message found");
                 virStoragePoolObjUnlock(pool);
@@ -634,7 +634,7 @@ storagePoolUndefine(virStoragePoolPtr obj) {
 
     if (unlink(pool->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
         char ebuf[1024];
-        VIR_ERROR("Failed to delete autostart link '%s': %s",
+        VIR_ERROR(_("Failed to delete autostart link '%s': %s"),
                    pool->autostartLink, virStrerror(errno, ebuf, sizeof ebuf));
     }
 

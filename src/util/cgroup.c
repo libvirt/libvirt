@@ -195,7 +195,7 @@ static int virCgroupDetect(virCgroupPtr group)
 
     rc = virCgroupDetectMounts(group);
     if (rc < 0) {
-        VIR_ERROR("Failed to detect mounts for %s", group->path);
+        VIR_ERROR(_("Failed to detect mounts for %s"), group->path);
         return rc;
     }
 
@@ -217,7 +217,7 @@ static int virCgroupDetect(virCgroupPtr group)
                 continue;
 
             if (!group->controllers[i].placement) {
-                VIR_ERROR("Could not find placement for controller %s at %s",
+                VIR_ERROR(_("Could not find placement for controller %s at %s"),
                           virCgroupControllerTypeToString(i),
                           group->controllers[i].placement);
                 rc = -ENOENT;
@@ -230,7 +230,7 @@ static int virCgroupDetect(virCgroupPtr group)
                       group->controllers[i].placement);
         }
     } else {
-        VIR_ERROR("Failed to detect mapping for %s", group->path);
+        VIR_ERROR(_("Failed to detect mapping for %s"), group->path);
     }
 
     return rc;
@@ -422,7 +422,7 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
                                   inherit_values[i],
                                   &value);
         if (rc != 0) {
-            VIR_ERROR("Failed to get %s %d", inherit_values[i], rc);
+            VIR_ERROR(_("Failed to get %s %d"), inherit_values[i], rc);
             break;
         }
 
@@ -435,7 +435,7 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
         VIR_FREE(value);
 
         if (rc != 0) {
-            VIR_ERROR("Failed to set %s %d", inherit_values[i], rc);
+            VIR_ERROR(_("Failed to set %s %d"), inherit_values[i], rc);
             break;
         }
     }

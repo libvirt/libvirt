@@ -283,7 +283,7 @@ static int virClearCapabilities(void)
     capng_clear(CAPNG_SELECT_BOTH);
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        VIR_ERROR("cannot clear process capabilities %d", ret);
+        VIR_ERROR(_("cannot clear process capabilities %d"), ret);
         return -1;
     }
 

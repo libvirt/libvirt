@@ -197,7 +197,7 @@ static int logStrToLong_ui(char const *s,
 
     ret = virStrToLong_ui(s, end_ptr, base, result);
     if (ret != 0) {
-        VIR_ERROR("Failed to convert '%s' to unsigned int", s);
+        VIR_ERROR(_("Failed to convert '%s' to unsigned int"), s);
     } else {
         VIR_DEBUG("Converted '%s' to unsigned int %u", s, *result);
     }
@@ -264,7 +264,7 @@ static int get_sriov_function(const char *device_link,
     device_path = canonicalize_file_name (device_link);
     if (device_path == NULL) {
         memset(errbuf, '\0', sizeof(errbuf));
-        VIR_ERROR("Failed to resolve device link '%s': '%s'", device_link,
+        VIR_ERROR(_("Failed to resolve device link '%s': '%s'"), device_link,
                   virStrerror(errno, errbuf, sizeof(errbuf)));
         goto out;
     }
@@ -277,7 +277,7 @@ static int get_sriov_function(const char *device_link,
     }
 
     if (parse_pci_config_address(config_address, *bdf) != 0) {
-        VIR_ERROR("Failed to parse PCI config address '%s'", config_address);
+        VIR_ERROR(_("Failed to parse PCI config address '%s'"), config_address);
         goto out;
     }
 
@@ -357,7 +357,7 @@ int get_virtual_functions_linux(const char *sysfs_path,
 
                 /* We should not get back SRIOV_NOT_FOUND in this
                  * case, so if we do, it's an error. */
-                VIR_ERROR("Failed to get SR IOV function from device link '%s'",
+                VIR_ERROR(_("Failed to get SR IOV function from device link '%s'"),
                           device_link);
                 goto out;
             } else {

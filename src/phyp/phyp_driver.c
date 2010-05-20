@@ -1067,7 +1067,7 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
                 break;
             else if (ret[i] == '\n') {
                 if (virStrToLong_i(id_c, &char_ptr, 10, &ids[got]) == -1) {
-                    VIR_ERROR("Cannot parse number from '%s'", id_c);
+                    VIR_ERROR(_("Cannot parse number from '%s'"), id_c);
                     goto err;
                 }
                 memset(id_c, 0, 10);
@@ -1520,7 +1520,7 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
         goto err;
 
     if (nvcpus > phypGetLparCPUMAX(dom)) {
-        VIR_ERROR("%s",
+        VIR_ERROR(_("%s"),
                   "You are trying to set a number of CPUs bigger than "
                   "the max possible..");
         goto err;
@@ -1547,7 +1547,7 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
     ret = phypExec(session, cmd, &exit_status, dom->conn);
 
     if (exit_status < 0) {
-        VIR_ERROR("%s",
+        VIR_ERROR(_("%s"),
                   "Possibly you don't have IBM Tools installed in your LPAR."
                   "Contact your support to enable this feature.");
         goto err;
@@ -1690,7 +1690,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     ret = phypExec(session, cmd, &exit_status, conn);
 
     if (exit_status < 0) {
-        VIR_ERROR("%s\"%s\"", "Unable to create LPAR. Reason: ", ret);
+        VIR_ERROR(_("%s\"%s\""), "Unable to create LPAR. Reason: ", ret);
         goto err;
     }
 
@@ -1992,7 +1992,7 @@ phypUUIDTable_Push(virConnectPtr conn)
                 /* end of file */
                 break;
             } else {
-                VIR_ERROR("Failed to read from '%s'", local_file);
+                VIR_ERROR(_("Failed to read from '%s'"), local_file);
                 goto err;
             }
         }

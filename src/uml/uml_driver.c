@@ -791,10 +791,10 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
             def->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
 
-        VIR_ERROR("Cleanup '%s'", def->ifname);
+        VIR_ERROR(_("Cleanup '%s'"), def->ifname);
         err = brDeleteTap(brctl, def->ifname);
         if (err) {
-            VIR_ERROR("Cleanup failed %d", err);
+            VIR_ERROR(_("Cleanup failed %d"), err);
             ret = -1;
         }
     }

@@ -787,7 +787,7 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
 
  failure:
     if (dbus_error_is_set(&err)) {
-        VIR_ERROR("%s: %s", err.name, err.message);
+        VIR_ERROR(_("%s: %s"), err.name, err.message);
         dbus_error_free(&err);
     }
     virNodeDeviceObjListFree(&driverState->devs);
