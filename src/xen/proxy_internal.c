@@ -159,7 +159,7 @@ virProxyForkServer(void)
     if (virExecDaemonize(proxyarg, NULL, NULL,
                          &pid, -1, NULL, NULL, 0,
                          NULL, NULL, NULL) < 0)
-        VIR_ERROR0("Failed to fork libvirt_proxy");
+        VIR_ERROR0(_("Failed to fork libvirt_proxy"));
 
     return (0);
 }

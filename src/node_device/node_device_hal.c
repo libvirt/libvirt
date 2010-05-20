@@ -718,22 +718,22 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     dbus_error_init(&err);
     hal_ctx = libhal_ctx_new();
     if (hal_ctx == NULL) {
-        VIR_ERROR0("libhal_ctx_new returned NULL");
+        VIR_ERROR0(_("libhal_ctx_new returned NULL"));
         goto failure;
     }
     dbus_conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
     if (dbus_conn == NULL) {
-        VIR_ERROR0("dbus_bus_get failed");
+        VIR_ERROR0(_("dbus_bus_get failed"));
         goto failure;
     }
     dbus_connection_set_exit_on_disconnect(dbus_conn, FALSE);
 
     if (!libhal_ctx_set_dbus_connection(hal_ctx, dbus_conn)) {
-        VIR_ERROR0("libhal_ctx_set_dbus_connection failed");
+        VIR_ERROR0(_("libhal_ctx_set_dbus_connection failed"));
         goto failure;
     }
     if (!libhal_ctx_init(hal_ctx, &err)) {
-        VIR_ERROR0("libhal_ctx_init failed, haldaemon is probably not running");
+        VIR_ERROR0(_("libhal_ctx_init failed, haldaemon is probably not running"));
         /* We don't want to show a fatal error here,
            otherwise entire libvirtd shuts down when
            hald isn't running */
@@ -747,7 +747,7 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
                                              remove_dbus_watch,
                                              toggle_dbus_watch,
                                              NULL, NULL)) {
-        VIR_ERROR0("dbus_connection_set_watch_functions failed");
+        VIR_ERROR0(_("dbus_connection_set_watch_functions failed"));
         goto failure;
     }
 
@@ -768,13 +768,13 @@ static int halDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
         !libhal_ctx_set_device_lost_capability(hal_ctx, device_cap_lost) ||
         !libhal_ctx_set_device_property_modified(hal_ctx, device_prop_modified) ||
         !libhal_device_property_watch_all(hal_ctx, &err)) {
-        VIR_ERROR0("setting up HAL callbacks failed");
+        VIR_ERROR0(_("setting up HAL callbacks failed"));
         goto failure;
     }
 
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        VIR_ERROR0("libhal_get_all_devices failed");
+        VIR_ERROR0(_("libhal_get_all_devices failed"));
         goto failure;
     }
     for (i = 0; i < num_devs; i++) {
@@ -835,7 +835,7 @@ static int halDeviceMonitorReload(void)
     dbus_error_init(&err);
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        VIR_ERROR0("libhal_get_all_devices failed");
+        VIR_ERROR0(_("libhal_get_all_devices failed"));
         return -1;
     }
     for (i = 0; i < num_devs; i++) {

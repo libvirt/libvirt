@@ -184,7 +184,7 @@ static void qemuDomainObjPrivateFree(void *data)
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->mon) {
-        VIR_ERROR0("Unexpected QEMU monitor still active during domain deletion");
+        VIR_ERROR0(_("Unexpected QEMU monitor still active during domain deletion"));
         qemuMonitorClose(priv->mon);
     }
     VIR_FREE(priv);
@@ -1392,7 +1392,7 @@ static void qemuDomainSnapshotLoad(void *payload,
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
 
         if (virAsprintf(&fullpath, "%s/%s", snapDir, entry->d_name) < 0) {
-            VIR_ERROR0("Failed to allocate memory for path");
+            VIR_ERROR0(_("Failed to allocate memory for path"));
             continue;
         }
 

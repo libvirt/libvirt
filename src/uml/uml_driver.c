@@ -780,7 +780,7 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
     int err;
     int ret = 0;
     brControl *brctl = NULL;
-    VIR_ERROR0("Cleanup tap");
+    VIR_ERROR0(_("Cleanup tap"));
     if (brInit(&brctl) < 0)
         return -1;
 
@@ -798,7 +798,7 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
             ret = -1;
         }
     }
-    VIR_ERROR0("Cleanup tap done");
+    VIR_ERROR0(_("Cleanup tap done"));
     brShutdown(brctl);
     return ret;
 }

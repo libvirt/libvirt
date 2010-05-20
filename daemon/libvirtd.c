@@ -3202,7 +3202,7 @@ int main(int argc, char **argv) {
     /* Start the event loop in a background thread, since
      * state initialization needs events to be being processed */
     if (qemudStartEventLoop(server) < 0) {
-        VIR_ERROR0("Event thread startup failed");
+        VIR_ERROR0(_("Event thread startup failed"));
         goto error;
     }
 
@@ -3211,14 +3211,14 @@ int main(int argc, char **argv) {
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
     if (virStateInitialize(server->privileged) < 0) {
-        VIR_ERROR0("Driver state initialization failed");
+        VIR_ERROR0(_("Driver state initialization failed"));
         goto shutdown;
     }
 
     /* Start accepting new clients from network */
     virMutexLock(&server->lock);
     if (qemudNetworkEnable(server) < 0) {
-        VIR_ERROR0("Network event loop enablement failed");
+        VIR_ERROR0(_("Network event loop enablement failed"));
         goto shutdown;
     }
     virMutexUnlock(&server->lock);

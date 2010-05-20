@@ -83,7 +83,7 @@ static int virCgroupDetectMounts(virCgroupPtr group)
 
     mounts = fopen("/proc/mounts", "r");
     if (mounts == NULL) {
-        VIR_ERROR0("Unable to open /proc/mounts");
+        VIR_ERROR0(_("Unable to open /proc/mounts"));
         return -ENOENT;
     }
 
@@ -136,7 +136,7 @@ static int virCgroupDetectPlacement(virCgroupPtr group)
 
     mapping = fopen("/proc/self/cgroup", "r");
     if (mapping == NULL) {
-        VIR_ERROR0("Unable to open /proc/self/cgroup");
+        VIR_ERROR0(_("Unable to open /proc/self/cgroup"));
         return -ENOENT;
     }
 

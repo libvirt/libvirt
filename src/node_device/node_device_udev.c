@@ -368,7 +368,7 @@ static int udevTranslatePCIIds(unsigned int vendor,
     const char *vendor_name = NULL, *device_name = NULL;
 
     if (pci_system_init() != 0) {
-        VIR_ERROR0("Failed to initialize libpciaccess");
+        VIR_ERROR0(_("Failed to initialize libpciaccess"));
         goto out;
     }
 
@@ -1408,7 +1408,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
     device = udev_monitor_receive_device(udev_monitor);
     if (device == NULL) {
-        VIR_ERROR0("udev_monitor_receive_device returned NULL");
+        VIR_ERROR0(_("udev_monitor_receive_device returned NULL"));
         goto out;
     }
 
@@ -1572,7 +1572,7 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     }
 
     if (virMutexInit(&driverState->lock) < 0) {
-        VIR_ERROR0("Failed to initialize mutex for driverState");
+        VIR_ERROR0(_("Failed to initialize mutex for driverState"));
         VIR_FREE(priv);
         VIR_FREE(driverState);
         ret = -1;
@@ -1594,7 +1594,7 @@ static int udevDeviceMonitorStartup(int privileged ATTRIBUTE_UNUSED)
     if (priv->udev_monitor == NULL) {
         VIR_FREE(priv);
         nodeDeviceUnlock(driverState);
-        VIR_ERROR0("udev_monitor_new_from_netlink returned NULL");
+        VIR_ERROR0(_("udev_monitor_new_from_netlink returned NULL"));
         ret = -1;
         goto out;
     }

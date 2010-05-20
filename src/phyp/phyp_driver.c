@@ -1233,30 +1233,30 @@ phypDomainDumpXML(virDomainPtr dom, int flags)
                                       dom->conn);
 
     if (lpar_name == NULL) {
-        VIR_ERROR0("Unable to determine domain's name.");
+        VIR_ERROR0(_("Unable to determine domain's name."));
         goto err;
     }
 
     if (phypGetLparUUID(def.uuid, dom->id, dom->conn) == -1) {
-        VIR_ERROR0("Unable to generate random uuid.");
+        VIR_ERROR0(_("Unable to generate random uuid."));
         goto err;
     }
 
     if ((def.maxmem =
          phypGetLparMem(dom->conn, managed_system, dom->id, 0)) == 0) {
-        VIR_ERROR0("Unable to determine domain's max memory.");
+        VIR_ERROR0(_("Unable to determine domain's max memory."));
         goto err;
     }
 
     if ((def.memory =
          phypGetLparMem(dom->conn, managed_system, dom->id, 1)) == 0) {
-        VIR_ERROR0("Unable to determine domain's memory.");
+        VIR_ERROR0(_("Unable to determine domain's memory."));
         goto err;
     }
 
     if ((def.vcpus =
          phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
-        VIR_ERROR0("Unable to determine domain's CPU.");
+        VIR_ERROR0(_("Unable to determine domain's CPU."));
         goto err;
     }
 
@@ -1695,7 +1695,7 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     }
 
     if (phypUUIDTable_AddLpar(conn, def->uuid, def->id) == -1) {
-        VIR_ERROR0("Unable to add LPAR to the table");
+        VIR_ERROR0(_("Unable to add LPAR to the table"));
         goto err;
     }
 
@@ -1835,13 +1835,13 @@ phypUUIDTable_WriteFile(virConnectPtr conn)
         if (safewrite(fd, &uuid_table->lpars[i]->id,
                       sizeof(uuid_table->lpars[i]->id)) !=
             sizeof(uuid_table->lpars[i]->id)) {
-            VIR_ERROR0("Unable to write information to local file.");
+            VIR_ERROR0(_("Unable to write information to local file."));
             goto err;
         }
 
         if (safewrite(fd, uuid_table->lpars[i]->uuid, VIR_UUID_BUFLEN) !=
             VIR_UUID_BUFLEN) {
-            VIR_ERROR0("Unable to write information to local file.");
+            VIR_ERROR0(_("Unable to write information to local file."));
             goto err;
         }
     }
