@@ -634,7 +634,7 @@ qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
-                      err ? err->message : "");
+                      err ? err->message : _("unknown error"));
         } else {
             virDomainEventPtr event =
                 virDomainEventNewFromObj(vm,
@@ -2895,7 +2895,7 @@ qemudReattachManagedDevice(pciDevice *dev)
         if (pciReAttachDevice(dev) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                      err ? err->message : "");
+                      err ? err->message : _("unknown error"));
             virResetError(err);
         }
     }
@@ -2914,7 +2914,7 @@ qemuDomainReAttachHostDevices(struct qemud_driver *driver,
     if (!(pcidevs = qemuGetPciHostDeviceList(def))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
-                  err ? err->message : "");
+                  err ? err->message : _("unknown error"));
         virResetError(err);
         return;
     }
@@ -2932,7 +2932,7 @@ qemuDomainReAttachHostDevices(struct qemud_driver *driver,
         if (pciResetDevice(dev, driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s"),
-                      err ? err->message : "");
+                      err ? err->message : _("unknown error"));
             virResetError(err);
         }
     }
