@@ -6669,7 +6669,6 @@ static int qemudDomainStart(virDomainPtr dom) {
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainEventPtr event = NULL;
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6700,8 +6699,6 @@ endjob:
 cleanup:
     if (vm)
         virDomainObjUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
     qemuDriverUnlock(driver);
     return ret;
 }
