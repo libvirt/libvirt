@@ -88,6 +88,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+#define QEMU_VNC_PORT_MIN  5900
+#define QEMU_VNC_PORT_MAX  65535
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */
@@ -2638,7 +2641,7 @@ qemuInitPCIAddresses(struct qemud_driver *driver,
 static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i;
 
-    for (i = 5900 ; i < 65535 ; i++) {
+    for (i = QEMU_VNC_PORT_MIN; i < QEMU_VNC_PORT_MAX; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
