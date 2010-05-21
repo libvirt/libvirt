@@ -39,16 +39,6 @@ LDADDS = \
 	$(LIBSOCKET) \
         $(COVERAGE_LDFLAGS)
 
-qemuhelpdata = \
-	kvm-74 \
-	kvm-86 \
-	qemu-0.9.1 \
-	qemu-0.10.5 \
-	qemu-0.12.1 \
-	qemu-kvm-0.10.5 \
-	qemu-kvm-0.11.0-rc2 \
-	qemu-kvm-0.12.3
-
 EXTRA_DIST =		\
         oomtrace.pl     \
 	test-lib.sh	\
@@ -79,7 +69,7 @@ EXTRA_DIST =		\
 	domainsnapshotschematest \
 	domainsnapshotxml2xmlout \
 	domainsnapshotxml2xmlin \
-	$(patsubst %,qemuhelpdata/%,$(qemuhelpdata))
+	qemuhelpdata
 
 noinst_PROGRAMS = virshtest conftest \
         nodeinfotest statstest qparamtest
