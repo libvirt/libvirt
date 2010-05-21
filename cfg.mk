@@ -67,6 +67,7 @@ local-checks-to-skip =			\
 useless_free_options =				\
   --name=VIR_FREE				\
   --name=sexpr_free				\
+  --name=virBitmapFree                          \
   --name=virCPUDefFree				\
   --name=virCapabilitiesFree			\
   --name=virCapabilitiesFreeGuest		\

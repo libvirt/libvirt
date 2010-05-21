@@ -4,6 +4,14 @@
 #
 
 
+# bitmap.h
+virBitmapAlloc;
+virBitmapFree;
+virBitmapSetBit;
+virBitmapClearBit;
+virBitmapGetBit;
+
+
 # buf.h
 virBufferVSprintf;
 virBufferEscapeString;

@@ -50,6 +50,7 @@ augeastest_DATA =
 # helper APIs for various purposes
 UTIL_SOURCES =							\
 		util/authhelper.c util/authhelper.h		\
+		util/bitmap.c util/bitmap.h			\
 		util/bridge.c util/bridge.h			\
 		util/buf.c util/buf.h				\
 		util/conf.c util/conf.h				\
