@@ -23,10 +23,10 @@
 #ifndef __BITMAP_H__
 # define __BITMAP_H__
 
-#include "internal.h"
+# include "internal.h"
 
-#include <stdbool.h>
-#include <sys/types.h>
+# include <stdbool.h>
+# include <sys/types.h>
 
 
 typedef struct _virBitmap virBitmap;
