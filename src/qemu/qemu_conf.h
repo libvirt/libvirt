@@ -39,6 +39,7 @@
 # include "pci.h"
 # include "cpu_conf.h"
 # include "driver.h"
+# include "bitmap.h"
 
 # define qemudDebug(fmt, ...) do {} while(0)
 
@@ -153,6 +154,8 @@ struct qemud_driver {
     char *saveImageFormat;
 
     pciDeviceList *activePciHostdevs;
+
+    virBitmapPtr reservedVNCPorts;
 };
 
 typedef struct _qemuDomainPCIAddressSet qemuDomainPCIAddressSet;

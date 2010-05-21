@@ -1485,6 +1485,11 @@ qemudStartup(int privileged) {
          virEventAddTimeout(-1, qemuDomainEventFlush, qemu_driver, NULL)) < 0)
         goto error;
 
+    /* Allocate bitmap for vnc port reservation */
+    if ((qemu_driver->reservedVNCPorts =
+         virBitmapAlloc(QEMU_VNC_PORT_MAX - QEMU_VNC_PORT_MIN)) == NULL)
+        goto out_of_memory;
+
     if (privileged) {
         if (virAsprintf(&qemu_driver->logDir,
                         "%s/log/libvirt/qemu", LOCAL_STATE_DIR) == -1)
@@ -1781,6 +1786,7 @@ qemudShutdown(void) {
     virCapabilitiesFree(qemu_driver->caps);
 
     virDomainObjListDeinit(&qemu_driver->domains);
+    virBitmapFree(qemu_driver->reservedVNCPorts);
 
     VIR_FREE(qemu_driver->securityDriverName);
     VIR_FREE(qemu_driver->logDir);
@@ -2638,13 +2644,22 @@ qemuInitPCIAddresses(struct qemud_driver *driver,
     return ret;
 }
 
-static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
+static int qemudNextFreeVNCPort(struct qemud_driver *driver) {
     int i;
 
     for (i = QEMU_VNC_PORT_MIN; i < QEMU_VNC_PORT_MAX; i++) {
         int fd;
         int reuse = 1;
         struct sockaddr_in addr;
+        bool used = false;
+
+        if (virBitmapGetBit(driver->reservedVNCPorts,
+                            i - QEMU_VNC_PORT_MIN, &used) < 0)
+            VIR_DEBUG("virBitmapGetBit failed on bit %d", i - QEMU_VNC_PORT_MIN);
+
+        if (used)
+            continue;
+
         addr.sin_family = AF_INET;
         addr.sin_port = htons(i);
         addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -2660,6 +2675,12 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
         if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
             /* Not in use, lets grab it */
             close(fd);
+            /* Add port to bitmap of reserved ports */
+            if (virBitmapSetBit(driver->reservedVNCPorts,
+                                i - QEMU_VNC_PORT_MIN) < 0) {
+                VIR_DEBUG("virBitmapSetBit failed on bit %d",
+                          i - QEMU_VNC_PORT_MIN);
+            }
             return i;
         }
         close(fd);
@@ -3699,6 +3720,21 @@ retry:
     }
 
     qemudRemoveDomainStatus(driver, vm);
+
+    /* Remove VNC port from port reservation bitmap, but only if it was
+       reserved by the driver (autoport=yes)
+    */
+    if ((vm->def->ngraphics == 1) &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        vm->def->graphics[0]->data.vnc.autoport &&
+        vm->def->graphics[0]->data.vnc.port != -1) {
+        if (virBitmapClearBit(driver->reservedVNCPorts,
+                              vm->def->graphics[0]->data.vnc.port - \
+                              QEMU_VNC_PORT_MIN) < 0) {
+            VIR_DEBUG("virBitmapClearBit failed on bit %d",
+                      vm->def->graphics[0]->data.vnc.port - QEMU_VNC_PORT_MIN);
+       }
+    }
 
     vm->pid = -1;
     vm->def->id = -1;
