@@ -302,7 +302,7 @@ virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     int retval = 0;
 
-    VIR_ERROR(_("in %s"), __func__);
+    VIR_DEBUG("in %s", __func__);
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
