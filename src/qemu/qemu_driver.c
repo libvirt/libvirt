@@ -7653,7 +7653,6 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pciDevice *pci;
     int ret;
-    virDomainDevicePCIAddress guestAddr;
     char *devstr = NULL;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
@@ -7688,20 +7687,24 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
 
         if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
             goto error;
-    }
 
-    qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorAddDevice(priv->mon, devstr);
-    else
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+    } else {
+        virDomainDevicePCIAddress guestAddr;
+
+        qemuDomainObjEnterMonitorWithDriver(driver, vm);
         ret = qemuMonitorAddPCIHostDevice(priv->mon,
                                           &hostdev->source.subsys.u.pci,
                                           &guestAddr);
-    qemuDomainObjExitMonitorWithDriver(driver, vm);
+        qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+        hostdev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        memcpy(&hostdev->info.addr.pci, &guestAddr, sizeof(guestAddr));
+    }
     if (ret < 0)
         goto error;
-    hostdev->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-    memcpy(&hostdev->info.addr.pci, &guestAddr, sizeof(guestAddr));
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
