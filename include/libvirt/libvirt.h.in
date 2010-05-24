@@ -2212,10 +2212,6 @@ int virConnectDomainEventRegisterAny(virConnectPtr conn,
 int virConnectDomainEventDeregisterAny(virConnectPtr conn,
                                        int callbackID);
 
-#ifdef __cplusplus
-}
-#endif
-
 
 /**
  * virNWFilter:
@@ -2278,5 +2274,9 @@ int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
                                                   char *buf);
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
                                                   int flags);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __VIR_VIRLIB_H__ */
