@@ -812,18 +812,11 @@ static int umlCleanupTapDevices(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
                             virDomainObjPtr vm) {
-    const char **argv = NULL, **tmp;
-    const char **progenv = NULL;
-    int i, ret;
-    pid_t pid;
+    int ret;
     char *logfile;
     int logfd = -1;
-    struct stat sb;
-    fd_set keepfd;
-    char ebuf[1024];
     umlDomainObjPrivatePtr priv = vm->privateData;
-
-    FD_ZERO(&keepfd);
+    virCommandPtr cmd = NULL;
 
     if (virDomainObjIsActive(vm)) {
         umlReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -840,7 +833,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so its hard to feed back a useful error
      */
-    if (stat(vm->def->os.kernel, &sb) < 0) {
+    if (access(vm->def->os.kernel, X_OK) < 0) {
         virReportSystemError(errno,
                              _("Cannot find UML kernel %s"),
                              vm->def->os.kernel);
@@ -877,67 +870,30 @@ static int umlStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (umlBuildCommandLine(conn, driver, vm, &keepfd,
-                            &argv, &progenv) < 0) {
+    if (!(cmd = umlBuildCommandLine(conn, driver, vm))) {
         VIR_FORCE_CLOSE(logfd);
         virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(conn, vm);
         return -1;
     }
 
-    tmp = progenv;
-    while (*tmp) {
-        if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN("Unable to write envv to logfile: %s",
-                   virStrerror(errno, ebuf, sizeof ebuf));
-        if (safewrite(logfd, " ", 1) < 0)
-            VIR_WARN("Unable to write envv to logfile: %s",
-                   virStrerror(errno, ebuf, sizeof ebuf));
-        tmp++;
-    }
-    tmp = argv;
-    while (*tmp) {
-        if (safewrite(logfd, *tmp, strlen(*tmp)) < 0)
-            VIR_WARN("Unable to write argv to logfile: %s",
-                   virStrerror(errno, ebuf, sizeof ebuf));
-        if (safewrite(logfd, " ", 1) < 0)
-            VIR_WARN("Unable to write argv to logfile: %s",
-                   virStrerror(errno, ebuf, sizeof ebuf));
-        tmp++;
-    }
-    if (safewrite(logfd, "\n", 1) < 0)
-        VIR_WARN("Unable to write argv to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof ebuf));
+    virCommandWriteArgLog(cmd, logfd);
 
     priv->monitor = -1;
 
-    ret = virExecDaemonize(argv, progenv, &keepfd, &pid,
-                           -1, &logfd, &logfd,
-                           VIR_EXEC_CLEAR_CAPS,
-                           NULL, NULL, NULL);
+    virCommandClearCaps(cmd);
+    virCommandSetOutputFD(cmd, &logfd);
+    virCommandSetErrorFD(cmd, &logfd);
+    virCommandDaemonize(cmd);
+
+    ret = virCommandRun(cmd, NULL);
     VIR_FORCE_CLOSE(logfd);
     if (ret < 0)
         goto cleanup;
 
     ret = virDomainObjSetDefTransient(driver->caps, vm);
 cleanup:
-    /*
-     * At the moment, the only thing that populates keepfd is
-     * umlBuildCommandLineChr. We want to close every fd it opens.
-     */
-    for (i = 0; i < FD_SETSIZE; i++)
-        if (FD_ISSET(i, &keepfd)) {
-            int tmpfd = i;
-            VIR_FORCE_CLOSE(tmpfd);
-        }
-
-    for (i = 0 ; argv[i] ; i++)
-        VIR_FREE(argv[i]);
-    VIR_FREE(argv);
-
-    for (i = 0 ; progenv[i] ; i++)
-        VIR_FREE(progenv[i]);
-    VIR_FREE(progenv);
+    virCommandFree(cmd);
 
     if (ret < 0) {
         virDomainConfVMNWFilterTeardown(vm);

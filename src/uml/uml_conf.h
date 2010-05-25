@@ -31,6 +31,7 @@
 # include "domain_conf.h"
 # include "virterror_internal.h"
 # include "threads.h"
+# include "command.h"
 
 # define umlDebug(fmt, ...) do {} while(0)
 
@@ -68,11 +69,8 @@ struct uml_driver {
 
 virCapsPtr  umlCapsInit               (void);
 
-int         umlBuildCommandLine       (virConnectPtr conn,
-                                       struct uml_driver *driver,
-                                       virDomainObjPtr dom,
-                                       fd_set *keepfd,
-                                       const char ***retargv,
-                                       const char ***retenv);
+virCommandPtr umlBuildCommandLine(virConnectPtr conn,
+                                  struct uml_driver *driver,
+                                  virDomainObjPtr dom);
 
 #endif /* __UML_CONF_H */

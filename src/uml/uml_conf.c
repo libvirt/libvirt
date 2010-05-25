@@ -48,6 +48,7 @@
 #include "logging.h"
 #include "domain_nwfilter.h"
 #include "files.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -307,7 +308,7 @@ error:
 static char *
 umlBuildCommandLineChr(virDomainChrDefPtr def,
                        const char *dev,
-                       fd_set *keepfd)
+                       virCommandPtr cmd)
 {
     char *ret = NULL;
 
@@ -371,7 +372,7 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
                 VIR_FORCE_CLOSE(fd_out);
                 return NULL;
             }
-            FD_SET(fd_out, keepfd);
+            virCommandTransferFD(cmd, fd_out);
         }
         break;
    case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -419,109 +420,27 @@ static char *umlNextArg(char *args)
  * Constructs a argv suitable for launching uml with config defined
  * for a given virtual machine.
  */
-int umlBuildCommandLine(virConnectPtr conn,
-                        struct uml_driver *driver,
-                        virDomainObjPtr vm,
-                        fd_set *keepfd,
-                        const char ***retargv,
-                        const char ***retenv)
+virCommandPtr umlBuildCommandLine(virConnectPtr conn,
+                                  struct uml_driver *driver,
+                                  virDomainObjPtr vm)
 {
     int i, j;
-    char memory[50];
     struct utsname ut;
-    int qargc = 0, qarga = 0;
-    const char **qargv = NULL;
-    int qenvc = 0, qenva = 0;
-    const char **qenv = NULL;
-    char *cmdline = NULL;
+    virCommandPtr cmd;
 
     uname(&ut);
 
-#define ADD_ARG_SPACE                                                   \
-    do {                                                                \
-        if (qargc == qarga) {                                           \
-            qarga += 10;                                                \
-            if (VIR_REALLOC_N(qargv, qarga) < 0)                        \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
+    cmd = virCommandNew(vm->def->os.kernel);
 
-#define ADD_ARG(thisarg)                                                \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        qargv[qargc++] = thisarg;                                       \
-    } while (0)
+    virCommandAddEnvPassCommon(cmd);
 
-#define ADD_ARG_LIT(thisarg)                                            \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        if ((qargv[qargc++] = strdup(thisarg)) == NULL)                 \
-            goto no_memory;                                             \
-    } while (0)
-
-#define ADD_ARG_PAIR(key,val)                                           \
-    do {                                                                \
-        char *arg;                                                      \
-        ADD_ARG_SPACE;                                                  \
-        if (virAsprintf(&arg, "%s=%s", key, val) < 0)                   \
-            goto no_memory;                                             \
-        qargv[qargc++] = arg;                                           \
-    } while (0)
-
-
-#define ADD_ENV_SPACE                                                   \
-    do {                                                                \
-        if (qenvc == qenva) {                                           \
-            qenva += 10;                                                \
-            if (VIR_REALLOC_N(qenv, qenva) < 0)                         \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
-
-#define ADD_ENV(thisarg)                                                \
-    do {                                                                \
-        ADD_ENV_SPACE;                                                  \
-        qenv[qenvc++] = thisarg;                                        \
-    } while (0)
-
-#define ADD_ENV_LIT(thisarg)                                            \
-    do {                                                                \
-        ADD_ENV_SPACE;                                                  \
-        if ((qenv[qenvc++] = strdup(thisarg)) == NULL)                  \
-            goto no_memory;                                             \
-    } while (0)
-
-#define ADD_ENV_COPY(envname)                                           \
-    do {                                                                \
-        char *val = getenv(envname);                                    \
-        char *envval;                                                   \
-        ADD_ENV_SPACE;                                                  \
-        if (val != NULL) {                                              \
-            if (virAsprintf(&envval, "%s=%s", envname, val) < 0)        \
-                goto no_memory;                                         \
-            qenv[qenvc++] = envval;                                     \
-        }                                                               \
-    } while (0)
-
-    snprintf(memory, sizeof(memory), "%luK", vm->def->mem.cur_balloon);
-
-    ADD_ENV_LIT("LC_ALL=C");
-
-    ADD_ENV_COPY("LD_PRELOAD");
-    ADD_ENV_COPY("LD_LIBRARY_PATH");
-    ADD_ENV_COPY("PATH");
-    ADD_ENV_COPY("USER");
-    ADD_ENV_COPY("LOGNAME");
-    ADD_ENV_COPY("TMPDIR");
-
-    ADD_ARG_LIT(vm->def->os.kernel);
-    //ADD_ARG_PAIR("con0", "fd:0,fd:1");
-    ADD_ARG_PAIR("mem", memory);
-    ADD_ARG_PAIR("umid", vm->def->name);
-    ADD_ARG_PAIR("uml_dir", driver->monitorDir);
+    //virCommandAddArgPair(cmd, "con0", "fd:0,fd:1");
+    virCommandAddArgFormat(cmd, "mem=%luK", vm->def->mem.cur_balloon);
+    virCommandAddArgPair(cmd, "umid", vm->def->name);
+    virCommandAddArgPair(cmd, "uml_dir", driver->monitorDir);
 
     if (vm->def->os.root)
-        ADD_ARG_PAIR("root", vm->def->os.root);
+        virCommandAddArgPair(cmd, "root", vm->def->os.root);
 
     for (i = 0 ; i < vm->def->ndisks ; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -532,24 +451,26 @@ int umlBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        ADD_ARG_PAIR(disk->dst, disk->src);
+        virCommandAddArgPair(cmd, disk->dst, disk->src);
     }
 
     for (i = 0 ; i < vm->def->nnets ; i++) {
         char *ret = umlBuildCommandLineNet(conn, vm->def->nets[i], i);
         if (!ret)
             goto error;
-        ADD_ARG(ret);
+        virCommandAddArg(cmd, ret);
+        VIR_FREE(ret);
     }
 
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
         char *ret = NULL;
         if (i == 0 && vm->def->console)
-            ret = umlBuildCommandLineChr(vm->def->console, "con", keepfd);
+            ret = umlBuildCommandLineChr(vm->def->console, "con", cmd);
         if (!ret)
             if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;
-        ADD_ARG(ret);
+        virCommandAddArg(cmd, ret);
+        VIR_FREE(ret);
     }
 
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
@@ -559,15 +480,18 @@ int umlBuildCommandLine(virConnectPtr conn,
             if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
-            ret = umlBuildCommandLineChr(chr, "ssl", keepfd);
+            ret = umlBuildCommandLineChr(chr, "ssl", cmd);
         if (!ret)
             if (virAsprintf(&ret, "ssl%d=none", i) < 0)
                 goto no_memory;
-        ADD_ARG(ret);
+
+        virCommandAddArg(cmd, ret);
+        VIR_FREE(ret);
     }
 
     if (vm->def->os.cmdline) {
         char *args, *next_arg;
+        char *cmdline;
         if ((cmdline = strdup(vm->def->os.cmdline)) == NULL)
             goto no_memory;
 
@@ -577,41 +501,18 @@ int umlBuildCommandLine(virConnectPtr conn,
 
         while (*args) {
             next_arg = umlNextArg(args);
-            ADD_ARG_LIT(args);
+            virCommandAddArg(cmd, args);
             args = next_arg;
         }
+        VIR_FREE(cmdline);
     }
 
-    ADD_ARG(NULL);
-    ADD_ENV(NULL);
-
-    *retargv = qargv;
-    *retenv = qenv;
-    return 0;
+    return cmd;
 
  no_memory:
     virReportOOMError();
  error:
 
-    if (qargv) {
-        for (i = 0 ; i < qargc ; i++)
-            VIR_FREE((qargv)[i]);
-        VIR_FREE(qargv);
-    }
-    if (qenv) {
-        for (i = 0 ; i < qenvc ; i++)
-            VIR_FREE((qenv)[i]);
-        VIR_FREE(qenv);
-    }
-    VIR_FREE(cmdline);
-    return -1;
-
-#undef ADD_ARG
-#undef ADD_ARG_LIT
-#undef ADD_ARG_SPACE
-#undef ADD_USBDISK
-#undef ADD_ENV
-#undef ADD_ENV_COPY
-#undef ADD_ENV_LIT
-#undef ADD_ENV_SPACE
+    virCommandFree(cmd);
+    return NULL;
 }
