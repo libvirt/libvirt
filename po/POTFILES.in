@@ -78,6 +78,7 @@ src/uml/uml_driver.c
 src/util/authhelper.c
 src/util/bridge.c
 src/util/cgroup.c
+src/util/command.c
 src/util/conf.c
 src/util/dnsmasq.c
 src/util/hooks.c

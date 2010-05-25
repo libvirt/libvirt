@@ -83,6 +83,41 @@ virCgroupSetMemorySoftLimit;
 virCgroupSetSwapHardLimit;
 
 
+# command.h
+virCommandAddArg;
+virCommandAddArgFormat;
+virCommandAddArgList;
+virCommandAddArgPair;
+virCommandAddArgSet;
+virCommandAddEnvPair;
+virCommandAddEnvPass;
+virCommandAddEnvPassCommon;
+virCommandAddEnvString;
+virCommandClearCaps;
+virCommandDaemonize;
+virCommandFree;
+virCommandNew;
+virCommandNewArgList;
+virCommandNewArgs;
+virCommandNonblockingFDs;
+virCommandPreserveFD;
+virCommandRun;
+virCommandRunAsync;
+virCommandSetErrorBuffer;
+virCommandSetErrorFD;
+virCommandSetInputBuffer;
+virCommandSetInputFD;
+virCommandSetOutputBuffer;
+virCommandSetOutputFD;
+virCommandSetPidFile;
+virCommandSetPreExecHook;
+virCommandSetWorkingDirectory;
+virCommandToString;
+virCommandTransferFD;
+virCommandWait;
+virCommandWriteArgLog;
+
+
 # conf.h
 virConfFree;
 virConfFreeValue;

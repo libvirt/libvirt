@@ -1,0 +1,11 @@
+ENV:DISPLAY=:0.0
+ENV:HOME=/home/test
+ENV:LC_ALL=C
+ENV:LOGNAME=testTMPDIR=/tmp
+ENV:PATH=/usr/bin:/bin
+ENV:USER=test
+FD:0
+FD:1
+FD:2
+DAEMON:no
+CWD:/tmp

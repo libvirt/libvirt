@@ -1,6 +1,10 @@
 *.exe
 .deps
 .libs
+commandhelper
+commandhelper.log
+commandhelper.pid
+commandtest
 conftest
 esxutilstest
 eventtest
