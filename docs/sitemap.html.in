@@ -260,6 +260,10 @@
                 <a href="api_extension.html">API extensions</a>
                 <span>Adding new public libvirt APIs</span>
               </li>
+              <li>
+                <a href="internals/command.html">Spawning commands</a>
+                <span>Spawning commands from libvirt driver code</span>
+              </li>
             </ul>
           </li>
           <li>

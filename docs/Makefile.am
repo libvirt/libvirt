@@ -60,7 +60,8 @@ gif = \
   architecture.gif \
   node.gif
 
-dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in
+dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in)) todo.html.in \
+      $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
 patches = $(wildcard api_extension/*.patch)
@@ -112,6 +113,14 @@ todo:
 
 %.png: %.fig
 	convert -rotate 90 $< $@
+
+internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
+	@if [ -x $(XSLTPROC) ] ; then \
+	  echo "Generating $@"; \
+	  name=`echo $@ | sed -e 's/.tmp//'`; \
+	  $(XSLTPROC) --stringparam pagename $$name --nonet --html \
+	    $(top_srcdir)/docs/subsite.xsl $< > $@ \
+	    || { rm $@ && exit 1; }; fi
 
 %.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in
 	@if [ -x $(XSLTPROC) ] ; then \
