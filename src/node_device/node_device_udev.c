@@ -1473,12 +1473,8 @@ udevGetDMIData(union _virNodeDevCapData *data)
         goto out;
     }
 
-    if (udevGetStringSysfsAttr(device,
-                               "product_uuid",
-                               &tmp) == PROPERTY_ERROR) {
+    if (virGetHostUUID(data->system.hardware.uuid))
         goto out;
-    }
-    virUUIDParse(tmp, data->system.hardware.uuid);
 
     if (udevGetStringSysfsAttr(device,
                                "bios_vendor",

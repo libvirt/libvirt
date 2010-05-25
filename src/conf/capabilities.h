@@ -110,6 +110,7 @@ struct _virCapsHost {
     virCapsHostNUMACellPtr *numaCell;
     virCapsHostSecModel secModel;
     virCPUDefPtr cpu;
+    unsigned char host_uuid[VIR_UUID_BUFLEN];
 };
 
 typedef struct _virCaps virCaps;

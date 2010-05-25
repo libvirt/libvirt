@@ -27,6 +27,7 @@
 #include "buf.h"
 #include "memory.h"
 #include "util.h"
+#include "uuid.h"
 #include "cpu_conf.h"
 
 /**
@@ -662,9 +663,14 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 {
     virBuffer xml = VIR_BUFFER_INITIALIZER;
     int i, j, k;
+    char host_uuid[VIR_UUID_STRING_BUFLEN];
 
     virBufferAddLit(&xml, "<capabilities>\n\n");
     virBufferAddLit(&xml, "  <host>\n");
+    if (virUUIDIsValid(caps->host.host_uuid)) {
+        virUUIDFormat(caps->host.host_uuid, host_uuid);
+        virBufferVSprintf(&xml,"    <uuid>%s</uuid>\n", host_uuid);
+    }
     virBufferAddLit(&xml, "    <cpu>\n");
     virBufferVSprintf(&xml, "      <arch>%s</arch>\n",
                       caps->host.arch);

@@ -33,6 +33,7 @@
 #include "conf.h"
 #include "memory.h"
 #include "logging.h"
+#include "uuid.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LXC
@@ -48,7 +49,7 @@ virCapsPtr lxcCapsInit(void)
 
     if ((caps = virCapabilitiesNew(utsname.machine,
                                    0, 0)) == NULL)
-        goto no_memory;
+        goto error;
 
     /* Some machines have problematic NUMA toplogy causing
      * unexpected failures. We don't want to break the QEMU
@@ -57,6 +58,12 @@ virCapsPtr lxcCapsInit(void)
     if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN0("Failed to query host NUMA topology, disabling NUMA capabilities");
+    }
+
+    if (virGetHostUUID(caps->host.host_uuid)) {
+        lxcError(VIR_ERR_INTERNAL_ERROR,
+                 "%s", _("cannot get the host uuid"));
+        goto error;
     }
 
     /* XXX shouldn't 'borrow' KVM's prefix */
@@ -70,7 +77,7 @@ virCapsPtr lxcCapsInit(void)
                                          NULL,
                                          0,
                                          NULL)) == NULL)
-        goto no_memory;
+        goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       "lxc",
@@ -78,14 +85,14 @@ virCapsPtr lxcCapsInit(void)
                                       NULL,
                                       0,
                                       NULL) == NULL)
-        goto no_memory;
+        goto error;
 
     /* LXC Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
 
     return caps;
 
-no_memory:
+error:
     virCapabilitiesFree(caps);
     return NULL;
 }

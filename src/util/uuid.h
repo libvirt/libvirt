@@ -22,6 +22,11 @@
 #ifndef __VIR_UUID_H__
 # define __VIR_UUID_H__
 
+int virSetHostUUIDStr(const char *host_uuid);
+int virGetHostUUID(unsigned char *host_uuid);
+
+int virUUIDIsValid(unsigned char *uuid);
+
 int virUUIDGenerate(unsigned char *uuid);
 
 int virUUIDParse(const char *uuidstr,

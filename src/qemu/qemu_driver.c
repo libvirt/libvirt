@@ -1334,6 +1334,11 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
     caps->privateDataXMLFormat = qemuDomainObjPrivateXMLFormat;
     caps->privateDataXMLParse = qemuDomainObjPrivateXMLParse;
 
+    if (virGetHostUUID(caps->host.host_uuid)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot get the host uuid"));
+        goto err_exit;
+    }
 
     /* Security driver data */
     if (driver->securityPrimaryDriver) {
@@ -1355,6 +1360,7 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
 
 no_memory:
     virReportOOMError();
+err_exit:
     virCapabilitiesFree(caps);
     return NULL;
 }

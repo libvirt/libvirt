@@ -29,6 +29,7 @@ src/interface/netcf_driver.c
 src/internal.h
 src/libvirt.c
 src/lxc/lxc_container.c
+src/lxc/lxc_conf.c
 src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
 src/network/bridge_driver.c

@@ -38,10 +38,13 @@
 #include "util.h"
 #include "virterror_internal.h"
 #include "logging.h"
+#include "memory.h"
 
 #ifndef ENODATA
 # define ENODATA EIO
 #endif
+
+static unsigned char host_uuid[VIR_UUID_BUFLEN];
 
 static int
 virUUIDGenerateRandomBytes(unsigned char *buf,
@@ -207,4 +210,117 @@ void virUUIDFormat(const unsigned char *uuid, char *uuidstr)
              uuid[8], uuid[9], uuid[10], uuid[11],
              uuid[12], uuid[13], uuid[14], uuid[15]);
     uuidstr[VIR_UUID_STRING_BUFLEN-1] = '\0';
+}
+
+
+
+/**
+ * virUUIDIsValid
+ *
+ * @uuid: The UUID to test
+ *
+ * Do some basic tests to check whether the given UUID is
+ * valid as a host UUID.
+ * Basic tests:
+ *  - Not all of the digits may be equal
+ */
+int
+virUUIDIsValid(unsigned char *uuid)
+{
+    unsigned int i, ctr = 1;
+    unsigned char c;
+
+    if (!uuid)
+        return 0;
+
+    c = uuid[0];
+
+    for (i = 1; i < VIR_UUID_BUFLEN; i++)
+        if (uuid[i] == c)
+            ctr++;
+
+    return (ctr != VIR_UUID_BUFLEN);
+}
+
+static int
+getDMISystemUUID(char *uuid, int len)
+{
+    unsigned int i = 0;
+    const char *paths[] = {
+        "/sys/devices/virtual/dmi/id/product_uuid",
+        "/sys/class/dmi/id/product_uuid",
+        NULL
+    };
+
+    while (paths[i]) {
+        int fd = open(paths[i], O_RDONLY);
+        if (fd > 0) {
+            if (saferead(fd, uuid, len) == len) {
+                close(fd);
+                return 0;
+            }
+            close(fd);
+        }
+        i++;
+    }
+
+    return -1;
+}
+
+
+/**
+ * setHostUUID
+ *
+ * @host_uuid: UUID that the host is supposed to have
+ *
+ * Set the UUID of the host if it hasn't been set, yet
+ * Returns 0 in case of success, an error code in case of error.
+ */
+int
+virSetHostUUIDStr(const char *uuid)
+{
+    int rc;
+    char dmiuuid[VIR_UUID_STRING_BUFLEN];
+
+    if (virUUIDIsValid(host_uuid))
+        return EEXIST;
+
+    if (!uuid) {
+        if (!getDMISystemUUID(dmiuuid, sizeof(dmiuuid))) {
+            if (!virUUIDParse(dmiuuid, host_uuid))
+                return 0;
+        }
+
+        if (!virUUIDIsValid(host_uuid))
+            return virUUIDGenerate(host_uuid);
+    } else {
+        rc = virUUIDParse(uuid, host_uuid);
+        if (rc)
+            return rc;
+        if (!virUUIDIsValid(host_uuid))
+            return EINVAL;
+    }
+
+    return 0;
+}
+
+/**
+ * getHostUUID:
+ *
+ * @host_uuid: memory to store the host_uuid into
+ *
+ * Get the UUID of the host. Returns 0 in case of success,
+ * an error code otherwise.
+ * Returns 0 in case of success, an error code in case of error.
+ */
+int virGetHostUUID(unsigned char *uuid)
+{
+    int ret = 0;
+
+    if (!virUUIDIsValid(host_uuid))
+        ret = virSetHostUUIDStr(NULL);
+
+    memcpy(uuid, host_uuid, sizeof(host_uuid));
+
+    return ret;
 }

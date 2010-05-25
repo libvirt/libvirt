@@ -18,6 +18,11 @@
 
   <define name='hostcaps'>
     <element name='host'>
+      <optional>
+        <element name='uuid'>
+          <ref name='UUID'/>
+        </element>
+      </optional>
       <element name='cpu'>
         <element name='arch'>
           <ref name='archnames'/>
@@ -348,5 +353,16 @@
     <data type='string'>
       <param name='pattern'>[a-zA-Z0-9\-_]+</param>
     </data>
+  </define>
+
+  <define name="UUID">
+    <choice>
+      <data type="string">
+        <param name="pattern">[a-fA-F0-9]{32}</param>
+      </data>
+      <data type="string">
+        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
+      </data>
+    </choice>
   </define>
 </grammar>

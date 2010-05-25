@@ -57,6 +57,7 @@
 #include "dispatch.h"
 
 #include "util.h"
+#include "uuid.h"
 #include "remote_driver.h"
 #include "conf.h"
 #include "event.h"
@@ -2718,6 +2719,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     char *unix_sock_rw_perms = NULL;
     char *unix_sock_group = NULL;
     char *buf = NULL;
+    char *host_uuid = NULL;
 
 #if HAVE_POLKIT
     /* Change the default back to no auth for non-root */
@@ -2840,11 +2842,18 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_INT (conf, filename, max_requests);
     GET_CONF_INT (conf, filename, max_client_requests);
 
+    GET_CONF_STR (conf, filename, host_uuid);
+    if (virSetHostUUIDStr(host_uuid))
+        goto free_and_fail;
+
+    VIR_FREE(host_uuid);
+
     virConfFree (conf);
     return 0;
 
  free_and_fail:
     virConfFree (conf);
+    VIR_FREE(host_uuid);
     VIR_FREE(mdns_name);
     VIR_FREE(unix_sock_ro_perms);
     VIR_FREE(unix_sock_rw_perms);
