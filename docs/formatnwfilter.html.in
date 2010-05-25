@@ -384,10 +384,12 @@
       </table>
     <p>
       Valid Strings for <code>protocolid</code> are: arp, rarp, ipv4, ipv6
-      <br><br>
-      Example: <pre>&lt;mac match='no' srcmacaddr='$MAC'/&gt;</pre>
-      <br><br>
     </p>
+<pre>
+[...]
+&lt;mac match='no' srcmacaddr='$MAC'/&gt;
+[...]
+</pre>
 
     <h5><a name="nwfelemsRulesProtoARP">ARP/RARP</a></h5>
     <p>
@@ -702,12 +704,12 @@
        <tr>
          <td>srcportend</td>
          <td>UINT16</td>
-         <td>End of range of valid source ports</code></td>
+         <td>End of range of valid source ports</td>
        </tr>
        <tr>
          <td>dstportstart</td>
          <td>UINT16</td>
-         <td>Start of range of valid destination ports</code></td>
+         <td>Start of range of valid destination ports</td>
        </tr>
        <tr>
          <td>dstportend</td>
