@@ -33,7 +33,6 @@
 #include "virterror_internal.h"
 #include "hooks.h"
 #include "util.h"
-#include "conf/domain_conf.h"
 #include "logging.h"
 #include "memory.h"
 #include "files.h"
