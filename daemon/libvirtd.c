@@ -2843,8 +2843,10 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_INT (conf, filename, max_client_requests);
 
     GET_CONF_STR (conf, filename, host_uuid);
-    if (virSetHostUUIDStr(host_uuid))
+    if (virSetHostUUIDStr(host_uuid)) {
+        VIR_ERROR(_("invalid host UUID: %s"), host_uuid);
         goto free_and_fail;
+    }
 
     VIR_FREE(host_uuid);
 
