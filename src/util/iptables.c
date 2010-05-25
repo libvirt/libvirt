@@ -39,7 +39,7 @@
 
 #include "internal.h"
 #include "iptables.h"
-#include "util.h"
+#include "command.h"
 #include "memory.h"
 #include "virterror_internal.h"
 #include "logging.h"
@@ -102,72 +102,23 @@ static int ATTRIBUTE_SENTINEL
 iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 {
     va_list args;
-    int retval = ENOMEM;
-    const char **argv;
+    int ret;
+    virCommandPtr cmd;
     const char *s;
-    int n;
 
-    n = 1 + /* /sbin/iptables  */
-        2 + /*   --table foo   */
-        2 + /*   --insert bar  */
-        1;  /*   arg           */
-
-    va_start(args, arg);
-    while (va_arg(args, const char *))
-        n++;
-
-    va_end(args);
-
-    if (VIR_ALLOC_N(argv, n + 1) < 0)
-        goto error;
-
-    n = 0;
-
-    if (!(argv[n++] = strdup(IPTABLES_PATH)))
-        goto error;
-
-    if (!(argv[n++] = strdup("--table")))
-        goto error;
-
-    if (!(argv[n++] = strdup(rules->table)))
-        goto error;
-
-    if (!(argv[n++] = strdup(action == ADD ? "--insert" : "--delete")))
-        goto error;
-
-    if (!(argv[n++] = strdup(rules->chain)))
-        goto error;
-
-    if (!(argv[n++] = strdup(arg)))
-        goto error;
+    cmd = virCommandNew(IPTABLES_PATH);
+    virCommandAddArgList(cmd, "--table", rules->table,
+                         action == ADD ? "--insert" : "--delete",
+                         rules->chain, arg, NULL);
 
     va_start(args, arg);
-
-    while ((s = va_arg(args, const char *))) {
-        if (!(argv[n++] = strdup(s))) {
-            va_end(args);
-            goto error;
-        }
-    }
-
+    while ((s = va_arg(args, const char *)))
+        virCommandAddArg(cmd, s);
     va_end(args);
 
-    if (virRun(argv, NULL) < 0) {
-        retval = errno;
-        goto error;
-    }
-
-    retval = 0;
-
- error:
-    if (argv) {
-        n = 0;
-        while (argv[n])
-            VIR_FREE(argv[n++]);
-        VIR_FREE(argv);
-    }
-
-    return retval;
+    ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+    return ret;
 }
 
 /**

@@ -38,6 +38,7 @@
 #include "memory.h"
 #include "files.h"
 #include "configmake.h"
+#include "command.h"
 
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
@@ -190,36 +191,15 @@ virHookPresent(int driver) {
  * Returns: 0 if the execution succeeded, 1 if the script was not found or
  *          invalid parameters, and -1 if script returned an error
  */
-#ifdef WIN32
-int
-virHookCall(int driver ATTRIBUTE_UNUSED,
-            const char *id ATTRIBUTE_UNUSED,
-            int op ATTRIBUTE_UNUSED,
-            int sub_op ATTRIBUTE_UNUSED,
-            const char *extra ATTRIBUTE_UNUSED,
-            const char *input ATTRIBUTE_UNUSED) {
-    virReportSystemError(ENOSYS, "%s",
-                         _("spawning hooks not supported on this platform"));
-    return -1;
-}
-#else
 int
 virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
             const char *input) {
-    int ret, waitret, exitstatus, i;
+    int ret;
     char *path;
-    int argc = 0, arga = 0;
-    const char **argv = NULL;
-    int envc = 0, enva = 0;
-    const char **env = NULL;
+    virCommandPtr cmd;
     const char *drvstr;
     const char *opstr;
     const char *subopstr;
-    pid_t pid;
-    int outfd = -1, errfd = -1;
-    int pipefd[2] = { -1, -1};
-    char *outbuf = NULL;
-    char *errbuf = NULL;
 
     if ((driver < VIR_HOOK_DRIVER_DAEMON) ||
         (driver >= VIR_HOOK_DRIVER_LAST))
@@ -271,192 +251,18 @@ virHookCall(int driver, const char *id, int op, int sub_op, const char *extra,
         return(-1);
     }
 
-    /*
-     * Convenience macros borrowed from qemudBuildCommandLine()
-     */
-# define ADD_ARG_SPACE                                                   \
-    do {                                                                \
-        if (argc == arga) {                                             \
-            arga += 10;                                                 \
-            if (VIR_REALLOC_N(argv, arga) < 0)                          \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
+    cmd = virCommandNewArgList(path, id, opstr, subopstr, extra, NULL);
 
-# define ADD_ARG(thisarg)                                                \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        argv[argc++] = thisarg;                                         \
-    } while (0)
+    virCommandAddEnvPassCommon(cmd);
 
-# define ADD_ARG_LIT(thisarg)                                            \
-    do {                                                                \
-        ADD_ARG_SPACE;                                                  \
-        if ((argv[argc++] = strdup(thisarg)) == NULL)                   \
-            goto no_memory;                                             \
-    } while (0)
+    if (input)
+        virCommandSetInputBuffer(cmd, input);
 
-# define ADD_ENV_SPACE                                                   \
-    do {                                                                \
-        if (envc == enva) {                                             \
-            enva += 10;                                                 \
-            if (VIR_REALLOC_N(env, enva) < 0)                           \
-                goto no_memory;                                         \
-        }                                                               \
-    } while (0)
+    ret = virCommandRun(cmd, NULL);
 
-# define ADD_ENV(thisarg)                                                \
-    do {                                                                \
-        ADD_ENV_SPACE;                                                  \
-        env[envc++] = thisarg;                                          \
-    } while (0)
+    virCommandFree(cmd);
 
-# define ADD_ENV_LIT(thisarg)                                            \
-    do {                                                                \
-        ADD_ENV_SPACE;                                                  \
-        if ((env[envc++] = strdup(thisarg)) == NULL)                    \
-            goto no_memory;                                             \
-    } while (0)
-
-# define ADD_ENV_PAIR(envname, val)                                      \
-    do {                                                                \
-        char *envval;                                                   \
-        ADD_ENV_SPACE;                                                  \
-        if (virAsprintf(&envval, "%s=%s", envname, val) < 0)            \
-            goto no_memory;                                             \
-        env[envc++] = envval;                                           \
-    } while (0)
-
-# define ADD_ENV_COPY(envname)                                           \
-    do {                                                                \
-        char *val = getenv(envname);                                    \
-        if (val != NULL) {                                              \
-            ADD_ENV_PAIR(envname, val);                                 \
-        }                                                               \
-    } while (0)
-
-    ADD_ENV_LIT("LC_ALL=C");
-
-    ADD_ENV_COPY("LD_PRELOAD");
-    ADD_ENV_COPY("LD_LIBRARY_PATH");
-    ADD_ENV_COPY("PATH");
-    ADD_ENV_COPY("HOME");
-    ADD_ENV_COPY("USER");
-    ADD_ENV_COPY("LOGNAME");
-    ADD_ENV_COPY("TMPDIR");
-    ADD_ENV(NULL);
-
-    ADD_ARG_LIT(path);
-    ADD_ARG_LIT(id);
-    ADD_ARG_LIT(opstr);
-    ADD_ARG_LIT(subopstr);
-
-    ADD_ARG_LIT(extra);
-    ADD_ARG(NULL);
-
-    /* pass any optional input on the script stdin */
-    if (input != NULL) {
-        if (pipe(pipefd) < -1) {
-            virReportSystemError(errno, "%s",
-                             _("unable to create pipe for hook input"));
-            ret = 1;
-            goto cleanup;
-        }
-        if (safewrite(pipefd[1], input, strlen(input)) < 0) {
-            virReportSystemError(errno, "%s",
-                             _("unable to write to pipe for hook input"));
-            ret = 1;
-            goto cleanup;
-        }
-        ret = virExec(argv, env, NULL, &pid, pipefd[0], &outfd, &errfd,
-                      VIR_EXEC_NONE | VIR_EXEC_NONBLOCK);
-        if (VIR_CLOSE(pipefd[1]) < 0) {
-            virReportSystemError(errno, "%s",
-                             _("unable to close pipe for hook input"));
-        }
-    } else {
-        ret = virExec(argv, env, NULL, &pid, -1, &outfd, &errfd,
-                      VIR_EXEC_NONE | VIR_EXEC_NONBLOCK);
-    }
-    if (ret < 0) {
-        virHookReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
-                           _("Failed to execute %s hook script"),
-                           path);
-        ret = 1;
-        goto cleanup;
-    }
-
-    /*
-     * we are interested in the error log if any and make sure the
-     * script doesn't block on stdout/stderr descriptors being full
-     * stdout can be useful for debug too.
-     */
-    if (virPipeReadUntilEOF(outfd, errfd, &outbuf, &errbuf) < 0) {
-        virReportSystemError(errno, _("cannot wait for '%s'"), path);
-        while (waitpid(pid, &exitstatus, 0) == -1 && errno == EINTR)
-            ;
-        ret = 1;
-        goto cleanup;
-    }
-
-    if (outbuf)
-        VIR_DEBUG("Command stdout: %s", outbuf);
-    if (errbuf)
-        VIR_DEBUG("Command stderr: %s", errbuf);
-
-    while ((waitret = waitpid(pid, &exitstatus, 0) == -1) &&
-           (errno == EINTR));
-    if (waitret == -1) {
-        virReportSystemError(errno, _("Failed to wait for '%s'"), path);
-        ret = 1;
-        goto cleanup;
-    }
-    if (exitstatus != 0) {
-        virHookReportError(VIR_ERR_HOOK_SCRIPT_FAILED,
-                           _("Hook script %s %s failed with error code %d:%s"),
-                           path, drvstr, exitstatus, errbuf);
-        ret = -1;
-    }
-
-cleanup:
-    if (VIR_CLOSE(pipefd[0]) < 0) {
-        virReportSystemError(errno, "%s",
-                         _("unable to close pipe for hook input"));
-        ret = 1;
-    }
-    if (VIR_CLOSE(pipefd[1]) < 0) {
-        virReportSystemError(errno, "%s",
-                         _("unable to close pipe for hook input"));
-        ret = 1;
-    }
-    if (argv) {
-        for (i = 0 ; i < argc ; i++)
-            VIR_FREE((argv)[i]);
-        VIR_FREE(argv);
-    }
-    if (env) {
-        for (i = 0 ; i < envc ; i++)
-            VIR_FREE((env)[i]);
-        VIR_FREE(env);
-    }
-    VIR_FREE(outbuf);
-    VIR_FREE(errbuf);
     VIR_FREE(path);
 
-    return(ret);
-
-no_memory:
-    virReportOOMError();
-
-    goto cleanup;
-
-# undef ADD_ARG
-# undef ADD_ARG_LIT
-# undef ADD_ARG_SPACE
-# undef ADD_USBDISK
-# undef ADD_ENV
-# undef ADD_ENV_COPY
-# undef ADD_ENV_LIT
-# undef ADD_ENV_SPACE
+    return ret;
 }
-#endif
