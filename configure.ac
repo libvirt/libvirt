@@ -42,6 +42,7 @@ HAL_REQUIRED=0.5.0
 DEVMAPPER_REQUIRED=1.0.0
 LIBCURL_REQUIRED="7.18.0"
 LIBPCAP_REQUIRED="1.0.0"
+LIBNL_REQUIRED="1.1"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -2005,6 +2006,24 @@ fi
 AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
 
 
+dnl netlink library
+
+LIBNL_CFLAGS=""
+LIBNL_LIBS=""
+
+if test "$with_macvtap" = "yes"; then
+    PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
+    ], [
+        AC_MSG_ERROR([libnl >= $LIBNL_REQUIRED is required for macvtap support])
+    ])
+fi
+
+AC_SUBST([LIBNL_CFLAGS])
+AC_SUBST([LIBNL_LIBS])
+
+
+
+
 # Only COPYING.LIB is under version control, yet COPYING
 # is included as part of the distribution tarball.
 # Copy one to the other, but only if this is a srcdir-build.
@@ -2182,6 +2201,11 @@ if test "$with_qemu" = "yes" ; then
 AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
 else
 AC_MSG_NOTICE([    pcap: no])
+fi
+if test "$with_macvtap" = "yes" ; then
+AC_MSG_NOTICE([      nl: $LIBNL_CFLAGS $LIBNL_LIBS])
+else
+AC_MSG_NOTICE([      nl: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])

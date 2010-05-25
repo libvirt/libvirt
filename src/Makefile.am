@@ -999,7 +999,7 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += $(LIBXML_LIBS) \
-		    $(LIBPCAP_LIBS) \
+		    $(LIBPCAP_LIBS) $(LIBNL_LIBS) \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LIBADD)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
@@ -1058,7 +1058,7 @@ libvirt_lxc_SOURCES =						\
 libvirt_lxc_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 libvirt_lxc_LDADD = $(CAPNG_LIBS) $(YAJL_LIBS) \
 		$(LIBXML_LIBS) $(NUMACTL_LIBS) $(LIB_PTHREAD) \
-		../gnulib/lib/libgnu.la
+		$(LIBNL_LIBS) ../gnulib/lib/libgnu.la
 libvirt_lxc_CFLAGS =				\
 		$(LIBPARTED_CFLAGS)		\
 		$(NUMACTL_CFLAGS)		\
