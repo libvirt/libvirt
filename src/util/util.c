@@ -463,7 +463,7 @@ __virExec(const char *const*argv,
     int childerr = -1;
     int tmpfd;
 
-    if ((null = open("/dev/null", O_RDONLY)) < 0) {
+    if ((null = open("/dev/null", O_RDWR)) < 0) {
         virReportSystemError(errno,
                              _("cannot open %s"),
                              "/dev/null");
