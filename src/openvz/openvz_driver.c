@@ -873,13 +873,15 @@ cleanup:
 
 static virDomainPtr
 openvzDomainCreateXML(virConnectPtr conn, const char *xml,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+                      unsigned int flags)
 {
     struct openvz_driver *driver =  conn->privateData;
     virDomainDefPtr vmdef = NULL;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     const char *progstart[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL};
+
+    virCheckFlags(0, NULL);
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(driver->caps, xml,

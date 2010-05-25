@@ -479,7 +479,7 @@ xenapiNumOfDomains (virConnectPtr conn)
 static virDomainPtr
 xenapiDomainCreateXML (virConnectPtr conn,
                        const char *xmlDesc,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags)
 {
     xen_vm_record *record = NULL;
     xen_vm vm = NULL;
@@ -488,6 +488,8 @@ xenapiDomainCreateXML (virConnectPtr conn,
     virCapsPtr caps = ((struct _xenapiPrivate *)(conn->privateData))->caps;
     if (!caps)
         return NULL;
+
+    virCheckFlags(0, NULL);
 
     virDomainDefPtr defPtr = virDomainDefParseString(caps, xmlDesc, flags);
     createVMRecordFromXml(conn, defPtr, &record, &vm);

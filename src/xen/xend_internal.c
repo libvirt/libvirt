@@ -3788,13 +3788,15 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  */
 static virDomainPtr
 xenDaemonCreateXML(virConnectPtr conn, const char *xmlDesc,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+                     unsigned int flags)
 {
     int ret;
     char *sexpr;
     virDomainPtr dom = NULL;
     xenUnifiedPrivatePtr priv;
     virDomainDefPtr def;
+
+    virCheckFlags(0, NULL);
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 

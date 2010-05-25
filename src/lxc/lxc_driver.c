@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -1404,7 +1405,7 @@ cleanup:
  * lxcDomainCreateAndStart:
  * @conn: pointer to connection
  * @xml: XML definition of domain
- * @flags: Unused
+ * @flags: Must be 0 for now
  *
  * Creates a domain based on xml and starts it
  *
@@ -1413,12 +1414,14 @@ cleanup:
 static virDomainPtr
 lxcDomainCreateAndStart(virConnectPtr conn,
                         const char *xml,
-                        unsigned int flags ATTRIBUTE_UNUSED) {
+                        unsigned int flags) {
     lxc_driver_t *driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainPtr dom = NULL;
     virDomainEventPtr event = NULL;
+
+    virCheckFlags(0, NULL);
 
     lxcDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,

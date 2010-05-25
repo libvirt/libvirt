@@ -1,5 +1,7 @@
 /*---------------------------------------------------------------------------*/
-/* Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
+/*
+ * Copyright (C) 2010 Red Hat, Inc.
+ * Copyright 2002-2009, Distributed Systems Architecture Group, Universidad
  * Complutense de Madrid (dsa-research.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -435,12 +437,14 @@ return_point:
 static virDomainPtr
 oneDomainCreateAndStart(virConnectPtr conn,
                         const char *xml,
-                        unsigned int flags ATTRIBUTE_UNUSED) {
+                        unsigned int flags) {
     one_driver_t *driver = conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainPtr dom = NULL;
     int oneid;
+
+    virCheckFlags(0, NULL);
 
     oneDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,

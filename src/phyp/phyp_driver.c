@@ -1397,7 +1397,7 @@ phypDomainDestroy(virDomainPtr dom)
 static virDomainPtr
 phypDomainCreateAndStart(virConnectPtr conn,
                          const char *xml,
-                         unsigned int flags ATTRIBUTE_UNUSED)
+                         unsigned int flags)
 {
 
     ConnectionData *connection_data = conn->networkPrivateData;
@@ -1409,6 +1409,8 @@ phypDomainCreateAndStart(virConnectPtr conn,
     lparPtr *lpars = uuid_table->lpars;
     unsigned int i = 0;
     char *managed_system = phyp_driver->managed_system;
+
+    virCheckFlags(0, NULL);
 
     if (!(def = virDomainDefParseString(phyp_driver->caps, xml,
                                         VIR_DOMAIN_XML_SECURE)))

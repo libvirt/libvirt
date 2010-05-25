@@ -1287,13 +1287,15 @@ cleanup:
 
 static virDomainPtr
 testDomainCreateXML(virConnectPtr conn, const char *xml,
-                      unsigned int flags ATTRIBUTE_UNUSED)
+                      unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
     virDomainEventPtr event = NULL;
+
+    virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(privconn->caps, xml,

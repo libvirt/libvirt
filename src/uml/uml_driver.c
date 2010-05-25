@@ -1262,11 +1262,13 @@ static int umlNumDomains(virConnectPtr conn) {
     return n;
 }
 static virDomainPtr umlDomainCreate(virConnectPtr conn, const char *xml,
-                                      unsigned int flags ATTRIBUTE_UNUSED) {
+                                      unsigned int flags) {
     struct uml_driver *driver = conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
+
+    virCheckFlags(0, NULL);
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(driver->caps, xml,

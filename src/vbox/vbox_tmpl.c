@@ -991,7 +991,7 @@ cleanup:
 }
 
 static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
-                                        unsigned int flags ATTRIBUTE_UNUSED) {
+                                        unsigned int flags) {
     /* VirtualBox currently doesn't have support for running
      * virtual machines without actually defining them and thus
      * for time being just define new machine and start it.
@@ -1000,7 +1000,11 @@ static virDomainPtr vboxDomainCreateXML(virConnectPtr conn, const char *xml,
      * change this behaviour to the expected one.
      */
 
-    virDomainPtr dom = vboxDomainDefineXML(conn, xml);
+    virDomainPtr dom;
+
+    virCheckFlags(0, NULL);
+
+    dom = vboxDomainDefineXML(conn, xml);
     if (dom == NULL)
         return NULL;
 
