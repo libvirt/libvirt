@@ -38,6 +38,7 @@
 # include "network.h"
 # include "nwfilter_params.h"
 # include "nwfilter_conf.h"
+# include "macvtap.h"
 
 /* Private component of virDomainXMLFlags */
 typedef enum {
@@ -290,6 +291,7 @@ struct _virDomainNetDef {
         struct {
             char *linkdev;
             int mode;
+            virVirtualPortProfileParams virtPortProfile;
         } direct;
     } data;
     char *ifname;

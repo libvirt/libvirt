@@ -43,6 +43,7 @@
 
 # include "util.h"
 # include "memory.h"
+# include "logging.h"
 # include "macvtap.h"
 # include "interface.h"
 # include "conf/domain_conf.h"
@@ -56,6 +57,16 @@
 
 # define MACVTAP_NAME_PREFIX	"macvtap"
 # define MACVTAP_NAME_PATTERN	"macvtap%d"
+
+
+static int associatePortProfileId(const char *macvtap_ifname,
+                                  const virVirtualPortProfileParamsPtr virtPort,
+                                  int vf,
+                                  const unsigned char *vmuuid);
+
+static int disassociatePortProfileId(const char *macvtap_ifname,
+                                     const virVirtualPortProfileParamsPtr virtPort);
+
 
 static int nlOpen(void)
 {
@@ -577,8 +588,10 @@ configMacvtapTap(int tapfd, int vnet_hdr)
  *    be NULL if this function is supposed to choose a name
  * @macaddress: The MAC address for the macvtap device
  * @linkdev: The interface name of the NIC to connect to the external bridge
- * @mode_str: String describing the mode. Valid are 'bridge', 'vepa' and
- *     'private'.
+ * @mode: int describing the mode for 'bridge', 'vepa' or 'private'.
+ * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
+ * @vmuuid: The UUID of the VM the macvtap belongs to
+ * @virtPortProfile: pointer to object holding the virtual port profile data
  * @res_ifname: Pointer to a string pointer where the actual name of the
  *     interface will be stored into if everything succeeded. It is up
  *     to the caller to free the string.
@@ -592,8 +605,10 @@ openMacvtapTap(const char *tgifname,
                const unsigned char *macaddress,
                const char *linkdev,
                int mode,
-               char **res_ifname,
-               int vnet_hdr)
+               int vnet_hdr,
+               const unsigned char *vmuuid,
+               virVirtualPortProfileParamsPtr virtPortProfile,
+               char **res_ifname)
 {
     const char *type = "macvtap";
     int c, rc;
@@ -639,6 +654,14 @@ create_name:
         cr_ifname = ifname;
     }
 
+    if (associatePortProfileId(cr_ifname,
+                               virtPortProfile,
+                               -1,
+                               vmuuid) != 0) {
+        rc = -1;
+        goto link_del_exit;
+    }
+
     rc = ifaceUp(cr_ifname);
     if (rc != 0) {
         virReportSystemError(errno,
@@ -647,7 +670,7 @@ create_name:
                              "MAC address"),
                              cr_ifname);
         rc = -1;
-        goto link_del_exit;
+        goto disassociate_exit;
     }
 
     rc = openTap(cr_ifname, 10);
@@ -656,13 +679,17 @@ create_name:
         if (configMacvtapTap(rc, vnet_hdr) < 0) {
             close(rc);
             rc = -1;
-            goto link_del_exit;
+            goto disassociate_exit;
         }
         *res_ifname = strdup(cr_ifname);
     } else
-        goto link_del_exit;
+        goto disassociate_exit;
 
     return rc;
+
+disassociate_exit:
+    disassociatePortProfileId(cr_ifname,
+                              virtPortProfile);
 
 link_del_exit:
     link_del(cr_ifname);
@@ -674,13 +701,103 @@ link_del_exit:
 /**
  * delMacvtap:
  * @ifname : The name of the macvtap interface
+ * @virtPortProfile: pointer to object holding the virtual port profile data
  *
- * Delete an interface given its name.
+ * Delete an interface given its name. Disassociate
+ * it with the switch if port profile parameters
+ * were provided.
  */
 void
-delMacvtap(const char *ifname)
+delMacvtap(const char *ifname,
+           virVirtualPortProfileParamsPtr virtPortProfile)
 {
-    link_del(ifname);
+    if (ifname) {
+        disassociatePortProfileId(ifname,
+                                  virtPortProfile);
+        link_del(ifname);
+    }
 }
 
 #endif
+
+
+/**
+ * associatePortProfile
+ *
+ * @macvtap_ifname: The name of the macvtap device
+ * @virtPort: pointer to the object holding port profile parameters
+ * @vf: virtual function number, -1 if to be ignored
+ * @vmuuid : the UUID of the virtual machine
+ *
+ * Associate a port on a swtich with a profile. This function
+ * may notify a kernel driver or an external daemon to run
+ * the setup protocol. If profile parameters were not supplied
+ * by the user, then this function returns without doing
+ * anything.
+ *
+ * Returns 0 in case of success, != 0 otherwise with error
+ * having been reported.
+ */
+static int
+associatePortProfileId(const char *macvtap_ifname,
+                       const virVirtualPortProfileParamsPtr virtPort,
+                       int vf,
+                       const unsigned char *vmuuid)
+{
+    int rc = 0;
+    VIR_DEBUG("Associating port profile '%p' on link device '%s'",
+              virtPort, macvtap_ifname);
+    (void)vf;
+    (void)vmuuid;
+
+    switch (virtPort->virtPortType) {
+    case VIR_VIRTUALPORT_NONE:
+    case VIR_VIRTUALPORT_TYPE_LAST:
+        break;
+
+    case VIR_VIRTUALPORT_8021QBG:
+
+        break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+
+        break;
+    }
+
+    return rc;
+}
+
+
+/**
+ * disassociatePortProfile
+ *
+ * @macvtap_ifname: The name of the macvtap device
+ * @virtPort: point to object holding port profile parameters
+ *
+ * Returns 0 in case of success, != 0 otherwise with error
+ * having been reported.
+ */
+static int
+disassociatePortProfileId(const char *macvtap_ifname,
+                          const virVirtualPortProfileParamsPtr virtPort)
+{
+    int rc = 0;
+    VIR_DEBUG("Disassociating port profile id '%p' on link device '%s' ",
+              virtPort, macvtap_ifname);
+
+    switch (virtPort->virtPortType) {
+    case VIR_VIRTUALPORT_NONE:
+    case VIR_VIRTUALPORT_TYPE_LAST:
+        break;
+
+    case VIR_VIRTUALPORT_8021QBG:
+
+        break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+
+        break;
+    }
+
+    return rc;
+}

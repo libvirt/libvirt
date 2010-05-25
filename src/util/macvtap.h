@@ -24,6 +24,40 @@
 
 # include <config.h>
 
+
+enum virVirtualPortType {
+    VIR_VIRTUALPORT_NONE,
+    VIR_VIRTUALPORT_8021QBG,
+    VIR_VIRTUALPORT_8021QBH,
+
+    VIR_VIRTUALPORT_TYPE_LAST,
+};
+
+# ifdef IFLA_VF_PORT_PROFILE_MAX
+#  define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX IFLA_VF_PORT_PROFILE_MAX
+# else
+#  define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
+# endif
+
+/* profile data for macvtap (VEPA) */
+typedef struct _virVirtualPortProfileParams virVirtualPortProfileParams;
+typedef virVirtualPortProfileParams *virVirtualPortProfileParamsPtr;
+struct _virVirtualPortProfileParams {
+    enum virVirtualPortType   virtPortType;
+    union {
+        struct {
+            uint8_t       managerID;
+            uint32_t      typeID; // 24 bit valid
+            uint8_t       typeIDVersion;
+            unsigned char instanceID[VIR_UUID_BUFLEN];
+        } virtPort8021Qbg;
+        struct {
+            char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
+        } virtPort8021Qbh;
+    } u;
+};
+
+
 # if defined(WITH_MACVTAP)
 
 #  include "internal.h"
@@ -32,10 +66,13 @@ int openMacvtapTap(const char *ifname,
                    const unsigned char *macaddress,
                    const char *linkdev,
                    int mode,
-                   char **res_ifname,
-                   int vnet_hdr);
+                   int vnet_hdr,
+                   const unsigned char *vmuuid,
+                   virVirtualPortProfileParamsPtr virtPortProfile,
+                   char **res_ifname);
 
-void delMacvtap(const char *ifname);
+void delMacvtap(const char *ifname,
+                virVirtualPortProfileParamsPtr virtPortProfile);
 
 # endif /* WITH_MACVTAP */
 
@@ -43,5 +80,7 @@ void delMacvtap(const char *ifname);
 # define MACVTAP_MODE_VEPA_STR     "vepa"
 # define MACVTAP_MODE_BRIDGE_STR   "bridge"
 
+
+VIR_ENUM_DECL(virVirtualPort)
 
 #endif /* __UTIL_MACVTAP_H__ */

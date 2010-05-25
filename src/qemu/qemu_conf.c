@@ -1474,9 +1474,8 @@ int
 qemudPhysIfaceConnect(virConnectPtr conn,
                       struct qemud_driver *driver,
                       virDomainNetDefPtr net,
-                      char *linkdev,
-                      int brmode,
-                      unsigned long long qemuCmdFlags)
+                      unsigned long long qemuCmdFlags,
+                      const unsigned char *vmuuid)
 {
     int rc;
 #if WITH_MACVTAP
@@ -1488,8 +1487,9 @@ qemudPhysIfaceConnect(virConnectPtr conn,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    rc = openMacvtapTap(net->ifname, net->mac, linkdev, brmode,
-                        &res_ifname, vnet_hdr);
+    rc = openMacvtapTap(net->ifname, net->mac, net->data.direct.linkdev,
+                        net->data.direct.mode, vnet_hdr, vmuuid,
+                        &net->data.direct.virtPortProfile, &res_ifname);
     if (rc >= 0) {
         VIR_FREE(net->ifname);
         net->ifname = res_ifname;
@@ -1509,17 +1509,17 @@ qemudPhysIfaceConnect(virConnectPtr conn,
             if (err) {
                 close(rc);
                 rc = -1;
-                delMacvtap(net->ifname);
+                delMacvtap(net->ifname,
+                           &net->data.direct.virtPortProfile);
             }
         }
     }
 #else
     (void)conn;
     (void)net;
-    (void)linkdev;
-    (void)brmode;
     (void)qemuCmdFlags;
     (void)driver;
+    (void)vmuuid;
     qemuReportError(VIR_ERR_INTERNAL_ERROR,
                     "%s", _("No support for macvtap device"));
     rc = -1;
@@ -4139,9 +4139,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto no_memory;
             } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
                 int tapfd = qemudPhysIfaceConnect(conn, driver, net,
-                                                  net->data.direct.linkdev,
-                                                  net->data.direct.mode,
-                                                  qemuCmdFlags);
+                                                  qemuCmdFlags,
+                                                  def->uuid);
                 if (tapfd < 0)
                     goto error;
 

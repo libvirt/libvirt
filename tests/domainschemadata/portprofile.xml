@@ -1,0 +1,36 @@
+<domain type='lxc'>
+  <name>portprofile</name>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory>1048576</memory>
+    <os>
+        <type>exe</type>
+        <init>/sh</init>
+    </os>
+  <devices>
+    <interface type='direct'>
+      <source dev='eth0' mode='vepa'/>
+      <virtualport type='802.1Qbg'>
+        <parameters managerid='12' typeid='1193046' typeidversion='1'
+                    instanceid='fa9b7fff-b0a0-4893-8e0e-beef4ff18f8f'/>
+      </virtualport>
+    </interface>
+    <interface type='direct'>
+      <source dev='eth0' mode='vepa'/>
+      <virtualport type='802.1Qbg'>
+        <parameters managerid='12' typeid='1193046' typeidversion='1'/>
+      </virtualport>
+    </interface>
+    <interface type='direct'>
+      <source dev='eth0' mode='vepa'/>
+      <virtualport type='802.1Qbh'>
+        <parameters profileid='my_profile'/>
+      </virtualport>
+    </interface>
+    <interface type='direct'>
+      <source dev='eth0' mode='vepa'/>
+    </interface>
+    <interface type='direct'>
+      <source dev='eth0' mode='vepa'/>
+    </interface>
+  </devices>
+</domain>

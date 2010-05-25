@@ -276,9 +276,8 @@ qemudOpenVhostNet(virDomainNetDefPtr net,
 int qemudPhysIfaceConnect(virConnectPtr conn,
                           struct qemud_driver *driver,
                           virDomainNetDefPtr net,
-                          char *linkdev,
-                          int brmode,
-                          unsigned long long qemuCmdFlags);
+                          unsigned long long qemuCmdFlags,
+                          const unsigned char *vmuuid);
 
 int         qemudProbeMachineTypes      (const char *binary,
                                          virCapsGuestMachinePtr **machines,

@@ -817,6 +817,9 @@
               </optional>
               <empty/>
             </element>
+            <optional>
+              <ref name="virtualPortProfile"/>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>
@@ -901,6 +904,45 @@
         </element>
       </optional>
     </interleave>
+  </define>
+  <define name="virtualPortProfile">
+    <choice>
+      <group>
+        <element name="virtualport">
+          <attribute name="type">
+            <value>802.1Qbg</value>
+          </attribute>
+          <element name="parameters">
+            <attribute name="managerid">
+              <ref name="uint8range"/>
+            </attribute>
+            <attribute name="typeid">
+              <ref name="uint24range"/>
+            </attribute>
+            <attribute name="typeidversion">
+              <ref name="uint8range"/>
+            </attribute>
+            <optional>
+              <attribute name="instanceid">
+                <ref name="UUID"/>
+              </attribute>
+            </optional>
+          </element>
+        </element>
+      </group>
+      <group>
+        <element name="virtualport">
+          <attribute name="type">
+            <value>802.1Qbh</value>
+          </attribute>
+          <element name="parameters">
+            <attribute name="profileid">
+              <ref name="virtualPortProfileID"/>
+            </attribute>
+          </element>
+        </element>
+      </group>
+    </choice>
   </define>
   <!--
       An emulator description is just a path to the binary used for the task
@@ -1767,6 +1809,33 @@
   <define name="filter-param-value">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.:]+</param>
+    </data>
+  </define>
+  <define name="uint8range">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">255</param>
+      </data>
+    </choice>
+  </define>
+  <define name="uint24range">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,6}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">16777215</param>
+      </data>
+    </choice>
+  </define>
+  <define name="virtualPortProfileID">
+    <data type="string">
+      <param name="maxLength">39</param>
     </data>
   </define>
 </grammar>
