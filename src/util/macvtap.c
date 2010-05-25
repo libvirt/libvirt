@@ -718,8 +718,6 @@ delMacvtap(const char *ifname,
     }
 }
 
-#endif
-
 
 /**
  * associatePortProfile
@@ -801,3 +799,5 @@ disassociatePortProfileId(const char *macvtap_ifname,
 
     return rc;
 }
+
+#endif /* WITH_MACVTAP */
