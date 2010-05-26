@@ -1276,7 +1276,7 @@ xenDaemonParseSxprChar(const char *value,
         if (def->data.tcp.service == NULL)
             goto no_memory;
 
-        if (offset2 && strstr(offset2, ",listen"))
+        if (offset2 && strstr(offset2, ",server"))
             def->data.tcp.listen = 1;
     }
     break;
@@ -1332,7 +1332,7 @@ xenDaemonParseSxprChar(const char *value,
             goto no_memory;
 
         if (offset != NULL &&
-            strstr(offset, ",listen") != NULL)
+            strstr(offset, ",server") != NULL)
             def->data.nix.listen = 1;
     }
     break;
@@ -5209,7 +5209,7 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
                            "tcp" : "telnet"),
                           (def->data.tcp.host ? def->data.tcp.host : ""),
                           (def->data.tcp.service ? def->data.tcp.service : ""),
-                          (def->data.tcp.listen ? ",listen" : ""));
+                          (def->data.tcp.listen ? ",server,nowait" : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -5223,7 +5223,7 @@ xenDaemonFormatSxprChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferVSprintf(buf, "%s:%s%s", type,
                           def->data.nix.path,
-                          def->data.nix.listen ? ",listen" : "");
+                          def->data.nix.listen ? ",server,nowait" : "");
         break;
     }
 
