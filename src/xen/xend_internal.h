@@ -96,12 +96,6 @@ xenDaemonDomainFetch(virConnectPtr xend,
                      const char *name,
                      const char *cpus);
 
-int xend_parse_sexp_desc_char(virBufferPtr buf,
-                              const char *devtype,
-                              int portNum,
-                              const char *value,
-                              const char *tty);
-
 virDomainDefPtr
 xenDaemonParseSxprString(virConnectPtr conn,
                          const char *sexpr,
