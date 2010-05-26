@@ -143,6 +143,8 @@ html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: \
 		$(srcdir)/../src/%.c \
 		$(srcdir)/../src/util/virterror.c
 
+check-local: all
+
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
 
