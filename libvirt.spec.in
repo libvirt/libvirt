@@ -832,6 +832,7 @@ fi
 %dir %{_datadir}/libvirt/schemas/
 
 %{_datadir}/libvirt/schemas/domain.rng
+%{_datadir}/libvirt/schemas/domainsnapshot.rng
 %{_datadir}/libvirt/schemas/network.rng
 %{_datadir}/libvirt/schemas/storagepool.rng
 %{_datadir}/libvirt/schemas/storagevol.rng

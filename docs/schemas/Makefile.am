@@ -3,6 +3,7 @@
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = \
 	domain.rng \
+	domainsnapshot.rng \
 	interface.rng \
 	network.rng \
 	secret.rng \
