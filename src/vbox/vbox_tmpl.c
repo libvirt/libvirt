@@ -61,6 +61,8 @@
 # include "vbox_CAPI_v3_0.h"
 #elif VBOX_API_VERSION == 3001
 # include "vbox_CAPI_v3_1.h"
+#elif VBOX_API_VERSION == 3002
+# include "vbox_CAPI_v3_2.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif
@@ -2029,9 +2031,11 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
             def->features = 0;
 #if VBOX_API_VERSION < 3001
             machine->vtbl->GetPAEEnabled(machine, &PAEEnabled);
-#else  /* VBOX_API_VERSION >= 3001 */
+#elif VBOX_API_VERSION == 3001
             machine->vtbl->GetCpuProperty(machine, CpuPropertyType_PAE, &PAEEnabled);
-#endif /* VBOX_API_VERSION >= 3001 */
+#elif VBOX_API_VERSION >= 3002
+            machine->vtbl->GetCPUProperty(machine, CPUPropertyType_PAE, &PAEEnabled);
+#endif
             if (PAEEnabled) {
                 def->features = def->features | (1 << VIR_DOMAIN_FEATURE_PAE);
             }
@@ -3357,6 +3361,9 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     vboxIID        *mchiid      = NULL;
     virDomainDefPtr def         = NULL;
     PRUnichar *machineNameUtf16 = NULL;
+#if VBOX_API_VERSION >= 3002
+    PRBool override             = PR_FALSE;
+#endif
     nsresult rc;
 
     if (!(def = virDomainDefParseString(data->caps, xml,
@@ -3373,12 +3380,22 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     VBOX_UTF8_TO_UTF16(def->name, &machineNameUtf16);
     vboxIIDFromUUID(def->uuid, iid);
+#if VBOX_API_VERSION < 3002
     rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                             machineNameUtf16,
                                             NULL,
                                             NULL,
                                             iid,
                                             &machine);
+#else /* VBOX_API_VERSION >= 3002 */
+    rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
+                                            machineNameUtf16,
+                                            NULL,
+                                            NULL,
+                                            iid,
+                                            override,
+                                            &machine);
+#endif /* VBOX_API_VERSION >= 3002 */
     VBOX_UTF16_FREE(machineNameUtf16);
 
     if (NS_FAILED(rc)) {
@@ -3405,11 +3422,15 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
 #if VBOX_API_VERSION < 3001
     rc = machine->vtbl->SetPAEEnabled(machine, (def->features) &
                                       (1 << VIR_DOMAIN_FEATURE_PAE));
-#else  /* VBOX_API_VERSION >= 3001 */
+#elif VBOX_API_VERSION == 3001
     rc = machine->vtbl->SetCpuProperty(machine, CpuPropertyType_PAE,
                                        (def->features) &
                                        (1 << VIR_DOMAIN_FEATURE_PAE));
-#endif /* VBOX_API_VERSION >= 3001 */
+#elif VBOX_API_VERSION >= 3002
+    rc = machine->vtbl->SetCPUProperty(machine, CPUPropertyType_PAE,
+                                       (def->features) &
+                                       (1 << VIR_DOMAIN_FEATURE_PAE));
+#endif
     if (NS_FAILED(rc)) {
         vboxError(VIR_ERR_INTERNAL_ERROR,
                   _("could not change PAE status to: %s, rc=%08x"),
@@ -6334,7 +6355,11 @@ static IVirtualBoxCallback *vboxAllocCallbackObj(void) {
         vboxCallback->vtbl->OnMachineRegistered         = &vboxCallbackOnMachineRegistered;
         vboxCallback->vtbl->OnSessionStateChange        = &vboxCallbackOnSessionStateChange;
         vboxCallback->vtbl->OnSnapshotTaken             = &vboxCallbackOnSnapshotTaken;
+# if VBOX_API_VERSION < 3002
         vboxCallback->vtbl->OnSnapshotDiscarded         = &vboxCallbackOnSnapshotDiscarded;
+# else /* VBOX_API_VERSION >= 3002 */
+        vboxCallback->vtbl->OnSnapshotDeleted           = &vboxCallbackOnSnapshotDiscarded;
+# endif /* VBOX_API_VERSION >= 3002 */
         vboxCallback->vtbl->OnSnapshotChange            = &vboxCallbackOnSnapshotChange;
         vboxCallback->vtbl->OnGuestPropertyChange       = &vboxCallbackOnGuestPropertyChange;
         g_pVBoxGlobalData->vboxCallBackRefCount = 1;
