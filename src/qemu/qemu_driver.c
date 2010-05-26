@@ -7019,7 +7019,7 @@ error:
 static int qemudDomainAttachPciDiskDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainDiskDefPtr disk,
-                                          int qemuCmdFlags)
+                                          unsigned long long qemuCmdFlags)
 {
     int i, ret;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
@@ -7114,7 +7114,7 @@ error:
 static int qemudDomainAttachPciControllerDevice(struct qemud_driver *driver,
                                                 virDomainObjPtr vm,
                                                 virDomainControllerDefPtr controller,
-                                                int qemuCmdFlags)
+                                                unsigned long long qemuCmdFlags)
 {
     int i;
     int ret = -1;
@@ -7180,7 +7180,7 @@ static virDomainControllerDefPtr
 qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
                                          virDomainObjPtr vm,
                                          int controller,
-                                         int qemuCmdFlags)
+                                         unsigned long long qemuCmdFlags)
 {
     int i;
     virDomainControllerDefPtr cont;
@@ -7225,7 +7225,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
 static int qemudDomainAttachSCSIDisk(struct qemud_driver *driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk,
-                                     int qemuCmdFlags)
+                                     unsigned long long qemuCmdFlags)
 {
     int i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -7341,7 +7341,7 @@ error:
 static int qemudDomainAttachUsbMassstorageDevice(struct qemud_driver *driver,
                                                  virDomainObjPtr vm,
                                                  virDomainDiskDefPtr disk,
-                                                 int qemuCmdFlags)
+                                                 unsigned long long qemuCmdFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int i, ret;
@@ -7652,7 +7652,7 @@ no_memory:
 static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainHostdevDefPtr hostdev,
-                                          int qemuCmdFlags)
+                                          unsigned long long qemuCmdFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     pciDevice *pci;
@@ -7764,7 +7764,7 @@ error:
 static int qemudDomainAttachHostUsbDevice(struct qemud_driver *driver,
                                           virDomainObjPtr vm,
                                           virDomainHostdevDefPtr hostdev,
-                                          int qemuCmdFlags)
+                                          unsigned long long qemuCmdFlags)
 {
     int ret;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -7808,7 +7808,7 @@ error:
 static int qemudDomainAttachHostDevice(struct qemud_driver *driver,
                                        virDomainObjPtr vm,
                                        virDomainHostdevDefPtr hostdev,
-                                       int qemuCmdFlags)
+                                       unsigned long long qemuCmdFlags)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         qemuReportError(VIR_ERR_NO_SUPPORT,
