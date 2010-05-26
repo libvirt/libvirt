@@ -1354,6 +1354,48 @@ fail:
     return -1;
 }
 
+static void qemudParsePCIDeviceStrs(const char *qemu, unsigned long long *flags)
+{
+    const char *const qemuarg[] = { qemu, "-device", "pci-assign,?", NULL };
+    const char *const qemuenv[] = { "LC_ALL=C", NULL };
+    pid_t child;
+    int status;
+    int newstderr = -1;
+
+    if (virExec(qemuarg, qemuenv, NULL,
+                &child, -1, NULL, &newstderr, VIR_EXEC_CLEAR_CAPS) < 0)
+        return;
+
+    char *pciassign = NULL;
+    enum { MAX_PCI_OUTPUT_SIZE = 1024*4 };
+    int len = virFileReadLimFD(newstderr, MAX_PCI_OUTPUT_SIZE, &pciassign);
+    if (len < 0) {
+        virReportSystemError(errno,
+                             _("Unable to read %s pci-assign device output"),
+                             qemu);
+        goto cleanup;
+    }
+
+    if (strstr(pciassign, "pci-assign.configfd"))
+        *flags |= QEMUD_CMD_FLAG_PCI_CONFIGFD;
+
+cleanup:
+    VIR_FREE(pciassign);
+    close(newstderr);
+rewait:
+    if (waitpid(child, &status, 0) != child) {
+        if (errno == EINTR)
+            goto rewait;
+
+        VIR_ERROR(_("Unexpected exit status from qemu %d pid %lu"),
+                  WEXITSTATUS(status), (unsigned long)child);
+    }
+    if (WEXITSTATUS(status) != 0) {
+        VIR_WARN("Unexpected exit status '%d', qemu probably failed",
+                 WEXITSTATUS(status));
+    }
+}
+
 int qemudExtractVersionInfo(const char *qemu,
                             unsigned int *retversion,
                             unsigned long long *retflags) {
@@ -1386,6 +1428,9 @@ int qemudExtractVersionInfo(const char *qemu,
     if (qemudParseHelpStr(qemu, help, &flags,
                           &version, &is_kvm, &kvm_version) == -1)
         goto cleanup2;
+
+    if (flags & QEMUD_CMD_FLAG_DEVICE)
+        qemudParsePCIDeviceStrs(qemu, &flags);
 
     if (retversion)
         *retversion = version;
@@ -2896,8 +2941,33 @@ error:
 }
 
 
+int
+qemudOpenPCIConfig(virDomainHostdevDefPtr dev)
+{
+    char *path = NULL;
+    int configfd = -1;
+
+    if (virAsprintf(&path, "/sys/bus/pci/devices/%04x:%02x:%02x.%01x/config",
+                    dev->source.subsys.u.pci.domain,
+                    dev->source.subsys.u.pci.bus,
+                    dev->source.subsys.u.pci.slot,
+                    dev->source.subsys.u.pci.function) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    configfd = open(path, O_RDWR, 0);
+
+    if (configfd < 0)
+        virReportSystemError(errno, _("Failed opening %s"), path);
+
+    VIR_FREE(path);
+
+    return configfd;
+}
+
 char *
-qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev)
+qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev, const char *configfd)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -2907,6 +2977,8 @@ qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev)
                       dev->source.subsys.u.pci.slot,
                       dev->source.subsys.u.pci.function);
     virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    if (configfd && *configfd)
+        virBufferVSprintf(&buf, ",configfd=%s", configfd);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info) < 0)
         goto error;
 
@@ -4611,8 +4683,30 @@ int qemudBuildCommandLine(virConnectPtr conn,
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
             if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+                char *configfd_name = NULL;
+                if (qemuCmdFlags & QEMUD_CMD_FLAG_PCI_CONFIGFD) {
+                    int configfd = qemudOpenPCIConfig(hostdev);
+
+                    if (configfd >= 0) {
+                        if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
+                            close(configfd);
+                            virReportOOMError();
+                            goto no_memory;
+                        }
+
+                        if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
+                            VIR_FREE(configfd_name);
+                            close(configfd);
+                            goto no_memory;
+                        }
+
+                        (*vmfds)[(*nvmfds)++] = configfd;
+                    }
+                }
                 ADD_ARG_LIT("-device");
-                if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+                devstr = qemuBuildPCIHostdevDevStr(hostdev, configfd_name);
+                VIR_FREE(configfd_name);
+                if (!devstr)
                     goto error;
                 ADD_ARG(devstr);
             } else if (qemuCmdFlags & QEMUD_CMD_FLAG_PCIDEVICE) {

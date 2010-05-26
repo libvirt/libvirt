@@ -7658,6 +7658,8 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
     pciDevice *pci;
     int ret;
     char *devstr = NULL;
+    int configfd = -1;
+    char *configfd_name = NULL;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0) {
         virReportOOMError();
@@ -7688,8 +7690,32 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
             goto error;
         if (qemuDomainPCIAddressEnsureAddr(priv->pciaddrs, &hostdev->info) < 0)
             goto error;
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_PCI_CONFIGFD) {
+            configfd = qemudOpenPCIConfig(hostdev);
+            if (configfd >= 0) {
+                if (virAsprintf(&configfd_name, "fd-%s",
+                                hostdev->info.alias) < 0) {
+                    virReportOOMError();
+                    goto error;
+                }
 
-        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev)))
+                qemuDomainObjEnterMonitorWithDriver(driver, vm);
+                if (qemuMonitorSendFileHandle(priv->mon, configfd_name,
+                                              configfd) < 0) {
+                    qemuDomainObjExitMonitorWithDriver(driver, vm);
+                    goto error;
+                }
+                qemuDomainObjExitMonitorWithDriver(driver, vm);
+            }
+        }
+
+        if (!virDomainObjIsActive(vm)) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("guest unexpectedly quit during hotplug"));
+            goto error;
+        }
+
+        if (!(devstr = qemuBuildPCIHostdevDevStr(hostdev, configfd_name)))
             goto error;
 
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -7713,6 +7739,9 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
     VIR_FREE(devstr);
+    VIR_FREE(configfd_name);
+    if (configfd >= 0)
+        close(configfd);
 
     return 0;
 
@@ -7724,6 +7753,9 @@ error:
 
     VIR_FREE(devstr);
     pciDeviceListDel(driver->activePciHostdevs, pci);
+    VIR_FREE(configfd_name);
+    if (configfd >= 0)
+        close(configfd);
 
     return -1;
 }

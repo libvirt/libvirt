@@ -89,6 +89,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_NO_HPET       = (1LL << 33), /* -no-hpet flag is supported */
     QEMUD_CMD_FLAG_NO_KVM_PIT    = (1LL << 34), /* -no-kvm-pit-reinjection supported */
     QEMUD_CMD_FLAG_TDF           = (1LL << 35), /* -tdf flag (user-mode pit catchup) */
+    QEMUD_CMD_FLAG_PCI_CONFIGFD  = (1LL << 36), /* pci-assign.configfd */
 };
 
 /* Main driver state */
@@ -247,7 +248,10 @@ char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound);
 /* Legacy, pre device support */
 char * qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev);
 /* Current, best practice */
-char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev);
+char * qemuBuildPCIHostdevDevStr(virDomainHostdevDefPtr dev,
+                                 const char *configfd);
+
+int qemudOpenPCIConfig(virDomainHostdevDefPtr dev);
 
 /* Current, best practice */
 char * qemuBuildChrChardevStr(virDomainChrDefPtr dev);
