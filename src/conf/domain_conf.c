@@ -1952,50 +1952,6 @@ err_exit:
 }
 
 
-static void
-virVirtualPortProfileFormat(virBufferPtr buf,
-                            virVirtualPortProfileParamsPtr virtPort,
-                            const char *indent)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    if (virtPort->virtPortType == VIR_VIRTUALPORT_NONE)
-        return;
-
-    virBufferVSprintf(buf, "%s<virtualport type='%s'>\n",
-                      indent,
-                      virVirtualPortTypeToString(virtPort->virtPortType));
-
-    switch (virtPort->virtPortType) {
-    case VIR_VIRTUALPORT_NONE:
-    case VIR_VIRTUALPORT_TYPE_LAST:
-        break;
-
-    case VIR_VIRTUALPORT_8021QBG:
-        virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
-                      uuidstr);
-        virBufferVSprintf(buf,
-                          "%s  <parameters managerid='%d' typeid='%d' "
-                          "typeidversion='%d' instanceid='%s'/>\n",
-                          indent,
-                          virtPort->u.virtPort8021Qbg.managerID,
-                          virtPort->u.virtPort8021Qbg.typeID,
-                          virtPort->u.virtPort8021Qbg.typeIDVersion,
-                          uuidstr);
-        break;
-
-    case VIR_VIRTUALPORT_8021QBH:
-        virBufferVSprintf(buf,
-                          "%s  <parameters profileid='%s'/>\n",
-                          indent,
-                          virtPort->u.virtPort8021Qbh.profileID);
-        break;
-    }
-
-    virBufferVSprintf(buf, "%s</virtualport>\n", indent);
-}
-
-
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
@@ -3774,8 +3730,51 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
     VIR_FREE(dev);
     return NULL;
 }
-#endif
+#endif /* !PROXY */
 
+
+static void
+virVirtualPortProfileFormat(virBufferPtr buf,
+                            virVirtualPortProfileParamsPtr virtPort,
+                            const char *indent)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (virtPort->virtPortType == VIR_VIRTUALPORT_NONE)
+        return;
+
+    virBufferVSprintf(buf, "%s<virtualport type='%s'>\n",
+                      indent,
+                      virVirtualPortTypeToString(virtPort->virtPortType));
+
+    switch (virtPort->virtPortType) {
+    case VIR_VIRTUALPORT_NONE:
+    case VIR_VIRTUALPORT_TYPE_LAST:
+        break;
+
+    case VIR_VIRTUALPORT_8021QBG:
+        virUUIDFormat(virtPort->u.virtPort8021Qbg.instanceID,
+                      uuidstr);
+        virBufferVSprintf(buf,
+                          "%s  <parameters managerid='%d' typeid='%d' "
+                          "typeidversion='%d' instanceid='%s'/>\n",
+                          indent,
+                          virtPort->u.virtPort8021Qbg.managerID,
+                          virtPort->u.virtPort8021Qbg.typeID,
+                          virtPort->u.virtPort8021Qbg.typeIDVersion,
+                          uuidstr);
+        break;
+
+    case VIR_VIRTUALPORT_8021QBH:
+        virBufferVSprintf(buf,
+                          "%s  <parameters profileid='%s'/>\n",
+                          indent,
+                          virtPort->u.virtPort8021Qbh.profileID);
+        break;
+    }
+
+    virBufferVSprintf(buf, "%s</virtualport>\n", indent);
+}
 
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
