@@ -14,7 +14,7 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='LSILOGIC'/>
-      <source file='[datastore] directory/FEDORA11.vmdk'/>
+      <source file='[datastore] directory/FEDORA11.VMDK'/>
       <target dev='sda' bus='scsi'/>
     </disk>
     <interface type='bridge'>
