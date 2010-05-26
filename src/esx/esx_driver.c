@@ -141,6 +141,69 @@ esxSupportsLongMode(esxPrivate *priv)
 
 
 
+static int
+esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (esxVI_EnsureSession(priv->host) < 0) {
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "hardware.systemInfo.uuid") < 0 ||
+        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
+                                        "HostSystem", propertyNameList,
+                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        goto cleanup;
+    }
+
+    if (hostSystem == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not retrieve the HostSystem object"));
+        goto cleanup;
+    }
+
+    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "hardware.systemInfo.uuid")) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_String) < 0) {
+                goto cleanup;
+            }
+
+            if (strlen(dynamicProperty->val->string) > 0) {
+                if (virUUIDParse(dynamicProperty->val->string, uuid) < 0) {
+                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                              _("Could not parse UUID from string '%s'"),
+                              dynamicProperty->val->string);
+                    goto cleanup;
+                }
+            } else {
+                /* HostSystem has an empty UUID */
+                memset(uuid, 0, VIR_UUID_BUFLEN);
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&hostSystem);
+
+    return result;
+}
+
+
+
 static virCapsPtr
 esxCapsInit(esxPrivate *priv)
 {
@@ -165,6 +228,10 @@ esxCapsInit(esxPrivate *priv)
 
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
+
+    if (esxLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0) {
+        goto failure;
+    }
 
     /* i686 */
     guest = virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0,
