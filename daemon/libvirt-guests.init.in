@@ -37,6 +37,7 @@ SHUTDOWN_TIMEOUT=0
 test -f "$sysconfdir"/sysconfig/libvirt-guests && . "$sysconfdir"/sysconfig/libvirt-guests
 
 LISTFILE="$localstatedir"/lib/libvirt/libvirt-guests
+VAR_SUBSYS_LIBVIRT_GUESTS="$localstatedir"/lock/subsys/libvirt-guests
 
 RETVAL=0
 
@@ -117,12 +118,17 @@ guest_is_on() {
     return 0
 }
 
+started() {
+    touch "$VAR_SUBSYS_LIBVIRT_GUESTS"
+}
+
 start() {
-    [ -f $LISTFILE ] || return 0
+    [ -f "$LISTFILE" ] || { started; return 0; }
 
     if [ "x$ON_BOOT" != xstart ]; then
         echo $"libvirt-guests is configured not to start any guests on boot"
-        rm -f $LISTFILE
+        rm -f "$LISTFILE"
+        started
         return 0
     fi
 
@@ -152,9 +158,10 @@ start() {
                 fi
             fi
         done
-    done <$LISTFILE
+    done <"$LISTFILE"
 
-    rm -f $LISTFILE
+    rm -f "$LISTFILE"
+    started
 }
 
 suspend_guest()
@@ -210,7 +217,7 @@ shutdown_guest()
 
 stop() {
     # last stop was not followed by start
-    [ -f $LISTFILE ] && return 0
+    [ -f "$LISTFILE" ] && return 0
 
     suspending=true
     if [ "x$ON_SHUTDOWN" = xshutdown ]; then
@@ -222,7 +229,7 @@ stop() {
         fi
     fi
 
-    : >$LISTFILE
+    : >"$LISTFILE"
     for uri in $URIS; do
         echo -n $"Running guests on $uri URI: "
         list=$(list_guests $uri)
@@ -237,7 +244,7 @@ stop() {
                 echo $"no running guests."
             else
                 echo
-                echo $uri $list >>$LISTFILE
+                echo $uri $list >>"$LISTFILE"
             fi
         fi
     done
@@ -256,7 +263,9 @@ stop() {
                 shutdown_guest $uri $guest
             fi
         done
-    done <$LISTFILE
+    done <"$LISTFILE"
+
+    rm -f "$VAR_SUBSYS_LIBVIRT_GUESTS"
 }
 
 gueststatus() {
@@ -277,7 +286,7 @@ case "$1" in
     force-reload)
         ;;
     status)
-        if [ -f $LISTFILE ]; then
+        if [ -f "$LISTFILE" ]; then
             RETVAL=3
         else
             RETVAL=0
