@@ -477,13 +477,16 @@
   ...
   &lt;devices&gt;
     &lt;disk type='file'&gt;
-      &lt;driver name="tap" type="aio" cache="default"&gt;
+      &lt;driver name="tap" type="aio" cache="default"/&gt;
       &lt;source file='/var/lib/xen/images/fv0'/&gt;
       &lt;target dev='hda' bus='ide'/&gt;
       &lt;encryption type='...'&gt;
         ...
       &lt;/encryption&gt;
       &lt;shareable/&gt;
+      &lt;serial&gt;
+        ...
+      &lt;/serial&gt;
     &lt;/disk&gt;
   &lt;/devices&gt;
   ...</pre>
@@ -531,6 +534,11 @@
       <dd>If present, this indicates the device is expected to be shared
           between domains (assuming the hypervisor and OS support this),
           which means that caching should be deactivated for that device.
+      </dd>
+      <dt><code>serial</code></dt>
+      <dd>If present, this specify serial number of virtual hard drive.
+          For example, it may look as <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
+          <span class="since">Since 0.7.1</span>
       </dd>
     </dl>
 
