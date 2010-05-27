@@ -379,6 +379,10 @@ virStoragePoolSourcePtr
 virStoragePoolSourceListNewSource(virStoragePoolSourceListPtr list);
 char *virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def);
 
+int virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
+                                 virStoragePoolDefPtr def,
+                                 unsigned int check_active);
+
 void virStoragePoolObjLock(virStoragePoolObjPtr obj);
 void virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
 

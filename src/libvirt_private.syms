@@ -610,6 +610,7 @@ virStoragePoolTypeFromString;
 virStoragePartedFsTypeTypeToString;
 virStoragePoolObjLock;
 virStoragePoolObjUnlock;
+virStoragePoolObjIsDuplicate;
 
 # storage_encryption_conf.h
 virStorageEncryptionFree;

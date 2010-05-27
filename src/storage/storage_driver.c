@@ -521,17 +521,8 @@ storagePoolCreate(virConnectPtr conn,
     if (!(def = virStoragePoolDefParseString(xml)))
         goto cleanup;
 
-    pool = virStoragePoolObjFindByUUID(&driver->pools, def->uuid);
-    if (!pool)
-        pool = virStoragePoolObjFindByName(&driver->pools, def->name);
-
-    if (pool) {
-        virStorageReportError(VIR_ERR_INTERNAL_ERROR,
-                              "%s", _("storage pool already exists"));
-        virStoragePoolObjUnlock(pool);
-        pool = NULL;
+    if (virStoragePoolObjIsDuplicate(&driver->pools, def, 1) < 0)
         goto cleanup;
-    }
 
     if ((backend = virStorageBackendForType(def->type)) == NULL)
         goto cleanup;
@@ -577,6 +568,9 @@ storagePoolDefine(virConnectPtr conn,
 
     storageDriverLock(driver);
     if (!(def = virStoragePoolDefParseString(xml)))
+        goto cleanup;
+
+    if (virStoragePoolObjIsDuplicate(&driver->pools, def, 0) < 0)
         goto cleanup;
 
     if (virStorageBackendForType(def->type) == NULL)
