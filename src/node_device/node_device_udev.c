@@ -1223,31 +1223,43 @@ static int udevSetParent(struct udev_device *device,
     virNodeDeviceObjPtr dev = NULL;
     int ret = -1;
 
-    parent_device = udev_device_get_parent(device);
-    if (parent_device == NULL) {
-        VIR_INFO("Could not find udev parent for device with sysfs path '%s'",
-                 udev_device_get_syspath(device));
-    }
+    parent_device = device;
+    do {
 
-    parent_sysfs_path = udev_device_get_syspath(parent_device);
-    if (parent_sysfs_path == NULL) {
-        VIR_INFO("Could not get syspath for parent of '%s'",
-                 udev_device_get_syspath(device));
-        parent_sysfs_path = "";
-    }
+        parent_device = udev_device_get_parent(parent_device);
+        if (parent_device == NULL) {
+            break;
+        }
 
-    def->parent_sysfs_path = strdup(parent_sysfs_path);
-    if (def->parent_sysfs_path == NULL) {
-        virReportOOMError();
-        goto out;
-    }
+        parent_sysfs_path = udev_device_get_syspath(parent_device);
+        if (parent_sysfs_path == NULL) {
+            VIR_INFO("Could not get syspath for parent of '%s'",
+                     udev_device_get_syspath(parent_device));
+        }
 
-    dev = virNodeDeviceFindBySysfsPath(&driverState->devs, parent_sysfs_path);
-    if (dev == NULL) {
+        dev = virNodeDeviceFindBySysfsPath(&driverState->devs,
+                                           parent_sysfs_path);
+        if (dev != NULL) {
+            def->parent = strdup(dev->def->name);
+            virNodeDeviceObjUnlock(dev);
+
+            if (def->parent == NULL) {
+                virReportOOMError();
+                goto out;
+            }
+
+            def->parent_sysfs_path = strdup(parent_sysfs_path);
+            if (def->parent_sysfs_path == NULL) {
+                virReportOOMError();
+                goto out;
+            }
+
+        }
+
+    } while (def->parent == NULL && parent_device != NULL);
+
+    if (def->parent == NULL) {
         def->parent = strdup("computer");
-    } else {
-        def->parent = strdup(dev->def->name);
-        virNodeDeviceObjUnlock(dev);
     }
 
     if (def->parent == NULL) {
