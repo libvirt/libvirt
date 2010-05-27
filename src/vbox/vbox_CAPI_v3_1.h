@@ -1,4 +1,7 @@
-
+/*
+ * Libvirt notice: this file is derived from the VirtualBox SDK, with
+ * libvirt edits; do not regenerate in the context of libvirt.
+ */
 /*
  *  DO NOT EDIT! This is a generated file.
  *
