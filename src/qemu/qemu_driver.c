@@ -3287,7 +3287,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               int stdin_fd) {
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
-    int i, ret;
+    int i, ret, runflags;
     struct stat sb;
     int *vmfds = NULL;
     int nvmfds = 0;
@@ -3501,9 +3501,16 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     for (i = 0 ; i < nvmfds ; i++)
         FD_SET(vmfds[i], &keepfd);
 
+    VIR_DEBUG("Clear emulator capabilities: %d",
+              driver->clearEmulatorCapabilities);
+    runflags = VIR_EXEC_NONBLOCK;
+    if (driver->clearEmulatorCapabilities) {
+        runflags |= VIR_EXEC_CLEAR_CAPS;
+    }
+
     ret = virExecDaemonize(argv, progenv, &keepfd, &child,
                            stdin_fd, &logfile, &logfile,
-                           VIR_EXEC_NONBLOCK | VIR_EXEC_CLEAR_CAPS,
+                           runflags,
                            qemudSecurityHook, &hookData,
                            pidfile);
     VIR_FREE(pidfile);

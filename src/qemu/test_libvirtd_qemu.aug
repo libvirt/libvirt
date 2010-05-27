@@ -99,6 +99,8 @@ hugetlbfs_mount = \"/dev/hugepages\"
 relaxed_acs_check = 1
 
 vnc_allow_host_audio = 1
+
+clear_emulator_capabilities = 0
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -208,3 +210,5 @@ vnc_allow_host_audio = 1
 { "relaxed_acs_check" = "1" }
 { "#empty" }
 { "vnc_allow_host_audio" = "1" }
+{ "#empty" }
+{ "clear_emulator_capabilities" = "0" }

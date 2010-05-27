@@ -104,6 +104,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
 
     /* Setup critical defaults */
     driver->dynamicOwnership = 1;
+    driver->clearEmulatorCapabilities = 1;
 
     if (!(driver->vncListen = strdup("127.0.0.1"))) {
         virReportOOMError();
@@ -354,6 +355,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     p = virConfGetValue (conf, "vnc_allow_host_audio");
     CHECK_TYPE ("vnc_allow_host_audio", VIR_CONF_LONG);
     if (p) driver->vncAllowHostAudio = p->l;
+
+    p = virConfGetValue (conf, "clear_emulator_capabilities");
+    CHECK_TYPE ("clear_emulator_capabilities", VIR_CONF_LONG);
+    if (p) driver->clearEmulatorCapabilities = p->l;
 
     virConfFree (conf);
     return 0;

@@ -138,8 +138,8 @@ struct qemud_driver {
     ebtablesContext *ebtables;
 
     unsigned int relaxedACS : 1;
-
     unsigned int vncAllowHostAudio : 1;
+    unsigned int clearEmulatorCapabilities : 1;
 
     virCapsPtr caps;
 
