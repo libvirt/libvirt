@@ -169,6 +169,10 @@ int virNetworkSetBridgeName(const virNetworkObjListPtr nets,
                             virNetworkDefPtr def,
                             int check_collision);
 
+int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
+                             virNetworkDefPtr def,
+                             unsigned int check_active);
+
 void virNetworkObjLock(virNetworkObjPtr obj);
 void virNetworkObjUnlock(virNetworkObjPtr obj);
 

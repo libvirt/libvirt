@@ -469,6 +469,7 @@ virNetworkSaveConfig;
 virNetworkSetBridgeName;
 virNetworkObjLock;
 virNetworkObjUnlock;
+virNetworkObjIsDuplicate;
 
 
 # nodeinfo.h
