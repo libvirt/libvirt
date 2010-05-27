@@ -597,7 +597,14 @@ static int udevProcessNetworkInterface(struct udev_device *device,
                                        virNodeDeviceDefPtr def)
 {
     int ret = -1;
+    const char *devtype = udev_device_get_devtype(device);
     union _virNodeDevCapData *data = &def->caps->data;
+
+    if (devtype && STREQ(devtype, "wlan")) {
+        data->net.subtype = VIR_NODE_DEV_CAP_NET_80211;
+    } else {
+        data->net.subtype = VIR_NODE_DEV_CAP_NET_80203;
+    }
 
     if (udevGetStringProperty(device,
                               "INTERFACE",
@@ -1074,6 +1081,8 @@ static int udevGetDeviceType(struct udev_device *device,
     int ret = 0;
 
     devtype = udev_device_get_devtype(device);
+    VIR_DEBUG("Found device type '%s' for device '%s'",
+              NULLSTR(devtype), udev_device_get_sysname(device));
 
     if (devtype != NULL && STREQ(devtype, "usb_device")) {
         *type = VIR_NODE_DEV_CAP_USB_DEV;
@@ -1105,13 +1114,20 @@ static int udevGetDeviceType(struct udev_device *device,
         goto out;
     }
 
+    if (devtype != NULL && STREQ(devtype, "wlan")) {
+        *type = VIR_NODE_DEV_CAP_NET;
+        goto out;
+    }
+
     if (udevGetUintProperty(device, "PCI_CLASS", &tmp, 16) == PROPERTY_FOUND) {
         *type = VIR_NODE_DEV_CAP_PCI_DEV;
         goto out;
     }
 
-    /* It does not appear that network interfaces set the device type
-     * property. */
+    /* It does not appear that wired network interfaces set the
+     * DEVTYPE property.  USB devices also have an INTERFACE property,
+     * but they do set DEVTYPE, so if devtype is NULL and the
+     * INTERFACE property exists, we have a network device. */
     if (devtype == NULL &&
         udevGetStringProperty(device,
                               "INTERFACE",
