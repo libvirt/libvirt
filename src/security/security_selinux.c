@@ -755,6 +755,107 @@ SELinuxSetSecurityProcessLabel(virSecurityDriverPtr drv,
 }
 
 static int
+SELinuxSetSecuritySocketLabel(virSecurityDriverPtr drv,
+                               virDomainObjPtr vm)
+{
+    /* TODO: verify DOI */
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    context_t execcon = NULL;
+    context_t proccon = NULL;
+    security_context_t scon = NULL;
+    int rc = -1;
+
+    if (vm->def->seclabel.label == NULL)
+        return 0;
+
+    if (!STREQ(drv->name, secdef->model)) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("security label driver mismatch: "
+                                 "'%s' model configured for domain, but "
+                                 "hypervisor driver is '%s'."),
+                               secdef->model, drv->name);
+        goto done;
+    }
+
+    if ( !(execcon = context_new(secdef->label)) ) {
+        virReportSystemError(errno,
+                             _("unable to allocate socket security context '%s'"),
+                             secdef->label);
+        goto done;
+    }
+
+    if (getcon(&scon) == -1) {
+        virReportSystemError(errno,
+                             _("unable to get current process context '%s'"),
+                             secdef->label);
+        goto done;
+    }
+
+    if ( !(proccon = context_new(scon)) ) {
+        virReportSystemError(errno,
+                             _("unable to set socket security context '%s'"),
+                             secdef->label);
+        goto done;
+    }
+
+    if (context_range_set(proccon, context_range_get(execcon)) == -1) {
+        virReportSystemError(errno,
+                             _("unable to set socket security context range '%s'"),
+                             secdef->label);
+        goto done;
+    }
+
+    VIR_DEBUG("Setting VM %s socket context %s",
+              vm->def->name, context_str(proccon));
+    if (setsockcreatecon(context_str(proccon)) == -1) {
+        virReportSystemError(errno,
+                             _("unable to set socket security context '%s'"),
+                             context_str(proccon));
+        goto done;
+    }
+
+    rc = 0;
+done:
+
+    if (security_getenforce() != 1)
+        rc = 0;
+    if (execcon) context_free(execcon);
+    if (proccon) context_free(proccon);
+    freecon(scon);
+    return rc;
+}
+
+static int
+SELinuxClearSecuritySocketLabel(virSecurityDriverPtr drv,
+                                virDomainObjPtr vm)
+{
+    /* TODO: verify DOI */
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+
+    if (vm->def->seclabel.label == NULL)
+        return 0;
+
+    if (!STREQ(drv->name, secdef->model)) {
+        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("security label driver mismatch: "
+                                 "'%s' model configured for domain, but "
+                                 "hypervisor driver is '%s'."),
+                               secdef->model, drv->name);
+        if (security_getenforce() == 1)
+            return -1;
+    }
+
+    if (setsockcreatecon(NULL) == -1) {
+        virReportSystemError(errno,
+                             _("unable to clear socket security context '%s'"),
+                             secdef->label);
+        if (security_getenforce() == 1)
+            return -1;
+    }
+    return 0;
+}
+
+static int
 SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_UNUSED)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
@@ -795,6 +896,8 @@ virSecurityDriver virSELinuxSecurityDriver = {
     .open                       = SELinuxSecurityDriverOpen,
     .domainSecurityVerify       = SELinuxSecurityVerify,
     .domainSetSecurityImageLabel = SELinuxSetSecurityImageLabel,
+    .domainSetSecuritySocketLabel     = SELinuxSetSecuritySocketLabel,
+    .domainClearSecuritySocketLabel     = SELinuxClearSecuritySocketLabel,
     .domainRestoreSecurityImageLabel = SELinuxRestoreSecurityImageLabel,
     .domainGenSecurityLabel     = SELinuxGenSecurityLabel,
     .domainReserveSecurityLabel     = SELinuxReserveSecurityLabel,

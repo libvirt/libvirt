@@ -310,6 +310,51 @@ qemuSecurityStackedGetProcessLabel(virDomainObjPtr vm,
     return rc;
 }
 
+
+static int
+qemuSecurityStackedSetSocketLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
+                                  virDomainObjPtr vm)
+{
+    int rc = 0;
+
+    if (driver->securityPrimaryDriver &&
+        driver->securityPrimaryDriver->domainSetSecuritySocketLabel &&
+        driver->securityPrimaryDriver->domainSetSecuritySocketLabel(driver->securityPrimaryDriver,
+                                                                    vm) < 0)
+        rc = -1;
+
+    if (driver->securitySecondaryDriver &&
+        driver->securitySecondaryDriver->domainSetSecuritySocketLabel &&
+        driver->securitySecondaryDriver->domainSetSecuritySocketLabel(driver->securitySecondaryDriver,
+                                                                      vm) < 0)
+        rc = -1;
+
+    return rc;
+}
+
+
+static int
+qemuSecurityStackedClearSocketLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
+                                    virDomainObjPtr vm)
+{
+    int rc = 0;
+
+    if (driver->securitySecondaryDriver &&
+        driver->securitySecondaryDriver->domainClearSecuritySocketLabel &&
+        driver->securitySecondaryDriver->domainClearSecuritySocketLabel(driver->securitySecondaryDriver,
+                                                                        vm) < 0)
+        rc = -1;
+
+    if (driver->securityPrimaryDriver &&
+        driver->securityPrimaryDriver->domainClearSecuritySocketLabel &&
+        driver->securityPrimaryDriver->domainClearSecuritySocketLabel(driver->securityPrimaryDriver,
+                                                                      vm) < 0)
+        rc = -1;
+
+    return rc;
+}
+
+
 virSecurityDriver qemuStackedSecurityDriver = {
     .name                       = "qemuStacked",
     .domainSecurityVerify = qemuSecurityStackedVerify,
@@ -332,4 +377,7 @@ virSecurityDriver qemuStackedSecurityDriver = {
 
     .domainSetSavedStateLabel = qemuSecurityStackedSetSavedStateLabel,
     .domainRestoreSavedStateLabel = qemuSecurityStackedRestoreSavedStateLabel,
+
+    .domainClearSecuritySocketLabel = qemuSecurityStackedClearSocketLabel,
+    .domainSetSecuritySocketLabel = qemuSecurityStackedSetSocketLabel,
 };

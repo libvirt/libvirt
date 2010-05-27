@@ -32,6 +32,10 @@ typedef virSecurityDriverStatus (*virSecurityDriverProbe) (void);
 typedef int (*virSecurityDriverOpen) (virSecurityDriverPtr drv);
 typedef int (*virSecurityDomainRestoreImageLabel) (virDomainObjPtr vm,
                                                    virDomainDiskDefPtr disk);
+typedef int (*virSecurityDomainSetSocketLabel) (virSecurityDriverPtr drv,
+                                                virDomainObjPtr vm);
+typedef int (*virSecurityDomainClearSocketLabel)(virSecurityDriverPtr drv,
+                                                virDomainObjPtr vm);
 typedef int (*virSecurityDomainSetImageLabel) (virDomainObjPtr vm,
                                                virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainRestoreHostdevLabel) (virDomainObjPtr vm,
@@ -61,6 +65,8 @@ struct _virSecurityDriver {
     virSecurityDriverOpen open;
     virSecurityDomainSecurityVerify domainSecurityVerify;
     virSecurityDomainRestoreImageLabel domainRestoreSecurityImageLabel;
+    virSecurityDomainSetSocketLabel domainSetSecuritySocketLabel;
+    virSecurityDomainClearSocketLabel domainClearSecuritySocketLabel;
     virSecurityDomainSetImageLabel domainSetSecurityImageLabel;
     virSecurityDomainGenLabel domainGenSecurityLabel;
     virSecurityDomainReserveLabel domainReserveSecurityLabel;

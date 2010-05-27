@@ -1186,27 +1186,44 @@ static int
 qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
+    int ret = -1;
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the monitor is active */
     virDomainObjRef(vm);
+
+    if ((driver->securityDriver &&
+         driver->securityDriver->domainSetSecuritySocketLabel &&
+         driver->securityDriver->domainSetSecuritySocketLabel(driver->securityDriver,vm)) < 0) {
+        VIR_ERROR(_("Failed to set security context for monitor for %s"), vm->def->name);
+        goto error;
+    }
 
     if ((priv->mon = qemuMonitorOpen(vm,
                                      priv->monConfig,
                                      priv->monJSON,
                                      &monitorCallbacks)) == NULL) {
         VIR_ERROR(_("Failed to connect monitor for %s"), vm->def->name);
-        return -1;
+        goto error;
+    }
+
+    if ((driver->securityDriver &&
+         driver->securityDriver->domainClearSecuritySocketLabel &&
+         driver->securityDriver->domainClearSecuritySocketLabel(driver->securityDriver,vm)) < 0) {
+        VIR_ERROR(_("Failed to set security context for monitor for %s"), vm->def->name);
+        goto error;
     }
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorSetCapabilities(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    ret = 0;
+error:
     if (ret < 0) {
         qemuMonitorClose(priv->mon);
         priv->mon = NULL;
+        virDomainObjUnref(vm);
     }
 
     return ret;
