@@ -347,6 +347,9 @@ SELinuxSetFilecon(const char *path, char *tcon)
     return 0;
 }
 
+
+/* This method shouldn't raise errors, since they'll overwrite
+ * errors that the caller(s) are already dealing with */
 static int
 SELinuxRestoreSecurityFileLabel(const char *path)
 {
@@ -354,27 +357,27 @@ SELinuxRestoreSecurityFileLabel(const char *path)
     security_context_t fcon = NULL;
     int rc = -1;
     char *newpath = NULL;
+    char ebuf[1024];
 
     VIR_INFO("Restoring SELinux context on '%s'", path);
 
     if (virFileResolveLink(path, &newpath) < 0) {
-        virReportSystemError(errno,
-                             _("cannot resolve symlink %s"), path);
+        VIR_WARN("cannot resolve symlink %s: %s", path,
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
         goto err;
     }
 
     if (stat(newpath, &buf) != 0) {
-        virReportSystemError(errno,
-                             _("cannot stat %s"), newpath);
+        VIR_WARN("cannot stat %s: %s", newpath,
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
         goto err;
     }
 
     if (matchpathcon(newpath, buf.st_mode, &fcon) == 0)  {
         rc = SELinuxSetFilecon(newpath, fcon);
     } else {
-        virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot restore selinux file label for %s"),
-                               newpath);
+        VIR_WARN("cannot lookup default selinux label for %s",
+                 newpath);
     }
 
 err:
