@@ -646,8 +646,8 @@ void registerCommonNodeFuncs(virDeviceMonitorPtr driver)
 int nodedevRegister(void) {
 #if defined(HAVE_HAL) && defined(HAVE_UDEV)
     /* Register only one of these two - they conflict */
-    if (halNodeRegister() == -1)
-        return udevNodeRegister();
+    if (udevNodeRegister() == -1)
+        return halNodeRegister();
     return 0;
 #else
 # ifdef HAVE_HAL
