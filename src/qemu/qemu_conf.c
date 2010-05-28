@@ -1556,6 +1556,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
                 rc = -1;
                 delMacvtap(net->ifname,
                            &net->data.direct.virtPortProfile);
+                VIR_FREE(net->ifname);
             }
         }
     }

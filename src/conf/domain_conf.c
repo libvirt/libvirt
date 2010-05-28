@@ -2207,6 +2207,8 @@ virDomainNetDefParseXML(virCapsPtr caps,
         def->data.direct.linkdev = dev;
         dev = NULL;
 
+        VIR_FREE(ifname);
+
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
