@@ -7720,6 +7720,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
         pciFreeDevice(pci);
         return -1;
     }
+    pci = NULL; /* activePciHostdevs owns the 'pci' reference now */
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
@@ -7787,8 +7788,22 @@ error:
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &hostdev->info) < 0)
         VIR_WARN0("Unable to release PCI address on host device");
 
-    VIR_FREE(devstr);
+    pci = pciGetDevice(hostdev->source.subsys.u.pci.domain,
+                       hostdev->source.subsys.u.pci.bus,
+                       hostdev->source.subsys.u.pci.slot,
+                       hostdev->source.subsys.u.pci.function);
+
     pciDeviceListDel(driver->activePciHostdevs, pci);
+
+    if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
+        VIR_WARN0("Unable to reset PCI device after assign failure");
+    else if (hostdev->managed &&
+             pciReAttachDevice(pci) < 0)
+        VIR_WARN0("Unable to re-attach PCI device after assign failure");
+    pciFreeDevice(pci);
+
+
+    VIR_FREE(devstr);
     VIR_FREE(configfd_name);
     if (configfd >= 0)
         close(configfd);
