@@ -472,6 +472,20 @@ Makefile: _autogen
   endif
 endif
 
+# Give credit where due:
+# Ensure that each commit author email address (possibly mapped via
+# git log's .mailmap) appears in our AUTHORS file.
+sc_check_author_list:
+	@fail=0;							\
+	for i in $$(git log --pretty=format:%aE%n|sort -u|grep -v '^$$'); do \
+	  sanitized=$$(echo "$$i"|LC_ALL=C sed 's/\([^a-zA-Z0-9_@-]\)/\\\1/g'); \
+	  grep -iq "<$$sanitized>" AUTHORS				\
+	    || { printf '%s\n' "$$i" >&2; fail=1; };			\
+	done;								\
+	test $$fail = 1							\
+	  && echo '$(ME): committer(s) not listed in AUTHORS' >&2;	\
+	test $$fail = 0
+
 # It is necessary to call autogen any time gnulib changes.  Autogen
 # reruns configure, then we regenerate all Makefiles at once.
 .PHONY: _autogen
