@@ -2319,11 +2319,11 @@ int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    /* If the command failed qemu prints:
-     * Could not add ... */
-    if (strstr(reply, "Could not add ")) {
+    /* If the command succeeds, no output is sent. So
+     * any non-empty string shows an error */
+    if (STRNEQ(reply, "")) {
         qemuReportError(VIR_ERR_OPERATION_FAILED,
-                        _("adding %s device failed"), devicestr);
+                        _("adding %s device failed: %s"), devicestr, reply);
         goto cleanup;
     }
 
