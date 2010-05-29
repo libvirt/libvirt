@@ -93,10 +93,10 @@ enum {
     VIR_STORAGE_VOL_OPEN_CHAR   = 1 << 3, /* char files okay */
 };
 
-#define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_ERROR    |\
-                                      VIR_STORAGE_VOL_OPEN_REG      |\
-                                      VIR_STORAGE_VOL_OPEN_CHAR     |\
-                                      VIR_STORAGE_VOL_OPEN_BLOCK)
+# define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_ERROR    |\
+                                       VIR_STORAGE_VOL_OPEN_REG      |\
+                                       VIR_STORAGE_VOL_OPEN_CHAR     |\
+                                       VIR_STORAGE_VOL_OPEN_BLOCK)
 
 int virStorageBackendVolOpenCheckMode(const char *path, unsigned int flags)
 ATTRIBUTE_RETURN_CHECK
