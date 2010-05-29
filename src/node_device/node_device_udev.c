@@ -1309,13 +1309,14 @@ static int udevAddOneDevice(struct udev_device *device)
         goto out;
     }
 
+    /* If this is a device change, the old definition will be freed
+     * and the current definition will take its place. */
     nodeDeviceLock(driverState);
     dev = virNodeDeviceAssignDef(&driverState->devs, def);
     nodeDeviceUnlock(driverState);
 
     if (dev == NULL) {
         VIR_ERROR(_("Failed to create device for '%s'"), def->name);
-        virNodeDeviceDefFree(def);
         goto out;
     }
 
@@ -1324,6 +1325,10 @@ static int udevAddOneDevice(struct udev_device *device)
     ret = 0;
 
 out:
+    if (ret != 0) {
+        virNodeDeviceDefFree(def);
+    }
+
     return ret;
 }
 
@@ -1338,14 +1343,16 @@ static int udevProcessDeviceListEntry(struct udev *udev,
     name = udev_list_entry_get_name(list_entry);
 
     device = udev_device_new_from_syspath(udev, name);
+
     if (device != NULL) {
         if (udevAddOneDevice(device) != 0) {
             VIR_INFO("Failed to create node device for udev device '%s'",
                      name);
         }
-        udev_device_unref(device);
         ret = 0;
     }
+
+    udev_device_unref(device);
 
     return ret;
 }
@@ -1454,6 +1461,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
     }
 
 out:
+    udev_device_unref(device);
     return;
 }
 
