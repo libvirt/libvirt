@@ -672,7 +672,7 @@ Build a given pool.
 Create and start a pool object from the XML I<file>.
 
 =item B<pool-create-as> I<name> I<--print-xml> I<type> optional I<source-host>
-I<source-path> I<source-dev> I<source-name> <target>
+I<source-path> I<source-dev> I<source-name> <target> I<--source-format format>
 
 Create and start a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
@@ -684,7 +684,7 @@ I<type>.
 Create, but do not start, a pool object from the XML I<file>.
 
 =item B<pool-define-as> I<name> I<--print-xml> I<type> optional I<source-host>
-I<source-path> I<source-dev> I<source-name> <target>
+I<source-path> I<source-dev> I<source-name> <target> I<--source-format format>
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
