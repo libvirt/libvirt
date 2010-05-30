@@ -4468,13 +4468,14 @@ static const vshCmdOptDef opts_pool_X_as[] = {
     {"source-dev", VSH_OT_DATA, 0, N_("source device for underlying storage")},
     {"source-name", VSH_OT_DATA, 0, N_("source name for underlying storage")},
     {"target", VSH_OT_DATA, 0, N_("target for underlying storage")},
+    {"source-format", VSH_OT_STRING, 0, N_("format for underlying storage")},
     {NULL, 0, 0, NULL}
 };
 
 static int buildPoolXML(const vshCmd *cmd, char **retname, char **xml) {
 
     int found;
-    char *name, *type, *srcHost, *srcPath, *srcDev, *srcName, *target;
+    char *name, *type, *srcHost, *srcPath, *srcDev, *srcName, *srcFormat, *target;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     name = vshCommandOptString(cmd, "name", &found);
@@ -4488,6 +4489,7 @@ static int buildPoolXML(const vshCmd *cmd, char **retname, char **xml) {
     srcPath = vshCommandOptString(cmd, "source-path", &found);
     srcDev = vshCommandOptString(cmd, "source-dev", &found);
     srcName = vshCommandOptString(cmd, "source-name", &found);
+    srcFormat = vshCommandOptString(cmd, "source-format", &found);
     target = vshCommandOptString(cmd, "target", &found);
 
     virBufferVSprintf(&buf, "<pool type='%s'>\n", type);
@@ -4501,6 +4503,8 @@ static int buildPoolXML(const vshCmd *cmd, char **retname, char **xml) {
             virBufferVSprintf(&buf, "    <dir path='%s'/>\n", srcPath);
         if (srcDev)
             virBufferVSprintf(&buf, "    <device path='%s'/>\n", srcDev);
+        if (srcFormat)
+            virBufferVSprintf(&buf, "    <format type='%s'/>\n", srcFormat);
         if (srcName)
             virBufferVSprintf(&buf, "    <name>%s</name>\n", srcName);
 
