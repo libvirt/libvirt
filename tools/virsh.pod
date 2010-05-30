@@ -156,10 +156,10 @@ description see:
   L<http://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
-=item B<list>
+=item B<list> optional I<--inactive> I<--all>
 
 Prints information about one or more domains.  If no domains are
-specified it prints out information about all domains.
+specified it prints out information about running domains.
 
 An example format for the list is as follows:
 
@@ -177,7 +177,7 @@ State is the run state (see below).
 
 B<STATES>
 
-The State field lists 6 states for a domain, and which ones the
+The State field lists 7 states for a domain, and which ones the
 current domain is in.
 
 =over 4
@@ -204,6 +204,11 @@ scheduling by the hypervisor.
 The domain is in the process of shutting down, i.e. the guest operating system
 has been notified and should be in the process of stopping its operations
 gracefully.
+
+=item B<shut off>
+
+The domain is not running.  Usually this indicates the domain has been
+shut down completely, or has not been started.
 
 =item B<crashed>
 
@@ -747,6 +752,8 @@ Undefine the configuration for an inactive I<pool>.
 =item B<pool-uuid> I<pool>
 
 Returns the UUID of the named I<pool>.
+
+=back
 
 =head1 SECRET COMMMANDS
 
