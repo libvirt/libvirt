@@ -119,7 +119,7 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
  */
 int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
 {
-    if (b > bitmap->size - 1)
+    if (bitmap->size != 0 && b > bitmap->size - 1)
         return -1;
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~(1 << VIR_BITMAP_BIT_OFFSET(b));
