@@ -1857,41 +1857,34 @@ phypUUIDTable_Init(virConnectPtr conn)
 {
     uuid_tablePtr uuid_table;
     phyp_driverPtr phyp_driver;
-    int nids = 0;
+    int nids_numdomains = 0;
+    int nids_listdomains = 0;
     int *ids = NULL;
     unsigned int i = 0;
 
-    if ((nids = phypNumDomainsGeneric(conn, 2)) < 0)
+    if ((nids_numdomains = phypNumDomainsGeneric(conn, 2)) < 0)
         goto err;
 
-    /* exit early if there are no domains */
-    if (nids == 0)
-        return 0;
-
-    if (VIR_ALLOC_N(ids, nids) < 0) {
+    if (VIR_ALLOC_N(ids, nids_numdomains) < 0) {
         virReportOOMError();
         goto err;
     }
 
-    if ((nids = phypListDomainsGeneric(conn, ids, nids, 1)) < 0)
+    if ((nids_listdomains =
+         phypListDomainsGeneric(conn, ids, nids_numdomains, 1)) < 0)
         goto err;
 
     /* exit early if there are no domains */
-    /* FIXME: phypNumDomainsGeneric() returned > 0 but phypListDomainsGeneric()
-     *        returned 0. indicates this an error condition?
-     *        an even stricter check would be to treat
-     *
-     *          phypNumDomainsGeneric() != phypListDomainsGeneric()
-     *
-     *        as an error */
-    if (nids == 0) {
-        VIR_FREE(ids);
-        return 0;
+    if (nids_numdomains == 0 && nids_listdomains == 0)
+        goto exit;
+    else if (nids_numdomains != nids_listdomains) {
+        VIR_ERROR0(_("Unable to determine number of domains."));
+        goto err;
     }
 
     phyp_driver = conn->privateData;
     uuid_table = phyp_driver->uuid_table;
-    uuid_table->nlpars = nids;
+    uuid_table->nlpars = nids_listdomains;
 
     /* try to get the table from server */
     if (phypUUIDTable_Pull(conn) == -1) {
@@ -1905,7 +1898,8 @@ phypUUIDTable_Init(virConnectPtr conn)
                 uuid_table->lpars[i]->id = ids[i];
 
                 if (virUUIDGenerate(uuid_table->lpars[i]->uuid) < 0)
-                    VIR_WARN("Unable to generate UUID for domain %d", ids[i]);
+                    VIR_WARN("Unable to generate UUID for domain %d",
+                             ids[i]);
             }
         } else {
             virReportOOMError();
