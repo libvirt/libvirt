@@ -121,7 +121,7 @@ static int usbFindBusByVendor(unsigned vendor, unsigned product,
             char *tmpstr = de->d_name;
             unsigned found_bus, found_addr;
 
-            if (STREQ(de->d_name, "usb"))
+            if (STRPREFIX(de->d_name, "usb"))
                 tmpstr += 3;
 
             if (virStrToLong_ui(tmpstr, &ignore, 10, &found_bus) < 0) {
