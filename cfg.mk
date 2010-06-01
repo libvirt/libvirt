@@ -479,7 +479,7 @@ sc_check_author_list:
 	@fail=0;							\
 	for i in $$(git log --pretty=format:%aE%n|sort -u|grep -v '^$$'); do \
 	  sanitized=$$(echo "$$i"|LC_ALL=C sed 's/\([^a-zA-Z0-9_@-]\)/\\\1/g'); \
-	  grep -iq "<$$sanitized>" AUTHORS				\
+	  grep -iq "<$$sanitized>" $(srcdir)/AUTHORS			\
 	    || { printf '%s\n' "$$i" >&2; fail=1; };			\
 	done;								\
 	test $$fail = 1							\
