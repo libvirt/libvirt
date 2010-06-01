@@ -239,7 +239,7 @@ uninstall-init:
 
 BUILT_SOURCES += libvirtd.init libvirt-guests.init
 
-%.init: %.init.in $(top_srcdir)/config.status
+%.init: %.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
 	    -e s!\@sbindir\@!@sbindir@!g		\
