@@ -91,6 +91,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_mingw32_datadir}/libvirt/
 %dir %{_mingw32_datadir}/libvirt/schemas/
 %{_mingw32_datadir}/libvirt/schemas/domain.rng
+%{_mingw32_datadir}/libvirt/schemas/domainsnapshot.rng
 %{_mingw32_datadir}/libvirt/schemas/network.rng
 %{_mingw32_datadir}/libvirt/schemas/storagepool.rng
 %{_mingw32_datadir}/libvirt/schemas/storagevol.rng
