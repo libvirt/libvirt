@@ -1,6 +1,7 @@
 /*
  * bitmap.h: Simple bitmap operations
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2010 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -58,7 +59,7 @@ virBitmapPtr virBitmapAlloc(size_t size)
     virBitmapPtr bitmap;
     size_t sz;
 
-    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size)
+    if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0)
         return NULL;
 
     sz = (size + VIR_BITMAP_BITS_PER_UNIT - 1) /
