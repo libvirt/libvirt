@@ -3239,6 +3239,9 @@ qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
                           ",bus=" QEMU_VIRTIO_SERIAL_PREFIX "%d.%d",
                           dev->info.addr.vioserial.controller,
                           dev->info.addr.vioserial.bus);
+        virBufferVSprintf(&buf,
+                          ",nr=%d",
+                          dev->info.addr.vioserial.port);
     }
 
     virBufferVSprintf(&buf, ",chardev=%s", dev->info.alias);

@@ -28,7 +28,19 @@
       <target type='virtio' name='org.linux-kvm.port.0'/>
     </channel>
     <channel type='pty'>
-      <target type='virtio' name='org.linux-kvm.port.1'/>
+      <target type='virtio' name='org.linux-kvm.port.foo'/>
+      <address type='virtio-serial' controller='1' bus='0'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.bar'/>
+      <address type='virtio-serial' controller='1' bus='0' port='3'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.wizz'/>
+      <address type='virtio-serial' controller='0' bus='0'/>
+    </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.ooh'/>
       <address type='virtio-serial' controller='1' bus='0'/>
     </channel>
   </devices>

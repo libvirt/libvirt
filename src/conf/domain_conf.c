@@ -1055,9 +1055,10 @@ static int virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
-        virBufferVSprintf(buf, " controller='%d' bus='%d'",
+        virBufferVSprintf(buf, " controller='%d' bus='%d' port='%d'",
                           info->addr.vioserial.controller,
-                          info->addr.vioserial.bus);
+                          info->addr.vioserial.bus,
+                          info->addr.vioserial.port);
         break;
 
     default:
@@ -1190,13 +1191,14 @@ virDomainDeviceVirtioSerialAddressParseXML(
     virDomainDeviceVirtioSerialAddressPtr addr
 )
 {
-    char *controller, *bus;
+    char *controller, *bus, *port;
     int ret = -1;
 
     memset(addr, 0, sizeof(*addr));
 
     controller = virXMLPropString(node, "controller");
     bus = virXMLPropString(node, "bus");
+    port = virXMLPropString(node, "port");
 
     if (controller &&
         virStrToLong_ui(controller, NULL, 10, &addr->controller) < 0) {
@@ -1209,6 +1211,13 @@ virDomainDeviceVirtioSerialAddressParseXML(
         virStrToLong_ui(bus, NULL, 10, &addr->bus) < 0) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                              _("Cannot parse <address> 'bus' attribute"));
+        goto cleanup;
+    }
+
+    if (port &&
+        virStrToLong_ui(port, NULL, 10, &addr->port) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                             _("Cannot parse <address> 'port' attribute"));
         goto cleanup;
     }
 
@@ -4375,6 +4384,21 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             goto error;
 
         def->channels[def->nchannels++] = chr;
+
+        if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
+            chr->info.addr.vioserial.port == 0) {
+            int maxport = -1;
+            int j;
+            for (j = 0 ; j < i ; j++) {
+                virDomainChrDefPtr thischr = def->channels[j];
+                if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
+                    thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
+                    thischr->info.addr.vioserial.bus == chr->info.addr.vioserial.bus &&
+                    (int)thischr->info.addr.vioserial.port > maxport)
+                    maxport = thischr->info.addr.vioserial.port;
+            }
+            chr->info.addr.vioserial.port = maxport + 1;
+        }
     }
     VIR_FREE(nodes);
 

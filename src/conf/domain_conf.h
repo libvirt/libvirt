@@ -98,6 +98,7 @@ typedef virDomainDeviceVirtioSerialAddress *virDomainDeviceVirtioSerialAddressPt
 struct _virDomainDeviceVirtioSerialAddress {
     unsigned int controller;
     unsigned int bus;
+    unsigned int port;
 };
 
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
