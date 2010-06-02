@@ -93,6 +93,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_NODEFCONFIG   = (1LL << 37), /* -nodefconfig */
     QEMUD_CMD_FLAG_BOOT_MENU     = (1LL << 38), /* -boot menu=on support */
     QEMUD_CMD_FLAG_ENABLE_KQEMU  = (1LL << 39), /* -enable-kqemu flag */
+    QEMUD_CMD_FLAG_FSDEV         = (1LL << 40), /* -fstype filesystem passthrough */
 };
 
 /* Main driver state */
@@ -188,6 +189,7 @@ struct _qemuDomainCmdlineDef {
 
 # define QEMU_DRIVE_HOST_PREFIX "drive-"
 # define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
+# define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
 # define qemuReportError(code, ...)                                      \
     virReportErrorHelper(NULL, VIR_FROM_QEMU, code, __FILE__,           \
@@ -248,9 +250,12 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
                         int bootable,
                         unsigned long long qemuCmdFlags);
+char *qemuBuildFSStr(virDomainFSDefPtr fs,
+                     unsigned long long qemuCmdFlags);
 
 /* Current, best practice */
 char * qemuBuildDriveDevStr(virDomainDiskDefPtr disk);
+char * qemuBuildFSDevStr(virDomainFSDefPtr fs);
 /* Current, best practice */
 char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);
 

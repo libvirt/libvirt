@@ -368,6 +368,8 @@ mymain(int argc, char **argv)
     DO_TEST("sound", 0);
     DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("fs9p", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG | QEMUD_CMD_FLAG_FSDEV);
 
     DO_TEST("hostdev-usb-address", 0);
     DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE |

@@ -1213,6 +1213,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_TDF;
     if (strstr(help, ",menu=on"))
         flags |= QEMUD_CMD_FLAG_BOOT_MENU;
+    if (strstr(help, "-fsdev"))
+        flags |= QEMUD_CMD_FLAG_FSDEV;
 
     /* Keep disabled till we're actually ready to turn on netdev mode
      * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
@@ -2012,6 +2014,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCmdFlags)
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
         return 0;
 
+    for (i = 0; i < def->nfss ; i++) {
+        if (virAsprintf(&def->fss[i]->info.alias, "fs%d", i) < 0)
+            goto no_memory;
+    }
     for (i = 0; i < def->nsounds ; i++) {
         if (virAsprintf(&def->sounds[i]->info.alias, "sound%d", i) < 0)
             goto no_memory;
@@ -2374,6 +2380,15 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             if (qemuDomainPCIAddressReserveSlot(addrs, 2) < 0)
                 goto error;
         }
+    }
+    for (i = 0; i < def->nfss ; i++) {
+        if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        /* Only support VirtIO-9p-pci so far. If that changes,
+         * we might need to skip devices here */
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->fss[i]->info) < 0)
+            goto error;
     }
 
     /* Network interfaces */
@@ -2751,6 +2766,64 @@ qemuBuildDriveDevStr(virDomainDiskDefPtr disk)
     }
     virBufferVSprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferVSprintf(&opt, ",id=%s", disk->info.alias);
+
+    if (virBufferError(&opt)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&opt);
+
+error:
+    virBufferFreeAndReset(&opt);
+    return NULL;
+}
+
+
+char *qemuBuildFSStr(virDomainFSDefPtr fs,
+                     unsigned long long qemuCmdFlags ATTRIBUTE_UNUSED)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+
+    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("can only passthrough directories"));
+        goto error;
+    }
+
+    virBufferAddLit(&opt, "local,security_model=passthrough");
+    virBufferVSprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
+    virBufferVSprintf(&opt, ",path=%s", fs->src);
+
+    if (virBufferError(&opt)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&opt);
+
+error:
+    virBufferFreeAndReset(&opt);
+    return NULL;
+}
+
+
+char *
+qemuBuildFSDevStr(virDomainFSDefPtr fs)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+
+    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("can only passthrough directories"));
+        goto error;
+    }
+
+    virBufferAddLit(&opt, "virtio-9p-pci");
+    virBufferVSprintf(&opt, ",id=%s", fs->info.alias);
+    virBufferVSprintf(&opt, ",fsdev=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
+    virBufferVSprintf(&opt, ",mount_tag=%s", fs->dst);
+    qemuBuildDeviceAddressStr(&opt, &fs->info);
 
     if (virBufferError(&opt)) {
         virReportOOMError();
@@ -4378,6 +4451,29 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             ADD_ARG_LIT(dev);
             ADD_ARG_LIT(file);
+        }
+    }
+
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_FSDEV) {
+        for (i = 0 ; i < def->nfss ; i++) {
+            char *optstr;
+            virDomainFSDefPtr fs = def->fss[i];
+
+            ADD_ARG_LIT("-fsdev");
+            if (!(optstr = qemuBuildFSStr(fs, qemuCmdFlags)))
+                goto error;
+            ADD_ARG(optstr);
+
+            ADD_ARG_LIT("-device");
+            if (!(optstr = qemuBuildFSDevStr(fs)))
+                goto error;
+            ADD_ARG(optstr);
+        }
+    } else {
+        if (def->nfss) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("filesystem passthrough not supported by this QEMU"));
+            goto error;
         }
     }
 
