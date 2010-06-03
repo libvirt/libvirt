@@ -49,6 +49,7 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
     int i;
     int noVerify;
     int autoAnswer;
+    char *tmp;
 
     if (parsedQuery == NULL || *parsedQuery != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -120,6 +121,61 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
             }
 
             (*parsedQuery)->autoAnswer = autoAnswer != 0;
+        } else if (STRCASEEQ(queryParam->name, "proxy")) {
+            /* Expected format: [<type>://]<hostname>[:<port>] */
+            (*parsedQuery)->proxy = true;
+            (*parsedQuery)->proxy_type = CURLPROXY_HTTP;
+            VIR_FREE((*parsedQuery)->proxy_hostname);
+            (*parsedQuery)->proxy_port = 1080;
+
+            if ((tmp = STRSKIP(queryParam->value, "http://")) != NULL) {
+                (*parsedQuery)->proxy_type = CURLPROXY_HTTP;
+            } else if ((tmp = STRSKIP(queryParam->value, "socks://")) != NULL ||
+                       (tmp = STRSKIP(queryParam->value, "socks5://")) != NULL) {
+                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS5;
+            } else if ((tmp = STRSKIP(queryParam->value, "socks4://")) != NULL) {
+                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS4;
+            } else if ((tmp = STRSKIP(queryParam->value, "socks4a://")) != NULL) {
+                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS4A;
+            } else if ((tmp = strstr(queryParam->value, "://")) != NULL) {
+                *tmp = '\0';
+
+                ESX_ERROR(VIR_ERR_INVALID_ARG,
+                          _("Query parameter 'proxy' contains unexpected "
+                            "type '%s' (should be (http|socks(|4|4a|5))"),
+                          queryParam->value);
+                goto cleanup;
+            } else {
+                tmp = queryParam->value;
+            }
+
+            (*parsedQuery)->proxy_hostname = strdup(tmp);
+
+            if ((*parsedQuery)->proxy_hostname == NULL) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if ((tmp = strchr((*parsedQuery)->proxy_hostname, ':')) != NULL) {
+                if (tmp == (*parsedQuery)->proxy_hostname) {
+                    ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                              _("Query parameter 'proxy' doesn't contain a "
+                                "hostname"));
+                    goto cleanup;
+                }
+
+                *tmp++ = '\0';
+
+                if (virStrToLong_i(tmp, NULL, 10,
+                                   &(*parsedQuery)->proxy_port) < 0 ||
+                    (*parsedQuery)->proxy_port < 1 ||
+                    (*parsedQuery)->proxy_port > 65535) {
+                    ESX_ERROR(VIR_ERR_INVALID_ARG,
+                              _("Query parameter 'proxy' has unexpected port"
+                                "value '%s' (should be [1..65535])"), tmp);
+                    goto cleanup;
+                }
+            }
         } else {
             VIR_WARN("Ignoring unexpected query parameter '%s'",
                      queryParam->name);
@@ -161,6 +217,7 @@ esxUtil_FreeParsedQuery(esxUtil_ParsedQuery **parsedQuery)
 
     VIR_FREE((*parsedQuery)->transport);
     VIR_FREE((*parsedQuery)->vCenter);
+    VIR_FREE((*parsedQuery)->proxy_hostname);
 
     VIR_FREE(*parsedQuery);
 }

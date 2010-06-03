@@ -279,7 +279,7 @@ esxCapsInit(esxPrivate *priv)
 
 
 /*
- * URI format: {esx|gsx}://[<user>@]<server>[:<port>]/[<query parameter> ...]
+ * URI format: {esx|gsx}://[<username>@]<hostname>[:<port>]/[<query parameter> ...]
  *
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
@@ -293,6 +293,7 @@ esxCapsInit(esxPrivate *priv)
  * - vcenter={<vcenter>|*}
  * - no_verify={0|1}
  * - auto_answer={0|1}
+ * - proxy=[{http|socks|socks4|socks4a|socks5}://]<hostname>[:<port>]
  *
  * If no transport parameter is specified https is used.
  *
@@ -308,6 +309,10 @@ esxCapsInit(esxPrivate *priv)
  * If the auto_answer parameter is set to 1, the driver will respond to all
  * virtual machine questions with the default answer, otherwise virtual machine
  * questions will be reported as errors. The default value it 0.
+ *
+ * The proxy parameter allows to specify a proxy for to be used by libcurl.
+ * The default for the optional <type> part is http and socks is synonymous for
+ * socks5. The optional <port> part allows to override the default port 1080.
  */
 static virDrvOpenStatus
 esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
@@ -421,7 +426,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, hostIpAddress, username,
-                              password, parsedQuery->noVerify) < 0) {
+                              password, parsedQuery) < 0) {
         goto cleanup;
     }
 
@@ -554,8 +559,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         if (esxVI_Context_Connect(priv->vCenter, url, vCenterIpAddress,
-                                  username, password,
-                                  parsedQuery->noVerify) < 0) {
+                                  username, password, parsedQuery) < 0) {
             goto cleanup;
         }
 
@@ -589,7 +593,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(priv->transport);
         VIR_FREE(priv);
     }
-
 
     esxUtil_FreeParsedQuery(&parsedQuery);
     VIR_FREE(url);

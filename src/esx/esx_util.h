@@ -36,6 +36,10 @@ struct _esxUtil_ParsedQuery {
     char *vCenter;
     bool noVerify;
     bool autoAnswer;
+    bool proxy;
+    int proxy_type;
+    char *proxy_hostname;
+    int proxy_port;
 };
 
 int esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri);

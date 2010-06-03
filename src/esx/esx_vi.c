@@ -277,7 +277,7 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 int
 esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
-                      const char *password, bool noVerify)
+                      const char *password, esxUtil_ParsedQuery *parsedQuery)
 {
     int result = -1;
     esxVI_String *propertyNameList = NULL;
@@ -328,8 +328,10 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_USERAGENT, "libvirt-esx");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HEADER, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 0);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER, noVerify ? 0 : 1);
-    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST, noVerify ? 0 : 2);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER,
+                     parsedQuery->noVerify ? 0 : 1);
+    curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST,
+                     parsedQuery->noVerify ? 0 : 2);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPHEADER, ctx->curl_headers);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_READFUNCTION,
@@ -342,6 +344,15 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 1);
 #endif
+
+    if (parsedQuery->proxy) {
+        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXY,
+                         parsedQuery->proxy_hostname);
+        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYTYPE,
+                         parsedQuery->proxy_type);
+        curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYPORT,
+                         parsedQuery->proxy_port);
+    }
 
     if (virMutexInit(&ctx->curl_lock) < 0) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",

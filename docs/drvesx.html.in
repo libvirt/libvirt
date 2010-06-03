@@ -116,7 +116,25 @@ type://[username@]hostname[:port]/[?extraparameters]
                 If set to 1, the driver answers all
                 <a href="#questions">questions</a> with the default answer.
                 If set to 0, questions are reported as errors. The default
-                value it 0.
+                value it 0. <span class="since">Since 0.7.5</span>.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <code>proxy</code>
+            </td>
+            <td>
+                <code>[type://]hostname[:port]</code>
+            </td>
+            <td>
+                Allows to specify a proxy for HTTP and HTTPS communication.
+                <span class="since">Since 0.8.2</span>.
+                The optional <code>type</code> part may be one of:
+                <code>http</code>, <code>socks</code>, <code>socks4</code>,
+                <code>socks4a</code> or <code>socks5</code>. The default is
+                <code>http</code> and <code>socks</code> is synonymous for
+                <code>socks5</code>. The optional <code>port</code> allows to
+                override the default port 1080.
             </td>
         </tr>
     </table>

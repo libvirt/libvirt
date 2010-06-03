@@ -31,6 +31,7 @@
 # include "virterror_internal.h"
 # include "datatypes.h"
 # include "esx_vi_types.h"
+# include "esx_util.h"
 
 
 
@@ -161,7 +162,8 @@ int esxVI_Context_Alloc(esxVI_Context **ctx);
 void esxVI_Context_Free(esxVI_Context **ctx);
 int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
                           const char *url, const char *username,
-                          const char *password, bool noVerify);
+                          const char *password,
+                          esxUtil_ParsedQuery *parsedQuery);
 int esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url,
                                char **content);
 int esxVI_Context_UploadFile(esxVI_Context *ctx, const char *url,
