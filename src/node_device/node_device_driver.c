@@ -45,23 +45,9 @@ static int update_caps(virNodeDeviceObjPtr dev)
     virNodeDevCapsDefPtr cap = dev->def->caps;
 
     while (cap) {
-        /* The only cap that currently needs updating is the WWN of FC HBAs. */
+        /* The only caps that currently need updating are FC related. */
         if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            if (cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-                if (read_wwn(cap->data.scsi_host.host,
-                            "port_name",
-                            &cap->data.scsi_host.wwpn) == -1) {
-                    VIR_ERROR(_("Failed to refresh WWPN for host%d"),
-                              cap->data.scsi_host.host);
-                }
-
-                if (read_wwn(cap->data.scsi_host.host,
-                            "node_name",
-                            &cap->data.scsi_host.wwnn) == -1) {
-                    VIR_ERROR(_("Failed to refresh WWNN for host%d"),
-                              cap->data.scsi_host.host);
-                }
-            }
+            check_fc_host(&dev->def->caps->data);
         }
         cap = cap->next;
     }
@@ -239,6 +225,7 @@ nodeDeviceLookupByWWN(virConnectPtr conn,
         while (cap) {
 
             if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+                check_fc_host(&cap->data);
                 if (cap->data.scsi_host.flags &
                     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
 
