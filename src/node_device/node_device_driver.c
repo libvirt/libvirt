@@ -584,7 +584,7 @@ cleanup:
 static int
 nodeDeviceDestroy(virNodeDevicePtr dev)
 {
-    int ret = 0;
+    int ret = -1;
     virDeviceMonitorStatePtr driver = dev->conn->devMonPrivateData;
     virNodeDeviceObjPtr obj = NULL;
     char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
@@ -631,6 +631,7 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
         goto out;
     }
 
+    ret = 0;
 out:
     if (obj)
         virNodeDeviceObjUnlock(obj);

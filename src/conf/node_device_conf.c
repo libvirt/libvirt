@@ -1308,7 +1308,7 @@ virNodeDeviceGetParentHost(const virNodeDeviceObjListPtr devs,
     parent = virNodeDeviceFindByName(devs, parent_name);
     if (parent == NULL) {
         virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("Could not find parent HBA for '%s'"),
+                                 _("Could not find parent device for '%s'"),
                                  dev_name);
         ret = -1;
         goto out;
@@ -1328,7 +1328,7 @@ virNodeDeviceGetParentHost(const virNodeDeviceObjListPtr devs,
 
     if (cap == NULL) {
         virNodeDeviceReportError(VIR_ERR_INTERNAL_ERROR,
-                                 _("Parent HBA %s is not capable "
+                                 _("Parent device %s is not capable "
                                    "of vport operations"),
                                  parent->def->name);
         ret = -1;
