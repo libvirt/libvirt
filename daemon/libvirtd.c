@@ -533,7 +533,7 @@ static int qemudWritePidFile(const char *pidFile) {
 }
 
 static int qemudListenUnix(struct qemud_server *server,
-                           const char *path, int readonly, int auth) {
+                           char *path, int readonly, int auth) {
     struct qemud_socket *sock;
     struct sockaddr_un addr;
     mode_t oldmask;
@@ -549,6 +549,7 @@ static int qemudListenUnix(struct qemud_server *server,
     sock->port = -1;
     sock->type = QEMUD_SOCK_TYPE_UNIX;
     sock->auth = auth;
+    sock->path = path;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         VIR_ERROR(_("Failed to create socket: %s"),
@@ -743,17 +744,30 @@ cleanup:
 }
 
 static int qemudInitPaths(struct qemud_server *server,
-                          char *sockname,
-                          char *roSockname,
-                          int maxlen)
+                          char **sockname,
+                          char **roSockname)
 {
-    char *sock_dir;
-    char *dir_prefix = NULL;
-    int ret = -1;
+    char *base_dir_prefix = NULL;
     char *sock_dir_prefix = NULL;
+    int ret = -1;
 
+    /* The base_dir_prefix is the base under which all libvirtd
+     * files live */
+    if (server->privileged) {
+        if (!(base_dir_prefix = strdup (LOCAL_STATE_DIR)))
+            goto no_memory;
+    } else {
+        uid_t uid = geteuid();
+        if (!(base_dir_prefix = virGetUserDirectory(uid)))
+            goto cleanup;
+    }
+
+    /* The unix_sock_dir is the location under which all
+     * unix domain sockets live */
     if (unix_sock_dir) {
-        sock_dir = unix_sock_dir;
+        if (!(sock_dir_prefix = strdup(unix_sock_dir)))
+            goto no_memory;
+
         /* Change the group ownership of /var/run/libvirt to unix_sock_gid */
         if (server->privileged) {
             if (chown(unix_sock_dir, -1, unix_sock_gid) < 0)
@@ -761,68 +775,53 @@ static int qemudInitPaths(struct qemud_server *server,
                           unix_sock_dir);
         }
     } else {
-        sock_dir = sockname;
         if (server->privileged) {
-            dir_prefix = strdup (LOCAL_STATE_DIR);
-            if (dir_prefix == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
-            if (snprintf (sock_dir, maxlen, "%s/run/libvirt",
-                          dir_prefix) >= maxlen)
-                goto snprintf_error;
+            if (virAsprintf(&sock_dir_prefix, "%s/run/libvirt",
+                            base_dir_prefix) < 0)
+                goto no_memory;
         } else {
-            uid_t uid = geteuid();
-            dir_prefix = virGetUserDirectory(uid);
-            if (dir_prefix == NULL) {
-                /* Do not diagnose here; virGetUserDirectory does that.  */
-                goto snprintf_error;
-            }
-
-            if (snprintf(sock_dir, maxlen, "%s/.libvirt", dir_prefix) >= maxlen)
-                goto snprintf_error;
+            if (virAsprintf(&sock_dir_prefix, "%s/.libvirt",
+                            base_dir_prefix) < 0)
+                goto no_memory;
         }
     }
 
-    sock_dir_prefix = strdup (sock_dir);
-    if (!sock_dir_prefix) {
-        virReportOOMError();
-        goto cleanup;
+    if (server->privileged) {
+        if (virAsprintf(sockname, "%s/libvirt-sock",
+                        sock_dir_prefix) < 0)
+            goto no_memory;
+        if (virAsprintf(roSockname, "%s/libvirt-sock-ro",
+                        sock_dir_prefix) < 0)
+            goto no_memory;
+        unlink(*sockname);
+        unlink(*roSockname);
+    } else {
+        if (virAsprintf(sockname, "@%s/libvirt-sock",
+                        sock_dir_prefix) < 0)
+            goto no_memory;
+        /* There is no RO socket in unprivileged mode,
+         * since the user always has full RW access
+         * to their private instance */
     }
 
     if (server->privileged) {
-        if (snprintf (sockname, maxlen, "%s/libvirt-sock",
-                      sock_dir_prefix) >= maxlen
-            || (snprintf (roSockname, maxlen, "%s/libvirt-sock-ro",
-                          sock_dir_prefix) >= maxlen))
-            goto snprintf_error;
-        unlink(sockname);
-        unlink(roSockname);
+        if (virAsprintf(&server->logDir, "%s/log/libvirt",
+                        base_dir_prefix) < 0)
+            goto no_memory;
     } else {
-        if (snprintf(sockname, maxlen, "@%s/libvirt-sock",
-                     sock_dir_prefix) >= maxlen)
-            goto snprintf_error;
+        if (virAsprintf(&server->logDir, "%s/.libvirt/log",
+                        base_dir_prefix) < 0)
+            goto no_memory;
     }
-
-    if (server->privileged) {
-        if (!(server->logDir = strdup (LOCAL_STATE_DIR "/log/libvirt")))
-            virReportOOMError();
-    } else {
-        if (virAsprintf(&server->logDir, "%s/.libvirt/log", dir_prefix) < 0)
-            virReportOOMError();
-    }
-
-    if (server->logDir == NULL)
-        goto cleanup;
 
     ret = 0;
 
- snprintf_error:
-    if (ret)
-        VIR_ERROR0(_("Resulting path too long for buffer in qemudInitPaths()"));
+no_memory:
+    if (ret != 0)
+        virReportOOMError();
 
  cleanup:
-    VIR_FREE(dir_prefix);
+    VIR_FREE(base_dir_prefix);
     VIR_FREE(sock_dir_prefix);
     return ret;
 }
@@ -931,22 +930,22 @@ static struct qemud_server *qemudInitialize(void) {
 }
 
 static int qemudNetworkInit(struct qemud_server *server) {
-    char sockname[PATH_MAX];
-    char roSockname[PATH_MAX];
+    char *sockname = NULL;
+    char *roSockname = NULL;
 #if HAVE_SASL
     int err;
 #endif /* HAVE_SASL */
 
-    roSockname[0] = '\0';
-
-    if (qemudInitPaths(server, sockname, roSockname, PATH_MAX) < 0)
+    if (qemudInitPaths(server, &sockname, &roSockname) < 0)
         goto cleanup;
 
     if (qemudListenUnix(server, sockname, 0, auth_unix_rw) < 0)
         goto cleanup;
+    sockname = NULL;
 
-    if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1, auth_unix_ro) < 0)
+    if (roSockname != NULL && qemudListenUnix(server, roSockname, 1, auth_unix_ro) < 0)
         goto cleanup;
+    roSockname = NULL;
 
 #if HAVE_SASL
     if (auth_unix_rw == REMOTE_AUTH_SASL ||
@@ -1057,6 +1056,8 @@ static int qemudNetworkInit(struct qemud_server *server) {
     return 0;
 
  cleanup:
+    VIR_FREE(sockname);
+    VIR_FREE(roSockname);
     return -1;
 }
 
@@ -1079,6 +1080,7 @@ static int qemudNetworkEnable(struct qemud_server *server) {
     }
     return 0;
 }
+
 
 static gnutls_session_t
 remoteInitializeTLSSession (void)
@@ -2422,6 +2424,14 @@ static void qemudCleanup(struct qemud_server *server) {
         if (sock->watch)
             virEventRemoveHandleImpl(sock->watch);
         close(sock->fd);
+
+        /* Unlink unix domain sockets which are not in
+         * the abstract namespace */
+        if (sock->path &&
+            sock->path[0] != '@')
+            unlink(sock->path);
+        VIR_FREE(sock->path);
+
         VIR_FREE(sock);
         sock = next;
     }

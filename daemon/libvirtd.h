@@ -233,6 +233,7 @@ struct qemud_client {
 
 
 struct qemud_socket {
+    char *path;
     int fd;
     int watch;
     int readonly;
