@@ -302,17 +302,19 @@ istartswith(const char *haystack, const char *needle)
  * xend_req:
  * @fd: the file descriptor
  * @content: the buffer to store the content
- * @n_content: the size of the buffer
  *
  * Read the HTTP response from a Xen Daemon request.
+ * If the response contains content, memory is allocated to
+ * hold the content.
  *
- * Returns the HTTP return code.
+ * Returns the HTTP return code and @content is set to the
+ * allocated memory containing HTTP content.
  */
 static int
-xend_req(int fd, char *content, size_t n_content)
+xend_req(int fd, char **content)
 {
     char buffer[4096];
-    int content_length = -1;
+    int content_length = 0;
     int retcode = 0;
 
     while (sreads(fd, buffer, sizeof(buffer)) > 0) {
@@ -325,19 +327,17 @@ xend_req(int fd, char *content, size_t n_content)
             retcode = atoi(buffer + 9);
     }
 
-    if (content_length > -1) {
+    if (content_length > 0) {
         ssize_t ret;
 
-        if ((unsigned int) content_length > (n_content + 1))
-            content_length = n_content - 1;
+        if (VIR_ALLOC_N(*content, content_length) < 0 ) {
+            virReportOOMError();
+            return -1;
+        }
 
-        ret = sread(fd, content, content_length);
+        ret = sread(fd, *content, content_length);
         if (ret < 0)
             return -1;
-
-        content[ret] = 0;
-    } else {
-        content[0] = 0;
     }
 
     return retcode;
@@ -348,7 +348,6 @@ xend_req(int fd, char *content, size_t n_content)
  * @xend: pointer to the Xen Daemon structure
  * @path: the path used for the HTTP request
  * @content: the buffer to store the content
- * @n_content: the size of the buffer
  *
  * Do an HTTP GET RPC with the Xen Daemon
  *
@@ -356,7 +355,7 @@ xend_req(int fd, char *content, size_t n_content)
  */
 static int
 xend_get(virConnectPtr xend, const char *path,
-         char *content, size_t n_content)
+         char **content)
 {
     int ret;
     int s = do_connect(xend);
@@ -373,14 +372,15 @@ xend_get(virConnectPtr xend, const char *path,
             "Accept-Encoding: identity\r\n"
             "Content-Type: application/x-www-form-urlencoded\r\n" "\r\n");
 
-    ret = xend_req(s, content, n_content);
+    ret = xend_req(s, content);
     close(s);
 
     if (((ret < 0) || (ret >= 300)) &&
         ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
         virXendError(VIR_ERR_GET_FAILED,
                      _("%d status from xen daemon: %s:%s"),
-                     ret, path, content);
+                     ret, path,
+                     content ? *content: "NULL");
     }
 
     return ret;
@@ -392,8 +392,6 @@ xend_get(virConnectPtr xend, const char *path,
  * @xend: pointer to the Xen Daemon structure
  * @path: the path used for the HTTP request
  * @ops: the information sent for the POST
- * @content: the buffer to store the content
- * @n_content: the size of the buffer
  *
  * Do an HTTP POST RPC with the Xen Daemon, this usually makes changes at the
  * Xen level.
@@ -401,10 +399,10 @@ xend_get(virConnectPtr xend, const char *path,
  * Returns the HTTP return code or -1 in case or error.
  */
 static int
-xend_post(virConnectPtr xend, const char *path, const char *ops,
-          char *content, size_t n_content)
+xend_post(virConnectPtr xend, const char *path, const char *ops)
 {
     char buffer[100];
+    char *err_buf = NULL;
     int ret;
     int s = do_connect(xend);
 
@@ -425,26 +423,28 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
     swrites(s, "\r\n\r\n");
     swrites(s, ops);
 
-    ret = xend_req(s, content, n_content);
+    ret = xend_req(s, &err_buf);
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
         virXendError(VIR_ERR_POST_FAILED,
-                     _("xend_post: error from xen daemon: %s"), content);
-    } else if ((ret == 202) && (strstr(content, "failed") != NULL)) {
+                     _("xend_post: error from xen daemon: %s"), err_buf);
+    } else if ((ret == 202) && err_buf && (strstr(err_buf, "failed") != NULL)) {
         virXendError(VIR_ERR_POST_FAILED,
-                     _("xend_post: error from xen daemon: %s"), content);
+                     _("xend_post: error from xen daemon: %s"), err_buf);
         ret = -1;
-    } else if (((ret >= 200) && (ret <= 202)) && (strstr(content, "xend.err") != NULL)) {
+    } else if (((ret >= 200) && (ret <= 202)) && err_buf &&
+               (strstr(err_buf, "xend.err") != NULL)) {
         /* This is to catch case of things like 'virsh dump Domain-0 foo'
          * which returns a success code, but the word 'xend.err'
          * in body to indicate error :-(
          */
         virXendError(VIR_ERR_POST_FAILED,
-                     _("xend_post: error from xen daemon: %s"), content);
+                     _("xend_post: error from xen daemon: %s"), err_buf);
         ret = -1;
     }
 
+    VIR_FREE(err_buf);
     return ret;
 }
 #endif /* ! PROXY */
@@ -487,8 +487,6 @@ http2unix(int ret)
  * xend_op_ext:
  * @xend: pointer to the Xen Daemon structure
  * @path: path for the object
- * @error: buffer for the error output
- * @n_error: size of @error
  * @key: the key for the operation
  * @ap: input values to pass to the operation
  *
@@ -497,8 +495,7 @@ http2unix(int ret)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_op_ext(virConnectPtr xend, const char *path, char *error,
-            size_t n_error, const char *key, va_list ap)
+xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
 {
     const char *k = key, *v;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -524,7 +521,7 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
     }
 
     content = virBufferContentAndReset(&buf);
-    ret = http2unix(xend_post(xend, path, content, error, n_error));
+    ret = http2unix(xend_post(xend, path, content));
     VIR_FREE(content);
 
     return ret;
@@ -535,8 +532,6 @@ xend_op_ext(virConnectPtr xend, const char *path, char *error,
  * xend_op:
  * @xend: pointer to the Xen Daemon structure
  * @name: the domain name target of this operation
- * @error: buffer for the error output
- * @n_error: size of @error
  * @key: the key for the operation
  * @ap: input values to pass to the operation
  * @...: input values to pass to the operation
@@ -550,14 +545,13 @@ static int ATTRIBUTE_SENTINEL
 xend_op(virConnectPtr xend, const char *name, const char *key, ...)
 {
     char buffer[1024];
-    char error[1024];
     va_list ap;
     int ret;
 
     snprintf(buffer, sizeof(buffer), "/xend/domain/%s", name);
 
     va_start(ap, key);
-    ret = xend_op_ext(xend, buffer, error, sizeof(error), key, ap);
+    ret = xend_op_ext(xend, buffer, key, ap);
     va_end(ap);
 
     return ret;
@@ -581,21 +575,29 @@ static struct sexpr *sexpr_get(virConnectPtr xend, const char *fmt, ...)
 static struct sexpr *
 sexpr_get(virConnectPtr xend, const char *fmt, ...)
 {
-    char buffer[4096];
+    char *buffer = NULL;
     char path[1024];
     va_list ap;
     int ret;
+    struct sexpr *res = NULL;
 
     va_start(ap, fmt);
     vsnprintf(path, sizeof(path), fmt, ap);
     va_end(ap);
 
-    ret = xend_get(xend, path, buffer, sizeof(buffer));
+    ret = xend_get(xend, path, &buffer);
     ret = http2unix(ret);
     if (ret == -1)
-        return NULL;
+        goto cleanup;
 
-    return string2sexpr(buffer);
+    if (buffer == NULL)
+        goto cleanup;
+
+    res = string2sexpr(buffer);
+
+cleanup:
+    VIR_FREE(buffer);
+    return res;
 }
 
 /**
