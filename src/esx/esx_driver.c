@@ -314,12 +314,11 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
+    esxUtil_ParsedQuery *parsedQuery = NULL;
     char hostIpAddress[NI_MAXHOST] = "";
     char vCenterIpAddress[NI_MAXHOST] = "";
     char *url = NULL;
     char *vCenter = NULL;
-    int noVerify = 0; // boolean
-    int autoAnswer = 0; // boolean
     char *username = NULL;
     char *password = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -349,20 +348,19 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    priv->maxVcpus = -1;
-    priv->supportsVMotion = esxVI_Boolean_Undefined;
-    priv->supportsLongMode = esxVI_Boolean_Undefined;
-    priv->autoAnswer = esxVI_Boolean_False;
-    priv->usedCpuTimeCounterId = -1;
-
-    if (esxUtil_ParseQuery(conn->uri, &priv->transport, &vCenter, &noVerify,
-                           &autoAnswer) < 0) {
+    if (esxUtil_ParseQuery(&parsedQuery, conn->uri) < 0) {
         goto cleanup;
     }
 
-    if (autoAnswer) {
-        priv->autoAnswer = esxVI_Boolean_True;
-    }
+    priv->transport = parsedQuery->transport;
+    parsedQuery->transport = NULL;
+
+    priv->maxVcpus = -1;
+    priv->supportsVMotion = esxVI_Boolean_Undefined;
+    priv->supportsLongMode = esxVI_Boolean_Undefined;
+    priv->autoAnswer = parsedQuery->autoAnswer ? esxVI_Boolean_True
+                                               : esxVI_Boolean_False;
+    priv->usedCpuTimeCounterId = -1;
 
     /*
      * Set the port dependent on the transport protocol if no port is
@@ -414,10 +412,6 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
     }
 
-    if (esxVI_Context_Alloc(&priv->host) < 0) {
-        goto cleanup;
-    }
-
     password = virRequestPassword(auth, username, conn->uri->server);
 
     if (password == NULL) {
@@ -425,8 +419,9 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (esxVI_Context_Connect(priv->host, url, hostIpAddress, username,
-                              password, noVerify) < 0) {
+    if (esxVI_Context_Alloc(&priv->host) < 0 ||
+        esxVI_Context_Connect(priv->host, url, hostIpAddress, username,
+                              password, parsedQuery->noVerify) < 0) {
         goto cleanup;
     }
 
@@ -559,7 +554,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         if (esxVI_Context_Connect(priv->vCenter, url, vCenterIpAddress,
-                                  username, password, noVerify) < 0) {
+                                  username, password,
+                                  parsedQuery->noVerify) < 0) {
             goto cleanup;
         }
 
@@ -594,6 +590,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(priv);
     }
 
+
+    esxUtil_FreeParsedQuery(&parsedQuery);
     VIR_FREE(url);
     VIR_FREE(vCenter);
     VIR_FREE(password);
@@ -2961,14 +2959,14 @@ esxDomainMigratePrepare(virConnectPtr dconn,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
     int result = -1;
-    char *transport = NULL;
+    esxUtil_ParsedQuery *parsedQuery = NULL;
 
     if (uri_in == NULL) {
-        if (esxUtil_ParseQuery(dconn->uri, &transport, NULL, NULL, NULL) < 0) {
+        if (esxUtil_ParseQuery(&parsedQuery, dconn->uri) < 0) {
             return -1;
         }
 
-        if (virAsprintf(uri_out, "%s://%s:%d/sdk", transport,
+        if (virAsprintf(uri_out, "%s://%s:%d/sdk", parsedQuery->transport,
                         dconn->uri->server, dconn->uri->port) < 0) {
             virReportOOMError();
             goto cleanup;
@@ -2978,7 +2976,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
     result = 0;
 
   cleanup:
-    VIR_FREE(transport);
+    esxUtil_FreeParsedQuery(&parsedQuery);
 
     return result;
 }

@@ -39,29 +39,25 @@
 #define VIR_FROM_THIS VIR_FROM_ESX
 
 
+
 int
-esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
-                   int *noVerify, int *autoAnswer)
+esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
 {
     int result = -1;
-    int i;
     struct qparam_set *queryParamSet = NULL;
     struct qparam *queryParam = NULL;
+    int i;
+    int noVerify;
+    int autoAnswer;
 
-    if (transport != NULL) {
-        *transport = NULL;
+    if (parsedQuery == NULL || *parsedQuery != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
     }
 
-    if (vCenter != NULL) {
-        *vCenter = NULL;
-    }
-
-    if (noVerify != NULL) {
-        *noVerify = 0;
-    }
-
-    if (autoAnswer != NULL) {
-        *autoAnswer = 0;
+    if (VIR_ALLOC(*parsedQuery) < 0) {
+        virReportOOMError();
+        return -1;
     }
 
 #ifdef HAVE_XMLURI_QUERY_RAW
@@ -71,75 +67,69 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 #endif
 
     if (queryParamSet == NULL) {
-        return -1;
+        goto cleanup;
     }
 
     for (i = 0; i < queryParamSet->n; i++) {
         queryParam = &queryParamSet->p[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
-            if (transport == NULL) {
-                continue;
-            }
+            VIR_FREE((*parsedQuery)->transport);
 
-            *transport = strdup(queryParam->value);
+            (*parsedQuery)->transport = strdup(queryParam->value);
 
-            if (*transport == NULL) {
+            if ((*parsedQuery)->transport == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
 
-            if (STRNEQ(*transport, "http") && STRNEQ(*transport, "https")) {
+            if (STRNEQ((*parsedQuery)->transport, "http") &&
+                STRNEQ((*parsedQuery)->transport, "https")) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'transport' has unexpected value "
-                            "'%s' (should be http|https)"), *transport);
+                            "'%s' (should be http|https)"),
+                          (*parsedQuery)->transport);
                 goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
-            if (vCenter == NULL) {
-                continue;
-            }
+            VIR_FREE((*parsedQuery)->vCenter);
 
-            *vCenter = strdup(queryParam->value);
+            (*parsedQuery)->vCenter = strdup(queryParam->value);
 
-            if (*vCenter == NULL) {
+            if ((*parsedQuery)->vCenter == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {
-            if (noVerify == NULL) {
-                continue;
-            }
-
-            if (virStrToLong_i(queryParam->value, NULL, 10, noVerify) < 0 ||
-                (*noVerify != 0 && *noVerify != 1)) {
+            if (virStrToLong_i(queryParam->value, NULL, 10, &noVerify) < 0 ||
+                (noVerify != 0 && noVerify != 1)) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'no_verify' has unexpected value "
                             "'%s' (should be 0 or 1)"), queryParam->value);
                 goto cleanup;
             }
-        } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
-            if (autoAnswer == NULL) {
-                continue;
-            }
 
-            if (virStrToLong_i(queryParam->value, NULL, 10, autoAnswer) < 0 ||
-                (*autoAnswer != 0 && *autoAnswer != 1)) {
+            (*parsedQuery)->noVerify = noVerify != 0;
+        } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
+            if (virStrToLong_i(queryParam->value, NULL, 10, &autoAnswer) < 0 ||
+                (autoAnswer != 0 && autoAnswer != 1)) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'auto_answer' has unexpected "
                             "value '%s' (should be 0 or 1)"), queryParam->value);
                 goto cleanup;
             }
+
+            (*parsedQuery)->autoAnswer = autoAnswer != 0;
         } else {
             VIR_WARN("Ignoring unexpected query parameter '%s'",
                      queryParam->name);
         }
     }
 
-    if (transport != NULL && *transport == NULL) {
-        *transport = strdup("https");
+    if ((*parsedQuery)->transport == NULL) {
+        (*parsedQuery)->transport = strdup("https");
 
-        if (*transport == NULL) {
+        if ((*parsedQuery)->transport == NULL) {
             virReportOOMError();
             goto cleanup;
         }
@@ -149,13 +139,7 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
 
   cleanup:
     if (result < 0) {
-        if (transport != NULL) {
-            VIR_FREE(*transport);
-        }
-
-        if (vCenter != NULL) {
-            VIR_FREE(*vCenter);
-        }
+        esxUtil_FreeParsedQuery(parsedQuery);
     }
 
     if (queryParamSet != NULL) {
@@ -163,6 +147,22 @@ esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
     }
 
     return result;
+}
+
+
+
+
+void
+esxUtil_FreeParsedQuery(esxUtil_ParsedQuery **parsedQuery)
+{
+    if (parsedQuery == NULL || *parsedQuery == NULL) {
+        return;
+    }
+
+    VIR_FREE((*parsedQuery)->transport);
+    VIR_FREE((*parsedQuery)->vCenter);
+
+    VIR_FREE(*parsedQuery);
 }
 
 

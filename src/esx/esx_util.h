@@ -23,13 +23,24 @@
 #ifndef __ESX_UTIL_H__
 # define __ESX_UTIL_H__
 
+# include <stdbool.h>
 # include <libxml/uri.h>
 
 # include "internal.h"
 # include "conf.h"
 
-int esxUtil_ParseQuery(xmlURIPtr uri, char **transport, char **vCenter,
-                       int *noVerify, int *autoAnswer);
+typedef struct _esxUtil_ParsedQuery esxUtil_ParsedQuery;
+
+struct _esxUtil_ParsedQuery {
+    char *transport;
+    char *vCenter;
+    bool noVerify;
+    bool autoAnswer;
+};
+
+int esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri);
+
+void esxUtil_FreeParsedQuery(esxUtil_ParsedQuery **parsedQuery);
 
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 

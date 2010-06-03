@@ -277,7 +277,7 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 int
 esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
-                      const char *password, int noVerify)
+                      const char *password, bool noVerify)
 {
     int result = -1;
     esxVI_String *propertyNameList = NULL;
