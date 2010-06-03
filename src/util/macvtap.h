@@ -72,6 +72,8 @@ int openMacvtapTap(const char *ifname,
                    char **res_ifname);
 
 void delMacvtap(const char *ifname,
+                const unsigned char *macaddress,
+                const char *linkdev,
                 virVirtualPortProfileParamsPtr virtPortProfile);
 
 # endif /* WITH_MACVTAP */
@@ -80,6 +82,16 @@ void delMacvtap(const char *ifname,
 # define MACVTAP_MODE_VEPA_STR     "vepa"
 # define MACVTAP_MODE_BRIDGE_STR   "bridge"
 
+int vpAssociatePortProfileId(const char *macvtap_ifname,
+                             const unsigned char *macvtap_macaddr,
+                             const char *linkdev,
+                             const virVirtualPortProfileParamsPtr virtPort,
+                             const unsigned char *vmuuid);
+
+int vpDisassociatePortProfileId(const char *macvtap_ifname,
+                                const unsigned char *macvtap_macaddr,
+                                const char *linkdev,
+                                const virVirtualPortProfileParamsPtr virtPort);
 
 VIR_ENUM_DECL(virVirtualPort)
 

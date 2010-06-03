@@ -2005,13 +2005,27 @@ if test "$with_macvtap" != "no" ; then
 fi
 AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
 
+AC_TRY_COMPILE([ #include <sys/socket.h>
+                 #include <linux/rtnetlink.h> ],
+                 [ int x = IFLA_PORT_MAX; ],
+                 [ with_virtualport=yes ],
+                 [ with_virtualport=no ])
+if test "$with_virtualport" = "yes"; then
+    val=1
+else
+    val=0
+fi
+AC_DEFINE_UNQUOTED([WITH_VIRTUALPORT], $val,
+                   [whether vsi vepa support is enabled])
+AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
+
 
 dnl netlink library
 
 LIBNL_CFLAGS=""
 LIBNL_LIBS=""
 
-if test "$with_macvtap" = "yes"; then
+if test "$with_macvtap" = "yes" || test "$with_virtualport" = "yes"; then
     PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
     ], [
         AC_MSG_ERROR([libnl >= $LIBNL_REQUIRED is required for macvtap support])
@@ -2084,6 +2098,7 @@ AC_MSG_NOTICE([ Network: $with_network])
 AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([   netcf: $with_netcf])
 AC_MSG_NOTICE([ macvtap: $with_macvtap])
+AC_MSG_NOTICE([virtport: $with_virtualport])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])

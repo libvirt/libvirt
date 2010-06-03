@@ -3716,7 +3716,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            delMacvtap(net->ifname,
+            delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
                        &net->data.direct.virtPortProfile);
             VIR_FREE(net->ifname);
         }
@@ -8555,7 +8555,7 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
 
 #if WITH_MACVTAP
     if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        delMacvtap(detach->ifname,
+        delMacvtap(detach->ifname, detach->mac, detach->data.direct.linkdev,
                    &detach->data.direct.virtPortProfile);
         VIR_FREE(detach->ifname);
     }

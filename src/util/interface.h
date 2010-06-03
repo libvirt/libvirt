@@ -12,6 +12,9 @@
 
 # include "datatypes.h"
 
+int ifaceGetFlags(const char *name, short *flags);
+int ifaceIsUp(const char *name, bool *up);
+
 int ifaceCtrl(const char *name, bool up);
 
 static inline int ifaceUp(const char *name) {
@@ -26,5 +29,7 @@ int ifaceCheck(bool reportError, const char *ifname,
                const unsigned char *macaddr, int ifindex);
 
 int ifaceGetIndex(bool reportError, const char *ifname, int *ifindex);
+
+int ifaceGetVlanID(const char *vlanifname, int *vlanid);
 
 #endif /* __VIR_INTERFACE_H__ */

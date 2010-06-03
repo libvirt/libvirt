@@ -695,6 +695,9 @@ virArgvToString;
 ifaceCtrl;
 ifaceCheck;
 ifaceGetIndex;
+ifaceGetFlags;
+ifaceIsUp;
+ifaceGetVlanID;
 
 # usb.h
 usbGetDevice;

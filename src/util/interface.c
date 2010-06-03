@@ -30,6 +30,8 @@
 
 #ifdef __linux__
 # include <linux/if.h>
+# include <linux/sockios.h>
+# include <linux/if_vlan.h>
 #endif
 
 #include "internal.h"
@@ -41,6 +43,85 @@
 #define ifaceError(code, ...) \
         virReportErrorHelper(NULL, VIR_FROM_NET, code, __FILE__, \
                              __FUNCTION__, __LINE__, __VA_ARGS__)
+
+#if __linux__
+static int
+getFlags(int fd, const char *ifname, struct ifreq *ifr) {
+
+    memset(ifr, 0, sizeof(*ifr));
+
+    if (virStrncpy(ifr->ifr_name,
+                   ifname, strlen(ifname), sizeof(ifr->ifr_name)) == NULL)
+        return ENODEV;
+
+    if (ioctl(fd, SIOCGIFFLAGS, ifr) < 0)
+        return errno;
+
+    return 0;
+}
+
+
+/**
+ * ifaceGetFlags
+ *
+ * @ifname : name of the interface
+ * @flags : pointer to short holding the flags on success
+ *
+ * Get the flags of the interface. Returns 0 on success, error code on failure.
+ */
+int
+ifaceGetFlags(const char *ifname, short *flags) {
+    struct ifreq ifr;
+    int rc;
+    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+
+    if (fd < 0)
+        return errno;
+
+    rc = getFlags(fd, ifname, &ifr);
+
+    *flags = ifr.ifr_flags;
+
+    close(fd);
+
+    return rc;
+}
+
+
+int
+ifaceIsUp(const char *ifname, bool *up) {
+    short flags;
+    int rc = ifaceGetFlags(ifname, &flags);
+
+    if (rc)
+        return rc;
+
+    *up = ((flags & IFF_UP) == IFF_UP);
+
+    return 0;
+}
+#else
+
+/* Note: Showstopper on cygwin is only missing PF_PACKET */
+
+int
+ifaceGetFlags(const char *ifname ATTRIBUTE_UNUSED,
+              short *flags ATTRIBUTE_UNUSED) {
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceGetFlags is not supported on non-linux platforms"));
+    return ENOSYS;
+}
+
+int
+ifaceIsUp(const char *ifname ATTRIBUTE_UNUSED,
+          bool *up ATTRIBUTE_UNUSED) {
+
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceIsUp is not supported on non-linux platforms"));
+    return ENOSYS;
+}
+
+#endif /* __linux__ */
 
 /*
  * chgIfaceFlags: Change flags on an interface
@@ -59,23 +140,16 @@
 static int chgIfaceFlags(const char *ifname, short flagclear, short flagset) {
     struct ifreq ifr;
     int rc = 0;
-    int flags;
+    short flags;
     short flagmask = (~0 ^ flagclear);
     int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
 
     if (fd < 0)
         return errno;
 
-    if (virStrncpy(ifr.ifr_name,
-                   ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
-        rc = ENODEV;
+    rc = getFlags(fd, ifname, &ifr);
+    if (rc != 0)
         goto err_exit;
-    }
-
-    if (ioctl(fd, SIOCGIFFLAGS, &ifr) < 0) {
-        rc = errno;
-        goto err_exit;
-    }
 
     flags = (ifr.ifr_flags & flagmask) | flagset;
 
@@ -150,6 +224,8 @@ ifaceCheck(bool reportError, const char *ifname,
         fd = socket(PF_PACKET, SOCK_DGRAM, 0);
         if (fd < 0)
             return errno;
+
+        memset(&ifr, 0, sizeof(ifr));
 
         if (virStrncpy(ifr.ifr_name,
                        ifname, strlen(ifname), sizeof(ifr.ifr_name)) == NULL) {
@@ -227,6 +303,8 @@ ifaceGetIndex(bool reportError, const char *ifname, int *ifindex)
     if (fd < 0)
         return errno;
 
+    memset(&ifreq, 0, sizeof(ifreq));
+
     if (virStrncpy(ifreq.ifr_name, ifname, strlen(ifname),
                    sizeof(ifreq.ifr_name)) == NULL) {
         if (reportError)
@@ -268,4 +346,47 @@ ifaceGetIndex(bool reportError,
     return ENOSYS;
 }
 
+#endif /* __linux__ */
+
+#ifdef __linux__
+int
+ifaceGetVlanID(const char *vlanifname, int *vlanid) {
+    struct vlan_ioctl_args vlanargs = {
+      .cmd = GET_VLAN_VID_CMD,
+    };
+    int rc = 0;
+    int fd = socket(PF_PACKET, SOCK_DGRAM, 0);
+
+    if (fd < 0)
+        return errno;
+
+    if (virStrcpyStatic(vlanargs.device1, vlanifname) == NULL) {
+        rc = EINVAL;
+        goto err_exit;
+    }
+
+    if (ioctl(fd, SIOCGIFVLAN, &vlanargs) != 0) {
+        rc = errno;
+        goto err_exit;
+    }
+
+    *vlanid = vlanargs.u.VID;
+
+ err_exit:
+    close(fd);
+
+    return rc;
+}
+
+#else
+
+int
+ifaceGetVlanID(const char *vlanifname ATTRIBUTE_UNUSED,
+               int *vlanid ATTRIBUTE_UNUSED) {
+
+    ifaceError(VIR_ERR_INTERNAL_ERROR, "%s",
+               _("ifaceGetVlanID is not supported on non-linux platforms"));
+
+    return ENOSYS;
+}
 #endif /* __linux__ */

@@ -1559,7 +1559,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
             if (err) {
                 close(rc);
                 rc = -1;
-                delMacvtap(net->ifname,
+                delMacvtap(net->ifname, net->mac, net->data.direct.linkdev,
                            &net->data.direct.virtPortProfile);
                 VIR_FREE(net->ifname);
             }
