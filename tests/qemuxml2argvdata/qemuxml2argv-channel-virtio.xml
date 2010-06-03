@@ -43,5 +43,9 @@
       <target type='virtio' name='org.linux-kvm.port.ooh'/>
       <address type='virtio-serial' controller='1' bus='0'/>
     </channel>
+    <channel type='pty'>
+      <target type='virtio' name='org.linux-kvm.port.lla'/>
+      <address type='virtio-serial' controller='2' bus='0'/>
+    </channel>
   </devices>
 </domain>

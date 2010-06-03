@@ -4385,6 +4385,10 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         def->channels[def->nchannels++] = chr;
 
+        if (chr->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO &&
+            chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            chr->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
+
         if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
             chr->info.addr.vioserial.port == 0) {
             int maxport = -1;
@@ -4797,6 +4801,12 @@ static int virDomainDefMaybeAddController(virDomainDefPtr def,
     cont->type = type;
     cont->idx = idx;
 
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+        cont->opts.vioserial.ports = -1;
+        cont->opts.vioserial.vectors = -1;
+    }
+
+
     if (VIR_REALLOC_N(def->controllers, def->ncontrollers+1) < 0) {
         VIR_FREE(cont);
         virReportOOMError();
@@ -4839,15 +4849,18 @@ static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
 {
     /* Look for any virtio serial device */
     int i;
+
     for (i = 0 ; i < def->nchannels ; i++) {
         virDomainChrDefPtr channel = def->channels[i];
 
         if (channel->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO) {
-            /* Try to add a virtio serial controller with index 0 */
+            int idx = 0;
+            if (channel->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
+                idx = channel->info.addr.vioserial.controller;
+
             if (virDomainDefMaybeAddController(def,
-                    VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, 0) < 0)
+                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx) < 0)
                 return -1;
-            break;
         }
     }
 
