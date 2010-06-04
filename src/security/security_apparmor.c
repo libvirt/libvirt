@@ -149,7 +149,7 @@ profile_status_file(const char *str)
  */
 static int
 load_profile(const char *profile, virDomainObjPtr vm,
-             virDomainDiskDefPtr disk)
+             const char *fn)
 {
     int rc = -1, status, ret;
     bool create = true;
@@ -175,9 +175,9 @@ load_profile(const char *profile, virDomainObjPtr vm,
         };
         ret = virExec(argv, NULL, NULL, &child,
                       pipefd[0], NULL, NULL, VIR_EXEC_NONE);
-    } else if (disk && disk->src) {
+    } else if (fn) {
         const char *const argv[] = {
-            VIRT_AA_HELPER, "-r", "-u", profile, "-f", disk->src, NULL
+            VIRT_AA_HELPER, "-r", "-u", profile, "-f", fn, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
                       pipefd[0], NULL, NULL, VIR_EXEC_NONE);
@@ -274,6 +274,40 @@ use_apparmor(void)
 
 cleanup:
     VIR_FREE(libvirt_daemon);
+    return rc;
+}
+
+/* reload the profile, adding read/write file specified by fn if it is not
+ * NULL.
+ */
+static int
+reload_profile(virDomainObjPtr vm, const char *fn)
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    int rc = -1;
+    char *profile_name = NULL;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    if ((profile_name = get_profile_name(vm)) == NULL)
+        return rc;
+
+    /* Update the profile only if it is loaded */
+    if (profile_loaded(secdef->imagelabel) >= 0) {
+        if (load_profile(secdef->imagelabel, vm, fn) < 0) {
+            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot update AppArmor profile "
+                                     "\'%s\'"),
+                                   secdef->imagelabel);
+            goto clean;
+        }
+    }
+
+    rc = 0;
+  clean:
+    VIR_FREE(profile_name);
+
     return rc;
 }
 
@@ -377,14 +411,14 @@ AppArmorGenSecurityLabel(virDomainObjPtr vm)
 }
 
 static int
-AppArmorSetSecurityAllLabel(virDomainObjPtr vm)
+AppArmorSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path)
 {
     if (vm->def->seclabel.type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
     /* if the profile is not already loaded, then load one */
     if (profile_loaded(vm->def->seclabel.label) < 0) {
-        if (load_profile(vm->def->seclabel.label, vm, NULL) < 0) {
+        if (load_profile(vm->def->seclabel.label, vm, stdin_path) < 0) {
             virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot generate AppArmor profile "
                                    "\'%s\'"), vm->def->seclabel.label);
@@ -502,32 +536,7 @@ static int
 AppArmorRestoreSecurityImageLabel(virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
 {
-    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
-    int rc = -1;
-    char *profile_name = NULL;
-
-    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
-        return 0;
-
-    if ((profile_name = get_profile_name(vm)) == NULL)
-        return rc;
-
-    /* Update the profile only if it is loaded */
-    if (profile_loaded(secdef->imagelabel) >= 0) {
-        if (load_profile(secdef->imagelabel, vm, NULL) < 0) {
-            virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot update AppArmor profile "
-                                     "\'%s\'"),
-                                   secdef->imagelabel);
-            goto clean;
-        }
-    }
-
-    rc = 0;
-  clean:
-    VIR_FREE(profile_name);
-
-    return rc;
+    return reload_profile(vm, NULL);
 }
 
 /* Called when hotplugging */
@@ -557,7 +566,7 @@ AppArmorSetSecurityImageLabel(virDomainObjPtr vm, virDomainDiskDefPtr disk)
 
         /* update the profile only if it is loaded */
         if (profile_loaded(secdef->imagelabel) >= 0) {
-            if (load_profile(secdef->imagelabel, vm, disk) < 0) {
+            if (load_profile(secdef->imagelabel, vm, disk->src) < 0) {
                 virSecurityReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("cannot update AppArmor profile "
                                      "\'%s\'"),
@@ -624,6 +633,21 @@ AppArmorRestoreSecurityHostdevLabel(virDomainObjPtr vm,
     return 0;
 }
 
+static int
+AppArmorSetSavedStateLabel(virDomainObjPtr vm,
+                          const char *savefile)
+{
+    return reload_profile(vm, savefile);
+}
+
+
+static int
+AppArmorRestoreSavedStateLabel(virDomainObjPtr vm,
+                               const char *savefile ATTRIBUTE_UNUSED)
+{
+    return reload_profile(vm, NULL);
+}
+
 virSecurityDriver virAppArmorSecurityDriver = {
     .name = SECURITY_APPARMOR_NAME,
     .probe = AppArmorSecurityDriverProbe,
@@ -640,4 +664,6 @@ virSecurityDriver virAppArmorSecurityDriver = {
     .domainSetSecurityAllLabel = AppArmorSetSecurityAllLabel,
     .domainSetSecurityHostdevLabel = AppArmorSetSecurityHostdevLabel,
     .domainRestoreSecurityHostdevLabel = AppArmorRestoreSecurityHostdevLabel,
+    .domainSetSavedStateLabel = AppArmorSetSavedStateLabel,
+    .domainRestoreSavedStateLabel = AppArmorRestoreSavedStateLabel,
 };
