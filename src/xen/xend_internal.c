@@ -68,6 +68,7 @@
 # define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 #endif
 
+#define XEND_RCV_BUF_MAX_LEN 65536
 
 #ifndef PROXY
 static int
@@ -310,7 +311,7 @@ istartswith(const char *haystack, const char *needle)
  * Returns the HTTP return code and @content is set to the
  * allocated memory containing HTTP content.
  */
-static int
+static int ATTRIBUTE_NONNULL (2)
 xend_req(int fd, char **content)
 {
     char buffer[4096];
@@ -330,7 +331,19 @@ xend_req(int fd, char **content)
     if (content_length > 0) {
         ssize_t ret;
 
-        if (VIR_ALLOC_N(*content, content_length) < 0 ) {
+        if (content_length > XEND_RCV_BUF_MAX_LEN) {
+            virXendError(VIR_ERR_INTERNAL_ERROR,
+                         _("Xend returned HTTP Content-Length of %d, "
+                           "which exceeds maximum of %d"),
+                         content_length,
+                         XEND_RCV_BUF_MAX_LEN);
+            return -1;
+        }
+
+        /* Allocate one byte beyond the end of the largest buffer we will read.
+           Combined with the fact that VIR_ALLOC_N zeros the returned buffer,
+           this guarantees that "content" will always be NUL-terminated. */
+        if (VIR_ALLOC_N(*content, content_length + 1) < 0 ) {
             virReportOOMError();
             return -1;
         }
@@ -353,7 +366,7 @@ xend_req(int fd, char **content)
  *
  * Returns the HTTP return code or -1 in case or error.
  */
-static int
+static int ATTRIBUTE_NONNULL(3)
 xend_get(virConnectPtr xend, const char *path,
          char **content)
 {
@@ -379,8 +392,7 @@ xend_get(virConnectPtr xend, const char *path,
         ((ret != 404) || (!STRPREFIX(path, "/xend/domain/")))) {
         virXendError(VIR_ERR_GET_FAILED,
                      _("%d status from xen daemon: %s:%s"),
-                     ret, path,
-                     content ? *content: "NULL");
+                     ret, path, NULLSTR(*content));
     }
 
     return ret;
