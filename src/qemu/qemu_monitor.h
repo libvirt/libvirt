@@ -261,7 +261,10 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 unsigned int background,
                                 const char * const *argv);
 
-# define QEMU_MONITOR_MIGRATE_TO_FILE_BS 512llu
+/* In general, a larger BS means better domain save performance,
+ * at the expense of a larger resulting file - see qemu_driver.c
+ */
+# define QEMU_MONITOR_MIGRATE_TO_FILE_BS (1024llu * 1024)
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
                              unsigned int background,

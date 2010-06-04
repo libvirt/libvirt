@@ -4964,7 +4964,15 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     /* Due to way we append QEMU state on our header with dd,
      * we need to ensure there's a 512 byte boundary. Unfortunately
      * we don't have an explicit offset in the header, so we fake
-     * it by padding the XML string with NULLs */
+     * it by padding the XML string with NULLs.
+     *
+     * XXX: This means there will be (QEMU_MONITOR_MIGRATE_TO_FILE_BS
+     *      - strlen(xml)) bytes of wastage in each file.
+     *      Unfortunately, a large BS is needed for reasonable
+     *      performance. It would be nice to find a replacement for dd
+     *      that could specify the start offset in bytes rather than
+     *      blocks, to eliminate this waste.
+     */
     if (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS) {
         unsigned long long pad =
             QEMU_MONITOR_MIGRATE_TO_FILE_BS -
