@@ -755,7 +755,7 @@ SELinuxSetSecurityProcessLabel(virSecurityDriverPtr drv,
 }
 
 static int
-SELinuxSetSecurityAllLabel(virDomainObjPtr vm)
+SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_UNUSED)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;

@@ -196,18 +196,18 @@ qemuSecurityStackedRestoreSecurityHostdevLabel(virDomainObjPtr vm,
 
 
 static int
-qemuSecurityStackedSetSecurityAllLabel(virDomainObjPtr vm)
+qemuSecurityStackedSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path)
 {
     int rc = 0;
 
     if (driver->securitySecondaryDriver &&
         driver->securitySecondaryDriver->domainSetSecurityAllLabel &&
-        driver->securitySecondaryDriver->domainSetSecurityAllLabel(vm) < 0)
+        driver->securitySecondaryDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0)
         rc = -1;
 
     if (driver->securityPrimaryDriver &&
         driver->securityPrimaryDriver->domainSetSecurityAllLabel &&
-        driver->securityPrimaryDriver->domainSetSecurityAllLabel(vm) < 0)
+        driver->securityPrimaryDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0)
         rc = -1;
 
     return rc;

@@ -154,7 +154,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
                               const char *migrateFrom,
-                              int stdin_fd);
+                              int stdin_fd,
+                              const char *stdin_path);
 
 static void qemudShutdownVMDaemon(struct qemud_driver *driver,
                                   virDomainObjPtr vm,
@@ -3284,7 +3285,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               virDomainObjPtr vm,
                               const char *migrateFrom,
-                              int stdin_fd) {
+                              int stdin_fd,
+                              const char *stdin_path) {
     const char **argv = NULL, **tmp;
     const char **progenv = NULL;
     int i, ret, runflags;
@@ -3332,7 +3334,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     DEBUG0("Generating setting domain security labels (if required)");
     if (driver->securityDriver &&
         driver->securityDriver->domainSetSecurityAllLabel &&
-        driver->securityDriver->domainSetSecurityAllLabel(vm) < 0)
+        driver->securityDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0)
         goto cleanup;
 
     /* Ensure no historical cgroup for this VM is lying around bogus
@@ -4196,7 +4198,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup; /* XXXX free the 'vm' we created ? */
 
-    if (qemudStartVMDaemon(conn, driver, vm, NULL, -1) < 0) {
+    if (qemudStartVMDaemon(conn, driver, vm, NULL, -1, NULL) < 0) {
         if (qemuDomainObjEndJob(vm) > 0)
             virDomainRemoveInactive(&driver->domains,
                                     vm);
@@ -6212,7 +6214,7 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    ret = qemudStartVMDaemon(conn, driver, vm, "stdio", fd);
+    ret = qemudStartVMDaemon(conn, driver, vm, "stdio", fd, path);
 
     if (intermediate_pid != -1) {
         /* Wait for intermediate process to exit */
@@ -6671,7 +6673,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1);
+    ret = qemudStartVMDaemon(conn, driver, vm, NULL, -1, NULL);
     if (ret != -1) {
         virDomainEventPtr event =
             virDomainEventNewFromObj(vm,
@@ -10149,7 +10151,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming unix:/path/to/file or exec:nc -U /path/to/file
      */
-    internalret = qemudStartVMDaemon(dconn, driver, vm, migrateFrom, -1);
+    internalret = qemudStartVMDaemon(dconn, driver, vm, migrateFrom, -1, NULL);
     VIR_FREE(migrateFrom);
     if (internalret < 0) {
         /* Note that we don't set an error here because qemudStartVMDaemon
@@ -10367,7 +10369,7 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
      * -incoming tcp:0.0.0.0:port
      */
     snprintf (migrateFrom, sizeof (migrateFrom), "tcp:0.0.0.0:%d", this_port);
-    if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, -1) < 0) {
+    if (qemudStartVMDaemon (dconn, driver, vm, migrateFrom, -1, NULL) < 0) {
         /* Note that we don't set an error here because qemudStartVMDaemon
          * should have already done that.
          */
@@ -11855,7 +11857,7 @@ static int qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
 
             rc = qemudStartVMDaemon(snapshot->domain->conn, driver, vm, NULL,
-                                    -1);
+                                    -1, NULL);
             if (qemuDomainSnapshotSetInactive(vm, driver->snapshotDir) < 0)
                 goto endjob;
             if (rc < 0)
