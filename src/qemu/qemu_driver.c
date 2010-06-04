@@ -4959,12 +4959,6 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
         is_reg = S_ISREG(sb.st_mode);
     }
 
-
-    /* Setup hook data needed by virFileOperation hook function */
-    hdata.dom = dom;
-    hdata.path = path;
-    hdata.xml = xml;
-    hdata.header = &header;
     offset = sizeof(header) + header.xml_len;
 
     /* Due to way we append QEMU state on our header with dd,
@@ -4984,6 +4978,12 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
         offset += pad;
         header.xml_len += pad;
     }
+
+    /* Setup hook data needed by virFileOperation hook function */
+    hdata.dom = dom;
+    hdata.path = path;
+    hdata.xml = xml;
+    hdata.header = &header;
 
     /* Write header to file, followed by XML */
 
