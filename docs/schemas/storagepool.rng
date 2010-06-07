@@ -188,12 +188,14 @@
     </element>
   </define>
 
-  <define name='initiatorinfoiqn'>
-    <element name='iqn'>
-      <attribute name='name'>
-        <text/>
-      </attribute>
-      <empty/>
+  <define name='initiatorinfo'>
+    <element name='initiator'>
+      <element name='iqn'>
+        <attribute name='name'>
+          <text/>
+        </attribute>
+        <empty/>
+      </element>
     </element>
   </define>
 
@@ -372,7 +374,7 @@
       <ref name='sourceinfohost'/>
       <ref name='sourceinfodev'/>
       <optional>
-      <ref name='initiatorinfoiqn'/>
+        <ref name='initiatorinfo'/>
       </optional>
       <optional>
         <ref name='sourceinfoauth'/>

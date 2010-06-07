@@ -95,6 +95,7 @@ mymain(int argc, char **argv)
     DO_TEST("pool-netfs");
     DO_TEST("pool-scsi");
     DO_TEST("pool-mpath");
+    DO_TEST("pool-iscsi-multiiqn");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
