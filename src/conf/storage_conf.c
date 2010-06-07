@@ -815,6 +815,13 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         src->name)
         virBufferVSprintf(buf,"    <name>%s</name>\n", src->name);
 
+    if ((options->flags & VIR_STORAGE_POOL_SOURCE_INITIATOR_IQN) &&
+        src->initiator.iqn) {
+        virBufferAddLit(buf,"    <initiator>\n");
+        virBufferEscapeString(buf,"      <iqn name='%s'/>\n", src->initiator.iqn);
+        virBufferAddLit(buf,"    </initiator>\n");
+    }
+
     if (options->formatToString) {
         const char *format = (options->formatToString)(src->format);
         if (!format) {
