@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "c-ctype.h"
+
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a,b) (strcmp(a,b) == 0)
 
@@ -56,6 +58,8 @@ int main(int argc, char **argv)
     PedDisk *disk;
     PedPartition *part;
     int cmd = DISK_LAYOUT;
+    const char *path;
+    const char *partsep;
 
     if (argc == 3 && STREQ(argv[2], "-g")) {
         cmd = DISK_GEOMETRY;
@@ -64,8 +68,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if ((dev = ped_device_get(argv[1])) == NULL) {
-        fprintf(stderr, "unable to access device %s\n", argv[1]);
+    path = argv[1];
+    partsep = c_isdigit(path[strlen(path)-1]) ? "p" : "";
+
+    if ((dev = ped_device_get(path)) == NULL) {
+        fprintf(stderr, "unable to access device %s\n", path);
         return 2;
     }
 
@@ -117,8 +124,8 @@ int main(int argc, char **argv)
          * in bytes, not the last sector number
          */
         if (part->num != -1) {
-            printf("%s%d%c%s%c%s%c%llu%c%llu%c%llu%c",
-                   part->geom.dev->path,
+            printf("%s%s%d%c%s%c%s%c%llu%c%llu%c%llu%c",
+                   path, partsep,
                    part->num, '\0',
                    type, '\0',
                    content, '\0',
