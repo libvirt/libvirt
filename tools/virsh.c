@@ -5980,6 +5980,53 @@ cmdVolName(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "vol-pool" command
+ */
+static const vshCmdInfo info_vol_pool[] = {
+    {"help", N_("returns the storage pool for a given volume key or path")},
+    {"desc", ""},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_vol_pool[] = {
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume key or path")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVolPool(vshControl *ctl, const vshCmd *cmd)
+{
+    virStoragePoolPtr pool;
+    virStorageVolPtr vol;
+
+    /* Check the connection to libvirtd daemon is still working */
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    /* Use the supplied string to locate the volume */
+    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
+                                   VSH_BYUUID))) {
+        return FALSE;
+    }
+
+    /* Look up the parent storage pool for the volume */
+    pool = virStoragePoolLookupByVolume(vol);
+    if (pool == NULL) {
+        vshError(ctl, "%s", _("failed to get parent pool"));
+        virStorageVolFree(vol);
+        return FALSE;
+    }
+
+    /* Return the name of the parent storage pool */
+    vshPrint(ctl, "%s\n", virStoragePoolGetName(pool));
+
+    /* Cleanup */
+    virStorageVolFree(vol);
+    virStoragePoolFree(pool);
+    return TRUE;
+}
+
 
 /*
  * "vol-key" command
@@ -8842,6 +8889,7 @@ static const vshCmdDef commands[] = {
     {"vol-dumpxml", cmdVolDumpXML, opts_vol_dumpxml, info_vol_dumpxml},
     {"vol-info", cmdVolInfo, opts_vol_info, info_vol_info},
     {"vol-list", cmdVolList, opts_vol_list, info_vol_list},
+    {"vol-pool", cmdVolPool, opts_vol_pool, info_vol_pool},
     {"vol-path", cmdVolPath, opts_vol_path, info_vol_path},
     {"vol-name", cmdVolName, opts_vol_name, info_vol_name},
     {"vol-key", cmdVolKey, opts_vol_key, info_vol_key},
