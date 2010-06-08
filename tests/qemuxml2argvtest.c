@@ -330,6 +330,7 @@ mymain(int argc, char **argv)
 
     DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
     DO_TEST("channel-virtio", QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("channel-virtio-auto", QEMUD_CMD_FLAG_DEVICE);
 
     DO_TEST("watchdog", 0);
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE);

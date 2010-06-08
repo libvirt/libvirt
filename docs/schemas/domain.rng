@@ -1470,6 +1470,11 @@
         <ref name="driveBus"/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="port">
+        <ref name="driveUnit"/>
+      </attribute>
+    </optional>
   </define>
   <!--
       Devices attached to a domain.
