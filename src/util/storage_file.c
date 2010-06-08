@@ -135,11 +135,9 @@ static struct FileTypeInfo const fileTypeInfo[] = {
       LV_LITTLE_ENDIAN, 4, 1,
       4+4+4, 8, 512, -1, vmdk4GetBackingStore },
     /* Connectix / VirtualPC */
-    /* XXX Untested
     { VIR_STORAGE_FILE_VPC, "conectix", NULL,
-      LV_BIG_ENDIAN, -1, 0,
-      -1, 0, 0, -1, NULL},
-    */
+      LV_BIG_ENDIAN, 12, 0x10000,
+      8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL},
 };
 
 static int
