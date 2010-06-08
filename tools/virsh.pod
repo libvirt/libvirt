@@ -784,8 +784,8 @@ source volume is in.
 I<vol-name-or-key-or-path> is the name or key or path of the source volume.
 
 =item B<vol-create-as> I<pool-or-uuid> I<name> I<capacity> optional
-I<--allocation> I<size> I<--format> I<string> I<--snapshot-source-vol>
-I<vol-name-or-key-or-path> I<--snapshot-source-format> I<string>
+I<--allocation> I<size> I<--format> I<string> I<--backing-vol>
+I<vol-name-or-key-or-path> I<--backing-vol-format> I<string>
 
 Create a volume from a set of arguments.
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
@@ -797,10 +797,10 @@ I<--allocation> I<size> is the initial size to be allocated in the volume, with
 optional k, M, G, or T suffix.
 I<--format> I<string> is used in file based storage pools to specify the volume
 file format to use; raw, bochs, qcow, qcow2, vmdk.
-I<--snapshot-source-vol> I<vol-name-or-key-or-path> is the source backing
+I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
 volume to be used if taking a snapshot of an existing volume.
-I<--snapshot-source-format> I<string> is the format of the snapshot backing volume;
-raw, bochs, qcow, qcow2, vmdk.
+I<--backing-vol-format> I<string> is the format of the snapshot backing volume;
+raw, bochs, qcow, qcow2, vmdk, host_device.
 
 =item B<vol-clone> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path> I<name>
 

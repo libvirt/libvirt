@@ -5279,6 +5279,8 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ, N_("size of the vol with optional k,M,G,T suffix")},
     {"allocation", VSH_OT_STRING, 0, N_("initial allocation size with optional k,M,G,T suffix")},
     {"format", VSH_OT_STRING, 0, N_("file format type raw,bochs,qcow,qcow2,vmdk")},
+    {"backing-vol", VSH_OT_STRING, 0, N_("the backing volume if taking a snapshot")},
+    {"backing-vol-format", VSH_OT_STRING, 0, N_("format of backing volume if taking a snapshot")},
     {NULL, 0, 0, NULL}
 };
 
@@ -5318,6 +5320,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     int found;
     char *xml;
     char *name, *capacityStr, *allocationStr, *format;
+    char *snapshotStrVol, *snapshotStrFormat;
     unsigned long long capacity, allocation = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -5344,6 +5347,8 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Malformed size %s"), allocationStr);
 
     format = vshCommandOptString(cmd, "format", &found);
+    snapshotStrVol = vshCommandOptString(cmd, "backing-vol", &found);
+    snapshotStrFormat = vshCommandOptString(cmd, "backing-vol-format", &found);
 
     virBufferAddLit(&buf, "<volume>\n");
     virBufferVSprintf(&buf, "  <name>%s</name>\n", name);
@@ -5356,8 +5361,62 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         virBufferVSprintf(&buf, "    <format type='%s'/>\n",format);
         virBufferAddLit(&buf, "  </target>\n");
     }
-    virBufferAddLit(&buf, "</volume>\n");
 
+    /* Convert the snapshot parameters into backingStore XML */
+    if (snapshotStrVol) {
+        /* Lookup snapshot backing volume.  Try the backing-vol
+         *  parameter as a name */
+        vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as name\n",
+                 cmd->def->name, snapshotStrVol);
+        virStorageVolPtr snapVol = virStorageVolLookupByName(pool, snapshotStrVol);
+        if (snapVol)
+                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as name\n",
+                         cmd->def->name, snapshotStrVol);
+
+        if (snapVol == NULL) {
+            /* Snapshot backing volume not found by name.  Try the
+             *  backing-vol parameter as a key */
+            vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as key\n",
+                     cmd->def->name, snapshotStrVol);
+            snapVol = virStorageVolLookupByKey(ctl->conn, snapshotStrVol);
+            if (snapVol)
+                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as key\n",
+                         cmd->def->name, snapshotStrVol);
+        }
+        if (snapVol == NULL) {
+            /* Snapshot backing volume not found by key.  Try the
+             *  backing-vol parameter as a path */
+            vshDebug(ctl, 5, "%s: Look up backing store volume '%s' as path\n",
+                     cmd->def->name, snapshotStrVol);
+            snapVol = virStorageVolLookupByPath(ctl->conn, snapshotStrVol);
+            if (snapVol)
+                vshDebug(ctl, 5, "%s: Backing store volume found using '%s' as path\n",
+                         cmd->def->name, snapshotStrVol);
+        }
+        if (snapVol == NULL) {
+            vshError(ctl, _("failed to get vol '%s'"), snapshotStrVol);
+            return FALSE;
+        }
+
+        char *snapshotStrVolPath;
+        if ((snapshotStrVolPath = virStorageVolGetPath(snapVol)) == NULL) {
+            virStorageVolFree(snapVol);
+            return FALSE;
+        }
+
+        /* Create XML for the backing store */
+        virBufferAddLit(&buf, "  <backingStore>\n");
+        virBufferVSprintf(&buf, "    <path>%s</path>\n",snapshotStrVolPath);
+        if (snapshotStrFormat)
+            virBufferVSprintf(&buf, "    <format type='%s'/>\n",snapshotStrFormat);
+        virBufferAddLit(&buf, "  </backingStore>\n");
+
+        /* Cleanup snapshot allocations */
+        VIR_FREE(snapshotStrVolPath);
+        virStorageVolFree(snapVol);
+    }
+
+    virBufferAddLit(&buf, "</volume>\n");
 
     if (virBufferError(&buf)) {
         vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
