@@ -89,7 +89,7 @@ Running hypervisor: Xen 3.0.0
 
 =back
 
-=item B<cd> I<directory> optional
+=item B<cd> optional I<directory>
 
 Will change current directory to I<directory>.  The default directory
 for the B<cd> command is the home directory or, if there is no I<HOME>
@@ -273,13 +273,13 @@ pre-existing guest.
 
 B<Example>
 
-virsh dumpxml <domain-id> > domain.xml
-edit domain.xml
-virsh create < domain.xml
+ virsh dumpxml <domain-id> > domain.xml
+ edit domain.xml
+ virsh create < domain.xml
 
 =item B<define> I<FILE>
 
-Define a domain from an XML <file>. The domain definitions is registered
+Define a domain from an XML <file>. The domain definition is registered
 but not started.
 
 =item B<destroy> I<domain-id>
@@ -490,7 +490,7 @@ is not available the processes will provide an exit code of 1.
 =item B<undefine> I<domain-id>
 
 Undefine the configuration for an inactive domain. Since it's not running
-the domain name or UUId must be used as the I<domain-id>.
+the domain name or UUID must be used as the I<domain-id>.
 
 =item B<vcpuinfo> I<domain-id>
 
