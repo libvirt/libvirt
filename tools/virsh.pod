@@ -265,11 +265,13 @@ The option I<--disable> disables autostarting.
 
 Connect the virtual serial console for the guest.
 
-=item B<create> I<FILE>
+=item B<create> I<FILE> optional I<--console> I<--paused>
 
 Create a domain from an XML <file>. An easy way to create the XML
 <file> is to use the B<dumpxml> command to obtain the definition of a
-pre-existing guest.
+pre-existing guest.  The domain will be paused if the I<--paused> option
+is used and supported by the driver; otherwise it will be running.
+If I<--console> is requested, attach to the console after creation.
 
 B<Example>
 

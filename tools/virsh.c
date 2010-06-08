@@ -1141,6 +1141,7 @@ static const vshCmdOptDef opts_create[] = {
 #ifndef WIN32
     {"console", VSH_OT_BOOL, 0, N_("attach to console after creation")},
 #endif
+    {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1155,6 +1156,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
 #ifndef WIN32
     int console = vshCommandOptBool(cmd, "console");
 #endif
+    unsigned int flags = VIR_DOMAIN_NONE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1166,7 +1168,10 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
         return FALSE;
 
-    dom = virDomainCreateXML(ctl->conn, buffer, 0);
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_START_PAUSED;
+
+    dom = virDomainCreateXML(ctl->conn, buffer, flags);
     VIR_FREE(buffer);
 
     if (dom != NULL) {
