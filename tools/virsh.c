@@ -9464,17 +9464,19 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     if (name)
         *name = n;
 
-    /* try it by PATH */
+    /* try it by name */
     if (pool && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> trying as vol UUID\n",
+        vshDebug(ctl, 5, "%s: <%s> trying as vol name\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByName(pool, n);
     }
+    /* try it by key */
     if (vol == NULL && (flag & VSH_BYUUID)) {
         vshDebug(ctl, 5, "%s: <%s> trying as vol key\n",
                  cmd->def->name, optname);
         vol = virStorageVolLookupByKey(ctl->conn, n);
     }
+    /* try it by path */
     if (vol == NULL && (flag & VSH_BYUUID)) {
         vshDebug(ctl, 5, "%s: <%s> trying as vol path\n",
                  cmd->def->name, optname);
