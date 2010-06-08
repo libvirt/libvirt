@@ -757,6 +757,111 @@ Returns the UUID of the named I<pool>.
 
 =back
 
+=head1 VOLUME COMMANDS
+
+=item B<vol-create> I<pool-or-uuid> I<FILE>
+
+Create a volume from an XML <file>.
+I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+I<FILE> is the XML <file> with the volume definition. An easy way to create the
+XML <file> is to use the B<vol-dumpxml> command to obtain the definition of a
+pre-existing volume.
+
+B<Example>
+
+ virsh vol-dumpxml --pool storagepool1 appvolume1 > newvolume.xml
+ edit newvolume.xml
+ virsh vol-create differentstoragepool newvolume.xml
+
+=item B<vol-create-from> I<pool-or-uuid> I<FILE> [optional I<--inputpool>
+I<pool-or-uuid>] I<vol-name-or-key-or-path>
+
+Create a volume, using another volume as input.
+I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+I<FILE> is the XML <file> with the volume definition.
+I<--inputpool> I<pool-or-uuid> is the name or uuid of the storage pool the
+source volume is in.
+I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
+=item B<vol-create-as> I<pool-or-uuid> I<name> I<capacity> optional
+I<--allocation> I<size> I<--format> I<string> I<--snapshot-source-vol>
+I<vol-name-or-key-or-path> I<--snapshot-source-format> I<string>
+
+Create a volume from a set of arguments.
+I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
+in.
+I<name> is the name of the new volume.
+I<capacity> is the size of the volume to be created, with optional k, M, G, or
+T suffix.
+I<--allocation> I<size> is the initial size to be allocated in the volume, with
+optional k, M, G, or T suffix.
+I<--format> I<string> is used in file based storage pools to specify the volume
+file format to use; raw, bochs, qcow, qcow2, vmdk.
+I<--snapshot-source-vol> I<vol-name-or-key-or-path> is the source backing
+volume to be used if taking a snapshot of an existing volume.
+I<--snapshot-source-format> I<string> is the format of the snapshot backing volume;
+raw, bochs, qcow, qcow2, vmdk.
+
+=item B<vol-clone> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path> I<name>
+
+Clone an existing volume.  Less powerful, but easier to type, version of
+B<vol-create-from>.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+I<name> is the name of the new volume.
+
+=item B<vol-delete> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+
+Delete a given volume.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume is in.
+I<vol-name-or-key-or-path> is the name or key or path of the volume to delete.
+
+=item B<vol-wipe> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+
+Wipe a volume, ensure data previously on the volume is not accessible to future reads.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume is in.
+I<vol-name-or-key-or-path> is the name or key or path of the volume to wipe.
+
+=item B<vol-dumpxml> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+
+Output the volume information as an XML dump to stdout.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume is in.
+I<vol-name-or-key-or-path> is the name or key or path of the volume to output the XML of.
+
+=item B<vol-info> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+
+Returns basic information about the given storage volume.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume is in.
+I<vol-name-or-key-or-path> is the name or key or path of the volume to return information for.
+
+=item B<vol-list> I<--pool> I<pool-or-uuid>
+
+Return the list of volumes in the given storage pool.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool.
+
+=item B<vol-pool> I<vol-key-or-path>
+
+Return the pool for a given volume.
+I<vol-key-or-path> is the key or path of the volume to return the pool name for.
+
+=item B<vol-path> [optional I<--pool> I<pool-or-uuid>] I<vol-name-or-key>
+
+Return the path for a given volume.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume is in.
+I<vol-name-or-key> is the name or key of the volume to return the path for.
+
+=item B<vol-name> I<vol-key-or-path>
+
+Return the name for a given volume.
+I<vol-key-or-path> is the key or path of the volume to return the name for.
+
+=item B<vol-key> I<vol-uuid>
+
+Return the volume key for a given volume UUID.
+I<vol-uuid> is the UUID of the volume to return the volume key for.
+
+=back
+
 =head1 SECRET COMMMANDS
 
 The following commands manipulate "secrets" (e.g. passwords, passphrases and
