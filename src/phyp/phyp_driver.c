@@ -886,7 +886,7 @@ phypGetVIOSPartitionID(virConnectPtr conn)
 
     if (virAsprintf(&cmd,
                     "lssyscfg -m %s -r lpar -F lpar_id,lpar_env|grep "
-                    "vioserver|sed -s 's/,.*$//g'", managed_system) < 0) {
+                    "vioserver|sed -s 's/,.*$//'", managed_system) < 0) {
         virReportOOMError();
         goto err;
     }
@@ -925,7 +925,7 @@ phypDiskType(virConnectPtr conn, char *backing_device)
 
     if (virAsprintf(&cmd,
                     "viosvrcmd -m %s -p %d -c \"lssp -field name type "
-                    "-fmt , -all|grep %s|sed -e 's/^.*,//g'\"",
+                    "-fmt , -all|grep %s|sed -e 's/^.*,//'\"",
                     managed_system, vios_id, backing_device) < 0) {
         virReportOOMError();
         goto cleanup;
@@ -983,7 +983,7 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
 
     if (virAsprintf(&cmd,
                     "lssyscfg -r lpar -m %s -F lpar_id,state %s |grep -c "
-                    "^[0-9]*", managed_system, state) < 0) {
+                    "'^[0-9]*'", managed_system, state) < 0) {
         virReportOOMError();
         goto err;
     }
@@ -1051,7 +1051,7 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
 
     if (virAsprintf
         (&cmd,
-         "lssyscfg -r lpar -m %s -F lpar_id,state %s | sed -e 's/,.*$//g'",
+         "lssyscfg -r lpar -m %s -F lpar_id,state %s | sed -e 's/,.*$//'",
          managed_system, state) < 0) {
         virReportOOMError();
         goto err;
@@ -1115,7 +1115,7 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
     if (virAsprintf
         (&cmd,
          "lssyscfg -r lpar -m %s -F name,state | grep \"Not Activated\" | "
-         "sed -e 's/,.*$//g'", managed_system) < 0) {
+         "sed -e 's/,.*$//'", managed_system) < 0) {
         virReportOOMError();
         goto err;
     }
@@ -1539,7 +1539,7 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
     if (virAsprintf
         (&cmd,
          "chhwres -r proc -m %s --id %d -o %c --procunits %d 2>&1 |sed"
-         "-e 's/^.*\\([0-9]\\+.[0-9]\\+\\).*$/\\1/g'",
+         "-e 's/^.*\\([0-9][0-9]*.[0-9][0-9]*\\).*$/\\1/'",
          managed_system, dom->id, operation, amount) < 0) {
         virReportOOMError();
         goto err;
