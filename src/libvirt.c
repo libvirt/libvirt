@@ -1210,6 +1210,34 @@ do_open (const char *name,
     ret->flags = flags & VIR_CONNECT_RO;
 
     for (i = 0; i < virDriverTabCount; i++) {
+        /* We're going to probe the remote driver next. So we have already
+         * probed all other client-side-only driver before, but none of them
+         * accepted the URI.
+         * If the scheme corresponds to a known but disabled client-side-only
+         * driver then report a useful error, instead of a cryptic one about
+         * not being able to connect to libvirtd or not being able to find
+         * certificates. */
+        if (virDriverTab[i]->no == VIR_DRV_REMOTE &&
+            ret->uri != NULL && ret->uri->scheme != NULL &&
+            (
+#ifndef WITH_PHYP
+             STRCASEEQ(ret->uri->scheme, "phyp") ||
+#endif
+#ifndef WITH_ESX
+             STRCASEEQ(ret->uri->scheme, "esx") ||
+             STRCASEEQ(ret->uri->scheme, "gsx") ||
+#endif
+#ifndef WITH_XENAPI
+             STRCASEEQ(ret->uri->scheme, "xenapi") ||
+#endif
+             false)) {
+            virReportErrorHelper(NULL, VIR_FROM_NONE, VIR_ERR_INVALID_ARG,
+                                 __FILE__, __FUNCTION__, __LINE__,
+                                 _("libvirt was built without the '%s' driver"),
+                                 ret->uri->scheme);
+            goto failed;
+        }
+
         DEBUG("trying driver %d (%s) ...",
               i, virDriverTab[i]->name);
         res = virDriverTab[i]->open (ret, auth, flags);
