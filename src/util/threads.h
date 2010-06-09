@@ -61,14 +61,12 @@ int virThreadLocalInit(virThreadLocalPtr l,
 void *virThreadLocalGet(virThreadLocalPtr l);
 void virThreadLocalSet(virThreadLocalPtr l, void*);
 
-# ifdef HAVE_PTHREAD_MUTEXATTR_INIT
+# ifdef WIN32
+#  include "threads-win32.h"
+# elif defined HAVE_PTHREAD_MUTEXATTR_INIT
 #  include "threads-pthread.h"
 # else
-#  ifdef WIN32
-#   include "threads-win32.h"
-#  else
-#   error "Either pthreads or Win32 threads are required"
-#  endif
+#  error "Either pthreads or Win32 threads are required"
 # endif
 
 #endif
