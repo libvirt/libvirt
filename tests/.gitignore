@@ -23,8 +23,6 @@ statstest
 qparamtest
 seclabeltest
 eventtest
-*.gcda
-*.gcno
 *.exe
 object-locking
 object-locking.cmi

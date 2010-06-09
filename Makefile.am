@@ -68,10 +68,14 @@ tests:
 
 cov: clean-cov
 	mkdir $(top_builddir)/coverage
-	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp -d $(top_srcdir)/src  -d $(top_srcdir)/daemon -d $(top_srcdir)/tests
-	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp -o $(top_builddir)/coverage/libvirt.info *usr*
+	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
+	  -d $(top_builddir)/src  -d $(top_builddir)/daemon \
+	  -d $(top_builddir)/tests
+	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp \
+	  -o $(top_builddir)/coverage/libvirt.info
 	rm $(top_builddir)/coverage/libvirt.info.tmp
-	$(GENHTML) -s -t "libvirt" -o $(top_builddir)/coverage --legend $(top_builddir)/coverage/libvirt.info
+	$(GENHTML) --show-details -t "libvirt" -o $(top_builddir)/coverage \
+	  --legend $(top_builddir)/coverage/libvirt.info
 
 clean-cov:
 	rm -rf $(top_builddir)/coverage

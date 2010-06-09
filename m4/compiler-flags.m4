@@ -23,7 +23,6 @@
 
 AC_DEFUN([gl_COMPILER_FLAGS],
   [AC_MSG_CHECKING(whether compiler accepts $1)
-   AC_SUBST(COMPILER_FLAGS)
    ac_save_CFLAGS="$CFLAGS"
    dnl Some flags are dependant, so we set all previously checked
    dnl flags when testing. Except for -Werror which we have to

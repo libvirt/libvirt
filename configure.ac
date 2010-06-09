@@ -1752,6 +1752,7 @@ AC_ARG_ENABLE([test-coverage],
 enable_coverage=$enableval
 
 if test "${enable_coverage}" = yes; then
+  COMPILER_FLAGS=
   gl_COMPILER_FLAGS(-fprofile-arcs)
   gl_COMPILER_FLAGS(-ftest-coverage)
   AC_SUBST([COVERAGE_CFLAGS], [$COMPILER_FLAGS])

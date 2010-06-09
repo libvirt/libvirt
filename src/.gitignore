@@ -6,9 +6,6 @@ Makefile.in
 *.loT
 *.la
 *.exe
-*.gcda
-*.gcno
-*.gcov
 *.cov
 libvirt_parthelper
 libvirt_lxc

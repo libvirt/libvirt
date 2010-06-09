@@ -2,6 +2,9 @@
 *.#*#
 *.a
 *.exe
+*.gcda
+*.gcno
+*.gcov
 *.o
 *.orig
 *.rej
