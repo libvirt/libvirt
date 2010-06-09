@@ -7364,7 +7364,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     } else if (STREQ(type, "bridge")) {
         typ = 2;
     } else {
-        vshError(ctl, _("No support %s in command 'attach-interface'"), type);
+        vshError(ctl, _("No support for %s in command 'attach-interface'"),
+                 type);
         goto cleanup;
     }
 
@@ -7626,14 +7627,16 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         if (STREQ(driver, "file") || STREQ(driver, "tap")) {
             isFile = 1;
         } else if (STRNEQ(driver, "phy")) {
-            vshError(ctl, _("No support %s in command 'attach-disk'"), driver);
+            vshError(ctl, _("No support for %s in command 'attach-disk'"),
+                     driver);
             goto cleanup;
         }
     }
 
     if (mode) {
         if (STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
-            vshError(ctl, _("No support %s in command 'attach-disk'"), mode);
+            vshError(ctl, _("No support for %s in command 'attach-disk'"),
+                     mode);
             goto cleanup;
         }
     }

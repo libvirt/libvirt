@@ -528,13 +528,17 @@ format of the device sections to get the most accurate set of accepted values.
 
 Attach a device to the domain, using a device definition in an XML file.
 See the documentation to learn about libvirt XML format for a device.
+For cdrom and floppy devices, this command only replaces the media within
+the single existing device; consider using B<update-device> for this usage.
 
 =item B<attach-disk> I<domain-id> I<source> I<target> optional I<--driver driver> I<--subdriver subdriver> I<--type type> I<--mode mode>
 
 Attach a new disk device to the domain.
 I<source> and I<target> are paths for the files and devices.
 I<driver> can be I<file>, I<tap> or I<phy> depending on the kind of access.
-I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default.
+I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default,
+although this use only replaces the media within the existing virtual cdrom or
+floppy device; consider using B<update-device> for this usage instead.
 I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 
 =item B<attach-interface> I<domain-id> I<type> I<source> optional I<--target target> I<--mac mac> I<--script script>
@@ -563,6 +567,13 @@ Detach a network interface from a domain.
 I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
 It is recommended to use the I<mac> option to distinguish between the interfaces
 if more than one are present on the domain.
+
+=item B<update-device> I<domain-id> I<file> optional I<--persistent>
+
+Update the characteristics of a device associated with I<domain-id>,
+based on the device definition in an XML I<file>.  If the I<--persistent>
+option is used, the changes will affect the next boot of the domain.
+See the documentation to learn about libvirt XML format for a device.
 
 =back
 
