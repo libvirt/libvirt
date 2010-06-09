@@ -1,5 +1,5 @@
 /*
- * virsh.c: a Xen shell used to exercise the libvirt API
+ * virsh.c: a shell to exercise the libvirt API
  *
  * Copyright (C) 2005, 2007-2010 Red Hat, Inc.
  *
