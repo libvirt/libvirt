@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -261,10 +261,16 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 unsigned int background,
                                 const char * const *argv);
 
-/* In general, a larger BS means better domain save performance,
- * at the expense of a larger resulting file - see qemu_driver.c
+/* In general, BS is the smallest fundamental block size we can use to
+ * access a block device; everything must be aligned to a multiple of
+ * this.  Linux generally supports a BS as small as 512, but with
+ * newer disks with 4k sectors, performance is better if we guarantee
+ * alignment to the sector size.  However, operating on BS-sized
+ * blocks is painfully slow, so we also have a transfer size that is
+ * larger but only aligned to the smaller block size.
  */
-# define QEMU_MONITOR_MIGRATE_TO_FILE_BS (1024llu * 1024)
+# define QEMU_MONITOR_MIGRATE_TO_FILE_BS (1024llu * 4)
+# define QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE (1024llu * 1024)
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
                              unsigned int background,

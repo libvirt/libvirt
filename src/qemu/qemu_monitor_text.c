@@ -1273,10 +1273,16 @@ int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    if (virAsprintf(&dest, "exec:%s | dd of=%s bs=%llu seek=%llu",
-                    argstr, safe_target,
-                    QEMU_MONITOR_MIGRATE_TO_FILE_BS,
-                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS) < 0) {
+    /* Two dd processes, sharing the same stdout, are necessary to
+     * allow starting at an alignment of 512, but without wasting
+     * padding to get to the larger alignment useful for speed.  Use
+     * <> redirection to avoid truncating a regular file.  */
+    if (virAsprintf(&dest, "exec:%s | { dd bs=%llu seek=%llu if=/dev/null && "
+                    "dd bs=%llu; } 1<>%s",
+                    argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
+                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
+                    safe_target) < 0) {
         virReportOOMError();
         goto cleanup;
     }
