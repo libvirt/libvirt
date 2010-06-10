@@ -63,6 +63,9 @@ struct _qemuMonitorMessage {
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
+    void (*destroy)(qemuMonitorPtr mon,
+                    virDomainObjPtr vm);
+
     void (*eofNotify)(qemuMonitorPtr mon,
                       virDomainObjPtr vm,
                       int withError);
@@ -120,7 +123,7 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                int json,
                                qemuMonitorCallbacksPtr cb);
 
-int qemuMonitorClose(qemuMonitorPtr mon);
+void qemuMonitorClose(qemuMonitorPtr mon);
 
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 

@@ -1173,7 +1173,17 @@ no_memory:
 }
 
 
+static void qemuHandleMonitorDestroy(qemuMonitorPtr mon,
+                                     virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    if (priv->mon == mon)
+        priv->mon = NULL;
+    virDomainObjUnref(vm);
+}
+
 static qemuMonitorCallbacks monitorCallbacks = {
+    .destroy = qemuHandleMonitorDestroy,
     .eofNotify = qemuHandleMonitorEOF,
     .diskSecretLookup = findVolumeQcowPassphrase,
     .domainStop = qemuHandleDomainStop,
@@ -1190,10 +1200,6 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted while the monitor is active */
-    virDomainObjRef(vm);
-
     if ((driver->securityDriver &&
          driver->securityDriver->domainSetSecuritySocketLabel &&
          driver->securityDriver->domainSetSecuritySocketLabel(driver->securityDriver,vm)) < 0) {
@@ -1201,13 +1207,17 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
         goto error;
     }
 
-    if ((priv->mon = qemuMonitorOpen(vm,
-                                     priv->monConfig,
-                                     priv->monJSON,
-                                     &monitorCallbacks)) == NULL) {
-        VIR_ERROR(_("Failed to connect monitor for %s"), vm->def->name);
-        goto error;
-    }
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted while the monitor is active */
+    virDomainObjRef(vm);
+
+    priv->mon = qemuMonitorOpen(vm,
+                                priv->monConfig,
+                                priv->monJSON,
+                                &monitorCallbacks);
+
+    if (priv->mon == NULL)
+        virDomainObjUnref(vm);
 
     if ((driver->securityDriver &&
          driver->securityDriver->domainClearSecuritySocketLabel &&
@@ -1216,17 +1226,20 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
         goto error;
     }
 
+    if (priv->mon == NULL) {
+        VIR_INFO("Failed to connect monitor for %s", vm->def->name);
+        goto error;
+    }
+
+
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
     ret = qemuMonitorSetCapabilities(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
     ret = 0;
 error:
-    if (ret < 0) {
+    if (ret < 0)
         qemuMonitorClose(priv->mon);
-        priv->mon = NULL;
-        virDomainObjUnref(vm);
-    }
 
     return ret;
 }
@@ -3693,11 +3706,8 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
                              _("Failed to send SIGTERM to %s (%d)"),
                              vm->def->name, vm->pid);
 
-    if (priv->mon &&
-        qemuMonitorClose(priv->mon) == 0) {
-        virDomainObjUnref(vm);
-        priv->mon = NULL;
-    }
+    if (priv->mon)
+        qemuMonitorClose(priv->mon);
 
     if (priv->monConfig) {
         if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)

@@ -198,6 +198,8 @@ void qemuMonitorUnlock(qemuMonitorPtr mon)
 static void qemuMonitorFree(qemuMonitorPtr mon)
 {
     VIR_DEBUG("mon=%p", mon);
+    if (mon->cb->destroy)
+        (mon->cb->destroy)(mon, mon->vm);
     if (virCondDestroy(&mon->notify) < 0)
     {}
     virMutexDestroy(&mon->lock);
@@ -675,12 +677,12 @@ cleanup:
 }
 
 
-int qemuMonitorClose(qemuMonitorPtr mon)
+void qemuMonitorClose(qemuMonitorPtr mon)
 {
     int refs;
 
     if (!mon)
-        return 0;
+        return;
 
     VIR_DEBUG("mon=%p", mon);
 
@@ -700,7 +702,6 @@ int qemuMonitorClose(qemuMonitorPtr mon)
 
     if ((refs = qemuMonitorUnref(mon)) > 0)
         qemuMonitorUnlock(mon);
-    return refs;
 }
 
 
