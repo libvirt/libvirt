@@ -3,7 +3,7 @@
  *   remote_internal driver and libvirtd.  This protocol is
  *   internal and may change at any time.
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -693,6 +693,15 @@ struct remote_num_of_defined_domains_ret {
 };
 
 struct remote_domain_create_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_create_with_flags_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_create_with_flags_ret {
     remote_nonnull_domain dom;
 };
 
@@ -2004,7 +2013,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_REVERT_TO_SNAPSHOT = 192,
     REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
     REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
-    REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195
+    REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
+    REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196
 
     /*
      * Notice how the entries are grouped in sets of 10 ?

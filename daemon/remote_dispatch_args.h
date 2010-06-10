@@ -164,3 +164,4 @@
     remote_domain_revert_to_snapshot_args val_remote_domain_revert_to_snapshot_args;
     remote_domain_snapshot_delete_args val_remote_domain_snapshot_delete_args;
     remote_domain_get_block_info_args val_remote_domain_get_block_info_args;
+    remote_domain_create_with_flags_args val_remote_domain_create_with_flags_args;

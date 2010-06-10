@@ -122,6 +122,14 @@ static int remoteDispatchDomainCreate(
     remote_error *err,
     remote_domain_create_args *args,
     void *ret);
+static int remoteDispatchDomainCreateWithFlags(
+    struct qemud_server *server,
+    struct qemud_client *client,
+    virConnectPtr conn,
+    remote_message_header *hdr,
+    remote_error *err,
+    remote_domain_create_with_flags_args *args,
+    remote_domain_create_with_flags_ret *ret);
 static int remoteDispatchDomainCreateXml(
     struct qemud_server *server,
     struct qemud_client *client,

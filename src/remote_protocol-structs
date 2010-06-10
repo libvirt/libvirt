@@ -406,6 +406,13 @@ struct remote_num_of_defined_domains_ret {
 struct remote_domain_create_args {
 	remote_nonnull_domain      dom;
 };
+struct remote_domain_create_with_flags_args {
+	remote_nonnull_domain      dom;
+	u_int                      flags;
+};
+struct remote_domain_create_with_flags_ret {
+	remote_nonnull_domain      dom;
+};
 struct remote_domain_define_xml_args {
 	remote_nonnull_string      xml;
 };

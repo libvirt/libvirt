@@ -1203,6 +1203,26 @@ xdr_remote_domain_create_args (XDR *xdrs, remote_domain_create_args *objp)
 }
 
 bool_t
+xdr_remote_domain_create_with_flags_args (XDR *xdrs, remote_domain_create_with_flags_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
+xdr_remote_domain_create_with_flags_ret (XDR *xdrs, remote_domain_create_with_flags_ret *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->dom))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_domain_define_xml_args (XDR *xdrs, remote_domain_define_xml_args *objp)
 {
 

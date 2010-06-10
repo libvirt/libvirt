@@ -982,3 +982,8 @@
     .args_filter = (xdrproc_t) xdr_void,
     .ret_filter = (xdrproc_t) xdr_void,
 },
+{   /* DomainCreateWithFlags => 196 */
+    .fn = (dispatch_fn) remoteDispatchDomainCreateWithFlags,
+    .args_filter = (xdrproc_t) xdr_remote_domain_create_with_flags_args,
+    .ret_filter = (xdrproc_t) xdr_remote_domain_create_with_flags_ret,
+},

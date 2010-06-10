@@ -666,6 +666,17 @@ struct remote_domain_create_args {
 };
 typedef struct remote_domain_create_args remote_domain_create_args;
 
+struct remote_domain_create_with_flags_args {
+        remote_nonnull_domain dom;
+        u_int flags;
+};
+typedef struct remote_domain_create_with_flags_args remote_domain_create_with_flags_args;
+
+struct remote_domain_create_with_flags_ret {
+        remote_nonnull_domain dom;
+};
+typedef struct remote_domain_create_with_flags_ret remote_domain_create_with_flags_ret;
+
 struct remote_domain_define_xml_args {
         remote_nonnull_string xml;
 };
@@ -2215,6 +2226,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SNAPSHOT_DELETE = 193,
         REMOTE_PROC_DOMAIN_GET_BLOCK_INFO = 194,
         REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON = 195,
+        REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS = 196,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2345,6 +2357,8 @@ extern  bool_t xdr_remote_list_defined_domains_args (XDR *, remote_list_defined_
 extern  bool_t xdr_remote_list_defined_domains_ret (XDR *, remote_list_defined_domains_ret*);
 extern  bool_t xdr_remote_num_of_defined_domains_ret (XDR *, remote_num_of_defined_domains_ret*);
 extern  bool_t xdr_remote_domain_create_args (XDR *, remote_domain_create_args*);
+extern  bool_t xdr_remote_domain_create_with_flags_args (XDR *, remote_domain_create_with_flags_args*);
+extern  bool_t xdr_remote_domain_create_with_flags_ret (XDR *, remote_domain_create_with_flags_ret*);
 extern  bool_t xdr_remote_domain_define_xml_args (XDR *, remote_domain_define_xml_args*);
 extern  bool_t xdr_remote_domain_define_xml_ret (XDR *, remote_domain_define_xml_ret*);
 extern  bool_t xdr_remote_domain_undefine_args (XDR *, remote_domain_undefine_args*);
@@ -2678,6 +2692,8 @@ extern bool_t xdr_remote_list_defined_domains_args ();
 extern bool_t xdr_remote_list_defined_domains_ret ();
 extern bool_t xdr_remote_num_of_defined_domains_ret ();
 extern bool_t xdr_remote_domain_create_args ();
+extern bool_t xdr_remote_domain_create_with_flags_args ();
+extern bool_t xdr_remote_domain_create_with_flags_ret ();
 extern bool_t xdr_remote_domain_define_xml_args ();
 extern bool_t xdr_remote_domain_define_xml_ret ();
 extern bool_t xdr_remote_domain_undefine_args ();

@@ -3036,6 +3036,38 @@ done:
     return rv;
 }
 
+static int
+remoteDomainCreateWithFlags (virDomainPtr domain, unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_create_with_flags_args args;
+    remote_domain_create_with_flags_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_CREATE_WITH_FLAGS,
+              (xdrproc_t) xdr_remote_domain_create_with_flags_args,
+              (char *) &args,
+              (xdrproc_t) xdr_remote_domain_create_with_flags_ret,
+              (char *) &ret) == -1)
+        goto done;
+
+    domain->id = ret.dom.id;
+    xdr_free ((xdrproc_t) &xdr_remote_domain_create_with_flags_ret,
+              (char *) &ret);
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 static virDomainPtr
 remoteDomainDefineXML (virConnectPtr conn, const char *xml)
 {
@@ -10215,7 +10247,7 @@ static virDriver remote_driver = {
     remoteListDefinedDomains, /* listDefinedDomains */
     remoteNumOfDefinedDomains, /* numOfDefinedDomains */
     remoteDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    remoteDomainCreateWithFlags, /* domainCreateWithFlags */
     remoteDomainDefineXML, /* domainDefineXML */
     remoteDomainUndefine, /* domainUndefine */
     remoteDomainAttachDevice, /* domainAttachDevice */
