@@ -1915,6 +1915,7 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
     vboxIID  *iid        = NULL;
     int gotAllABoutDef   = -1;
     nsresult rc;
+    char *tmp;
 
 #if VBOX_API_VERSION == 2002
     if (VIR_ALLOC(iid) < 0) {
@@ -2191,12 +2192,15 @@ static char *vboxDomainDumpXML(virDomainPtr dom, int flags) {
                 } else if ((vrdpPresent != 1) && (totalPresent == 0) && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
                     if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
                         def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-                        def->graphics[def->ngraphics]->data.desktop.display = strdup(getenv("DISPLAY"));
-                        if (def->graphics[def->ngraphics]->data.desktop.display == NULL) {
-                            virReportOOMError();
-                            /* just don't go to cleanup yet as it is ok to have
-                             * display as NULL
-                             */
+                        tmp = getenv("DISPLAY");
+                        if (tmp != NULL) {
+                            def->graphics[def->ngraphics]->data.desktop.display = strdup(tmp);
+                            if (def->graphics[def->ngraphics]->data.desktop.display == NULL) {
+                                virReportOOMError();
+                                /* just don't go to cleanup yet as it is ok to have
+                                 * display as NULL
+                                 */
+                            }
                         }
                         totalPresent++;
                         def->ngraphics++;
