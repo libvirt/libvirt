@@ -1892,6 +1892,7 @@ static virDriver umlDriver = {
     umlListDefinedDomains, /* listDefinedDomains */
     umlNumDefinedDomains, /* numOfDefinedDomains */
     umlDomainStart, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     umlDomainDefine, /* domainDefineXML */
     umlDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

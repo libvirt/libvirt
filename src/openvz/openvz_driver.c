@@ -1507,6 +1507,7 @@ static virDriver openvzDriver = {
     openvzListDefinedDomains, /* listDefinedDomains */
     openvzNumDefinedDomains, /* numOfDefinedDomains */
     openvzDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     openvzDomainDefineXML, /* domainDefineXML */
     openvzDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

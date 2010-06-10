@@ -2557,6 +2557,7 @@ static virDriver lxcDriver = {
     lxcListDefinedDomains, /* listDefinedDomains */
     lxcNumDefinedDomains, /* numOfDefinedDomains */
     lxcDomainStart, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     lxcDomainDefine, /* domainDefineXML */
     lxcDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

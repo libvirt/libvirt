@@ -3694,6 +3694,7 @@ static virDriver esxDriver = {
     esxListDefinedDomains,           /* listDefinedDomains */
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */
+    NULL,                            /* domainCreateWithFlags */
     esxDomainDefineXML,              /* domainDefineXML */
     esxDomainUndefine,               /* domainUndefine */
     NULL,                            /* domainAttachDevice */

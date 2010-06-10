@@ -5261,6 +5261,7 @@ static virDriver testDriver = {
     testListDefinedDomains, /* listDefinedDomains */
     testNumOfDefinedDomains, /* numOfDefinedDomains */
     testDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     testDomainDefineXML, /* domainDefineXML */
     testDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

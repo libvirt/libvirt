@@ -8177,6 +8177,7 @@ virDriver NAME(Driver) = {
     vboxListDefinedDomains, /* listDefinedDomains */
     vboxNumOfDefinedDomains, /* numOfDefinedDomains */
     vboxDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     vboxDomainDefineXML, /* domainDefineXML */
     vboxDomainUndefine, /* domainUndefine */
     vboxDomainAttachDevice, /* domainAttachDevice */

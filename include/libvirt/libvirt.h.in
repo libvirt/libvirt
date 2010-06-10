@@ -799,6 +799,8 @@ int                     virConnectListDefinedDomains (virConnectPtr conn,
                                                  char **const names,
                                                  int maxnames);
 int                     virDomainCreate         (virDomainPtr domain);
+int                     virDomainCreateWithFlags (virDomainPtr domain,
+                                                 unsigned int flags);
 
 int                     virDomainGetAutostart   (virDomainPtr domain,
                                                  int *autostart);

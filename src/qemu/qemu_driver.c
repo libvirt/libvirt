@@ -12195,6 +12195,7 @@ static virDriver qemuDriver = {
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */
     qemudDomainStart, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
     qemudDomainAttachDevice, /* domainAttachDevice */

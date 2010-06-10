@@ -4878,7 +4878,7 @@ error:
  * virDomainCreate:
  * @domain: pointer to a defined domain
  *
- * launch a defined domain. If the call succeed the domain moves from the
+ * Launch a defined domain. If the call succeeds the domain moves from the
  * defined to the running domains pools.
  *
  * Returns 0 in case of success, -1 in case of error
@@ -4904,6 +4904,49 @@ virDomainCreate(virDomainPtr domain) {
     if (conn->driver->domainCreate) {
         int ret;
         ret = conn->driver->domainCreate (domain);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+/**
+ * virDomainCreateWithFlags:
+ * @domain: pointer to a defined domain
+ * @flags: bitwise-or of supported virDomainCreateFlags
+ *
+ * Launch a defined domain. If the call succeeds the domain moves from the
+ * defined to the running domains pools.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
+    virConnectPtr conn;
+    DEBUG("domain=%p, flags=%d", domain, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return (-1);
+    }
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainCreateWithFlags) {
+        int ret;
+        ret = conn->driver->domainCreateWithFlags (domain, flags);
         if (ret < 0)
             goto error;
         return ret;

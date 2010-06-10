@@ -161,6 +161,9 @@ typedef int
         (*virDrvNumOfDefinedDomains)	(virConnectPtr conn);
 typedef int
         (*virDrvDomainCreate)		(virDomainPtr dom);
+typedef int
+        (*virDrvDomainCreateWithFlags)	(virDomainPtr dom,
+                                         unsigned int flags);
 typedef virDomainPtr
         (*virDrvDomainDefineXML)	(virConnectPtr conn,
                                          const char *xml);
@@ -468,7 +471,7 @@ typedef int
  *  - close
  */
 struct _virDriver {
-    int	       no;	/* the number virDrvNo */
+    int        no;	/* the number virDrvNo */
     const char * name;	/* the name of the driver */
     virDrvOpen			open;
     virDrvClose			close;
@@ -511,6 +514,7 @@ struct _virDriver {
     virDrvListDefinedDomains	listDefinedDomains;
     virDrvNumOfDefinedDomains	numOfDefinedDomains;
     virDrvDomainCreate		domainCreate;
+    virDrvDomainCreateWithFlags	domainCreateWithFlags;
     virDrvDomainDefineXML           domainDefineXML;
     virDrvDomainUndefine            domainUndefine;
     virDrvDomainAttachDevice	domainAttachDevice;

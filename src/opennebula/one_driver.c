@@ -755,6 +755,7 @@ static virDriver oneDriver = {
     oneListDefinedDomains, /* listDefinedDomains */
     oneNumDefinedDomains, /* numOfDefinedDomains */
     oneDomainStart, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     oneDomainDefine, /* domainDefineXML */
     oneDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

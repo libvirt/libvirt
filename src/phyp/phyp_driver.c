@@ -1609,6 +1609,7 @@ virDriver phypDriver = {
     phypListDefinedDomains,     /* listDefinedDomains */
     phypNumDefinedDomains,      /* numOfDefinedDomains */
     NULL,                       /* domainCreate */
+    NULL,                       /* domainCreateWithFlags */
     NULL,                       /* domainDefineXML */
     NULL,                       /* domainUndefine */
     NULL,                       /* domainAttachDevice */

@@ -1941,6 +1941,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedListDefinedDomains, /* listDefinedDomains */
     xenUnifiedNumOfDefinedDomains, /* numOfDefinedDomains */
     xenUnifiedDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     xenUnifiedDomainDefineXML, /* domainDefineXML */
     xenUnifiedDomainUndefine, /* domainUndefine */
     xenUnifiedDomainAttachDevice, /* domainAttachDevice */

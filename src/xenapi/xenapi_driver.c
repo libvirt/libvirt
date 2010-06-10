@@ -1744,6 +1744,7 @@ static virDriver xenapiDriver = {
     xenapiListDefinedDomains, /* listDefinedDomains */
     xenapiNumOfDefinedDomains, /* numOfDefinedDomains */
     xenapiDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     xenapiDomainDefineXML, /* domainDefineXML */
     xenapiDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

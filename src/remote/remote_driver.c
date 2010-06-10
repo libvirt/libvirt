@@ -10215,6 +10215,7 @@ static virDriver remote_driver = {
     remoteListDefinedDomains, /* listDefinedDomains */
     remoteNumOfDefinedDomains, /* numOfDefinedDomains */
     remoteDomainCreate, /* domainCreate */
+    NULL, /* domainCreateWithFlags */
     remoteDomainDefineXML, /* domainDefineXML */
     remoteDomainUndefine, /* domainUndefine */
     remoteDomainAttachDevice, /* domainAttachDevice */
