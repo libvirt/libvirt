@@ -2345,7 +2345,7 @@ esxNumberOfDefinedDomains(virConnectPtr conn)
 
 
 static int
-esxDomainCreate(virDomainPtr domain)
+esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -2354,6 +2354,8 @@ esxDomainCreate(virDomainPtr domain)
     esxVI_VirtualMachinePowerState powerState;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->host) < 0) {
         return -1;
@@ -2397,7 +2399,11 @@ esxDomainCreate(virDomainPtr domain)
     return result;
 }
 
-
+static int
+esxDomainCreate(virDomainPtr domain)
+{
+    return esxDomainCreateWithFlags(domain, 0);
+}
 
 static virDomainPtr
 esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
@@ -3694,7 +3700,7 @@ static virDriver esxDriver = {
     esxListDefinedDomains,           /* listDefinedDomains */
     esxNumberOfDefinedDomains,       /* numOfDefinedDomains */
     esxDomainCreate,                 /* domainCreate */
-    NULL,                            /* domainCreateWithFlags */
+    esxDomainCreateWithFlags,        /* domainCreateWithFlags */
     esxDomainDefineXML,              /* domainDefineXML */
     esxDomainUndefine,               /* domainUndefine */
     NULL,                            /* domainAttachDevice */

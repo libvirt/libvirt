@@ -3143,7 +3143,7 @@ cleanup:
     return ret;
 }
 
-static int vboxDomainCreate(virDomainPtr dom) {
+static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine **machines    = NULL;
     IProgress *progress    = NULL;
@@ -3154,6 +3154,8 @@ static int vboxDomainCreate(virDomainPtr dom) {
     unsigned char iidl[VIR_UUID_BUFLEN] = {0};
     nsresult rc;
     int i = 0;
+
+    virCheckFlags(0, -1);
 
     if (!dom->name) {
         vboxError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3359,6 +3361,10 @@ static int vboxDomainCreate(virDomainPtr dom) {
 
 cleanup:
     return ret;
+}
+
+static int vboxDomainCreate(virDomainPtr dom) {
+    return vboxDomainCreateWithFlags(dom, 0);
 }
 
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
@@ -8177,7 +8183,7 @@ virDriver NAME(Driver) = {
     vboxListDefinedDomains, /* listDefinedDomains */
     vboxNumOfDefinedDomains, /* numOfDefinedDomains */
     vboxDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    vboxDomainCreateWithFlags, /* domainCreateWithFlags */
     vboxDomainDefineXML, /* domainDefineXML */
     vboxDomainUndefine, /* domainUndefine */
     vboxDomainAttachDevice, /* domainAttachDevice */

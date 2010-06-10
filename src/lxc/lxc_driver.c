@@ -1349,19 +1349,22 @@ cleanup:
 }
 
 /**
- * lxcDomainStart:
+ * lxcDomainStartWithFlags:
  * @dom: domain to start
+ * @flags: Must be 0 for now
  *
  * Looks up domain and starts it.
  *
  * Returns 0 on success or -1 in case of error
  */
-static int lxcDomainStart(virDomainPtr dom)
+static int lxcDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 {
     lxc_driver_t *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     lxcDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1399,6 +1402,19 @@ cleanup:
         lxcDomainEventQueue(driver, event);
     lxcDriverUnlock(driver);
     return ret;
+}
+
+/**
+ * lxcDomainStart:
+ * @dom: domain to start
+ *
+ * Looks up domain and starts it.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int lxcDomainStart(virDomainPtr dom)
+{
+    return lxcDomainStartWithFlags(dom, 0);
 }
 
 /**
@@ -2557,7 +2573,7 @@ static virDriver lxcDriver = {
     lxcListDefinedDomains, /* listDefinedDomains */
     lxcNumDefinedDomains, /* numOfDefinedDomains */
     lxcDomainStart, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    lxcDomainStartWithFlags, /* domainCreateWithFlags */
     lxcDomainDefine, /* domainDefineXML */
     lxcDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

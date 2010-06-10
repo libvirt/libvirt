@@ -958,12 +958,14 @@ cleanup:
 }
 
 static int
-openvzDomainCreate(virDomainPtr dom)
+openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *prog[] = {VZCTL, "--quiet", "start", PROGRAM_SENTINAL, NULL };
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     openvzDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dom->name);
@@ -997,6 +999,12 @@ cleanup:
     if (vm)
         virDomainObjUnlock(vm);
     return ret;
+}
+
+static int
+openvzDomainCreate(virDomainPtr dom)
+{
+    return openvzDomainCreateWithFlags(dom, 0);
 }
 
 static int
@@ -1507,7 +1515,7 @@ static virDriver openvzDriver = {
     openvzListDefinedDomains, /* listDefinedDomains */
     openvzNumDefinedDomains, /* numOfDefinedDomains */
     openvzDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    openvzDomainCreateWithFlags, /* domainCreateWithFlags */
     openvzDomainDefineXML, /* domainDefineXML */
     openvzDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

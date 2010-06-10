@@ -2350,11 +2350,13 @@ cleanup:
 }
 
 
-static int testDomainCreate(virDomainPtr domain) {
+static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags) {
     testConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virDomainEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     testDriverLock(privconn);
     privdom = virDomainFindByName(&privconn->domains,
@@ -2387,6 +2389,10 @@ cleanup:
         testDomainEventQueue(privconn, event);
     testDriverUnlock(privconn);
     return ret;
+}
+
+static int testDomainCreate(virDomainPtr domain) {
+    return testDomainCreateWithFlags(domain, 0);
 }
 
 static int testDomainUndefine(virDomainPtr domain) {
@@ -5261,7 +5267,7 @@ static virDriver testDriver = {
     testListDefinedDomains, /* listDefinedDomains */
     testNumOfDefinedDomains, /* numOfDefinedDomains */
     testDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    testDomainCreateWithFlags, /* domainCreateWithFlags */
     testDomainDefineXML, /* domainDefineXML */
     testDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

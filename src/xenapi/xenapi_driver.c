@@ -1448,17 +1448,20 @@ xenapiNumOfDefinedDomains (virConnectPtr conn)
 }
 
 /*
- * xenapiDomainCreate
+ * xenapiDomainCreateWithFlags
  *
  * starts a VM
  * Return 0 on success or -1 in case of error
  */
 static int
-xenapiDomainCreate (virDomainPtr dom)
+xenapiDomainCreateWithFlags (virDomainPtr dom, unsigned int flags)
 {
     xen_vm_set *vms;
     xen_vm vm;
     xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
+
+    virCheckFlags(0, -1);
+
     if (xen_vm_get_by_name_label(session, &vms, dom->name) && vms->size > 0) {
         if (vms->size != 1) {
             xenapiSessionErrorHandler(dom->conn, VIR_ERR_INTERNAL_ERROR,
@@ -1479,6 +1482,18 @@ xenapiDomainCreate (virDomainPtr dom)
         return -1;
     }
     return 0;
+}
+
+/*
+ * xenapiDomainCreate
+ *
+ * starts a VM
+ * Return 0 on success or -1 in case of error
+ */
+static int
+xenapiDomainCreate (virDomainPtr dom)
+{
+    return xenapiDomainCreateWithFlags(dom, 0);
 }
 
 /*
@@ -1744,7 +1759,7 @@ static virDriver xenapiDriver = {
     xenapiListDefinedDomains, /* listDefinedDomains */
     xenapiNumOfDefinedDomains, /* numOfDefinedDomains */
     xenapiDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    xenapiDomainCreateWithFlags, /* domainCreateWithFlags */
     xenapiDomainDefineXML, /* domainDefineXML */
     xenapiDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

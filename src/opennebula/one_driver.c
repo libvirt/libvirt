@@ -402,13 +402,15 @@ cleanup:
     return ret;
 }
 
-static int oneDomainStart(virDomainPtr dom)
+static int oneDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn = dom->conn;
     one_driver_t *driver = conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     int oneid;
+
+    virCheckFlags(0, -1);
 
     oneDriverLock(driver);
     vm = virDomainFindByName(&driver->domains, dom->name);
@@ -432,6 +434,11 @@ return_point:
     oneDriverUnlock(driver);
 
     return ret;
+}
+
+static int oneDomainStart(virDomainPtr dom)
+{
+    return oneDomainStartWithFlags(dom, 0);
 }
 
 static virDomainPtr
@@ -755,7 +762,7 @@ static virDriver oneDriver = {
     oneListDefinedDomains, /* listDefinedDomains */
     oneNumDefinedDomains, /* numOfDefinedDomains */
     oneDomainStart, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    oneDomainStartWithFlags, /* domainCreateWithFlags */
     oneDomainDefine, /* domainDefineXML */
     oneDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */

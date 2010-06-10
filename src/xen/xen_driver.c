@@ -1381,10 +1381,12 @@ xenUnifiedNumOfDefinedDomains (virConnectPtr conn)
 }
 
 static int
-xenUnifiedDomainCreate (virDomainPtr dom)
+xenUnifiedDomainCreateWithFlags (virDomainPtr dom, unsigned int flags)
 {
     GET_PRIVATE(dom->conn);
     int i;
+
+    virCheckFlags(0, -1);
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
         if (priv->opened[i] && drivers[i]->domainCreate &&
@@ -1392,6 +1394,12 @@ xenUnifiedDomainCreate (virDomainPtr dom)
             return 0;
 
     return -1;
+}
+
+static int
+xenUnifiedDomainCreate (virDomainPtr dom)
+{
+    return xenUnifiedDomainCreateWithFlags(dom, 0);
 }
 
 static virDomainPtr
@@ -1941,7 +1949,7 @@ static virDriver xenUnifiedDriver = {
     xenUnifiedListDefinedDomains, /* listDefinedDomains */
     xenUnifiedNumOfDefinedDomains, /* numOfDefinedDomains */
     xenUnifiedDomainCreate, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    xenUnifiedDomainCreateWithFlags, /* domainCreateWithFlags */
     xenUnifiedDomainDefineXML, /* domainDefineXML */
     xenUnifiedDomainUndefine, /* domainUndefine */
     xenUnifiedDomainAttachDevice, /* domainAttachDevice */

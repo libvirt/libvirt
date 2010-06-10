@@ -6721,10 +6721,15 @@ cleanup:
     return ret;
 }
 
-static int qemudDomainStart(virDomainPtr dom) {
+static int
+qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
+{
     struct qemud_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    /* XXX: Support VIR_DOMAIN_START_PAUSED */
+    virCheckFlags(0, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6757,6 +6762,12 @@ cleanup:
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
     return ret;
+}
+
+static int
+qemudDomainStart(virDomainPtr dom)
+{
+    return qemudDomainStartWithFlags(dom, 0);
 }
 
 static int
@@ -12195,7 +12206,7 @@ static virDriver qemuDriver = {
     qemudListDefinedDomains, /* listDefinedDomains */
     qemudNumDefinedDomains, /* numOfDefinedDomains */
     qemudDomainStart, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    qemudDomainStartWithFlags, /* domainCreateWithFlags */
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
     qemudDomainAttachDevice, /* domainAttachDevice */

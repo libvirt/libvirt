@@ -1576,10 +1576,12 @@ static int umlNumDefinedDomains(virConnectPtr conn) {
 }
 
 
-static int umlDomainStart(virDomainPtr dom) {
+static int umlDomainStartWithFlags(virDomainPtr dom, unsigned int flags) {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     umlDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -1599,6 +1601,9 @@ cleanup:
     return ret;
 }
 
+static int umlDomainStart(virDomainPtr dom) {
+    return umlDomainStartWithFlags(dom, 0);
+}
 
 static virDomainPtr umlDomainDefine(virConnectPtr conn, const char *xml) {
     struct uml_driver *driver = conn->privateData;
@@ -1892,7 +1897,7 @@ static virDriver umlDriver = {
     umlListDefinedDomains, /* listDefinedDomains */
     umlNumDefinedDomains, /* numOfDefinedDomains */
     umlDomainStart, /* domainCreate */
-    NULL, /* domainCreateWithFlags */
+    umlDomainStartWithFlags, /* domainCreateWithFlags */
     umlDomainDefine, /* domainDefineXML */
     umlDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
