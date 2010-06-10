@@ -148,7 +148,8 @@ static void qemuDomainEventQueue(struct qemud_driver *driver,
 
 static int qemudDomainObjStart(virConnectPtr conn,
                                struct qemud_driver *driver,
-                               virDomainObjPtr vm);
+                               virDomainObjPtr vm,
+                               bool start_paused);
 
 static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
@@ -643,7 +644,7 @@ qemuAutostartDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     } else {
         if (vm->autostart &&
             !virDomainObjIsActive(vm) &&
-            qemudDomainObjStart(data->conn, data->driver, vm) < 0) {
+            qemudDomainObjStart(data->conn, data->driver, vm, false) < 0) {
             err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
@@ -6685,7 +6686,8 @@ static int qemudNumDefinedDomains(virConnectPtr conn) {
 
 static int qemudDomainObjStart(virConnectPtr conn,
                                struct qemud_driver *driver,
-                               virDomainObjPtr vm)
+                               virDomainObjPtr vm,
+                               bool start_paused)
 {
     int ret = -1;
     char *managed_save;
@@ -6706,7 +6708,7 @@ static int qemudDomainObjStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    ret = qemudStartVMDaemon(conn, driver, vm, NULL, false, -1, NULL);
+    ret = qemudStartVMDaemon(conn, driver, vm, NULL, start_paused, -1, NULL);
     if (ret != -1) {
         virDomainEventPtr event =
             virDomainEventNewFromObj(vm,
@@ -6728,8 +6730,7 @@ qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     int ret = -1;
 
-    /* XXX: Support VIR_DOMAIN_START_PAUSED */
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_START_PAUSED, -1);
 
     qemuDriverLock(driver);
     vm = virDomainFindByUUID(&driver->domains, dom->uuid);
@@ -6751,7 +6752,8 @@ qemudDomainStartWithFlags(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
-    ret = qemudDomainObjStart(dom->conn, driver, vm);
+    ret = qemudDomainObjStart(dom->conn, driver, vm,
+                              (flags & VIR_DOMAIN_START_PAUSED) != 0);
 
 endjob:
     if (qemuDomainObjEndJob(vm) == 0)
