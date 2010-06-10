@@ -5219,7 +5219,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
 endjob:
     if (vm) {
         if (ret != 0) {
-            if (header.was_running && priv->mon) {
+            if (header.was_running && virDomainObjIsActive(vm)) {
                 qemuDomainObjEnterMonitorWithDriver(driver, vm);
                 rc = qemuMonitorStartCPUs(priv->mon, dom->conn);
                 qemuDomainObjExitMonitorWithDriver(driver, vm);
@@ -5531,7 +5531,7 @@ endjob:
     /* Since the monitor is always attached to a pty for libvirt, it
        will support synchronous operations so we always get here after
        the migration is complete.  */
-    else if (resume && paused && priv->mon) {
+    else if (resume && paused && virDomainObjIsActive(vm)) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         if (qemuMonitorStartCPUs(priv->mon, dom->conn) < 0) {
             if (virGetLastError() == NULL)
@@ -7657,7 +7657,7 @@ cleanup:
     return ret;
 
 try_remove:
-    if (!priv->mon)
+    if (!virDomainObjIsActive(vm))
         goto cleanup;
 
     if (vlan < 0) {
@@ -7689,7 +7689,7 @@ try_remove:
     goto cleanup;
 
 try_tapfd_close:
-    if (!priv->mon)
+    if (!virDomainObjIsActive(vm))
         goto cleanup;
 
     if (tapfd_name) {
@@ -10743,7 +10743,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     retval = doTunnelSendAll(st, client_sock);
 
 cancel:
-    if (retval != 0 && priv->mon) {
+    if (retval != 0 && virDomainObjIsActive(vm)) {
         qemuDomainObjEnterMonitorWithDriver(driver, vm);
         qemuMonitorMigrateCancel(priv->mon);
         qemuDomainObjExitMonitorWithDriver(driver, vm);
