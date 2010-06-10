@@ -638,18 +638,74 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
         goto masqerr2;
     }
 
-    /* enable masquerading */
+    /*
+     * Enable masquerading.
+     *
+     * We need to end up with 3 rules in the table in this order
+     *
+     *  1. protocol=tcp with sport mapping restricton
+     *  2. protocol=udp with sport mapping restricton
+     *  3. generic any protocol
+     *
+     * The sport mappings are required, because default IPtables
+     * MASQUERADE is maintain port number unchanged where possible.
+     *
+     * NFS can be configured to only "trust" port numbers < 1023.
+     *
+     * Guests using NAT thus need to be prevented from having port
+     * numbers < 1023, otherwise they can bypass the NFS "security"
+     * check on the source port number.
+     *
+     * Since we use '--insert' to add rules to the header of the
+     * chain, we actually need to add them in the reverse of the
+     * order just mentioned !
+     */
+
+    /* First the generic masquerade rule for other protocols */
     if ((err = iptablesAddForwardMasquerade(driver->iptables,
                                             network->def->network,
-                                            network->def->forwardDev))) {
+                                            network->def->forwardDev,
+                                            NULL))) {
         virReportSystemError(err,
                              _("failed to add iptables rule to enable masquerading to '%s'"),
                              network->def->forwardDev ? network->def->forwardDev : NULL);
         goto masqerr3;
     }
 
+    /* UDP with a source port restriction */
+    if ((err = iptablesAddForwardMasquerade(driver->iptables,
+                                            network->def->network,
+                                            network->def->forwardDev,
+                                            "udp"))) {
+        virReportSystemError(err,
+                             _("failed to add iptables rule to enable UDP masquerading to '%s'"),
+                             network->def->forwardDev ? network->def->forwardDev : NULL);
+        goto masqerr4;
+    }
+
+    /* TCP with a source port restriction */
+    if ((err = iptablesAddForwardMasquerade(driver->iptables,
+                                            network->def->network,
+                                            network->def->forwardDev,
+                                            "tcp"))) {
+        virReportSystemError(err,
+                             _("failed to add iptables rule to enable TCP masquerading to '%s'"),
+                             network->def->forwardDev ? network->def->forwardDev : NULL);
+        goto masqerr5;
+    }
+
     return 1;
 
+ masqerr5:
+    iptablesRemoveForwardMasquerade(driver->iptables,
+                                    network->def->network,
+                                    network->def->forwardDev,
+                                    "udp");
+ masqerr4:
+    iptablesRemoveForwardMasquerade(driver->iptables,
+                                    network->def->network,
+                                    network->def->forwardDev,
+                                    NULL);
  masqerr3:
     iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                  network->def->network,
@@ -814,8 +870,17 @@ networkRemoveIptablesRules(struct network_driver *driver,
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
         if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
             iptablesRemoveForwardMasquerade(driver->iptables,
-                                                network->def->network,
-                                                network->def->forwardDev);
+                                            network->def->network,
+                                            network->def->forwardDev,
+                                            "tcp");
+            iptablesRemoveForwardMasquerade(driver->iptables,
+                                            network->def->network,
+                                            network->def->forwardDev,
+                                            "udp");
+            iptablesRemoveForwardMasquerade(driver->iptables,
+                                            network->def->network,
+                                            network->def->forwardDev,
+                                            NULL);
             iptablesRemoveForwardAllowRelatedIn(driver->iptables,
                                                 network->def->network,
                                                 network->def->bridge,

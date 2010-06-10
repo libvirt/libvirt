@@ -692,25 +692,49 @@ iptablesRemoveForwardRejectIn(iptablesContext *ctx,
  */
 static int
 iptablesForwardMasquerade(iptablesContext *ctx,
-                       const char *network,
-                       const char *physdev,
-                       int action)
+                          const char *network,
+                          const char *physdev,
+                          const char *protocol,
+                          int action)
 {
-    if (physdev && physdev[0]) {
-        return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                     action,
-                                     "--source", network,
-                                     "!", "--destination", network,
-                                     "--out-interface", physdev,
-                                     "--jump", "MASQUERADE",
-                                     NULL);
+    if (protocol && protocol[0]) {
+        if (physdev && physdev[0]) {
+            return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                         action,
+                                         "--source", network,
+                                         "-p", protocol,
+                                         "!", "--destination", network,
+                                         "--out-interface", physdev,
+                                         "--jump", "MASQUERADE",
+                                         "--to-ports", "1024-65535",
+                                         NULL);
+        } else {
+            return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                         action,
+                                         "--source", network,
+                                         "-p", protocol,
+                                         "!", "--destination", network,
+                                         "--jump", "MASQUERADE",
+                                         "--to-ports", "1024-65535",
+                                         NULL);
+        }
     } else {
-        return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                     action,
-                                     "--source", network,
-                                     "!", "--destination", network,
-                                     "--jump", "MASQUERADE",
-                                     NULL);
+        if (physdev && physdev[0]) {
+            return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                         action,
+                                         "--source", network,
+                                         "!", "--destination", network,
+                                         "--out-interface", physdev,
+                                         "--jump", "MASQUERADE",
+                                         NULL);
+        } else {
+            return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                         action,
+                                         "--source", network,
+                                         "!", "--destination", network,
+                                         "--jump", "MASQUERADE",
+                                         NULL);
+        }
     }
 }
 
@@ -719,6 +743,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
  * @ctx: pointer to the IP table context
  * @network: the source network name
  * @physdev: the physical input device or NULL
+ * @protocol: the network protocol or NULL
  *
  * Add rules to the IP table context to allow masquerading
  * network @network on @physdev. This allow the bridge to
@@ -729,9 +754,10 @@ iptablesForwardMasquerade(iptablesContext *ctx,
 int
 iptablesAddForwardMasquerade(iptablesContext *ctx,
                              const char *network,
-                             const char *physdev)
+                             const char *physdev,
+                             const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, network, physdev, ADD);
+    return iptablesForwardMasquerade(ctx, network, physdev, protocol, ADD);
 }
 
 /**
@@ -739,6 +765,7 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
  * @ctx: pointer to the IP table context
  * @network: the source network name
  * @physdev: the physical input device or NULL
+ * @protocol: the network protocol or NULL
  *
  * Remove rules from the IP table context to stop masquerading
  * network @network on @physdev. This stops the bridge from
@@ -749,7 +776,8 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
 int
 iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 const char *network,
-                                const char *physdev)
+                                const char *physdev,
+                                const char *protocol)
 {
-    return iptablesForwardMasquerade(ctx, network, physdev, REMOVE);
+    return iptablesForwardMasquerade(ctx, network, physdev, protocol, REMOVE);
 }

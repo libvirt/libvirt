@@ -85,9 +85,11 @@ int              iptablesRemoveForwardRejectIn   (iptablesContext *ctx,
 
 int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
                                                   const char *network,
-                                                  const char *physdev);
+                                                  const char *physdev,
+                                                  const char *protocol);
 int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
                                                   const char *network,
-                                                  const char *physdev);
+                                                  const char *physdev,
+                                                  const char *protocol);
 
 #endif /* __QEMUD_IPTABLES_H__ */
