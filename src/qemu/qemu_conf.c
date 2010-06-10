@@ -3779,8 +3779,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!def->graphics)
         ADD_ARG_LIT("-nographic");
 
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
-        ADD_ARG_LIT("-nodefaults");
+    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+        ADD_ARG_LIT("-nodefconfig"); /* Disabling global config files */
+        ADD_ARG_LIT("-nodefaults");  /* Disabling default guest devices */
+    }
 
     if (monitor_chr) {
         char *chrdev;
