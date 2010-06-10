@@ -469,9 +469,12 @@ services must be shutdown in the domain.
 The exact behavior of a domain when it shuts down is set by the
 I<on_shutdown> parameter in the domain's XML definition.
 
-=item B<start> I<domain-name>
+=item B<start> I<domain-name> optional I<--console> I<--paused>
 
-Start a (previously defined) inactive domain.
+Start a (previously defined) inactive domain.  The domain will be paused
+if the I<--paused> option is used and supported by the driver; otherwise
+it will be running.
+If I<--console> is requested, attach to the console after creation.
 
 =item B<suspend> I<domain-id>
 

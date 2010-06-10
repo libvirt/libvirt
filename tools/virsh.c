@@ -1306,6 +1306,7 @@ static const vshCmdOptDef opts_start[] = {
 #ifndef WIN32
     {"console", VSH_OT_BOOL, 0, N_("attach to console after creation")},
 #endif
+    {"paused", VSH_OT_BOOL, 0, N_("leave the guest paused after creation")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1317,6 +1318,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 #ifndef WIN32
     int console = vshCommandOptBool(cmd, "console");
 #endif
+    unsigned int flags = VIR_DOMAIN_NONE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1330,7 +1332,12 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    if (virDomainCreate(dom) == 0) {
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_START_PAUSED;
+
+    /* Prefer older API unless we have to pass a flag.  */
+    if ((flags ? virDomainCreateWithFlags(dom, flags)
+         : virDomainCreate(dom)) == 0) {
         vshPrint(ctl, _("Domain %s started\n"),
                  virDomainGetName(dom));
 #ifndef WIN32
