@@ -1213,6 +1213,7 @@ int virFileResolveLink(const char *linkpath,
  */
 char *virFindFileInPath(const char *file)
 {
+    char *path;
     char pathenv[PATH_MAX];
     char *penv = pathenv;
     char *pathseg;
@@ -1232,7 +1233,9 @@ char *virFindFileInPath(const char *file)
     }
 
     /* copy PATH env so we can tweak it */
-    if (virStrcpyStatic(pathenv, getenv("PATH")) == NULL)
+    path = getenv("PATH");
+
+    if (path == NULL || virStrcpyStatic(pathenv, path) == NULL)
         return NULL;
 
     /* for each path segment, append the file to search for and test for
