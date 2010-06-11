@@ -1542,16 +1542,20 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         if (virFileHasSuffix(fileName, ".vmdk")) {
             if (deviceType != NULL) {
                 if (bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-                    STRCASENEQ(deviceType, "scsi-hardDisk")) {
+                    STRCASENEQ(deviceType, "scsi-hardDisk") &&
+                    STRCASENEQ(deviceType, "disk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                               _("Expecting VMX entry '%s' to be 'scsi-hardDisk' "
-                                "but found '%s'"), deviceType_name, deviceType);
+                                "or 'disk' but found '%s'"), deviceType_name,
+                              deviceType);
                     goto cleanup;
                 } else if (bus == VIR_DOMAIN_DISK_BUS_IDE &&
-                           STRCASENEQ(deviceType, "ata-hardDisk")) {
+                           STRCASENEQ(deviceType, "ata-hardDisk") &&
+                           STRCASENEQ(deviceType, "disk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                               _("Expecting VMX entry '%s' to be 'ata-hardDisk' "
-                                "but found '%s'"), deviceType_name, deviceType);
+                                "or 'disk' but found '%s'"), deviceType_name,
+                              deviceType);
                     goto cleanup;
                 }
             }
