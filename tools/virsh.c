@@ -6098,12 +6098,13 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
  * "vol-key" command
  */
 static const vshCmdInfo info_vol_key[] = {
-    {"help", N_("convert a vol UUID to vol key")},
+    {"help", N_("returns the volume key for a given volume name or path")},
     {"desc", ""},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_vol_key[] = {
+    {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol uuid")},
     {NULL, 0, 0, NULL}
 };
@@ -6116,8 +6117,7 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (!(vol = vshCommandOptVolBy(ctl, cmd, "vol", "pool", NULL,
-                                   VSH_BYUUID)))
+    if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return FALSE;
 
     vshPrint(ctl, "%s\n", virStorageVolGetKey(vol));
