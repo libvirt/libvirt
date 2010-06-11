@@ -6018,13 +6018,13 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
  * "vol-name" command
  */
 static const vshCmdInfo info_vol_name[] = {
-    {"help", N_("convert a vol UUID to vol name")},
+    {"help", N_("returns the volume name for a given volume key or path")},
     {"desc", ""},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_vol_name[] = {
-    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol key or path")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume key or path")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6105,7 +6105,7 @@ static const vshCmdInfo info_vol_key[] = {
 
 static const vshCmdOptDef opts_vol_key[] = {
     {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
-    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol uuid")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume name or path")},
     {NULL, 0, 0, NULL}
 };
 
@@ -6131,14 +6131,14 @@ cmdVolKey(vshControl *ctl, const vshCmd *cmd)
  * "vol-path" command
  */
 static const vshCmdInfo info_vol_path[] = {
-    {"help", N_("convert a vol UUID to vol path")},
+    {"help", N_("returns the volume path for a given volume name or key")},
     {"desc", ""},
     {NULL, NULL}
 };
 
 static const vshCmdOptDef opts_vol_path[] = {
     {"pool", VSH_OT_STRING, 0, N_("pool name or uuid")},
-    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("vol name or key")},
+    {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume name or key")},
     {NULL, 0, 0, NULL}
 };
 
