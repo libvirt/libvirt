@@ -6084,6 +6084,7 @@ static const vshCmdInfo info_vol_pool[] = {
 };
 
 static const vshCmdOptDef opts_vol_pool[] = {
+    {"uuid", VSH_OT_BOOL, 0, N_("return the pool uuid rather than pool name")},
     {"vol", VSH_OT_DATA, VSH_OFLAG_REQ, N_("volume key or path")},
     {NULL, 0, 0, NULL}
 };
@@ -6093,6 +6094,7 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol;
+    char uuid[VIR_UUID_STRING_BUFLEN];
 
     /* Check the connection to libvirtd daemon is still working */
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -6112,8 +6114,15 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
     }
 
-    /* Return the name of the parent storage pool */
-    vshPrint(ctl, "%s\n", virStoragePoolGetName(pool));
+    /* Return the requested details of the parent storage pool */
+    if (vshCommandOptBool(cmd, "uuid")) {
+        /* Retrieve and return pool UUID string */
+        if (virStoragePoolGetUUIDString(pool, &uuid[0]) == 0)
+            vshPrint(ctl, "%s\n", uuid);
+    } else {
+        /* Return the storage pool name */
+        vshPrint(ctl, "%s\n", virStoragePoolGetName(pool));
+    }
 
     /* Cleanup */
     virStorageVolFree(vol);
