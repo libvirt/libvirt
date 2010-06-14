@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     }
 
     path = argv[1];
-    partsep = c_isdigit(path[strlen(path)-1]) ? "p" : "";
+    partsep = *path && c_isdigit(path[strlen(path)-1]) ? "p" : "";
 
     if ((dev = ped_device_get(path)) == NULL) {
         fprintf(stderr, "unable to access device %s\n", path);
