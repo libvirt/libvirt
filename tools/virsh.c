@@ -3413,7 +3413,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virNetworkGetAutostart(network, &autostart) < 0)
             autostartStr = _("no autostart");
         else
-            autostartStr = autostart ? "yes" : "no";
+            autostartStr = autostart ? _("yes") : _("no");
 
         vshPrint(ctl, "%-20s %-10s %-10s\n",
                  virNetworkGetName(network),
@@ -3436,7 +3436,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virNetworkGetAutostart(network, &autostart) < 0)
             autostartStr = _("no autostart");
         else
-            autostartStr = autostart ? "yes" : "no";
+            autostartStr = autostart ? _("yes") : _("no");
 
         vshPrint(ctl, "%-20s %-10s %-10s\n",
                  inactiveNames[i],
@@ -4954,7 +4954,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virStoragePoolGetAutostart(pool, &autostart) < 0)
             autostartStr = _("no autostart");
         else
-            autostartStr = autostart ? "yes" : "no";
+            autostartStr = autostart ? _("yes") : _("no");
 
         vshPrint(ctl, "%-20s %-10s %-10s\n",
                  virStoragePoolGetName(pool),
@@ -4977,7 +4977,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         if (virStoragePoolGetAutostart(pool, &autostart) < 0)
             autostartStr = _("no autostart");
         else
-            autostartStr = autostart ? "yes" : "no";
+            autostartStr = autostart ? _("yes") : _("no");
 
         vshPrint(ctl, "%-20s %-10s %-10s\n",
                  inactiveNames[i],
