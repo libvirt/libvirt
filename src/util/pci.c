@@ -814,12 +814,18 @@ pciBindDeviceToStub(pciDevice *dev, const char *driver)
 }
 
 int
-pciDettachDevice(pciDevice *dev)
+pciDettachDevice(pciDevice *dev, pciDeviceList *activeDevs)
 {
     const char *driver = pciFindStubDriver();
     if (!driver) {
         pciReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot find any PCI stub module"));
+        return -1;
+    }
+
+    if (activeDevs && pciDeviceListFind(activeDevs, dev)) {
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Not detaching active device %s"), dev->name);
         return -1;
     }
 
@@ -875,12 +881,18 @@ pciUnBindDeviceFromStub(pciDevice *dev, const char *driver)
 }
 
 int
-pciReAttachDevice(pciDevice *dev)
+pciReAttachDevice(pciDevice *dev, pciDeviceList *activeDevs)
 {
     const char *driver = pciFindStubDriver();
     if (!driver) {
         pciReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot find any PCI stub module"));
+        return -1;
+    }
+
+    if (activeDevs && pciDeviceListFind(activeDevs, dev)) {
+        pciReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Not reattaching active device %s"), dev->name);
         return -1;
     }
 

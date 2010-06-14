@@ -2865,7 +2865,7 @@ qemuPrepareHostPCIDevices(struct qemud_driver *driver,
             goto cleanup;
 
         if (pciDeviceGetManaged(dev) &&
-            pciDettachDevice(dev) < 0)
+            pciDettachDevice(dev, driver->activePciHostdevs) < 0)
             goto cleanup;
     }
 
@@ -2967,7 +2967,7 @@ qemuPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static void
-qemudReattachManagedDevice(pciDevice *dev)
+qemudReattachManagedDevice(pciDevice *dev, struct qemud_driver *driver)
 {
     int retries = 100;
 
@@ -2977,7 +2977,7 @@ qemudReattachManagedDevice(pciDevice *dev)
             usleep(100*1000);
             retries--;
         }
-        if (pciReAttachDevice(dev) < 0) {
+        if (pciReAttachDevice(dev, driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to re-attach PCI device: %s"),
                       err ? err->message : _("unknown error"));
@@ -3024,7 +3024,7 @@ qemuDomainReAttachHostDevices(struct qemud_driver *driver,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        qemudReattachManagedDevice(dev);
+        qemudReattachManagedDevice(dev, driver);
     }
 
     pciDeviceListFree(pcidevs);
@@ -7772,7 +7772,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
         return -1;
 
     if (!pciDeviceIsAssignable(pci, !driver->relaxedACS) ||
-        (hostdev->managed && pciDettachDevice(pci) < 0) ||
+        (hostdev->managed && pciDettachDevice(pci, driver->activePciHostdevs) < 0) ||
         pciResetDevice(pci, driver->activePciHostdevs) < 0) {
         pciFreeDevice(pci);
         return -1;
@@ -7860,7 +7860,7 @@ error:
     if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
         VIR_WARN0("Unable to reset PCI device after assign failure");
     else if (hostdev->managed &&
-             pciReAttachDevice(pci) < 0)
+             pciReAttachDevice(pci, driver->activePciHostdevs) < 0)
         VIR_WARN0("Unable to re-attach PCI device after assign failure");
     pciFreeDevice(pci);
 
@@ -8771,7 +8771,7 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
         pciDeviceListDel(driver->activePciHostdevs, pci);
         if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
             ret = -1;
-        qemudReattachManagedDevice(pci);
+        qemudReattachManagedDevice(pci, driver);
         pciFreeDevice(pci);
     }
 
@@ -11277,6 +11277,7 @@ out:
 static int
 qemudNodeDeviceDettach (virNodeDevicePtr dev)
 {
+    struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
@@ -11288,11 +11289,13 @@ qemudNodeDeviceDettach (virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
-    if (pciDettachDevice(pci) < 0)
+    qemuDriverLock(driver);
+    if (pciDettachDevice(pci, driver->activePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
+    qemuDriverUnlock(driver);
     pciFreeDevice(pci);
     return ret;
 }
@@ -11300,6 +11303,7 @@ out:
 static int
 qemudNodeDeviceReAttach (virNodeDevicePtr dev)
 {
+    struct qemud_driver *driver = dev->conn->privateData;
     pciDevice *pci;
     unsigned domain, bus, slot, function;
     int ret = -1;
@@ -11311,11 +11315,13 @@ qemudNodeDeviceReAttach (virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
-    if (pciReAttachDevice(pci) < 0)
+    qemuDriverLock(driver);
+    if (pciReAttachDevice(pci, driver->activePciHostdevs) < 0)
         goto out;
 
     ret = 0;
 out:
+    qemuDriverUnlock(driver);
     pciFreeDevice(pci);
     return ret;
 }
