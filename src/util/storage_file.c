@@ -78,12 +78,33 @@ struct FileTypeInfo {
     int qcowCryptOffset;  /* Byte offset from start of file
                            * where to find encryption mode,
                            * -1 if encryption is not used */
-    int (*getBackingStore)(char **res, const unsigned char *buf, size_t buf_size);
+    int (*getBackingStore)(char **res, int *format,
+                           const unsigned char *buf, size_t buf_size);
 };
 
-static int cowGetBackingStore(char **, const unsigned char *, size_t);
-static int qcowXGetBackingStore(char **, const unsigned char *, size_t);
-static int vmdk4GetBackingStore(char **, const unsigned char *, size_t);
+static int cowGetBackingStore(char **, int *,
+                              const unsigned char *, size_t);
+static int qcow1GetBackingStore(char **, int *,
+                                const unsigned char *, size_t);
+static int qcow2GetBackingStore(char **, int *,
+                                const unsigned char *, size_t);
+static int vmdk4GetBackingStore(char **, int *,
+                                const unsigned char *, size_t);
+
+#define QCOWX_HDR_VERSION (4)
+#define QCOWX_HDR_BACKING_FILE_OFFSET (QCOWX_HDR_VERSION+4)
+#define QCOWX_HDR_BACKING_FILE_SIZE (QCOWX_HDR_BACKING_FILE_OFFSET+8)
+#define QCOWX_HDR_IMAGE_SIZE (QCOWX_HDR_BACKING_FILE_SIZE+4+4)
+
+#define QCOW1_HDR_CRYPT (QCOWX_HDR_IMAGE_SIZE+8+1+1)
+#define QCOW2_HDR_CRYPT (QCOWX_HDR_IMAGE_SIZE+8)
+
+#define QCOW1_HDR_TOTAL_SIZE (QCOW1_HDR_CRYPT+4+8)
+#define QCOW2_HDR_TOTAL_SIZE (QCOW2_HDR_CRYPT+4+4+8+8+4+4+8)
+
+#define QCOW2_HDR_EXTENSION_END 0
+#define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
+
 
 
 static struct FileTypeInfo const fileTypeInfo[] = {
@@ -119,11 +140,11 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     /* QCow */
     { VIR_STORAGE_FILE_QCOW, "QFI", NULL,
       LV_BIG_ENDIAN, 4, 1,
-      4+4+8+4+4, 8, 1, 4+4+8+4+4+8+1+1+2, qcowXGetBackingStore },
+      QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore },
     /* QCow 2 */
     { VIR_STORAGE_FILE_QCOW2, "QFI", NULL,
       LV_BIG_ENDIAN, 4, 2,
-      4+4+8+4+4, 8, 1, 4+4+8+4+4+8, qcowXGetBackingStore },
+      QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore },
     /* VMDK 3 */
     /* XXX Untested
     { VIR_STORAGE_FILE_VMDK, "COWD", NULL,
@@ -142,11 +163,14 @@ static struct FileTypeInfo const fileTypeInfo[] = {
 
 static int
 cowGetBackingStore(char **res,
+                   int *format,
                    const unsigned char *buf,
                    size_t buf_size)
 {
 #define COW_FILENAME_MAXLEN 1024
     *res = NULL;
+    *format = VIR_STORAGE_FILE_AUTO;
+
     if (buf_size < 4+4+ COW_FILENAME_MAXLEN)
         return BACKING_STORE_INVALID;
     if (buf[4+4] == '\0') /* cow_header_v2.backing_file[0] */
@@ -160,31 +184,98 @@ cowGetBackingStore(char **res,
     return BACKING_STORE_OK;
 }
 
+
+static int
+qcow2GetBackingStoreFormat(int *format,
+                           const unsigned char *buf,
+                           size_t buf_size,
+                           size_t extension_start,
+                           size_t extension_end)
+{
+    size_t offset = extension_start;
+
+    /*
+     * The extensions take format of
+     *
+     * int32: magic
+     * int32: length
+     * byte[length]: payload
+     *
+     * Unknown extensions can be ignored by skipping
+     * over "length" bytes in the data stream.
+     */
+    while (offset < (buf_size-8) &&
+           offset < (extension_end-8)) {
+        unsigned int magic =
+            (buf[offset] << 24) +
+            (buf[offset+1] << 16) +
+            (buf[offset+2] << 8) +
+            (buf[offset+3]);
+        unsigned int len =
+            (buf[offset+4] << 24) +
+            (buf[offset+5] << 16) +
+            (buf[offset+6] << 8) +
+            (buf[offset+7]);
+
+        offset += 8;
+
+        if ((offset + len) < offset)
+            break;
+
+        if ((offset + len) > buf_size)
+            break;
+
+        switch (magic) {
+        case QCOW2_HDR_EXTENSION_END:
+            goto done;
+
+        case QCOW2_HDR_EXTENSION_BACKING_FORMAT:
+            if (buf[offset+len] != '\0')
+                break;
+            *format = virStorageFileFormatTypeFromString(
+                ((const char *)buf)+offset);
+            break;
+        }
+
+        offset += len;
+    }
+
+done:
+
+    return 0;
+}
+
+
 static int
 qcowXGetBackingStore(char **res,
+                     int *format,
                      const unsigned char *buf,
-                     size_t buf_size)
+                     size_t buf_size,
+                     bool isQCow2)
 {
     unsigned long long offset;
     unsigned long size;
 
     *res = NULL;
-    if (buf_size < 4+4+8+4)
+    if (format)
+        *format = VIR_STORAGE_FILE_AUTO;
+
+    if (buf_size < QCOWX_HDR_BACKING_FILE_OFFSET+8+4)
         return BACKING_STORE_INVALID;
-    offset = (((unsigned long long)buf[4+4] << 56)
-              | ((unsigned long long)buf[4+4+1] << 48)
-              | ((unsigned long long)buf[4+4+2] << 40)
-              | ((unsigned long long)buf[4+4+3] << 32)
-              | ((unsigned long long)buf[4+4+4] << 24)
-              | ((unsigned long long)buf[4+4+5] << 16)
-              | ((unsigned long long)buf[4+4+6] << 8)
-              | buf[4+4+7]); /* QCowHeader.backing_file_offset */
+    offset = (((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET] << 56)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+1] << 48)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+2] << 40)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+3] << 32)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+4] << 24)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+5] << 16)
+              | ((unsigned long long)buf[QCOWX_HDR_BACKING_FILE_OFFSET+6] << 8)
+              | buf[QCOWX_HDR_BACKING_FILE_OFFSET+7]); /* QCowHeader.backing_file_offset */
     if (offset > buf_size)
         return BACKING_STORE_INVALID;
-    size = ((buf[4+4+8] << 24)
-            | (buf[4+4+8+1] << 16)
-            | (buf[4+4+8+2] << 8)
-            | buf[4+4+8+3]); /* QCowHeader.backing_file_size */
+    size = ((buf[QCOWX_HDR_BACKING_FILE_SIZE] << 24)
+            | (buf[QCOWX_HDR_BACKING_FILE_SIZE+1] << 16)
+            | (buf[QCOWX_HDR_BACKING_FILE_SIZE+2] << 8)
+            | buf[QCOWX_HDR_BACKING_FILE_SIZE+3]); /* QCowHeader.backing_file_size */
     if (size == 0)
         return BACKING_STORE_OK;
     if (offset + size > buf_size || offset + size < offset)
@@ -197,12 +288,63 @@ qcowXGetBackingStore(char **res,
     }
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
+
+    /*
+     * Traditionally QCow2 files had a layout of
+     *
+     * [header]
+     * [backingStoreName]
+     *
+     * Although the backingStoreName typically followed
+     * the header immediately, this was not required by
+     * the format. By specifying a higher byte offset for
+     * the backing file offset in the header, it was
+     * possible to leave space between the header and
+     * start of backingStore.
+     *
+     * This hack is now used to store extensions to the
+     * qcow2 format:
+     *
+     * [header]
+     * [extensions]
+     * [backingStoreName]
+     *
+     * Thus the file region to search for extensions is
+     * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
+     * and the start of the backingStoreName (offset)
+     */
+    if (isQCow2)
+        qcow2GetBackingStoreFormat(format, buf, buf_size, QCOW2_HDR_TOTAL_SIZE, offset);
+
     return BACKING_STORE_OK;
 }
 
 
 static int
+qcow1GetBackingStore(char **res,
+                     int *format,
+                     const unsigned char *buf,
+                     size_t buf_size)
+{
+    /* QCow1 doesn't have the extensions capability
+     * used to store backing format */
+    *format = VIR_STORAGE_FILE_AUTO;
+    return qcowXGetBackingStore(res, NULL, buf, buf_size, false);
+}
+
+static int
+qcow2GetBackingStore(char **res,
+                     int *format,
+                     const unsigned char *buf,
+                     size_t buf_size)
+{
+    return qcowXGetBackingStore(res, format, buf, buf_size, true);
+}
+
+
+static int
 vmdk4GetBackingStore(char **res,
+                     int *format,
                      const unsigned char *buf,
                      size_t buf_size)
 {
@@ -212,6 +354,14 @@ vmdk4GetBackingStore(char **res,
     size_t len;
 
     *res = NULL;
+    /*
+     * Technically this should have been VMDK, since
+     * VMDK spec / VMWare impl only support VMDK backed
+     * by VMDK. QEMU isn't following this though and
+     * does probing on VMDK backing files, hence we set
+     * AUTO
+     */
+    *format = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size <= 0x200)
         return BACKING_STORE_INVALID;
@@ -358,9 +508,12 @@ virStorageFileGetMetadataFromFD(const char *path,
         /* Validation passed, we know the file format now */
         meta->format = fileTypeInfo[i].type;
         if (fileTypeInfo[i].getBackingStore != NULL) {
-            char *base;
+            char *backing;
+            int backingFormat;
 
-            switch (fileTypeInfo[i].getBackingStore(&base, head, len)) {
+            switch (fileTypeInfo[i].getBackingStore(&backing,
+                                                    &backingFormat,
+                                                    head, len)) {
             case BACKING_STORE_OK:
                 break;
 
@@ -370,13 +523,16 @@ virStorageFileGetMetadataFromFD(const char *path,
             case BACKING_STORE_ERROR:
                 return -1;
             }
-            if (base != NULL) {
-                meta->backingStore = absolutePathFromBaseFile(path, base);
-                VIR_FREE(base);
+            if (backing != NULL) {
+                meta->backingStore = absolutePathFromBaseFile(path, backing);
+                VIR_FREE(backing);
                 if (meta->backingStore == NULL) {
                     virReportOOMError();
                     return -1;
                 }
+                meta->backingStoreFormat = backingFormat;
+            } else {
+                meta->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
             }
         }
         return 0;
