@@ -8567,9 +8567,9 @@ static int qemudDomainDetachPciControllerDevice(struct qemud_driver *driver,
         vm->def->ncontrollers = 0;
     }
 
-    if (qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0) {
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN0("Unable to release PCI address on controller");
-    }
 
     virDomainControllerDefFree(detach);
 
@@ -8775,9 +8775,9 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
         pciFreeDevice(pci);
     }
 
-    if (qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0) {
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
         VIR_WARN0("Unable to release PCI address on controller");
-    }
 
     if (vm->def->nhostdevs > 1) {
         memmove(vm->def->hostdevs + i,
