@@ -45,6 +45,7 @@
 #include "macvtap.h"
 #include "nwfilter_conf.h"
 #include "ignore-value.h"
+#include "storage_file.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -7272,5 +7273,103 @@ done:
     return rc;
 }
 
+
+int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
+                                bool allowProbing,
+                                bool ignoreOpenFailure,
+                                virDomainDiskDefPathIterator iter,
+                                void *opaque)
+{
+    virHashTablePtr paths;
+    int format;
+    int ret = -1;
+    size_t depth = 0;
+    char *nextpath = NULL;
+
+    if (!disk->src)
+        return 0;
+
+    if (disk->driverType) {
+        const char *formatStr = disk->driverType;
+        if (STREQ(formatStr, "aio"))
+            formatStr = "raw"; /* Xen compat */
+
+        if ((format = virStorageFileFormatTypeFromString(formatStr)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unknown disk format '%s' for %s"),
+                                 disk->driverType, disk->src);
+            return -1;
+        }
+    } else {
+        if (allowProbing) {
+            format = VIR_STORAGE_FILE_AUTO;
+        } else {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("no disk format for %s and probing is disabled"),
+                                 disk->src);
+            return -1;
+        }
+    }
+
+    paths = virHashCreate(5);
+
+    do {
+        virStorageFileMetadata meta;
+        const char *path = nextpath ? nextpath : disk->src;
+        int fd;
+
+        if (iter(disk, path, depth, opaque) < 0)
+            goto cleanup;
+
+        if (virHashLookup(paths, path)) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("backing store for %s is self-referential"),
+                                 disk->src);
+            goto cleanup;
+        }
+
+        if ((fd = open(path, O_RDONLY)) < 0) {
+            if (ignoreOpenFailure) {
+                char ebuf[1024];
+                VIR_WARN("Ignoring open failure on %s: %s", path,
+                         virStrerror(errno, ebuf, sizeof(ebuf)));
+                break;
+            } else {
+                virReportSystemError(errno,
+                                     _("unable to open disk path %s"),
+                                     path);
+                goto cleanup;
+            }
+        }
+
+        if (virStorageFileGetMetadataFromFD(path, fd, format, &meta) < 0) {
+            close(fd);
+            goto cleanup;
+        }
+        close(fd);
+
+        if (virHashAddEntry(paths, path, (void*)0x1) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        depth++;
+        nextpath = meta.backingStore;
+
+        format = meta.backingStoreFormat;
+
+        if (format == VIR_STORAGE_FILE_AUTO &&
+            !allowProbing)
+            format = VIR_STORAGE_FILE_RAW; /* Stops further recursion */
+    } while (nextpath);
+
+    ret = 0;
+
+cleanup:
+    virHashFree(paths, NULL);
+    VIR_FREE(nextpath);
+
+    return ret;
+}
 
 #endif /* ! PROXY */

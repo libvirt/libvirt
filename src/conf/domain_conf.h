@@ -1079,6 +1079,17 @@ int virDomainChrDefForeach(virDomainDefPtr def,
                            void *opaque);
 
 
+typedef int (*virDomainDiskDefPathIterator)(virDomainDiskDefPtr disk,
+                                            const char *path,
+                                            size_t depth,
+                                            void *opaque);
+
+int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
+                                bool allowProbing,
+                                bool ignoreOpenFailure,
+                                virDomainDiskDefPathIterator iter,
+                                void *opaque);
+
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)

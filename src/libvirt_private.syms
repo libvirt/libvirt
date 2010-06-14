@@ -225,6 +225,7 @@ virDomainSnapshotDefFormat;
 virDomainSnapshotAssignDef;
 virDomainObjAssignDef;
 virDomainChrDefForeach;
+virDomainDiskDefForeachPath;
 
 
 # domain_event.h
