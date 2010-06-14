@@ -58,7 +58,6 @@ enum {
 
 /* Either 'magic' or 'extension' *must* be provided */
 struct FileTypeInfo {
-    int type;           /* One of the constants above */
     const char *magic;  /* Optional string of file magic
                          * to check at head of file */
     const char *extension; /* Optional file extension to check */
@@ -108,58 +107,59 @@ static int vmdk4GetBackingStore(char **, int *,
 
 
 static struct FileTypeInfo const fileTypeInfo[] = {
-    /* Bochs */
-    /* XXX Untested
-    { VIR_STORAGE_FILE_BOCHS, "Bochs Virtual HD Image", NULL,
-      LV_LITTLE_ENDIAN, 64, 0x20000,
-      32+16+16+4+4+4+4+4, 8, 1, -1, NULL },*/
-    /* CLoop */
-    /* XXX Untested
-    { VIR_STORAGE_VOL_CLOOP, "#!/bin/sh\n#V2.0 Format\nmodprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1\n", NULL,
-      LV_LITTLE_ENDIAN, -1, 0,
-      -1, 0, 0, -1, NULL }, */
-    /* Cow */
-    { VIR_STORAGE_FILE_COW, "OOOM", NULL,
-      LV_BIG_ENDIAN, 4, 2,
-      4+4+1024+4, 8, 1, -1, cowGetBackingStore },
-    /* DMG */
-    /* XXX QEMU says there's no magic for dmg, but we should check... */
-    { VIR_STORAGE_FILE_DMG, NULL, ".dmg",
-      0, -1, 0,
-      -1, 0, 0, -1, NULL },
-    /* XXX there's probably some magic for iso we can validate too... */
-    { VIR_STORAGE_FILE_ISO, NULL, ".iso",
-      0, -1, 0,
-      -1, 0, 0, -1, NULL },
-    /* Parallels */
-    /* XXX Untested
-    { VIR_STORAGE_FILE_PARALLELS, "WithoutFreeSpace", NULL,
-      LV_LITTLE_ENDIAN, 16, 2,
-      16+4+4+4+4, 4, 512, -1, NULL },
-    */
-    /* QCow */
-    { VIR_STORAGE_FILE_QCOW, "QFI", NULL,
-      LV_BIG_ENDIAN, 4, 1,
-      QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore },
-    /* QCow 2 */
-    { VIR_STORAGE_FILE_QCOW2, "QFI", NULL,
-      LV_BIG_ENDIAN, 4, 2,
-      QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore },
-    /* VMDK 3 */
-    /* XXX Untested
-    { VIR_STORAGE_FILE_VMDK, "COWD", NULL,
-      LV_LITTLE_ENDIAN, 4, 1,
-      4+4+4, 4, 512, -1, NULL },
-    */
-    /* VMDK 4 */
-    { VIR_STORAGE_FILE_VMDK, "KDMV", NULL,
-      LV_LITTLE_ENDIAN, 4, 1,
-      4+4+4, 8, 512, -1, vmdk4GetBackingStore },
-    /* Connectix / VirtualPC */
-    { VIR_STORAGE_FILE_VPC, "conectix", NULL,
-      LV_BIG_ENDIAN, 12, 0x10000,
-      8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL},
+    [VIR_STORAGE_FILE_RAW] = { NULL, NULL, LV_LITTLE_ENDIAN, -1, 0, 0, 0, 0, 0, NULL },
+    [VIR_STORAGE_FILE_DIR] = { NULL, NULL, LV_LITTLE_ENDIAN, -1, 0, 0, 0, 0, 0, NULL },
+    [VIR_STORAGE_FILE_BOCHS] = {
+        /*"Bochs Virtual HD Image", */ /* Untested */ NULL,
+        NULL,
+        LV_LITTLE_ENDIAN, 64, 0x20000,
+        32+16+16+4+4+4+4+4, 8, 1, -1, NULL
+    },
+    [VIR_STORAGE_FILE_CLOOP] = {
+        /*"#!/bin/sh\n#V2.0 Format\nmodprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1\n", */ /* Untested */ NULL,
+        NULL,
+        LV_LITTLE_ENDIAN, -1, 0,
+        -1, 0, 0, -1, NULL
+    },
+    [VIR_STORAGE_FILE_COW] = {
+        "OOOM", NULL,
+        LV_BIG_ENDIAN, 4, 2,
+        4+4+1024+4, 8, 1, -1, cowGetBackingStore
+    },
+    [VIR_STORAGE_FILE_DMG] = {
+        NULL, /* XXX QEMU says there's no magic for dmg, but we should check... */
+        ".dmg",
+        0, -1, 0,
+        -1, 0, 0, -1, NULL
+    },
+    [VIR_STORAGE_FILE_ISO] = {
+        NULL, /* XXX there's probably some magic for iso we can validate too... */
+        ".iso",
+        0, -1, 0,
+        -1, 0, 0, -1, NULL
+    },
+    [VIR_STORAGE_FILE_QCOW] = {
+        "QFI", NULL,
+        LV_BIG_ENDIAN, 4, 1,
+        QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore,
+    },
+    [VIR_STORAGE_FILE_QCOW2] = {
+        "QFI", NULL,
+        LV_BIG_ENDIAN, 4, 2,
+        QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore,
+    },
+    [VIR_STORAGE_FILE_VMDK] = {
+        "KDMV", NULL,
+        LV_LITTLE_ENDIAN, 4, 1,
+        4+4+4, 8, 512, -1, vmdk4GetBackingStore
+    },
+    [VIR_STORAGE_FILE_VPC] = {
+        "conectix", NULL,
+        LV_BIG_ENDIAN, 12, 0x10000,
+        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL
+    },
 };
+verify(ARRAY_CARDINALITY(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
 
 static int
 cowGetBackingStore(char **res,
@@ -506,7 +506,7 @@ virStorageFileGetMetadataFromFD(const char *path,
         }
 
         /* Validation passed, we know the file format now */
-        meta->format = fileTypeInfo[i].type;
+        meta->format = i;
         if (fileTypeInfo[i].getBackingStore != NULL) {
             char *backing;
             int backingFormat;
@@ -546,7 +546,7 @@ virStorageFileGetMetadataFromFD(const char *path,
         if (!virFileHasSuffix(path, fileTypeInfo[i].extension))
             continue;
 
-        meta->format = fileTypeInfo[i].type;
+        meta->format = i;
         return 0;
     }
 
