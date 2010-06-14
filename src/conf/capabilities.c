@@ -175,6 +175,9 @@ virCapabilitiesFree(virCapsPtr caps) {
     VIR_FREE(caps->host.secModel.doi);
     virCPUDefFree(caps->host.cpu);
 
+    VIR_FREE(caps->defaultDiskDriverName);
+    VIR_FREE(caps->defaultDiskDriverType);
+
     VIR_FREE(caps);
 }
 

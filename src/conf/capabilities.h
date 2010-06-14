@@ -123,6 +123,8 @@ struct _virCaps {
     virCapsGuestPtr *guests;
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     unsigned int emulatorRequired : 1;
+    const char *defaultDiskDriverName;
+    const char *defaultDiskDriverType;
     void *(*privateDataAllocFunc)(void);
     void (*privateDataFreeFunc)(void *);
     int (*privateDataXMLFormat)(virBufferPtr, void *);

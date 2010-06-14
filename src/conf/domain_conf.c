@@ -1639,6 +1639,16 @@ virDomainDiskDefParseXML(virCapsPtr caps,
     def->serial = serial;
     serial = NULL;
 
+    if (!def->driverType &&
+        caps->defaultDiskDriverType &&
+        !(def->driverType = strdup(caps->defaultDiskDriverType)))
+        goto no_memory;
+
+    if (!def->driverName &&
+        caps->defaultDiskDriverName &&
+        !(def->driverName = strdup(caps->defaultDiskDriverName)))
+        goto no_memory;
+
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
         && virDomainDiskDefAssignAddress(caps, def) < 0)
         goto error;
@@ -1658,6 +1668,9 @@ cleanup:
     virStorageEncryptionFree(encryption);
 
     return def;
+
+no_memory:
+    virReportOOMError();
 
  error:
     virDomainDiskDefFree(def);
@@ -4275,7 +4288,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps, nodes[i],
+        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps,
+                                                            nodes[i],
                                                             flags);
         if (!disk)
             goto error;

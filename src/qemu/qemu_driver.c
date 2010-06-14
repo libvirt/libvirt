@@ -1361,6 +1361,14 @@ qemuCreateCapabilities(virCapsPtr oldcaps,
         return NULL;
     }
 
+    if (driver->allowDiskFormatProbing) {
+        caps->defaultDiskDriverName = NULL;
+        caps->defaultDiskDriverType = NULL;
+    } else {
+        caps->defaultDiskDriverName = "qemu";
+        caps->defaultDiskDriverType = "raw";
+    }
+
     /* Domain XML parser hooks */
     caps->privateDataAllocFunc = qemuDomainObjPrivateAlloc;
     caps->privateDataFreeFunc = qemuDomainObjPrivateFree;
