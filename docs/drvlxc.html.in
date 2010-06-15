@@ -35,6 +35,11 @@ start it using
 </pre>
 
 <p>
+In the &lt;emulator&gt; element, be sure you specify the correct path
+to libvirt_lxc, if it does not live in /usr/libexec on your system.
+</p>
+
+<p>
 The next example assumes there is a private root filesystem
 (perhaps hand-crafted using busybox, or installed from media,
 debootstrap, whatever) under /opt/vm-1-root:
@@ -71,14 +76,17 @@ debootstrap, whatever) under /opt/vm-1-root:
 In both cases, you can define and start a container using:</p>
 <pre>
 virsh --connect lxc:/// define v1.xml
-virsh --connect lxc:/// start v1.xml
+virsh --connect lxc:/// start vm1
 </pre>
 and then get a console  using:
 <pre>
-virsh --connect lxc:/// console v1
+virsh --connect lxc:/// console vm1
 </pre>
 <p>Now doing 'ps -ef' will only show processes in the container, for
-instance.
+instance.  You can undefine it using
 </p>
+<pre>
+virsh --connect lxc:/// undefine vm1
+</pre>
   </body>
 </html>
