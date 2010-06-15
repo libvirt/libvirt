@@ -24,6 +24,8 @@
 #ifndef __VIR_CAPABILITIES_H
 # define __VIR_CAPABILITIES_H
 
+# include <stdbool.h>
+
 # include "internal.h"
 # include "util.h"
 # include "buf.h"
@@ -125,6 +127,7 @@ struct _virCaps {
     void (*privateDataFreeFunc)(void *);
     int (*privateDataXMLFormat)(virBufferPtr, void *);
     int (*privateDataXMLParse)(xmlXPathContextPtr, void *);
+    bool hasWideScsiBus;
 };
 
 

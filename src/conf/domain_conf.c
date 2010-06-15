@@ -1339,7 +1339,7 @@ virDomainParseLegacyDeviceAddress(char *devaddr,
 }
 
 int
-virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
+virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def)
 {
     int idx = virDiskNameToIndex(def->dst);
     if (idx < 0)
@@ -1347,12 +1347,30 @@ virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
 
     switch (def->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        /* For SCSI we define the default mapping to be 7 units
-         * per bus, 1 bus per controller, many controllers */
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-        def->info.addr.drive.controller = idx / 7;
-        def->info.addr.drive.bus = 0;
-        def->info.addr.drive.unit = idx % 7;
+
+        if (caps->hasWideScsiBus) {
+            /* For a wide SCSI bus we define the default mapping to be
+             * 16 units per bus, 1 bus per controller, many controllers.
+             * Unit 7 is the SCSI controller itself. Therefore unit 7
+             * cannot be assigned to disks and is skipped.
+             */
+            def->info.addr.drive.controller = idx / 15;
+            def->info.addr.drive.bus = 0;
+            def->info.addr.drive.unit = idx % 15;
+
+            /* Skip the SCSI controller at unit 7 */
+            if (def->info.addr.drive.unit >= 7) {
+                ++def->info.addr.drive.unit;
+            }
+        } else {
+            /* For a narrow SCSI bus we define the default mapping to be
+             * 7 units per bus, 1 bus per controller, many controllers */
+            def->info.addr.drive.controller = idx / 7;
+            def->info.addr.drive.bus = 0;
+            def->info.addr.drive.unit = idx % 7;
+        }
+
         break;
 
     case VIR_DOMAIN_DISK_BUS_IDE:
@@ -1385,7 +1403,8 @@ virDomainDiskDefAssignAddress(virDomainDiskDefPtr def)
  * @param node XML nodeset to parse for disk definition
  */
 static virDomainDiskDefPtr
-virDomainDiskDefParseXML(xmlNodePtr node,
+virDomainDiskDefParseXML(virCapsPtr caps,
+                         xmlNodePtr node,
                          int flags) {
     virDomainDiskDefPtr def;
     xmlNodePtr cur;
@@ -1615,7 +1634,7 @@ virDomainDiskDefParseXML(xmlNodePtr node,
     serial = NULL;
 
     if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
-        && virDomainDiskDefAssignAddress(def) < 0)
+        && virDomainDiskDefAssignAddress(caps, def) < 0)
         goto error;
 
 cleanup:
@@ -3687,7 +3706,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
 
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         dev->type = VIR_DOMAIN_DEVICE_DISK;
-        if (!(dev->data.disk = virDomainDiskDefParseXML(node, flags)))
+        if (!(dev->data.disk = virDomainDiskDefParseXML(caps, node, flags)))
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "filesystem")) {
         dev->type = VIR_DOMAIN_DEVICE_FS;
@@ -4237,7 +4256,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     if (n && VIR_ALLOC_N(def->disks, n) < 0)
         goto no_memory;
     for (i = 0 ; i < n ; i++) {
-        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(nodes[i],
+        virDomainDiskDefPtr disk = virDomainDiskDefParseXML(caps, nodes[i],
                                                             flags);
         if (!disk)
             goto error;

@@ -228,6 +228,8 @@ esxCapsInit(esxPrivate *priv)
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
 
+    caps->hasWideScsiBus = true;
+
     if (esxLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0) {
         goto failure;
     }

@@ -5022,7 +5022,8 @@ error:
  * Will fail if not using the 'index' keyword
  */
 static virDomainDiskDefPtr
-qemuParseCommandLineDisk(const char *val,
+qemuParseCommandLineDisk(virCapsPtr caps,
+                         const char *val,
                          int nvirtiodisk)
 {
     virDomainDiskDefPtr def = NULL;
@@ -5195,7 +5196,7 @@ qemuParseCommandLineDisk(const char *val,
     else
         def->dst[2] = 'a' + idx;
 
-    if (virDomainDiskDefAssignAddress(def) < 0) {
+    if (virDomainDiskDefAssignAddress(caps, def) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         _("invalid device name '%s'"), def->dst);
         virDomainDiskDefFree(def);
@@ -6007,7 +6008,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                 goto no_memory;
             }
 
-            if (virDomainDiskDefAssignAddress(disk) < 0)
+            if (virDomainDiskDefAssignAddress(caps, disk) < 0)
                 goto error;
 
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
@@ -6155,7 +6156,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-drive")) {
             virDomainDiskDefPtr disk;
             WANT_VALUE();
-            if (!(disk = qemuParseCommandLineDisk(val, nvirtiodisk)))
+            if (!(disk = qemuParseCommandLineDisk(caps, val, nvirtiodisk)))
                 goto error;
             if (VIR_REALLOC_N(def->disks, def->ndisks+1) < 0) {
                 virDomainDiskDefFree(disk);

@@ -999,7 +999,7 @@ int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk);
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
-int virDomainDiskDefAssignAddress(virDomainDiskDefPtr def);
+int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
 
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);
