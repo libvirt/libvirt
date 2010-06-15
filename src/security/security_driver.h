@@ -28,32 +28,48 @@ typedef enum {
 
 typedef struct _virSecurityDriver virSecurityDriver;
 typedef virSecurityDriver *virSecurityDriverPtr;
+
+typedef struct _virSecurityDriverState virSecurityDriverState;
+typedef virSecurityDriverState *virSecurityDriverStatePtr;
+
 typedef virSecurityDriverStatus (*virSecurityDriverProbe) (void);
 typedef int (*virSecurityDriverOpen) (virSecurityDriverPtr drv);
-typedef int (*virSecurityDomainRestoreImageLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityDriverPtr drv,
+                                                   virDomainObjPtr vm,
                                                    virDomainDiskDefPtr disk);
 typedef int (*virSecurityDomainSetSocketLabel) (virSecurityDriverPtr drv,
                                                 virDomainObjPtr vm);
 typedef int (*virSecurityDomainClearSocketLabel)(virSecurityDriverPtr drv,
                                                 virDomainObjPtr vm);
-typedef int (*virSecurityDomainSetImageLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainSetImageLabel) (virSecurityDriverPtr drv,
+                                               virDomainObjPtr vm,
                                                virDomainDiskDefPtr disk);
-typedef int (*virSecurityDomainRestoreHostdevLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainRestoreHostdevLabel) (virSecurityDriverPtr drv,
+                                                     virDomainObjPtr vm,
                                                      virDomainHostdevDefPtr dev);
-typedef int (*virSecurityDomainSetHostdevLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityDriverPtr drv,
+                                                 virDomainObjPtr vm,
                                                  virDomainHostdevDefPtr dev);
-typedef int (*virSecurityDomainSetSavedStateLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityDriverPtr drv,
+                                                    virDomainObjPtr vm,
                                                     const char *savefile);
-typedef int (*virSecurityDomainRestoreSavedStateLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainRestoreSavedStateLabel) (virSecurityDriverPtr drv,
+                                                        virDomainObjPtr vm,
                                                         const char *savefile);
-typedef int (*virSecurityDomainGenLabel) (virDomainObjPtr sec);
-typedef int (*virSecurityDomainReserveLabel) (virDomainObjPtr sec);
-typedef int (*virSecurityDomainReleaseLabel) (virDomainObjPtr sec);
-typedef int (*virSecurityDomainSetAllLabel) (virDomainObjPtr sec,
+typedef int (*virSecurityDomainGenLabel) (virSecurityDriverPtr drv,
+                                          virDomainObjPtr sec);
+typedef int (*virSecurityDomainReserveLabel) (virSecurityDriverPtr drv,
+                                              virDomainObjPtr sec);
+typedef int (*virSecurityDomainReleaseLabel) (virSecurityDriverPtr drv,
+                                              virDomainObjPtr sec);
+typedef int (*virSecurityDomainSetAllLabel) (virSecurityDriverPtr drv,
+                                             virDomainObjPtr sec,
                                              const char *stdin_path);
-typedef int (*virSecurityDomainRestoreAllLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainRestoreAllLabel) (virSecurityDriverPtr drv,
+                                                 virDomainObjPtr vm,
                                                  int migrated);
-typedef int (*virSecurityDomainGetProcessLabel) (virDomainObjPtr vm,
+typedef int (*virSecurityDomainGetProcessLabel) (virSecurityDriverPtr drv,
+                                                 virDomainObjPtr vm,
                                                  virSecurityLabelPtr sec);
 typedef int (*virSecurityDomainSetProcessLabel) (virSecurityDriverPtr drv,
                                                  virDomainObjPtr vm);
