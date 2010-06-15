@@ -439,54 +439,43 @@ SELinuxRestoreSecurityImageLabel(virDomainObjPtr vm,
 
 
 static int
+SELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
+                            const char *path,
+                            size_t depth,
+                            void *opaque)
+{
+    const virSecurityLabelDefPtr secdef = opaque;
+
+    if (depth == 0) {
+        if (disk->shared) {
+            return SELinuxSetFilecon(path, default_image_context);
+        } else if (disk->readonly) {
+            return SELinuxSetFilecon(path, default_content_context);
+        } else if (secdef->imagelabel) {
+            return SELinuxSetFilecon(path, secdef->imagelabel);
+        } else {
+            return 0;
+        }
+    } else {
+        return SELinuxSetFilecon(path, default_content_context);
+    }
+}
+
+static int
 SELinuxSetSecurityImageLabel(virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
-    const char *path;
 
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
-    if (!disk->src)
-        return 0;
-
-    path = disk->src;
-    do {
-        virStorageFileMetadata meta;
-        int ret;
-
-        ret = virStorageFileGetMetadata(path,
-                                        VIR_STORAGE_FILE_AUTO,
-                                        &meta);
-
-        if (path != disk->src)
-            VIR_FREE(path);
-        path = NULL;
-
-        if (ret < 0)
-           break;
-
-        if (meta.backingStore != NULL &&
-            SELinuxSetFilecon(meta.backingStore,
-                              default_content_context) < 0) {
-            VIR_FREE(meta.backingStore);
-            return -1;
-        }
-
-        path = meta.backingStore;
-    } while (path != NULL);
-
-    if (disk->shared) {
-        return SELinuxSetFilecon(disk->src, default_image_context);
-    } else if (disk->readonly) {
-        return SELinuxSetFilecon(disk->src, default_content_context);
-    } else if (secdef->imagelabel) {
-        return SELinuxSetFilecon(disk->src, secdef->imagelabel);
-    }
-
-    return 0;
+    return virDomainDiskDefForeachPath(disk,
+                                       true,
+                                       false,
+                                       SELinuxSetSecurityFileLabel,
+                                       secdef);
 }
 
 

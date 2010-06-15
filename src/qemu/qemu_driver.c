@@ -3044,107 +3044,82 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
+
+static int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+                                  const char *path,
+                                  size_t depth ATTRIBUTE_UNUSED,
+                                  void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    VIR_DEBUG("Process path %s for disk", path);
+    /* XXX RO vs RW */
+    rc = virCgroupAllowDevicePath(cgroup, path);
+    if (rc != 0) {
+        /* Get this for non-block devices */
+        if (rc == -EINVAL) {
+            VIR_DEBUG("Ignoring EINVAL for %s", path);
+        } else if (rc == -EACCES) { /* Get this for root squash NFS */
+            VIR_DEBUG("Ignoring EACCES for %s", path);
+        } else {
+            virReportSystemError(-rc,
+                                 _("Unable to allow access for disk path %s"),
+                                 path);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
 static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
-                               virDomainObjPtr vm,
                                virDomainDiskDefPtr disk)
 {
-    char *path = disk->src;
-    int ret = -1;
+    return virDomainDiskDefForeachPath(disk,
+                                       true,
+                                       true,
+                                       qemuSetupDiskPathAllow,
+                                       cgroup);
+}
 
-    while (path != NULL) {
-        virStorageFileMetadata meta;
-        int rc;
 
-        VIR_DEBUG("Process path '%s' for disk", path);
-        rc = virCgroupAllowDevicePath(cgroup, path);
-        if (rc != 0) {
-            /* Get this for non-block devices */
-            if (rc == -EINVAL) {
-                VIR_DEBUG("Ignoring EINVAL for %s", path);
-            } else if (rc == -EACCES) { /* Get this for root squash NFS */
-                VIR_DEBUG("Ignoring EACCES for %s", path);
-            } else {
-                virReportSystemError(-rc,
-                                     _("Unable to allow device %s for %s"),
-                                     path, vm->def->name);
-                if (path != disk->src)
-                    VIR_FREE(path);
-                goto cleanup;
-            }
+static int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+                                    const char *path,
+                                    size_t depth ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    VIR_DEBUG("Process path %s for disk", path);
+    /* XXX RO vs RW */
+    rc = virCgroupDenyDevicePath(cgroup, path);
+    if (rc != 0) {
+        /* Get this for non-block devices */
+        if (rc == -EINVAL) {
+            VIR_DEBUG("Ignoring EINVAL for %s", path);
+        } else if (rc == -EACCES) { /* Get this for root squash NFS */
+            VIR_DEBUG("Ignoring EACCES for %s", path);
+        } else {
+            virReportSystemError(-rc,
+                                 _("Unable to allow access for disk path %s"),
+                                 path);
+            return -1;
         }
-
-        rc = virStorageFileGetMetadata(path,
-                                       VIR_STORAGE_FILE_AUTO,
-                                       &meta);
-        if (rc < 0)
-            VIR_WARN("Unable to lookup parent image for %s", path);
-
-        if (path != disk->src)
-            VIR_FREE(path);
-        path = NULL;
-
-        if (rc < 0)
-            break; /* Treating as non fatal */
-
-        path = meta.backingStore;
     }
-
-    ret = 0;
-
-cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
-                                  virDomainObjPtr vm,
                                   virDomainDiskDefPtr disk)
 {
-    char *path = disk->src;
-    int ret = -1;
-
-    while (path != NULL) {
-        virStorageFileMetadata meta;
-        int rc;
-
-        VIR_DEBUG("Process path '%s' for disk", path);
-        rc = virCgroupDenyDevicePath(cgroup, path);
-        if (rc != 0) {
-            /* Get this for non-block devices */
-            if (rc == -EINVAL) {
-                VIR_DEBUG("Ignoring EINVAL for %s", path);
-            } else if (rc == -EACCES) { /* Get this for root squash NFS */
-                VIR_DEBUG("Ignoring EACCES for %s", path);
-            } else {
-                virReportSystemError(-rc,
-                                     _("Unable to deny device %s for %s"),
-                                     path, vm->def->name);
-                if (path != disk->src)
-                    VIR_FREE(path);
-                goto cleanup;
-            }
-        }
-
-        rc = virStorageFileGetMetadata(path,
-                                       VIR_STORAGE_FILE_AUTO,
-                                       &meta);
-        if (rc < 0)
-            VIR_WARN("Unable to lookup parent image for %s", path);
-
-        if (path != disk->src)
-            VIR_FREE(path);
-        path = NULL;
-
-        if (rc < 0)
-            break; /* Treating as non fatal */
-
-        path = meta.backingStore;
-    }
-
-    ret = 0;
-
-cleanup:
-    return ret;
+    return virDomainDiskDefForeachPath(disk,
+                                       true,
+                                       true,
+                                       qemuTeardownDiskPathDeny,
+                                       cgroup);
 }
 
 
@@ -3208,7 +3183,7 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuSetupDiskCgroup(cgroup, vm, vm->def->disks[i]) < 0)
+            if (qemuSetupDiskCgroup(cgroup, vm->def->disks[i]) < 0)
                 goto cleanup;
         }
 
@@ -8039,7 +8014,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -8084,7 +8059,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             /* Fallthrough */
         }
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }
@@ -8284,7 +8259,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -8307,7 +8282,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         }
 
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }
@@ -8434,7 +8409,7 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
@@ -8497,7 +8472,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(cgroup, vm, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }

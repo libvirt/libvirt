@@ -36,7 +36,6 @@
 #include "uuid.h"
 #include "hostusb.h"
 #include "pci.h"
-#include "storage_file.h"
 
 static char *progname;
 
@@ -801,6 +800,28 @@ file_iterate_pci_cb(pciDevice *dev ATTRIBUTE_UNUSED,
 }
 
 static int
+add_file_path(virDomainDiskDefPtr disk,
+              const char *path,
+              size_t depth,
+              void *opaque)
+{
+    virBufferPtr buf = opaque;
+    int ret;
+
+    if (depth == 0) {
+        if (disk->readonly)
+            ret = vah_add_file(buf, path, "r");
+        else
+            ret = vah_add_file(buf, path, "rw");
+    } else {
+        ret = vah_add_file(buf, path, "r");
+    }
+
+    return ret;
+}
+
+
+static int
 get_files(vahControl * ctl)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -821,45 +842,15 @@ get_files(vahControl * ctl)
         goto clean;
     }
 
-    for (i = 0; i < ctl->def->ndisks; i++)
-        if (ctl->def->disks[i] && ctl->def->disks[i]->src) {
-            int ret;
-            const char *path;
-
-            path = ctl->def->disks[i]->src;
-            do {
-                virStorageFileMetadata meta;
-
-                ret = virStorageFileGetMetadata(path,
-                                                VIR_STORAGE_FILE_AUTO,
-                                                &meta);
-
-                if (path != ctl->def->disks[i]->src)
-                    VIR_FREE(path);
-                path = NULL;
-
-                if (ret < 0) {
-                    vah_warning("could not open path, skipping");
-                    continue;
-                }
-
-                if (meta.backingStore != NULL &&
-                    (ret = vah_add_file(&buf, meta.backingStore, "rw")) != 0) {
-                    VIR_FREE(meta.backingStore);
-                    goto clean;
-                }
-
-                path = meta.backingStore;
-            } while (path != NULL);
-
-            if (ctl->def->disks[i]->readonly)
-                ret = vah_add_file(&buf, ctl->def->disks[i]->src, "r");
-            else
-                ret = vah_add_file(&buf, ctl->def->disks[i]->src, "rw");
-
-            if (ret != 0)
-                goto clean;
-        }
+    for (i = 0; i < ctl->def->ndisks; i++) {
+        int ret = virDomainDiskDefForeachPath(ctl->def->disks[i],
+                                              true,
+                                              false,
+                                              add_file_path,
+                                              &buf);
+        if (ret != 0)
+            goto clean;
+    }
 
     for (i = 0; i < ctl->def->nserials; i++)
         if (ctl->def->serials[i] && ctl->def->serials[i]->data.file.path)

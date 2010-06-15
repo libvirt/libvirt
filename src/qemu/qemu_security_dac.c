@@ -98,45 +98,28 @@ err:
 
 
 static int
+qemuSecurityDACSetSecurityFileLabel(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
+                                    const char *path,
+                                    size_t depth ATTRIBUTE_UNUSED,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    return qemuSecurityDACSetOwnership(path, driver->user, driver->group);
+}
+
+
+static int
 qemuSecurityDACSetSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                      virDomainDiskDefPtr disk)
 
 {
-    const char *path;
-
     if (!driver->privileged || !driver->dynamicOwnership)
         return 0;
 
-    if (!disk->src)
-        return 0;
-
-    path = disk->src;
-    do {
-        virStorageFileMetadata meta;
-        int ret;
-
-        ret = virStorageFileGetMetadata(path,
-                                        VIR_STORAGE_FILE_AUTO,
-                                        &meta);
-
-        if (path != disk->src)
-            VIR_FREE(path);
-        path = NULL;
-
-        if (ret < 0)
-            return -1;
-
-        if (meta.backingStore != NULL &&
-            qemuSecurityDACSetOwnership(meta.backingStore,
-                                        driver->user, driver->group) < 0) {
-            VIR_FREE(meta.backingStore);
-            return -1;
-        }
-
-        path = meta.backingStore;
-    } while (path != NULL);
-
-    return qemuSecurityDACSetOwnership(disk->src, driver->user, driver->group);
+    return virDomainDiskDefForeachPath(disk,
+                                       true,
+                                       false,
+                                       qemuSecurityDACSetSecurityFileLabel,
+                                       NULL);
 }
 
 
