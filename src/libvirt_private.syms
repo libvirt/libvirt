@@ -628,6 +628,8 @@ virStorageGenerateQcowPassphrase;
 # storage_file.h
 virStorageFileFormatTypeToString;
 virStorageFileFormatTypeFromString;
+virStorageFileProbeFormat;
+virStorageFileProbeFormatFromFD;
 virStorageFileGetMetadata;
 virStorageFileGetMetadataFromFD;
 virStorageFileIsSharedFS;

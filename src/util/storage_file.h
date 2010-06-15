@@ -57,6 +57,10 @@ typedef struct _virStorageFileMetadata {
 #  define DEV_BSIZE 512
 # endif
 
+int virStorageFileProbeFormat(const char *path);
+int virStorageFileProbeFormatFromFD(const char *path,
+                                    int fd);
+
 int virStorageFileGetMetadata(const char *path,
                               virStorageFileMetadata *meta);
 int virStorageFileGetMetadataFromFD(const char *path,

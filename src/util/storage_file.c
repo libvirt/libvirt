@@ -104,6 +104,9 @@ static int vmdk4GetBackingStore(char **, int *,
 #define QCOW2_HDR_EXTENSION_END 0
 #define QCOW2_HDR_EXTENSION_BACKING_FORMAT 0xE2792ACA
 
+/* VMDK needs at least this to find backing store,
+ * other formats need less */
+#define STORAGE_MAX_HEAD (20*512)
 
 
 static struct FileTypeInfo const fileTypeInfo[] = {
@@ -349,9 +352,14 @@ vmdk4GetBackingStore(char **res,
                      size_t buf_size)
 {
     static const char prefix[] = "parentFileNameHint=\"";
-
-    char desc[20*512 + 1], *start, *end;
+    char *desc, *start, *end;
     size_t len;
+    int ret = BACKING_STORE_ERROR;
+
+    if (VIR_ALLOC_N(desc, STORAGE_MAX_HEAD + 1) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     *res = NULL;
     /*
@@ -363,29 +371,42 @@ vmdk4GetBackingStore(char **res,
      */
     *format = VIR_STORAGE_FILE_AUTO;
 
-    if (buf_size <= 0x200)
-        return BACKING_STORE_INVALID;
+    if (buf_size <= 0x200) {
+        ret = BACKING_STORE_INVALID;
+        goto cleanup;
+    }
     len = buf_size - 0x200;
-    if (len > sizeof(desc) - 1)
-        len = sizeof(desc) - 1;
+    if (len > STORAGE_MAX_HEAD)
+        len = STORAGE_MAX_HEAD;
     memcpy(desc, buf + 0x200, len);
     desc[len] = '\0';
     start = strstr(desc, prefix);
-    if (start == NULL)
-        return BACKING_STORE_OK;
+    if (start == NULL) {
+        ret = BACKING_STORE_OK;
+        goto cleanup;
+    }
     start += strlen(prefix);
     end = strchr(start, '"');
-    if (end == NULL)
-        return BACKING_STORE_INVALID;
-    if (end == start)
-        return BACKING_STORE_OK;
+    if (end == NULL) {
+        ret = BACKING_STORE_INVALID;
+        goto cleanup;
+    }
+    if (end == start) {
+        ret = BACKING_STORE_OK;
+        goto cleanup;
+    }
     *end = '\0';
     *res = strdup(start);
     if (*res == NULL) {
         virReportOOMError();
-        return BACKING_STORE_ERROR;
+        goto cleanup;
     }
-    return BACKING_STORE_OK;
+
+    ret = BACKING_STORE_OK;
+
+cleanup:
+    VIR_FREE(desc);
+    return ret;
 }
 
 /**
@@ -411,148 +432,325 @@ absolutePathFromBaseFile(const char *base_file, const char *path)
     return res;
 }
 
+
+static bool
+virStorageFileMatchesMagic(int format,
+                           unsigned char *buf,
+                           size_t buflen)
+{
+    int mlen;
+
+    if (fileTypeInfo[format].magic == NULL)
+        return false;
+
+    /* Validate magic data */
+    mlen = strlen(fileTypeInfo[format].magic);
+    if (mlen > buflen)
+        return false;
+
+    if (memcmp(buf, fileTypeInfo[format].magic, mlen) != 0)
+        return false;
+
+    return true;
+}
+
+
+static bool
+virStorageFileMatchesExtension(int format,
+                               const char *path)
+{
+    if (fileTypeInfo[format].extension == NULL)
+        return false;
+
+    if (virFileHasSuffix(path, fileTypeInfo[format].extension))
+        return true;
+
+    return false;
+}
+
+
+static bool
+virStorageFileMatchesVersion(int format,
+                             unsigned char *buf,
+                             size_t buflen)
+{
+    int version;
+
+    /* Validate version number info */
+    if (fileTypeInfo[format].versionOffset == -1)
+        return false;
+
+    if ((fileTypeInfo[format].versionOffset + 4) > buflen)
+        return false;
+
+    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
+        version =
+            (buf[fileTypeInfo[format].versionOffset+3] << 24) |
+            (buf[fileTypeInfo[format].versionOffset+2] << 16) |
+            (buf[fileTypeInfo[format].versionOffset+1] << 8) |
+            (buf[fileTypeInfo[format].versionOffset]);
+    } else {
+        version =
+            (buf[fileTypeInfo[format].versionOffset] << 24) |
+            (buf[fileTypeInfo[format].versionOffset+1] << 16) |
+            (buf[fileTypeInfo[format].versionOffset+2] << 8) |
+            (buf[fileTypeInfo[format].versionOffset+3]);
+    }
+    if (version != fileTypeInfo[format].versionNumber)
+        return false;
+
+    return true;
+}
+
+
+static int
+virStorageFileGetMetadataFromBuf(int format,
+                                 const char *path,
+                                 unsigned char *buf,
+                                 size_t buflen,
+                                 virStorageFileMetadata *meta)
+{
+    /* XXX we should consider moving virStorageBackendUpdateVolInfo
+     * code into this method, for non-magic files
+     */
+    if (!fileTypeInfo[format].magic) {
+        return 0;
+    }
+
+    /* Optionally extract capacity from file */
+    if (fileTypeInfo[format].sizeOffset != -1) {
+        if ((fileTypeInfo[format].sizeOffset + 8) > buflen)
+            return 1;
+
+        if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
+            meta->capacity =
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+7] << 56) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+6] << 48) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+5] << 40) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+4] << 32) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+3] << 24) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+2] << 16) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+1] << 8) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset]);
+        } else {
+            meta->capacity =
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset] << 56) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+1] << 48) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+2] << 40) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+3] << 32) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+4] << 24) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+5] << 16) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+6] << 8) |
+                ((unsigned long long)buf[fileTypeInfo[format].sizeOffset+7]);
+        }
+        /* Avoid unlikely, but theoretically possible overflow */
+        if (meta->capacity > (ULLONG_MAX / fileTypeInfo[format].sizeMultiplier))
+            return 1;
+        meta->capacity *= fileTypeInfo[format].sizeMultiplier;
+    }
+
+    if (fileTypeInfo[format].qcowCryptOffset != -1) {
+        int crypt_format;
+
+        crypt_format =
+            (buf[fileTypeInfo[format].qcowCryptOffset] << 24) |
+            (buf[fileTypeInfo[format].qcowCryptOffset+1] << 16) |
+            (buf[fileTypeInfo[format].qcowCryptOffset+2] << 8) |
+            (buf[fileTypeInfo[format].qcowCryptOffset+3]);
+        meta->encrypted = crypt_format != 0;
+    }
+
+    if (fileTypeInfo[format].getBackingStore != NULL) {
+        char *backing;
+        int backingFormat;
+        int ret = fileTypeInfo[format].getBackingStore(&backing,
+                                                       &backingFormat,
+                                                       buf, buflen);
+        if (ret == BACKING_STORE_INVALID)
+            return 1;
+
+        if (ret == BACKING_STORE_ERROR)
+            return -1;
+
+        if (backing != NULL) {
+            meta->backingStore = absolutePathFromBaseFile(path, backing);
+            VIR_FREE(backing);
+            if (meta->backingStore == NULL) {
+                virReportOOMError();
+                return -1;
+            }
+            meta->backingStoreFormat = backingFormat;
+        } else {
+            meta->backingStore = NULL;
+            meta->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virStorageFileProbeFormatFromBuf(const char *path,
+                                 unsigned char *buf,
+                                 size_t buflen)
+{
+    int format = VIR_STORAGE_FILE_RAW;
+    int i;
+
+    /* First check file magic */
+    for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
+        if (virStorageFileMatchesMagic(i, buf, buflen) &&
+            virStorageFileMatchesVersion(i, buf, buflen)) {
+            format = i;
+            goto cleanup;
+        }
+    }
+
+    /* No magic, so check file extension */
+    for (i = 0 ; i < VIR_STORAGE_FILE_LAST ; i++) {
+        if (virStorageFileMatchesExtension(i, path)) {
+            format = i;
+            goto cleanup;
+        }
+    }
+
+cleanup:
+    return format;
+}
+
+
 /**
- * Probe the header of a file to determine what type of disk image
- * it is, and info about its capacity if available.
+ * virStorageFileProbeFormatFromFD:
+ *
+ * Probe for the format of 'fd' (which is an open file descriptor
+ * pointing to 'path'), returning the detected disk format.
+ *
+ * Callers are advised never to trust the returned 'format'
+ * unless it is listed as VIR_STORAGE_FILE_RAW, since a
+ * malicious guest can turn a file into any other non-raw
+ * format at will.
+ *
+ * Best option: Don't use this function
+ */
+int
+virStorageFileProbeFormatFromFD(const char *path, int fd)
+{
+    unsigned char *head;
+    ssize_t len = STORAGE_MAX_HEAD;
+    int ret = -1;
+
+    if (VIR_ALLOC_N(head, len) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
+        goto cleanup;
+    }
+
+    if ((len = read(fd, head, len)) < 0) {
+        virReportSystemError(errno, _("cannot read header '%s'"), path);
+        goto cleanup;
+    }
+
+    ret = virStorageFileProbeFormatFromBuf(path, head, len);
+
+cleanup:
+    VIR_FREE(head);
+    return ret;
+}
+
+
+/**
+ * virStorageFileProbeFormat:
+ *
+ * Probe for the format of 'path', returning the detected
+ * disk format.
+ *
+ * Callers are advised never to trust the returned 'format'
+ * unless it is listed as VIR_STORAGE_FILE_RAW, since a
+ * malicious guest can turn a raw file into any other non-raw
+ * format at will.
+ *
+ * Best option: Don't use this function
+ */
+int
+virStorageFileProbeFormat(const char *path)
+{
+    int fd, ret;
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportSystemError(errno, _("cannot open file '%s'"), path);
+        return -1;
+    }
+
+    ret = virStorageFileProbeFormatFromFD(path, fd);
+
+    close(fd);
+
+    return ret;
+}
+
+/**
+ * virStorageFileGetMetadataFromFD:
+ *
+ * Probe for the format of 'fd' (which is an open file descriptor
+ * for the file 'path'), filling 'meta' with the detected
+ * format and other associated metadata.
+ *
+ * Callers are advised never to trust the returned 'meta->format'
+ * unless it is listed as VIR_STORAGE_FILE_RAW, since a
+ * malicious guest can turn a raw file into any other non-raw
+ * format at will.
  */
 int
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
                                 virStorageFileMetadata *meta)
 {
-    unsigned char head[20*512]; /* vmdk4GetBackingStore needs this much. */
-    int len, i;
+    unsigned char *head;
+    ssize_t len = STORAGE_MAX_HEAD;
+    int ret = -1;
 
-    memset(meta, 0, sizeof (*meta));
-
-    /* If all else fails, call it a raw file */
-    meta->format = VIR_STORAGE_FILE_RAW;
-
-    if ((len = read(fd, head, sizeof(head))) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), path);
+    if (VIR_ALLOC_N(head, len) < 0) {
+        virReportOOMError();
         return -1;
     }
 
-    /* First check file magic */
-    for (i = 0 ; i < ARRAY_CARDINALITY(fileTypeInfo) ; i++) {
-        int mlen;
+    memset(meta, 0, sizeof (*meta));
 
-        if (fileTypeInfo[i].magic == NULL)
-            continue;
-
-        /* Validate magic data */
-        mlen = strlen(fileTypeInfo[i].magic);
-        if (mlen > len)
-            continue;
-        if (memcmp(head, fileTypeInfo[i].magic, mlen) != 0)
-            continue;
-
-        /* Validate version number info */
-        if (fileTypeInfo[i].versionNumber != -1) {
-            int version;
-
-            if (fileTypeInfo[i].endian == LV_LITTLE_ENDIAN) {
-                version = (head[fileTypeInfo[i].versionOffset+3] << 24) |
-                    (head[fileTypeInfo[i].versionOffset+2] << 16) |
-                    (head[fileTypeInfo[i].versionOffset+1] << 8) |
-                    head[fileTypeInfo[i].versionOffset];
-            } else {
-                version = (head[fileTypeInfo[i].versionOffset] << 24) |
-                    (head[fileTypeInfo[i].versionOffset+1] << 16) |
-                    (head[fileTypeInfo[i].versionOffset+2] << 8) |
-                    head[fileTypeInfo[i].versionOffset+3];
-            }
-            if (version != fileTypeInfo[i].versionNumber)
-                continue;
-        }
-
-        /* Optionally extract capacity from file */
-        if (fileTypeInfo[i].sizeOffset != -1) {
-            if (fileTypeInfo[i].endian == LV_LITTLE_ENDIAN) {
-                meta->capacity =
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+7] << 56) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+6] << 48) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+5] << 40) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+4] << 32) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+3] << 24) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+2] << 16) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+1] << 8) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset]);
-            } else {
-                meta->capacity =
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset] << 56) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+1] << 48) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+2] << 40) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+3] << 32) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+4] << 24) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+5] << 16) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+6] << 8) |
-                    ((unsigned long long)head[fileTypeInfo[i].sizeOffset+7]);
-            }
-            /* Avoid unlikely, but theoretically possible overflow */
-            if (meta->capacity > (ULLONG_MAX / fileTypeInfo[i].sizeMultiplier))
-                continue;
-            meta->capacity *= fileTypeInfo[i].sizeMultiplier;
-        }
-
-        if (fileTypeInfo[i].qcowCryptOffset != -1) {
-            int crypt_format;
-
-            crypt_format = (head[fileTypeInfo[i].qcowCryptOffset] << 24) |
-                (head[fileTypeInfo[i].qcowCryptOffset+1] << 16) |
-                (head[fileTypeInfo[i].qcowCryptOffset+2] << 8) |
-                head[fileTypeInfo[i].qcowCryptOffset+3];
-            meta->encrypted = crypt_format != 0;
-        }
-
-        /* Validation passed, we know the file format now */
-        meta->format = i;
-        if (fileTypeInfo[i].getBackingStore != NULL) {
-            char *backing;
-            int backingFormat;
-
-            switch (fileTypeInfo[i].getBackingStore(&backing,
-                                                    &backingFormat,
-                                                    head, len)) {
-            case BACKING_STORE_OK:
-                break;
-
-            case BACKING_STORE_INVALID:
-                continue;
-
-            case BACKING_STORE_ERROR:
-                return -1;
-            }
-            if (backing != NULL) {
-                meta->backingStore = absolutePathFromBaseFile(path, backing);
-                VIR_FREE(backing);
-                if (meta->backingStore == NULL) {
-                    virReportOOMError();
-                    return -1;
-                }
-                meta->backingStoreFormat = backingFormat;
-            } else {
-                meta->backingStoreFormat = VIR_STORAGE_FILE_AUTO;
-            }
-        }
-        return 0;
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        virReportSystemError(errno, _("cannot set to start of '%s'"), path);
+        goto cleanup;
     }
 
-    /* No magic, so check file extension */
-    for (i = 0 ; i < ARRAY_CARDINALITY(fileTypeInfo) ; i++) {
-        if (fileTypeInfo[i].extension == NULL)
-            continue;
-
-        if (!virFileHasSuffix(path, fileTypeInfo[i].extension))
-            continue;
-
-        meta->format = i;
-        return 0;
+    if ((len = read(fd, head, len)) < 0) {
+        virReportSystemError(errno, _("cannot read header '%s'"), path);
+        goto cleanup;
     }
 
-    return 0;
+    meta->format = virStorageFileProbeFormatFromBuf(path, head, len);
+
+    ret = virStorageFileGetMetadataFromBuf(meta->format, path, head, len, meta);
+
+cleanup:
+    VIR_FREE(head);
+    return ret;
 }
 
+/**
+ * virStorageFileGetMetadata:
+ *
+ * Probe for the format of 'path', filling 'meta' with the detected
+ * format and other associated metadata.
+ *
+ * Callers are advised never to trust the returned 'meta->format'
+ * unless it is listed as VIR_STORAGE_FILE_RAW, since a
+ * malicious guest can turn a raw file into any other non-raw
+ * format at will.
+ */
 int
 virStorageFileGetMetadata(const char *path,
                           virStorageFileMetadata *meta)
