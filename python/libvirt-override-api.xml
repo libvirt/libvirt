@@ -183,7 +183,7 @@
       <arg name='pool' type='virStoragePoolPtr' info='a storage pool object'/>
     </function>
     <function name='virStorageVolGetInfo' file='python'>
-      <info>Extract information about a storage pool. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>
+      <info>Extract information about a storage volume. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>
       <return type='int *' info='the list of information or None in case of error'/>
       <arg name='vol' type='virStorageVolPtr' info='a storage vol object'/>
     </function>
