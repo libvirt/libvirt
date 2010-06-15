@@ -1326,7 +1326,8 @@ qemudSecurityInit(struct qemud_driver *qemud_drv)
     qemuSecurityDACSetDriver(qemud_drv);
 
     ret = virSecurityDriverStartup(&security_drv,
-                                   qemud_drv->securityDriverName);
+                                   qemud_drv->securityDriverName,
+                                   qemud_drv->allowDiskFormatProbing);
     if (ret == -1) {
         VIR_ERROR0(_("Failed to start security driver"));
         return -1;
@@ -3074,11 +3075,12 @@ static int qemuSetupDiskPathAllow(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 }
 
 
-static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
+static int qemuSetupDiskCgroup(struct qemud_driver *driver,
+                               virCgroupPtr cgroup,
                                virDomainDiskDefPtr disk)
 {
     return virDomainDiskDefForeachPath(disk,
-                                       true,
+                                       driver->allowDiskFormatProbing,
                                        true,
                                        qemuSetupDiskPathAllow,
                                        cgroup);
@@ -3113,11 +3115,12 @@ static int qemuTeardownDiskPathDeny(virDomainDiskDefPtr disk ATTRIBUTE_UNUSED,
 }
 
 
-static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
+static int qemuTeardownDiskCgroup(struct qemud_driver *driver,
+                                  virCgroupPtr cgroup,
                                   virDomainDiskDefPtr disk)
 {
     return virDomainDiskDefForeachPath(disk,
-                                       true,
+                                       driver->allowDiskFormatProbing,
                                        true,
                                        qemuTeardownDiskPathDeny,
                                        cgroup);
@@ -3184,7 +3187,7 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
         }
 
         for (i = 0; i < vm->def->ndisks ; i++) {
-            if (qemuSetupDiskCgroup(cgroup, vm->def->disks[i]) < 0)
+            if (qemuSetupDiskCgroup(driver, cgroup, vm->def->disks[i]) < 0)
                 goto cleanup;
         }
 
@@ -8037,7 +8040,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(cgroup, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(driver, cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -8082,7 +8085,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             /* Fallthrough */
         }
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }
@@ -8282,7 +8285,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                 vm->def->name);
                 goto endjob;
             }
-            if (qemuSetupDiskCgroup(cgroup, dev->data.disk) < 0)
+            if (qemuSetupDiskCgroup(driver, cgroup, dev->data.disk) < 0)
                 goto endjob;
         }
 
@@ -8305,7 +8308,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         }
 
         if (ret != 0 && cgroup) {
-            if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
+            if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
                 VIR_WARN("Failed to teardown cgroup for disk path %s",
                          NULLSTR(dev->data.disk->src));
         }
@@ -8433,7 +8436,7 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
@@ -8497,7 +8500,7 @@ static int qemudDomainDetachSCSIDiskDevice(struct qemud_driver *driver,
         VIR_WARN("Unable to restore security label on %s", dev->data.disk->src);
 
     if (cgroup != NULL) {
-        if (qemuTeardownDiskCgroup(cgroup, dev->data.disk) < 0)
+        if (qemuTeardownDiskCgroup(driver, cgroup, dev->data.disk) < 0)
             VIR_WARN("Failed to teardown cgroup for disk path %s",
                      NULLSTR(dev->data.disk->src));
     }
@@ -9676,8 +9679,15 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
             goto cleanup;
         }
     } else {
-        if ((format = virStorageFileProbeFormat(disk->src)) < 0)
+        if (driver->allowDiskFormatProbing) {
+            if ((format = virStorageFileProbeFormat(disk->src)) < 0)
+                goto cleanup;
+        } else {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("no disk format for %s and probing is disabled"),
+                            disk->src);
             goto cleanup;
+        }
     }
 
     if (virStorageFileGetMetadataFromFD(path, fd,

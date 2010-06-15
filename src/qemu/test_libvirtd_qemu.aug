@@ -101,6 +101,8 @@ relaxed_acs_check = 1
 vnc_allow_host_audio = 1
 
 clear_emulator_capabilities = 0
+
+allow_disk_format_probing = 1
 "
 
    test Libvirtd_qemu.lns get conf =
@@ -212,3 +214,5 @@ clear_emulator_capabilities = 0
 { "vnc_allow_host_audio" = "1" }
 { "#empty" }
 { "clear_emulator_capabilities" = "0" }
+{ "#empty" }
+{ "allow_disk_format_probing" = "1" }

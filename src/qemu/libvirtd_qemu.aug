@@ -40,6 +40,7 @@ module Libvirtd_qemu =
                  | bool_entry "relaxed_acs_check"
                  | bool_entry "vnc_allow_host_audio"
                  | bool_entry "clear_emulator_capabilities"
+                 | bool_entry "allow_disk_format_probing"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = vnc_entry

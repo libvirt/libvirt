@@ -56,7 +56,8 @@ virSecurityDriverVerify(virDomainDefPtr def)
 
 int
 virSecurityDriverStartup(virSecurityDriverPtr *drv,
-                         const char *name)
+                         const char *name,
+                         bool allowDiskFormatProbing)
 {
     unsigned int i;
 
@@ -72,7 +73,7 @@ virSecurityDriverStartup(virSecurityDriverPtr *drv,
         switch (tmp->probe()) {
         case SECURITY_DRIVER_ENABLE:
             virSecurityDriverInit(tmp);
-            if (tmp->open(tmp) == -1) {
+            if (tmp->open(tmp, allowDiskFormatProbing) == -1) {
                 return -1;
             } else {
                 *drv = tmp;
@@ -124,4 +125,15 @@ const char *
 virSecurityDriverGetModel(virSecurityDriverPtr drv)
 {
     return drv->name;
+}
+
+void virSecurityDriverSetAllowDiskFormatProbing(virSecurityDriverPtr drv,
+                                                bool allowDiskFormatProbing)
+{
+    drv->_private.allowDiskFormatProbing = allowDiskFormatProbing;
+}
+
+bool virSecurityDriverGetAllowDiskFormatProbing(virSecurityDriverPtr drv)
+{
+    return drv->_private.allowDiskFormatProbing;
 }

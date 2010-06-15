@@ -141,6 +141,7 @@ struct qemud_driver {
     unsigned int relaxedACS : 1;
     unsigned int vncAllowHostAudio : 1;
     unsigned int clearEmulatorCapabilities : 1;
+    unsigned int allowDiskFormatProbing : 1;
 
     virCapsPtr caps;
 

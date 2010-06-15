@@ -15,7 +15,7 @@ main (int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
     const char *doi, *model;
     virSecurityDriverPtr security_drv;
 
-    ret = virSecurityDriverStartup (&security_drv, "selinux");
+    ret = virSecurityDriverStartup (&security_drv, "selinux", false);
     if (ret == -1)
     {
         fprintf (stderr, "Failed to start security driver");

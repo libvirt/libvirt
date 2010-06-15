@@ -40,6 +40,7 @@
 static char *progname;
 
 typedef struct {
+    bool allowDiskFormatProbing;
     char uuid[PROFILE_NAME_SIZE];       /* UUID of vm */
     bool dryrun;                /* dry run */
     char cmd;                   /* 'c'   create
@@ -844,7 +845,7 @@ get_files(vahControl * ctl)
 
     for (i = 0; i < ctl->def->ndisks; i++) {
         int ret = virDomainDiskDefForeachPath(ctl->def->disks[i],
-                                              true,
+                                              ctl->allowDiskFormatProbing,
                                               false,
                                               add_file_path,
                                               &buf);
@@ -943,6 +944,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
 {
     int arg, idx = 0;
     struct option opt[] = {
+        {"probing", 1, 0, 'p' },
         {"add", 0, 0, 'a'},
         {"create", 0, 0, 'c'},
         {"dryrun", 0, 0, 'd'},
@@ -990,6 +992,12 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
                 if (virStrcpy((char *) ctl->uuid, optarg,
                     PROFILE_NAME_SIZE) == NULL)
                     vah_error(ctl, 1, "error copying UUID");
+                break;
+            case 'p':
+                if (STREQ(optarg, "1"))
+                    ctl->allowDiskFormatProbing = true;
+                else
+                    ctl->allowDiskFormatProbing = false;
                 break;
             default:
                 vah_error(ctl, 1, "unsupported option");

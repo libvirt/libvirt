@@ -365,6 +365,10 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     CHECK_TYPE ("clear_emulator_capabilities", VIR_CONF_LONG);
     if (p) driver->clearEmulatorCapabilities = p->l;
 
+    p = virConfGetValue (conf, "allow_disk_format_probing");
+    CHECK_TYPE ("allow_disk_format_probing", VIR_CONF_LONG);
+    if (p) driver->allowDiskFormatProbing = p->l;
+
     virConfFree (conf);
     return 0;
 }

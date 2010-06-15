@@ -266,13 +266,15 @@ SELinuxSecurityDriverProbe(void)
 }
 
 static int
-SELinuxSecurityDriverOpen(virSecurityDriverPtr drv)
+SELinuxSecurityDriverOpen(virSecurityDriverPtr drv,
+                          bool allowDiskFormatProbing)
 {
     /*
      * Where will the DOI come from?  SELinux configuration, or qemu
      * configuration? For the moment, we'll just set it to "0".
      */
     virSecurityDriverSetDOI(drv, SECURITY_SELINUX_VOID_DOI);
+    virSecurityDriverSetAllowDiskFormatProbing(drv, allowDiskFormatProbing);
     return SELinuxInitialize();
 }
 
@@ -467,18 +469,19 @@ SELinuxSetSecurityFileLabel(virDomainDiskDefPtr disk,
 }
 
 static int
-SELinuxSetSecurityImageLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
+SELinuxSetSecurityImageLabel(virSecurityDriverPtr drv,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    bool allowDiskFormatProbing = virSecurityDriverGetAllowDiskFormatProbing(drv);
 
     if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
         return 0;
 
     return virDomainDiskDefForeachPath(disk,
-                                       true,
+                                       allowDiskFormatProbing,
                                        false,
                                        SELinuxSetSecurityFileLabel,
                                        secdef);

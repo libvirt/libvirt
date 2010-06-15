@@ -157,6 +157,8 @@ load_profile(virSecurityDriverPtr drv,
     char *xml = NULL;
     int pipefd[2];
     pid_t child;
+    const char *probe = virSecurityDriverGetAllowDiskFormatProbing(drv)
+        ? "1" : "0";
 
     if (pipe(pipefd) < -1) {
         virReportSystemError(errno, "%s", _("unable to create pipe"));
@@ -172,19 +174,19 @@ load_profile(virSecurityDriverPtr drv,
 
     if (create) {
         const char *const argv[] = {
-            VIRT_AA_HELPER, "-c", "-u", profile, NULL
+            VIRT_AA_HELPER, "-p", probe, "-c", "-u", profile, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
                       pipefd[0], NULL, NULL, VIR_EXEC_NONE);
     } else if (fn) {
         const char *const argv[] = {
-            VIRT_AA_HELPER, "-r", "-u", profile, "-f", fn, NULL
+            VIRT_AA_HELPER, "-p", probe, "-r", "-u", profile, "-f", fn, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
                       pipefd[0], NULL, NULL, VIR_EXEC_NONE);
     } else {
         const char *const argv[] = {
-            VIRT_AA_HELPER, "-r", "-u", profile, NULL
+            VIRT_AA_HELPER, "-p", probe, "-r", "-u", profile, NULL
         };
         ret = virExec(argv, NULL, NULL, &child,
                       pipefd[0], NULL, NULL, VIR_EXEC_NONE);
@@ -347,9 +349,11 @@ AppArmorSecurityDriverProbe(void)
  * currently not used.
  */
 static int
-AppArmorSecurityDriverOpen(virSecurityDriverPtr drv)
+AppArmorSecurityDriverOpen(virSecurityDriverPtr drv,
+                           bool allowDiskFormatProbing)
 {
     virSecurityDriverSetDOI(drv, SECURITY_APPARMOR_VOID_DOI);
+    virSecurityDriverSetAllowDiskFormatProbing(drv, allowDiskFormatProbing);
     return 0;
 }
 

@@ -117,7 +117,7 @@ qemuSecurityDACSetSecurityImageLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
         return 0;
 
     return virDomainDiskDefForeachPath(disk,
-                                       true,
+                                       driver->allowDiskFormatProbing,
                                        false,
                                        qemuSecurityDACSetSecurityFileLabel,
                                        NULL);

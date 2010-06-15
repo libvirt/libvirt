@@ -33,7 +33,8 @@ typedef struct _virSecurityDriverState virSecurityDriverState;
 typedef virSecurityDriverState *virSecurityDriverStatePtr;
 
 typedef virSecurityDriverStatus (*virSecurityDriverProbe) (void);
-typedef int (*virSecurityDriverOpen) (virSecurityDriverPtr drv);
+typedef int (*virSecurityDriverOpen) (virSecurityDriverPtr drv,
+                                      bool allowDiskFormatProbing);
 typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityDriverPtr drv,
                                                    virDomainObjPtr vm,
                                                    virDomainDiskDefPtr disk);
@@ -102,12 +103,14 @@ struct _virSecurityDriver {
      */
     struct {
         char doi[VIR_SECURITY_DOI_BUFLEN];
+        bool allowDiskFormatProbing;
     } _private;
 };
 
 /* Global methods */
 int virSecurityDriverStartup(virSecurityDriverPtr *drv,
-                             const char *name);
+                             const char *name,
+                             bool allowDiskFormatProbing);
 
 int
 virSecurityDriverVerify(virDomainDefPtr def);
@@ -120,7 +123,10 @@ virSecurityDriverVerify(virDomainDefPtr def);
 void virSecurityDriverInit(virSecurityDriverPtr drv);
 int virSecurityDriverSetDOI(virSecurityDriverPtr drv,
                             const char *doi);
+void virSecurityDriverSetAllowDiskFormatProbing(virSecurityDriverPtr drv,
+                                                bool allowDiskFormatProbing);
 const char *virSecurityDriverGetDOI(virSecurityDriverPtr drv);
 const char *virSecurityDriverGetModel(virSecurityDriverPtr drv);
+bool virSecurityDriverGetAllowDiskFormatProbing(virSecurityDriverPtr drv);
 
 #endif /* __VIR_SECURITY_H__ */
