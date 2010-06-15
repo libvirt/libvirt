@@ -115,7 +115,9 @@
         </optional>
         <choice>
           <ref name="osbootkernel"/>
-          <ref name="osbootdev"/>
+          <oneOrMore>
+            <ref name="osbootdev"/>
+          </oneOrMore>
         </choice>
       </interleave>
     </element>
