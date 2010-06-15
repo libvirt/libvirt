@@ -46,7 +46,6 @@ enum virStorageFileFormat {
 VIR_ENUM_DECL(virStorageFileFormat);
 
 typedef struct _virStorageFileMetadata {
-    int format;
     char *backingStore;
     int backingStoreFormat;
     unsigned long long capacity;
@@ -62,9 +61,11 @@ int virStorageFileProbeFormatFromFD(const char *path,
                                     int fd);
 
 int virStorageFileGetMetadata(const char *path,
+                              int format,
                               virStorageFileMetadata *meta);
 int virStorageFileGetMetadataFromFD(const char *path,
                                     int fd,
+                                    int format,
                                     virStorageFileMetadata *meta);
 
 int virStorageFileIsSharedFS(const char *path);

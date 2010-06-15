@@ -3073,7 +3073,9 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
             }
         }
 
-        rc = virStorageFileGetMetadata(path, &meta);
+        rc = virStorageFileGetMetadata(path,
+                                       VIR_STORAGE_FILE_AUTO,
+                                       &meta);
         if (rc < 0)
             VIR_WARN("Unable to lookup parent image for %s", path);
 
@@ -3123,7 +3125,9 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
             }
         }
 
-        rc = virStorageFileGetMetadata(path, &meta);
+        rc = virStorageFileGetMetadata(path,
+                                       VIR_STORAGE_FILE_AUTO,
+                                       &meta);
         if (rc < 0)
             VIR_WARN("Unable to lookup parent image for %s", path);
 
@@ -9618,6 +9622,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     struct stat sb;
     int i;
+    int format;
 
     virCheckFlags(0, -1);
 
@@ -9662,7 +9667,21 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     /* Probe for magic formats */
-    if (virStorageFileGetMetadataFromFD(path, fd, &meta) < 0)
+    if (disk->driverType) {
+        if ((format = virStorageFileFormatTypeFromString(disk->driverType)) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("unknown disk format %s for %s"),
+                            disk->driverType, disk->src);
+            goto cleanup;
+        }
+    } else {
+        if ((format = virStorageFileProbeFormat(disk->src)) < 0)
+            goto cleanup;
+    }
+
+    if (virStorageFileGetMetadataFromFD(path, fd,
+                                        format,
+                                        &meta) < 0)
         goto cleanup;
 
     /* Get info for normal formats */
@@ -9710,7 +9729,7 @@ static int qemuDomainGetBlockInfo(virDomainPtr dom,
        highest allocated extent from QEMU */
     if (virDomainObjIsActive(vm) &&
         disk->type == VIR_DOMAIN_DISK_TYPE_BLOCK &&
-        meta.format != VIR_STORAGE_FILE_RAW &&
+        format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode)) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
         if (qemuDomainObjBeginJob(vm) < 0)

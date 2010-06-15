@@ -457,7 +457,9 @@ SELinuxSetSecurityImageLabel(virDomainObjPtr vm,
         virStorageFileMetadata meta;
         int ret;
 
-        ret = virStorageFileGetMetadata(path, &meta);
+        ret = virStorageFileGetMetadata(path,
+                                        VIR_STORAGE_FILE_AUTO,
+                                        &meta);
 
         if (path != disk->src)
             VIR_FREE(path);

@@ -115,7 +115,9 @@ qemuSecurityDACSetSecurityImageLabel(virDomainObjPtr vm ATTRIBUTE_UNUSED,
         virStorageFileMetadata meta;
         int ret;
 
-        ret = virStorageFileGetMetadata(path, &meta);
+        ret = virStorageFileGetMetadata(path,
+                                        VIR_STORAGE_FILE_AUTO,
+                                        &meta);
 
         if (path != disk->src)
             VIR_FREE(path);

@@ -75,14 +75,19 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
 
     memset(&meta, 0, sizeof(meta));
 
-    if (virStorageFileGetMetadataFromFD(target->path, fd, &meta) < 0) {
+    if ((target->format = virStorageFileProbeFormatFromFD(target->path, fd)) < 0) {
+        close(fd);
+        return -1;
+    }
+
+    if (virStorageFileGetMetadataFromFD(target->path, fd,
+                                        target->format,
+                                        &meta) < 0) {
         close(fd);
         return -1;
     }
 
     close(fd);
-
-    target->format = meta.format;
 
     if (backingStore) {
         *backingStore = meta.backingStore;

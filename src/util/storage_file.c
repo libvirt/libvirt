@@ -696,18 +696,23 @@ virStorageFileProbeFormat(const char *path)
 /**
  * virStorageFileGetMetadataFromFD:
  *
- * Probe for the format of 'fd' (which is an open file descriptor
- * for the file 'path'), filling 'meta' with the detected
- * format and other associated metadata.
+ * Extract metadata about the storage volume with the specified
+ * image format. If image format is VIR_STORAGE_FILE_AUTO, it
+ * will probe to automatically identify the format.
  *
- * Callers are advised never to trust the returned 'meta->format'
- * unless it is listed as VIR_STORAGE_FILE_RAW, since a
- * malicious guest can turn a raw file into any other non-raw
- * format at will.
+ * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
+ * format, since a malicious guest can turn a raw file into any
+ * other non-raw format at will.
+ *
+ * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
+ * it indicates the image didn't specify an explicit format for its
+ * backing store. Callers are advised against probing for the
+ * backing store format in this case.
  */
 int
 virStorageFileGetMetadataFromFD(const char *path,
                                 int fd,
+                                int format,
                                 virStorageFileMetadata *meta)
 {
     unsigned char *head;
@@ -731,9 +736,16 @@ virStorageFileGetMetadataFromFD(const char *path,
         goto cleanup;
     }
 
-    meta->format = virStorageFileProbeFormatFromBuf(path, head, len);
+    if (format == VIR_STORAGE_FILE_AUTO)
+        format = virStorageFileProbeFormatFromBuf(path, head, len);
 
-    ret = virStorageFileGetMetadataFromBuf(meta->format, path, head, len, meta);
+    if (format < 0 ||
+        format >= VIR_STORAGE_FILE_LAST) {
+        virReportSystemError(EINVAL, _("unknown storage file format %d"), format);
+        return -1;
+    }
+
+    ret = virStorageFileGetMetadataFromBuf(format, path, head, len, meta);
 
 cleanup:
     VIR_FREE(head);
@@ -743,16 +755,22 @@ cleanup:
 /**
  * virStorageFileGetMetadata:
  *
- * Probe for the format of 'path', filling 'meta' with the detected
- * format and other associated metadata.
+ * Extract metadata about the storage volume with the specified
+ * image format. If image format is VIR_STORAGE_FILE_AUTO, it
+ * will probe to automatically identify the format.
  *
- * Callers are advised never to trust the returned 'meta->format'
- * unless it is listed as VIR_STORAGE_FILE_RAW, since a
- * malicious guest can turn a raw file into any other non-raw
- * format at will.
+ * Callers are advised never to use VIR_STORAGE_FILE_AUTO as a
+ * format, since a malicious guest can turn a raw file into any
+ * other non-raw format at will.
+ *
+ * If the returned meta.backingStoreFormat is VIR_STORAGE_FILE_AUTO
+ * it indicates the image didn't specify an explicit format for its
+ * backing store. Callers are advised against probing for the
+ * backing store format in this case.
  */
 int
 virStorageFileGetMetadata(const char *path,
+                          int format,
                           virStorageFileMetadata *meta)
 {
     int fd, ret;
@@ -762,7 +780,7 @@ virStorageFileGetMetadata(const char *path,
         return -1;
     }
 
-    ret = virStorageFileGetMetadataFromFD(path, fd, meta);
+    ret = virStorageFileGetMetadataFromFD(path, fd, format, meta);
 
     close(fd);
 
