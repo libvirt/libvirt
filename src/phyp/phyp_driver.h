@@ -66,10 +66,18 @@ struct _phyp_driver {
     uuid_tablePtr uuid_table;
     virCapsPtr caps;
     int vios_id;
+
+    /* system_type:
+     * 0 = hmc
+     * 127 = ivm
+     * */
+    int system_type;
     char *managed_system;
 };
 
 int phypCheckSPFreeSapce(virConnectPtr conn, int required_size, char *sp);
+
+int phypGetSystemType(virConnectPtr conn);
 
 int phypGetVIOSPartitionID(virConnectPtr conn);
 
