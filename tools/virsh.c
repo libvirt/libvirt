@@ -1620,25 +1620,25 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         for (i = 0; i < nparams; i++){
             switch (params[i].type) {
             case VIR_DOMAIN_SCHED_FIELD_INT:
-                 printf("%-15s: %d\n",  params[i].field, params[i].value.i);
+                 vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.i);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_UINT:
-                 printf("%-15s: %u\n",  params[i].field, params[i].value.ui);
+                 vshPrint(ctl, "%-15s: %u\n",  params[i].field, params[i].value.ui);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_LLONG:
-                 printf("%-15s: %lld\n",  params[i].field, params[i].value.l);
+                 vshPrint(ctl, "%-15s: %lld\n",  params[i].field, params[i].value.l);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_ULLONG:
-                 printf("%-15s: %llu\n",  params[i].field, params[i].value.ul);
+                 vshPrint(ctl, "%-15s: %llu\n",  params[i].field, params[i].value.ul);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
-                 printf("%-15s: %f\n",  params[i].field, params[i].value.d);
+                 vshPrint(ctl, "%-15s: %f\n",  params[i].field, params[i].value.d);
                  break;
             case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
-                 printf("%-15s: %d\n",  params[i].field, params[i].value.b);
+                 vshPrint(ctl, "%-15s: %d\n",  params[i].field, params[i].value.b);
                  break;
             default:
-                 printf("not implemented scheduler parameter type\n");
+                 vshPrint(ctl, "not implemented scheduler parameter type\n");
             }
         }
     }
@@ -2654,7 +2654,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virDomainGetXMLDesc(dom, flags);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -2700,7 +2700,7 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
 
     xmlData = virConnectDomainXMLFromNative(ctl->conn, format, configData, flags);
     if (xmlData != NULL) {
-        printf("%s", xmlData);
+        vshPrint(ctl, "%s", xmlData);
         VIR_FREE(xmlData);
     } else {
         ret = FALSE;
@@ -2745,7 +2745,7 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
 
     configData = virConnectDomainXMLToNative(ctl->conn, format, xmlData, flags);
     if (configData != NULL) {
-        printf("%s", configData);
+        vshPrint(ctl, "%s", configData);
         VIR_FREE(configData);
     } else {
         ret = FALSE;
@@ -3217,7 +3217,7 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virNetworkGetXMLDesc(network, 0);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -3806,7 +3806,7 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virInterfaceGetXMLDesc(iface, flags);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -4094,7 +4094,7 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virNWFilterGetXMLDesc(nwfilter, 0);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -4566,7 +4566,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (printXML) {
-        printf("%s", xml);
+        vshPrint(ctl, "%s", xml);
         VIR_FREE(xml);
     } else {
         pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
@@ -4655,7 +4655,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     if (printXML) {
-        printf("%s", xml);
+        vshPrint(ctl, "%s", xml);
         VIR_FREE(xml);
     } else {
         pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
@@ -4859,7 +4859,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virStoragePoolGetXMLDesc(pool, 0);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -5925,7 +5925,7 @@ cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     dump = virStorageVolGetXMLDesc(vol, 0);
     if (dump != NULL) {
-        printf("%s", dump);
+        vshPrint(ctl, "%s", dump);
         VIR_FREE(dump);
     } else {
         ret = FALSE;
@@ -6240,7 +6240,7 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     xml = virSecretGetXMLDesc(secret, 0);
     if (xml == NULL)
         goto cleanup;
-    printf("%s", xml);
+    vshPrint(ctl, "%s", xml);
     VIR_FREE(xml);
     ret = TRUE;
 
@@ -6350,7 +6350,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
-    printf("%s", base64);
+    vshPrint(ctl, "%s", base64);
     memset(base64, 0, strlen(base64));
     VIR_FREE(base64);
     ret = TRUE;
@@ -8681,7 +8681,7 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!xml)
         goto cleanup;
 
-    printf("%s", xml);
+    vshPrint(ctl, "%s", xml);
 
     ret = TRUE;
 
