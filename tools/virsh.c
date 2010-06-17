@@ -1910,6 +1910,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     virSecurityModel secmodel;
     virSecurityLabel seclabel;
+    int persistent = 0;
     int ret = TRUE, autostart;
     unsigned int id;
     char *str, uuid[VIR_UUID_STRING_BUFLEN];
@@ -1963,6 +1964,15 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         ret = FALSE;
     }
 
+    /* Check and display whether the domain is persistent or not */
+    persistent = virDomainIsPersistent(dom);
+    vshDebug(ctl, 5, "Domain persistent flag value: %d\n", persistent);
+    if (persistent < 0)
+        vshPrint(ctl, "%-15s %s\n", _("Persistent:"), _("unknown"));
+    else
+        vshPrint(ctl, "%-15s %s\n", _("Persistent:"), persistent ? _("yes") : _("no"));
+
+    /* Check and display whether the domain autostarts or not */
     if (!virDomainGetAutostart(dom, &autostart)) {
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"),
                  autostart ? _("enable") : _("disable") );
@@ -5141,6 +5151,8 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolInfo info;
     virStoragePoolPtr pool;
+    int autostart = 0;
+    int persistent = 0;
     int ret = TRUE;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
@@ -5180,6 +5192,22 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
                      _("inaccessible"));
             break;
         }
+
+        /* Check and display whether the pool is persistent or not */
+        persistent = virStoragePoolIsPersistent(pool);
+        vshDebug(ctl, 5, "Pool persistent flag value: %d\n", persistent);
+        if (persistent < 0)
+            vshPrint(ctl, "%-15s %s\n", _("Persistent:"),  _("unknown"));
+        else
+            vshPrint(ctl, "%-15s %s\n", _("Persistent:"), persistent ? _("yes") : _("no"));
+
+        /* Check and display whether the pool is autostarted or not */
+        virStoragePoolGetAutostart(pool, &autostart);
+        vshDebug(ctl, 5, "Pool autostart flag value: %d\n", autostart);
+        if (autostart < 0)
+            vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+        else
+            vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
 
         if (info.state == VIR_STORAGE_POOL_RUNNING ||
             info.state == VIR_STORAGE_POOL_DEGRADED) {

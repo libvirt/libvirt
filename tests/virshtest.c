@@ -23,6 +23,7 @@ State:          running\n\
 CPU(s):         1\n\
 Max memory:     261072 kB\n\
 Used memory:    131072 kB\n\
+Persistent:     yes\n\
 Autostart:      disable\n\
 \n";
 static const char *domuuid_fc4 = DOM_UUID "\n\n";
