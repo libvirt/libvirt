@@ -227,9 +227,6 @@ static char *vshCommandOptString(const vshCmd *cmd, const char *name,
                                  int *found);
 static long long vshCommandOptLongLong(const vshCmd *cmd, const char *name,
                                        int *found);
-#if 0
-static int vshCommandOptStringList(const vshCmd *cmd, const char *name, char ***data);
-#endif
 static int vshCommandOptBool(const vshCmd *cmd, const char *name);
 
 #define VSH_BYID     (1 << 1)
@@ -9777,32 +9774,6 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name, int *found)
         *found = num_found;
     return res;
 }
-
-#if 0
-static int
-vshCommandOptStringList(const vshCmd *cmd, const char *name, char ***data)
-{
-    vshCmdOpt *arg = cmd->opts;
-    char **val = NULL;
-    int nval = 0;
-
-    while (arg) {
-        if (arg->def && STREQ(arg->def->name, name)) {
-            char **tmp = realloc(val, sizeof(*tmp) * (nval+1));
-            if (!tmp) {
-                VIR_FREE(val);
-                return -1;
-            }
-            val = tmp;
-            val[nval++] = arg->data;
-        }
-        arg = arg->next;
-    }
-
-    *data = val;
-    return nval;
-}
-#endif
 
 /*
  * Returns TRUE/FALSE if the option exists
