@@ -1629,8 +1629,6 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 
     if (nparams) {
         params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
-        if (params == NULL)
-            goto cleanup;
 
         memset(params, 0, sizeof(virSchedParameter)* nparams);
         ret = virDomainGetSchedulerParameters(dom, params, &nparams);
@@ -7909,51 +7907,40 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     /* Make XML of interface */
     tmp = vshMalloc(ctl, 1);
-    if (!tmp) goto cleanup;
     buf = vshMalloc(ctl, strlen(type) + 25);
-    if (!buf) goto cleanup;
     sprintf(buf, "    <interface type='%s'>\n" , type);
 
     tmp = vshRealloc(ctl, tmp, strlen(source) + 28);
-    if (!tmp) goto cleanup;
     if (typ == 1) {
         sprintf(tmp, "      <source network='%s'/>\n", source);
     } else if (typ == 2) {
         sprintf(tmp, "      <source bridge='%s'/>\n", source);
     }
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     if (target != NULL) {
         tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <target dev='%s'/>\n", target);
         buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        if (!buf) goto cleanup;
         strcat(buf, tmp);
     }
 
     if (mac != NULL) {
         tmp = vshRealloc(ctl, tmp, strlen(mac) + 25);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <mac address='%s'/>\n", mac);
         buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        if (!buf) goto cleanup;
         strcat(buf, tmp);
     }
 
     if (script != NULL) {
         tmp = vshRealloc(ctl, tmp, strlen(script) + 25);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <script path='%s'/>\n", script);
         buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        if (!buf) goto cleanup;
         strcat(buf, tmp);
     }
 
     buf = vshRealloc(ctl, buf, strlen(buf) + 19);
-    if (!buf) goto cleanup;
     strcat(buf, "    </interface>\n");
 
     if (vshCommandOptBool(cmd, "persistent")) {
@@ -8181,9 +8168,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     /* Make XML of disk */
     tmp = vshMalloc(ctl, 1);
-    if (!tmp) goto cleanup;
     buf = vshMalloc(ctl, 23);
-    if (!buf) goto cleanup;
     if (isFile) {
         sprintf(buf, "    <disk type='file'");
     } else {
@@ -8192,72 +8177,56 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (type) {
         tmp = vshRealloc(ctl, tmp, strlen(type) + 13);
-        if (!tmp) goto cleanup;
         sprintf(tmp, " device='%s'>\n", type);
     } else {
         tmp = vshRealloc(ctl, tmp, 3);
-        if (!tmp) goto cleanup;
         sprintf(tmp, ">\n");
     }
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     if (driver) {
         tmp = vshRealloc(ctl, tmp, strlen(driver) + 22);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <driver name='%s'", driver);
     } else {
         tmp = vshRealloc(ctl, tmp, 25);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <driver name='phy'");
     }
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     if (subdriver) {
         tmp = vshRealloc(ctl, tmp, strlen(subdriver) + 12);
-        if (!tmp) goto cleanup;
         sprintf(tmp, " type='%s'/>\n", subdriver);
     } else {
         tmp = vshRealloc(ctl, tmp, 4);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "/>\n");
     }
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     tmp = vshRealloc(ctl, tmp, strlen(source) + 25);
-    if (!tmp) goto cleanup;
     if (isFile) {
         sprintf(tmp, "      <source file='%s'/>\n", source);
     } else {
         sprintf(tmp, "      <source dev='%s'/>\n", source);
     }
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
-    if (!tmp) goto cleanup;
     sprintf(tmp, "      <target dev='%s'/>\n", target);
     buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-    if (!buf) goto cleanup;
     strcat(buf, tmp);
 
     if (mode != NULL) {
         tmp = vshRealloc(ctl, tmp, strlen(mode) + 11);
-        if (!tmp) goto cleanup;
         sprintf(tmp, "      <%s/>\n", mode);
         buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
-        if (!buf) goto cleanup;
         strcat(buf, tmp);
     }
 
     buf = vshRealloc(ctl, buf, strlen(buf) + 13);
-    if (!buf) goto cleanup;
     strcat(buf, "    </disk>\n");
 
     if (vshCommandOptBool(cmd, "persistent")) {
@@ -8600,12 +8569,7 @@ editWriteToTempFile (vshControl *ctl, const char *doc)
     const char *tmpdir;
     int fd;
 
-    ret = malloc (PATH_MAX);
-    if (!ret) {
-        vshError(ctl, _("malloc: failed to allocate temporary file name: %s"),
-                 strerror(errno));
-        return NULL;
-    }
+    ret = vshMalloc(ctl, PATH_MAX);
 
     tmpdir = getenv ("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
