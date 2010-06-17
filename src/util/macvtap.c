@@ -905,6 +905,9 @@ ifaceGetNthParent(int ifindex, const char *ifname, unsigned int nthParent,
 
     *nth = 0;
 
+    if (ifindex <= 0 && ifaceGetIndex(true, ifname, &ifindex) != 0)
+        return 1;
+
     while (!end && i <= nthParent) {
         rc = link_dump(true, ifname, ifindex, tb, &recvbuf);
         if (rc)
