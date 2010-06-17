@@ -939,7 +939,7 @@ virUnrefStoragePool(virStoragePoolPtr pool) {
  * @conn: the hypervisor connection
  * @pool: pool owning the volume
  * @name: pointer to the storage vol name
- * @uuid: pointer to the uuid
+ * @key: pointer to unique key of the volume
  *
  * Lookup if the storage vol is already registered for that connection,
  * if yes return a new pointer to it, if no allocate a new structure,
@@ -1025,7 +1025,6 @@ virReleaseStorageVol(virStorageVolPtr vol) {
     virConnectPtr conn = vol->conn;
     DEBUG("release vol %p %s", vol, vol->name);
 
-    /* TODO search by UUID first as they are better differentiators */
     if (virHashRemoveEntry(conn->storageVols, vol->key, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1291,9 +1290,10 @@ static void
 virReleaseSecret(virSecretPtr secret) {
     virConnectPtr conn = secret->conn;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    DEBUG("release secret %p %p", secret, secret->uuid);
 
     virUUIDFormat(secret->uuid, uuidstr);
+    DEBUG("release secret %p %s", secret, uuidstr);
+
     if (virHashRemoveEntry(conn->secrets, uuidstr, NULL) < 0) {
         virMutexUnlock(&conn->lock);
         virLibConnError(VIR_ERR_INTERNAL_ERROR, "%s",
