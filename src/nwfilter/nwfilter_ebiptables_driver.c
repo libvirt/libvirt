@@ -1488,17 +1488,24 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
     char chainPrefix[2];
     int needState = 1;
     bool maySkipICMP, inout = false;
+    const char *matchState;
 
     if ((rule->tt == VIR_NWFILTER_RULE_DIRECTION_IN) ||
         (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT)) {
         directionIn = 1;
-        needState = 0;
         inout = (rule->tt == VIR_NWFILTER_RULE_DIRECTION_INOUT);
+        if (inout)
+            needState = 0;
     }
 
     chainPrefix[0] = 'F';
 
     maySkipICMP = directionIn || inout;
+
+    if (needState)
+        matchState = directionIn ? MATCH_STATE_IN : MATCH_STATE_OUT;
+    else
+        matchState = NULL;
 
     chainPrefix[1] = CHAINPREFIX_HOST_IN_TEMP;
     rc = _iptablesCreateRuleInstance(directionIn,
@@ -1508,8 +1515,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     needState ? MATCH_STATE_OUT
-                                               : NULL,
+                                     matchState,
                                      "RETURN",
                                      isIPv6,
                                      maySkipICMP);
@@ -1518,6 +1524,10 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
 
 
     maySkipICMP = !directionIn || inout;
+    if (needState)
+        matchState = directionIn ? MATCH_STATE_OUT : MATCH_STATE_IN;
+    else
+        matchState = NULL;
 
     chainPrefix[1] = CHAINPREFIX_HOST_OUT_TEMP;
     rc = _iptablesCreateRuleInstance(!directionIn,
@@ -1527,8 +1537,7 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
                                      ifname,
                                      vars,
                                      res,
-                                     needState ? MATCH_STATE_IN
-                                               : NULL,
+                                     matchState,
                                      "ACCEPT",
                                      isIPv6,
                                      maySkipICMP);
