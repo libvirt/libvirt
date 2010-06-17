@@ -1271,7 +1271,6 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 error:
     if (ret != NULL) {
         VIR_FREE(ret->usageID);
-        VIR_FREE(ret->uuid);
         VIR_FREE(ret);
     }
     return NULL;
