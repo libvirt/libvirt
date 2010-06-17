@@ -369,8 +369,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         ret->magic = VIR_DOMAIN_MAGIC;
         ret->conn = conn;
         ret->id = -1;
-        if (uuid != NULL)
-            memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
         ret->snapshots = virHashCreate(20);
 
         if (virHashAddEntry(conn->domains, uuidstr, ret) < 0) {
@@ -515,8 +514,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
         }
         ret->magic = VIR_NETWORK_MAGIC;
         ret->conn = conn;
-        if (uuid != NULL)
-            memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
         if (virHashAddEntry(conn->networks, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
@@ -837,8 +835,7 @@ virGetStoragePool(virConnectPtr conn, const char *name, const unsigned char *uui
         }
         ret->magic = VIR_STORAGE_POOL_MAGIC;
         ret->conn = conn;
-        if (uuid != NULL)
-            memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
         if (virHashAddEntry(conn->storagePools, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
@@ -1452,8 +1449,7 @@ virGetNWFilter(virConnectPtr conn, const char *name, const unsigned char *uuid) 
         }
         ret->magic = VIR_NWFILTER_MAGIC;
         ret->conn = conn;
-        if (uuid != NULL)
-            memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
         if (virHashAddEntry(conn->nwfilterPools, uuidstr, ret) < 0) {
             virMutexUnlock(&conn->lock);
