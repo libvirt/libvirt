@@ -223,6 +223,8 @@ static int vshCmddefHelp(vshControl *ctl, const char *name);
 
 static vshCmdOpt *vshCommandOpt(const vshCmd *cmd, const char *name);
 static int vshCommandOptInt(const vshCmd *cmd, const char *name, int *found);
+static unsigned long vshCommandOptUL(const vshCmd *cmd, const char *name,
+                                     int *found);
 static char *vshCommandOptString(const vshCmd *cmd, const char *name,
                                  int *found);
 static long long vshCommandOptLongLong(const vshCmd *cmd, const char *name,
@@ -2515,7 +2517,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virDomainInfo info;
-    int kilobytes;
+    unsigned long kilobytes;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
@@ -2524,10 +2526,10 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
-    kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
+    kilobytes = vshCommandOptUL(cmd, "kilobytes", NULL);
     if (kilobytes <= 0) {
         virDomainFree(dom);
-        vshError(ctl, _("Invalid value of %d for memory size"), kilobytes);
+        vshError(ctl, _("Invalid value of %lu for memory size"), kilobytes);
         return FALSE;
     }
 
@@ -2539,7 +2541,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 
     if (kilobytes > info.maxMem) {
         virDomainFree(dom);
-        vshError(ctl, _("Requested memory size %d kb is larger than maximum of %lu kb"),
+        vshError(ctl, _("Requested memory size %lu kb is larger than maximum of %lu kb"),
                  kilobytes, info.maxMem);
         return FALSE;
     }
@@ -9725,6 +9727,26 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *found)
 
     if ((arg != NULL) && (arg->data != NULL)) {
         res = strtol(arg->data, &end_p, 10);
+        if ((arg->data == end_p) || (*end_p!= 0))
+            num_found = FALSE;
+        else
+            num_found = TRUE;
+    }
+    if (found)
+        *found = num_found;
+    return res;
+}
+
+static unsigned long
+vshCommandOptUL(const vshCmd *cmd, const char *name, int *found)
+{
+    vshCmdOpt *arg = vshCommandOpt(cmd, name);
+    unsigned long res = 0;
+    int num_found = FALSE;
+    char *end_p = NULL;
+
+    if ((arg != NULL) && (arg->data != NULL)) {
+        res = strtoul(arg->data, &end_p, 10);
         if ((arg->data == end_p) || (*end_p!= 0))
             num_found = FALSE;
         else
