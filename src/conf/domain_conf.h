@@ -194,6 +194,15 @@ enum virDomainControllerType {
     VIR_DOMAIN_CONTROLLER_TYPE_LAST
 };
 
+
+enum virDomainControllerModel {
+    VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC,
+    VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC,
+    VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068,
+
+    VIR_DOMAIN_CONTROLLER_MODEL_LAST
+};
+
 typedef struct _virDomainVirtioSerialOpts virDomainVirtioSerialOpts;
 typedef virDomainVirtioSerialOpts *virDomainVirtioSerialOptsPtr;
 struct _virDomainVirtioSerialOpts {
@@ -207,6 +216,7 @@ typedef virDomainControllerDef *virDomainControllerDefPtr;
 struct _virDomainControllerDef {
     int type;
     int idx;
+    int model; /* -1 == undef */
     union {
         virDomainVirtioSerialOpts vioserial;
     } opts;
@@ -1073,6 +1083,7 @@ VIR_ENUM_DECL(virDomainDiskBus)
 VIR_ENUM_DECL(virDomainDiskCache)
 VIR_ENUM_DECL(virDomainDiskErrorPolicy)
 VIR_ENUM_DECL(virDomainController)
+VIR_ENUM_DECL(virDomainControllerModel)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChrTarget)

@@ -671,6 +671,15 @@
         <ref name="unsignedInt"/>
       </attribute>
       <optional>
+        <attribute name="model">
+          <choice>
+            <value>buslogic</value>
+            <value>lsilogic</value>
+            <value>lsisas1068</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>

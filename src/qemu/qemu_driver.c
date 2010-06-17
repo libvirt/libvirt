@@ -7270,6 +7270,7 @@ qemuDomainFindOrCreateSCSIDiskController(struct qemud_driver *driver,
     }
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
     cont->idx = 0;
+    cont->model = -1;
 
     VIR_INFO0("No SCSI controller present, hotplugging one");
     if (qemudDomainAttachPciControllerDevice(driver,

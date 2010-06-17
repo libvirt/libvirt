@@ -139,6 +139,11 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "sata",
               "virtio-serial")
 
+VIR_ENUM_IMPL(virDomainControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+              "buslogic",
+              "lsilogic",
+              "lsisas1068")
+
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "mount",
               "block",
@@ -1670,6 +1675,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     virDomainControllerDefPtr def;
     char *type = NULL;
     char *idx = NULL;
+    char *model = NULL;
 
     if (VIR_ALLOC(def) < 0) {
         virReportOOMError();
@@ -1692,6 +1698,17 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  _("Cannot parse controller index %s"), idx);
             goto error;
         }
+    }
+
+    model = virXMLPropString(node, "model");
+    if (model) {
+        if ((def->model = virDomainControllerModelTypeFromString(model)) < 0) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("Unknown model type '%s'"), model);
+            goto error;
+        }
+    } else {
+        def->model = -1;
     }
 
     if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
@@ -1745,6 +1762,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 cleanup:
     VIR_FREE(type);
     VIR_FREE(idx);
+    VIR_FREE(model);
 
     return def;
 
@@ -4819,6 +4837,7 @@ static int virDomainDefMaybeAddController(virDomainDefPtr def,
 
     cont->type = type;
     cont->idx = idx;
+    cont->model = -1;
 
     if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
         cont->opts.vioserial.ports = -1;
@@ -5232,6 +5251,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
                              int flags)
 {
     const char *type = virDomainControllerTypeToString(def->type);
+    const char *model = NULL;
 
     if (!type) {
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5239,9 +5259,23 @@ virDomainControllerDefFormat(virBufferPtr buf,
         return -1;
     }
 
+    if (def->model != -1) {
+        model = virDomainControllerModelTypeToString(def->model);
+
+        if (!model) {
+            virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                                 _("unexpected model type %d"), def->model);
+            return -1;
+        }
+    }
+
     virBufferVSprintf(buf,
                       "    <controller type='%s' index='%d'",
                       type, def->idx);
+
+    if (model) {
+        virBufferEscapeString(buf, " model='%s'", model);
+    }
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
