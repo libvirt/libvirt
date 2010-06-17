@@ -568,6 +568,7 @@ static int
 cmdConnect(vshControl *ctl, const vshCmd *cmd)
 {
     int ro = vshCommandOptBool(cmd, "readonly");
+    char *name;
 
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
@@ -578,7 +579,10 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     }
 
     VIR_FREE(ctl->name);
-    ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
+    name = vshCommandOptString(cmd, "name", NULL);
+    if (!name)
+        return FALSE;
+    ctl->name = vshStrdup(ctl, name);
 
     if (!ro) {
         ctl->readonly = 0;
@@ -2344,7 +2348,6 @@ cmdVcpupin(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (!(cpulist = vshCommandOptString(cmd, "cpulist", NULL))) {
-        vshError(ctl, "%s", _("vcpupin: Missing cpulist"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -2953,10 +2956,8 @@ cmdMigrate (vshControl *ctl, const vshCmd *cmd)
         return FALSE;
 
     desturi = vshCommandOptString (cmd, "desturi", &found);
-    if (!found) {
-        vshError(ctl, "%s", _("migrate: Missing desturi"));
+    if (!found)
         goto done;
-    }
 
     migrateuri = vshCommandOptString (cmd, "migrateuri", NULL);
 
@@ -7678,7 +7679,6 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
-        vshError(ctl, "%s", _("attach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -7746,7 +7746,6 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
-        vshError(ctl, "%s", _("detach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -7814,7 +7813,6 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
-        vshError(ctl, "%s", _("update-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -9206,10 +9204,8 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     name = vshCommandOptString(cmd, "snapshotname", NULL);
-    if (name == NULL) {
-        vshError(ctl, "%s", _("missing snapshotname"));
+    if (name == NULL)
         goto cleanup;
-    }
 
     snapshot = virDomainSnapshotLookupByName(dom, name, 0);
     if (snapshot == NULL)
@@ -9264,10 +9260,8 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     name = vshCommandOptString(cmd, "snapshotname", NULL);
-    if (name == NULL) {
-        vshError(ctl, "%s", _("missing snapshotname"));
+    if (name == NULL)
         goto cleanup;
-    }
 
     snapshot = virDomainSnapshotLookupByName(dom, name, 0);
     if (snapshot == NULL)
@@ -9320,10 +9314,8 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     name = vshCommandOptString(cmd, "snapshotname", NULL);
-    if (name == NULL) {
-        vshError(ctl, "%s", _("missing snapshotname"));
+    if (name == NULL)
         goto cleanup;
-    }
 
     if (vshCommandOptBool(cmd, "children"))
         flags |= VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN;
@@ -9754,7 +9746,13 @@ vshCommandOptString(const vshCmd *cmd, const char *name, int *found)
     if (found)
         *found = arg ? TRUE : FALSE;
 
-    return arg && arg->data && *arg->data ? arg->data : NULL;
+    if (arg && arg->data && *arg->data)
+        return arg->data;
+
+    if ((arg->def->flag) & VSH_OFLAG_REQ)
+        vshError(NULL, _("Missing required option '%s'"), name);
+
+    return NULL;
 }
 
 /*
@@ -9818,10 +9816,8 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     if (!cmd_has_option (ctl, cmd, optname))
         return NULL;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined domain name or id"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -9866,10 +9862,8 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     if (!cmd_has_option (ctl, cmd, optname))
         return NULL;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined network name"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -9907,10 +9901,8 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
     if (!cmd_has_option (ctl, cmd, optname))
         return NULL;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined nwfilter name"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -9947,10 +9939,8 @@ vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     if (!cmd_has_option (ctl, cmd, optname))
         return NULL;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined interface identifier"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -9984,10 +9974,8 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     virStoragePoolPtr pool = NULL;
     char *n;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined pool name"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
@@ -10025,15 +10013,11 @@ vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     char *n, *p;
     int found;
 
-    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, "%s", _("undefined vol name"));
+    if (!(n = vshCommandOptString(cmd, optname, NULL)))
         return NULL;
-    }
 
-    if (!(p = vshCommandOptString(cmd, pooloptname, &found)) && found) {
-        vshError(ctl, "%s", _("undefined pool name"));
+    if (!(p = vshCommandOptString(cmd, pooloptname, &found)) && found)
         return NULL;
-    }
 
     if (p)
         pool = vshCommandOptPoolBy(ctl, cmd, pooloptname, name, flag);
@@ -10083,10 +10067,8 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, char **name)
         return NULL;
 
     n = vshCommandOptString(cmd, optname, NULL);
-    if (n == NULL) {
-        vshError(ctl, "%s", _("undefined secret UUID"));
+    if (n == NULL)
         return NULL;
-    }
 
     vshDebug(ctl, 5, "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
 
