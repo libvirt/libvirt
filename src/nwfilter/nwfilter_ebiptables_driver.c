@@ -1498,6 +1498,9 @@ iptablesCreateRuleInstance(virNWFilterDefPtr nwfilter,
             needState = 0;
     }
 
+    if ((rule->flags & RULE_FLAG_NO_STATEMATCH))
+        needState = 0;
+
     chainPrefix[0] = 'F';
 
     maySkipICMP = directionIn || inout;

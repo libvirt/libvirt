@@ -5,14 +5,14 @@
           dstipaddr='10.1.2.3' dstipmask='255.255.255.255'
           dscp='2'/>
   </rule>
-  <rule action='accept' direction='in'>
+  <rule action='accept' direction='in' statematch='false'>
      <tcp srcmacaddr='1:2:3:4:5:6'
           srcipaddr='10.1.2.3' srcipmask='32'
           dscp='33'
           srcportstart='20' srcportend='21'
           dstportstart='100' dstportend='1111'/>
   </rule>
-  <rule action='accept' direction='in'>
+  <rule action='accept' direction='in' statematch='0'>
      <tcp srcmacaddr='1:2:3:4:5:6'
           srcipaddr='10.1.2.3' srcipmask='32'
           dscp='63'

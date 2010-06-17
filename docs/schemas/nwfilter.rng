@@ -299,6 +299,11 @@
         <ref name='priority-type'/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="statematch">
+        <ref name='statematch-type'/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="match-attribute">
@@ -815,5 +820,10 @@
         <param name="minInclusive">0</param>
         <param name="maxInclusive">1000</param>
       </data>
+  </define>
+  <define name='statematch-type'>
+    <data type="string">
+      <param name="pattern">([Ff][Aa][Ll][Ss][Ee]|0)</param>
+    </data>
   </define>
 </grammar>
