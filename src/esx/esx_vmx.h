@@ -29,17 +29,25 @@
 # include "esx_vi.h"
 
 int
-esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id);
+esxVMX_SCSIDiskNameToControllerAndUnit(const char *name, int *controller,
+                                       int *unit);
 
 int
-esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id);
+esxVMX_IDEDiskNameToBusAndUnit(const char *name, int *bus, int *unit);
 
 int
-esxVMX_FloppyDiskNameToController(const char *name, int *controller);
+esxVMX_FloppyDiskNameToUnit(const char *name, int *unit);
 
 int
-esxVMX_GatherSCSIControllers(virDomainDefPtr conf, char *virtualDev[4],
-                             int present[4]);
+esxVMX_VerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk);
+
+int
+esxVMX_HandleLegacySCSIDiskDriverName(virDomainDefPtr def,
+                                      virDomainDiskDefPtr disk);
+
+int
+esxVMX_GatherSCSIControllers(virDomainDefPtr def, int virtualDev[4],
+                             bool present[4]);
 
 char *
 esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
@@ -56,7 +64,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
                      const char *datastoreName, const char *directoryName);
 
 virDomainDefPtr
-esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
+esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
                    const char *datastoreName, const char *directoryName,
                    esxVI_ProductVersion productVersion);
 
@@ -65,11 +73,11 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
 
 int
 esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
-                           char **virtualDev);
+                           int *virtualDev);
 
 int
-esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
-                 int controller, int id, const char *virtualDev,
+esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
+                 int device, int busType, int controllerOrBus, int unit,
                  const char *datastoreName, const char *directoryName,
                  virDomainDiskDefPtr *def);
 int
@@ -95,7 +103,7 @@ char *
 esxVMX_FormatFileName(esxVI_Context *ctx, const char *src);
 
 char *
-esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
+esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                     esxVI_ProductVersion productVersion);
 
 int

@@ -12,19 +12,22 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='buslogic'/>
       <source file='[datastore] directory/harddisk1.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='lsilogic'/>
       <source file='[datastore] directory/harddisk2.vmdk'/>
       <target dev='sdp' bus='scsi'/>
+      <address type='drive' controller='1' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='lsisas1068'/>
       <source file='[datastore] directory/harddisk3.vmdk'/>
       <target dev='sdae' bus='scsi'/>
+      <address type='drive' controller='2' bus='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='buslogic'/>
+    <controller type='scsi' index='1' model='lsilogic'/>
+    <controller type='scsi' index='2' model='lsisas1068'/>
   </devices>
 </domain>

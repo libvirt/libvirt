@@ -18,7 +18,7 @@ static virCapsPtr caps = NULL;
 # define MAX_FILE 4096
 
 static void
-testESXCapsInit(void)
+testCapsInit(void)
 {
     virCapsGuestPtr guest = NULL;
 
@@ -28,8 +28,10 @@ testESXCapsInit(void)
         return;
     }
 
-    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x50, 0x56 });
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
     virCapabilitiesAddHostMigrateTransport(caps, "esx");
+
+    caps->hasWideScsiBus = true;
 
     /* i686 guest */
     guest =
@@ -90,7 +92,7 @@ testCompareFiles(const char *xml, const char *vmx,
         goto failure;
     }
 
-    formatted = esxVMX_FormatConfig(NULL, def, productVersion);
+    formatted = esxVMX_FormatConfig(NULL, caps, def, productVersion);
 
     if (formatted == NULL) {
         goto failure;
@@ -165,7 +167,7 @@ mymain(int argc, char **argv)
             }                                                                 \
         } while (0)
 
-    testESXCapsInit();
+    testCapsInit();
 
     if (caps == NULL) {
         return EXIT_FAILURE;

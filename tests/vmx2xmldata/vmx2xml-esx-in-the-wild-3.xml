@@ -13,18 +13,23 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='lsilogic'/>
       <source file='[datastore] directory/Debian2.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <source file='[498076b2-02796c1a-ef5b-000ae484a6a3] Isos/debian-testing-amd64-netinst.iso'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='floppy'>
       <source file='[498076b2-02796c1a-ef5b-000ae484a6a3] Debian2/dummy.flp'/>
       <target dev='fdb' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' unit='1'/>
     </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
+    <controller type='fdc' index='0'/>
+    <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:0c:29:f5:c3:0c'/>
       <source bridge='VM Network'/>

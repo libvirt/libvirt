@@ -23,6 +23,8 @@
 
 #include <config.h>
 
+#include <c-ctype.h>
+
 #include "internal.h"
 #include "virterror_internal.h"
 #include "memory.h"
@@ -78,9 +80,9 @@ def->os
 ################################################################################
 ## disks #######################################################################
 
-                                        scsi[0..3]:[0..6,8..15] -> <controller>:<id>
-                                        ide[0..1]:[0..1]        -> <controller>:<id>
-                                        floppy[0..1]            -> <controller>
+                                        scsi[0..3]:[0..6,8..15] -> <controller>:<unit> with 1 bus per controller
+                                        ide[0..1]:[0..1]        -> <bus>:<unit> with 1 controller
+                                        floppy[0..1]            -> <unit> with 1 controller and 1 bus per controller
 
 def->disks[0]...
 
@@ -100,7 +102,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_DISK      <=>   scsi0:0.deviceType = "scsi-hardDisk"    # defaults to ?
 ->bus = _DISK_BUS_SCSI
 ->src = <value>.vmdk              <=>   scsi0:0.fileName = "<value>.vmdk"
-->dst = sd[<controller> * 15 + <id> mapped to [a-z]+]
+->dst = sd[<controller> * 15 + <unit> mapped to [a-z]+]
 ->driverName = <driver>           <=>   scsi0.virtualDev = "<driver>"           # default depends on guestOS value
 ->driverType
 ->cachemode                       <=>   scsi0:0.writeThrough = "<value>"        # defaults to false, true -> _DISK_CACHE_WRITETHRU, false _DISK_CACHE_DEFAULT
@@ -124,7 +126,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_DISK      <=>   ide0:0.deviceType = "ata-hardDisk"      # defaults to ?
 ->bus = _DISK_BUS_IDE
 ->src = <value>.vmdk              <=>   ide0:0.fileName = "<value>.vmdk"
-->dst = hd[<controller> * 2 + <id> mapped to [a-z]+]
+->dst = hd[<bus> * 2 + <unit> mapped to [a-z]+]
 ->driverName
 ->driverType
 ->cachemode                       <=>   ide0:0.writeThrough = "<value>"         # defaults to false, true -> _DISK_CACHE_WRITETHRU, false _DISK_CACHE_DEFAULT
@@ -144,7 +146,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_CDROM     <=>   scsi0:0.deviceType = "cdrom-image"      # defaults to ?
 ->bus = _DISK_BUS_SCSI
 ->src = <value>.iso               <=>   scsi0:0.fileName = "<value>.iso"
-->dst = sd[<controller> * 15 + <id> mapped to [a-z]+]
+->dst = sd[<controller> * 15 + <unit> mapped to [a-z]+]
 ->driverName = <driver>           <=>   scsi0.virtualDev = "<driver>"           # default depends on guestOS value
 ->driverType
 ->cachemode
@@ -163,7 +165,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_CDROM     <=>   ide0:0.deviceType = "cdrom-image"       # defaults to ?
 ->bus = _DISK_BUS_IDE
 ->src = <value>.iso               <=>   ide0:0.fileName = "<value>.iso"
-->dst = hd[<controller> * 2 + <id> mapped to [a-z]+]
+->dst = hd[<bus> * 2 + <unit> mapped to [a-z]+]
 ->driverName
 ->driverType
 ->cachemode
@@ -183,7 +185,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_CDROM     <=>   scsi0:0.deviceType = "atapi-cdrom"      # defaults to ?
 ->bus = _DISK_BUS_SCSI
 ->src = <value>                   <=>   scsi0:0.fileName = "<value>"            # e.g. "/dev/scd0" ?
-->dst = sd[<controller> * 16 + <id> mapped to [a-z]+]
+->dst = sd[<controller> * 15 + <unit> mapped to [a-z]+]
 ->driverName = <driver>           <=>   scsi0.virtualDev = "<driver>"           # default depends on guestOS value
 ->driverType
 ->cachemode
@@ -203,7 +205,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_CDROM     <=>   ide0:0.deviceType = "atapi-cdrom"       # defaults to ?
 ->bus = _DISK_BUS_IDE
 ->src = <value>                   <=>   ide0:0.fileName = "<value>"             # e.g. "/dev/scd0"
-->dst = hd[<controller> * 2 + <id> mapped to [a-z]+]
+->dst = hd[<bus> * 2 + <unit> mapped to [a-z]+]
 ->driverName
 ->driverType
 ->cachemode
@@ -223,7 +225,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_FLOPPY
 ->bus = _DISK_BUS_FDC
 ->src = <value>.flp               <=>   floppy0.fileName = "<value>.flp"
-->dst = fd[<controller> mapped to [a-z]+]
+->dst = fd[<unit> mapped to [a-z]+]
 ->driverName
 ->driverType
 ->cachemode
@@ -243,7 +245,7 @@ def->disks[0]...
 ->device = _DISK_DEVICE_FLOPPY
 ->bus = _DISK_BUS_FDC
 ->src = <value>                   <=>   floppy0.fileName = "<value>"            # e.g. "/dev/fd0"
-->dst = fd[<controller> mapped to [a-z]+]
+->dst = fd[<unit> mapped to [a-z]+]
 ->driverName
 ->driverType
 ->cachemode
@@ -429,7 +431,7 @@ def->parallels[0]...
 
 
 int
-esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
+esxVMX_SCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *unit)
 {
     int idx;
 
@@ -448,7 +450,7 @@ esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
         return -1;
     }
 
-    /* Each of the 4 SCSI controllers offers 15 IDs for devices */
+    /* Each of the 4 SCSI controllers has 1 bus with 15 units each for devices */
     if (idx >= (4 * 15)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("SCSI disk index (parsed from '%s') is too large"), name);
@@ -456,11 +458,11 @@ esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
     }
 
     *controller = idx / 15;
-    *id = idx % 15;
+    *unit = idx % 15;
 
-    /* Skip the controller ifself with ID 7 */
-    if (*id >= 7) {
-        ++(*id);
+    /* Skip the controller ifself at unit 7 */
+    if (*unit >= 7) {
+        ++(*unit);
     }
 
     return 0;
@@ -469,7 +471,7 @@ esxVMX_SCSIDiskNameToControllerAndID(const char *name, int *controller, int *id)
 
 
 int
-esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id)
+esxVMX_IDEDiskNameToBusAndUnit(const char *name, int *bus, int *unit)
 {
     int idx;
 
@@ -488,15 +490,15 @@ esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id)
         return -1;
     }
 
-    /* Each of the 2 IDE controllers offers 2 IDs for devices */
+    /* The IDE controller has 2 buses with 2 units each for devices */
     if (idx >= (2 * 2)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("IDE disk index (parsed from '%s') is too large"), name);
         return -1;
     }
 
-    *controller = idx / 2;
-    *id = idx % 2;
+    *bus = idx / 2;
+    *unit = idx % 2;
 
     return 0;
 }
@@ -504,7 +506,7 @@ esxVMX_IDEDiskNameToControllerAndID(const char *name, int *controller, int *id)
 
 
 int
-esxVMX_FloppyDiskNameToController(const char *name, int *controller)
+esxVMX_FloppyDiskNameToUnit(const char *name, int *unit)
 {
     int idx;
 
@@ -523,13 +525,14 @@ esxVMX_FloppyDiskNameToController(const char *name, int *controller)
         return -1;
     }
 
+    /* The FDC controller has 1 bus with 2 units for devices */
     if (idx >= 2) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Floppy disk index (parsed from '%s') is too large"), name);
         return -1;
     }
 
-    *controller = idx;
+    *unit = idx;
 
     return 0;
 }
@@ -537,13 +540,180 @@ esxVMX_FloppyDiskNameToController(const char *name, int *controller)
 
 
 int
-esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
-                             int present[4])
+esxVMX_VerifyDiskAddress(virCapsPtr caps, virDomainDiskDefPtr disk)
 {
-    virDomainDiskDefPtr disk;
-    int i, controller, id;
+    virDomainDiskDef def;
+    virDomainDeviceDriveAddressPtr drive;
 
-    /* Check for continuous use of the same virtualDev per SCSI controller */
+    memset(&def, 0, sizeof(def));
+
+    if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Unsupported disk address type '%s'"),
+                  virDomainDeviceAddressTypeToString(disk->info.type));
+        return -1;
+    }
+
+    drive = &disk->info.addr.drive;
+
+    def.dst = disk->dst;
+    def.bus = disk->bus;
+
+    if (virDomainDiskDefAssignAddress(caps, &def) < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Could not verify disk address"));
+        return -1;
+    }
+
+    if (def.info.addr.drive.controller != drive->controller ||
+        def.info.addr.drive.bus != drive->bus ||
+        def.info.addr.drive.unit != drive->unit) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Disk address %d:%d:%d doesn't match target device '%s'"),
+                  drive->controller, drive->bus, drive->unit, disk->dst);
+        return -1;
+    }
+
+    /* drive->{controller|bus|unit} is unsigned, no >= 0 checks are necessary */
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+        if (drive->controller > 3) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("SCSI controller index %d out of [0..3] range"),
+                      drive->controller);
+            return -1;
+        }
+
+        if (drive->bus != 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("SCSI bus index %d out of [0] range"),
+                      drive->bus);
+            return -1;
+        }
+
+        if (drive->unit > 15 || drive->unit == 7) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("SCSI unit index %d out of [0..6,8..15] range"),
+                      drive->unit);
+            return -1;
+        }
+    } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+        if (drive->controller != 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("IDE controller index %d out of [0] range"),
+                      drive->controller);
+            return -1;
+        }
+
+        if (drive->bus > 1) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("IDE bus index %d out of [0..1] range"),
+                      drive->bus);
+            return -1;
+        }
+
+        if (drive->unit > 1) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("IDE unit index %d out of [0..1] range"),
+                      drive->unit);
+            return -1;
+        }
+    } else if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+        if (drive->controller != 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("FDC controller index %d out of [0] range"),
+                      drive->controller);
+            return -1;
+        }
+
+        if (drive->bus != 0) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("FDC bus index %d out of [0] range"),
+                      drive->bus);
+            return -1;
+        }
+
+        if (drive->unit > 1) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("FDC unit index %d out of [0..1] range"),
+                      drive->unit);
+            return -1;
+        }
+    } else {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Unsupported bus type '%s'"),
+                  virDomainDiskBusTypeToString(disk->bus));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
+esxVMX_HandleLegacySCSIDiskDriverName(virDomainDefPtr def,
+                                      virDomainDiskDefPtr disk)
+{
+    char *tmp;
+    int model, i;
+    virDomainControllerDefPtr controller = NULL;
+
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI || disk->driverName == NULL) {
+        return 0;
+    }
+
+    tmp = disk->driverName;
+
+    for (; *tmp != '\0'; ++tmp) {
+        *tmp = c_tolower(*tmp);
+    }
+
+    model = virDomainControllerModelTypeFromString(disk->driverName);
+
+    if (model < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Unknown driver name '%s'"), disk->driverName);
+        return -1;
+    }
+
+    for (i = 0; i < def->ncontrollers; ++i) {
+        if (def->controllers[i]->idx == disk->info.addr.drive.controller) {
+            controller = def->controllers[i];
+            break;
+        }
+    }
+
+    if (controller == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Missing SCSI controller for index %d"),
+                  disk->info.addr.drive.controller);
+        return -1;
+    }
+
+    if (controller->model == -1) {
+        controller->model = model;
+    } else if (controller->model != model) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Inconsistent SCSI controller model ('%s' is not '%s') "
+                    "for SCSI controller index %d"), disk->driverName,
+                  virDomainControllerModelTypeToString(controller->model),
+                  controller->idx);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
+esxVMX_GatherSCSIControllers(virDomainDefPtr def, int virtualDev[4],
+                             bool present[4])
+{
+    int i;
+    virDomainDiskDefPtr disk;
+    virDomainControllerDefPtr controller = NULL;
+
     for (i = 0; i < def->ndisks; ++i) {
         disk = def->disks[i];
 
@@ -551,34 +721,36 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, char *virtualDev[4],
             continue;
         }
 
-        if (disk->driverName != NULL &&
-            STRCASENEQ(disk->driverName, "buslogic") &&
-            STRCASENEQ(disk->driverName, "lsilogic") &&
-            STRCASENEQ(disk->driverName, "lsisas1068")) {
+        controller = NULL;
+
+        for (i = 0; i < def->ncontrollers; ++i) {
+            if (def->controllers[i]->idx == disk->info.addr.drive.controller) {
+                controller = def->controllers[i];
+                break;
+            }
+        }
+
+        if (controller == NULL) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Expecting domain XML entry 'devices/disk/target' to "
-                        "be 'buslogic' or 'lsilogic' or 'lsisas1068' but found '%s'"),
-                      disk->driverName);
+                      _("Missing SCSI controller for index %d"),
+                      disk->info.addr.drive.controller);
             return -1;
         }
 
-        if (esxVMX_SCSIDiskNameToControllerAndID(disk->dst, &controller,
-                                                 &id) < 0) {
-            return -1;
-        }
-
-        present[controller] = 1;
-
-        if (virtualDev[controller] == NULL) {
-            virtualDev[controller] = disk->driverName;
-        } else if (disk->driverName == NULL ||
-                   STRCASENEQ(virtualDev[controller], disk->driverName)) {
+        if (controller->model != -1 &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Inconsistent driver usage ('%s' is not '%s') on SCSI "
-                        "controller index %d"), virtualDev[controller],
-                      disk->driverName ? disk->driverName : "?", controller);
+                      _("Expecting domain XML attribute 'model' of entry "
+                        "'controller' to be 'buslogic' or 'lsilogic' or "
+                        "'lsisas1068' but found '%s'"),
+                      virDomainControllerModelTypeToString(controller->model));
             return -1;
         }
+
+        present[controller->idx] = true;
+        virtualDev[controller->idx] = controller->model;
     }
 
     return 0;
@@ -725,7 +897,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
 
 
 virDomainDefPtr
-esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
+esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
                    const char *datastoreName, const char *directoryName,
                    esxVI_ProductVersion productVersion)
 {
@@ -740,10 +912,11 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     char *sched_cpu_affinity = NULL;
     char *guestOS = NULL;
     int controller;
+    int bus;
     int port;
     int present; // boolean
-    char *scsi_virtualDev = NULL;
-    int id;
+    int scsi_virtualDev[4] = { -1, -1, -1, -1 };
+    int unit;
 
     conf = virConfReadMem(vmx, strlen(vmx), VIR_CONF_FLAG_VMX_FORMAT);
 
@@ -970,12 +1143,11 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
         goto cleanup;
     }
 
-/*
-    def->emulator
-    def->features*/
+    /* def:features */
+    /* FIXME */
 
-/*
-    def->localtime*/
+    /* def:clock */
+    /* FIXME */
 
     /* def:graphics */
     if (VIR_ALLOC_N(def->graphics, 1) < 0) {
@@ -1003,10 +1175,8 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
     /* def:disks (scsi) */
     for (controller = 0; controller < 4; ++controller) {
-        VIR_FREE(scsi_virtualDev);
-
         if (esxVMX_ParseSCSIController(conf, controller, &present,
-                                       &scsi_virtualDev) < 0) {
+                                       &scsi_virtualDev[controller]) < 0) {
             goto cleanup;
         }
 
@@ -1014,18 +1184,18 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
             continue;
         }
 
-        for (id = 0; id < 16; ++id) {
-            if (id == 7) {
+        for (unit = 0; unit < 16; ++unit) {
+            if (unit == 7) {
                 /*
-                 * SCSI ID 7 is assigned to the SCSI controller and cannot be
+                 * SCSI unit 7 is assigned to the SCSI controller and cannot be
                  * used for disk devices.
                  */
                 continue;
             }
 
-            if (esxVMX_ParseDisk(ctx, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
-                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, id,
-                                 scsi_virtualDev, datastoreName, directoryName,
+            if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
+                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1035,9 +1205,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
                 continue;
             }
 
-            if (esxVMX_ParseDisk(ctx, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
-                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, id,
-                                 scsi_virtualDev, datastoreName, directoryName,
+            if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
+                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1049,11 +1219,11 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     }
 
     /* def:disks (ide) */
-    for (controller = 0; controller < 2; ++controller) {
-        for (id = 0; id < 2; ++id) {
-            if (esxVMX_ParseDisk(ctx, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
-                                 VIR_DOMAIN_DISK_BUS_IDE, controller, id,
-                                 NULL, datastoreName, directoryName,
+    for (bus = 0; bus < 2; ++bus) {
+        for (unit = 0; unit < 2; ++unit) {
+            if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
+                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1063,9 +1233,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
                 continue;
             }
 
-            if (esxVMX_ParseDisk(ctx, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
-                                 VIR_DOMAIN_DISK_BUS_IDE, controller, id,
-                                 NULL, datastoreName, directoryName,
+            if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
+                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1077,9 +1247,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     }
 
     /* def:disks (floppy) */
-    for (controller = 0; controller < 2; ++controller) {
-        if (esxVMX_ParseDisk(ctx, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
-                             VIR_DOMAIN_DISK_BUS_FDC, controller, -1, NULL,
+    for (unit = 0; unit < 2; ++unit) {
+        if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
+                             VIR_DOMAIN_DISK_BUS_FDC, 0, unit,
                              datastoreName, directoryName,
                              &def->disks[def->ndisks]) < 0) {
             goto cleanup;
@@ -1087,6 +1257,27 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
 
         if (def->disks[def->ndisks] != NULL) {
             ++def->ndisks;
+        }
+    }
+
+    /* def:controllers */
+    if (virDomainDefAddImplicitControllers(def) < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not add controllers"));
+        goto cleanup;
+    }
+
+    for (controller = 0; controller < def->ncontrollers; ++controller) {
+        if (def->controllers[controller]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            if (def->controllers[controller]->idx < 0 ||
+                def->controllers[controller]->idx > 3) {
+                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                          _("SCSI controller index %d out of [0..3] range"),
+                          def->controllers[controller]->idx);
+                goto cleanup;
+            }
+
+            def->controllers[controller]->model =
+              scsi_virtualDev[def->controllers[controller]->idx];
         }
     }
 
@@ -1130,8 +1321,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     def->nserials = 0;
 
     for (port = 0; port < 4; ++port) {
-        if (esxVMX_ParseSerial(ctx, conf, port, datastoreName,
-                               directoryName,
+        if (esxVMX_ParseSerial(ctx, conf, port, datastoreName, directoryName,
                                &def->serials[def->nserials]) < 0) {
             goto cleanup;
         }
@@ -1150,8 +1340,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     def->nparallels = 0;
 
     for (port = 0; port < 3; ++port) {
-        if (esxVMX_ParseParallel(ctx, conf, port, datastoreName,
-                                 directoryName,
+        if (esxVMX_ParseParallel(ctx, conf, port, datastoreName, directoryName,
                                  &def->parallels[def->nparallels]) < 0) {
             goto cleanup;
         }
@@ -1172,7 +1361,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, const char *vmx,
     virConfFree(conf);
     VIR_FREE(sched_cpu_affinity);
     VIR_FREE(guestOS);
-    VIR_FREE(scsi_virtualDev);
 
     return def;
 }
@@ -1245,12 +1433,14 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 
 int
 esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
-                           char **virtualDev)
+                           int *virtualDev)
 {
     char present_name[32];
     char virtualDev_name[32];
+    char *virtualDev_string = NULL;
+    char *tmp;
 
-    if (virtualDev == NULL || *virtualDev != NULL) {
+    if (virtualDev == NULL || *virtualDev != -1) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1274,24 +1464,36 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
         return 0;
     }
 
-    if (esxUtil_GetConfigString(conf, virtualDev_name, virtualDev, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev_string,
+                                1) < 0) {
         goto failure;
     }
 
-    if (*virtualDev != NULL &&
-        STRCASENEQ(*virtualDev, "buslogic") &&
-        STRCASENEQ(*virtualDev, "lsilogic") &&
-        STRCASENEQ(*virtualDev, "lsisas1068")) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' or "
-                    "'lsisas1068' but found '%s'"), virtualDev_name, *virtualDev);
-        goto failure;
+    if (virtualDev_string != NULL) {
+        tmp = virtualDev_string;
+
+        for (; *tmp != '\0'; ++tmp) {
+            *tmp = c_tolower(*tmp);
+        }
+
+        *virtualDev = virDomainControllerModelTypeFromString(virtualDev_string);
+
+        if (*virtualDev == -1 ||
+            (*virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068)) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
+                        "or 'lsisas1068' but found '%s'"), virtualDev_name,
+                        virtualDev_string);
+            goto failure;
+        }
     }
 
     return 0;
 
   failure:
-    VIR_FREE(*virtualDev);
+    VIR_FREE(virtualDev_string);
 
     return -1;
 }
@@ -1314,29 +1516,26 @@ struct _virDomainDiskDef {
 };*/
 
 int
-esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
-                 int controller, int id, const char *virtualDev,
+esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
+                 int device, int busType, int controllerOrBus, int unit,
                  const char *datastoreName, const char *directoryName,
                  virDomainDiskDefPtr *def)
 {
     /*
-     *     device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
-     *        bus = VIR_DOMAIN_DISK_BUS_SCSI
-     * controller = [0..3]
-     *         id = [0..6,8..15]
-     * virtualDev = {'buslogic', 'lsilogic', 'lsisas1068'}
+     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
+     *         busType = VIR_DOMAIN_DISK_BUS_SCSI
+     * controllerOrBus = [0..3] -> controller
+     *            unit = [0..6,8..15]
      *
-     *     device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
-     *        bus = VIR_DOMAIN_DISK_BUS_IDE
-     * controller = [0..1]
-     *         id = [0..1]
-     * virtualDev = NULL
+     *          device = {VIR_DOMAIN_DISK_DEVICE_DISK, VIR_DOMAIN_DISK_DEVICE_CDROM}
+     *         busType = VIR_DOMAIN_DISK_BUS_IDE
+     * controllerOrBus = [0..1] -> bus
+     *            unit = [0..1]
      *
-     *     device = VIR_DOMAIN_DISK_DEVICE_FLOPPY
-     *        bus = VIR_DOMAIN_DISK_BUS_FDC
-     * controller = [0..1]
-     *         id = -1
-     * virtualDev = NULL
+     *          device = VIR_DOMAIN_DISK_DEVICE_FLOPPY
+     *         busType = VIR_DOMAIN_DISK_BUS_FDC
+     * controllerOrBus = [0]
+     *            unit = [0..1]
      */
 
     int result = -1;
@@ -1374,66 +1573,58 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
     }
 
     (*def)->device = device;
-    (*def)->bus = bus;
+    (*def)->bus = busType;
 
     /* def:dst, def:driverName */
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK ||
         device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            if (controller < 0 || controller > 3) {
+        if (busType == VIR_DOMAIN_DISK_BUS_SCSI) {
+            if (controllerOrBus < 0 || controllerOrBus > 3) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                           _("SCSI controller index %d out of [0..3] range"),
-                          controller);
+                          controllerOrBus);
                 goto cleanup;
             }
 
-            if (id < 0 || id > 15 || id == 7) {
+            if (unit < 0 || unit > 15 || unit == 7) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("SCSI ID %d out of [0..6,8..15] range"), id);
+                          _("SCSI unit index %d out of [0..6,8..15] range"),
+                          unit);
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "scsi%d:%d", controller, id) < 0) {
+            if (virAsprintf(&prefix, "scsi%d:%d", controllerOrBus, unit) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
 
             (*def)->dst =
                virIndexToDiskName
-                 (controller * 15 + (id < 7 ? id : id - 1), "sd");
+                 (controllerOrBus * 15 + (unit < 7 ? unit : unit - 1), "sd");
 
             if ((*def)->dst == NULL) {
                 goto cleanup;
             }
-
-            if (virtualDev != NULL) {
-                (*def)->driverName = strdup(virtualDev);
-
-                if ((*def)->driverName == NULL) {
-                    virReportOOMError();
-                    goto cleanup;
-                }
-            }
-        } else if (bus == VIR_DOMAIN_DISK_BUS_IDE) {
-            if (controller < 0 || controller > 1) {
+        } else if (busType == VIR_DOMAIN_DISK_BUS_IDE) {
+            if (controllerOrBus < 0 || controllerOrBus > 1) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("IDE controller index %d out of [0..1] range"),
-                          controller);
+                          _("IDE bus index %d out of [0..1] range"),
+                          controllerOrBus);
                 goto cleanup;
             }
 
-            if (id < 0 || id > 1) {
+            if (unit < 0 || unit > 1) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("IDE ID %d out of [0..1] range"), id);
+                          _("IDE unit index %d out of [0..1] range"), unit);
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "ide%d:%d", controller, id) < 0) {
+            if (virAsprintf(&prefix, "ide%d:%d", controllerOrBus, unit) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
 
-            (*def)->dst = virIndexToDiskName(controller * 2 + id, "hd");
+            (*def)->dst = virIndexToDiskName(controllerOrBus * 2 + unit, "hd");
 
             if ((*def)->dst == NULL) {
                 goto cleanup;
@@ -1441,25 +1632,32 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Unsupported bus type '%s' for device type '%s'"),
-                      virDomainDiskBusTypeToString(bus),
+                      virDomainDiskBusTypeToString(busType),
                       virDomainDiskDeviceTypeToString(device));
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-        if (bus == VIR_DOMAIN_DISK_BUS_FDC) {
-            if (controller < 0 || controller > 1) {
+        if (busType == VIR_DOMAIN_DISK_BUS_FDC) {
+            if (controllerOrBus != 0) {
                 ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                          _("Floppy controller index %d out of [0..1] range"),
-                          controller);
+                          _("FDC controller index %d out of [0] range"),
+                          controllerOrBus);
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "floppy%d", controller) < 0) {
+            if (unit < 0 || unit > 1) {
+                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                          _("FDC unit index %d out of [0..1] range"),
+                          unit);
+                goto cleanup;
+            }
+
+            if (virAsprintf(&prefix, "floppy%d", unit) < 0) {
                 virReportOOMError();
                 goto cleanup;
             }
 
-            (*def)->dst = virIndexToDiskName(controller, "fd");
+            (*def)->dst = virIndexToDiskName(unit, "fd");
 
             if ((*def)->dst == NULL) {
                 goto cleanup;
@@ -1467,7 +1665,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
         } else {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Unsupported bus type '%s' for device type '%s'"),
-                      virDomainDiskBusTypeToString(bus),
+                      virDomainDiskBusTypeToString(busType),
                       virDomainDiskDeviceTypeToString(device));
             goto cleanup;
         }
@@ -1541,7 +1739,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
     if (device == VIR_DOMAIN_DISK_DEVICE_DISK) {
         if (virFileHasSuffix(fileName, ".vmdk")) {
             if (deviceType != NULL) {
-                if (bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+                if (busType == VIR_DOMAIN_DISK_BUS_SCSI &&
                     STRCASENEQ(deviceType, "scsi-hardDisk") &&
                     STRCASENEQ(deviceType, "disk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1549,7 +1747,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
                                 "or 'disk' but found '%s'"), deviceType_name,
                               deviceType);
                     goto cleanup;
-                } else if (bus == VIR_DOMAIN_DISK_BUS_IDE &&
+                } else if (busType == VIR_DOMAIN_DISK_BUS_IDE &&
                            STRCASENEQ(deviceType, "ata-hardDisk") &&
                            STRCASENEQ(deviceType, "disk")) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1558,16 +1756,6 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
                               deviceType);
                     goto cleanup;
                 }
-            }
-
-            if (writeThrough && virtualDev == NULL) {
-                /*
-                 * FIXME: If no virtualDev is explicit specified need to get
-                 *        the default based on the guestOS. The mechanism to
-                 *        obtain the default is currently missing
-                 */
-                VIR_WARN0("No explicit SCSI driver specified in VMX config, "
-                          "cannot represent explicit specified cachemode");
             }
 
             (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
@@ -1663,6 +1851,12 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virConfPtr conf, int device, int bus,
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, _("Unsupported device type '%s'"),
                   virDomainDiskDeviceTypeToString(device));
+        goto cleanup;
+    }
+
+    if (virDomainDiskDefAssignAddress(caps, *def) < 0) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not assign address to disk '%s'"), (*def)->src);
         goto cleanup;
     }
 
@@ -2239,13 +2433,15 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
 
 
 char *
-esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
+esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                     esxVI_ProductVersion productVersion)
 {
     int i;
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    bool scsi_present[4] = { false, false, false, false };
+    int scsi_virtualDev[4] = { -1, -1, -1, -1 };
 
     memset(zero, 0, VIR_UUID_BUFLEN);
 
@@ -2398,8 +2594,12 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
     }
 
     /* def:disks */
-    int scsi_present[4] = { 0, 0, 0, 0 };
-    char *scsi_virtualDev[4] = { NULL, NULL, NULL, NULL };
+    for (i = 0; i < def->ndisks; ++i) {
+        if (esxVMX_VerifyDiskAddress(caps, def->disks[i]) < 0 ||
+            esxVMX_HandleLegacySCSIDiskDriverName(def, def->disks[i]) < 0) {
+            goto failure;
+        }
+    }
 
     if (esxVMX_GatherSCSIControllers(def, scsi_virtualDev, scsi_present) < 0) {
         goto failure;
@@ -2409,9 +2609,10 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virDomainDefPtr def,
         if (scsi_present[i]) {
             virBufferVSprintf(&buffer, "scsi%d.present = \"true\"\n", i);
 
-            if (scsi_virtualDev[i] != NULL) {
+            if (scsi_virtualDev[i] != -1) {
                 virBufferVSprintf(&buffer, "scsi%d.virtualDev = \"%s\"\n", i,
-                                  scsi_virtualDev[i]);
+                                  virDomainControllerModelTypeToString
+                                    (scsi_virtualDev[i]));
             }
         }
     }
@@ -2543,7 +2744,7 @@ int
 esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
                       virBufferPtr buffer)
 {
-    int controller, id;
+    int controllerOrBus, unit;
     const char *busName = NULL;
     const char *entryPrefix = NULL;
     const char *deviceTypePrefix = NULL;
@@ -2559,8 +2760,8 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
         entryPrefix = "scsi";
         deviceTypePrefix = "scsi";
 
-        if (esxVMX_SCSIDiskNameToControllerAndID(def->dst, &controller,
-                                                 &id) < 0) {
+        if (esxVMX_SCSIDiskNameToControllerAndUnit(def->dst, &controllerOrBus,
+                                                   &unit) < 0) {
             return -1;
         }
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_IDE) {
@@ -2568,8 +2769,8 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
         entryPrefix = "ide";
         deviceTypePrefix = "ata";
 
-        if (esxVMX_IDEDiskNameToControllerAndID(def->dst, &controller,
-                                                &id) < 0) {
+        if (esxVMX_IDEDiskNameToBusAndUnit(def->dst, &controllerOrBus,
+                                           &unit) < 0) {
             return -1;
         }
     } else {
@@ -2588,9 +2789,9 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
     }
 
     virBufferVSprintf(buffer, "%s%d:%d.present = \"true\"\n",
-                      entryPrefix, controller, id);
+                      entryPrefix, controllerOrBus, unit);
     virBufferVSprintf(buffer, "%s%d:%d.deviceType = \"%s-hardDisk\"\n",
-                      entryPrefix, controller, id, deviceTypePrefix);
+                      entryPrefix, controllerOrBus, unit, deviceTypePrefix);
 
     if (def->src != NULL) {
         if (! virFileHasSuffix(def->src, ".vmdk")) {
@@ -2607,7 +2808,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
         }
 
         virBufferVSprintf(buffer, "%s%d:%d.fileName = \"%s\"\n",
-                          entryPrefix, controller, id, fileName);
+                          entryPrefix, controllerOrBus, unit, fileName);
 
         VIR_FREE(fileName);
     }
@@ -2615,7 +2816,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
     if (def->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
         if (def->cachemode == VIR_DOMAIN_DISK_CACHE_WRITETHRU) {
             virBufferVSprintf(buffer, "%s%d:%d.writeThrough = \"true\"\n",
-                              entryPrefix, controller, id);
+                              entryPrefix, controllerOrBus, unit);
         } else if (def->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("%s harddisk '%s' has unsupported cache mode '%s'"),
@@ -2634,7 +2835,7 @@ int
 esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
                    virBufferPtr buffer)
 {
-    int controller, id;
+    int controllerOrBus, unit;
     const char *busName = NULL;
     const char *entryPrefix = NULL;
     char *fileName = NULL;
@@ -2648,16 +2849,16 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
         busName = "SCSI";
         entryPrefix = "scsi";
 
-        if (esxVMX_SCSIDiskNameToControllerAndID(def->dst, &controller,
-                                                 &id) < 0) {
+        if (esxVMX_SCSIDiskNameToControllerAndUnit(def->dst, &controllerOrBus,
+                                                   &unit) < 0) {
             return -1;
         }
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_IDE) {
         busName = "IDE";
         entryPrefix = "ide";
 
-        if (esxVMX_IDEDiskNameToControllerAndID(def->dst, &controller,
-                                                &id) < 0) {
+        if (esxVMX_IDEDiskNameToBusAndUnit(def->dst, &controllerOrBus,
+                                           &unit) < 0) {
             return -1;
         }
     } else {
@@ -2668,11 +2869,11 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
     }
 
     virBufferVSprintf(buffer, "%s%d:%d.present = \"true\"\n",
-                      entryPrefix, controller, id);
+                      entryPrefix, controllerOrBus, unit);
 
     if (def->type == VIR_DOMAIN_DISK_TYPE_FILE) {
         virBufferVSprintf(buffer, "%s%d:%d.deviceType = \"cdrom-image\"\n",
-                          entryPrefix, controller, id);
+                          entryPrefix, controllerOrBus, unit);
 
         if (def->src != NULL) {
             if (! virFileHasSuffix(def->src, ".iso")) {
@@ -2689,17 +2890,17 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
             }
 
             virBufferVSprintf(buffer, "%s%d:%d.fileName = \"%s\"\n",
-                              entryPrefix, controller, id, fileName);
+                              entryPrefix, controllerOrBus, unit, fileName);
 
             VIR_FREE(fileName);
         }
     } else if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
         virBufferVSprintf(buffer, "%s%d:%d.deviceType = \"atapi-cdrom\"\n",
-                          entryPrefix, controller, id);
+                          entryPrefix, controllerOrBus, unit);
 
         if (def->src != NULL) {
             virBufferVSprintf(buffer, "%s%d:%d.fileName = \"%s\"\n",
-                              entryPrefix, controller, id, def->src);
+                              entryPrefix, controllerOrBus, unit, def->src);
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -2720,7 +2921,7 @@ int
 esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
                     virBufferPtr buffer)
 {
-    int controller;
+    int unit;
     char *fileName = NULL;
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -2728,15 +2929,14 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
         return -1;
     }
 
-    if (esxVMX_FloppyDiskNameToController(def->dst, &controller) < 0) {
+    if (esxVMX_FloppyDiskNameToUnit(def->dst, &unit) < 0) {
         return -1;
     }
 
-    virBufferVSprintf(buffer, "floppy%d.present = \"true\"\n", controller);
+    virBufferVSprintf(buffer, "floppy%d.present = \"true\"\n", unit);
 
     if (def->type == VIR_DOMAIN_DISK_TYPE_FILE) {
-        virBufferVSprintf(buffer, "floppy%d.fileType = \"file\"\n",
-                          controller);
+        virBufferVSprintf(buffer, "floppy%d.fileType = \"file\"\n", unit);
 
         if (def->src != NULL) {
             if (! virFileHasSuffix(def->src, ".flp")) {
@@ -2753,17 +2953,16 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
             }
 
             virBufferVSprintf(buffer, "floppy%d.fileName = \"%s\"\n",
-                              controller, fileName);
+                              unit, fileName);
 
             VIR_FREE(fileName);
         }
     } else if (def->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-        virBufferVSprintf(buffer, "floppy%d.fileType = \"device\"\n",
-                          controller);
+        virBufferVSprintf(buffer, "floppy%d.fileType = \"device\"\n", unit);
 
         if (def->src != NULL) {
             virBufferVSprintf(buffer, "floppy%d.fileName = \"%s\"\n",
-                              controller, def->src);
+                              unit, def->src);
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,

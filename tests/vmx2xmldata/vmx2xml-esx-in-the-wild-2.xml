@@ -13,31 +13,40 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='lsilogic' cache='writethrough'/>
+      <driver cache='writethrough'/>
       <source file='[datastore] directory/Debian1.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
-      <driver name='buslogic'/>
       <source file='[datastore] directory/Debian1-cdrom.iso'/>
       <target dev='sdp' bus='scsi'/>
+      <address type='drive' controller='1' bus='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <source file='/vmimages/tools-isoimages/linux.iso'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
       <source dev='/dev/scd0'/>
       <target dev='hdb' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='1'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='[datastore] directory/Debian1-IDE.vmdk'/>
       <target dev='hdd' bus='ide'/>
+      <address type='drive' controller='0' bus='1' unit='1'/>
     </disk>
     <disk type='block' device='floppy'>
       <source dev='/dev/fd0'/>
       <target dev='fda' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
+    <controller type='scsi' index='1' model='buslogic'/>
+    <controller type='fdc' index='0'/>
+    <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:0c:29:3c:98:3e'/>
       <source bridge='VM Network'/>

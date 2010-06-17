@@ -12,9 +12,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='buslogic' cache='writethrough'/>
+      <driver cache='writethrough'/>
       <source file='[datastore] directory/harddisk.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='buslogic'/>
   </devices>
 </domain>

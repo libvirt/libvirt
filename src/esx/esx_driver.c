@@ -2153,8 +2153,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto cleanup;
     }
 
-    def = esxVMX_ParseConfig(priv->host, vmx, datastoreName, directoryName,
-                             priv->host->productVersion);
+    def = esxVMX_ParseConfig(priv->host, priv->caps, vmx, datastoreName,
+                             directoryName, priv->host->productVersion);
 
     if (def != NULL) {
         xml = virDomainDefFormat(def, flags);
@@ -2194,7 +2194,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    def = esxVMX_ParseConfig(priv->host, nativeConfig, "?", "?",
+    def = esxVMX_ParseConfig(priv->host, priv->caps, nativeConfig, "?", "?",
                              priv->host->productVersion);
 
     if (def != NULL) {
@@ -2229,7 +2229,8 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    vmx = esxVMX_FormatConfig(priv->host, def, priv->host->productVersion);
+    vmx = esxVMX_FormatConfig(priv->host, priv->caps, def,
+                              priv->host->productVersion);
 
     virDomainDefFree(def);
 
@@ -2457,7 +2458,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     /* Build VMX from domain XML */
-    vmx = esxVMX_FormatConfig(priv->host, def, priv->host->productVersion);
+    vmx = esxVMX_FormatConfig(priv->host, priv->caps, def,
+                              priv->host->productVersion);
 
     if (vmx == NULL) {
         goto cleanup;

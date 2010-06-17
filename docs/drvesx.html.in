@@ -311,6 +311,21 @@ ethernet0.checkMACAddress = "false"
 <pre>
     ...
     &lt;disk type='file' device='disk'&gt;
+      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
+    &lt;/disk&gt;
+    &lt;controller type='scsi' index='0' model='<strong>lsilogic</strong>'/&gt;
+    ...
+</pre>
+    <p>
+        The controller element is supported <span class="since">since 0.8.2</span>.
+        Prior to this <code>&lt;driver name='lsilogic'/&gt;</code> was abused to
+        specify the SCSI controller model. This attribute usage is deprecated now.
+    </p>
+<pre>
+    ...
+    &lt;disk type='file' device='disk'&gt;
       &lt;driver name='<strong>lsilogic</strong>'/&gt;
       &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
       &lt;target dev='sda' bus='scsi'/&gt;
@@ -393,7 +408,7 @@ ide0:0.startConnected = "false"
 ethernet0.present = "true"
 ethernet0.networkName = "VM Network"
 ethernet0.addressType = "vpx"
-ethernet0.address = "00:50:56:91:48:c7"
+ethernet0.generatedAddress = "00:50:56:91:48:c7"
 chipset.onlineStandby = "false"
 guestOSAltName = "Red Hat Enterprise Linux 5 (32-Bit)"
 guestOS = "rhel5"
@@ -434,10 +449,11 @@ Enter root password for example.com:
   &lt;on_crash&gt;destroy&lt;/on_crash&gt;
   &lt;devices&gt;
     &lt;disk type='file' device='disk'&gt;
-      &lt;driver name='lsilogic'/&gt;
       &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
       &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
     &lt;/disk&gt;
+    &lt;controller type='scsi' index='0' model='lsilogic'/&gt;
     &lt;interface type='bridge'&gt;
       &lt;mac address='00:50:56:91:48:c7'/&gt;
       &lt;source bridge='VM Network'/&gt;
@@ -465,10 +481,11 @@ $ cat &gt; demo.xml &lt;&lt; EOF
   &lt;/os&gt;
   &lt;devices&gt;
     &lt;disk type='file' device='disk'&gt;
-      &lt;driver name='lsilogic'/&gt;
       &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
       &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
     &lt;/disk&gt;
+    &lt;controller type='scsi' index='0' model='lsilogic'/&gt;
     &lt;interface type='bridge'&gt;
       &lt;mac address='00:50:56:25:48:c7'/&gt;
       &lt;source bridge='VM Network'/&gt;
@@ -517,7 +534,9 @@ ethernet0.address = "00:50:56:25:48:C7"
     &lt;disk type='file' device='disk'&gt;
       &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
       &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
     &lt;/disk&gt;
+    &lt;controller type='scsi' index='0'/&gt;
     &lt;interface type='bridge'&gt;
       &lt;mac address='00:50:56:25:48:c7'/&gt;
       &lt;source bridge='VM Network'/&gt;

@@ -14,6 +14,8 @@
     <disk type='block' device='cdrom'>
       <source dev='/dev/scd0'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='ide' index='0'/>
   </devices>
 </domain>

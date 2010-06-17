@@ -13,10 +13,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='lsilogic'/>
       <source file='[datastore] directory/fedora11.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='lsilogic'/>
     <interface type='bridge'>
       <mac address='00:50:56:91:48:c7'/>
       <source bridge='vm network'/>

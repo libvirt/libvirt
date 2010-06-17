@@ -15,7 +15,9 @@
     <disk type='file' device='disk'>
       <source file='[datastore] directory/Debian-System1-0-cl2.vmdk'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:0c:29:c5:e3:5d'/>
       <source bridge='net2'/>

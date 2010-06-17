@@ -13,8 +13,58 @@
 
 static char *progname = NULL;
 static char *abs_srcdir = NULL;
+static virCapsPtr caps = NULL;
 
 # define MAX_FILE 4096
+
+static void
+testCapsInit(void)
+{
+    virCapsGuestPtr guest = NULL;
+
+    caps = virCapabilitiesNew("i686", 1, 1);
+
+    if (caps == NULL) {
+        return;
+    }
+
+    virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
+    virCapabilitiesAddHostMigrateTransport(caps, "esx");
+
+    caps->hasWideScsiBus = true;
+
+    /* i686 guest */
+    guest =
+      virCapabilitiesAddGuest(caps, "hvm", "i686", 32, NULL, NULL, 0, NULL);
+
+    if (guest == NULL) {
+        goto failure;
+    }
+
+    if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+                                      NULL) == NULL) {
+        goto failure;
+    }
+
+    /* x86_64 guest */
+    guest =
+      virCapabilitiesAddGuest(caps, "hvm", "x86_64", 64, NULL, NULL, 0, NULL);
+
+    if (guest == NULL) {
+        goto failure;
+    }
+
+    if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+                                      NULL) == NULL) {
+        goto failure;
+    }
+
+    return;
+
+  failure:
+    virCapabilitiesFree(caps);
+    caps = NULL;
+}
 
 static int
 testCompareFiles(const char *vmx, const char *xml,
@@ -37,7 +87,7 @@ testCompareFiles(const char *vmx, const char *xml,
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(NULL, vmxData, "datastore", "directory",
+    def = esxVMX_ParseConfig(NULL, caps, vmxData, "datastore", "directory",
                              productVersion);
 
     if (def == NULL) {
@@ -123,6 +173,12 @@ mymain(int argc, char **argv)
             }                                                                 \
         } while (0)
 
+    testCapsInit();
+
+    if (caps == NULL) {
+        return EXIT_FAILURE;
+    }
+
     DO_TEST("case-insensitive-1", "case-insensitive-1", esxVI_ProductVersion_ESX35);
     DO_TEST("case-insensitive-2", "case-insensitive-2", esxVI_ProductVersion_ESX35);
 
@@ -175,6 +231,8 @@ mymain(int argc, char **argv)
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2", esxVI_ProductVersion_ESX35);
     DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3", esxVI_ProductVersion_ESX35);
     DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4", esxVI_ProductVersion_ESX35);
+
+    virCapabilitiesFree(caps);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

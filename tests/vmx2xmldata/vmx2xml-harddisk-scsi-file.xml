@@ -14,6 +14,8 @@
     <disk type='file' device='disk'>
       <source file='[datastore] directory/harddisk.vmdk'/>
       <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0'/>
   </devices>
 </domain>
