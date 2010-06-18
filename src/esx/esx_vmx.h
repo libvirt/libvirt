@@ -23,6 +23,8 @@
 #ifndef __ESX_VMX_H__
 # define __ESX_VMX_H__
 
+# include <stdbool.h>
+
 # include "internal.h"
 # include "conf.h"
 # include "domain_conf.h"
@@ -72,7 +74,7 @@ int
 esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
 
 int
-esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
+esxVMX_ParseSCSIController(virConfPtr conf, int controller, bool *present,
                            int *virtualDev);
 
 int

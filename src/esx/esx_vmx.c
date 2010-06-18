@@ -914,7 +914,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     int controller;
     int bus;
     int port;
-    int present; // boolean
+    bool present;
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     int unit;
 
@@ -934,7 +934,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
     /* vmx:config.version */
     if (esxUtil_GetConfigLong(conf, "config.version", &config_version, 0,
-                              0) < 0) {
+                              false) < 0) {
         goto cleanup;
     }
 
@@ -947,7 +947,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
     /* vmx:virtualHW.version */
     if (esxUtil_GetConfigLong(conf, "virtualHW.version", &virtualHW_version, 0,
-                              0) < 0) {
+                              false) < 0) {
         goto cleanup;
     }
 
@@ -991,17 +991,17 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
     /* vmx:uuid.bios -> def:uuid */
     /* FIXME: Need to handle 'uuid.action = "create"' */
-    if (esxUtil_GetConfigUUID(conf, "uuid.bios", def->uuid, 1) < 0) {
+    if (esxUtil_GetConfigUUID(conf, "uuid.bios", def->uuid, true) < 0) {
         goto cleanup;
     }
 
     /* vmx:displayName -> def:name */
-    if (esxUtil_GetConfigString(conf, "displayName", &def->name, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, "displayName", &def->name, true) < 0) {
         goto cleanup;
     }
 
     /* vmx:memsize -> def:maxmem */
-    if (esxUtil_GetConfigLong(conf, "memsize", &memsize, 32, 1) < 0) {
+    if (esxUtil_GetConfigLong(conf, "memsize", &memsize, 32, true) < 0) {
         goto cleanup;
     }
 
@@ -1015,7 +1015,8 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     def->maxmem = memsize * 1024; /* Scale from megabytes to kilobytes */
 
     /* vmx:sched.mem.max -> def:memory */
-    if (esxUtil_GetConfigLong(conf, "sched.mem.max", &memory, memsize, 1) < 0) {
+    if (esxUtil_GetConfigLong(conf, "sched.mem.max", &memory, memsize,
+                              true) < 0) {
         goto cleanup;
     }
 
@@ -1030,7 +1031,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     }
 
     /* vmx:numvcpus -> def:vcpus */
-    if (esxUtil_GetConfigLong(conf, "numvcpus", &numvcpus, 1, 1) < 0) {
+    if (esxUtil_GetConfigLong(conf, "numvcpus", &numvcpus, 1, true) < 0) {
         goto cleanup;
     }
 
@@ -1046,7 +1047,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     /* vmx:sched.cpu.affinity -> def:cpumask */
     // VirtualMachine:config.cpuAffinity.affinitySet
     if (esxUtil_GetConfigString(conf, "sched.cpu.affinity", &sched_cpu_affinity,
-                                1) < 0) {
+                                true) < 0) {
         goto cleanup;
     }
 
@@ -1128,7 +1129,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     }
 
     /* vmx:guestOS -> def:os.arch */
-    if (esxUtil_GetConfigString(conf, "guestOS", &guestOS, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, "guestOS", &guestOS, true) < 0) {
         goto cleanup;
     }
 
@@ -1370,7 +1371,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 int
 esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 {
-    int enabled = 0; // boolean
+    bool enabled = false;
     long long port = 0;
 
     if (def == NULL || *def != NULL) {
@@ -1379,7 +1380,7 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     }
 
     if (esxUtil_GetConfigBoolean(conf, "RemoteDisplay.vnc.enabled", &enabled,
-                                 0, 1) < 0) {
+                                 false, true) < 0) {
         return -1;
     }
 
@@ -1395,13 +1396,13 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     (*def)->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
 
     if (esxUtil_GetConfigLong(conf, "RemoteDisplay.vnc.port", &port, -1,
-                               1) < 0 ||
+                              true) < 0 ||
         esxUtil_GetConfigString(conf, "RemoteDisplay.vnc.ip",
-                                &(*def)->data.vnc.listenAddr, 1) < 0 ||
+                                &(*def)->data.vnc.listenAddr, true) < 0 ||
         esxUtil_GetConfigString(conf, "RemoteDisplay.vnc.keymap",
-                                &(*def)->data.vnc.keymap, 1) < 0 ||
+                                &(*def)->data.vnc.keymap, true) < 0 ||
         esxUtil_GetConfigString(conf, "RemoteDisplay.vnc.password",
-                                &(*def)->data.vnc.passwd, 1) < 0) {
+                                &(*def)->data.vnc.passwd, true) < 0) {
         goto failure;
     }
 
@@ -1432,7 +1433,7 @@ esxVMX_ParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 
 
 int
-esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
+esxVMX_ParseSCSIController(virConfPtr conf, int controller, bool *present,
                            int *virtualDev)
 {
     char present_name[32];
@@ -1456,7 +1457,8 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
     snprintf(virtualDev_name, sizeof(virtualDev_name), "scsi%d.virtualDev",
              controller);
 
-    if (esxUtil_GetConfigBoolean(conf, present_name, present, 0, 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, present_name, present, false,
+                                 true) < 0) {
         goto failure;
     }
 
@@ -1465,7 +1467,7 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, int *present,
     }
 
     if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev_string,
-                                1) < 0) {
+                                true) < 0) {
         goto failure;
     }
 
@@ -1542,16 +1544,16 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
     char *prefix = NULL;
 
     char present_name[32] = "";
-    int present = 0;
+    bool present = false;
 
     char startConnected_name[32] = "";
-    int startConnected = 0;
+    bool startConnected = false;
 
     char deviceType_name[32] = "";
     char *deviceType = NULL;
 
     char clientDevice_name[32] = "";
-    int clientDevice = 0;
+    bool clientDevice = false;
 
     char fileType_name[32] = "";
     char *fileType = NULL;
@@ -1560,7 +1562,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
     char *fileName = NULL;
 
     char writeThrough_name[32] = "";
-    int writeThrough = 0;
+    bool writeThrough = false;
 
     if (def == NULL || *def != NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1685,13 +1687,14 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
     ESX_BUILD_VMX_NAME(writeThrough);
 
     /* vmx:present */
-    if (esxUtil_GetConfigBoolean(conf, present_name, &present, 0, 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, present_name, &present, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
     /* vmx:startConnected */
     if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected,
-                                 1, 1) < 0) {
+                                 true, true) < 0) {
         goto cleanup;
     }
 
@@ -1701,13 +1704,13 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
     }
 
     /* vmx:deviceType -> def:type */
-    if (esxUtil_GetConfigString(conf, deviceType_name, &deviceType, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, deviceType_name, &deviceType, true) < 0) {
         goto cleanup;
     }
 
     /* vmx:clientDevice */
-    if (esxUtil_GetConfigBoolean(conf, clientDevice_name, &clientDevice, 0,
-                                 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, clientDevice_name, &clientDevice, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
@@ -1720,18 +1723,18 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
     }
 
     /* vmx:fileType -> def:type */
-    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, true) < 0) {
         goto cleanup;
     }
 
     /* vmx:fileName -> def:src, def:type */
-    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, 0) < 0) {
+    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, false) < 0) {
         goto cleanup;
     }
 
     /* vmx:writeThrough -> def:cachemode */
-    if (esxUtil_GetConfigBoolean(conf, writeThrough_name, &writeThrough, 0,
-                                 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, writeThrough_name, &writeThrough, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
@@ -1893,10 +1896,10 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     char prefix[48] = "";
 
     char present_name[48] = "";
-    int present = 0;
+    bool present = false;
 
     char startConnected_name[48] = "";
-    int startConnected = 0;
+    bool startConnected = false;
 
     char connectionType_name[48] = "";
     char *connectionType = NULL;
@@ -1953,13 +1956,14 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     ESX_BUILD_VMX_NAME(vnet);
 
     /* vmx:present */
-    if (esxUtil_GetConfigBoolean(conf, present_name, &present, 0, 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, present_name, &present, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
     /* vmx:startConnected */
-    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected, 1,
-                                 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected,
+                                 true, true) < 0) {
         goto cleanup;
     }
 
@@ -1970,15 +1974,16 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     /* vmx:connectionType -> def:type */
     if (esxUtil_GetConfigString(conf, connectionType_name, &connectionType,
-                                1) < 0) {
+                                true) < 0) {
         goto cleanup;
     }
 
     /* vmx:addressType, vmx:generatedAddress, vmx:address -> def:mac */
-    if (esxUtil_GetConfigString(conf, addressType_name, &addressType, 1) < 0 ||
+    if (esxUtil_GetConfigString(conf, addressType_name, &addressType,
+                                true) < 0 ||
         esxUtil_GetConfigString(conf, generatedAddress_name, &generatedAddress,
-                                1) < 0 ||
-        esxUtil_GetConfigString(conf, address_name, &address, 1) < 0) {
+                                true) < 0 ||
+        esxUtil_GetConfigString(conf, address_name, &address, true) < 0) {
         goto cleanup;
     }
 
@@ -2010,8 +2015,8 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     }
 
     /* vmx:virtualDev, vmx:features -> def:model */
-    if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev, 1) < 0 ||
-        esxUtil_GetConfigLong(conf, features_name, &features, 0, 1) < 0) {
+    if (esxUtil_GetConfigString(conf, virtualDev_name, &virtualDev, true) < 0 ||
+        esxUtil_GetConfigLong(conf, features_name, &features, 0, true) < 0) {
         goto cleanup;
     }
 
@@ -2043,13 +2048,14 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     if ((connectionType == NULL ||
          STRCASEEQ(connectionType, "bridged") ||
          STRCASEEQ(connectionType, "custom")) &&
-        esxUtil_GetConfigString(conf, networkName_name, &networkName, 0) < 0) {
+        esxUtil_GetConfigString(conf, networkName_name, &networkName,
+                                false) < 0) {
         goto cleanup;
     }
 
     /* vmx:vnet -> def:data.ifname */
     if (connectionType != NULL && STRCASEEQ(connectionType, "custom") &&
-        esxUtil_GetConfigString(conf, vnet_name, &vnet, 0) < 0) {
+        esxUtil_GetConfigString(conf, vnet_name, &vnet, false) < 0) {
         goto cleanup;
     }
 
@@ -2126,10 +2132,10 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     char prefix[48] = "";
 
     char present_name[48] = "";
-    int present = 0;
+    bool present = false;
 
     char startConnected_name[48] = "";
-    int startConnected = 0;
+    bool startConnected = false;
 
     char fileType_name[48] = "";
     char *fileType = NULL;
@@ -2163,13 +2169,14 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     ESX_BUILD_VMX_NAME(fileName);
 
     /* vmx:present */
-    if (esxUtil_GetConfigBoolean(conf, present_name, &present, 0, 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, present_name, &present, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
     /* vmx:startConnected */
-    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected, 1,
-                                 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected,
+                                 true, true) < 0) {
         goto cleanup;
     }
 
@@ -2179,12 +2186,12 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     }
 
     /* vmx:fileType -> def:type */
-    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, 0) < 0) {
+    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, false) < 0) {
         goto cleanup;
     }
 
     /* vmx:fileName -> def:data.file.path */
-    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, 0) < 0) {
+    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, false) < 0) {
         goto cleanup;
     }
 
@@ -2255,10 +2262,10 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     char prefix[48] = "";
 
     char present_name[48] = "";
-    int present = 0;
+    bool present = false;
 
     char startConnected_name[48] = "";
-    int startConnected = 0;
+    bool startConnected = false;
 
     char fileType_name[48] = "";
     char *fileType = NULL;
@@ -2292,13 +2299,14 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     ESX_BUILD_VMX_NAME(fileName);
 
     /* vmx:present */
-    if (esxUtil_GetConfigBoolean(conf, present_name, &present, 0, 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, present_name, &present, false,
+                                 true) < 0) {
         goto cleanup;
     }
 
     /* vmx:startConnected */
-    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected, 1,
-                                 1) < 0) {
+    if (esxUtil_GetConfigBoolean(conf, startConnected_name, &startConnected,
+                                 true, true) < 0) {
         goto cleanup;
     }
 
@@ -2308,12 +2316,12 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     }
 
     /* vmx:fileType -> def:type */
-    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, 0) < 0) {
+    if (esxUtil_GetConfigString(conf, fileType_name, &fileType, false) < 0) {
         goto cleanup;
     }
 
     /* vmx:fileName -> def:data.file.path */
-    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, 0) < 0) {
+    if (esxUtil_GetConfigString(conf, fileName_name, &fileName, false) < 0) {
         goto cleanup;
     }
 

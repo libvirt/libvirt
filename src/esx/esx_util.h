@@ -56,15 +56,15 @@ int esxUtil_ResolveHostname(const char *hostname,
                             char *ipAddress, size_t ipAddress_length);
 
 int esxUtil_GetConfigString(virConfPtr conf, const char *name, char **string,
-                            int optional);
+                            bool optional);
 
 int esxUtil_GetConfigUUID(virConfPtr conf, const char *name,
-                          unsigned char *uuid, int optional);
+                          unsigned char *uuid, bool optional);
 
 int esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
-                          long long default_, int optional);
+                          long long default_, bool optional);
 
-int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, int *boolean_,
-                             int default_, int optional);
+int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
+                             bool default_, bool optional);
 
 #endif /* __ESX_UTIL_H__ */
