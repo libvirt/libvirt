@@ -387,7 +387,7 @@ virshReportError(vshControl *ctl)
          * no error was ever raised, so just ignore */
         last_error = virSaveLastError();
         if (!last_error || last_error->code == VIR_ERR_OK)
-            return;
+            goto out;
     }
 
     if (last_error->code == VIR_ERR_OK) {
