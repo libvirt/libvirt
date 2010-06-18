@@ -277,6 +277,13 @@
         Valid values are in the range of 0 to 1000. If this attribute is not
         provided, the value 500 will automatically be assigned.
      </li>
+     <li>
+        statematch -- optional; possible values are '0' or 'false' to
+        turn the underlying connection state matching off; default is 'true'
+        <br>
+        Also read the section on <a href="#nwfelemsRulesAdv">advanced configuration</a>
+        topics.
+     </li>
     </ul>
     <p>
      The above example indicates that the traffic of type <code>ip</code>
@@ -1115,6 +1122,118 @@
       </table>
     <p>
       <br><br>
+    </p>
+
+    <h3><a name="nwfelemsRulesAdv">Advanced Filter Configuration Topics</a></h3>
+    <p>
+     The following sections discuss advanced filter configuration
+     topics.
+    </p>
+    <h4><a name="nwfelemsRulesAdvTracking">Connection tracking</a></h4>
+    <p>
+     The network filtering subsystem (on Linux) makes use of the connection
+     tracking support of iptables. This helps in enforcing the
+     directionality of network traffic (state match) as well as
+     counting and limiting the number of simultaneous connections towards
+     a VM. As an example, if a VM has TCP port 8080
+     open as a server, clients may connect to the VM on port 8080.
+     Connection tracking and enforcement of directionality then prevents
+     the VM from initiating a connection from
+     (TCP client) port 8080 to the host back to a remote host.
+     More importantly, tracking helps to prevent
+     remote attackers from establishing a connection back to a VM. For example,
+     if the user inside the VM established a connection to
+     port 80 on an attacker site, then the attacker will not be able to
+     initiate a connection from TCP port 80 back towards the VM.
+     By default the connection state match that enables connection tracking
+     and then enforcement of directionality of traffic is turned on. <br>
+     The following shows an example XML fragement where this feature has been
+     turned off for incoming connections to TCP port 12345.
+    </p>
+<pre>
+   [...]
+    &lt;rule direction='in' action='accept' statematch='false'&gt;
+      &lt;tcp dstportstart='12345'/&gt;
+    &lt;/rule&gt;
+   [...]
+</pre>
+    <p>
+     This now allows incoming traffic to TCP port 12345, but would also
+     enable the initiation from (client) TCP port 12345 within the VM,
+     which may or may not be desirable.
+    </p>
+
+    <h4><a name="nwfelemsRulesAdvLimiting">Limiting Number of Connections</a></h4>
+    <p>
+     To limit the number of connections a VM may establish, a rule must
+     be provided that sets a limit of connections for a given
+     type of traffic. If for example a VM
+     is supposed to be allowed to only ping one other IP address at a time
+     and is supposed to have only one active incoming ssh connection at a
+     time, the following XML fragment can be used to achieve this.
+    </p>
+<pre>
+  [...]
+  &lt;rule action='drop' direction='in' priority='400'&gt;
+    &lt;tcp connlimit-above='1'/&gt;
+  &lt;/rule&gt;
+  &lt;rule action='accept' direction='in' priority='500'&gt;
+    &lt;tcp dstportstart='22'/&gt;
+  &lt;/rule&gt;
+  &lt;rule action='drop' direction='out' priority='400'&gt;
+    &lt;icmp connlimit-above='1'/&gt;
+  &lt;/rule&gt;
+  &lt;rule action='accept' direction='out' priority='500'&gt;
+    &lt;icmp/&gt;
+  &lt;/rule&gt;
+  &lt;rule action='accept' direction='out' priority='500'&gt;
+    &lt;udp dstportstart='53'/&gt;
+  &lt;/rule&gt;
+  &lt;rule action='drop' direction='inout' priority='1000'&gt;
+    &lt;all/&gt;
+  &lt;/rule&gt;
+  [...]
+</pre>
+    <p>
+     Note that the rule for the limit has to logically appear
+     before the rule for accepting the traffic.<br>
+     An additional rule for letting DNS traffic to port 22
+     go out the VM has been added to avoid ssh sessions not
+     getting established for reasons related to DNS lookup failures
+     by the ssh daemon. Leaving this rule out may otherwise lead to
+     fun-filled debugging joy (symptom: ssh client seems to hang
+     while trying to connect).
+     <br><br>
+     Lot of care must be taken with timeouts related
+     to tracking of traffic. An ICMP ping that
+     the user may have terminated inside the VM may have a long
+     timeout in the host's connection tracking system and therefore
+     not allow another ICMP ping to go through for a while. Therefore,
+     the timeouts have to be tuned in the host's sysfs, i.e.,
+    </p>
+
+<pre>
+  echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
+</pre>
+    <p>
+      sets the ICMP connection tracking timeout to 3 seconds. The
+      effect of this is that once one ping is terminated, another
+      one can start after 3 seconds.<br>
+      Further, we want to point out that a client that for whatever
+      reason has not properly closed a TCP connection may cause a
+      connection to be held open for a longer period of time,
+      depending to what timeout the <code>TCP established</code> state
+      timeout has been set to on the host. Also, idle connections may time
+      out in the connection tracking system but can be reactivated once
+      packets are exchanged. However, a newly initiated connection may force
+      an idle connection into TCP backoff if the number of allowed connections
+      is set to a too low limit, the new connection is established
+      and hits (not exceeds) the limit of allowed connections and for
+      example a key is pressed on the old ssh session, which now has become
+      unresponsive due to its traffic being dropped.
+      Therefore, the limit of connections should be rather high so that
+      fluctuations in new TCP connections don't cause odd
+      traffic behavior in relaton to idle connections.
     </p>
 
     <h2><a name="nwfcli">Command line tools</a></h2>
