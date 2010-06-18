@@ -101,7 +101,7 @@ void virBitmapFree(virBitmapPtr bitmap)
  */
 int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
 {
-    if (b > bitmap->size - 1)
+    if (bitmap->size <= b)
         return -1;
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= (1 << VIR_BITMAP_BIT_OFFSET(b));
@@ -119,7 +119,7 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
  */
 int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
 {
-    if (bitmap->size != 0 && b > bitmap->size - 1)
+    if (bitmap->size <= b)
         return -1;
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~(1 << VIR_BITMAP_BIT_OFFSET(b));
@@ -141,7 +141,7 @@ int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 {
     uint32_t bit;
 
-    if (b > bitmap->size - 1)
+    if (bitmap->size <= b)
         return -1;
 
     bit = bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &
