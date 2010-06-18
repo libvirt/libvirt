@@ -781,6 +781,8 @@ Returns the UUID of the named I<pool>.
 
 =head1 VOLUME COMMANDS
 
+=over 4
+
 =item B<vol-create> I<pool-or-uuid> I<FILE>
 
 Create a volume from an XML <file>.
