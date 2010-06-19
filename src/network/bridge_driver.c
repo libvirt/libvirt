@@ -737,6 +737,15 @@ networkAddIptablesRules(struct network_driver *driver,
         goto err4;
     }
 
+    /* allow TFTP requests through to dnsmasq */
+    if (network->def->tftproot &&
+        (err = iptablesAddUdpInput(driver->iptables, network->def->bridge, 69))) {
+        virReportSystemError(err,
+                             _("failed to add iptables rule to allow TFTP requests from '%s'"),
+                             network->def->bridge);
+        goto err4tftp;
+    }
+
 
     /* Catch all rules to block forwarding to/from bridges */
 
@@ -784,6 +793,10 @@ networkAddIptablesRules(struct network_driver *driver,
     iptablesRemoveForwardRejectOut(driver->iptables,
                                    network->def->bridge);
  err5:
+    if (network->def->tftproot) {
+        iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
+    }
+ err4tftp:
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
  err4:
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
@@ -821,6 +834,7 @@ networkRemoveIptablesRules(struct network_driver *driver,
     iptablesRemoveForwardAllowCross(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectIn(driver->iptables, network->def->bridge);
     iptablesRemoveForwardRejectOut(driver->iptables, network->def->bridge);
+    iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 69);
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveTcpInput(driver->iptables, network->def->bridge, 53);
     iptablesRemoveUdpInput(driver->iptables, network->def->bridge, 67);
