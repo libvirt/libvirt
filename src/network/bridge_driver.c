@@ -1,5 +1,5 @@
 /*
- * driver.c: core driver methods for managing qemu guests
+ * bridge_driver.c: core driver methods for managing network
  *
  * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
