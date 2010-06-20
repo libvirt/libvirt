@@ -28,7 +28,6 @@
 #include <time.h>
 #include <limits.h>
 #include <assert.h>
-#include <errno.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <signal.h>
