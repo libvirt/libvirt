@@ -81,7 +81,7 @@
 #include "xml.h"
 #include "cpu/cpu.h"
 #include "macvtap.h"
-#include "nwfilter/nwfilter_gentech_driver.h"
+#include "domain_nwfilter.h"
 #include "hooks.h"
 #include "storage_file.h"
 
@@ -3577,7 +3577,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     VIR_FREE(progenv);
 
     if (ret == -1) /* The VM failed to start; tear filters before taps */
-        virNWFilterTearVMNWFilters(vm);
+        virDomainConfVMNWFilterTeardown(vm);
 
     if (vmfds) {
         for (i = 0 ; i < nvmfds ; i++) {
@@ -3669,7 +3669,7 @@ static void qemudShutdownVMDaemon(struct qemud_driver *driver,
      * reporting so we don't squash a legit error. */
     orig_err = virSaveLastError();
 
-    virNWFilterTearVMNWFilters(vm);
+    virDomainConfVMNWFilterTeardown(vm);
 
     if (driver->macFilter) {
         def = vm->def;
@@ -7646,7 +7646,7 @@ cleanup:
         VIR_WARN0("Unable to release PCI address on NIC");
 
     if (ret != 0)
-        virNWFilterTearNWFilter(net);
+        virDomainConfNWFilterTeardown(net);
 
     VIR_FREE(nicstr);
     VIR_FREE(netstr);
@@ -8615,7 +8615,7 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    virNWFilterTearNWFilter(detach);
+    virDomainConfNWFilterTeardown(detach);
 
 #if WITH_MACVTAP
     if (detach->type == VIR_DOMAIN_NET_TYPE_DIRECT) {

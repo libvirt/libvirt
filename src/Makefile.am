@@ -97,7 +97,8 @@ DRIVER_SOURCES =						\
 # Domain driver generic impl APIs
 DOMAIN_CONF_SOURCES =						\
 		conf/capabilities.c conf/capabilities.h		\
-		conf/domain_conf.c conf/domain_conf.h
+		conf/domain_conf.c conf/domain_conf.h		\
+		conf/domain_nwfilter.c conf/domain_nwfilter.h
 
 DOMAIN_EVENT_SOURCES =						\
 		conf/domain_event.c conf/domain_event.h

@@ -264,6 +264,11 @@ virDomainEventDispatchDefaultFunc;
 virDomainEventDispatch;
 virDomainEventQueueDispatch;
 
+# domain_nwfilter.h
+virDomainConfNWFilterRegister;
+virDomainConfNWFilterInstantiate;
+virDomainConfNWFilterTeardown;
+virDomainConfVMNWFilterTeardown;
 
 # ebtables.h
 ebtablesAddForwardAllowIn;

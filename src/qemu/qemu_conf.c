@@ -54,7 +54,7 @@
 #include "network.h"
 #include "macvtap.h"
 #include "cpu/cpu.h"
-#include "nwfilter/nwfilter_gentech_driver.h"
+#include "domain_nwfilter.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -1514,9 +1514,10 @@ int qemudExtractVersion(struct qemud_driver *driver) {
 /**
  * qemudPhysIfaceConnect:
  * @conn: pointer to virConnect object
+ * @driver: pointer to the qemud_driver
  * @net: pointer to he VM's interface description with direct device type
- * @linkdev: The name of the physical interface to link the macvtap to
- * @brmode: The mode to put the macvtap device into
+ * @qemuCmdFlags: flags for qemu
+ * @vmuuid: The UUID of the VM (needed by 802.1Qbh)
  *
  * Returns a filedescriptor on success or -1 in case of error.
  */
@@ -1555,7 +1556,7 @@ qemudPhysIfaceConnect(virConnectPtr conn,
 
     if (rc >= 0) {
         if ((net->filter) && (net->ifname)) {
-            err = virNWFilterInstantiateFilter(conn, net);
+            err = virDomainConfNWFilterInstantiate(conn, net);
             if (err) {
                 close(rc);
                 rc = -1;
@@ -1688,7 +1689,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
 
     if (tapfd >= 0) {
         if ((net->filter) && (net->ifname)) {
-            err = virNWFilterInstantiateFilter(conn, net);
+            err = virDomainConfNWFilterInstantiate(conn, net);
             if (err) {
                 close(tapfd);
                 tapfd = -1;
@@ -4207,7 +4208,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
 
                 if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
-                    virNWFilterTearNWFilter(net);
+                    virDomainConfNWFilterTeardown(net);
                     close(tapfd);
                     goto no_memory;
                 }
@@ -4226,7 +4227,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
 
                 if (VIR_REALLOC_N(*vmfds, (*nvmfds)+1) < 0) {
-                    virNWFilterTearNWFilter(net);
+                    virDomainConfNWFilterTeardown(net);
                     close(tapfd);
                     goto no_memory;
                 }
@@ -4766,7 +4767,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     virReportOOMError();
  error:
     for (i = 0; i <= last_good_net; i++)
-        virNWFilterTearNWFilter(def->nets[i]);
+        virDomainConfNWFilterTeardown(def->nets[i]);
     if (vmfds &&
         *vmfds) {
         for (i = 0; i < *nvmfds; i++)

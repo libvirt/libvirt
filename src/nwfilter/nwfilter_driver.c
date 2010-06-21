@@ -33,6 +33,7 @@
 #include "datatypes.h"
 #include "memory.h"
 #include "domain_conf.h"
+#include "domain_nwfilter.h"
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 
@@ -410,6 +411,20 @@ cleanup:
 }
 
 
+static int
+nwfilterInstantiateFilter(virConnectPtr conn,
+                          virDomainNetDefPtr net) {
+    return virNWFilterInstantiateFilter(conn, net);
+}
+
+
+static void
+nwfilterTeardownFilter(virDomainNetDefPtr net) {
+    if ((net->ifname) && (net->filter))
+        virNWFilterTeardownFilter(net);
+}
+
+
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
     .open = nwfilterOpen,
@@ -432,8 +447,16 @@ static virStateDriver stateDriver = {
     .active = nwfilterDriverActive,
 };
 
+
+static virDomainConfNWFilterDriver domainNWFilterDriver = {
+    .instantiateFilter = nwfilterInstantiateFilter,
+    .teardownFilter = nwfilterTeardownFilter,
+};
+
+
 int nwfilterRegister(void) {
     virRegisterNWFilterDriver(&nwfilterDriver);
     virRegisterStateDriver(&stateDriver);
+    virDomainConfNWFilterRegister(&domainNWFilterDriver);
     return 0;
 }

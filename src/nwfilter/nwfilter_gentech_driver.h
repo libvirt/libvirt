@@ -67,21 +67,4 @@ void virNWFilterDomainFWUpdateCB(void *payload,
                                  const char *name ATTRIBUTE_UNUSED,
                                  void *data);
 
-
-/* tear down an interface's filter before tearing down the interface */
-static inline void
-virNWFilterTearNWFilter(virDomainNetDefPtr net) {
-    if ((net->filter) && (net->ifname))
-        virNWFilterTeardownFilter(net);
-}
-
-
-static inline void
-virNWFilterTearVMNWFilters(virDomainObjPtr vm) {
-    int i;
-
-    for (i = 0; i < vm->def->nnets; i++)
-        virNWFilterTearNWFilter(vm->def->nets[i]);
-}
-
 #endif
