@@ -61,7 +61,7 @@ run_virsh() {
         conn="-c $uri"
     fi
 
-    virsh $conn "$@"
+    virsh $conn "$@" </dev/null
 }
 
 run_virsh_c() {
