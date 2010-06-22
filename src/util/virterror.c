@@ -760,15 +760,15 @@ virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_NO_SUPPORT:
             if (info == NULL)
-                errmsg = _("this function is not supported by the hypervisor");
+                errmsg = _("this function is not supported by the connection driver");
             else
-                errmsg = _("this function is not supported by the hypervisor: %s");
+                errmsg = _("this function is not supported by the connection driver: %s");
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
-                errmsg = _("no hypervisor driver available");
+                errmsg = _("no connection driver available");
             else
-                errmsg = _("no hypervisor driver available for %s");
+                errmsg = _("no connection driver available for %s");
             break;
         case VIR_ERR_INVALID_CONN:
             if (info == NULL)
