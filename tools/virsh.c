@@ -1433,6 +1433,60 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "managedsave-remove" command
+ */
+static const vshCmdInfo info_managedsaveremove[] = {
+    {"help", N_("Remove managed save of a domain")},
+    {"desc", N_("Remove an existing managed save state file from a domain")},
+    {NULL, NULL}
+};
+
+static const vshCmdOptDef opts_managedsaveremove[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    int ret = FALSE;
+    int hassave;
+
+    if (!vshConnectionUsability(ctl, ctl->conn))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return FALSE;
+
+    hassave = virDomainHasManagedSaveImage(dom, 0);
+    if (hassave < 0) {
+        vshError(ctl, _("Failed to check for domain managed save image"));
+        goto cleanup;
+    }
+
+    if (hassave) {
+        if (virDomainManagedSaveRemove(dom, 0) < 0) {
+            vshError(ctl, _("Failed to remove managed save image for domain %s"),
+                     name);
+            goto cleanup;
+        }
+        else
+            vshPrint(ctl, _("Removed managedsave image for domain %s"), name);
+    }
+    else
+        vshPrint(ctl, _("Domain %s has no manage save image; removal skipped"),
+                 name);
+
+    ret = TRUE;
+
+cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "schedinfo" command
  */
 static const vshCmdInfo info_schedinfo[] = {
@@ -9207,6 +9261,7 @@ static const vshCmdDef commands[] = {
     {"iface-destroy", cmdInterfaceDestroy, opts_interface_destroy, info_interface_destroy},
 
     {"managedsave", cmdManagedSave, opts_managedsave, info_managedsave},
+    {"managedsave-remove", cmdManagedSaveRemove, opts_managedsaveremove, info_managedsaveremove},
 
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
 

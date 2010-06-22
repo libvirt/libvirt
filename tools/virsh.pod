@@ -380,6 +380,12 @@ Ask libvirt to save a running domain state in a place managed by libvirt.
 If libvirt is asked to restart the domain later on it will resume it from
 the saved domain state (and the state is discarded).
 
+=item B<managedsave-remove> I<domain-id>
+
+Remove the managed save file for a domain if it exists.  The next time the
+domain is started it will not restore to its previous state but instead will
+do a full boot.
+
 =item B<migrate> optional I<--live> I<--suspend> I<domain-id> I<desturi> I<migrateuri>
 
 Migrate domain to another host.  Add --live for live migration; --suspend
