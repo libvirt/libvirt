@@ -418,8 +418,8 @@ libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
 libvirt_la_BUILT_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES =					\
 		$(UTIL_SOURCES)
-libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS)
-libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIB_PTHREAD)
+libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS)
+libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) $(LIB_PTHREAD)
 
 
 noinst_LTLIBRARIES += libvirt_conf.la
@@ -439,9 +439,9 @@ noinst_LTLIBRARIES += libvirt_driver.la
 libvirt_la_BUILT_LIBADD += libvirt_driver.la
 libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
-libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS)	\
+libvirt_driver_la_CFLAGS = $(NUMACTL_CFLAGS) $(GNUTLS_CFLAGS) \
 		-I@top_srcdir@/src/conf
-libvirt_driver_la_LIBADD = $(NUMACTL_LIBS)
+libvirt_driver_la_LIBADD = $(NUMACTL_LIBS) $(GNUTLS_LIBS)
 
 USED_SYM_FILES = libvirt_private.syms
 
@@ -1001,7 +1001,6 @@ libvirt_la_LDFLAGS = $(VERSION_SCRIPT_FLAGS)$(LIBVIRT_SYMBOL_FILE) \
 		    $(CYGWIN_EXTRA_LDFLAGS) $(MINGW_EXTRA_LDFLAGS)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += $(LIBXML_LIBS) \
-		    $(LIBPCAP_LIBS) $(LIBNL_LIBS) \
 		    $(DRIVER_MODULE_LIBS) \
 		    $(CYGWIN_EXTRA_LIBADD)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
@@ -1038,8 +1037,8 @@ libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
-libvirt_parthelper_LDADD = $(LIBPARTED_LIBS)
-libvirt_parthelper_CFLAGS = $(LIBPARTED_CFLAGS) ../gnulib/lib/libgnu.la
+libvirt_parthelper_LDADD = $(LIBPARTED_LIBS) ../gnulib/lib/libgnu.la
+libvirt_parthelper_CFLAGS = $(LIBPARTED_CFLAGS)
 endif
 endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
