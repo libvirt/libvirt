@@ -94,7 +94,7 @@
             cb = cbData["cb"]
             opaque = cbData["opaque"]
 
-            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, opaque)
+            cb(self, virDomain(self, _obj=dom), srcPath, devAlias, action, opaque)
             return 0
         except AttributeError:
             pass
