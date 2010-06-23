@@ -328,6 +328,100 @@ done:
 
 
 static int
+qemuSecurityDACSetChardevLabel(virDomainObjPtr vm,
+                               virDomainChrDefPtr dev)
+
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    char *in = NULL, *out = NULL;
+    int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        ret = qemuSecurityDACSetOwnership(dev->data.file.path, driver->user, driver->group);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if ((qemuSecurityDACSetOwnership(in, driver->user, driver->group) < 0) ||
+            (qemuSecurityDACSetOwnership(out, driver->user, driver->group) < 0))
+            goto done;
+        ret = 0;
+        break;
+
+    default:
+        ret = 0;
+        break;
+    }
+
+done:
+    VIR_FREE(in);
+    VIR_FREE(out);
+    return ret;
+}
+
+static int
+qemuSecurityDACRestoreChardevLabel(virDomainObjPtr vm,
+                                   virDomainChrDefPtr dev)
+
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    char *in = NULL, *out = NULL;
+    int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        ret = qemuSecurityDACRestoreSecurityFileLabel(dev->data.file.path);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
+            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if ((qemuSecurityDACRestoreSecurityFileLabel(out) < 0) ||
+            (qemuSecurityDACRestoreSecurityFileLabel(in) < 0))
+            goto done;
+        ret = 0;
+        break;
+
+    default:
+        ret = 0;
+        break;
+    }
+
+done:
+    VIR_FREE(in);
+    VIR_FREE(out);
+    return ret;
+}
+
+
+static int
+qemuSecurityDACRestoreChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                      virDomainChrDefPtr dev,
+                                      void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+
+    return qemuSecurityDACRestoreChardevLabel(vm, dev);
+}
+
+
+static int
 qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm,
                                        int migrated)
 {
@@ -352,6 +446,12 @@ qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm,
             rc = -1;
     }
 
+    if (virDomainChrDefForeach(vm->def,
+                               false,
+                               qemuSecurityDACRestoreChardevCallback,
+                               vm) < 0)
+        rc = -1;
+
     if (vm->def->os.kernel &&
         qemuSecurityDACRestoreSecurityFileLabel(vm->def->os.kernel) < 0)
         rc = -1;
@@ -361,6 +461,17 @@ qemuSecurityDACRestoreSecurityAllLabel(virDomainObjPtr vm,
         rc = -1;
 
     return rc;
+}
+
+
+static int
+qemuSecurityDACSetChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                      virDomainChrDefPtr dev,
+                                      void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+
+    return qemuSecurityDACSetChardevLabel(vm, dev);
 }
 
 
@@ -383,6 +494,12 @@ qemuSecurityDACSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path AT
         if (qemuSecurityDACSetSecurityHostdevLabel(vm, vm->def->hostdevs[i]) < 0)
             return -1;
     }
+
+    if (virDomainChrDefForeach(vm->def,
+                               true,
+                               qemuSecurityDACSetChardevCallback,
+                               vm) < 0)
+        return -1;
 
     if (vm->def->os.kernel &&
         qemuSecurityDACSetOwnership(vm->def->os.kernel,

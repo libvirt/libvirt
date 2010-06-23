@@ -628,6 +628,101 @@ done:
     return ret;
 }
 
+
+static int
+SELinuxSetSecurityChardevLabel(virDomainObjPtr vm,
+                               virDomainChrDefPtr dev)
+
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    char *in = NULL, *out = NULL;
+    int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        ret = SELinuxSetFilecon(dev->data.file.path, secdef->imagelabel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if ((virAsprintf(&in, "%s.in", dev->data.file.path) < 0) ||
+            (virAsprintf(&out, "%s.out", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if ((SELinuxSetFilecon(in, secdef->imagelabel) < 0) ||
+            (SELinuxSetFilecon(out, secdef->imagelabel) < 0))
+            goto done;
+        ret = 0;
+        break;
+
+    default:
+        ret = 0;
+        break;
+    }
+
+done:
+    VIR_FREE(in);
+    VIR_FREE(out);
+    return ret;
+}
+
+static int
+SELinuxRestoreSecurityChardevLabel(virDomainObjPtr vm,
+                                   virDomainChrDefPtr dev)
+
+{
+    const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
+    char *in = NULL, *out = NULL;
+    int ret = -1;
+
+    if (secdef->type == VIR_DOMAIN_SECLABEL_STATIC)
+        return 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        ret = SELinuxSetFilecon(dev->data.file.path, secdef->imagelabel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if ((virAsprintf(&out, "%s.out", dev->data.file.path) < 0) ||
+            (virAsprintf(&in, "%s.in", dev->data.file.path) < 0)) {
+            virReportOOMError();
+            goto done;
+        }
+        if ((SELinuxRestoreSecurityFileLabel(out) < 0) ||
+            (SELinuxRestoreSecurityFileLabel(in) < 0))
+            goto done;
+        ret = 0;
+        break;
+
+    default:
+        ret = 0;
+        break;
+    }
+
+done:
+    VIR_FREE(in);
+    VIR_FREE(out);
+    return ret;
+}
+
+
+static int
+SELinuxRestoreSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                      virDomainChrDefPtr dev,
+                                      void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+
+    return SELinuxRestoreSecurityChardevLabel(vm, dev);
+}
+
+
 static int
 SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm,
                                int migrated ATTRIBUTE_UNUSED)
@@ -651,6 +746,12 @@ SELinuxRestoreSecurityAllLabel(virDomainObjPtr vm,
                                                 migrated) < 0)
             rc = -1;
     }
+
+    if (virDomainChrDefForeach(vm->def,
+                               false,
+                               SELinuxRestoreSecurityChardevCallback,
+                               vm) < 0)
+        rc = -1;
 
     if (vm->def->os.kernel &&
         SELinuxRestoreSecurityFileLabel(vm->def->os.kernel) < 0)
@@ -858,6 +959,18 @@ SELinuxClearSecuritySocketLabel(virSecurityDriverPtr drv,
     return 0;
 }
 
+
+static int
+SELinuxSetSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                  virDomainChrDefPtr dev,
+                                  void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+
+    return SELinuxSetSecurityChardevLabel(vm, dev);
+}
+
+
 static int
 SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_UNUSED)
 {
@@ -881,6 +994,12 @@ SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_
         if (SELinuxSetSecurityHostdevLabel(vm, vm->def->hostdevs[i]) < 0)
             return -1;
     }
+
+    if (virDomainChrDefForeach(vm->def,
+                               true,
+                               SELinuxSetSecurityChardevCallback,
+                               vm) < 0)
+        return -1;
 
     if (vm->def->os.kernel &&
         SELinuxSetFilecon(vm->def->os.kernel, default_content_context) < 0)

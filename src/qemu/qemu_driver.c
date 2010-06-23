@@ -2950,6 +2950,28 @@ qemuPrepareHostDevices(struct qemud_driver *driver,
 }
 
 
+static int
+qemuPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                         virDomainChrDefPtr dev,
+                         void *opaque ATTRIBUTE_UNUSED)
+{
+    int fd;
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_FILE)
+        return 0;
+
+    if ((fd = open(dev->data.file.path, O_CREAT | O_APPEND, S_IRUSR|S_IWUSR)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to pre-create chardev file '%s'"),
+                             dev->data.file.path);
+        return -1;
+    }
+
+    close(fd);
+
+    return 0;
+}
+
+
 static void
 qemudReattachManagedDevice(pciDevice *dev)
 {
@@ -3035,7 +3057,7 @@ static int qemuSetupDiskCgroup(virCgroupPtr cgroup,
         virStorageFileMetadata meta;
         int rc;
 
-        VIR_DEBUG("Process path %s for disk", path);
+        VIR_DEBUG("Process path '%s' for disk", path);
         rc = virCgroupAllowDevicePath(cgroup, path);
         if (rc != 0) {
             /* Get this for non-block devices */
@@ -3085,7 +3107,7 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
         virStorageFileMetadata meta;
         int rc;
 
-        VIR_DEBUG("Process path %s for disk", path);
+        VIR_DEBUG("Process path '%s' for disk", path);
         rc = virCgroupDenyDevicePath(cgroup, path);
         if (rc != 0) {
             /* Get this for non-block devices */
@@ -3121,6 +3143,30 @@ static int qemuTeardownDiskCgroup(virCgroupPtr cgroup,
 
 cleanup:
     return ret;
+}
+
+
+static int qemuSetupChardevCgroup(virDomainDefPtr def,
+                                  virDomainChrDefPtr dev,
+                                  void *opaque)
+{
+    virCgroupPtr cgroup = opaque;
+    int rc;
+
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_DEV)
+        return 0;
+
+
+    VIR_DEBUG("Process path '%s' for disk", dev->data.file.path);
+    rc = virCgroupAllowDevicePath(cgroup, dev->data.file.path);
+    if (rc != 0) {
+        virReportSystemError(-rc,
+                             _("Unable to allow device %s for %s"),
+                             dev->data.file.path, def->name);
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -3191,6 +3237,12 @@ static int qemuSetupCgroup(struct qemud_driver *driver,
                 goto cleanup;
             }
         }
+
+        if (virDomainChrDefForeach(vm->def,
+                                   true,
+                                   qemuSetupChardevCgroup,
+                                   cgroup) < 0)
+            goto cleanup;
     }
 
 done:
@@ -3362,6 +3414,13 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     /* Must be run before security labelling */
     DEBUG0("Preparing host devices");
     if (qemuPrepareHostDevices(driver, vm->def) < 0)
+        goto cleanup;
+
+    DEBUG0("Preparing chr devices");
+    if (virDomainChrDefForeach(vm->def,
+                               true,
+                               qemuPrepareChardevDevice,
+                               NULL) < 0)
         goto cleanup;
 
     /* If you are using a SecurityDriver with dynamic labelling,
