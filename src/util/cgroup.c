@@ -445,7 +445,38 @@ static int virCgroupCpuSetInherit(virCgroupPtr parent, virCgroupPtr group)
     return rc;
 }
 
-static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group, int create)
+static int virCgroupSetMemoryUseHierarchy(virCgroupPtr group)
+{
+    int rc = 0;
+    unsigned long long value;
+    const char *filename = "memory.use_hierarchy";
+
+    rc = virCgroupGetValueU64(group,
+                              VIR_CGROUP_CONTROLLER_MEMORY,
+                              filename, &value);
+    if (rc != 0) {
+        VIR_ERROR(_("Failed to read %s/%s (%d)"), group->path, filename, rc);
+        return rc;
+    }
+
+    /* Setting twice causes error, so if already enabled, skip setting */
+    if (value == 1)
+        return 0;
+
+    VIR_DEBUG("Setting up %s/%s", group->path, filename);
+    rc = virCgroupSetValueU64(group,
+                              VIR_CGROUP_CONTROLLER_MEMORY,
+                              filename, 1);
+
+    if (rc != 0) {
+        VIR_ERROR(_("Failed to set %s/%s (%d)"), group->path, filename, rc);
+    }
+
+    return rc;
+}
+
+static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group,
+                              int create, bool memory_hierarchy)
 {
     int i;
     int rc = 0;
@@ -474,6 +505,20 @@ static int virCgroupMakeGroup(virCgroupPtr parent, virCgroupPtr group, int creat
                 (i == VIR_CGROUP_CONTROLLER_CPUSET ||
                  STREQ(group->controllers[i].mountPoint, group->controllers[VIR_CGROUP_CONTROLLER_CPUSET].mountPoint))) {
                 rc = virCgroupCpuSetInherit(parent, group);
+                if (rc != 0) {
+                    VIR_FREE(path);
+                    break;
+                }
+            }
+            /*
+             * Note that virCgroupSetMemoryUseHierarchy should always be
+             * called prior to creating subcgroups and attaching tasks.
+             */
+            if (memory_hierarchy &&
+                group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint != NULL &&
+                (i == VIR_CGROUP_CONTROLLER_MEMORY ||
+                 STREQ(group->controllers[i].mountPoint, group->controllers[VIR_CGROUP_CONTROLLER_MEMORY].mountPoint))) {
+                rc = virCgroupSetMemoryUseHierarchy(group);
                 if (rc != 0) {
                     VIR_FREE(path);
                     break;
@@ -555,7 +600,7 @@ static int virCgroupAppRoot(int privileged,
     if (rc != 0)
         goto cleanup;
 
-    rc = virCgroupMakeGroup(rootgrp, *group, create);
+    rc = virCgroupMakeGroup(rootgrp, *group, create, false);
 
 cleanup:
     virCgroupFree(&rootgrp);
@@ -705,7 +750,7 @@ int virCgroupForDriver(const char *name,
     VIR_FREE(path);
 
     if (rc == 0) {
-        rc = virCgroupMakeGroup(rootgrp, *group, create);
+        rc = virCgroupMakeGroup(rootgrp, *group, create, false);
         if (rc != 0)
             virCgroupFree(group);
     }
@@ -755,7 +800,17 @@ int virCgroupForDomain(virCgroupPtr driver,
     VIR_FREE(path);
 
     if (rc == 0) {
-        rc = virCgroupMakeGroup(driver, *group, create);
+        /*
+         * Create a cgroup with memory.use_hierarchy enabled to
+         * surely account memory usage of lxc with ns subsystem
+         * enabled. (To be exact, memory and ns subsystems are
+         * enabled at the same time.)
+         *
+         * The reason why doing it here, not a upper group, say
+         * a group for driver, is to avoid overhead to track
+         * cumulative usage that we don't need.
+         */
+        rc = virCgroupMakeGroup(driver, *group, create, true);
         if (rc != 0)
             virCgroupFree(group);
     }
