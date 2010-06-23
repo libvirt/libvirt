@@ -1,6 +1,7 @@
 /*
  * cgroup.c: Tools for managing cgroups
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -23,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <libgen.h>
+#include <dirent.h>
 
 #include "internal.h"
 #include "util.h"
@@ -561,10 +563,62 @@ cleanup:
 }
 #endif
 
+static int virCgroupRemoveRecursively(char *grppath)
+{
+    DIR *grpdir;
+    struct dirent *ent;
+    int rc = 0;
+
+    grpdir = opendir(grppath);
+    if (grpdir == NULL) {
+        VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
+        rc = -errno;
+        return rc;
+    }
+
+    for (;;) {
+        char *path;
+
+        errno = 0;
+        ent = readdir(grpdir);
+        if (ent == NULL) {
+            if ((rc = -errno))
+                VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
+            break;
+        }
+
+        if (ent->d_name[0] == '.') continue;
+        if (ent->d_type != DT_DIR) continue;
+
+        if (virAsprintf(&path, "%s/%s", grppath, ent->d_name) == -1) {
+            rc = -ENOMEM;
+            break;
+        }
+        rc = virCgroupRemoveRecursively(path);
+        VIR_FREE(path);
+        if (rc != 0)
+            break;
+    }
+    closedir(grpdir);
+
+    DEBUG("Removing cgroup %s", grppath);
+    if (rmdir(grppath) != 0 && errno != ENOENT) {
+        rc = -errno;
+        VIR_ERROR(_("Unable to remove %s (%d)"), grppath, errno);
+    }
+
+    return rc;
+}
+
 /**
  * virCgroupRemove:
  *
  * @group: The group to be removed
+ *
+ * It first removes all child groups recursively
+ * in depth first order and then removes @group
+ * because the presence of the child groups
+ * prevents removing @group.
  *
  * Returns: 0 on success
  */
@@ -585,10 +639,8 @@ int virCgroupRemove(virCgroupPtr group)
                                       &grppath) != 0)
             continue;
 
-        DEBUG("Removing cgroup %s", grppath);
-        if (rmdir(grppath) != 0 && errno != ENOENT) {
-            rc = -errno;
-        }
+        DEBUG("Removing cgroup %s and all child cgroups", grppath);
+        rc = virCgroupRemoveRecursively(grppath);
         VIR_FREE(grppath);
     }
 
