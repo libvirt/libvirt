@@ -655,7 +655,8 @@ phypGetLparMem(virConnectPtr conn, const char *managed_system, int lpar_id,
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r mem --level lpar -F %s --filter lpar_ids=%d",
+    virBufferVSprintf(&buf,
+                      " -r mem --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_mem" : "curr_max_mem", lpar_id);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
@@ -721,7 +722,8 @@ phypGetLparCPUGeneric(virConnectPtr conn, const char *managed_system,
     virBufferAddLit(&buf, "lshwres");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -r proc --level lpar -F %s --filter lpar_ids=%d",
+    virBufferVSprintf(&buf,
+                      " -r proc --level lpar -F %s --filter lpar_ids=%d",
                       type ? "curr_max_procs" : "curr_procs", lpar_id);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
@@ -772,8 +774,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferVSprintf(&buf, " -r virtualio --rsubtype scsi -F "
-                      "remote_slot_num --filter lpar_names=%s",
-                      lpar_name);
+                      "remote_slot_num --filter lpar_names=%s", lpar_name);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
@@ -1066,7 +1067,8 @@ phypNumDomainsGeneric(virConnectPtr conn, unsigned int type)
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9]*'", state);
+    virBufferVSprintf(&buf, " -F lpar_id,state %s |grep -c '^[0-9]*'",
+                      state);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
@@ -1140,7 +1142,8 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F lpar_id,state %s | sed -e 's/,.*$//'", state);
+    virBufferVSprintf(&buf, " -F lpar_id,state %s | sed -e 's/,.*$//'",
+                      state);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
@@ -2125,7 +2128,7 @@ phypUUIDTable_Push(virConnectPtr conn)
                 /* end of file */
                 break;
             } else {
-                VIR_ERROR(_("Failed to read from '%s'"), local_file);
+                VIR_ERROR(_("Failed to read from %s"), local_file);
                 goto err;
             }
         }
