@@ -972,7 +972,7 @@ SELinuxSetSecurityChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
-SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_UNUSED)
+SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path)
 {
     const virSecurityLabelDefPtr secdef = &vm->def->seclabel;
     int i;
@@ -1007,6 +1007,10 @@ SELinuxSetSecurityAllLabel(virDomainObjPtr vm, const char *stdin_path ATTRIBUTE_
 
     if (vm->def->os.initrd &&
         SELinuxSetFilecon(vm->def->os.initrd, default_content_context) < 0)
+        return -1;
+
+    if (stdin_path &&
+        SELinuxSetFilecon(stdin_path, default_content_context) < 0)
         return -1;
 
     return 0;

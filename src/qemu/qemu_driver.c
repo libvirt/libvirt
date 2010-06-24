@@ -6268,7 +6268,6 @@ error:
     return -1;
 }
 
-/* TODO: check seclabel restore */
 static int ATTRIBUTE_NONNULL(6)
 qemudDomainSaveImageStartVM(virConnectPtr conn,
                             struct qemud_driver *driver,
@@ -6380,6 +6379,11 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     ret = 0;
 
 out:
+    if (driver->securityDriver &&
+        driver->securityDriver->domainRestoreSavedStateLabel &&
+        driver->securityDriver->domainRestoreSavedStateLabel(vm, path) == -1)
+        VIR_WARN("failed to restore save state label on %s", path);
+
     return ret;
 }
 
