@@ -56,6 +56,7 @@
 #include "virterror_internal.h"
 #include "uuid.h"
 #include "domain_conf.h"
+#include "storage_conf.h"
 #include "nodeinfo.h"
 
 #include "phyp_driver.h"
@@ -2265,6 +2266,22 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 
 }
 
+static virDrvOpenStatus
+phypStorageOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
+                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                int flags)
+{
+    virCheckFlags(0, VIR_DRV_OPEN_ERROR);
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int
+phypStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 static virDriver phypDriver = {
     VIR_DRV_PHYP, "PHYP", phypOpen,     /* open */
     phypClose,                  /* close */
@@ -2364,9 +2381,54 @@ static virDriver phypDriver = {
     NULL,                       /* domainSnapshotDelete */
 };
 
+static virStorageDriver phypStorageDriver = {
+    .name = "PHYP",
+    .open = phypStorageOpen,
+    .close = phypStorageClose,
+
+    .numOfPools = NULL,
+    .listPools = NULL,
+    .numOfDefinedPools = NULL,
+    .listDefinedPools = NULL,
+    .findPoolSources = NULL,
+    .poolLookupByName = NULL,
+    .poolLookupByUUID = NULL,
+    .poolLookupByVolume = NULL,
+    .poolCreateXML = NULL,
+    .poolDefineXML = NULL,
+    .poolBuild = NULL,
+    .poolUndefine = NULL,
+    .poolCreate = NULL,
+    .poolDestroy = NULL,
+    .poolDelete = NULL,
+    .poolRefresh = NULL,
+    .poolGetInfo = NULL,
+    .poolGetXMLDesc = NULL,
+    .poolGetAutostart = NULL,
+    .poolSetAutostart = NULL,
+    .poolNumOfVolumes = NULL,
+    .poolListVolumes = NULL,
+
+    .volLookupByName = NULL,
+    .volLookupByKey = NULL,
+    .volLookupByPath = NULL,
+    .volCreateXML = NULL,
+    .volCreateXMLFrom = NULL,
+    .volDelete = NULL,
+    .volGetInfo = NULL,
+    .volGetXMLDesc = NULL,
+    .volGetPath = NULL,
+    .poolIsActive = NULL,
+    .poolIsPersistent = NULL
+};
+
 int
 phypRegister(void)
 {
-    virRegisterDriver(&phypDriver);
+    if (virRegisterDriver(&phypDriver) < 0)
+        return -1;
+    if (virRegisterStorageDriver(&phypStorageDriver) < 0)
+        return -1;
+
     return 0;
 }
