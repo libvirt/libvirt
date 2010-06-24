@@ -1,5 +1,5 @@
-
 /*
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2009
  *
  * phyp_driver.c: ssh layer to access Power Hypervisors
@@ -22,14 +22,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "conf/capabilities.h"
-#include "conf/domain_conf.h"
-#include <config.h>
-#include <libssh2.h>
+#ifndef PHYP_DRIVER_H
+# define PHYP_DRIVER_H
 
-#define LPAR_EXEC_ERR -1
-#define SSH_CONN_ERR -2         /* error while trying to connect to remote host */
-#define SSH_CMD_ERR -3          /* error while trying to execute the remote cmd */
+# include "conf/capabilities.h"
+# include "conf/domain_conf.h"
+# include <config.h>
+# include <libssh2.h>
+
+# define LPAR_EXEC_ERR -1
+# define SSH_CONN_ERR -2         /* error while trying to connect to remote host */
+# define SSH_CMD_ERR -3          /* error while trying to execute the remote cmd */
 
 typedef struct _ConnectionData ConnectionData;
 typedef ConnectionData *ConnectionDataPtr;
@@ -75,60 +78,6 @@ struct _phyp_driver {
     char *managed_system;
 };
 
-int phypCheckSPFreeSapce(virConnectPtr conn, int required_size, char *sp);
-
-int phypGetSystemType(virConnectPtr conn);
-
-int phypGetVIOSPartitionID(virConnectPtr conn);
-
-virCapsPtr phypCapsInit(void);
-
-int phypBuildLpar(virConnectPtr conn, virDomainDefPtr def);
-
-int phypUUIDTable_WriteFile(virConnectPtr conn);
-
-int phypUUIDTable_ReadFile(virConnectPtr conn);
-
-int phypUUIDTable_AddLpar(virConnectPtr conn, unsigned char *uuid, int id);
-
-int phypUUIDTable_RemLpar(virConnectPtr conn, int id);
-
-int phypUUIDTable_Pull(virConnectPtr conn);
-
-int phypUUIDTable_Push(virConnectPtr conn);
-
-int phypUUIDTable_Init(virConnectPtr conn);
-
-void phypUUIDTable_Free(uuid_tablePtr uuid_table);
-
-int escape_specialcharacters(char *src, char *dst, size_t dstlen);
-
-int waitsocket(int socket_fd, LIBSSH2_SESSION * session);
-
-int phypGetLparUUID(unsigned char *uuid, int lpar_id, virConnectPtr conn);
-
 int phypRegister(void);
 
-int phypGetLparState(virConnectPtr conn, unsigned int lpar_id);
-
-unsigned long phypGetLparMem(virConnectPtr conn,
-                             const char *managed_system, int lpar_id,
-                             int type);
-
-unsigned long phypGetLparCPU(virConnectPtr conn,
-                             const char *managed_system, int lpar_id);
-
-unsigned long phypGetLparCPUGeneric(virConnectPtr conn,
-                                    const char *managed_system,
-                                    int lpar_id, int type);
-
-int phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
-                      const char *lpar_name);
-
-char *phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
-                           char *lpar_name);
-
-int phypDiskType(virConnectPtr conn, char *backing_device);
-
-LIBSSH2_SESSION *openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
-                                int *internal_socket);
+#endif /* PHYP_DRIVER_H */
