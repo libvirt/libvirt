@@ -1648,7 +1648,1615 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return NULL;
+}
 
+static char *
+phypGetLparProfile(virConnectPtr conn, int lpar_id)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "lssyscfg");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -r prof --filter lpar_ids=%d -F name|head -n 1",
+                      lpar_id);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    char *char_ptr = strchr(ret, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    VIR_FREE(cmd);
+    return ret;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return NULL;
+}
+
+static int
+phypGetVIOSNextSlotNumber(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *char_ptr;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *profile = NULL;
+    int slot = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!(profile = phypGetLparProfile(conn, vios_id))) {
+        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        goto err;
+    }
+
+    virBufferAddLit(&buf, "lssyscfg");
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+
+    virBufferVSprintf(&buf, " -r prof --filter "
+                      "profile_names=%s -F virtual_eth_adapters,"
+                      "virtual_opti_pool_id,virtual_scsi_adapters,"
+                      "virtual_serial_adapters|sed -e 's/\"//g' -e "
+                      "'s/,/\\n/g'|sed -e 's/\\(^[0-9][0-9]\\*\\).*$/\\1/'"
+                      "|sort|tail -n 1", profile);
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return slot + 1;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypCreateServerSCSIAdapter(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *profile = NULL;
+    int slot = 0;
+    char *vios_name = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!
+        (vios_name =
+         phypGetLparNAME(session, managed_system, vios_id, conn))) {
+        VIR_ERROR0(_("Unable to get VIOS name"));
+        goto err;
+    }
+
+    if (!(profile = phypGetLparProfile(conn, vios_id))) {
+        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        goto err;
+    }
+
+    if ((slot = phypGetVIOSNextSlotNumber(conn)) == -1) {
+        VIR_ERROR0(_("Unable to get free slot number"));
+        goto err;
+    }
+
+    /* Listing all the virtual_scsi_adapter interfaces, the new adapter must
+     * be appended to this list
+     * */
+    virBufferAddLit(&buf, "lssyscfg");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf, " -r prof --filter lpar_ids=%d,profile_names=%s"
+                      " -F virtual_scsi_adapters|sed -e s/\\\"//g",
+                      vios_id, profile);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    /* Here I change the VIOS configuration to append the new adapter
+     * with the free slot I got with phypGetVIOSNextSlotNumber.
+     * */
+    virBufferAddLit(&buf, "chsyscfg");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf, " -r prof -i 'name=%s,lpar_id=%d,"
+                      "\"virtual_scsi_adapters=%s,%d/server/any/any/1\"'",
+                      vios_name, vios_id, ret, slot);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    /* Finally I add the new scsi adapter to VIOS using the same slot
+     * I used in the VIOS configuration.
+     * */
+    virBufferAddLit(&buf, "chhwres -r virtualio --rsubtype scsi");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -p %s -o a -s %d -d 0 -a \"adapter_type=server\"",
+                      vios_name, slot);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    VIR_FREE(profile);
+    VIR_FREE(vios_name);
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(profile);
+    VIR_FREE(vios_name);
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static char *
+phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lsmap -all -field svsa backing -fmt , ");
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|grep -v ',[^.*]'|head -n 1|sed -e 's/,//g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    char *char_ptr = strchr(ret, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    VIR_FREE(cmd);
+    return ret;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return NULL;
+}
+
+
+static int
+phypAttachDevice(virDomainPtr domain, const char *xml)
+{
+
+    virConnectPtr conn = domain->conn;
+    ConnectionData *connection_data = domain->conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = domain->conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *char_ptr = NULL;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *scsi_adapter = NULL;
+    int slot = 0;
+    char *vios_name = NULL;
+    char *profile = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainDefPtr def = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *domain_name = NULL;
+
+    if (VIR_ALLOC_N(domain_name, sizeof(domain->name)) < 0) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if (escape_specialcharacters
+        (domain->name, domain_name, strlen(domain->name)) == -1) {
+        virReportOOMError();
+        goto err;
+    }
+
+    def->os.type = strdup("aix");
+
+    if (def->os.type == NULL) {
+        virReportOOMError();
+        goto err;
+    }
+
+    dev = virDomainDeviceDefParse(phyp_driver->caps, def, xml,
+                                  VIR_DOMAIN_XML_INACTIVE);
+    if (!dev) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if (!
+        (vios_name =
+         phypGetLparNAME(session, managed_system, vios_id, conn))) {
+        VIR_ERROR0(_("Unable to get VIOS name"));
+        goto err;
+    }
+
+    /* First, let's look for a free SCSI Adapter
+     * */
+    if (!(scsi_adapter = phypGetVIOSFreeSCSIAdapter(conn))) {
+        /* If not found, let's create one.
+         * */
+        if (phypCreateServerSCSIAdapter(conn) == -1) {
+            VIR_ERROR0(_("Unable to create new virtual adapter"));
+            goto err;
+        } else {
+            if (!(scsi_adapter = phypGetVIOSFreeSCSIAdapter(conn))) {
+                VIR_ERROR0(_("Unable to create new virtual adapter"));
+                goto err;
+            }
+        }
+    }
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "mkvdev -vdev %s -vadapter %s",
+                      dev->data.disk->src, scsi_adapter);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (!(profile = phypGetLparProfile(conn, domain->id))) {
+        VIR_ERROR0(_("Unable to get VIOS profile name."));
+        goto err;
+    }
+
+    /* Let's get the slot number for the adapter we just created
+     * */
+    virBufferAddLit(&buf, "lshwres -r virtualio --rsubtype scsi");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " slot_num,backing_device|grep %s|cut -d, -f1",
+                      dev->data.disk->src);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+        goto err;
+
+    /* Listing all the virtual_scsi_adapter interfaces, the new adapter must
+     * be appended to this list
+     * */
+    virBufferAddLit(&buf, "lssyscfg");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -r prof --filter lpar_ids=%d,profile_names=%s"
+                      " -F virtual_scsi_adapters|sed -e 's/\"//g'",
+                      vios_id, profile);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    /* Here I change the LPAR configuration to append the new adapter
+     * with the new slot we just created
+     * */
+    virBufferAddLit(&buf, "chsyscfg");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -r prof -i 'name=%s,lpar_id=%d,"
+                      "\"virtual_scsi_adapters=%s,%d/client/%d/%s/0\"'",
+                      domain_name, domain->id, ret, slot,
+                      vios_id, vios_name);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &slot) == -1)
+        goto err;
+
+    /* Finally I add the new scsi adapter to VIOS using the same slot
+     * I used in the VIOS configuration.
+     * */
+    virBufferAddLit(&buf, "chhwres -r virtualio --rsubtype scsi");
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, " -m %s", managed_system);
+    virBufferVSprintf(&buf,
+                      " -p %s -o a -s %d -d 0 -a \"adapter_type=server\"",
+                      domain_name, slot);
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL) {
+        VIR_ERROR0(_
+                   ("Possibly you don't have IBM Tools installed in your LPAR."
+                    "Contact your support to enable this feature."));
+        goto err;
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    VIR_FREE(def);
+    VIR_FREE(dev);
+    VIR_FREE(vios_name);
+    VIR_FREE(scsi_adapter);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    VIR_FREE(def);
+    VIR_FREE(dev);
+    VIR_FREE(vios_name);
+    VIR_FREE(scsi_adapter);
+    return -1;
+}
+
+static int
+phypVolumeGetKey(virConnectPtr conn, char *key, const char *name)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lslv %s -field lvid", name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed -e 's/^LV IDENTIFIER://' -e 's/ //g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    char *char_ptr = strchr(ret, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    if (memcpy(key, ret, MAX_KEY_SIZE) == NULL)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static char *
+phypGetStoragePoolDevice(virConnectPtr conn, char *name)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lssp -detail -sp %s -field name", name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed '1d; s/ //g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    char *char_ptr = strchr(ret, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    VIR_FREE(cmd);
+    return ret;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return NULL;
+}
+
+static unsigned long int
+phypGetStoragePoolSize(virConnectPtr conn, char *name)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    int vios_id = phyp_driver->vios_id;
+    char *cmd = NULL;
+    char *ret = NULL;
+    int sp_size = 0;
+    char *char_ptr;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lssp -detail -sp %s -field size", name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed '1d; s/ //g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &sp_size) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return sp_size;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypBuildVolume(virConnectPtr conn, const char *lvname, const char *spname,
+                unsigned int capacity, char *key)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    int vios_id = phyp_driver->vios_id;
+    int system_type = phyp_driver->system_type;
+    char *managed_system = phyp_driver->managed_system;
+    char *cmd = NULL;
+    char *ret = NULL;
+    int exit_status = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "mklv -lv %s %s %d", lvname, spname, capacity);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0) {
+        VIR_ERROR(_("Unable to create Volume: %s"), ret);
+        goto err;
+    }
+
+    if (phypVolumeGetKey(conn, key, lvname) == -1)
+        goto err;;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static virStorageVolPtr
+phypVolumeLookupByName(virStoragePoolPtr pool, const char *volname)
+{
+
+    char key[MAX_KEY_SIZE];
+
+    if (phypVolumeGetKey(pool->conn, key, volname) == -1)
+        return NULL;
+
+    return virGetStorageVol(pool->conn, pool->name, volname, key);
+}
+
+static virStorageVolPtr
+phypStorageVolCreateXML(virStoragePoolPtr pool,
+                        const char *xml, unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    virStorageVolDefPtr voldef = NULL;
+    virStoragePoolDefPtr spdef = NULL;
+    virStorageVolPtr vol = NULL;
+    char *key = NULL;
+
+    if (VIR_ALLOC(spdef) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(key, MAX_KEY_SIZE) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    /* Filling spdef manually
+     * */
+    if (pool->name != NULL) {
+        spdef->name = pool->name;
+    } else {
+        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        goto err;
+    }
+
+    if (memcpy(spdef->uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage pool's uuid."));
+        goto err;
+    }
+
+    if ((spdef->capacity =
+         phypGetStoragePoolSize(pool->conn, pool->name)) == -1) {
+        VIR_ERROR0(_("Unable to determine storage pools's size."));
+        goto err;
+    }
+
+    /* Information not avaliable */
+    spdef->allocation = 0;
+    spdef->available = 0;
+
+    spdef->source.ndevice = 1;
+
+    /*XXX source adapter not working properly, should show hdiskX */
+    if ((spdef->source.adapter =
+         phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage pools's source adapter."));
+        goto err;
+    }
+
+    if ((voldef = virStorageVolDefParseString(spdef, xml)) == NULL) {
+        VIR_ERROR0(_("Error parsing volume XML."));
+        goto err;
+    }
+
+    /* checking if this name already exists on this system */
+    if (phypVolumeLookupByName(pool, voldef->name) != NULL) {
+        VIR_ERROR0(_("StoragePool name already exists."));
+        goto err;
+    }
+
+    /* The key must be NULL, the Power Hypervisor creates a key
+     * in the moment you create the volume.
+     * */
+    if (voldef->key) {
+        VIR_ERROR0(_("Key must be empty, Power Hypervisor will create one for you."));
+        goto err;
+    }
+
+    if (voldef->capacity) {
+        VIR_ERROR0(_("Capacity cannot be empty."));
+        goto err;
+    }
+
+    if (phypBuildVolume
+        (pool->conn, voldef->name, spdef->name, voldef->capacity,
+         key) == -1)
+        goto err;
+
+    if ((vol =
+         virGetStorageVol(pool->conn, pool->name, voldef->name,
+                          key)) == NULL)
+        goto err;
+
+    return vol;
+
+  err:
+    virStorageVolDefFree(voldef);
+    virStoragePoolDefFree(spdef);
+    if (vol)
+        virUnrefStorageVol(vol);
+    return NULL;
+}
+
+static char *
+phypVolumeGetPhysicalVolumeByStoragePool(virStorageVolPtr vol, char *sp)
+{
+    virConnectPtr conn = vol->conn;
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lssp -detail -sp %s -field pvname", sp);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed 1d");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    char *char_ptr = strchr(ret, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    VIR_FREE(cmd);
+    return ret;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return NULL;
+
+}
+
+static virStorageVolPtr
+phypVolumeLookupByPath(virConnectPtr conn, const char *volname)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *spname = NULL;
+    char *key = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lslv %s -field vgname", volname);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    spname = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || spname == NULL)
+        return NULL;
+
+    char *char_ptr = strchr(spname, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    if (VIR_ALLOC_N(key, MAX_KEY_SIZE) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (phypVolumeGetKey(conn, key, volname) == -1)
+        return NULL;
+
+    return virGetStorageVol(conn, spname, volname, key);
+}
+
+static int
+phypGetStoragePoolUUID(virConnectPtr conn, unsigned char *uuid,
+                       const char *name)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lsdev -dev %s -attr vgserial_id", name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed '1,2d'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (memmove(uuid, ret, VIR_UUID_BUFLEN) == NULL)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static virStoragePoolPtr
+phypStoragePoolLookupByName(virConnectPtr conn, const char *name)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+
+    if (phypGetStoragePoolUUID(conn, uuid, name) == -1)
+        return NULL;
+
+    return virGetStoragePool(conn, name, uuid);
+}
+
+static char *
+phypVolumeGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    virStorageVolDef voldef;
+    memset(&voldef, 0, sizeof(virStorageVolDef));
+
+    virStoragePoolPtr sp =
+        phypStoragePoolLookupByName(vol->conn, vol->pool);
+
+    if (!sp)
+        goto err;
+
+    virStoragePoolDef pool;
+    memset(&pool, 0, sizeof(virStoragePoolDef));
+
+    if (VIR_ALLOC_N(voldef.key, MAX_KEY_SIZE) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    if (sp->name != NULL) {
+        pool.name = sp->name;
+    } else {
+        VIR_ERROR0(_("Unable to determine storage sp's name."));
+        goto err;
+    }
+
+    if (memmove(pool.uuid, sp->uuid, VIR_UUID_BUFLEN) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage sp's uuid."));
+        goto err;
+    }
+
+    if ((pool.capacity = phypGetStoragePoolSize(sp->conn, sp->name)) == -1) {
+        VIR_ERROR0(_("Unable to determine storage sps's size."));
+        goto err;
+    }
+
+    /* Information not avaliable */
+    pool.allocation = 0;
+    pool.available = 0;
+
+    pool.source.ndevice = 1;
+
+    if ((pool.source.adapter =
+         phypGetStoragePoolDevice(sp->conn, sp->name)) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage sps's source adapter."));
+        goto err;
+    }
+
+    if (vol->name != NULL)
+        voldef.name = vol->name;
+    else {
+        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        goto err;
+    }
+
+    if (memmove(voldef.key, vol->key, PATH_MAX) == NULL) {
+        VIR_ERROR0(_("Unable to determine volume's key."));
+        goto err;
+    }
+
+    voldef.type = VIR_STORAGE_POOL_LOGICAL;
+
+    return virStorageVolDefFormat(&pool, &voldef);
+
+  err:
+    return NULL;
+}
+
+/* The Volume Group path here will be treated as suggested in the
+ * email on the libvirt mailling list. As soon as I can't get the
+ * path for every volume, the path will be a representation in
+ * the form:
+ *
+ * /physical_volume/storage_pool/logical_volume
+ *
+ * */
+static char *
+phypVolumeGetPath(virStorageVolPtr vol)
+{
+    virConnectPtr conn = vol->conn;
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    char *cmd = NULL;
+    char *sp = NULL;
+    char *path = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lslv %s -field vgname", vol->name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf,
+                      "|sed -e 's/^VOLUME GROUP://g' -e 's/ //g'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return NULL;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    sp = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || sp == NULL)
+        goto err;
+
+    char *char_ptr = strchr(sp, '\n');
+
+    if (char_ptr)
+        *char_ptr = '\0';
+
+    char *pv = phypVolumeGetPhysicalVolumeByStoragePool(vol, sp);
+
+    if (pv) {
+        if (virAsprintf(&path, "/%s/%s/%s", pv, sp, vol->name) < 0) {
+            virReportOOMError();
+            goto err;
+        }
+    } else {
+        goto err;
+    }
+
+    VIR_FREE(cmd);
+    return path;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(sp);
+    VIR_FREE(path);
+    return NULL;
+
+}
+
+static int
+phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
+                           int nvolumes)
+{
+    virConnectPtr conn = pool->conn;
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    int got = 0;
+    int i;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *volumes_list = NULL;
+    char *char_ptr2 = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|sed '1,2d'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    /* I need to parse the textual return in order to get the volumes */
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+    else {
+        volumes_list = ret;
+
+        while (got < nvolumes) {
+            char_ptr2 = strchr(volumes_list, '\n');
+
+            if (char_ptr2) {
+                *char_ptr2 = '\0';
+                if ((volumes[got++] = strdup(volumes_list)) == NULL) {
+                    virReportOOMError();
+                    goto err;
+                }
+                char_ptr2++;
+                volumes_list = char_ptr2;
+            } else
+                break;
+        }
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return got;
+
+  err:
+    for (i = 0; i < got; i++)
+        VIR_FREE(volumes[i]);
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypStoragePoolNumOfVolumes(virStoragePoolPtr pool)
+{
+    virConnectPtr conn = pool->conn;
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    int nvolumes = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *managed_system = phyp_driver->managed_system;
+    int vios_id = phyp_driver->vios_id;
+    char *char_ptr;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+    virBufferVSprintf(&buf, "lsvg -lv %s -field lvname", pool->name);
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+    virBufferVSprintf(&buf, "|grep -c '^.*$'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &nvolumes) == -1)
+        goto err;
+
+    /* We need to remove 2 line from the header text output */
+    nvolumes -= 2;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return nvolumes;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypDestroyStoragePool(virStoragePoolPtr pool)
+{
+    virConnectPtr conn = pool->conn;
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    int vios_id = phyp_driver->vios_id;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    char *cmd = NULL;
+    char *ret = NULL;
+    int exit_status = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "rmsp %s", pool->name);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    if (virAsprintf(&cmd,
+                    "viosvrcmd -m %s --id %d -c "
+                    "'rmsp %s'", managed_system, vios_id,
+                    pool->name) < 0) {
+        virReportOOMError();
+        goto err;
+    }
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0) {
+        VIR_ERROR(_("Unable to create Storage Pool: %s"), ret);
+        goto err;
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    virStoragePoolSource source = def->source;
+    int vios_id = phyp_driver->vios_id;
+    int system_type = phyp_driver->system_type;
+    char *managed_system = phyp_driver->managed_system;
+    char *cmd = NULL;
+    char *ret = NULL;
+    int exit_status = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "mksp -f %schild %s", def->name,
+                      source.adapter);
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0) {
+        VIR_ERROR(_("Unable to create Storage Pool: %s"), ret);
+        goto err;
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return 0;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+
+}
+
+static int
+phypNumOfStoragePools(virConnectPtr conn)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    int system_type = phyp_driver->system_type;
+    int exit_status = 0;
+    int nsp = 0;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *managed_system = phyp_driver->managed_system;
+    int vios_id = phyp_driver->vios_id;
+    char *char_ptr;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lsvg");
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    virBufferVSprintf(&buf, "|grep -c '^.*$'");
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+
+    if (virStrToLong_i(ret, &char_ptr, 10, &nsp) == -1)
+        goto err;
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return nsp;
+
+  err:
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static int
+phypListStoragePools(virConnectPtr conn, char **const pools, int npools)
+{
+    ConnectionData *connection_data = conn->networkPrivateData;
+    phyp_driverPtr phyp_driver = conn->privateData;
+    LIBSSH2_SESSION *session = connection_data->session;
+    char *managed_system = phyp_driver->managed_system;
+    int system_type = phyp_driver->system_type;
+    int vios_id = phyp_driver->vios_id;
+    int exit_status = 0;
+    int got = 0;
+    int i;
+    char *cmd = NULL;
+    char *ret = NULL;
+    char *storage_pools = NULL;
+    char *char_ptr2 = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (system_type == HMC)
+        virBufferVSprintf(&buf, "viosvrcmd -m %s --id %d -c '",
+                          managed_system, vios_id);
+
+    virBufferVSprintf(&buf, "lsvg");
+
+    if (system_type == HMC)
+        virBufferAddChar(&buf, '\'');
+
+    if (virBufferError(&buf)) {
+        virBufferFreeAndReset(&buf);
+        virReportOOMError();
+        return -1;
+    }
+    cmd = virBufferContentAndReset(&buf);
+
+    ret = phypExec(session, cmd, &exit_status, conn);
+
+    /* I need to parse the textual return in order to get the storage pools */
+    if (exit_status < 0 || ret == NULL)
+        goto err;
+    else {
+        storage_pools = ret;
+
+        while (got < npools) {
+            char_ptr2 = strchr(storage_pools, '\n');
+
+            if (char_ptr2) {
+                *char_ptr2 = '\0';
+                if ((pools[got++] = strdup(storage_pools)) == NULL) {
+                    virReportOOMError();
+                    goto err;
+                }
+                char_ptr2++;
+                storage_pools = char_ptr2;
+            } else
+                break;
+        }
+    }
+
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return got;
+
+  err:
+    for (i = 0; i < got; i++)
+        VIR_FREE(pools[i]);
+    VIR_FREE(cmd);
+    VIR_FREE(ret);
+    return -1;
+}
+
+static virStoragePoolPtr
+phypGetStoragePoolLookUpByUUID(virConnectPtr conn,
+                               const unsigned char *uuid)
+{
+    virStoragePoolPtr sp = NULL;
+    int npools = 0;
+    int gotpools = 0;
+    char **pools = NULL;
+    unsigned int i = 0;
+    unsigned char *local_uuid = NULL;
+
+    if (VIR_ALLOC_N(local_uuid, VIR_UUID_BUFLEN) < 0) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if ((npools = phypNumOfStoragePools(conn)) == -1) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if (VIR_ALLOC_N(pools, npools) < 0) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if ((gotpools = phypListStoragePools(conn, pools, npools)) == -1) {
+        virReportOOMError();
+        goto err;
+    }
+
+    if (gotpools != npools) {
+        virReportOOMError();
+        goto err;
+    }
+
+    for (i = 0; i < gotpools; i++) {
+        if (phypGetStoragePoolUUID(conn, local_uuid, pools[i]) == -1)
+            continue;
+
+        if (!memcmp(local_uuid, uuid, VIR_UUID_BUFLEN)) {
+            sp = virGetStoragePool(conn, pools[i], uuid);
+            VIR_FREE(local_uuid);
+            VIR_FREE(pools);
+
+            if (sp)
+                return sp;
+            else
+                goto err;
+        }
+    }
+
+  err:
+    VIR_FREE(local_uuid);
+    VIR_FREE(pools);
+    return NULL;
+}
+
+static virStoragePoolPtr
+phypStoragePoolCreateXML(virConnectPtr conn,
+                         const char *xml, unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    virStoragePoolDefPtr def = NULL;
+    virStoragePoolPtr sp = NULL;
+
+    if (!(def = virStoragePoolDefParseString(xml)))
+        goto err;
+
+    /* checking if this name already exists on this system */
+    if (phypStoragePoolLookupByName(conn, def->name) != NULL) {
+        VIR_WARN0("StoragePool name already exists.");
+        goto err;
+    }
+
+    /* checking if ID or UUID already exists on this system */
+    if (phypGetStoragePoolLookUpByUUID(conn, def->uuid) != NULL) {
+        VIR_WARN0("StoragePool uuid already exists.");
+        goto err;
+    }
+
+    if ((sp = virGetStoragePool(conn, def->name, def->uuid)) == NULL)
+        goto err;
+
+    if (phypBuildStoragePool(conn, def) == -1)
+        goto err;
+
+    return sp;
+
+  err:
+    virStoragePoolDefFree(def);
+    if (sp)
+        virUnrefStoragePool(sp);
+    return NULL;
+}
+
+static char *
+phypGetStoragePoolXMLDesc(virStoragePoolPtr pool, unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    virStoragePoolDef def;
+    memset(&def, 0, sizeof(virStoragePoolDef));
+
+    if (pool->name != NULL)
+        def.name = pool->name;
+    else {
+        VIR_ERROR0(_("Unable to determine storage pool's name."));
+        goto err;
+    }
+
+    if (memmove(def.uuid, pool->uuid, VIR_UUID_BUFLEN) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage pool's uuid."));
+        goto err;
+    }
+
+    if ((def.capacity =
+         phypGetStoragePoolSize(pool->conn, pool->name)) == -1) {
+        VIR_ERROR0(_("Unable to determine storage pools's size."));
+        goto err;
+    }
+
+    /* Information not avaliable */
+    def.allocation = 0;
+    def.available = 0;
+
+    def.source.ndevice = 1;
+
+    /*XXX source adapter not working properly, should show hdiskX */
+    if ((def.source.adapter =
+         phypGetStoragePoolDevice(pool->conn, pool->name)) == NULL) {
+        VIR_ERROR0(_("Unable to determine storage pools's source adapter."));
+        goto err;
+    }
+
+    return virStoragePoolDefFormat(&def);
+
+  err:
+    return NULL;
 }
 
 static int
@@ -2327,7 +3935,7 @@ static virDriver phypDriver = {
     NULL,                       /* domainCreateWithFlags */
     NULL,                       /* domainDefineXML */
     NULL,                       /* domainUndefine */
-    NULL,                       /* domainAttachDevice */
+    phypAttachDevice,           /* domainAttachDevice */
     NULL,                       /* domainAttachDeviceFlags */
     NULL,                       /* domainDetachDevice */
     NULL,                       /* domainDetachDeviceFlags */
@@ -2386,38 +3994,38 @@ static virStorageDriver phypStorageDriver = {
     .open = phypStorageOpen,
     .close = phypStorageClose,
 
-    .numOfPools = NULL,
-    .listPools = NULL,
+    .numOfPools = phypNumOfStoragePools,
+    .listPools = phypListStoragePools,
     .numOfDefinedPools = NULL,
     .listDefinedPools = NULL,
     .findPoolSources = NULL,
-    .poolLookupByName = NULL,
-    .poolLookupByUUID = NULL,
+    .poolLookupByName = phypStoragePoolLookupByName,
+    .poolLookupByUUID = phypGetStoragePoolLookUpByUUID,
     .poolLookupByVolume = NULL,
-    .poolCreateXML = NULL,
+    .poolCreateXML = phypStoragePoolCreateXML,
     .poolDefineXML = NULL,
     .poolBuild = NULL,
     .poolUndefine = NULL,
     .poolCreate = NULL,
-    .poolDestroy = NULL,
+    .poolDestroy = phypDestroyStoragePool,
     .poolDelete = NULL,
     .poolRefresh = NULL,
     .poolGetInfo = NULL,
-    .poolGetXMLDesc = NULL,
+    .poolGetXMLDesc = phypGetStoragePoolXMLDesc,
     .poolGetAutostart = NULL,
     .poolSetAutostart = NULL,
-    .poolNumOfVolumes = NULL,
-    .poolListVolumes = NULL,
+    .poolNumOfVolumes = phypStoragePoolNumOfVolumes,
+    .poolListVolumes = phypStoragePoolListVolumes,
 
-    .volLookupByName = NULL,
+    .volLookupByName = phypVolumeLookupByName,
     .volLookupByKey = NULL,
-    .volLookupByPath = NULL,
-    .volCreateXML = NULL,
+    .volLookupByPath = phypVolumeLookupByPath,
+    .volCreateXML = phypStorageVolCreateXML,
     .volCreateXMLFrom = NULL,
     .volDelete = NULL,
     .volGetInfo = NULL,
-    .volGetXMLDesc = NULL,
-    .volGetPath = NULL,
+    .volGetXMLDesc = phypVolumeGetXMLDesc,
+    .volGetPath = phypVolumeGetPath,
     .poolIsActive = NULL,
     .poolIsPersistent = NULL
 };
