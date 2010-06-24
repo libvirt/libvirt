@@ -256,12 +256,12 @@ typedef enum {
 } QEMU_MONITOR_MIGRATE;
 
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char *hostname,
                              int port);
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                unsigned int background,
+                                unsigned int flags,
                                 const char * const *argv);
 
 /* In general, BS is the smallest fundamental block size we can use to
@@ -276,13 +276,13 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
 # define QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE (1024llu * 1024)
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char * const *argv,
                              const char *target,
                              unsigned long long offset);
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char *unixfile);
 
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);

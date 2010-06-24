@@ -10590,7 +10590,7 @@ static int doNativeMigrate(struct qemud_driver *driver,
     int ret = -1;
     xmlURIPtr uribits = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    unsigned int background_flags = 0;
+    unsigned int background_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
 
     /* Issue the migrate command. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri, "tcp://")) {

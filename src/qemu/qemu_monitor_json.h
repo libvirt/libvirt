@@ -97,22 +97,22 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
                                       unsigned long long *total);
 
 int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char *hostname,
                                  int port);
 
 int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
-                                    int background,
+                                    unsigned int flags,
                                     const char * const *argv);
 
 int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char * const *argv,
                                  const char *target,
                                  unsigned long long offset);
 
 int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char *unixfile);
 
 int qemuMonitorJSONMigrateCancel(qemuMonitorPtr mon);

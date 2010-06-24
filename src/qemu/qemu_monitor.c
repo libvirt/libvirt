@@ -1299,13 +1299,13 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 
 
 int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char *hostname,
                              int port)
 {
     int ret;
-    DEBUG("mon=%p hostname=%s port=%d",
-          mon, hostname, port);
+    DEBUG("mon=%p hostname=%s port=%d flags=%u",
+          mon, hostname, port, flags);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1314,20 +1314,20 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToHost(mon, background, hostname, port);
+        ret = qemuMonitorJSONMigrateToHost(mon, flags, hostname, port);
     else
-        ret = qemuMonitorTextMigrateToHost(mon, background, hostname, port);
+        ret = qemuMonitorTextMigrateToHost(mon, flags, hostname, port);
     return ret;
 }
 
 
 int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                unsigned int background,
+                                unsigned int flags,
                                 const char * const *argv)
 {
     int ret;
-    DEBUG("mon=%p argv=%p",
-          mon, argv);
+    DEBUG("mon=%p argv=%p flags=%u",
+          mon, argv, flags);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1336,21 +1336,21 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToCommand(mon, background, argv);
+        ret = qemuMonitorJSONMigrateToCommand(mon, flags, argv);
     else
-        ret = qemuMonitorTextMigrateToCommand(mon, background, argv);
+        ret = qemuMonitorTextMigrateToCommand(mon, flags, argv);
     return ret;
 }
 
 int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char * const *argv,
                              const char *target,
                              unsigned long long offset)
 {
     int ret;
-    DEBUG("mon=%p argv=%p target=%s offset=%llu",
-          mon, argv, target, offset);
+    DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%u",
+          mon, argv, target, offset, flags);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1366,19 +1366,19 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToFile(mon, background, argv, target, offset);
+        ret = qemuMonitorJSONMigrateToFile(mon, flags, argv, target, offset);
     else
-        ret = qemuMonitorTextMigrateToFile(mon, background, argv, target, offset);
+        ret = qemuMonitorTextMigrateToFile(mon, flags, argv, target, offset);
     return ret;
 }
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             unsigned int background,
+                             unsigned int flags,
                              const char *unixfile)
 {
     int ret;
-    DEBUG("mon=%p, unixfile=%s",
-          mon, unixfile);
+    DEBUG("mon=%p, unixfile=%s flags=%u",
+          mon, unixfile, flags);
 
     if (!mon) {
         qemuReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1387,9 +1387,9 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
     }
 
     if (mon->json)
-        ret = qemuMonitorJSONMigrateToUnix(mon, background, unixfile);
+        ret = qemuMonitorJSONMigrateToUnix(mon, flags, unixfile);
     else
-        ret = qemuMonitorTextMigrateToUnix(mon, background, unixfile);
+        ret = qemuMonitorTextMigrateToUnix(mon, flags, unixfile);
     return ret;
 }
 

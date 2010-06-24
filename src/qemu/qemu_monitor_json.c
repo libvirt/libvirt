@@ -1599,14 +1599,17 @@ int qemuMonitorJSONGetMigrationStatus(qemuMonitorPtr mon,
 
 
 static int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
-                                  int background,
+                                  unsigned int flags,
                                   const char *uri)
 {
     int ret;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("migrate",
-                                                     "i:detach", background ? 1 : 0,
-                                                     "s:uri", uri,
-                                                     NULL);
+    virJSONValuePtr cmd =
+      qemuMonitorJSONMakeCommand("migrate",
+                                 "i:detach", flags & QEMU_MONITOR_MIGRATE_BACKGROUND ? 1 : 0,
+                                 "i:blk", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK ? 1 : 0,
+                                 "i:inc", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC ? 1 : 0,
+                                 "s:uri", uri,
+                                 NULL);
     virJSONValuePtr reply = NULL;
 
     if (!cmd)
@@ -1624,7 +1627,7 @@ static int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char *hostname,
                                  int port)
 {
@@ -1636,7 +1639,7 @@ int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorJSONMigrate(mon, background, uri);
+    ret = qemuMonitorJSONMigrate(mon, flags, uri);
 
     VIR_FREE(uri);
 
@@ -1645,7 +1648,7 @@ int qemuMonitorJSONMigrateToHost(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
-                                    int background,
+                                    unsigned int flags,
                                     const char * const *argv)
 {
     char *argstr;
@@ -1663,7 +1666,7 @@ int qemuMonitorJSONMigrateToCommand(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorJSONMigrate(mon, background, dest);
+    ret = qemuMonitorJSONMigrate(mon, flags, dest);
 
 cleanup:
     VIR_FREE(argstr);
@@ -1672,7 +1675,7 @@ cleanup:
 }
 
 int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char * const *argv,
                                  const char *target,
                                  unsigned long long offset)
@@ -1709,7 +1712,7 @@ int qemuMonitorJSONMigrateToFile(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorJSONMigrate(mon, background, dest);
+    ret = qemuMonitorJSONMigrate(mon, flags, dest);
 
 cleanup:
     VIR_FREE(safe_target);
@@ -1719,7 +1722,7 @@ cleanup:
 }
 
 int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
-                                 int background,
+                                 unsigned int flags,
                                  const char *unixfile)
 {
     char *dest = NULL;
@@ -1730,7 +1733,7 @@ int qemuMonitorJSONMigrateToUnix(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorJSONMigrate(mon, background, dest);
+    ret = qemuMonitorJSONMigrate(mon, flags, dest);
 
     VIR_FREE(dest);
 

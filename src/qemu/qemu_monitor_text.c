@@ -1136,7 +1136,7 @@ cleanup:
 
 
 static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
-                                  unsigned int background,
+                                  unsigned int flags,
                                   const char *dest)
 {
     char *cmd = NULL;
@@ -1151,11 +1151,11 @@ static int qemuMonitorTextMigrate(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (background & QEMU_MONITOR_MIGRATE_BACKGROUND)
+    if (flags & QEMU_MONITOR_MIGRATE_BACKGROUND)
         virBufferAddLit(&extra, " -d");
-    if (background & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK)
+    if (flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK)
         virBufferAddLit(&extra, " -b");
-    if (background & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
+    if (flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
         virBufferAddLit(&extra, " -i");
     if (virBufferError(&extra)) {
         virBufferFreeAndReset(&extra);
@@ -1202,7 +1202,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
-                                 unsigned int background,
+                                 unsigned int flags,
                                  const char *hostname,
                                  int port)
 {
@@ -1214,7 +1214,7 @@ int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorTextMigrate(mon, background, uri);
+    ret = qemuMonitorTextMigrate(mon, flags, uri);
 
     VIR_FREE(uri);
 
@@ -1223,7 +1223,7 @@ int qemuMonitorTextMigrateToHost(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
-                                    unsigned int background,
+                                    unsigned int flags,
                                     const char * const *argv)
 {
     char *argstr;
@@ -1241,7 +1241,7 @@ int qemuMonitorTextMigrateToCommand(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorTextMigrate(mon, background, dest);
+    ret = qemuMonitorTextMigrate(mon, flags, dest);
 
 cleanup:
     VIR_FREE(argstr);
@@ -1250,7 +1250,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
-                                 unsigned int background,
+                                 unsigned int flags,
                                  const char * const *argv,
                                  const char *target,
                                  unsigned long long offset)
@@ -1287,7 +1287,7 @@ int qemuMonitorTextMigrateToFile(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorTextMigrate(mon, background, dest);
+    ret = qemuMonitorTextMigrate(mon, flags, dest);
 
 cleanup:
     VIR_FREE(safe_target);
@@ -1297,7 +1297,7 @@ cleanup:
 }
 
 int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
-                                 unsigned int background,
+                                 unsigned int flags,
                                  const char *unixfile)
 {
     char *dest = NULL;
@@ -1308,7 +1308,7 @@ int qemuMonitorTextMigrateToUnix(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorTextMigrate(mon, background, dest);
+    ret = qemuMonitorTextMigrate(mon, flags, dest);
 
     VIR_FREE(dest);
 
