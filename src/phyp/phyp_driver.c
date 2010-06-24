@@ -227,8 +227,8 @@ phypGetVIOSPartitionID(virConnectPtr conn)
     virBufferAddLit(&buf, "lssyscfg");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferAddLit(&buf, " -r lpar -F lpar_id,lpar_env|grep "
-                    "vioserver|sed -s 's/,.*$//'");
+    virBufferAddLit(&buf, " -r lpar -F lpar_id,lpar_env"
+                    "|sed -n '/vioserver/ {\n s/,.*$//\n p\n}'");
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
@@ -1889,7 +1889,7 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
     if (system_type == HMC)
         virBufferAddChar(&buf, '\'');
 
-    virBufferVSprintf(&buf, "|grep -v ',[^.*]'|head -n 1|sed -e 's/,//g'");
+    virBufferVSprintf(&buf, "|sed '/,[^.*]/d; s/,//g; q'");
 
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
@@ -3330,7 +3330,7 @@ phypDiskType(virConnectPtr conn, char *backing_device)
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
     virBufferVSprintf(&buf, " -p %d -c \"lssp -field name type "
-                      "-fmt , -all|grep %s|sed -e 's/^.*,//'\"",
+                      "-fmt , -all|sed -n '/%s/ {\n s/^.*,//\n p\n}'\"",
                       vios_id, backing_device);
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
@@ -3398,8 +3398,8 @@ phypListDefinedDomains(virConnectPtr conn, char **const names, int nnames)
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
         virBufferVSprintf(&buf, " -m %s", managed_system);
-    virBufferVSprintf(&buf, " -F name,state | grep \"Not Activated\" | "
-                      "sed -e 's/,.*$//'");
+    virBufferVSprintf(&buf, " -F name,state"
+                      "|sed -n '/Not Activated/ {\n s/,.*$//\n p\n}'");
     if (virBufferError(&buf)) {
         virBufferFreeAndReset(&buf);
         virReportOOMError();
