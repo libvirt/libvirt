@@ -7221,4 +7221,56 @@ int virDomainSnapshotHasChildren(virDomainSnapshotObjPtr snap,
 }
 
 
+int virDomainChrDefForeach(virDomainDefPtr def,
+                           bool abortOnError,
+                           virDomainChrDefIterator iter,
+                           void *opaque)
+{
+    int i;
+    int rc = 0;
+
+    for (i = 0 ; i < def->nserials ; i++) {
+        if ((iter)(def,
+                   def->serials[i],
+                   opaque) < 0)
+            rc = -1;
+
+        if (abortOnError && rc != 0)
+            goto done;
+    }
+
+    for (i = 0 ; i < def->nparallels ; i++) {
+        if ((iter)(def,
+                   def->parallels[i],
+                   opaque) < 0)
+            rc = -1;
+
+        if (abortOnError && rc != 0)
+            goto done;
+    }
+
+    for (i = 0 ; i < def->nchannels ; i++) {
+        if ((iter)(def,
+                   def->channels[i],
+                   opaque) < 0)
+            rc = -1;
+
+        if (abortOnError && rc != 0)
+            goto done;
+    }
+    if (def->console) {
+        if ((iter)(def,
+                   def->console,
+                   opaque) < 0)
+            rc = -1;
+
+        if (abortOnError && rc != 0)
+            goto done;
+    }
+
+done:
+    return rc;
+}
+
+
 #endif /* ! PROXY */

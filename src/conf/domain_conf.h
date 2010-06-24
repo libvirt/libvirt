@@ -1069,6 +1069,15 @@ int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                      char **const names,
                                      int maxnames);
 
+typedef int (*virDomainChrDefIterator)(virDomainDefPtr def,
+                                       virDomainChrDefPtr dev,
+                                       void *opaque);
+
+int virDomainChrDefForeach(virDomainDefPtr def,
+                           bool abortOnError,
+                           virDomainChrDefIterator iter,
+                           void *opaque);
+
 
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
