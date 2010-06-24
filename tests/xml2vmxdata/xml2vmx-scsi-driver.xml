@@ -21,5 +21,10 @@
       <source file='[datastore] directory/harddisk3.vmdk'/>
       <target dev='sdae' bus='scsi'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='vmpvscsi'/>
+      <source file='[datastore] directory/harddisk4.vmdk'/>
+      <target dev='sdat' bus='scsi'/>
+    </disk>
   </devices>
 </domain>

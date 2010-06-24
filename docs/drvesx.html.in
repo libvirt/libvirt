@@ -302,7 +302,13 @@ ethernet0.checkMACAddress = "false"
         </dd>
         <dt><code>lsisas1068</code></dt>
         <dd>
-            LSI Logic SAS 1068 controller.
+            LSI Logic SAS 1068 controller. <span class="since">Since 0.8.0</span>
+        </dd>
+        <dt><code>vmpvscsi</code></dt>
+        <dd>
+            Special VMware Paravirtual SCSI controller, requires VMware tools inside
+            the guest. See <a href="http://kb.vmware.com/kb/1010398">VMware KB1010398</a>
+            for details. <span class="since">Since 0.8.3</span>
         </dd>
     </dl>
     <p>
@@ -640,6 +646,11 @@ Enter administrator password for example-vcenter.com:
         <li>
             <a href="http://www.sanbarrow.com/vmx.html">
                 VMware VMX config parameters
+            </a>
+        </li>
+        <li>
+            <a href="http://www.vmware.com/pdf/vsp_4_pvscsi_perf.pdf">
+                VMware ESX 4.0 PVSCSI Storage Performance
             </a>
         </li>
     </ul>

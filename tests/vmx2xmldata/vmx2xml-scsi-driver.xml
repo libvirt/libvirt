@@ -26,8 +26,14 @@
       <target dev='sdae' bus='scsi'/>
       <address type='drive' controller='2' bus='0' unit='0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk4.vmdk'/>
+      <target dev='sdat' bus='scsi'/>
+      <address type='drive' controller='3' bus='0' unit='0'/>
+    </disk>
     <controller type='scsi' index='0' model='buslogic'/>
     <controller type='scsi' index='1' model='lsilogic'/>
     <controller type='scsi' index='2' model='lsisas1068'/>
+    <controller type='scsi' index='3' model='vmpvscsi'/>
   </devices>
 </domain>

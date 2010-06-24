@@ -428,6 +428,15 @@ def->parallels[0]...
 #define ESX_BUILD_VMX_NAME(_suffix)                                           \
     snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."#_suffix, prefix);
 
+/* directly map the virDomainControllerModel to esxVMX_SCSIControllerModel,
+ * this is good enough for now because all virDomainControllerModel values
+ * are actually SCSI controller models in the ESX case */
+VIR_ENUM_DECL(esxVMX_SCSIControllerModel)
+VIR_ENUM_IMPL(esxVMX_SCSIControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+              "buslogic",
+              "lsilogic",
+              "lsisas1068",
+              "pvscsi");
 
 
 int
@@ -740,11 +749,12 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, int virtualDev[4],
         if (controller->model != -1 &&
             controller->model != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
             controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
-            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068) {
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068 &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting domain XML attribute 'model' of entry "
                         "'controller' to be 'buslogic' or 'lsilogic' or "
-                        "'lsisas1068' but found '%s'"),
+                        "'lsisas1068' or 'vmpvscsi' but found '%s'"),
                       virDomainControllerModelTypeToString(controller->model));
             return -1;
         }
@@ -1478,16 +1488,17 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, bool *present,
             *tmp = c_tolower(*tmp);
         }
 
-        *virtualDev = virDomainControllerModelTypeFromString(virtualDev_string);
+        *virtualDev = esxVMX_SCSIControllerModelTypeFromString(virtualDev_string);
 
         if (*virtualDev == -1 ||
             (*virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC &&
              *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068)) {
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068 &&
+             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI)) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' "
-                        "or 'lsisas1068' but found '%s'"), virtualDev_name,
-                        virtualDev_string);
+                        "or 'lsisas1068' or 'pvscsi' but found '%s'"),
+                       virtualDev_name, virtualDev_string);
             goto failure;
         }
     }
@@ -2619,7 +2630,7 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
 
             if (scsi_virtualDev[i] != -1) {
                 virBufferVSprintf(&buffer, "scsi%d.virtualDev = \"%s\"\n", i,
-                                  virDomainControllerModelTypeToString
+                                  esxVMX_SCSIControllerModelTypeToString
                                     (scsi_virtualDev[i]));
             }
         }

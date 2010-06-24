@@ -679,6 +679,7 @@
             <value>buslogic</value>
             <value>lsilogic</value>
             <value>lsisas1068</value>
+            <value>vmpvscsi</value>
           </choice>
         </attribute>
       </optional>
