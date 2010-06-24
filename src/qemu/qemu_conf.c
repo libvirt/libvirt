@@ -1176,6 +1176,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_BALLOON;
     if (strstr(help, "-device"))
         flags |= QEMUD_CMD_FLAG_DEVICE;
+    if (strstr(help, "-nodefconfig"))
+        flags |= QEMUD_CMD_FLAG_NODEFCONFIG;
     /* The trailing ' ' is important to avoid a bogus match */
     if (strstr(help, "-rtc "))
         flags |= QEMUD_CMD_FLAG_RTC;
@@ -3780,7 +3782,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT("-nographic");
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        ADD_ARG_LIT("-nodefconfig"); /* Disabling global config files */
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_NODEFCONFIG)
+            ADD_ARG_LIT("-nodefconfig"); /* Disabling global config files */
         ADD_ARG_LIT("-nodefaults");  /* Disabling default guest devices */
     }
 

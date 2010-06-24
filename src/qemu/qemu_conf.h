@@ -90,6 +90,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_NO_KVM_PIT    = (1LL << 34), /* -no-kvm-pit-reinjection supported */
     QEMUD_CMD_FLAG_TDF           = (1LL << 35), /* -tdf flag (user-mode pit catchup) */
     QEMUD_CMD_FLAG_PCI_CONFIGFD  = (1LL << 36), /* pci-assign.configfd */
+    QEMUD_CMD_FLAG_NODEFCONFIG   = (1LL << 37), /* -nodefconfig */
 };
 
 /* Main driver state */
