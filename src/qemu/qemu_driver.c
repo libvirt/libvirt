@@ -97,7 +97,8 @@
 enum qemuDomainJob {
     QEMU_JOB_NONE = 0,  /* Always set to 0 for easy if (jobActive) conditions */
     QEMU_JOB_UNSPECIFIED,
-    QEMU_JOB_MIGRATION,
+    QEMU_JOB_MIGRATION_OUT,
+    QEMU_JOB_MIGRATION_IN,
 };
 
 enum qemuDomainJobSignals {
@@ -4356,7 +4357,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
 
     priv = vm->privateData;
 
-    if (priv->jobActive == QEMU_JOB_MIGRATION) {
+    if (priv->jobActive == QEMU_JOB_MIGRATION_OUT) {
         if (vm->state != VIR_DOMAIN_PAUSED) {
             VIR_DEBUG("Requesting domain pause on %s",
                       vm->def->name);
@@ -10194,6 +10195,14 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     char *unixfile = NULL;
     unsigned long long qemuCmdFlags;
     struct qemuStreamMigFile *qemust = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+    struct timeval now;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
 
     qemuDriverLock(driver);
     if (!dom_xml) {
@@ -10238,9 +10247,11 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
     def = NULL;
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
+    priv->jobActive = QEMU_JOB_MIGRATION_OUT;
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -10316,6 +10327,18 @@ endjob:
         qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
 
+    /* We set a fake job active which is held across
+     * API calls until the finish() call. This prevents
+     * any other APIs being invoked while incoming
+     * migration is taking place
+     */
+    if (vm &&
+        virDomainObjIsActive(vm)) {
+        priv->jobActive = QEMU_JOB_MIGRATION_IN;
+        priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+        priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    }
+
 cleanup:
     virDomainDefFree(def);
     if (unixfile)
@@ -10355,6 +10378,14 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
     virDomainEventPtr event = NULL;
     int ret = -1;
     int internalret;
+    qemuDomainObjPrivatePtr priv = NULL;
+    struct timeval now;
+
+    if (gettimeofday(&now, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot get time of day"));
+        return -1;
+    }
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -10483,9 +10514,11 @@ qemudDomainMigratePrepare2 (virConnectPtr dconn,
         goto cleanup;
     }
     def = NULL;
+    priv = vm->privateData;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
+    priv->jobActive = QEMU_JOB_MIGRATION_OUT;
 
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
@@ -10516,6 +10549,18 @@ endjob:
     if (vm &&
         qemuDomainObjEndJob(vm) == 0)
         vm = NULL;
+
+    /* We set a fake job active which is held across
+     * API calls until the finish() call. This prevents
+     * any other APIs being invoked while incoming
+     * migration is taking place
+     */
+    if (vm &&
+        virDomainObjIsActive(vm)) {
+        priv->jobActive = QEMU_JOB_MIGRATION_IN;
+        priv->jobInfo.type = VIR_DOMAIN_JOB_UNBOUNDED;
+        priv->jobStart = (now.tv_sec * 1000ull) + (now.tv_usec / 1000);
+    }
 
 cleanup:
     VIR_FREE(hostname);
@@ -10989,7 +11034,7 @@ qemudDomainMigratePerform (virDomainPtr dom,
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
-    priv->jobActive = QEMU_JOB_MIGRATION;
+    priv->jobActive = QEMU_JOB_MIGRATION_OUT;
 
     if (!virDomainObjIsActive(vm)) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
@@ -11078,6 +11123,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
     virDomainEventPtr event = NULL;
     virErrorPtr orig_err;
     int newVM = 1;
+    qemuDomainObjPrivatePtr priv = NULL;
 
     virCheckFlags(VIR_MIGRATE_LIVE |
                   VIR_MIGRATE_PEER2PEER |
@@ -11098,6 +11144,15 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
                         _("no domain with matching name '%s'"), dname);
         goto cleanup;
     }
+
+    priv = vm->privateData;
+    if (priv->jobActive != QEMU_JOB_MIGRATION_IN) {
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("domain '%s' is not processing incoming migration"), dname);
+        goto cleanup;
+    }
+    priv->jobActive = QEMU_JOB_NONE;
+    memset(&priv->jobInfo, 0, sizeof(priv->jobInfo));
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
         goto cleanup;
@@ -11141,7 +11196,6 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
             event = NULL;
 
         }
-        qemuDomainObjPrivatePtr priv = vm->privateData;
         dom = virGetDomain (dconn, vm->def->name, vm->def->uuid);
 
         if (!(flags & VIR_MIGRATE_PAUSED)) {
@@ -11383,7 +11437,23 @@ static int qemuDomainGetJobInfo(virDomainPtr dom,
 
     if (virDomainObjIsActive(vm)) {
         if (priv->jobActive) {
+            struct timeval now;
+
             memcpy(info, &priv->jobInfo, sizeof(*info));
+
+            /* Refresh elapsed time again just to ensure it
+             * is fully updated. This is primarily for benefit
+             * of incoming migration which we don't currently
+             * monitor actively in the background thread
+             */
+            if (gettimeofday(&now, NULL) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("cannot get time of day"));
+                goto cleanup;
+            }
+            info->timeElapsed =
+                ((now.tv_sec * 1000ull) + (now.tv_usec / 1000)) -
+                priv->jobStart;
         } else {
             memset(info, 0, sizeof(*info));
             info->type = VIR_DOMAIN_JOB_NONE;
@@ -11477,7 +11547,7 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (priv->jobActive != QEMU_JOB_MIGRATION) {
+    if (priv->jobActive != QEMU_JOB_MIGRATION_OUT) {
         qemuReportError(VIR_ERR_OPERATION_INVALID,
                         "%s", _("domain is not being migrated"));
         goto cleanup;
