@@ -3428,8 +3428,10 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     DEBUG0("Generating setting domain security labels (if required)");
     if (driver->securityDriver &&
         driver->securityDriver->domainSetSecurityAllLabel &&
-        driver->securityDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0)
-        goto cleanup;
+        driver->securityDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0) {
+        if (virStorageFileIsSharedFS(stdin_path) != 1)
+            goto cleanup;
+    }
 
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
