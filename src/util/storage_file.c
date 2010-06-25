@@ -434,9 +434,44 @@ virStorageFileGetMetadata(const char *path,
 
 int virStorageFileIsSharedFS(const char *path)
 {
+    char *dirpath, *p;
     struct statfs sb;
+    int statfs_ret;
 
-    if (statfs(path, &sb) < 0) {
+    if ((dirpath = strdup(path)) == NULL) {
+        virReportOOMError();
+        return -1;
+    }
+
+    do {
+
+        /* Try less and less of the path until we get to a
+         * directory we can stat. Even if we don't have 'x'
+         * permission on any directory in the path on the NFS
+         * server (assuming it's NFS), we will be able to stat the
+         * mount point, and that will properly tell us if the
+         * fstype is NFS.
+         */
+
+        if ((p = strrchr(dirpath, '/')) == NULL) {
+            virReportSystemError(EINVAL,
+                         _("Invalid relative path '%s'"), path);
+            VIR_FREE(dirpath);
+            return -1;
+        }
+
+        if (p == dirpath)
+            *(p+1) = '\0';
+        else
+            *p = '\0';
+
+        statfs_ret = statfs(dirpath, &sb);
+
+    } while ((statfs_ret < 0) && (p != dirpath));
+
+    VIR_FREE(dirpath);
+
+    if (statfs_ret < 0) {
         virReportSystemError(errno,
                              _("cannot determine filesystem for '%s'"),
                              path);
