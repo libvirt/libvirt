@@ -11230,7 +11230,7 @@ qemudDomainMigrateFinish2 (virConnectPtr dconn,
             goto endjob;
         }
     } else {
-        qemudShutdownVMDaemon(driver, vm, 0);
+        qemudShutdownVMDaemon(driver, vm, 1);
         event = virDomainEventNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
