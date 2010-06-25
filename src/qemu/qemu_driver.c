@@ -46,13 +46,6 @@
 #include <sys/ioctl.h>
 #include <sys/un.h>
 
-#ifdef __linux__
-# include <sys/vfs.h>
-# ifndef NFS_SUPER_MAGIC
-#  define NFS_SUPER_MAGIC 0x6969
-# endif /* NFS_SUPER_MAGIC */
-#endif /* __linux__ */
-
 #include "virterror_internal.h"
 #include "logging.h"
 #include "datatypes.h"
@@ -5129,62 +5122,32 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
                 goto endjob;
             }
 
-#ifdef __linux__
             /* On Linux we can also verify the FS-type of the directory. */
-            char *dirpath, *p;
-            struct statfs st;
-            int statfs_ret;
+            switch (virStorageFileIsSharedFS(path)) {
+                case 1:
+                   /* it was on a network share, so we'll continue
+                    * as outlined above
+                    */
+                   break;
 
-            if ((dirpath = strdup(path)) == NULL) {
-                virReportOOMError();
-                goto endjob;
+                case -1:
+                   virReportSystemError(errno,
+                                        _("Failed to create domain save file "
+                                          "'%s': couldn't determine fs type"),
+                                        path);
+                   goto endjob;
+                   break;
+
+                case 0:
+                default:
+                   /* local file - log the error returned by virFileOperation */
+                   virReportSystemError(rc,
+                                        _("Failed to create domain save file '%s'"),
+                                        path);
+                   goto endjob;
+                   break;
+
             }
-
-            do {
-                // Try less and less of the path until we get to a
-                // directory we can stat. Even if we don't have 'x'
-                // permission on any directory in the path on the NFS
-                // server (assuming it's NFS), we will be able to stat the
-                // mount point, and that will properly tell us if the
-                // fstype is NFS.
-
-                if ((p = strrchr(dirpath, '/')) == NULL) {
-                    qemuReportError(VIR_ERR_INVALID_ARG,
-                                    _("Invalid relative path '%s' for domain save file"),
-                                    path);
-                    VIR_FREE(dirpath);
-                    goto endjob;
-                }
-
-                if (p == dirpath)
-                    *(p+1) = '\0';
-                else
-                    *p = '\0';
-
-                statfs_ret = statfs(dirpath, &st);
-
-            } while ((statfs_ret == -1) && (p != dirpath));
-
-            if (statfs_ret == -1) {
-                virReportSystemError(errno,
-                                     _("Failed to create domain save file "
-                                       "'%s': statfs of all elements of path "
-                                       "failed"),
-                                     path);
-                VIR_FREE(dirpath);
-                goto endjob;
-            }
-
-            if (st.f_type != NFS_SUPER_MAGIC) {
-                virReportSystemError(rc,
-                                     _("Failed to create domain save file '%s'"
-                                       " (fstype of '%s' is 0x%X"),
-                                     path, dirpath, (unsigned int) st.f_type);
-                VIR_FREE(dirpath);
-                goto endjob;
-            }
-            VIR_FREE(dirpath);
-#endif
 
             /* Retry creating the file as driver->user */
 
