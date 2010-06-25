@@ -70,8 +70,8 @@ fig = \
   libvirt-object-model.fig
 
 EXTRA_DIST=					\
-  libvirt-api.xml libvirt-refs.xml apibuild.py	\
-  site.xsl newapi.xsl news.xsl page.xsl	ChangeLog.xsl	\
+  apibuild.py \
+  site.xsl newapi.xsl news.xsl page.xsl ChangeLog.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(fig) $(png) \
@@ -129,19 +129,23 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; \
 	  else echo "missing XHTML1 DTD" ; fi ; fi
 
-$(devhelphtml): libvirt-api.xml $(devhelpxsl)
+$(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 	-@echo Rebuilding devhelp files
 	-@if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o devhelp/libvirt.devhelp \
 	  $(top_srcdir)/docs/devhelp/devhelp.xsl libvirt-api.xml ; fi
 
-html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: $(srcdir)/apibuild.py
-	-srcdir=$(srcdir) $(srcdir)/apibuild.py
+python_generated_files = \
+		$(srcdir)/html/libvirt-libvirt.html \
+		$(srcdir)/html/libvirt-virterror.html \
+		$(srcdir)/libvirt-api.xml \
+		$(srcdir)/libvirt-refs.xml
 
-html/%-%.html html/%-virterror.html %-api.xml %-refs.xml: \
-		$(srcdir)/../include/%/*.h \
-		$(srcdir)/../src/%.c \
+$(python_generated_files): $(srcdir)/apibuild.py \
+		$(srcdir)/../include/libvirt/*.h \
+		$(srcdir)/../src/libvirt.c \
 		$(srcdir)/../src/util/virterror.c
+	-srcdir=$(srcdir) $(srcdir)/apibuild.py
 
 check-local: all
 
