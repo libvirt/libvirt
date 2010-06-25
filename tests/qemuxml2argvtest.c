@@ -250,7 +250,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-fat", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-readonly-disk", QEMUD_CMD_FLAG_DRIVE |
-            QEMUD_CMD_FLAG_DEVICE);
+            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("disk-drive-fmt-qcow", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_BOOT | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-drive-shared", QEMUD_CMD_FLAG_DRIVE |
@@ -271,7 +271,8 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-cache-v2-none", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DRIVE_CACHE_V2 | QEMUD_CMD_FLAG_DRIVE_FORMAT);
     DO_TEST("disk-usb", 0);
-    DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE | QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("graphics-vnc", 0);
 
     driver.vncSASL = 1;
@@ -298,8 +299,10 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_UUID);
     DO_TEST("net-user", 0);
     DO_TEST("net-virtio", 0);
-    DO_TEST("net-virtio-device", QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("net-virtio-netdev", QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NETDEV);
+    DO_TEST("net-virtio-device", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("net-virtio-netdev", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NETDEV | QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("net-eth", 0);
     DO_TEST("net-eth-ifname", 0);
     DO_TEST("net-eth-names", QEMUD_CMD_FLAG_NET_NAME);
@@ -316,31 +319,49 @@ mymain(int argc, char **argv)
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
 
-    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-pty-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-dev-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-file-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-unix-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-udp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-tcp-telnet-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("serial-many-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("parallel-tcp-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("console-compat-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
 
-    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("channel-virtio", QEMUD_CMD_FLAG_DEVICE);
-    DO_TEST("channel-virtio-auto", QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("channel-guestfwd", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("channel-virtio", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("channel-virtio-auto", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
 
     DO_TEST("watchdog", 0);
-    DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("sound", 0);
-    DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
 
     DO_TEST("hostdev-usb-address", 0);
-    DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("hostdev-usb-address-device", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("hostdev-pci-address", QEMUD_CMD_FLAG_PCIDEVICE);
-    DO_TEST("hostdev-pci-address-device", QEMUD_CMD_FLAG_PCIDEVICE|QEMUD_CMD_FLAG_DEVICE);
+    DO_TEST("hostdev-pci-address-device", QEMUD_CMD_FLAG_PCIDEVICE |
+            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
 
     DO_TEST_FULL("restore-v1", QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO, "stdio");
     DO_TEST_FULL("restore-v2", QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC, "stdio");
