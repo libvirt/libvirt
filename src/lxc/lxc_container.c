@@ -255,13 +255,20 @@ static int lxcContainerRenameAndEnableInterfaces(unsigned int nveths,
 
         DEBUG("Renaming %s to %s", veths[i], newname);
         rc = setInterfaceName(veths[i], newname);
-        if (0 != rc)
+        if (0 != rc) {
+            VIR_ERROR(_("Failed to rename %s to %s (%d)"),
+                      veths[i], newname, rc);
+            rc = -1;
             goto error_out;
+        }
 
         DEBUG("Enabling %s", newname);
-        rc =  vethInterfaceUpOrDown(newname, 1);
-        if (0 != rc)
+        rc = vethInterfaceUpOrDown(newname, 1);
+        if (0 != rc) {
+            VIR_ERROR(_("Failed to enable %s (%d)"), newname, rc);
+            rc = -1;
             goto error_out;
+        }
         VIR_FREE(newname);
     }
 
