@@ -616,6 +616,8 @@ static int virCgroupRemoveRecursively(char *grppath)
 
     grpdir = opendir(grppath);
     if (grpdir == NULL) {
+        if (errno == ENOENT)
+            return 0;
         VIR_ERROR(_("Unable to open %s (%d)"), grppath, errno);
         rc = -errno;
         return rc;
