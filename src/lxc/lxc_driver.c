@@ -1284,7 +1284,7 @@ static int lxcVmStart(virConnectPtr conn,
     if (lxcSetupInterfaces(conn, vm->def, &nveths, &veths) != 0)
         goto cleanup;
 
-    /* Persist the live configuration now we have veth & tty info */
+    /* Save the configuration for the controller */
     if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
         goto cleanup;
 
@@ -1327,6 +1327,13 @@ static int lxcVmStart(virConnectPtr conn,
         lxcVmTerminate(driver, vm, 0);
         goto cleanup;
     }
+
+    /*
+     * Again, need to save the live configuration, because the function
+     * requires vm->def->id != -1 to save tty info surely.
+     */
+    if (virDomainSaveConfig(driver->stateDir, vm->def) < 0)
+        goto cleanup;
 
     rc = 0;
 
