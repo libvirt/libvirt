@@ -743,11 +743,13 @@ variables, and defaults to C<vi>.
 
 Returns basic information about the I<pool> object.
 
-=item B<pool-list> optional I<--inactive> I<--all>
+=item B<pool-list> optional I<--inactive> I<--all> I<--details>
 
 List pool objects known to libvirt.  By default, only pools in use by
 active domains are listed; I<--inactive> lists just the inactive
-pools, and I<--all> lists all pools.
+pools, and I<--all> lists all pools. The I<--details> option instructs
+virsh to additionally display pool persistence and capacity related
+information where available.
 
 =item B<pool-name> I<uuid>
 

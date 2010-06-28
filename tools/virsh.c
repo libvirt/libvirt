@@ -4891,114 +4891,400 @@ static const vshCmdInfo info_pool_list[] = {
 static const vshCmdOptDef opts_pool_list[] = {
     {"inactive", VSH_OT_BOOL, 0, N_("list inactive pools")},
     {"all", VSH_OT_BOOL, 0, N_("list inactive & active pools")},
+    {"details", VSH_OT_BOOL, 0, N_("display extended details for pools")},
     {NULL, 0, 0, NULL}
 };
 
 static int
 cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
-    int inactive = vshCommandOptBool(cmd, "inactive");
+    virStoragePoolInfo info;
+    char **poolNames = NULL;
+    int i, functionReturn, ret;
+    int numActivePools = 0, numInactivePools = 0, numAllPools = 0;
+    size_t stringLength = 0, nameStrLength = 0;
+    size_t autostartStrLength = 0, persistStrLength = 0;
+    size_t stateStrLength = 0, capStrLength = 0;
+    size_t allocStrLength = 0, availStrLength = 0;
+    struct poolInfoText {
+        char *state;
+        char *autostart;
+        char *persistent;
+        char *capacity;
+        char *allocation;
+        char *available;
+    };
+    struct poolInfoText *poolInfoTexts = NULL;
+
+    /* Determine the options passed by the user */
     int all = vshCommandOptBool(cmd, "all");
+    int details = vshCommandOptBool(cmd, "details");
+    int inactive = vshCommandOptBool(cmd, "inactive");
     int active = !inactive || all ? 1 : 0;
-    int maxactive = 0, maxinactive = 0, i;
-    char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
 
+    /* Check the connection to libvirtd daemon is still working */
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
+    /* Retrieve the number of active storage pools */
     if (active) {
-        maxactive = virConnectNumOfStoragePools(ctl->conn);
-        if (maxactive < 0) {
+        numActivePools = virConnectNumOfStoragePools(ctl->conn);
+        if (numActivePools < 0) {
             vshError(ctl, "%s", _("Failed to list active pools"));
             return FALSE;
         }
-        if (maxactive) {
-            activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
-
-            if ((maxactive = virConnectListStoragePools(ctl->conn, activeNames,
-                                                        maxactive)) < 0) {
-                vshError(ctl, "%s", _("Failed to list active pools"));
-                VIR_FREE(activeNames);
-                return FALSE;
-            }
-
-            qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
-        }
     }
+
+    /* Retrieve the number of inactive storage pools */
     if (inactive) {
-        maxinactive = virConnectNumOfDefinedStoragePools(ctl->conn);
-        if (maxinactive < 0) {
+        numInactivePools = virConnectNumOfDefinedStoragePools(ctl->conn);
+        if (numInactivePools < 0) {
             vshError(ctl, "%s", _("Failed to list inactive pools"));
-            VIR_FREE(activeNames);
             return FALSE;
         }
-        if (maxinactive) {
-            inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
+    }
 
-            if ((maxinactive = virConnectListDefinedStoragePools(ctl->conn, inactiveNames, maxinactive)) < 0) {
-                vshError(ctl, "%s", _("Failed to list inactive pools"));
-                VIR_FREE(activeNames);
-                VIR_FREE(inactiveNames);
-                return FALSE;
+    /* Determine the total number of pools to list */
+    numAllPools = numActivePools + numInactivePools;
+
+    /* Allocate memory for arrays of storage pool names and info */
+    poolNames = vshCalloc(ctl, numAllPools, sizeof(*poolNames));
+    poolInfoTexts =
+        vshCalloc(ctl, numAllPools, sizeof(*poolInfoTexts));
+
+    /* Retrieve a list of active storage pool names */
+    if (active) {
+        if ((virConnectListStoragePools(ctl->conn,
+                                        poolNames, numActivePools)) < 0) {
+            vshError(ctl, "%s", _("Failed to list active pools"));
+            VIR_FREE(poolInfoTexts);
+            VIR_FREE(poolNames);
+            return FALSE;
+        }
+    }
+
+    /* Add the inactive storage pools to the end of the name list */
+    if (inactive) {
+        if ((virConnectListDefinedStoragePools(ctl->conn,
+                                               &poolNames[numActivePools],
+                                               numInactivePools)) < 0) {
+            vshError(ctl, "%s", _("Failed to list inactive pools"));
+            VIR_FREE(poolInfoTexts);
+            VIR_FREE(poolNames);
+            return FALSE;
+        }
+    }
+
+    /* Sort the storage pool names */
+    qsort(poolNames, numAllPools, sizeof(*poolNames), namesorter);
+
+    /* Collect the storage pool information for display */
+    for (i = 0; i < numAllPools; i++) {
+        int autostart = 0, persistent = 0;
+
+        /* Retrieve a pool object, looking it up by name */
+        virStoragePoolPtr pool = virStoragePoolLookupByName(ctl->conn,
+                                                            poolNames[i]);
+        if (!pool) {
+            VIR_FREE(poolNames[i]);
+            continue;
+        }
+
+        /* Retrieve the autostart status of the pool */
+        if (virStoragePoolGetAutostart(pool, &autostart) < 0)
+            poolInfoTexts[i].autostart = vshStrdup(ctl, _("no autostart"));
+        else
+            poolInfoTexts[i].autostart = vshStrdup(ctl, autostart ?
+                                                    _("yes") : _("no"));
+
+        /* Retrieve the persistence status of the pool */
+        if (details) {
+            persistent = virStoragePoolIsPersistent(pool);
+            vshDebug(ctl, 5, "Persistent flag value: %d\n", persistent);
+            if (persistent < 0)
+                poolInfoTexts[i].persistent = vshStrdup(ctl, _("unknown"));
+            else
+                poolInfoTexts[i].persistent = vshStrdup(ctl, persistent ?
+                                                         _("yes") : _("no"));
+
+            /* Keep the length of persistent string if longest so far */
+            stringLength = strlen(poolInfoTexts[i].persistent);
+            if (stringLength > persistStrLength)
+                persistStrLength = stringLength;
+        }
+
+        /* Collect further extended information about the pool */
+        if (virStoragePoolGetInfo(pool, &info) != 0) {
+            /* Something went wrong retrieving pool info, cope with it */
+            vshError(ctl, "%s", _("Could not retrieve pool information"));
+            poolInfoTexts[i].state = vshStrdup(ctl, _("unknown"));
+            if (details) {
+                poolInfoTexts[i].capacity = vshStrdup(ctl, _("unknown"));
+                poolInfoTexts[i].allocation = vshStrdup(ctl, _("unknown"));
+                poolInfoTexts[i].available = vshStrdup(ctl, _("unknown"));
             }
+        } else {
+            /* Decide which state string to display */
+            if (details) {
+                /* --details option was specified, we're using detailed state
+                 * strings */
+                switch (info.state) {
+                case VIR_STORAGE_POOL_INACTIVE:
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
+                    break;
+                case VIR_STORAGE_POOL_BUILDING:
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("building"));
+                    break;
+                case VIR_STORAGE_POOL_RUNNING:
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("running"));
+                    break;
+                case VIR_STORAGE_POOL_DEGRADED:
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("degraded"));
+                    break;
+                case VIR_STORAGE_POOL_INACCESSIBLE:
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("inaccessible"));
+                    break;
+                }
 
-            qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+                /* Create the pool size related strings */
+                if (info.state == VIR_STORAGE_POOL_RUNNING ||
+                    info.state == VIR_STORAGE_POOL_DEGRADED) {
+                    double val;
+                    const char *unit;
+
+                    /* Create the capacity output string */
+                    val = prettyCapacity(info.capacity, &unit);
+                    ret = virAsprintf(&poolInfoTexts[i].capacity,
+                                      "%.2lf %s", val, unit);
+                    if (ret < 0) {
+                        /* An error occurred creating the string, return */
+                        goto asprintf_failure;
+                    }
+
+                    /* Create the allocation output string */
+                    val = prettyCapacity(info.allocation, &unit);
+                    ret = virAsprintf(&poolInfoTexts[i].allocation,
+                                      "%.2lf %s", val, unit);
+                    if (ret < 0) {
+                        /* An error occurred creating the string, return */
+                        goto asprintf_failure;
+                    }
+
+                    /* Create the available space output string */
+                    val = prettyCapacity(info.available, &unit);
+                    ret = virAsprintf(&poolInfoTexts[i].available,
+                                      "%.2lf %s", val, unit);
+                    if (ret < 0) {
+                        /* An error occurred creating the string, return */
+                        goto asprintf_failure;
+                    }
+                } else {
+                    /* Capacity related information isn't available */
+                    poolInfoTexts[i].capacity = vshStrdup(ctl, _("-"));
+                    poolInfoTexts[i].allocation = vshStrdup(ctl, _("-"));
+                    poolInfoTexts[i].available = vshStrdup(ctl, _("-"));
+                }
+
+                /* Keep the length of capacity string if longest so far */
+                stringLength = strlen(poolInfoTexts[i].capacity);
+                if (stringLength > capStrLength)
+                    capStrLength = stringLength;
+
+                /* Keep the length of allocation string if longest so far */
+                stringLength = strlen(poolInfoTexts[i].allocation);
+                if (stringLength > allocStrLength)
+                    allocStrLength = stringLength;
+
+                /* Keep the length of available string if longest so far */
+                stringLength = strlen(poolInfoTexts[i].available);
+                if (stringLength > availStrLength)
+                    availStrLength = stringLength;
+            } else {
+                /* --details option was not specified, only active/inactive
+                * state strings are used */
+                if (info.state == VIR_STORAGE_POOL_INACTIVE)
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("inactive"));
+                else
+                    poolInfoTexts[i].state = vshStrdup(ctl, _("active"));
+            }
         }
-    }
-    vshPrintExtra(ctl, "%-20s %-10s %-10s\n", _("Name"), _("State"), _("Autostart"));
-    vshPrintExtra(ctl, "-----------------------------------------\n");
 
-    for (i = 0; i < maxactive; i++) {
-        virStoragePoolPtr pool = virStoragePoolLookupByName(ctl->conn, activeNames[i]);
-        const char *autostartStr;
-        int autostart = 0;
+        /* Keep the length of name string if longest so far */
+        stringLength = strlen(poolNames[i]);
+        if (stringLength > nameStrLength)
+            nameStrLength = stringLength;
 
-        /* this kind of work with pools is not atomic operation */
-        if (!pool) {
-            VIR_FREE(activeNames[i]);
-            continue;
-        }
+        /* Keep the length of state string if longest so far */
+        stringLength = strlen(poolInfoTexts[i].state);
+        if (stringLength > stateStrLength)
+            stateStrLength = stringLength;
 
-        if (virStoragePoolGetAutostart(pool, &autostart) < 0)
-            autostartStr = _("no autostart");
-        else
-            autostartStr = autostart ? _("yes") : _("no");
+        /* Keep the length of autostart string if longest so far */
+        stringLength = strlen(poolInfoTexts[i].autostart);
+        if (stringLength > autostartStrLength)
+            autostartStrLength = stringLength;
 
-        vshPrint(ctl, "%-20s %-10s %-10s\n",
-                 virStoragePoolGetName(pool),
-                 _("active"),
-                 autostartStr);
+        /* Free the pool object */
         virStoragePoolFree(pool);
-        VIR_FREE(activeNames[i]);
     }
-    for (i = 0; i < maxinactive; i++) {
-        virStoragePoolPtr pool = virStoragePoolLookupByName(ctl->conn, inactiveNames[i]);
-        const char *autostartStr;
-        int autostart = 0;
 
-        /* this kind of work with pools is not atomic operation */
-        if (!pool) {
-            VIR_FREE(inactiveNames[i]);
-            continue;
+    /* If the --details option wasn't selected, we output the pool
+     * info using the fixed string format from previous versions to
+     * maintain backward compatibility.
+     */
+
+    /* Output basic info then return if --details option not selected */
+    if (!details) {
+        /* Output old style header */
+        vshPrintExtra(ctl, "%-20s %-10s %-10s\n", _("Name"), _("State"),
+                      _("Autostart"));
+        vshPrintExtra(ctl, "-----------------------------------------\n");
+
+        /* Output old style pool info */
+        for (i = 0; i < numAllPools; i++) {
+            vshPrint(ctl, "%-20s %-10s %-10s\n",
+                 poolNames[i],
+                 poolInfoTexts[i].state,
+                 poolInfoTexts[i].autostart);
         }
 
-        if (virStoragePoolGetAutostart(pool, &autostart) < 0)
-            autostartStr = _("no autostart");
-        else
-            autostartStr = autostart ? _("yes") : _("no");
-
-        vshPrint(ctl, "%-20s %-10s %-10s\n",
-                 inactiveNames[i],
-                 _("inactive"),
-                 autostartStr);
-
-        virStoragePoolFree(pool);
-        VIR_FREE(inactiveNames[i]);
+        /* Cleanup and return */
+        functionReturn = TRUE;
+        goto cleanup;
     }
-    VIR_FREE(activeNames);
-    VIR_FREE(inactiveNames);
-    return TRUE;
+
+    /* We only get here if the --details option was selected. */
+
+    /* Use the length of name header string if it's longest */
+    stringLength = strlen(_("Name"));
+    if (stringLength > nameStrLength)
+        nameStrLength = stringLength;
+
+    /* Use the length of state header string if it's longest */
+    stringLength = strlen(_("State"));
+    if (stringLength > stateStrLength)
+        stateStrLength = stringLength;
+
+    /* Use the length of autostart header string if it's longest */
+    stringLength = strlen(_("Autostart"));
+    if (stringLength > autostartStrLength)
+        autostartStrLength = stringLength;
+
+    /* Use the length of persistent header string if it's longest */
+    stringLength = strlen(_("Persistent"));
+    if (stringLength > persistStrLength)
+        persistStrLength = stringLength;
+
+    /* Use the length of capacity header string if it's longest */
+    stringLength = strlen(_("Capacity"));
+    if (stringLength > capStrLength)
+        capStrLength = stringLength;
+
+    /* Use the length of allocation header string if it's longest */
+    stringLength = strlen(_("Allocation"));
+    if (stringLength > allocStrLength)
+        allocStrLength = stringLength;
+
+    /* Use the length of available header string if it's longest */
+    stringLength = strlen(_("Available"));
+    if (stringLength > availStrLength)
+        availStrLength = stringLength;
+
+    /* Display the string lengths for debugging. */
+    vshDebug(ctl, 5, "Longest name string = %lu chars\n",
+             (unsigned long) nameStrLength);
+    vshDebug(ctl, 5, "Longest state string = %lu chars\n",
+             (unsigned long) stateStrLength);
+    vshDebug(ctl, 5, "Longest autostart string = %lu chars\n",
+             (unsigned long) autostartStrLength);
+    vshDebug(ctl, 5, "Longest persistent string = %lu chars\n",
+             (unsigned long) persistStrLength);
+    vshDebug(ctl, 5, "Longest capacity string = %lu chars\n",
+             (unsigned long) capStrLength);
+    vshDebug(ctl, 5, "Longest allocation string = %lu chars\n",
+             (unsigned long) allocStrLength);
+    vshDebug(ctl, 5, "Longest available string = %lu chars\n",
+             (unsigned long) availStrLength);
+
+    /* Create the output template.  Each column is sized according to
+     * the longest string.
+     */
+    char *outputStr;
+    ret = virAsprintf(&outputStr,
+              "%%-%lus  %%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus  %%%lus\n",
+              (unsigned long) nameStrLength,
+              (unsigned long) stateStrLength,
+              (unsigned long) autostartStrLength,
+              (unsigned long) persistStrLength,
+              (unsigned long) capStrLength,
+              (unsigned long) allocStrLength,
+              (unsigned long) availStrLength);
+    if (ret < 0) {
+        /* An error occurred creating the string, return */
+        goto asprintf_failure;
+    }
+
+    /* Display the header */
+    vshPrint(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
+             _("Persistent"), _("Capacity"), _("Allocation"), _("Available"));
+    for (i = nameStrLength + stateStrLength + autostartStrLength
+                           + persistStrLength + capStrLength
+                           + allocStrLength + availStrLength
+                           + 12; i > 0; i--)
+        vshPrintExtra(ctl, "-");
+    vshPrintExtra(ctl, "\n");
+
+    /* Display the pool info rows */
+    for (i = 0; i < numAllPools; i++) {
+        vshPrint(ctl, outputStr,
+                 poolNames[i],
+                 poolInfoTexts[i].state,
+                 poolInfoTexts[i].autostart,
+                 poolInfoTexts[i].persistent,
+                 poolInfoTexts[i].capacity,
+                 poolInfoTexts[i].allocation,
+                 poolInfoTexts[i].available);
+    }
+
+    /* Cleanup and return */
+    functionReturn = TRUE;
+    goto cleanup;
+
+asprintf_failure:
+
+    /* Display an appropriate error message then cleanup and return */
+    switch (errno) {
+    case ENOMEM:
+        /* Couldn't allocate memory */
+        vshError(ctl, "%s", _("Out of memory"));
+        break;
+    default:
+        /* Some other error */
+        vshError(ctl, _("virAsprintf failed (errno %d)"), errno);
+    }
+    functionReturn = FALSE;
+
+cleanup:
+
+    /* Safely free the memory allocated in this function */
+    for (i = 0; i < numAllPools; i++) {
+        /* Cleanup the memory for one pool info structure */
+        VIR_FREE(poolInfoTexts[i].state);
+        VIR_FREE(poolInfoTexts[i].autostart);
+        VIR_FREE(poolInfoTexts[i].persistent);
+        VIR_FREE(poolInfoTexts[i].capacity);
+        VIR_FREE(poolInfoTexts[i].allocation);
+        VIR_FREE(poolInfoTexts[i].available);
+        VIR_FREE(poolNames[i]);
+    }
+
+    /* Cleanup the memory for the initial arrays*/
+    VIR_FREE(poolInfoTexts);
+    VIR_FREE(poolNames);
+
+    /* Return the desired value */
+    return functionReturn;
 }
 
 /*
