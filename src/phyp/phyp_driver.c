@@ -3875,11 +3875,14 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 }
 
 static virDrvOpenStatus
-phypStorageOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
+phypStorageOpen(virConnectPtr conn,
                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                 int flags)
 {
     virCheckFlags(0, VIR_DRV_OPEN_ERROR);
+
+    if (conn->driver->no != VIR_DRV_PHYP)
+        return VIR_DRV_OPEN_DECLINED;
 
     return VIR_DRV_OPEN_SUCCESS;
 }
