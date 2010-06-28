@@ -63,7 +63,7 @@
 # include <mntent.h>
 #endif
 
-#include "areadlink.h"
+#include "dirname.h"
 #include "virterror_internal.h"
 #include "logging.h"
 #include "event.h"
@@ -1178,8 +1178,9 @@ int virFileLinkPointsTo(const char *checkLink,
 
 
 /*
- * Attempt to resolve a symbolic link, returning the
- * real path
+ * Attempt to resolve a symbolic link, returning an
+ * absolute path where only the last component is guaranteed
+ * not to be a symlink.
  *
  * Return 0 if path was not a symbolic, or the link was
  * resolved. Return -1 with errno set upon error
@@ -1191,16 +1192,21 @@ int virFileResolveLink(const char *linkpath,
 
     *resultpath = NULL;
 
-    if (lstat(linkpath, &st) < 0)
-        return -1;
-
-    if (!S_ISLNK(st.st_mode)) {
-        if (!(*resultpath = strdup(linkpath)))
+    /* We don't need the full canonicalization of intermediate
+     * directories, if linkpath is absolute and the basename is
+     * already a non-symlink.  */
+    if (IS_ABSOLUTE_FILE_NAME(linkpath)) {
+        if (lstat(linkpath, &st) < 0)
             return -1;
-        return 0;
+
+        if (!S_ISLNK(st.st_mode)) {
+            if (!(*resultpath = strdup(linkpath)))
+                return -1;
+            return 0;
+        }
     }
 
-    *resultpath = areadlink (linkpath);
+    *resultpath = canonicalize_file_name(linkpath);
 
     return *resultpath == NULL ? -1 : 0;
 }
