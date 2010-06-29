@@ -3429,7 +3429,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     if (driver->securityDriver &&
         driver->securityDriver->domainSetSecurityAllLabel &&
         driver->securityDriver->domainSetSecurityAllLabel(vm, stdin_path) < 0) {
-        if (virStorageFileIsSharedFS(stdin_path) != 1)
+        if (stdin_path && virStorageFileIsSharedFS(stdin_path) != 1)
             goto cleanup;
     }
 
