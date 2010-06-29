@@ -29,9 +29,8 @@
 /*******************************************************************************
 *   Header Files                                                               *
 *******************************************************************************/
-#ifdef LIBVIRT_VERSION
-# include <config.h>
-#endif /* LIBVIRT_VERSION */
+
+#include <config.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -192,28 +191,12 @@ int VBoxCGlueInit(void)
         return tryLoadOne(pszHome, 0);
 
     /*
-     * Try the known standard locations.
+     * Try the configured location.
      */
     g_szVBoxErrMsg[0] = '\0';
-#if defined(__gnu__linux__) || defined(__linux__)
-    if (tryLoadOne("/opt/VirtualBox", 1) == 0)
+
+    if (tryLoadOne(VBOX_XPCOMC_DIR, 1) == 0)
         return 0;
-    if (tryLoadOne("/usr/lib/virtualbox", 1) == 0)
-        return 0;
-#elif defined(__sun__)
-    if (tryLoadOne("/opt/VirtualBox/amd64", 1) == 0)
-        return 0;
-    if (tryLoadOne("/opt/VirtualBox/i386", 1) == 0)
-        return 0;
-#elif defined(__APPLE__)
-    if (tryLoadOne("/Application/VirtualBox.app/Contents/MacOS", 1) == 0)
-        return 0;
-#elif defined(__FreeBSD__)
-    if (tryLoadOne("/usr/local/lib/virtualbox", 1) == 0)
-        return 0;
-#else
-# error "port me"
-#endif
 
     /*
      * Finally try the dynamic linker search path.
