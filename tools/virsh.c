@@ -9445,7 +9445,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
                 else if (opt->type == VSH_OT_STRING)
                     snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                 else if (opt->type == VSH_OT_DATA)
-                    snprintf(buf, sizeof(buf), "<%s>", opt->name);
+                    snprintf(buf, sizeof(buf), _("[--%s] <string>"),
+                             opt->name);
 
                 fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
             }
