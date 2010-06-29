@@ -198,7 +198,7 @@ void qemuMonitorUnlock(qemuMonitorPtr mon)
 static void qemuMonitorFree(qemuMonitorPtr mon)
 {
     VIR_DEBUG("mon=%p", mon);
-    if (mon->cb->destroy)
+    if (mon->cb && mon->cb->destroy)
         (mon->cb->destroy)(mon, mon->vm);
     if (virCondDestroy(&mon->notify) < 0)
     {}
@@ -671,6 +671,12 @@ qemuMonitorOpen(virDomainObjPtr vm,
     return mon;
 
 cleanup:
+    /* We don't want the 'destroy' callback invoked during
+     * cleanup from construction failure, because that can
+     * give a double-unref on virDomainObjPtr in the caller,
+     * so kill the callbacks now.
+     */
+    mon->cb = NULL;
     qemuMonitorUnlock(mon);
     qemuMonitorClose(mon);
     return NULL;
