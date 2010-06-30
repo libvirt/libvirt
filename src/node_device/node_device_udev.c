@@ -363,12 +363,15 @@ static int udevTranslatePCIIds(unsigned int vendor,
                                char **vendor_string,
                                char **product_string)
 {
-    int ret = -1;
+    int ret = -1, pciret;
     struct pci_id_match m;
     const char *vendor_name = NULL, *device_name = NULL;
 
-    if (pci_system_init() != 0) {
-        VIR_ERROR0(_("Failed to initialize libpciaccess"));
+    if ((pciret = pci_system_init()) != 0) {
+        char ebuf[256];
+        VIR_INFO("Failed to initialize libpciaccess: %s",
+                 virStrerror(pciret, ebuf, sizeof ebuf));
+        ret = 0;
         goto out;
     }
 
