@@ -608,6 +608,7 @@ cleanup:
 }
 #endif
 
+#if defined _DIRENT_HAVE_D_TYPE
 static int virCgroupRemoveRecursively(char *grppath)
 {
     DIR *grpdir;
@@ -656,6 +657,13 @@ static int virCgroupRemoveRecursively(char *grppath)
 
     return rc;
 }
+#else
+static int virCgroupRemoveRecursively(char *grppath ATTRIBUTE_UNUSED)
+{
+    /* Claim no support */
+    return -ENXIO;
+}
+#endif
 
 /**
  * virCgroupRemove:
