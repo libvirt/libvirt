@@ -38,9 +38,9 @@ struct cpuX86cpuid {
 # define CPUX86_EXTENDED 0x80000000
 
 struct cpuX86Data {
-    int basic_len;
+    size_t basic_len;
     struct cpuX86cpuid *basic;
-    int extended_len;
+    size_t extended_len;
     struct cpuX86cpuid *extended;
 };
 
