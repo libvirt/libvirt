@@ -133,16 +133,21 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
      */
-    if (access (filename, R_OK) == -1) return 0;
+    if (access (filename, R_OK) == -1) {
+        VIR_INFO("Could not read qemu config file %s", filename);
+        return 0;
+    }
 
     conf = virConfReadFile (filename, 0);
-    if (!conf) return 0;
+    if (!conf) {
+        return -1;
+    }
 
 
 #define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
         qemuReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                         "remoteReadConfigFile: %s: %s: expected type " #typ, \
-                         filename, (name));                             \
+                        "%s: %s: expected type " #typ,                  \
+                        filename, (name));                              \
         virConfFree(conf);                                              \
         return -1;                                                      \
     }
