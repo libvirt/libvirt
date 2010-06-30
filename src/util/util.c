@@ -283,7 +283,8 @@ static int virClearCapabilities(void)
     capng_clear(CAPNG_SELECT_BOTH);
 
     if ((ret = capng_apply(CAPNG_SELECT_BOTH)) < 0) {
-        VIR_ERROR(_("cannot clear process capabilities %d"), ret);
+        virUtilError(VIR_ERR_INTERNAL_ERROR,
+                     _("cannot clear process capabilities %d"), ret);
         return -1;
     }
 
@@ -310,7 +311,7 @@ static int virClearCapabilities(void)
    Even if *pid >= 0, if the return value from virFork() is < 0, it
    indicates a failure that occurred in the parent or child process
    after the fork. In this case, the child process should call
-   _exit(1) after doing any additional error reporting.
+   _exit(EXIT_FAILURE) after doing any additional error reporting.
 
  */
 int virFork(pid_t *pid) {
@@ -559,7 +560,7 @@ __virExec(const char *const*argv,
         /* The fork was sucessful, but after that there was an error
          * in the child (which was already logged).
         */
-        _exit(1);
+        goto fork_error;
     }
 
     openmax = sysconf (_SC_OPEN_MAX);
@@ -575,19 +576,19 @@ __virExec(const char *const*argv,
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdin file handle"));
-        _exit(1);
+        goto fork_error;
     }
     if (childout > 0 &&
         dup2(childout, STDOUT_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stdout file handle"));
-        _exit(1);
+        goto fork_error;
     }
     if (childerr > 0 &&
         dup2(childerr, STDERR_FILENO) < 0) {
         virReportSystemError(errno,
                              "%s", _("failed to setup stderr file handle"));
-        _exit(1);
+        goto fork_error;
     }
 
     if (infd > 0)
@@ -605,20 +606,20 @@ __virExec(const char *const*argv,
         if (setsid() < 0) {
             virReportSystemError(errno,
                                  "%s", _("cannot become session leader"));
-            _exit(1);
+            goto fork_error;
         }
 
         if (chdir("/") < 0) {
             virReportSystemError(errno,
                                  "%s", _("cannot change to root directory: %s"));
-            _exit(1);
+            goto fork_error;
         }
 
         pid = fork();
         if (pid < 0) {
             virReportSystemError(errno,
                                  "%s", _("cannot fork child process"));
-            _exit(1);
+            goto fork_error;
         }
 
         if (pid > 0) {
@@ -629,7 +630,7 @@ __virExec(const char *const*argv,
                 virReportSystemError(errno,
                                      _("could not write pidfile %s for %d"),
                                      pidfile, pid);
-                _exit(1);
+                goto fork_error;
             }
             _exit(0);
         }
@@ -638,15 +639,14 @@ __virExec(const char *const*argv,
     if (hook)
         if ((hook)(data) != 0) {
             VIR_DEBUG0("Hook function failed.");
-            virDispatchError(NULL);
-            _exit(1);
+            goto fork_error;
         }
 
     /* The steps above may need todo something privileged, so
      * we delay clearing capabilities until the last minute */
     if ((flags & VIR_EXEC_CLEAR_CAPS) &&
         virClearCapabilities() < 0)
-        _exit(1);
+        goto fork_error;
 
     if (envp)
         execve(argv[0], (char **) argv, (char**)envp);
@@ -657,7 +657,9 @@ __virExec(const char *const*argv,
                          _("cannot execute binary %s"),
                          argv[0]);
 
-    _exit(1);
+ fork_error:
+    virDispatchError(NULL);
+    _exit(EXIT_FAILURE);
 
  cleanup:
     /* This is cleanup of parent process only - child
