@@ -16,6 +16,7 @@ higher level kind of languages:</p>
       <li><strong>Ruby</strong>: David Lutterkort provides <a href="http://libvirt.org/ruby/">bindings for Ruby</a>.</li>
       <li><strong>Java</strong>: Daniel Veillard maintains <a href="java.html">Java bindings</a>.</li>
       <li><strong>C#</strong>: Jarom&iacute;r &#x010C;ervenka maintains <a href="http://svn.i-tux.cz/listing.php?repname=SharpLibVirt">C# bindings here</a>.</li>
+      <li><strong>PHP</strong>: Radek Hladik is developing <a href="http://phplibvirt.cybersales.cz/">PHP bindings</a>.</li>
     </ul>
     <p>For information on using libvirt on <strong>Windows</strong>
       <a href="windows.html">please see the Windows
