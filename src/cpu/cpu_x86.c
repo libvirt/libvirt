@@ -233,6 +233,26 @@ x86DataSubtract(union cpuData *data1,
 }
 
 
+static bool
+x86DataIsEmpty(union cpuData *data)
+{
+    struct cpuX86cpuid zero = { 0, 0, 0, 0, 0 };
+    unsigned int i;
+
+    for (i = 0; i < data->x86.basic_len; i++) {
+        if (!x86cpuidMatch(data->x86.basic + i, &zero))
+            return false;
+    }
+
+    for (i = 0; i < data->x86.extended_len; i++) {
+        if (!x86cpuidMatch(data->x86.extended + i, &zero))
+            return false;
+    }
+
+    return true;
+}
+
+
 static union cpuData *
 x86DataFromModel(const struct x86_model *model)
 {
@@ -1362,6 +1382,12 @@ x86Baseline(virCPUDefPtr *cpus,
 
     if (!(data = x86DataFromModel(base_model)))
         goto no_memory;
+
+    if (x86DataIsEmpty(data)) {
+        virCPUReportError(VIR_ERR_OPERATION_FAILED,
+                "%s", _("CPUs are incompatible"));
+        goto error;
+    }
 
     if (x86Decode(cpu, data, models, nmodels, NULL) < 0)
         goto error;
