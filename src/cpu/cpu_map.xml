@@ -1,5 +1,9 @@
 <cpus>
   <arch name='x86'>
+    <!-- vendor definitions -->
+    <vendor name='Intel' string='GenuineIntel'/>
+    <vendor name='AMD' string='AuthenticAMD'/>
+
     <!-- standard features, EDX -->
     <feature name='fpu'> <!-- CPUID_FP87 -->
       <cpuid function='0x00000001' edx='0x00000001'/>
@@ -310,6 +314,7 @@
 
     <model name='phenom'>
       <model name='pentiumpro'/>
+      <vendor name='AMD'/>
       <feature name='mtrr'/>
       <feature name='clflush'/>
       <feature name='mca'/>
@@ -328,6 +333,7 @@
 
     <model name='athlon'>
       <model name='pentiumpro'/>
+      <vendor name='AMD'/>
       <feature name='pse36'/>
       <feature name='vme'/>
       <feature name='mtrr'/>

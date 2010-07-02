@@ -72,6 +72,7 @@ struct _virCPUDef {
     int match;          /* enum virCPUMatch */
     char *arch;
     char *model;
+    char *vendor;
     unsigned int sockets;
     unsigned int cores;
     unsigned int threads;

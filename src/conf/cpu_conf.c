@@ -58,6 +58,7 @@ virCPUDefFree(virCPUDefPtr def)
 
     VIR_FREE(def->model);
     VIR_FREE(def->arch);
+    VIR_FREE(def->vendor);
 
     for (i = 0 ; i < def->nfeatures ; i++)
         VIR_FREE(def->features[i].name);
@@ -79,6 +80,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
     if (VIR_ALLOC(copy) < 0
         || (cpu->arch && !(copy->arch = strdup(cpu->arch)))
         || (cpu->model && !(copy->model = strdup(cpu->model)))
+        || (cpu->vendor && !(copy->vendor = strdup(cpu->vendor)))
         || VIR_ALLOC_N(copy->features, cpu->nfeatures) < 0)
         goto no_memory;
 
@@ -170,6 +172,13 @@ virCPUDefParseXML(const xmlNodePtr node,
         def->type == VIR_CPU_TYPE_HOST) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                 "%s", _("Missing CPU model name"));
+        goto error;
+    }
+
+    def->vendor = virXPathString("string(./vendor[1])", ctxt);
+    if (def->vendor && !def->model) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                "%s", _("CPU vendor specified without CPU model"));
         goto error;
     }
 
@@ -348,6 +357,11 @@ virCPUDefFormatBuf(virBufferPtr buf,
 
     if (def->model)
         virBufferVSprintf(buf, "%s  <model>%s</model>\n", indent, def->model);
+
+    if (def->vendor) {
+        virBufferVSprintf(buf, "%s  <vendor>%s</vendor>\n",
+                          indent, def->vendor);
+    }
 
     if (def->sockets && def->cores && def->threads) {
         virBufferVSprintf(buf, "%s  <topology", indent);

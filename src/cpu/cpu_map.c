@@ -32,9 +32,14 @@
 
 #define CPUMAPFILE PKGDATADIR "/cpu_map.xml"
 
+VIR_ENUM_IMPL(cpuMapElement, CPU_MAP_ELEMENT_LAST,
+    "vendor",
+    "feature",
+    "model")
+
 
 static int load(xmlXPathContextPtr ctxt,
-                const char *node,
+                enum cpuMapElement element,
                 cpuMapLoadCallback callback,
                 void *data)
 {
@@ -47,9 +52,10 @@ static int load(xmlXPathContextPtr ctxt,
     cur = ctxt_node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST node)) {
+            xmlStrEqual(cur->name,
+                        BAD_CAST cpuMapElementTypeToString(element))) {
             ctxt->node = cur;
-            if (callback(ctxt, data) < 0)
+            if (callback(element, ctxt, data) < 0)
                 goto cleanup;
         }
 
@@ -66,20 +72,25 @@ cleanup:
 
 
 int cpuMapLoad(const char *arch,
-               cpuMapLoadCallback feature_cb,
-               void *model_data,
-               cpuMapLoadCallback model_cb,
-               void *feature_data)
+               cpuMapLoadCallback cb,
+               void *data)
 {
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *xpath = NULL;
     int ret = -1;
+    int element;
 
     if (arch == NULL) {
         virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                           "%s", _("undefined hardware architecture"));
+        return -1;
+    }
+
+    if (cb == NULL) {
+        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                          "%s", _("no callback provided"));
         return -1;
     }
 
@@ -107,11 +118,12 @@ int cpuMapLoad(const char *arch,
         goto cleanup;
     }
 
-    if ((feature_cb && load(ctxt, "feature", feature_cb, feature_data) < 0) ||
-        (model_cb && load(ctxt, "model", model_cb, model_data) < 0)) {
-        virCPUReportError(VIR_ERR_INTERNAL_ERROR,
-                _("cannot parse CPU map for %s architecture"), arch);
-        goto cleanup;
+    for (element = 0; element < CPU_MAP_ELEMENT_LAST; element++) {
+        if (load(ctxt, element, cb, data) < 0) {
+            virCPUReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("cannot parse CPU map for %s architecture"), arch);
+            goto cleanup;
+        }
     }
 
     ret = 0;

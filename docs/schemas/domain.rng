@@ -1557,6 +1557,7 @@
           <interleave>
             <ref name="cpuModel"/>
             <optional>
+              <ref name="cpuVendor"/>
               <ref name="cpuTopology"/>
             </optional>
             <zeroOrMore>
@@ -1580,6 +1581,12 @@
 
   <define name="cpuModel">
     <element name="model">
+      <text/>
+    </element>
+  </define>
+
+  <define name="cpuVendor">
+    <element name="vendor">
       <text/>
     </element>
   </define>

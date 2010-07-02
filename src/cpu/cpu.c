@@ -173,14 +173,15 @@ cpuEncode(const char *arch,
           union cpuData **required,
           union cpuData **optional,
           union cpuData **disabled,
-          union cpuData **forbidden)
+          union cpuData **forbidden,
+          union cpuData **vendor)
 {
     struct cpuArchDriver *driver;
 
     VIR_DEBUG("arch=%s, cpu=%p, forced=%p, required=%p, "
-              "optional=%p, disabled=%p, forbidden=%p",
+              "optional=%p, disabled=%p, forbidden=%p, vendor=%p",
               NULLSTR(arch), cpu, forced, required,
-              optional, disabled, forbidden);
+              optional, disabled, forbidden, vendor);
 
     if ((driver = cpuGetSubDriver(arch)) == NULL)
         return -1;
@@ -193,7 +194,7 @@ cpuEncode(const char *arch,
     }
 
     return driver->encode(cpu, forced, required,
-                          optional, disabled, forbidden);
+                          optional, disabled, forbidden, vendor);
 }
 
 

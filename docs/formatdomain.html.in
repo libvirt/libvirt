@@ -220,6 +220,7 @@
   ...
   &lt;cpu match='exact'&gt;
     &lt;model&gt;core2duo&lt;/model&gt;
+    &lt;vendor&gt;Intel&lt;/vendor&gt;
     &lt;topology sockets='1' cores='2' threads='1'/&gt;
     &lt;feature policy='disable' name='lahf_lm'/&gt;
   &lt;/cpu&gt;
@@ -266,6 +267,13 @@
         requested by the guest. The list of available CPU models and their
         definition can be found in <code>cpu_map.xml</code> file installed
         in libvirt's data directory.</dd>
+
+      <dt><code>vendor</code></dt>
+      <dd><span class="since">Since 0.8.3</span> the content of the
+        <code>vendor</code> element specifies CPU vendor requested by the
+        guest. If this element is missing, the guest can be run on a CPU
+        matching given features regardless on its vendor. The list of
+        supported vendors can be found in <code>cpu_map.xml</code>.</dd>
 
       <dt><code>topology</code></dt>
       <dd>The <code>topology</code> element specifies requested topology of

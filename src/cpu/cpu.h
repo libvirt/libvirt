@@ -58,7 +58,8 @@ typedef int
                      union cpuData **required,
                      union cpuData **optional,
                      union cpuData **disabled,
-                     union cpuData **forbidden);
+                     union cpuData **forbidden,
+                     union cpuData **vendor);
 
 typedef void
 (*cpuArchDataFree)  (union cpuData *data);
@@ -119,7 +120,8 @@ cpuEncode   (const char *arch,
              union cpuData **required,
              union cpuData **optional,
              union cpuData **disabled,
-             union cpuData **forbidden);
+             union cpuData **forbidden,
+             union cpuData **vendor);
 
 extern void
 cpuDataFree (const char *arch,

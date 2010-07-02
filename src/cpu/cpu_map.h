@@ -27,15 +27,25 @@
 # include "xml.h"
 
 
+enum cpuMapElement {
+    CPU_MAP_ELEMENT_VENDOR,
+    CPU_MAP_ELEMENT_FEATURE,
+    CPU_MAP_ELEMENT_MODEL,
+
+    CPU_MAP_ELEMENT_LAST
+};
+
+VIR_ENUM_DECL(cpuMapElement)
+
+
 typedef int
-(*cpuMapLoadCallback)  (xmlXPathContextPtr ctxt,
+(*cpuMapLoadCallback)  (enum cpuMapElement element,
+                        xmlXPathContextPtr ctxt,
                         void *data);
 
 extern int
 cpuMapLoad(const char *arch,
-           cpuMapLoadCallback feature_cb,
-           void *model_data,
-           cpuMapLoadCallback model_cb,
-           void *feature_data);
+           cpuMapLoadCallback cb,
+           void *data);
 
 #endif /* __VIR_CPU_MAP_H__ */

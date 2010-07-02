@@ -79,6 +79,11 @@
     <element name='model'>
       <text/>
     </element>
+    <optional>
+      <element name='vendor'>
+        <text/>
+      </element>
+    </optional>
     <element name='topology'>
       <attribute name='sockets'>
         <ref name='positiveInteger'/>
