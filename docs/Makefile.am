@@ -53,7 +53,7 @@ gif = \
   architecture.gif \
   node.gif
 
-dot_html_in = $(wildcard *.html.in)
+dot_html_in = $(notdir $(wildcard $(srcdir)/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
 patches = $(wildcard api_extension/*.patch)
