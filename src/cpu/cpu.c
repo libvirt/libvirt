@@ -354,7 +354,6 @@ cpuBaseline(virCPUDefPtr *cpus,
             unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
-    virCPUDefPtr cpu;
     unsigned int i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
@@ -394,16 +393,7 @@ cpuBaseline(virCPUDefPtr *cpus,
         return NULL;
     }
 
-    if ((cpu = driver->baseline(cpus, ncpus, models, nmodels))) {
-        cpu->type = VIR_CPU_TYPE_GUEST;
-        cpu->match = VIR_CPU_MATCH_EXACT;
-        VIR_FREE(cpu->arch);
-
-        for (i = 0; i < cpu->nfeatures; i++)
-            cpu->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
-    }
-
-    return cpu;
+    return driver->baseline(cpus, ncpus, models, nmodels);
 }
 
 

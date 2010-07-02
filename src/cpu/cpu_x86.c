@@ -1366,6 +1366,8 @@ x86Baseline(virCPUDefPtr *cpus,
     if (x86Decode(cpu, data, models, nmodels, NULL) < 0)
         goto error;
 
+    VIR_FREE(cpu->arch);
+
 cleanup:
     x86DataFree(data);
     x86ModelFree(base_model);
