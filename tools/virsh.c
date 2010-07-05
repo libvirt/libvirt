@@ -6314,70 +6314,269 @@ static const vshCmdInfo info_vol_list[] = {
 
 static const vshCmdOptDef opts_vol_list[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, N_("pool name or uuid")},
+    {"details", VSH_OT_BOOL, 0, N_("display extended details for volumes")},
     {NULL, 0, 0, NULL}
 };
 
 static int
 cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
+    virStorageVolInfo volumeInfo;
     virStoragePoolPtr pool;
-    int maxactive = 0, i;
     char **activeNames = NULL;
+    char *outputStr = NULL;
+    const char *unit;
+    double val;
+    int details = vshCommandOptBool(cmd, "details");
+    int numVolumes = 0, i;
+    int ret, functionReturn;
+    int stringLength = 0;
+    size_t allocStrLength = 0, capStrLength = 0;
+    size_t nameStrLength = 0, pathStrLength = 0;
+    size_t typeStrLength = 0;
+    struct volInfoText {
+        char *allocation;
+        char *capacity;
+        char *path;
+        char *type;
+    };
+    struct volInfoText *volInfoTexts = NULL;
 
+    /* Check the connection to libvirtd daemon is still working */
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
+    /* Look up the pool information given to us by the user */
     if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
         return FALSE;
 
-    maxactive = virStoragePoolNumOfVolumes(pool);
-    if (maxactive < 0) {
-        virStoragePoolFree(pool);
-        vshError(ctl, "%s", _("Failed to list active vols"));
-        return FALSE;
-    }
-    if (maxactive) {
-        activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
+    /* Determine the number of volumes in the pool */
+    numVolumes = virStoragePoolNumOfVolumes(pool);
 
-        if ((maxactive = virStoragePoolListVolumes(pool, activeNames,
-                                                   maxactive)) < 0) {
+    /* Retrieve the list of volume names in the pool */
+    if (numVolumes > 0) {
+        activeNames = vshCalloc(ctl, numVolumes, sizeof(*activeNames));
+        if ((numVolumes = virStoragePoolListVolumes(pool, activeNames,
+                                                    numVolumes)) < 0) {
             vshError(ctl, "%s", _("Failed to list active vols"));
             VIR_FREE(activeNames);
             virStoragePoolFree(pool);
             return FALSE;
         }
 
-        qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
+        /* Sort the volume names */
+        qsort(&activeNames[0], numVolumes, sizeof(*activeNames), namesorter);
+
+        /* Set aside memory for volume information pointers */
+        volInfoTexts = vshCalloc(ctl, numVolumes, sizeof(*volInfoTexts));
     }
-    vshPrintExtra(ctl, "%-20s %-40s\n", _("Name"), _("Path"));
-    vshPrintExtra(ctl, "-----------------------------------------\n");
 
-    for (i = 0; i < maxactive; i++) {
-        virStorageVolPtr vol = virStorageVolLookupByName(pool, activeNames[i]);
-        char *path;
+    /* Collect the rest of the volume information for display */
+    for (i = 0; i < numVolumes; i++) {
+        /* Retrieve volume info */
+        virStorageVolPtr vol = virStorageVolLookupByName(pool,
+                                                         activeNames[i]);
 
-        /* this kind of work with vols is not atomic operation */
-        if (!vol) {
-            VIR_FREE(activeNames[i]);
-            continue;
+        /* Retrieve the volume path */
+        if ((volInfoTexts[i].path = virStorageVolGetPath(vol)) == NULL) {
+            /* Something went wrong retrieving a volume path, cope with it */
+            volInfoTexts[i].path = vshStrdup(ctl, _("unknown"));
         }
 
-        if ((path = virStorageVolGetPath(vol)) == NULL) {
-            virStorageVolFree(vol);
-            continue;
+        /* If requested, retrieve volume type and sizing information */
+        if (details) {
+            if (virStorageVolGetInfo(vol, &volumeInfo) != 0) {
+                /* Something went wrong retrieving volume info, cope with it */
+                volInfoTexts[i].allocation = vshStrdup(ctl, _("unknown"));
+                volInfoTexts[i].capacity = vshStrdup(ctl, _("unknown"));
+                volInfoTexts[i].type = vshStrdup(ctl, _("unknown"));
+            } else {
+                /* Convert the returned volume info into output strings */
+
+                /* Volume type */
+                if (volumeInfo.type == VIR_STORAGE_VOL_FILE)
+                    volInfoTexts[i].type = vshStrdup(ctl, _("file"));
+                else
+                    volInfoTexts[i].type = vshStrdup(ctl, _("block"));
+
+                /* Create the capacity output string */
+                val = prettyCapacity(volumeInfo.capacity, &unit);
+                ret = virAsprintf(&volInfoTexts[i].capacity,
+                                  "%.2lf %s", val, unit);
+                if (ret < 0) {
+                    /* An error occurred creating the string, return */
+                    goto asprintf_failure;
+                }
+
+                /* Create the allocation output string */
+                val = prettyCapacity(volumeInfo.allocation, &unit);
+                ret = virAsprintf(&volInfoTexts[i].allocation,
+                                  "%.2lf %s", val, unit);
+                if (ret < 0) {
+                    /* An error occurred creating the string, return */
+                    goto asprintf_failure;
+                }
+            }
+
+            /* Remember the largest length for each output string.
+             * This lets us displaying header and volume information rows
+             * using a single, properly sized, printf style output string.
+             */
+
+            /* Keep the length of name string if longest so far */
+            stringLength = strlen(activeNames[i]);
+            if (stringLength > nameStrLength)
+                nameStrLength = stringLength;
+
+            /* Keep the length of path string if longest so far */
+            stringLength = strlen(volInfoTexts[i].path);
+            if (stringLength > pathStrLength)
+                pathStrLength = stringLength;
+
+            /* Keep the length of type string if longest so far */
+            stringLength = strlen(volInfoTexts[i].type);
+            if (stringLength > typeStrLength)
+                typeStrLength = stringLength;
+
+            /* Keep the length of capacity string if longest so far */
+            stringLength = strlen(volInfoTexts[i].capacity);
+            if (stringLength > capStrLength)
+                capStrLength = stringLength;
+
+            /* Keep the length of allocation string if longest so far */
+            stringLength = strlen(volInfoTexts[i].allocation);
+            if (stringLength > allocStrLength)
+                allocStrLength = stringLength;
         }
 
-
-        vshPrint(ctl, "%-20s %-40s\n",
-                 virStorageVolGetName(vol),
-                 path);
-        VIR_FREE(path);
+        /* Cleanup memory allocation */
         virStorageVolFree(vol);
+    }
+
+    /* If the --details option wasn't selected, we output the volume
+     * info using the fixed string format from previous versions to
+     * maintain backward compatibility.
+     */
+
+    /* Output basic info then return if --details option not selected */
+    if (!details) {
+        /* The old output format */
+        vshPrintExtra(ctl, "%-20s %-40s\n", _("Name"), _("Path"));
+        vshPrintExtra(ctl, "-----------------------------------------\n");
+        for (i = 0; i < numVolumes; i++) {
+            vshPrint(ctl, "%-20s %-40s\n", activeNames[i],
+                     volInfoTexts[i].path);
+        }
+
+        /* Cleanup and return */
+        functionReturn = TRUE;
+        goto cleanup;
+    }
+
+    /* We only get here if the --details option was selected. */
+
+    /* Use the length of name header string if it's longest */
+    stringLength = strlen(_("Name"));
+    if (stringLength > nameStrLength)
+        nameStrLength = stringLength;
+
+    /* Use the length of path header string if it's longest */
+    stringLength = strlen(_("Path"));
+    if (stringLength > pathStrLength)
+        pathStrLength = stringLength;
+
+    /* Use the length of type header string if it's longest */
+    stringLength = strlen(_("Type"));
+    if (stringLength > typeStrLength)
+        typeStrLength = stringLength;
+
+    /* Use the length of capacity header string if it's longest */
+    stringLength = strlen(_("Capacity"));
+    if (stringLength > capStrLength)
+        capStrLength = stringLength;
+
+    /* Use the length of allocation header string if it's longest */
+    stringLength = strlen(_("Allocation"));
+    if (stringLength > allocStrLength)
+        allocStrLength = stringLength;
+
+    /* Display the string lengths for debugging */
+    vshDebug(ctl, 5, "Longest name string = %lu chars\n", nameStrLength);
+    vshDebug(ctl, 5, "Longest path string = %lu chars\n", pathStrLength);
+    vshDebug(ctl, 5, "Longest type string = %lu chars\n", typeStrLength);
+    vshDebug(ctl, 5, "Longest capacity string = %lu chars\n", capStrLength);
+    vshDebug(ctl, 5, "Longest allocation string = %lu chars\n", allocStrLength);
+
+    /* Create the output template */
+    ret = virAsprintf(&outputStr,
+                      "%%-%lus  %%-%lus  %%-%lus  %%%lus  %%%lus\n",
+                      (unsigned long) nameStrLength,
+                      (unsigned long) pathStrLength,
+                      (unsigned long) typeStrLength,
+                      (unsigned long) capStrLength,
+                      (unsigned long) allocStrLength);
+    if (ret < 0) {
+        /* An error occurred creating the string, return */
+        goto asprintf_failure;
+    }
+
+    /* Display the header */
+    vshPrint(ctl, outputStr, _("Name"), _("Path"), _("Type"),
+             ("Capacity"), _("Allocation"));
+    for (i = nameStrLength + pathStrLength + typeStrLength
+                           + capStrLength + allocStrLength
+                           + 8; i > 0; i--)
+        vshPrintExtra(ctl, "-");
+    vshPrintExtra(ctl, "\n");
+
+    /* Display the volume info rows */
+    for (i = 0; i < numVolumes; i++) {
+        vshPrint(ctl, outputStr,
+                 activeNames[i],
+                 volInfoTexts[i].path,
+                 volInfoTexts[i].type,
+                 volInfoTexts[i].capacity,
+                 volInfoTexts[i].allocation);
+    }
+
+    /* Cleanup and return */
+    functionReturn = TRUE;
+    goto cleanup;
+
+asprintf_failure:
+
+    /* Display an appropriate error message then cleanup and return */
+    switch (errno) {
+    case ENOMEM:
+        /* Couldn't allocate memory */
+        vshError(ctl, "%s", _("Out of memory"));
+        break;
+    default:
+        /* Some other error */
+        vshError(ctl, _("virAsprintf failed (errno %d)"), errno);
+    }
+    functionReturn = FALSE;
+
+cleanup:
+
+    /* Safely free the memory allocated in this function */
+    for (i = 0; i < numVolumes; i++) {
+        /* Cleanup the memory for one volume info structure per loop */
+        VIR_FREE(volInfoTexts[i].path);
+        VIR_FREE(volInfoTexts[i].type);
+        VIR_FREE(volInfoTexts[i].capacity);
+        VIR_FREE(volInfoTexts[i].allocation);
         VIR_FREE(activeNames[i]);
     }
+
+    /* Cleanup remaining memory */
+    VIR_FREE(outputStr);
+    VIR_FREE(volInfoTexts);
     VIR_FREE(activeNames);
     virStoragePoolFree(pool);
-    return TRUE;
+
+    /* Return the desired value */
+    return functionReturn;
 }
 
 
