@@ -903,6 +903,14 @@ fi
 %endif
 
 %changelog
+* Mon Jul  5 2010 Daniel Veillard <veillard@redhat.com> - 0.8.2-1
+- phyp: adding support for IVM
+- libvirt: introduce domainCreateWithFlags API
+- add 802.1Qbh and 802.1Qbg switches handling
+- Support for VirtualBox version 3.2
+- Init script for handling guests on shutdown/boot
+- qemu: live migration with non-shared storage for kvm
+
 * Fri Apr 30 2010 Daniel Veillard <veillard@redhat.com> - 0.8.1-1
 - Starts dnsmasq from libvirtd with --dhcp-hostsfile
 - Add virDomainGetBlockInfo API to query disk sizing
