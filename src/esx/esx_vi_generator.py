@@ -469,18 +469,21 @@ class Object:
         return source
 
 
-    def generate_dynamic_cast_code(self):
+    def generate_dynamic_cast_code(self, is_first = True):
         global objects_by_name
         source = ""
 
         if self.extended_by is not None:
+            if not is_first:
+                source += "\n"
+
             source += "    /* %s */\n" % self.name
 
             for extended_by in self.extended_by:
                 source += "    ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(%s)\n" % extended_by
 
             for extended_by in self.extended_by:
-                source += objects_by_name[extended_by].generate_dynamic_cast_code()
+                source += objects_by_name[extended_by].generate_dynamic_cast_code(False)
 
         return source
 
@@ -820,18 +823,38 @@ class Object:
                     source += "ESX_VI__TEMPLATE__LIST__SERIALIZE(%s)\n\n" % self.name
 
         # deserilaize
-        if self.features & Object.FEATURE__DESERIALIZE:
-            source += "/* esxVI_%s_Deserialize */\n" % self.name
-            source += "ESX_VI__TEMPLATE__DESERIALIZE(%s,\n" % self.name
-            source += "{\n"
+        if self.extended_by is None:
+            if self.features & Object.FEATURE__DESERIALIZE:
+                source += "/* esxVI_%s_Deserialize */\n" % self.name
+                source += "ESX_VI__TEMPLATE__DESERIALIZE(%s,\n" % self.name
+                source += "{\n"
 
-            source += self.generate_deserialize_code()
+                source += self.generate_deserialize_code()
 
-            source += "})\n\n"
+                source += "})\n\n"
 
-            if self.features & Object.FEATURE__LIST:
-                source += "/* esxVI_%s_DeserializeList */\n" % self.name
-                source += "ESX_VI__TEMPLATE__LIST__DESERIALIZE(%s)\n\n" % self.name
+                if self.features & Object.FEATURE__LIST:
+                    source += "/* esxVI_%s_DeserializeList */\n" % self.name
+                    source += "ESX_VI__TEMPLATE__LIST__DESERIALIZE(%s)\n\n" % self.name
+        else:
+            if self.features & Object.FEATURE__DESERIALIZE:
+                source += "/* esxVI_%s_Deserialize */\n" % self.name
+                source += "ESX_VI__TEMPLATE__DYNAMIC_DESERIALIZE(%s,\n" % self.name
+                source += "{\n"
+
+                for extended_by in self.extended_by:
+                    source += "    ESX_VI__TEMPLATE__DISPATCH__DESERIALIZE(%s)\n" % extended_by
+
+                source += "},\n"
+                source += "{\n"
+
+                source += self.generate_deserialize_code()
+
+                source += "})\n\n"
+
+                if self.features & Object.FEATURE__LIST:
+                    source += "/* esxVI_%s_DeserializeList */\n" % self.name
+                    source += "ESX_VI__TEMPLATE__LIST__DESERIALIZE(%s)\n\n" % self.name
 
         source += "\n\n"
 

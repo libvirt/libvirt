@@ -250,11 +250,13 @@
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize)                    \
+#define ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, _extra, _deserialize)      \
     int                                                                       \
     esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **ptrptr)      \
     {                                                                         \
         xmlNodePtr childNode = NULL;                                          \
+                                                                              \
+        _extra                                                                \
                                                                               \
         if (ptrptr == NULL || *ptrptr != NULL) {                              \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",                        \
@@ -290,6 +292,11 @@
                                                                               \
         return -1;                                                            \
     }
+
+
+
+#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize)                    \
+    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, /* nothing */, _deserialize)
 
 
 
@@ -544,6 +551,12 @@
 
 
 
+#define ESX_VI__TEMPLATE__DISPATCH__DESERIALIZE(_type)                        \
+    case esxVI_Type_##_type:                                                  \
+      return esxVI_##_type##_Deserialize(node, (esxVI_##_type **)ptrptr);
+
+
+
 #define ESX_VI__TEMPLATE__DYNAMIC_FREE(__type, _dispatch, _body)              \
     ESX_VI__TEMPLATE__FREE(__type,                                            \
       ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, /* nothing */)            \
@@ -581,6 +594,73 @@
     ESX_VI__TEMPLATE__SERIALIZE_EXTRA(__type,                                 \
       ESX_VI__TEMPLATE__DISPATCH(__type, _dispatch, -1),                      \
       _serialize)
+
+
+
+#define ESX_VI__TEMPLATE__DYNAMIC_DESERIALIZE(__type, _dispatch,              \
+                                              _deserialize)                   \
+    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(__type,                               \
+      esxVI_Type type = esxVI_Type_Undefined;                                 \
+                                                                              \
+      if (esxVI_GetActualObjectType(node, esxVI_Type_##__type, &type) < 0) {  \
+          return -1;                                                          \
+      }                                                                       \
+                                                                              \
+      switch (type) {                                                         \
+        _dispatch                                                             \
+                                                                              \
+        case esxVI_Type_##__type:                                             \
+          break;                                                              \
+                                                                              \
+        default:                                                              \
+          ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                                \
+                       _("Call to %s for unexpected type '%s'"),              \
+                       __FUNCTION__, esxVI_Type_ToString(type));              \
+          return -1;                                                          \
+      },                                                                      \
+      _deserialize)
+
+
+
+static int
+esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
+                          esxVI_Type *actualType)
+{
+    int result = -1;
+    char *type = NULL;
+
+    if (actualType == NULL || *actualType != esxVI_Type_Undefined) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    type = (char *)xmlGetNsProp
+                     (node, BAD_CAST "type",
+                      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
+
+    if (type == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("%s is missing 'type' property"),
+                     esxVI_Type_ToString(baseType));
+        return -1;
+    }
+
+    *actualType = esxVI_Type_FromString(type);
+
+    if (*actualType == esxVI_Type_Undefined) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Unknown value '%s' for %s 'type' property"),
+                     type, esxVI_Type_ToString(baseType));
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    VIR_FREE(type);
+
+    return result;
+}
 
 
 
