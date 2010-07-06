@@ -2129,6 +2129,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           examples/domain-events/events-c/Makefile \
           examples/domsuspend/Makefile \
           examples/dominfo/Makefile \
+          examples/openauth/Makefile \
           examples/python/Makefile \
           examples/hellolibvirt/Makefile \
           examples/xml/nwfilter/Makefile)

@@ -585,7 +585,7 @@ gzip -9 ChangeLog
 rm -fr %{buildroot}
 
 %makeinstall
-for i in domain-events/events-c dominfo domsuspend hellolibvirt python xml/nwfilter
+for i in domain-events/events-c dominfo domsuspend hellolibvirt openauth python xml/nwfilter
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -887,6 +887,7 @@ fi
 %doc examples/domain-events/events-c
 %doc examples/dominfo
 %doc examples/domsuspend
+%doc examples/openauth
 %doc examples/xml
 
 %if %{with_python}
