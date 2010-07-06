@@ -184,6 +184,40 @@ object Event
 end
 
 
+object FileInfo
+    String                                   path                           r
+    Long                                     fileSize                       o
+    DateTime                                 modification                   o
+end
+
+
+object FileQuery
+end
+
+
+object FileQueryFlags
+    Boolean                                  fileType                       r
+    Boolean                                  fileSize                       r
+    Boolean                                  modification                   r
+end
+
+
+object FloppyImageFileInfo extends FileInfo
+end
+
+
+object FloppyImageFileQuery extends FileQuery
+end
+
+
+object FolderFileInfo extends FileInfo
+end
+
+
+object FolderFileQuery extends FileQuery
+end
+
+
 object HostCpuIdInfo
     Int                                      level                          r
     String                                   vendor                         o
@@ -191,6 +225,22 @@ object HostCpuIdInfo
     String                                   ebx                            o
     String                                   ecx                            o
     String                                   edx                            o
+end
+
+
+object HostDatastoreBrowserSearchResults
+    ManagedObjectReference                   datastore                      o
+    String                                   folderPath                     o
+    FileInfo                                 file                           ol
+end
+
+
+object HostDatastoreBrowserSearchSpec
+    FileQuery                                query                          ol
+    FileQueryFlags                           details                        o
+    Boolean                                  searchCaseInsensitive          o
+    String                                   matchPattern                   ol
+    Boolean                                  sortFoldersFirst               o
 end
 
 
@@ -222,6 +272,14 @@ object HostVmfsVolume extends HostFileSystemVolume
     String                                   uuid                           r
     HostScsiDiskPartition                    extent                         rl
     Boolean                                  vmfsUpgradable                 r
+end
+
+
+object IsoImageFileInfo extends FileInfo
+end
+
+
+object IsoImageFileQuery extends FileQuery
 end
 
 
@@ -424,6 +482,14 @@ object TaskInfo
 end
 
 
+object TemplateConfigFileInfo extends VmConfigFileInfo
+end
+
+
+object TemplateConfigFileQuery extends VmConfigFileQuery
+end
+
+
 object TraversalSpec extends SelectionSpec
     String                                   type                           r
     String                                   path                           r
@@ -499,6 +565,82 @@ object VirtualMachineSnapshotTree
     VirtualMachinePowerState                 state                          r
     Boolean                                  quiesced                       r
     VirtualMachineSnapshotTree               childSnapshotList              ol
+end
+
+
+object VmConfigFileInfo extends FileInfo
+    Int                                      configVersion                  o
+end
+
+
+object VmConfigFileQuery extends FileQuery
+    VmConfigFileQueryFilter                  filter                         o
+    VmConfigFileQueryFlags                   details                        o
+end
+
+
+object VmConfigFileQueryFilter
+    Int                                      matchConfigVersion             ol
+end
+
+
+object VmConfigFileQueryFlags
+    Boolean                                  configVersion                  r
+end
+
+
+object VmDiskFileInfo extends FileInfo
+    String                                   diskType                       o
+    Long                                     capacityKb                     o
+    Int                                      hardwareVersion                o
+    String                                   controllerType                 o
+    String                                   diskExtents                    ol
+end
+
+
+object VmDiskFileQuery extends FileQuery
+    VmDiskFileQueryFilter                    filter                         o
+    VmDiskFileQueryFlags                     details                        o
+end
+
+
+object VmDiskFileQueryFilter
+    String                                   diskType                       ol
+    Int                                      matchHardwareVersion           ol
+    String                                   controllerType                 ol
+end
+
+
+object VmDiskFileQueryFlags
+    Boolean                                  diskType                       r
+    Boolean                                  capacityKb                     r
+    Boolean                                  hardwareVersion                r
+    Boolean                                  controllerType                 o
+    Boolean                                  diskExtents                    o
+end
+
+
+object VmLogFileInfo extends FileInfo
+end
+
+
+object VmLogFileQuery extends FileQuery
+end
+
+
+object VmNvramFileInfo extends FileInfo
+end
+
+
+object VmNvramFileQuery extends FileQuery
+end
+
+
+object VmSnapshotFileInfo extends FileInfo
+end
+
+
+object VmSnapshotFileQuery extends FileQuery
 end
 
 
@@ -655,6 +797,13 @@ end
 method RevertToSnapshot_Task returns ManagedObjectReference r
     ManagedObjectReference                   _this                          r
     ManagedObjectReference                   host                           o
+end
+
+
+method SearchDatastore_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    String                                   datastorePath                  r
+    HostDatastoreBrowserSearchSpec           searchSpec                     o
 end
 
 

@@ -292,6 +292,15 @@ ethernet0.checkMACAddress = "false"
 
     <h4>SCSI controller models</h4>
     <dl>
+        <dt><code>auto</code></dt>
+        <dd>
+            This isn't a actual controller model. If specified the ESX driver
+            tries to detect the SCSI controller model referenced in the
+            <code>.vmdk</code> file and use it. Autodetection fails when a
+            SCSI controller has multiple disks attached and the SCSI controller
+            models referenced in the <code>.vmdk</code> files are inconsistent.
+            <span class="since">Since 0.8.3</span>
+        </dd>
         <dt><code>buslogic</code></dt>
         <dd>
             BusLogic SCSI controller for older guests.

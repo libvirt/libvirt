@@ -29,6 +29,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
+#include "esx_vi_methods.h"
 #include "esx_private.h"
 #include "esx_util.h"
 #include "esx_vmx.h"
@@ -433,6 +434,7 @@ def->parallels[0]...
  * are actually SCSI controller models in the ESX case */
 VIR_ENUM_DECL(esxVMX_SCSIControllerModel)
 VIR_ENUM_IMPL(esxVMX_SCSIControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+              "auto", /* just to match virDomainControllerModel, will never be used */
               "buslogic",
               "lsilogic",
               "lsisas1068",
@@ -716,34 +718,244 @@ esxVMX_HandleLegacySCSIDiskDriverName(virDomainDefPtr def,
 
 
 int
-esxVMX_GatherSCSIControllers(virDomainDefPtr def, int virtualDev[4],
-                             bool present[4])
+esxVMX_AutodetectSCSIControllerModel(esxVI_Context *ctx,
+                                     virDomainDiskDefPtr def, int *model)
 {
-    int i;
+    int result = -1;
+    char *datastoreName = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
+    char *datastorePath = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
+    esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
+    esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    esxVI_TaskInfo *taskInfo = NULL;
+    esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
+    esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
+
+    if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
+        def->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
+        def->type != VIR_DOMAIN_DISK_TYPE_FILE ||
+        def->src == NULL ||
+        ! STRPREFIX(def->src, "[")) {
+        /*
+         * This isn't a file-based SCSI disk device with a datastore related
+         * source path => do nothing.
+         */
+        return 0;
+    }
+
+    if (esxUtil_ParseDatastoreRelatedPath(def->src, &datastoreName,
+                                          &directoryName, &fileName) < 0) {
+        goto cleanup;
+    }
+
+    if (directoryName == NULL) {
+        if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
+                        directoryName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    /* Lookup HostDatastoreBrowser */
+    if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
+        esxVI_LookupDatastoreByName(ctx, datastoreName, propertyNameList,
+                                    &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetManagedObjectReference(datastore, "browser",
+                                        &hostDatastoreBrowser,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* Build HostDatastoreBrowserSearchSpec */
+    if (esxVI_HostDatastoreBrowserSearchSpec_Alloc(&searchSpec) < 0 ||
+        esxVI_FileQueryFlags_Alloc(&searchSpec->details) < 0) {
+        goto cleanup;
+    }
+
+    searchSpec->details->fileType = esxVI_Boolean_True;
+    searchSpec->details->fileSize = esxVI_Boolean_False;
+    searchSpec->details->modification = esxVI_Boolean_False;
+
+    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
+        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
+    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_False;
+    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
+    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
+    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+
+    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
+        goto cleanup;
+    }
+
+    searchSpec->matchPattern->value = fileName;
+
+    /* Search datastore for file */
+    if (esxVI_SearchDatastore_Task(ctx, hostDatastoreBrowser, datastorePath,
+                                   searchSpec, &task) < 0 ||
+        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Boolean_False,
+                                    &taskInfoState) < 0) {
+        goto cleanup;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not serach in datastore '%s'"), datastoreName);
+        goto cleanup;
+    }
+
+    if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo) < 0 ||
+        esxVI_HostDatastoreBrowserSearchResults_CastFromAnyType
+          (taskInfo->result, &searchResults) < 0) {
+        goto cleanup;
+    }
+
+    /* Interpret search result */
+    vmDiskFileInfo = esxVI_VmDiskFileInfo_DynamicCast(searchResults->file);
+
+    if (vmDiskFileInfo == NULL || vmDiskFileInfo->controllerType == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Could not lookup controller model for '%s'"), def->src);
+        goto cleanup;
+    }
+
+    if (STRCASEEQ(vmDiskFileInfo->controllerType,
+                  "VirtualBusLogicController")) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC;
+    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
+                         "VirtualLsiLogicController")) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC;
+    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
+                         "VirtualLsiLogicSASController")) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068;
+    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
+                         "ParaVirtualSCSIController")) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI;
+    } else {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Found unexpected controller model '%s' for disk '%s'"),
+                  vmDiskFileInfo->controllerType, def->src);
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    /* Don't double free fileName */
+    if (searchSpec != NULL && searchSpec->matchPattern != NULL) {
+        searchSpec->matchPattern->value = NULL;
+    }
+
+    VIR_FREE(datastoreName);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
+    VIR_FREE(datastorePath);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
+    esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
+    esxVI_ManagedObjectReference_Free(&task);
+    esxVI_TaskInfo_Free(&taskInfo);
+    esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
+
+    return result;
+}
+
+
+
+int
+esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
+                             int virtualDev[4], bool present[4])
+{
+    int result = -1;
+    int i, k;
     virDomainDiskDefPtr disk;
-    virDomainControllerDefPtr controller = NULL;
+    virDomainControllerDefPtr controller;
+    bool controllerHasDisksAttached;
+    int count = 0;
+    int *autodetectedModels;
 
-    for (i = 0; i < def->ndisks; ++i) {
-        disk = def->disks[i];
+    if (VIR_ALLOC_N(autodetectedModels, def->ndisks) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+    for (i = 0; i < def->ncontrollers; ++i) {
+        controller = def->controllers[i];
+
+        if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            // skip non-SCSI controllers
             continue;
         }
 
-        controller = NULL;
+        controllerHasDisksAttached = false;
 
-        for (i = 0; i < def->ncontrollers; ++i) {
-            if (def->controllers[i]->idx == disk->info.addr.drive.controller) {
-                controller = def->controllers[i];
+        for (k = 0; k < def->ndisks; ++k) {
+            disk = def->disks[k];
+
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+                disk->info.addr.drive.controller == controller->idx) {
+                controllerHasDisksAttached = true;
                 break;
             }
         }
 
-        if (controller == NULL) {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Missing SCSI controller for index %d"),
-                      disk->info.addr.drive.controller);
-            return -1;
+        if (! controllerHasDisksAttached) {
+            // skip SCSI controllers without attached disks
+            continue;
+        }
+
+        if (ctx != NULL &&
+            controller->model == VIR_DOMAIN_CONTROLLER_MODEL_AUTO) {
+            count = 0;
+
+            // try to autodetect the SCSI controller model by collecting
+            // SCSI controller model of all disks attached to this controller
+            for (k = 0; k < def->ndisks; ++k) {
+                disk = def->disks[k];
+
+                if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+                    disk->info.addr.drive.controller == controller->idx) {
+                    if (esxVMX_AutodetectSCSIControllerModel
+                          (ctx, disk, &autodetectedModels[count]) < 0) {
+                        goto cleanup;
+                    }
+
+                    ++count;
+                }
+            }
+
+            // autodetection fails when the disks attached to one controller
+            // have inconsistent SCSI controller models
+            for (k = 0; k < count; ++k) {
+                if (autodetectedModels[k] != autodetectedModels[0]) {
+                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                              _("Disks on SCSI controller %d have inconsistent "
+                                "controller models, cannot autodetect model"),
+                              controller->idx);
+                    goto cleanup;
+                }
+            }
+
+            controller->model = autodetectedModels[0];
         }
 
         if (controller->model != -1 &&
@@ -756,14 +968,19 @@ esxVMX_GatherSCSIControllers(virDomainDefPtr def, int virtualDev[4],
                         "'controller' to be 'buslogic' or 'lsilogic' or "
                         "'lsisas1068' or 'vmpvscsi' but found '%s'"),
                       virDomainControllerModelTypeToString(controller->model));
-            return -1;
+            goto cleanup;
         }
 
         present[controller->idx] = true;
         virtualDev[controller->idx] = controller->model;
     }
 
-    return 0;
+    result = 0;
+
+  cleanup:
+    VIR_FREE(autodetectedModels);
+
+    return result;
 }
 
 
@@ -2620,7 +2837,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         }
     }
 
-    if (esxVMX_GatherSCSIControllers(def, scsi_virtualDev, scsi_present) < 0) {
+    if (esxVMX_GatherSCSIControllers(ctx, def, scsi_virtualDev,
+                                     scsi_present) < 0) {
         goto failure;
     }
 

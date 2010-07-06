@@ -676,6 +676,7 @@
       <optional>
         <attribute name="model">
           <choice>
+            <value>auto</value>
             <value>buslogic</value>
             <value>lsilogic</value>
             <value>lsisas1068</value>

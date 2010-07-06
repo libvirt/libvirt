@@ -141,6 +141,7 @@ VIR_ENUM_IMPL(virDomainController, VIR_DOMAIN_CONTROLLER_TYPE_LAST,
               "virtio-serial")
 
 VIR_ENUM_IMPL(virDomainControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
+              "auto",
               "buslogic",
               "lsilogic",
               "lsisas1068",
