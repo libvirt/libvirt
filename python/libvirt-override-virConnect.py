@@ -146,3 +146,4 @@
         if ret == -1:
             raise libvirtError ('virConnectDomainEventRegisterAny() failed', conn=self)
         self.domainEventCallbackID[ret] = opaque
+        return ret
