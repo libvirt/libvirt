@@ -1037,8 +1037,13 @@ libexec_PROGRAMS += libvirt_parthelper
 
 libvirt_parthelper_SOURCES = $(STORAGE_HELPER_DISK_SOURCES)
 libvirt_parthelper_LDFLAGS = $(WARN_LDFLAGS) $(COVERAGE_LDFLAGS)
-libvirt_parthelper_LDADD = $(LIBPARTED_LIBS) ../gnulib/lib/libgnu.la
-libvirt_parthelper_CFLAGS = $(LIBPARTED_CFLAGS)
+libvirt_parthelper_LDADD =		\
+		$(LIBPARTED_LIBS)	\
+		$(DEVMAPPER_LIBS)	\
+		libvirt_util.la		\
+		../gnulib/lib/libgnu.la
+
+libvirt_parthelper_CFLAGS = $(LIBPARTED_CFLAGS) $(DEVMAPPER_CFLAGS)
 endif
 endif
 EXTRA_DIST += $(STORAGE_HELPER_DISK_SOURCES)
