@@ -1454,7 +1454,7 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
     int ret = FALSE;
     int hassave;
 
-    if (!vshConnectionUsability(ctl, ctl->conn))
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
