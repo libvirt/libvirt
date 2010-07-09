@@ -51,6 +51,7 @@
 static int
 virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                              char **backingStore,
+                             int *backingStoreFormat,
                              unsigned long long *allocation,
                              unsigned long long *capacity,
                              virStorageEncryptionPtr *encryption)
@@ -58,6 +59,10 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     int fd, ret;
     virStorageFileMetadata meta;
 
+    if (backingStore)
+        *backingStore = NULL;
+    if (backingStoreFormat)
+        *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
     if (encryption)
         *encryption = NULL;
 
@@ -89,12 +94,22 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
 
     close(fd);
 
-    if (backingStore) {
-        *backingStore = meta.backingStore;
-        meta.backingStore = NULL;
+    if (meta.backingStore) {
+        if (backingStore) {
+            *backingStore = meta.backingStore;
+            meta.backingStore = NULL;
+            if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
+                if ((*backingStoreFormat = virStorageFileProbeFormat(*backingStore)) < 0) {
+                    close(fd);
+                    goto cleanup;
+                }
+            } else {
+                *backingStoreFormat = meta.backingStoreFormat;
+            }
+        } else {
+            VIR_FREE(meta.backingStore);
+        }
     }
-
-    VIR_FREE(meta.backingStore);
 
     if (capacity && meta.capacity)
         *capacity = meta.capacity;
@@ -102,9 +117,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     if (encryption != NULL && meta.encrypted) {
         if (VIR_ALLOC(*encryption) < 0) {
             virReportOOMError();
-            if (backingStore)
-                VIR_FREE(*backingStore);
-            return -1;
+            goto cleanup;
         }
 
         switch (target->format) {
@@ -124,6 +137,11 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     }
 
     return 0;
+
+cleanup:
+    if (backingStore)
+        VIR_FREE(*backingStore);
+    return -1;
 }
 
 #if WITH_STORAGE_FS
@@ -585,6 +603,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     while ((ent = readdir(dir)) != NULL) {
         int ret;
         char *backingStore;
+        int backingStoreFormat;
 
         if (VIR_ALLOC(vol) < 0)
             goto no_memory;
@@ -604,6 +623,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if ((ret = virStorageBackendProbeTarget(&vol->target,
                                                 &backingStore,
+                                                &backingStoreFormat,
                                                 &vol->allocation,
                                                 &vol->capacity,
                                                 &vol->target.encryption)) < 0) {
@@ -619,44 +639,16 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
 
         if (backingStore != NULL) {
-            if (vol->target.format == VIR_STORAGE_FILE_QCOW2 &&
-                STRPREFIX("fmt:", backingStore)) {
-                char *fmtstr = backingStore + 4;
-                char *path = strchr(fmtstr, ':');
-                if (!path) {
-                    VIR_FREE(backingStore);
-                } else {
-                    *path = '\0';
-                    if ((vol->backingStore.format =
-                         virStorageFileFormatTypeFromString(fmtstr)) < 0) {
-                        VIR_FREE(backingStore);
-                    } else {
-                        memmove(backingStore, path, strlen(path) + 1);
-                        vol->backingStore.path = backingStore;
+            vol->backingStore.path = backingStore;
+            vol->backingStore.format = backingStoreFormat;
 
-                        if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
-                                                                 NULL,
-                                                                 NULL) < 0)
-                            VIR_FREE(vol->backingStore);
-                    }
-                }
-            } else {
-                vol->backingStore.path = backingStore;
-
-                if ((ret = virStorageBackendProbeTarget(&vol->backingStore,
-                                                        NULL, NULL, NULL,
-                                                        NULL)) < 0) {
-                    if (ret == -1)
-                        goto cleanup;
-                    else {
-                        /* Silently ignore non-regular files,
-                         * eg '.' '..', 'lost+found' */
-                        VIR_FREE(vol->backingStore);
-                    }
-                }
+            if (virStorageBackendUpdateVolTargetInfo(&vol->backingStore,
+                                                     NULL,
+                                                     NULL) < 0) {
+                VIR_FREE(vol->backingStore.path);
+                goto cleanup;
             }
         }
-
 
 
         if (VIR_REALLOC_N(pool->volumes.objs,
