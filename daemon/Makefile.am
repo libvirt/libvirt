@@ -32,8 +32,11 @@ EXTRA_DIST =						\
 	THREADING.txt					\
 	libvirt-guests.init.in				\
 	libvirt-guests.sysconf				\
+	libvirtd.pod.in					\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
+
+man_MANS = libvirtd.8
 
 BUILT_SOURCES =
 
@@ -49,6 +52,20 @@ augeas_DATA = libvirtd.aug
 
 augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
+
+POD2MAN = pod2man -c "Virtualization Support" \
+			-r "$(PACKAGE)-$(VERSION)" -s 8 -u
+
+libvirtd.pod: libvirtd.pod.in
+	sed \
+	    -e 's![@]sysconfdir[@]!$(sysconfdir)!g' \
+	    -e 's![@]localstatedir[@]!$(localstatedir)!g' \
+	    -e 's![@]remote_pid_file[@]!$(REMOTE_PID_FILE)!g' \
+	    < $< > $@-t
+	mv $@-t $@
+
+libvirtd.8: libvirtd.pod
+	$(AM_V_GEN)$(POD2MAN) $< $@
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
 
@@ -285,5 +302,5 @@ uninstall-data-sasl:
 endif
 
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES) $(man_MANS) libvirtd.pod
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
