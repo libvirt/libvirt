@@ -150,7 +150,7 @@ $(python_generated_files): $(srcdir)/apibuild.py \
 check-local: all
 
 clean-local:
-	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
+	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
 
 maintainer-clean-local: clean-local
 	rm -rf libvirt-api.xml libvirt-refs.xml
