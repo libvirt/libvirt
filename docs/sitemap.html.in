@@ -51,6 +51,10 @@
                 <span>The library and the daemon logging support</span>
               </li>
               <li>
+                <a href="firewall.html">Firewall</a>
+                <span>Firewall and network filter configuration</span>
+              </li>
+              <li>
                 <a href="hooks.html">Hooks</a>
                 <span>Hooks for system specific management</span>
               </li>
