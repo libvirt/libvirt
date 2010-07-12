@@ -1,5 +1,3 @@
-=encoding utf-8
-
 =head1 NAME
 
 libvirtd - libvirtd management daemon
@@ -148,30 +146,12 @@ L<http://libvirt.org/bugs.html>
 
 =head1 AUTHORS
 
- Stefan Berger        <stefanb@us.ibm.com>
- Daniel Berrange      <berrange@redhat.com>
- Eric Blake           <eblake@redhat.com>
- Matthias Bolte       <matthias.bolte@googlemail.com>
- Jiri Denemark        <jdenemar@redhat.com>
- Amy Griffis          <amy.griffis@hp.com>
- Guido Günther        <agx@sigxcpu.org>
- Richard W.M. Jones   <rjones@redhat.com>
- Dan Kenigsberg       <danken@redhat.com>
- Chris Lalancette     <clalance@redhat.com>
- Dave Leskovec        <dlesko@linux.vnet.ibm.com>
- John Levon           <john.levon@sun.com>
- Wolfgang Mauerer     <wolfgang.mauerer@siemens.com>
- Mark McLoughlin      <markmc@redhat.com>
- Jim Meyering         <meyering@redhat.com>
- Cole Robinson        <crobinso@redhat.com>
- Atsushi SAKAI        <sakaia@jp.fujitsu.com>
- Laine Stump          <laine@redhat.com>
- Miloslav Trmač       <mitr@redhat.com>
- Daniel Veillard      <veillard@redhat.com> or <daniel@veillard.com>
+Please refer to the AUTHORS file distributed with libvirt.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006-2010 Red Hat, Inc. and the above mentioned AUTHORS.
+Copyright (C) 2006-2010 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
 
 =head1 LICENSE
 

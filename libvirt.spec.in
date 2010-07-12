@@ -828,6 +828,8 @@ fi
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %attr(0755, root, root) %{_sbindir}/libvirtd
 
+%{_mandir}/man8/libvirtd.8*
+
 %doc docs/*.xml
 %endif
 

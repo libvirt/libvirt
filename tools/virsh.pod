@@ -1093,8 +1093,7 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS
 
-  Andrew Puch <apuch @ redhat.com>
-  Daniel Veillard <veillard @ redhat.com>
+  Please refer to the AUTHORS file distributed with libvirt.
 
   Based on the xm man page by:
   Sean Dague <sean at dague dot net>
@@ -1102,7 +1101,8 @@ Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2005, 2007-2010 Red Hat, Inc.
+Copyright (C) 2005, 2007-2010 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
 
 =head1 LICENSE
 
