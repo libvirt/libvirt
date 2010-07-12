@@ -130,9 +130,15 @@ virCPUDefParseXML(const xmlNodePtr node,
     }
 
     if (mode == VIR_CPU_TYPE_AUTO) {
-        if (virXPathBoolean("boolean(./arch)", ctxt))
+        if (virXPathBoolean("boolean(./arch)", ctxt)) {
+            if (virXPathBoolean("boolean(./@match)", ctxt)) {
+                virCPUReportError(VIR_ERR_XML_ERROR, "%s",
+                        _("'arch' element element cannot be used inside 'cpu'"
+                          " element with 'match' attribute'"));
+                goto error;
+            }
             def->type = VIR_CPU_TYPE_HOST;
-        else
+        } else
             def->type = VIR_CPU_TYPE_GUEST;
     } else
         def->type = mode;
