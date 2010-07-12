@@ -826,8 +826,7 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
     struct x86_model *model = NULL;
     int i;
 
-    if (cpu->type == VIR_CPU_TYPE_HOST
-        || policy == VIR_CPU_FEATURE_REQUIRE) {
+    if (policy == VIR_CPU_FEATURE_REQUIRE) {
         if ((model = x86ModelFind(map, cpu->model)) == NULL) {
             virCPUReportError(VIR_ERR_INTERNAL_ERROR,
                     _("Unknown CPU model %s"), cpu->model);
@@ -839,6 +838,8 @@ x86ModelFromCPU(const virCPUDefPtr cpu,
     }
     else if (VIR_ALLOC(model) < 0)
         goto no_memory;
+    else if (cpu->type == VIR_CPU_TYPE_HOST)
+        return model;
 
     for (i = 0; i < cpu->nfeatures; i++) {
         const struct x86_feature *feature;
@@ -1181,7 +1182,7 @@ x86Compute(virCPUDefPtr host,
     }
 
     if (!(map = x86LoadMap()) ||
-        !(host_model = x86ModelFromCPU(host, map, 0)) ||
+        !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)) ||
         !(cpu_force = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORCE)) ||
         !(cpu_require = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_REQUIRE)) ||
         !(cpu_optional = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_OPTIONAL)) ||
@@ -1611,7 +1612,7 @@ x86Baseline(virCPUDefPtr *cpus,
     if (!(map = x86LoadMap()))
         goto error;
 
-    if (!(base_model = x86ModelFromCPU(cpus[0], map, 0)))
+    if (!(base_model = x86ModelFromCPU(cpus[0], map, VIR_CPU_FEATURE_REQUIRE)))
         goto error;
 
     if (VIR_ALLOC(cpu) < 0 ||
@@ -1630,7 +1631,7 @@ x86Baseline(virCPUDefPtr *cpus,
     for (i = 1; i < ncpus; i++) {
         const char *vn = NULL;
 
-        if (!(model = x86ModelFromCPU(cpus[i], map, 0)))
+        if (!(model = x86ModelFromCPU(cpus[i], map, VIR_CPU_FEATURE_REQUIRE)))
             goto error;
 
         if (cpus[i]->vendor && model->vendor &&
@@ -1710,7 +1711,7 @@ x86Update(virCPUDefPtr guest,
     union cpuData *data = NULL;
 
     if (!(map = x86LoadMap()) ||
-        !(host_model = x86ModelFromCPU(host, map, 0)))
+        !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)))
         goto cleanup;
 
     for (i = 0; i < guest->nfeatures; i++) {
