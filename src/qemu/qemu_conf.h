@@ -289,6 +289,7 @@ int         qemudProbeMachineTypes      (const char *binary,
                                          int *nmachines);
 
 int         qemudProbeCPUModels         (const char *qemu,
+                                         unsigned long long qemuCmdFlags,
                                          const char *arch,
                                          unsigned int *count,
                                          const char ***cpus);

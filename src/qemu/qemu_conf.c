@@ -718,11 +718,17 @@ error:
 
 int
 qemudProbeCPUModels(const char *qemu,
+                    unsigned long long qemuCmdFlags,
                     const char *arch,
                     unsigned int *count,
                     const char ***cpus)
 {
-    const char *const qemuarg[] = { qemu, "-cpu", "?", NULL };
+    const char *const qemuarg[] = {
+        qemu,
+        "-cpu", "?",
+        (qemuCmdFlags & QEMUD_CMD_FLAG_NODEFCONFIG) ? "-nodefconfig" : NULL,
+        NULL
+    };
     const char *const qemuenv[] = { "LC_ALL=C", NULL };
     enum { MAX_MACHINES_OUTPUT_SIZE = 1024*4 };
     char *output = NULL;
@@ -916,7 +922,7 @@ qemudCapsInitGuest(virCapsPtr caps,
     guest->arch.defaultInfo.emulator_mtime = binary_mtime;
 
     if (caps->host.cpu &&
-        qemudProbeCPUModels(binary, info->arch, &ncpus, NULL) == 0 &&
+        qemudProbeCPUModels(binary, 0, info->arch, &ncpus, NULL) == 0 &&
         ncpus > 0 &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", 1, 0))
         goto error;
@@ -3365,6 +3371,7 @@ static int
 qemuBuildCpuArgStr(const struct qemud_driver *driver,
                    const virDomainDefPtr def,
                    const char *emulator,
+                   unsigned long long qemuCmdFlags,
                    const struct utsname *ut,
                    char **opt)
 {
@@ -3378,7 +3385,8 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
     int i;
 
     if (def->cpu && def->cpu->model) {
-        if (qemudProbeCPUModels(emulator, ut->machine, &ncpus, &cpus) < 0)
+        if (qemudProbeCPUModels(emulator, qemuCmdFlags, ut->machine,
+                                &ncpus, &cpus) < 0)
             goto cleanup;
 
         if (!ncpus || !host) {
@@ -3706,7 +3714,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         ADD_ARG_LIT(def->os.machine);
     }
 
-    if (qemuBuildCpuArgStr(driver, def, emulator, &ut, &cpu) < 0)
+    if (qemuBuildCpuArgStr(driver, def, emulator, qemuCmdFlags, &ut, &cpu) < 0)
         goto error;
 
     if (cpu) {
