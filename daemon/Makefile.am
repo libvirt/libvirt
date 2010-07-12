@@ -54,7 +54,7 @@ augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
 
 POD2MAN = pod2man -c "Virtualization Support" \
-			-r "$(PACKAGE)-$(VERSION)" -s 8 -u
+			-r "$(PACKAGE)-$(VERSION)" -s 8
 
 libvirtd.pod: libvirtd.pod.in
 	sed \
