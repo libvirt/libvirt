@@ -90,6 +90,12 @@ cpuCompareXML(virCPUDefPtr host,
     if (cpu == NULL)
         goto cleanup;
 
+    if (!cpu->model) {
+        virCPUReportError(VIR_ERR_OPERATION_INVALID,
+                "%s", _("no CPU model specified"));
+        goto cleanup;
+    }
+
     ret = cpuCompare(host, cpu);
 
 cleanup:
