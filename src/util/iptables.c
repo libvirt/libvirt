@@ -60,6 +60,7 @@ struct _iptablesContext
     iptRules *input_filter;
     iptRules *forward_filter;
     iptRules *nat_postrouting;
+    iptRules *mangle_postrouting;
 };
 
 static void
@@ -188,6 +189,9 @@ iptablesContextNew(void)
     if (!(ctx->nat_postrouting = iptRulesNew("nat", "POSTROUTING")))
         goto error;
 
+    if (!(ctx->mangle_postrouting = iptRulesNew("mangle", "POSTROUTING")))
+        goto error;
+
     return ctx;
 
  error:
@@ -210,6 +214,8 @@ iptablesContextFree(iptablesContext *ctx)
         iptRulesFree(ctx->forward_filter);
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
+    if (ctx->mangle_postrouting)
+        iptRulesFree(ctx->mangle_postrouting);
     VIR_FREE(ctx);
 }
 
@@ -780,4 +786,69 @@ iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 const char *protocol)
 {
     return iptablesForwardMasquerade(ctx, network, physdev, protocol, REMOVE);
+}
+
+
+static int
+iptablesOutputFixUdpChecksum(iptablesContext *ctx,
+                             const char *iface,
+                             int port,
+                             int action)
+{
+    char portstr[32];
+
+    snprintf(portstr, sizeof(portstr), "%d", port);
+    portstr[sizeof(portstr) - 1] = '\0';
+
+    return iptablesAddRemoveRule(ctx->mangle_postrouting,
+                                 action,
+                                 "--out-interface", iface,
+                                 "--protocol", "udp",
+                                 "--destination-port", portstr,
+                                 "--jump", "CHECKSUM", "--checksum-fill",
+                                 NULL);
+}
+
+/**
+ * iptablesAddOutputFixUdpChecksum:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to match
+ *
+ * Add an rule to the mangle table's POSTROUTING chain that fixes up the
+ * checksum of packets with the given destination @port.
+ * the given @iface interface for TCP packets.
+ *
+ * Returns 0 in case of success or an error code in case of error.
+ * (NB: if the system's iptables does not support checksum mangling,
+ * this will return an error, which should be ignored.)
+ */
+
+int
+iptablesAddOutputFixUdpChecksum(iptablesContext *ctx,
+                                const char *iface,
+                                int port)
+{
+    return iptablesOutputFixUdpChecksum(ctx, iface, port, ADD);
+}
+
+/**
+ * iptablesRemoveOutputFixUdpChecksum:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port of the rule to remove
+ *
+ * Removes the checksum fixup rule that was previous added with
+ * iptablesAddOutputFixUdpChecksum.
+ *
+ * Returns 0 in case of success or an error code in case of error
+ * (again, if iptables doesn't support checksum fixup, this will
+ * return an error, which should be ignored)
+ */
+int
+iptablesRemoveOutputFixUdpChecksum(iptablesContext *ctx,
+                                   const char *iface,
+                                   int port)
+{
+    return iptablesOutputFixUdpChecksum(ctx, iface, port, REMOVE);
 }

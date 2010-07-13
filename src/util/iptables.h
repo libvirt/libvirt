@@ -91,5 +91,11 @@ int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
                                                   const char *network,
                                                   const char *physdev,
                                                   const char *protocol);
+int              iptablesAddOutputFixUdpChecksum (iptablesContext *ctx,
+                                                  const char *iface,
+                                                  int port);
+int              iptablesRemoveOutputFixUdpChecksum (iptablesContext *ctx,
+                                                     const char *iface,
+                                                     int port);
 
 #endif /* __QEMUD_IPTABLES_H__ */

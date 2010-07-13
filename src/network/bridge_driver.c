@@ -837,6 +837,20 @@ networkAddIptablesRules(struct network_driver *driver,
              !networkAddRoutingIptablesRules(driver, network))
         goto err8;
 
+    /* If we are doing local DHCP service on this network, attempt to
+     * add a rule that will fixup the checksum of DHCP response
+     * packets back to the guests (but report failure without
+     * aborting, since not all iptables implementations support it).
+     */
+
+    if ((network->def->ipAddress || network->def->nranges) &&
+        (iptablesAddOutputFixUdpChecksum(driver->iptables,
+                                         network->def->bridge, 68) != 0)) {
+        VIR_WARN("Could not add rule to fixup DHCP response checksums "
+                 "on network '%s'.", network->def->name);
+        VIR_WARN0("May need to update iptables package & kernel to support CHECKSUM rule.");
+    }
+
     return 1;
 
  err8:
@@ -867,6 +881,10 @@ networkAddIptablesRules(struct network_driver *driver,
 static void
 networkRemoveIptablesRules(struct network_driver *driver,
                          virNetworkObjPtr network) {
+    if (network->def->ipAddress || network->def->nranges) {
+        iptablesRemoveOutputFixUdpChecksum(driver->iptables,
+                                           network->def->bridge, 68);
+    }
     if (network->def->forwardType != VIR_NETWORK_FORWARD_NONE) {
         if (network->def->forwardType == VIR_NETWORK_FORWARD_NAT) {
             iptablesRemoveForwardMasquerade(driver->iptables,

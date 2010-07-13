@@ -332,6 +332,7 @@ iptablesAddForwardAllowRelatedIn;
 iptablesAddForwardMasquerade;
 iptablesAddForwardRejectIn;
 iptablesAddForwardRejectOut;
+iptablesAddOutputFixUdpChecksum;
 iptablesAddTcpInput;
 iptablesAddUdpInput;
 iptablesContextFree;
@@ -343,6 +344,7 @@ iptablesRemoveForwardAllowRelatedIn;
 iptablesRemoveForwardMasquerade;
 iptablesRemoveForwardRejectIn;
 iptablesRemoveForwardRejectOut;
+iptablesRemoveOutputFixUdpChecksum;
 iptablesRemoveTcpInput;
 iptablesRemoveUdpInput;
 
