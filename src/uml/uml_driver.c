@@ -730,7 +730,7 @@ static int umlMonitorCommand(const struct uml_driver *driver,
         ssize_t nbytes;
         addrlen = sizeof(addr);
         nbytes = recvfrom(priv->monitor, &res, sizeof res, 0,
-                          (struct sockaddr *)&addr, &addrlen) < 0;
+                          (struct sockaddr *)&addr, &addrlen);
         if (nbytes < 0) {
             if (errno == EAGAIN || errno == EINTR)
                 continue;
