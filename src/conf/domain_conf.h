@@ -314,15 +314,20 @@ struct _virDomainNetDef {
 };
 
 enum virDomainChrDeviceType {
-    VIR_DOMAIN_CHR_DEVICE_TYPE_NULL = 0,
-    VIR_DOMAIN_CHR_DEVICE_TYPE_MONITOR,
+    VIR_DOMAIN_CHR_DEVICE_TYPE_MONITOR = 0,
     VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL,
     VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL,
     VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE,
-    VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD,
-    VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO,
+    VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL,
 
-    VIR_DOMAIN_CHR_DEVICE_TYPE_LAST
+    VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
+};
+
+enum virDomainChrChannelTargetType {
+    VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD = 0,
+    VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO,
+
+    VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
 };
 
 enum virDomainChrType {
@@ -351,6 +356,7 @@ typedef struct _virDomainChrDef virDomainChrDef;
 typedef virDomainChrDef *virDomainChrDefPtr;
 struct _virDomainChrDef {
     int deviceType;
+    int targetType;
     union {
         int port; /* parallel, serial, console */
         virSocketAddrPtr addr; /* guestfwd */
@@ -1136,6 +1142,7 @@ VIR_ENUM_DECL(virDomainControllerModel)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChrDevice)
+VIR_ENUM_DECL(virDomainChrChannelTarget)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)
