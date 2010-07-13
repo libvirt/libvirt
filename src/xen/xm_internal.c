@@ -1416,7 +1416,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 virDomainChrDefFree(chr);
                 goto no_memory;
             }
-            chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
+            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             def->parallels[0] = chr;
             def->nparallels++;
             chr = NULL;
@@ -1433,14 +1433,14 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
                 virDomainChrDefFree(chr);
                 goto no_memory;
             }
-            chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+            chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
             def->serials[0] = chr;
             def->nserials++;
         }
     } else {
         if (!(def->console = xenDaemonParseSxprChar("pty", NULL)))
             goto cleanup;
-        def->console->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE;
+        def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
     }
 
     if (hvm) {

@@ -164,7 +164,7 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "internal",
               "direct")
 
-VIR_ENUM_IMPL(virDomainChrTarget, VIR_DOMAIN_CHR_TARGET_TYPE_LAST,
+VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "null",
               "monitor",
               "parallel",
@@ -523,12 +523,12 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
     if (!def)
         return;
 
-    switch (def->targetType) {
-    case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+    switch (def->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD:
         VIR_FREE(def->target.addr);
         break;
 
-    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO:
         VIR_FREE(def->target.name);
         break;
     }
@@ -2415,7 +2415,7 @@ virDomainChrDefParseXML(xmlNodePtr node,
     char *mode = NULL;
     char *protocol = NULL;
     const char *nodeName;
-    const char *targetType = NULL;
+    const char *deviceType = NULL;
     const char *addrStr = NULL;
     const char *portStr = NULL;
     virDomainChrDefPtr def;
@@ -2432,7 +2432,7 @@ virDomainChrDefParseXML(xmlNodePtr node,
         def->type = VIR_DOMAIN_CHR_TYPE_NULL;
 
     nodeName = (const char *) node->name;
-    if ((def->targetType = virDomainChrTargetTypeFromString(nodeName)) < 0) {
+    if ((def->deviceType = virDomainChrDeviceTypeFromString(nodeName)) < 0) {
         /* channel is handled below */
         if (STRNEQ(nodeName, "channel")) {
             virDomainReportError(VIR_ERR_XML_ERROR,
@@ -2441,7 +2441,7 @@ virDomainChrDefParseXML(xmlNodePtr node,
             VIR_FREE(def);
             return NULL;
         }
-        def->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_NULL;
+        def->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_NULL;
     }
 
     cur = node->children;
@@ -2491,30 +2491,30 @@ virDomainChrDefParseXML(xmlNodePtr node,
                     protocol = virXMLPropString(cur, "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
                 /* If target type isn't set yet, expect it to be set here */
-                if (def->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_NULL) {
-                    targetType = virXMLPropString(cur, "type");
-                    if (targetType == NULL) {
+                if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_NULL) {
+                    deviceType = virXMLPropString(cur, "type");
+                    if (deviceType == NULL) {
                         virDomainReportError(VIR_ERR_XML_ERROR, "%s",
                                              _("character device target does "
                                                "not define a type"));
                         goto error;
                     }
-                    if ((def->targetType =
-                        virDomainChrTargetTypeFromString(targetType)) < 0)
+                    if ((def->deviceType =
+                        virDomainChrDeviceTypeFromString(deviceType)) < 0)
                     {
                         virDomainReportError(VIR_ERR_XML_ERROR,
                                              _("unknown target type for "
                                                "character device: %s"),
-                                             targetType);
+                                             deviceType);
                         goto error;
                     }
                 }
 
                 unsigned int port;
-                switch (def->targetType) {
-                case VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL:
-                case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
-                case VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE:
+                switch (def->deviceType) {
+                case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+                case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+                case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
                     portStr = virXMLPropString(cur, "port");
                     if (portStr == NULL) {
                         /* Not required. It will be assigned automatically
@@ -2530,7 +2530,7 @@ virDomainChrDefParseXML(xmlNodePtr node,
                     }
                     break;
 
-                case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+                case VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD:
                     addrStr = virXMLPropString(cur, "address");
                     portStr = virXMLPropString(cur, "port");
 
@@ -2574,14 +2574,14 @@ virDomainChrDefParseXML(xmlNodePtr node,
                     virSocketSetPort(def->target.addr, port);
                     break;
 
-                case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+                case VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO:
                     def->target.name = virXMLPropString(cur, "name");
                     break;
 
                 default:
                     virDomainReportError(VIR_ERR_XML_ERROR,
                                          _("unexpected target type type %u"),
-                                         def->targetType);
+                                         def->deviceType);
                 }
             }
         }
@@ -2714,7 +2714,7 @@ cleanup:
     VIR_FREE(connectHost);
     VIR_FREE(connectService);
     VIR_FREE(path);
-    VIR_FREE(targetType);
+    VIR_FREE(deviceType);
     VIR_FREE(addrStr);
     VIR_FREE(portStr);
 
@@ -4484,7 +4484,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
                 }
                 def->nserials = 1;
                 def->serials[0] = chr;
-                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
             }
         } else {
             def->console = chr;
@@ -4507,7 +4507,7 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
 
         def->channels[def->nchannels++] = chr;
 
-        if (chr->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO &&
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO &&
             chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             chr->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
 
@@ -5022,7 +5022,7 @@ static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
     for (i = 0 ; i < def->nchannels ; i++) {
         virDomainChrDefPtr channel = def->channels[i];
 
-        if (channel->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO) {
+        if (channel->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO) {
             int idx = 0;
             if (channel->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
                 idx = channel->info.addr.vioserial.controller;
@@ -5604,15 +5604,15 @@ virDomainChrDefFormat(virBufferPtr buf,
                       int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
-    const char *targetName = virDomainChrTargetTypeToString(def->targetType);
+    const char *targetName = virDomainChrDeviceTypeToString(def->deviceType);
     const char *elementName;
 
     int ret = 0;
 
-    switch (def->targetType) {
+    switch (def->deviceType) {
     /* channel types are in a common channel element */
-    case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
-    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO:
         elementName = "channel";
         break;
 
@@ -5629,7 +5629,7 @@ virDomainChrDefFormat(virBufferPtr buf,
     /* Compat with legacy  <console tty='/dev/pts/5'/> syntax */
     virBufferVSprintf(buf, "    <%s type='%s'",
                       elementName, type);
-    if (def->targetType == VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE &&
+    if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         def->type == VIR_DOMAIN_CHR_TYPE_PTY &&
         !(flags & VIR_DOMAIN_XML_INACTIVE) &&
         def->data.file.path) {
@@ -5704,8 +5704,8 @@ virDomainChrDefFormat(virBufferPtr buf,
         break;
     }
 
-    switch (def->targetType) {
-    case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+    switch (def->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD:
         {
             int port = virSocketGetPort(def->target.addr);
             if (port < 0) {
@@ -5726,7 +5726,7 @@ virDomainChrDefFormat(virBufferPtr buf,
             break;
         }
 
-    case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO:
         virBufferAddLit(buf, "      <target type='virtio'");
         if (def->target.name) {
             virBufferEscapeString(buf, " name='%s'", def->target.name);
@@ -5734,16 +5734,16 @@ virDomainChrDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
         break;
 
-    case VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL:
-    case VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL:
-    case VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
         virBufferVSprintf(buf, "      <target port='%d'/>\n", def->target.port);
         break;
 
     default:
         virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                              _("unexpected character destination type %d"),
-                             def->targetType);
+                             def->deviceType);
         return -1;
     }
 
@@ -6388,7 +6388,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
          * console */
         virDomainChrDef console;
         memcpy(&console, def->serials[0], sizeof(console));
-        console.targetType = VIR_DOMAIN_CHR_TARGET_TYPE_CONSOLE;
+        console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         if (virDomainChrDefFormat(&buf, &console, flags) < 0)
             goto cleanup;
     }

@@ -2396,7 +2396,7 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    (*def)->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
 
     snprintf(prefix, sizeof(prefix), "serial%d", port);
 
@@ -2526,7 +2526,7 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    (*def)->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
+    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
 
     snprintf(prefix, sizeof(prefix), "parallel%d", port);
 

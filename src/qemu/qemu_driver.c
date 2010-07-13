@@ -3573,7 +3573,7 @@ qemuPrepareMonitorChr(struct qemud_driver *driver,
                       virDomainChrDefPtr monConfig,
                       const char *vm)
 {
-    monConfig->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_MONITOR;
+    monConfig->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_MONITOR;
 
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = 1;

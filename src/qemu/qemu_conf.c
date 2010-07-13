@@ -4498,8 +4498,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         virDomainChrDefPtr channel = def->channels[i];
         char *devstr;
 
-        switch(channel->targetType) {
-        case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
+        switch(channel->deviceType) {
+        case VIR_DOMAIN_CHR_DEVICE_TYPE_GUESTFWD:
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) ||
                 !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4525,7 +4525,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             ADD_ARG(devstr);
             break;
 
-        case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
+        case VIR_DOMAIN_CHR_DEVICE_TYPE_VIRTIO:
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
                 qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                     _("virtio channel requires QEMU to support -device"));
@@ -6253,7 +6253,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     virDomainChrDefFree(chr);
                     goto no_memory;
                 }
-                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_SERIAL;
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = def->nserials;
                 def->serials[def->nserials++] = chr;
             }
@@ -6267,7 +6267,7 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     virDomainChrDefFree(chr);
                     goto no_memory;
                 }
-                chr->targetType = VIR_DOMAIN_CHR_TARGET_TYPE_PARALLEL;
+                chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
                 chr->target.port = def->nparallels;
                 def->parallels[def->nparallels++] = chr;
             }
