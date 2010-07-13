@@ -1194,10 +1194,12 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if ((driver->securityDriver &&
-         driver->securityDriver->domainSetSecuritySocketLabel &&
-         driver->securityDriver->domainSetSecuritySocketLabel(driver->securityDriver,vm)) < 0) {
-        VIR_ERROR(_("Failed to set security context for monitor for %s"), vm->def->name);
+    if (driver->securityDriver &&
+        driver->securityDriver->domainSetSecuritySocketLabel &&
+        driver->securityDriver->domainSetSecuritySocketLabel
+          (driver->securityDriver,vm) < 0) {
+        VIR_ERROR(_("Failed to set security context for monitor for %s"),
+                  vm->def->name);
         goto error;
     }
 
@@ -1213,10 +1215,12 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     if (priv->mon == NULL)
         virDomainObjUnref(vm);
 
-    if ((driver->securityDriver &&
-         driver->securityDriver->domainClearSecuritySocketLabel &&
-         driver->securityDriver->domainClearSecuritySocketLabel(driver->securityDriver,vm)) < 0) {
-        VIR_ERROR(_("Failed to set security context for monitor for %s"), vm->def->name);
+    if (driver->securityDriver &&
+        driver->securityDriver->domainClearSecuritySocketLabel &&
+        driver->securityDriver->domainClearSecuritySocketLabel
+          (driver->securityDriver,vm) < 0) {
+        VIR_ERROR(_("Failed to clear security context for monitor for %s"),
+                  vm->def->name);
         goto error;
     }
 
