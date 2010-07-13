@@ -11,3 +11,5 @@ libvirtd
 libvirtd.init
 libvirt-guests.init
 libvirtd*.logrotate
+libvirtd.pod
+libvirtd.8
