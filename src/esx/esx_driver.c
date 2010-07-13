@@ -475,10 +475,17 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     }
 
     /* Login to vCenter */
-    if (vCenter != NULL) {
+    if (parsedQuery->vCenter != NULL) {
         VIR_FREE(url);
         VIR_FREE(password);
         VIR_FREE(username);
+
+        vCenter = strdup(parsedQuery->vCenter);
+
+        if (vCenter == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
 
         /* If a vCenter is specified resolve the hostname */
         if (STRNEQ(vCenter, "*") &&
