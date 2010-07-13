@@ -3258,7 +3258,7 @@ libvirt_virConnectDomainEventIOErrorReasonCallback(virConnectPtr conn ATTRIBUTE_
 
     /* Call the Callback Dispatcher */
     pyobj_ret = PyObject_CallMethod(pyobj_conn,
-                                    (char*)"dispatchDomainEventIOErrorCallback",
+                                    (char*)"dispatchDomainEventIOErrorReasonCallback",
                                     (char*)"OssisO",
                                     pyobj_dom,
                                     srcPath, devAlias, action, reason,
