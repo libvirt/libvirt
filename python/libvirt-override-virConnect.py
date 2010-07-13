@@ -2,7 +2,7 @@
         try:
            for cb,opaque in self.domainEventCallbacks.items():
                del self.domainEventCallbacks[cb]
-           self.domainEventCallbacks = None
+           del self.domainEventCallbacks
            libvirtmod.virConnectDomainEventDeregister(self._o, self)
         except AttributeError:
            pass
@@ -17,6 +17,7 @@
         try:
             del self.domainEventCallbacks[cb]
             if len(self.domainEventCallbacks) == 0:
+                del self.domainEventCallbacks
                 ret = libvirtmod.virConnectDomainEventDeregister(self._o, self)
                 if ret == -1: raise libvirtError ('virConnectDomainEventDeregister() failed', conn=self)
         except AttributeError:
