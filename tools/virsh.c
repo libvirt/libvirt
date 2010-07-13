@@ -1462,7 +1462,7 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 
     hassave = virDomainHasManagedSaveImage(dom, 0);
     if (hassave < 0) {
-        vshError(ctl, _("Failed to check for domain managed save image"));
+        vshError(ctl, "%s", _("Failed to check for domain managed save image"));
         goto cleanup;
     }
 
