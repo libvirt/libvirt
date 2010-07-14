@@ -184,6 +184,7 @@ mymain(int argc, char **argv)
     DO_TEST_DIFFERENT("channel-virtio-auto");
     DO_TEST_DIFFERENT("console-compat-auto");
     DO_TEST_DIFFERENT("disk-scsi-device-auto");
+    DO_TEST_DIFFERENT("console-virtio");
 
     virCapabilitiesFree(driver.caps);
 

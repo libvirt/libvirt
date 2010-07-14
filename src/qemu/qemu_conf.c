@@ -2031,6 +2031,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCmdFlags)
         if (virAsprintf(&def->channels[i]->info.alias, "channel%d", i) < 0)
             goto no_memory;
     }
+    if (def->console) {
+        if (virAsprintf(&def->console->info.alias, "console%d", i) < 0)
+            goto no_memory;
+    }
     if (def->watchdog) {
         if (virAsprintf(&def->watchdog->info.alias, "watchdog%d", 0) < 0)
             goto no_memory;
@@ -3337,7 +3341,10 @@ char *
 qemuBuildVirtioSerialPortDevStr(virDomainChrDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virBufferAddLit(&buf, "virtserialport");
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE)
+        virBufferAddLit(&buf, "virtconsole");
+    else
+        virBufferAddLit(&buf, "virtserialport");
 
     if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         /* Check it's a virtio-serial address */
@@ -4544,6 +4551,41 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             ADD_ARG(devstr);
             break;
+        }
+    }
+
+    /* Explicit console devices */
+    if (def->console) {
+        virDomainChrDefPtr console = def->console;
+        char *devstr;
+
+        switch(console->targetType) {
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
+            if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
+                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                    _("virtio channel requires QEMU to support -device"));
+                goto error;
+            }
+
+            ADD_ARG_LIT("-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(console)))
+                goto error;
+            ADD_ARG(devstr);
+
+            ADD_ARG_LIT("-device");
+            if (!(devstr = qemuBuildVirtioSerialPortDevStr(console)))
+                goto error;
+            ADD_ARG(devstr);
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
+            break;
+
+        default:
+            qemuReportError(VIR_ERR_NO_SUPPORT,
+                            _("unsupported console target type %s"),
+                            NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
+            goto error;
         }
     }
 

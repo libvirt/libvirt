@@ -228,6 +228,7 @@ virDomainSnapshotAssignDef;
 virDomainObjAssignDef;
 virDomainChrDefForeach;
 virDomainDiskDefForeachPath;
+virDomainChrConsoleTargetTypeToString;
 
 
 # domain_event.h

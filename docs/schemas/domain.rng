@@ -1226,6 +1226,7 @@
         <value>xen</value>
         <value>serial</value>
         <value>uml</value>
+        <value>virtio</value>
       </choice>
     </attribute>
   </define>
@@ -1302,7 +1303,9 @@
           </optional>
           <empty/>
         </group>
-        <ref name="qemucdev"/>
+        <choice>
+          <ref name="qemucdev"/>
+        </choice>
       </choice>
     </element>
   </define>

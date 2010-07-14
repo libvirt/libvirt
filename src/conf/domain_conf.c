@@ -173,7 +173,8 @@ VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
               "serial",
               "xen",
-              "uml")
+              "uml",
+              "virtio")
 
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "monitor",
@@ -2426,13 +2427,12 @@ virDomainChrTargetTypeFromString(virCapsPtr caps,
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
         target = virDomainChrConsoleTargetTypeFromString(targetType);
-        /* Fall through */
+        break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     default:
         /* No target type yet*/
-        target = 0;
         break;
     }
 
@@ -4578,7 +4578,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
          * For HVM console actually created a serial device
          * while for non-HVM it was a parvirt console
          */
-        if (STREQ(def->os.type, "hvm")) {
+        if (STREQ(def->os.type, "hvm") &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
             if (def->nserials != 0) {
                 virDomainChrDefFree(chr);
             } else {
@@ -5122,7 +5123,7 @@ static int virDomainDefAddDiskControllersForType(virDomainDefPtr def,
 
 static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
 {
-    /* Look for any virtio serial device */
+    /* Look for any virtio serial or virtio console devs */
     int i;
 
     for (i = 0 ; i < def->nchannels ; i++) {
@@ -5132,6 +5133,21 @@ static int virDomainDefMaybeAddVirtioSerialController(virDomainDefPtr def)
             int idx = 0;
             if (channel->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
                 idx = channel->info.addr.vioserial.controller;
+
+            if (virDomainDefMaybeAddController(def,
+                VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx) < 0)
+                return -1;
+        }
+    }
+
+    if (def->console) {
+        virDomainChrDefPtr console = def->console;
+
+        if (console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
+            int idx = 0;
+            if (console->info.type ==
+                VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
+                idx = console->info.addr.vioserial.controller;
 
             if (virDomainDefMaybeAddController(def,
                 VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx) < 0)
@@ -5733,14 +5749,14 @@ virDomainChrDefFormat(virBufferPtr buf,
     virBufferVSprintf(buf, "    <%s type='%s'",
                       elementName, type);
     if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        def->target.port == 0 &&
         def->type == VIR_DOMAIN_CHR_TYPE_PTY &&
         !(flags & VIR_DOMAIN_XML_INACTIVE) &&
         def->data.file.path) {
-        virBufferEscapeString(buf, " tty='%s'>\n",
+        virBufferEscapeString(buf, " tty='%s'",
                               def->data.file.path);
-    } else {
-        virBufferAddLit(buf, ">\n");
     }
+    virBufferAddLit(buf, ">\n");
 
     switch (def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:

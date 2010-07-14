@@ -355,6 +355,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("channel-virtio-auto", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("console-virtio", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
 
     DO_TEST("watchdog", 0);
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |

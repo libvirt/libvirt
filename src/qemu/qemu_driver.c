@@ -2229,6 +2229,8 @@ qemudFindCharDevicePTYsMonitor(virDomainObjPtr vm,
     LOOKUP_PTYS(vm->def->serials,   vm->def->nserials,   "serial");
     LOOKUP_PTYS(vm->def->parallels, vm->def->nparallels, "parallel");
     LOOKUP_PTYS(vm->def->channels,  vm->def->nchannels,  "channel");
+    if (vm->def->console)
+        LOOKUP_PTYS(&vm->def->console, 1,  "console");
 #undef LOOKUP_PTYS
 
     return 0;

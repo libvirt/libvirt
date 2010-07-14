@@ -1132,8 +1132,16 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       This represents the primary console. This can be the paravirtualized
-      console with Xen guests, or duplicates the primary serial port for fully
-      virtualized guests without a paravirtualized console.
+      console with Xen guests, virtio console for QEMU/KVM, or duplicates
+      the primary serial port for fully virtualized guests without a
+      paravirtualized console.
+    </p>
+
+    <p>
+      A virtio console device is exposed in the
+      guest as /dev/hvc[0-7] (for more information, see
+      <a href="http://fedoraproject.org/wiki/Features/VirtioSerial">http://fedoraproject.org/wiki/Features/VirtioSerial</a>)
+      <span class="since">Since 0.8.3</span>
     </p>
 
 <pre>
@@ -1142,6 +1150,12 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;console type='pty'&gt;
       &lt;source path='/dev/pts/4'/&gt;
       &lt;target port='0'/&gt;
+    &lt;/console&gt;
+
+    &lt;!-- KVM virtio console --&gt;
+    &lt;console type='pty'&gt;
+      &lt;source path='/dev/pts/5'/&gt;
+      &lt;target type='virtio' port='0'/&gt;
     &lt;/console&gt;
   &lt;/devices&gt;
   ...</pre>
