@@ -1166,6 +1166,11 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source mode='bind' path='/tmp/guestfwd'/&gt;
       &lt;target type='guestfwd' address='10.0.2.1' port='4600'/&gt;
     &lt;/channel&gt;
+
+    &lt;!-- KVM virtio channel --&gt;
+    &lt;channel type='pty'&gt;
+      &lt;target type='virtio' name='arbitrary.virtio.serial.port.name'/&gt;
+    &lt;/channel&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -1182,6 +1187,13 @@ qemu-kvm -net nic,model=? /dev/null
         forwarded to the channel device on the host. The <code>target</code>
         element must have <code>address</code> and <code>port</code> attributes.
         <span class="since">Since 0.7.3</span></dd>
+
+      <dt><code>virtio</code></dt>
+      <dd>Paravirtualized virtio channel. Channel is exposed in the guest under
+        /dev/vport*, and if the optional element<code>name</code> is specified,
+        /dev/virtio-ports/$name (for more info, please see
+        <a href="http://fedoraproject.org/wiki/Features/VirtioSerial">http://fedoraproject.org/wiki/Features/VirtioSerial</a>)
+        <span class="since">Since 0.7.7</span></dd>
     </dl>
 
     <h5><a name="elementsCharHostInterface">Host interface</a></h5>
