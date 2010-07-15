@@ -25,5 +25,6 @@
     <video>
       <model type='cirrus' vram='9216' heads='1'/>
     </video>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -21,5 +21,6 @@
     </disk>
     <controller type='ide' index='0'/>
     <input type='tablet' bus='usb'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -28,5 +28,6 @@
       <source path='/dev/ttyS2'/>
       <target port='0'/>
     </console>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

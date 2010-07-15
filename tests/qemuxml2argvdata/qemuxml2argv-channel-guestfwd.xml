@@ -24,5 +24,6 @@
       <source path='/tmp/guestfwd'/>
       <target type='guestfwd' address='10.0.2.1' port='4600'/>
     </channel>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

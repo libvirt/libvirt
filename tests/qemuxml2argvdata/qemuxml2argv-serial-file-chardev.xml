@@ -28,5 +28,6 @@
       <source path='/tmp/serial.log'/>
       <target port='0'/>
     </console>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

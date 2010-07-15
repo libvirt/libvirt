@@ -2023,6 +2023,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCmdFlags)
         if (virAsprintf(&def->watchdog->info.alias, "watchdog%d", 0) < 0)
             goto no_memory;
     }
+    if (def->memballoon) {
+        if (virAsprintf(&def->memballoon->info.alias, "balloon%d", 0) < 0)
+            goto no_memory;
+    }
 
     return 0;
 
@@ -2296,8 +2300,17 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     }
 
     /* VirtIO balloon always at slot 3 by default */
-    if (qemuDomainPCIAddressReserveSlot(addrs, 3) < 0)
-        goto error;
+    if (def->memballoon &&
+        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+        def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        def->memballoon->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+        def->memballoon->info.addr.pci.domain = 0;
+        def->memballoon->info.addr.pci.bus = 0;
+        def->memballoon->info.addr.pci.slot = 3;
+        def->memballoon->info.addr.pci.function = 0;
+        if (qemuDomainPCIAddressReserveSlot(addrs, 3) < 0)
+            goto error;
+    }
 
     for (i = 0; i < def->ndisks ; i++) {
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -2895,6 +2908,29 @@ qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev)
     }
 
     virBufferVSprintf(&buf, "%s", model);
+    virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, &dev->info) < 0)
+        goto error;
+
+    if (virBufferError(&buf)) {
+        virReportOOMError();
+        goto error;
+    }
+
+    return virBufferContentAndReset(&buf);
+
+error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+char *
+qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "virtio-balloon-pci");
     virBufferVSprintf(&buf, ",id=%s", dev->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, &dev->info) < 0)
         goto error;
@@ -4771,12 +4807,25 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * NB: Earlier we declared that VirtIO balloon will always be in
      * slot 0x3 on bus 0x0
      */
-    if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
-        ADD_ARG_LIT("-device");
-        ADD_ARG_LIT("virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3");
-    } else if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
-        ADD_ARG_LIT("-balloon");
-        ADD_ARG_LIT("virtio");
+    if (def->memballoon) {
+        if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Memory balloon device type '%s' is not supported by this version of qemu"),
+                            virDomainMemballoonModelTypeToString(def->memballoon->model));
+            goto error;
+        }
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
+            char *optstr;
+            ADD_ARG_LIT("-device");
+
+            optstr = qemuBuildMemballoonDevStr(def->memballoon);
+            if (!optstr)
+                goto error;
+            ADD_ARG(optstr);
+        } else if (qemuCmdFlags & QEMUD_CMD_FLAG_BALLOON) {
+            ADD_ARG_LIT("-balloon");
+            ADD_ARG_LIT("virtio");
+        }
     }
 
     if (current_snapshot && current_snapshot->def->active) {
@@ -6344,6 +6393,15 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
             goto no_memory;
         }
         def->videos[def->nvideos++] = vid;
+    }
+
+    if (!def->memballoon) {
+        virDomainMemballoonDefPtr memballoon;
+        if (VIR_ALLOC(memballoon) < 0)
+            goto no_memory;
+        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
+
+        def->memballoon = memballoon;
     }
 
     VIR_FREE(nics);

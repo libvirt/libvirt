@@ -30,5 +30,6 @@
       <source mode='connect' host='127.0.0.1' service='9998'/>
       <target port='0'/>
     </console>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

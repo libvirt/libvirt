@@ -23,5 +23,6 @@
     </disk>
     <controller type='ide' index='0'/>
     <controller type='fdc' index='0'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

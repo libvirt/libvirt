@@ -19,5 +19,6 @@
       <target dev='hda' bus='ide'/>
     </disk>
     <watchdog model='ib700' action='poweroff'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -243,6 +243,8 @@ char * qemuBuildControllerDevStr(virDomainControllerDefPtr def);
 
 char * qemuBuildWatchdogDevStr(virDomainWatchdogDefPtr dev);
 
+char * qemuBuildMemballoonDevStr(virDomainMemballoonDefPtr dev);
+
 char * qemuBuildUSBInputDevStr(virDomainInputDefPtr dev);
 
 char * qemuBuildSoundDevStr(virDomainSoundDefPtr sound);

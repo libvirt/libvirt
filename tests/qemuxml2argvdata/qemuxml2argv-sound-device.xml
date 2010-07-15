@@ -22,5 +22,6 @@
     <sound model='es1370'/>
     <sound model='sb16'/>
     <sound model='ac97'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

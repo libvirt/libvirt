@@ -189,6 +189,10 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "pcspk",
               "ac97")
 
+VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
+              "virtio",
+              "xen");
+
 VIR_ENUM_IMPL(virDomainWatchdogModel, VIR_DOMAIN_WATCHDOG_MODEL_LAST,
               "i6300esb",
               "ib700")
@@ -558,6 +562,16 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
 }
 
 void virDomainSoundDefFree(virDomainSoundDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainDeviceInfoClear(&def->info);
+
+    VIR_FREE(def);
+}
+
+void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def)
 {
     if (!def)
         return;
@@ -1000,6 +1014,9 @@ int virDomainDeviceInfoIterate(virDomainDefPtr def,
             return -1;
     if (def->watchdog)
         if (cb(def, &def->watchdog->info, opaque) < 0)
+            return -1;
+    if (def->memballoon)
+        if (cb(def, &def->memballoon->info, opaque) < 0)
             return -1;
     if (def->console)
         if (cb(def, &def->console->info, opaque) < 0)
@@ -3170,6 +3187,40 @@ error:
 }
 
 
+static virDomainMemballoonDefPtr
+virDomainMemballoonDefParseXML(const xmlNodePtr node,
+                               int flags)
+{
+    char *model;
+    virDomainMemballoonDefPtr def;
+
+    if (VIR_ALLOC(def) < 0) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    model = virXMLPropString(node, "model");
+    if ((def->model = virDomainMemballoonModelTypeFromString(model)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unknown memory balloon model '%s'"), model);
+        goto error;
+    }
+
+    if (virDomainDeviceInfoParseXML(node, &def->info, flags) < 0)
+        goto error;
+
+cleanup:
+    VIR_FREE(model);
+
+    return def;
+
+error:
+    virDomainMemballoonDefFree(def);
+    def = NULL;
+    goto cleanup;
+}
+
+
 int
 virDomainVideoDefaultRAM(virDomainDefPtr def,
                          int type)
@@ -4634,6 +4685,41 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         VIR_FREE(nodes);
     }
 
+    /* analysis of the memballoon devices */
+    def->memballoon = NULL;
+    if ((n = virXPathNodeSet("./devices/memballoon", ctxt, &nodes)) < 0) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cannot extract memory balloon devices"));
+        goto error;
+    }
+    if (n > 1) {
+        virDomainReportError (VIR_ERR_INTERNAL_ERROR,
+                              "%s", _("only a single memory balloon device is supported"));
+        goto error;
+    }
+    if (n > 0) {
+        virDomainMemballoonDefPtr memballoon =
+            virDomainMemballoonDefParseXML(nodes[0], flags);
+        if (!memballoon)
+            goto error;
+
+        def->memballoon = memballoon;
+        VIR_FREE(nodes);
+    } else {
+        if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
+            def->virtType == VIR_DOMAIN_VIRT_QEMU ||
+            def->virtType == VIR_DOMAIN_VIRT_KQEMU ||
+            def->virtType == VIR_DOMAIN_VIRT_KVM) {
+            virDomainMemballoonDefPtr memballoon;
+            if (VIR_ALLOC(memballoon) < 0)
+                goto no_memory;
+            memballoon->model = def->virtType == VIR_DOMAIN_VIRT_XEN ?
+                VIR_DOMAIN_MEMBALLOON_MODEL_XEN :
+                VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
+            def->memballoon = memballoon;
+        }
+    }
+
     /* analysis of security label */
     if (virSecurityLabelDefParseXML(def, ctxt, flags) == -1)
         goto error;
@@ -5672,6 +5758,35 @@ virDomainSoundDefFormat(virBufferPtr buf,
 
 
 static int
+virDomainMemballoonDefFormat(virBufferPtr buf,
+                             virDomainMemballoonDefPtr def,
+                             int flags)
+{
+    const char *model = virDomainMemballoonModelTypeToString(def->model);
+
+    if (!model) {
+        virDomainReportError(VIR_ERR_INTERNAL_ERROR,
+                             _("unexpected memballoon model %d"), def->model);
+        return -1;
+    }
+
+    virBufferVSprintf(buf, "    <memballoon model='%s'",
+                      model);
+
+    if (virDomainDeviceInfoIsSet(&def->info)) {
+        virBufferAddLit(buf, ">\n");
+        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            return -1;
+        virBufferAddLit(buf, "    </memballoon>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainWatchdogDefFormat(virBufferPtr buf,
                            virDomainWatchdogDefPtr def,
                            int flags)
@@ -6279,6 +6394,9 @@ char *virDomainDefFormat(virDomainDefPtr def,
 
     if (def->watchdog)
         virDomainWatchdogDefFormat (&buf, def->watchdog, flags);
+
+    if (def->memballoon)
+        virDomainMemballoonDefFormat (&buf, def->memballoon, flags);
 
     virBufferAddLit(&buf, "  </devices>\n");
 

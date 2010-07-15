@@ -2360,6 +2360,8 @@ cleanup:
 
 #define QEMU_PCI_PRODUCT_DISK_VIRTIO 0x1001
 
+#define QEMU_PCI_PRODUCT_BALLOON_VIRTIO 0x1002
+
 #define QEMU_PCI_PRODUCT_NIC_NE2K     0x8029
 #define QEMU_PCI_PRODUCT_NIC_PCNET    0x2000
 #define QEMU_PCI_PRODUCT_NIC_RTL8139  0x8139
@@ -2568,6 +2570,25 @@ qemuGetPCIWatchdogVendorProduct(virDomainWatchdogDefPtr def,
 }
 
 
+static int
+qemuGetPCIMemballoonVendorProduct(virDomainMemballoonDefPtr def,
+                                  unsigned *vendor,
+                                  unsigned *product)
+{
+    switch (def->model) {
+    case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO:
+        *vendor = QEMU_PCI_VENDOR_REDHAT;
+        *product = QEMU_PCI_PRODUCT_BALLOON_VIRTIO;
+        break;
+
+    default:
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * This entire method assumes that PCI devices in 'info pci'
  * match ordering of devices specified on the command line
@@ -2649,7 +2670,7 @@ qemuDetectPCIAddresses(virDomainObjPtr vm,
             continue;
 
         if (qemuAssignNextPCIAddress(&(vm->def->sounds[i]->info),
-                                     vendor, product,
+                                    vendor, product,
                                      addrs,  naddrs) < 0) {
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("cannot find PCI address for sound adapter %s"),
@@ -2671,14 +2692,24 @@ qemuDetectPCIAddresses(virDomainObjPtr vm,
         }
     }
 
+    if (vm->def->memballoon &&
+        qemuGetPCIMemballoonVendorProduct(vm->def->memballoon, &vendor, &product) == 0) {
+        if (qemuAssignNextPCIAddress(&(vm->def->memballoon->info),
+                                     vendor, product,
+                                     addrs, naddrs) < 0) {
+            qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("cannot find PCI address for balloon %s"),
+                            virDomainMemballoonModelTypeToString(vm->def->memballoon->model));
+            return -1;
+        }
+    }
+
     /* XXX console (virtio) */
 
 
     /* ... and now things we don't have in our xml */
 
     /* XXX USB controller ? */
-
-    /* XXXX virtio balloon ? */
 
     /* XXX what about other PCI devices (ie bridges) */
 

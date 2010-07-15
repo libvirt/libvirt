@@ -560,6 +560,22 @@ struct _virDomainHostdevDef {
     virDomainDeviceInfo info; /* Guest address */
 };
 
+
+enum {
+    VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO,
+    VIR_DOMAIN_MEMBALLOON_MODEL_XEN,
+
+    VIR_DOMAIN_MEMBALLOON_MODEL_LAST
+};
+
+typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
+typedef virDomainMemballoonDef *virDomainMemballoonDefPtr;
+struct _virDomainMemballoonDef {
+    int model;
+    virDomainDeviceInfo info;
+};
+
+
 /* Flags for the 'type' field in next struct */
 enum virDomainDeviceType {
     VIR_DOMAIN_DEVICE_DISK,
@@ -871,6 +887,7 @@ struct _virDomainDef {
     virDomainChrDefPtr console;
     virSecurityLabelDef seclabel;
     virDomainWatchdogDefPtr watchdog;
+    virDomainMemballoonDefPtr memballoon;
     virCPUDefPtr cpu;
 };
 
@@ -931,6 +948,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
+void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def);
@@ -1109,6 +1127,7 @@ VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChrTarget)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainWatchdogModel)
 VIR_ENUM_DECL(virDomainWatchdogAction)
 VIR_ENUM_DECL(virDomainVideo)

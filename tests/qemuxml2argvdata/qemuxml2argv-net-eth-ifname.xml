@@ -25,5 +25,6 @@
       <script path='/etc/qemu-ifup'/>
       <target dev='nic02'/>
     </interface>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

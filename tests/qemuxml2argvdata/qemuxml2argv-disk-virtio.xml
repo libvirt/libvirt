@@ -34,5 +34,6 @@
       <target dev='vdb' bus='virtio'/>
     </disk>
     <controller type='ide' index='0'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

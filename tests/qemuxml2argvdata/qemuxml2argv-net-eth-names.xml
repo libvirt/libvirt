@@ -29,5 +29,6 @@
       <script path='/etc/qemu-ifup'/>
       <model type='e1000'/>
     </interface>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

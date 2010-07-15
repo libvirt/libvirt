@@ -30,5 +30,6 @@
       <address type='drive' controller='0' bus='1' unit='0'/>
     </disk>
     <controller type='ide' index='0'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

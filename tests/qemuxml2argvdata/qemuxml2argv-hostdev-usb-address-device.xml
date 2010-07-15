@@ -23,5 +23,6 @@
         <address bus='14' device='6'/>
       </source>
     </hostdev>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

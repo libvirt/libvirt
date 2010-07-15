@@ -27,5 +27,6 @@
       <target type='virtio' name='org.linux-kvm.port.foo'/>
       <address type='virtio-serial' controller='1' bus='0' port='3'/>
     </channel>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

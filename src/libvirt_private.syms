@@ -170,6 +170,8 @@ virDomainSaveStatus;
 virDomainSoundDefFree;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;
+virDomainMemballoonModelTypeFromString;
+virDomainMemballoonModelTypeToString;
 virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
 virDomainWatchdogActionTypeFromString;

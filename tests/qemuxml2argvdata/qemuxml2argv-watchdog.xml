@@ -21,5 +21,6 @@
     </disk>
     <controller type='ide' index='0'/>
     <watchdog model='ib700' action='poweroff'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

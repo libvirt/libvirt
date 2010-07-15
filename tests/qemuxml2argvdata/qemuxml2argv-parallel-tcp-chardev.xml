@@ -25,5 +25,6 @@
       <protocol type='raw'/>
       <target port='0'/>
     </parallel>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

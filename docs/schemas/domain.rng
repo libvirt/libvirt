@@ -1310,6 +1310,19 @@
       </optional>
     </element>
   </define>
+  <define name="memballoon">
+    <element name="memballoon">
+      <attribute name="model">
+        <choice>
+          <value>virtio</value>
+          <value>xen</value>
+        </choice>
+      </attribute>
+      <optional>
+        <ref name="address"/>
+      </optional>
+    </element>
+  </define>
   <define name="parallel">
     <element name="parallel">
       <ref name="qemucdev"/>
@@ -1515,6 +1528,9 @@
         </zeroOrMore>
         <optional>
           <ref name="watchdog"/>
+        </optional>
+        <optional>
+          <ref name="memballoon"/>
         </optional>
       </interleave>
     </element>

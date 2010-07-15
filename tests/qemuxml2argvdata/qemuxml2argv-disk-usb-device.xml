@@ -22,5 +22,6 @@
       <source file='/tmp/usbdisk.img'/>
       <target dev='sda' bus='usb'/>
     </disk>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

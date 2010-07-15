@@ -25,5 +25,6 @@
     <video>
       <model type='xen' vram='4096' heads='1'/>
     </video>
+    <memballoon model='virtio'/>
   </devices>
 </domain>

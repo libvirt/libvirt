@@ -59,6 +59,7 @@ cat <<\EOF > D.xml || fail=1
     </console>
     <sound model='pcspk'/>
     <sound model='es1370'/>
+    <memballoon model='virtio'/>
   </devices>
 </domain>
 EOF

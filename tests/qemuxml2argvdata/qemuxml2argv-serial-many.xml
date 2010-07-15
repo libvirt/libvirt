@@ -30,5 +30,6 @@
     <console type='pty'>
       <target port='0'/>
     </console>
+    <memballoon model='virtio'/>
   </devices>
 </domain>
