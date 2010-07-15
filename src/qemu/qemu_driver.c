@@ -824,7 +824,7 @@ getVolumeQcowPassphrase(virConnectPtr conn,
     enc = disk->encryption;
 
     if (!conn) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
                         "%s", _("cannot find secrets without a connection"));
         goto cleanup;
     }
@@ -7566,7 +7566,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     int vlan;
 
     if (!(qemuCmdFlags & QEMUD_CMD_FLAG_HOST_NET_ADD)) {
-        qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("installed qemu version does not support host_net_add"));
         return -1;
     }
@@ -7574,7 +7574,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("network device type '%s' cannot be attached: "
                               "qemu is not using a unix socket monitor"),
                             virDomainNetTypeToString(net->type));
@@ -7585,7 +7585,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
             return -1;
     } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (priv->monConfig->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("network device type '%s' cannot be attached: "
                             "qemu is not using a unix socket monitor"),
                             virDomainNetTypeToString(net->type));
@@ -7618,7 +7618,7 @@ static int qemudDomainAttachNetDevice(virConnectPtr conn,
         vlan = qemuDomainNetVLAN(net);
 
         if (vlan < 0) {
-            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("Unable to attach network devices without vlan"));
             goto cleanup;
         }
@@ -7954,7 +7954,7 @@ static int qemudDomainAttachHostDevice(struct qemud_driver *driver,
                                        unsigned long long qemuCmdFlags)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("hostdev mode '%s' not supported"),
                         virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
@@ -7997,7 +7997,7 @@ static int qemudDomainAttachHostDevice(struct qemud_driver *driver,
         break;
 
     default:
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("hostdev subsys type '%s' not supported"),
                         virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
         goto error;
@@ -8094,7 +8094,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
                 if (ret == 0)
                     dev->data.disk = NULL;
             } else {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 _("disk bus '%s' cannot be hotplugged."),
                                 virDomainDiskBusTypeToString(dev->data.disk->bus));
                 /* fallthrough */
@@ -8102,7 +8102,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             break;
 
         default:
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk device type '%s' cannot be hotplugged"),
                             virDomainDiskDeviceTypeToString(dev->data.disk->device));
             /* Fallthrough */
@@ -8119,7 +8119,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
             if (ret == 0)
                 dev->data.controller = NULL;
         } else {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk controller bus '%s' cannot be hotplugged."),
                             virDomainControllerTypeToString(dev->data.controller->type));
             /* fallthrough */
@@ -8135,7 +8135,7 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
         if (ret == 0)
             dev->data.hostdev = NULL;
     } else {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("device type '%s' cannot be attached"),
                         virDomainDeviceTypeToString(dev->type));
         goto endjob;
@@ -8324,7 +8324,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
 
         default:
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk bus '%s' cannot be updated."),
                             virDomainDiskBusTypeToString(dev->data.disk->bus));
             break;
@@ -8342,7 +8342,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         break;
 
     default:
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("disk device type '%s' cannot be updated"),
                         virDomainDiskDeviceTypeToString(dev->data.disk->device));
         break;
@@ -8922,7 +8922,7 @@ static int qemudDomainDetachHostDevice(struct qemud_driver *driver,
     int ret;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("hostdev mode '%s' not supported"),
                         virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
@@ -8936,7 +8936,7 @@ static int qemudDomainDetachHostDevice(struct qemud_driver *driver,
         ret = qemudDomainDetachHostUsbDevice(driver, vm, dev, qemuCmdFlags);
         break;
     default:
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("hostdev subsys type '%s' not supported"),
                         virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
         return -1;
@@ -8998,7 +8998,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
                                                   qemuCmdFlags);
         }
         else {
-            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("This type of disk cannot be hot unplugged"));
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
@@ -9008,7 +9008,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
             ret = qemudDomainDetachPciControllerDevice(driver, vm, dev,
                                                        qemuCmdFlags);
         } else {
-            qemuReportError(VIR_ERR_NO_SUPPORT,
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("disk controller bus '%s' cannot be hotunplugged."),
                             virDomainControllerTypeToString(dev->data.controller->type));
             /* fallthrough */
@@ -9016,7 +9016,7 @@ static int qemudDomainDetachDevice(virDomainPtr dom,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         ret = qemudDomainDetachHostDevice(driver, vm, dev, qemuCmdFlags);
     } else {
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         "%s", _("This type of device cannot be hot unplugged"));
     }
 

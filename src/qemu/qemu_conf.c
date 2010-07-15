@@ -1843,7 +1843,7 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
         ret = virAsprintf(&devname, "xenblk%d", devid);
         break;
     default:
-        qemuReportError(VIR_ERR_NO_SUPPORT,
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("Unsupported disk name mapping for bus '%s'"),
                         virDomainDiskBusTypeToString(disk->bus));
         return -1;
@@ -3394,7 +3394,7 @@ qemuBuildCpuArgStr(const struct qemud_driver *driver,
             goto cleanup;
 
         if (!ncpus || !host) {
-            qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                             _("CPU specification not supported by hypervisor"));
             goto cleanup;
         }
@@ -3568,7 +3568,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (migrateFrom) {
         if (STRPREFIX(migrateFrom, "tcp")) {
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_TCP)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 "%s", _("TCP migration is not supported with this QEMU binary"));
                 return -1;
             }
@@ -3576,13 +3576,13 @@ int qemudBuildCommandLine(virConnectPtr conn,
             if (qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC) {
                 migrateFrom = "exec:cat";
             } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_KVM_STDIO)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 "%s", _("STDIO migration is not supported with this QEMU binary"));
                 return -1;
             }
         } else if (STRPREFIX(migrateFrom, "exec")) {
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_MIGRATE_QEMU_EXEC)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 "%s", _("STDIO migration is not supported with this QEMU binary"));
                 return -1;
             }
@@ -4034,7 +4034,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
             /* QEMU doesn't implement a SATA driver */
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 "%s", _("SATA is not supported with this QEMU binary"));
                 goto error;
             }
@@ -4390,7 +4390,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         case VIR_DOMAIN_CHR_TARGET_TYPE_GUESTFWD:
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_CHARDEV) ||
                 !(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT,
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                 "%s", _("guestfwd requires QEMU to support -chardev & -device"));
                 goto error;
             }
@@ -4415,7 +4415,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
         case VIR_DOMAIN_CHR_TARGET_TYPE_VIRTIO:
             if (!(qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
-                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                     _("virtio channel requires QEMU to support -device"));
                 goto error;
             }
@@ -4747,7 +4747,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                     goto error;
                 ADD_ARG(devstr);
             } else {
-                qemuReportError(VIR_ERR_NO_SUPPORT, "%s",
+                qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                 _("PCI device assignment is not supported by this version of qemu"));
                 goto error;
             }
