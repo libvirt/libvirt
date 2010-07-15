@@ -531,6 +531,21 @@ static void qemuDomainObjExitMonitorWithDriver(struct qemud_driver *driver, virD
     }
 }
 
+static void qemuDomainObjEnterRemoteWithDriver(struct qemud_driver *driver,
+                                               virDomainObjPtr obj)
+{
+    virDomainObjRef(obj);
+    virDomainObjUnlock(obj);
+    qemuDriverUnlock(driver);
+}
+
+static void qemuDomainObjExitRemoteWithDriver(struct qemud_driver *driver,
+                                              virDomainObjPtr obj)
+{
+    qemuDriverLock(driver);
+    virDomainObjLock(obj);
+    virDomainObjUnref(obj);
+}
 
 static int qemuCgroupControllerActive(struct qemud_driver *driver,
                                       int controller)
@@ -10797,13 +10812,24 @@ static int doTunnelMigrate(virDomainPtr dom,
         /* virStreamNew only fails on OOM, and it reports the error itself */
         goto cleanup;
 
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
     internalret = dconn->driver->domainMigratePrepareTunnel(dconn, st,
                                                             flags, dname,
                                                             resource, dom_xml);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
 
     if (internalret < 0)
         /* domainMigratePrepareTunnel sets the error for us */
         goto cleanup;
+
+    /* the domain may have shutdown or crashed while we had the locks dropped
+     * in qemuDomainObjEnterRemoteWithDriver, so check again
+     */
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto cleanup;
+    }
 
     /*   3. start migration on source */
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
@@ -10877,8 +10903,10 @@ cancel:
 
 finish:
     dname = dname ? dname : dom->name;
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, NULL, 0, uri, flags, retval);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
 
 cleanup:
     if (client_sock != -1)
@@ -10917,18 +10945,31 @@ static int doNonTunnelMigrate(virDomainPtr dom,
     virDomainPtr ddomain = NULL;
     int retval = -1;
     char *uri_out = NULL;
+    int rc;
 
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
     /* NB we don't pass 'uri' into this, since that's the libvirtd
      * URI in this context - so we let dest pick it */
-    if (dconn->driver->domainMigratePrepare2(dconn,
-                                             NULL, /* cookie */
-                                             0, /* cookielen */
-                                             NULL, /* uri */
-                                             &uri_out,
-                                             flags, dname,
-                                             resource, dom_xml) < 0)
+    rc = dconn->driver->domainMigratePrepare2(dconn,
+                                              NULL, /* cookie */
+                                              0, /* cookielen */
+                                              NULL, /* uri */
+                                              &uri_out,
+                                              flags, dname,
+                                              resource, dom_xml);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
+    if (rc < 0)
         /* domainMigratePrepare2 sets the error for us */
         goto cleanup;
+
+    /* the domain may have shutdown or crashed while we had the locks dropped
+     * in qemuDomainObjEnterRemoteWithDriver, so check again
+     */
+    if (!virDomainObjIsActive(vm)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("guest unexpectedly quit"));
+        goto cleanup;
+    }
 
     if (uri_out == NULL) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -10943,8 +10984,10 @@ static int doNonTunnelMigrate(virDomainPtr dom,
 
 finish:
     dname = dname ? dname : dom->name;
+    qemuDomainObjEnterRemoteWithDriver(driver, vm);
     ddomain = dconn->driver->domainMigrateFinish2
         (dconn, dname, NULL, 0, uri_out, flags, retval);
+    qemuDomainObjExitRemoteWithDriver(driver, vm);
 
     if (ddomain)
         virUnrefDomain(ddomain);
