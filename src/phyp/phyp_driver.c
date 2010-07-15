@@ -380,12 +380,10 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
     int system_type = phyp_driver->system_type;
     char *managed_system = phyp_driver->managed_system;
     int exit_status = 0;
-    int got = 0;
-    char *char_ptr;
-    unsigned int i = 0, j = 0;
-    char id_c[10];
+    int got = -1;
     char *cmd = NULL;
     char *ret = NULL;
+    char *line, *next_line;
     const char *state;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -393,8 +391,6 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
         state = "|grep Running";
     else
         state = " ";
-
-    memset(id_c, 0, 10);
 
     virBufferAddLit(&buf, "lssyscfg -r lpar");
     if (system_type == HMC)
@@ -410,37 +406,28 @@ phypListDomainsGeneric(virConnectPtr conn, int *ids, int nids,
 
     ret = phypExec(session, cmd, &exit_status, conn);
 
-    /* I need to parse the textual return in order to get the ret */
     if (exit_status < 0 || ret == NULL)
         goto err;
-    else {
-        while (got < nids) {
-            if (ret[i] == '\0')
-                break;
-            else if (ret[i] == '\n') {
-                if (virStrToLong_i(id_c, &char_ptr, 10, &ids[got]) == -1) {
-                    VIR_ERROR(_("Cannot parse number from '%s'"), id_c);
-                    goto err;
-                }
-                memset(id_c, 0, 10);
-                j = 0;
-                got++;
-            } else {
-                id_c[j] = ret[i];
-                j++;
-            }
-            i++;
-        }
-    }
 
-    VIR_FREE(cmd);
-    VIR_FREE(ret);
-    return got;
+    /* I need to parse the textual return in order to get the ids */
+    line = ret;
+    got = 0;
+    while (*line && got < nids) {
+        if (virStrToLong_i(line, &next_line, 10, &ids[got]) == -1) {
+            VIR_ERROR(_("Cannot parse number from '%s'"), line);
+            got = -1;
+            goto err;
+        }
+        got++;
+        line = next_line;
+        while (*line == '\n')
+            line++; /* skip \n */
+    }
 
   err:
     VIR_FREE(cmd);
     VIR_FREE(ret);
-    return -1;
+    return got;
 }
 
 static int
