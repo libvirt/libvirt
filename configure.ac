@@ -1970,12 +1970,14 @@ AC_ARG_ENABLE([test-coverage],
 enable_coverage=$enableval
 
 if test "${enable_coverage}" = yes; then
-  COMPILER_FLAGS=
-  gl_COMPILER_FLAGS(-fprofile-arcs)
-  gl_COMPILER_FLAGS(-ftest-coverage)
-  AC_SUBST([COVERAGE_CFLAGS], [$COMPILER_FLAGS])
-  AC_SUBST([COVERAGE_LDFLAGS], [$COMPILER_FLAGS])
-  COMPILER_FLAGS=
+  save_WARN_CFLAGS=$WARN_CFLAGS
+  WARN_CFLAGS=
+  gl_WARN_ADD([-fprofile-arcs])
+  gl_WARN_ADD([-ftest-coverage])
+  COVERAGE_FLAGS=$WARN_CFLAGS
+  AC_SUBST([COVERAGE_CFLAGS], [$COVERAGE_FLAGS])
+  AC_SUBST([COVERAGE_LDFLAGS], [$COVERAGE_FLAGS])
+  WARN_CFLAGS=$save_WARN_CFLAGS
 fi
 
 AC_ARG_ENABLE([test-oom],
@@ -2538,6 +2540,7 @@ AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([        Debug: $enable_debug])
 AC_MSG_NOTICE([     Warnings: $enable_compile_warnings])
+AC_MSG_NOTICE([Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([     Readline: $lv_use_readline])
 AC_MSG_NOTICE([       Python: $with_python])
 AC_MSG_NOTICE([       DTrace: $with_dtrace])
