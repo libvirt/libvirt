@@ -6495,11 +6495,11 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         allocStrLength = stringLength;
 
     /* Display the string lengths for debugging */
-    vshDebug(ctl, 5, "Longest name string = %lu chars\n", nameStrLength);
-    vshDebug(ctl, 5, "Longest path string = %lu chars\n", pathStrLength);
-    vshDebug(ctl, 5, "Longest type string = %lu chars\n", typeStrLength);
-    vshDebug(ctl, 5, "Longest capacity string = %lu chars\n", capStrLength);
-    vshDebug(ctl, 5, "Longest allocation string = %lu chars\n", allocStrLength);
+    vshDebug(ctl, 5, "Longest name string = %zu chars\n", nameStrLength);
+    vshDebug(ctl, 5, "Longest path string = %zu chars\n", pathStrLength);
+    vshDebug(ctl, 5, "Longest type string = %zu chars\n", typeStrLength);
+    vshDebug(ctl, 5, "Longest capacity string = %zu chars\n", capStrLength);
+    vshDebug(ctl, 5, "Longest allocation string = %zu chars\n", allocStrLength);
 
     /* Create the output template */
     ret = virAsprintf(&outputStr,
