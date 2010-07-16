@@ -914,7 +914,8 @@ int lxcContainerStart(virDomainDefPtr def,
     return pid;
 }
 
-static int lxcContainerDummyChild(void *argv ATTRIBUTE_UNUSED)
+ATTRIBUTE_NORETURN static int
+lxcContainerDummyChild(void *argv ATTRIBUTE_UNUSED)
 {
     _exit(0);
 }

@@ -63,7 +63,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         dontwarn="$dontwarn -Wconversion"
         dontwarn="$dontwarn -Wsign-conversion"
         dontwarn="$dontwarn -Wold-style-definition"
-        dontwarn="$dontwarn -Wmissing-noreturn"
         dontwarn="$dontwarn -Wpacked"
         dontwarn="$dontwarn -Wunused-macros"
         dontwarn="$dontwarn -Woverlength-strings"
