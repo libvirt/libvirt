@@ -67,7 +67,7 @@ virtTestCountAverage(double *items, int nitems)
     return (double) (sum / nitems);
 }
 
-
+ATTRIBUTE_FMT_PRINTF(3,4)
 void virtTestResult(const char *name, int ret, const char *msg, ...)
 {
     va_list vargs;

@@ -67,7 +67,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         dontwarn="$dontwarn -Wpacked"
         dontwarn="$dontwarn -Wunused-macros"
         dontwarn="$dontwarn -Woverlength-strings"
-        dontwarn="$dontwarn -Wmissing-format-attribute"
         dontwarn="$dontwarn -Wstack-protector"
 
         # Get all possible GCC warnings

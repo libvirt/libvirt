@@ -243,7 +243,8 @@ static int vshInit(vshControl *ctl);
 static int vshDeinit(vshControl *ctl);
 static void vshUsage(void);
 static void vshOpenLogFile(vshControl *ctl);
-static void vshOutputLogFile(vshControl *ctl, int log_level, const char *format, va_list ap);
+static void vshOutputLogFile(vshControl *ctl, int log_level, const char *format, va_list ap)
+    ATTRIBUTE_FMT_PRINTF(3, 0);
 static void vshCloseLogFile(vshControl *ctl);
 
 static int vshParseArgv(vshControl *ctl, int argc, char **argv);
