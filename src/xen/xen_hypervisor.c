@@ -3621,7 +3621,7 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
  * Return true if the current process should be able to connect to Xen.
  */
 int
-xenHavePrivilege()
+xenHavePrivilege(void)
 {
 #ifdef __sun
     return priv_ineffect (PRIV_XVM_CONTROL);

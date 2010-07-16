@@ -457,14 +457,14 @@ virTestGetFlag(const char *name) {
 }
 
 unsigned int
-virTestGetDebug() {
+virTestGetDebug(void) {
     if (testDebug == -1)
         testDebug = virTestGetFlag("VIR_TEST_DEBUG");
     return testDebug;
 }
 
 unsigned int
-virTestGetVerbose() {
+virTestGetVerbose(void) {
     if (testVerbose == -1)
         testVerbose = virTestGetFlag("VIR_TEST_VERBOSE");
     return testVerbose || virTestGetDebug();
