@@ -1188,6 +1188,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
      */
     switch (productVersion) {
       case esxVI_ProductVersion_ESX35:
+      case esxVI_ProductVersion_VPX25:
         if (virtualHW_version != 4) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry 'virtualHW.version' to be 4 "
@@ -1200,6 +1201,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
       case esxVI_ProductVersion_GSX20:
       case esxVI_ProductVersion_ESX40:
+      case esxVI_ProductVersion_VPX40:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "

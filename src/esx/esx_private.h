@@ -33,6 +33,7 @@
                          __LINE__, __VA_ARGS__)
 
 typedef struct _esxPrivate {
+    esxVI_Context *primary; /* points to host or vCenter */
     esxVI_Context *host;
     esxVI_Context *vCenter;
     virCapsPtr caps;

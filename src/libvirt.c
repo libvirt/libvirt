@@ -1224,6 +1224,7 @@ do_open (const char *name,
              STRCASEEQ(ret->uri->scheme, "phyp") ||
 #endif
 #ifndef WITH_ESX
+             STRCASEEQ(ret->uri->scheme, "vpx") ||
              STRCASEEQ(ret->uri->scheme, "esx") ||
              STRCASEEQ(ret->uri->scheme, "gsx") ||
 #endif

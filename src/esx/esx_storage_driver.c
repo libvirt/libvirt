@@ -74,11 +74,11 @@ esxNumberOfStoragePools(virConnectPtr conn)
     esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *datastore = NULL;
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
-    if (esxVI_LookupObjectContentByType(priv->host, priv->host->datacenter,
+    if (esxVI_LookupObjectContentByType(priv->primary, priv->primary->datacenter,
                                         "Datastore", NULL, esxVI_Boolean_True,
                                         &datastoreList) < 0) {
         return -1;
@@ -117,13 +117,13 @@ esxListStoragePools(virConnectPtr conn, char **const names, int maxnames)
         return 0;
     }
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "summary.name") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->datacenter,
+        esxVI_LookupObjectContentByType(priv->primary, priv->primary->datacenter,
                                         "Datastore", propertyNameList,
                                         esxVI_Boolean_True,
                                         &datastoreList) < 0) {
@@ -209,7 +209,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     char *realName = NULL;
     virStoragePoolPtr pool = NULL;
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
@@ -217,7 +217,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
                                            "summary.accessible\0"
                                            "summary.name\0"
                                            "summary.url\0") < 0 ||
-        esxVI_LookupDatastoreByName(priv->host, name,
+        esxVI_LookupDatastoreByName(priv->primary, name,
                                     propertyNameList, &datastore,
                                     esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetBoolean(datastore, "summary.accessible",
@@ -242,7 +242,8 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
      *
      * The 'summary.url' property of an inaccessible datastore is invalid.
      */
-    if (accessible == esxVI_Boolean_True &&
+    /* FIXME: Need to handle this for a vpx:// connection */
+    if (accessible == esxVI_Boolean_True && priv->host != NULL &&
         priv->host->productVersion & esxVI_ProductVersion_ESX) {
         if (esxVI_GetStringValue(datastore, "summary.url", &summaryUrl,
                                  esxVI_Occurrence_RequiredItem) < 0) {
@@ -307,7 +308,9 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     char *name = NULL;
     virStoragePoolPtr pool = NULL;
 
-    if (! (priv->host->productVersion & esxVI_ProductVersion_ESX)) {
+    /* FIXME: Need to handle this for a vpx:// connection */
+    if (priv->host == NULL ||
+        ! (priv->host->productVersion & esxVI_ProductVersion_ESX)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                   _("Lookup by UUID is supported on ESX only"));
         return NULL;
@@ -389,13 +392,13 @@ esxStoragePoolRefresh(virStoragePoolPtr pool, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
-    if (esxVI_LookupDatastoreByName(priv->host, pool->name, NULL, &datastore,
+    if (esxVI_LookupDatastoreByName(priv->primary, pool->name, NULL, &datastore,
                                     esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_RefreshDatastore(priv->host, datastore->obj) < 0) {
+        esxVI_RefreshDatastore(priv->primary, datastore->obj) < 0) {
         goto cleanup;
     }
 
@@ -421,7 +424,7 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
 
     memset(info, 0, sizeof (*info));
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
@@ -429,7 +432,7 @@ esxStoragePoolGetInfo(virStoragePoolPtr pool, virStoragePoolInfoPtr info)
                                            "summary.accessible\0"
                                            "summary.capacity\0"
                                            "summary.freeSpace\0") < 0 ||
-        esxVI_LookupDatastoreByName(priv->host, pool->name,
+        esxVI_LookupDatastoreByName(priv->primary, pool->name,
                                     propertyNameList, &datastore,
                                     esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetBoolean(datastore, "summary.accessible",
@@ -494,7 +497,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
     memset(&def, 0, sizeof (def));
 
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
@@ -503,7 +506,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
                                            "summary.capacity\0"
                                            "summary.freeSpace\0"
                                            "info\0") < 0 ||
-        esxVI_LookupDatastoreByName(priv->host, pool->name,
+        esxVI_LookupDatastoreByName(priv->primary, pool->name,
                                     propertyNameList, &datastore,
                                     esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetBoolean(datastore, "summary.accessible",
