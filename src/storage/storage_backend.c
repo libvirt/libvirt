@@ -232,7 +232,6 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (fstat(fd, &st) == -1) {
-        ret = errno;
         virReportSystemError(errno, _("stat of '%s' failed"),
                              vol->target.path);
         goto cleanup;
