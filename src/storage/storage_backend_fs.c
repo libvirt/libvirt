@@ -567,8 +567,8 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 VIR_DIR_CREATE_FORCE_PERMS |
                                 VIR_DIR_CREATE_ALLOW_EXIST |
                                 (pool->def->type == VIR_STORAGE_POOL_NETFS
-                                 ? VIR_DIR_CREATE_AS_UID : 0)) != 0)) {
-            virReportSystemError(err, _("cannot create path '%s'"),
+                                 ? VIR_DIR_CREATE_AS_UID : 0)) < 0)) {
+            virReportSystemError(-err, _("cannot create path '%s'"),
                                  pool->def->target.path);
             goto error;
         }
@@ -793,8 +793,8 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
                             uid, gid,
                             VIR_DIR_CREATE_FORCE_PERMS |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
-                             ? VIR_DIR_CREATE_AS_UID : 0))) != 0) {
-        virReportSystemError(err, _("cannot create path '%s'"),
+                             ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
+        virReportSystemError(-err, _("cannot create path '%s'"),
                              vol->target.path);
         return -1;
     }
