@@ -116,13 +116,14 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 {
     int inputfd = -1;
     int amtread = -1;
-    int ret = -1;
+    int ret = 0;
     unsigned long long remain;
     size_t bytes = 1024 * 1024;
     char zerobuf[512];
     char *buf = NULL;
 
     if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
+        ret = -errno;
         virReportSystemError(errno,
                              _("could not open input path '%s'"),
                              inputvol->target.path);
@@ -132,6 +133,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     bzero(&zerobuf, sizeof(zerobuf));
 
     if (VIR_ALLOC_N(buf, bytes) < 0) {
+        ret = -errno;
         virReportOOMError();
         goto cleanup;
     }
@@ -145,6 +147,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
             bytes = remain;
 
         if ((amtread = saferead(inputfd, buf, bytes)) < 0) {
+            ret = -errno;
             virReportSystemError(errno,
                                  _("failed reading from file '%s'"),
                                  inputvol->target.path);
@@ -161,12 +164,14 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 
             if (is_dest_file && memcmp(buf+offset, zerobuf, interval) == 0) {
                 if (lseek(fd, interval, SEEK_CUR) < 0) {
+                    ret = -errno;
                     virReportSystemError(errno,
                                          _("cannot extend file '%s'"),
                                          vol->target.path);
                     goto cleanup;
                 }
             } else if (safewrite(fd, buf+offset, interval) < 0) {
+                ret = -errno;
                 virReportSystemError(errno,
                                      _("failed writing to file '%s'"),
                                      vol->target.path);
@@ -177,6 +182,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     }
 
     if (inputfd != -1 && close(inputfd) < 0) {
+        ret = -errno;
         virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              inputvol->target.path);
@@ -185,7 +191,6 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     inputfd = -1;
 
     *total -= remain;
-    ret = 0;
 
 cleanup:
     if (inputfd != -1)
