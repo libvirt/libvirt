@@ -288,9 +288,10 @@ static int createRawFileOpHook(int fd, void *data) {
     if (hdata->inputvol) {
         int res = virStorageBackendCopyToFD(hdata->vol, hdata->inputvol,
                                             fd, &remain, 1);
-        if (res < 0)
+        if (res < 0) {
             ret = -res;
             goto cleanup;
+        }
     }
 
     if (remain) {
