@@ -276,7 +276,7 @@ static int createRawFileOpHook(int fd, void *data) {
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
     if (ftruncate(fd, hdata->vol->capacity) < 0) {
-        ret = errno;
+        ret = -errno;
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
                              hdata->vol->target.path);
@@ -286,10 +286,9 @@ static int createRawFileOpHook(int fd, void *data) {
     remain = hdata->vol->allocation;
 
     if (hdata->inputvol) {
-        int res = virStorageBackendCopyToFD(hdata->vol, hdata->inputvol,
-                                            fd, &remain, 1);
-        if (res < 0) {
-            ret = -res;
+        ret = virStorageBackendCopyToFD(hdata->vol, hdata->inputvol,
+                                        fd, &remain, 1);
+        if (ret < 0) {
             goto cleanup;
         }
     }
@@ -308,7 +307,7 @@ static int createRawFileOpHook(int fd, void *data) {
                     bytes = remain;
                 if (safezero(fd, 0, hdata->vol->allocation - remain,
                              bytes) != 0) {
-                    ret = errno;
+                    ret = -errno;
                     virReportSystemError(errno, _("cannot fill file '%s'"),
                                          hdata->vol->target.path);
                     goto cleanup;
@@ -317,7 +316,7 @@ static int createRawFileOpHook(int fd, void *data) {
             }
         } else { /* No progress bars to be shown */
             if (safezero(fd, 0, 0, remain) != 0) {
-                ret = errno;
+                ret = -errno;
                 virReportSystemError(errno, _("cannot fill file '%s'"),
                                      hdata->vol->target.path);
                 goto cleanup;
@@ -327,7 +326,7 @@ static int createRawFileOpHook(int fd, void *data) {
     }
 
     if (fsync(fd) < 0) {
-        ret = errno;
+        ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              hdata->vol->target.path);
         goto cleanup;
@@ -365,7 +364,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
                                        VIR_FILE_OP_FORCE_PERMS |
                                        (pool->def->type == VIR_STORAGE_POOL_NETFS
                                         ? VIR_FILE_OP_AS_UID : 0))) < 0) {
-    virReportSystemError(createstat,
+    virReportSystemError(-createstat,
                          _("cannot create path '%s'"),
                          vol->target.path);
     goto cleanup;

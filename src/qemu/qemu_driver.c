@@ -4992,12 +4992,13 @@ struct fileOpHookData {
     struct qemud_save_header *header;
 };
 
+/* return -errno on failure, or 0 on success */
 static int qemudDomainSaveFileOpHook(int fd, void *data) {
     struct fileOpHookData *hdata = data;
     int ret = 0;
 
     if (safewrite(fd, hdata->header, sizeof(*hdata->header)) != sizeof(*hdata->header)) {
-        ret = errno;
+        ret = -errno;
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                         _("failed to write header to domain save file '%s'"),
                         hdata->path);
@@ -5005,7 +5006,7 @@ static int qemudDomainSaveFileOpHook(int fd, void *data) {
     }
 
     if (safewrite(fd, hdata->xml, hdata->header->xml_len) != hdata->header->xml_len) {
-        ret = errno;
+        ret = -errno;
         qemuReportError(VIR_ERR_OPERATION_FAILED,
                          _("failed to write xml to '%s'"), hdata->path);
         goto endjob;
@@ -5141,7 +5142,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
             virReportSystemError(errno, _("unable to open %s"), path);
             goto endjob;
         }
-        if (qemudDomainSaveFileOpHook(fd, &hdata) != 0) {
+        if (qemudDomainSaveFileOpHook(fd, &hdata) < 0) {
             close(fd);
             goto endjob;
         }
@@ -5154,7 +5155,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
                                   S_IRUSR|S_IWUSR,
                                   getuid(), getgid(),
                                   qemudDomainSaveFileOpHook, &hdata,
-                                  0)) != 0) {
+                                  0)) < 0) {
             /* If we failed as root, and the error was permission-denied
                (EACCES), assume it's on a network-connected share where
                root access is restricted (eg, root-squashed NFS). If the
@@ -5162,9 +5163,9 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
                bypass security driver shenanigans, and retry the operation
                after doing setuid to qemu user */
 
-            if ((rc != EACCES) ||
+            if ((rc != -EACCES) ||
                 driver->user == getuid()) {
-                virReportSystemError(rc, _("Failed to create domain save file '%s'"),
+                virReportSystemError(-rc, _("Failed to create domain save file '%s'"),
                                      path);
                 goto endjob;
             }
@@ -5188,7 +5189,7 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
                 case 0:
                 default:
                    /* local file - log the error returned by virFileOperation */
-                   virReportSystemError(rc,
+                   virReportSystemError(-rc,
                                         _("Failed to create domain save file '%s'"),
                                         path);
                    goto endjob;
@@ -5202,8 +5203,8 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
                                        S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP,
                                        driver->user, driver->group,
                                        qemudDomainSaveFileOpHook, &hdata,
-                                       VIR_FILE_OP_AS_UID)) != 0) {
-                virReportSystemError(rc, _("Error from child process creating '%s'"),
+                                       VIR_FILE_OP_AS_UID)) < 0) {
+                virReportSystemError(-rc, _("Error from child process creating '%s'"),
                                  path);
                 goto endjob;
             }
