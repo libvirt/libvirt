@@ -324,12 +324,13 @@ static int createRawFileOpHook(int fd, void *data) {
             }
         }
 
-        if (fsync(fd) < 0) {
-            ret = errno;
-            virReportSystemError(errno, _("cannot sync data to file '%s'"),
-                                 hdata->vol->target.path);
-            goto cleanup;
-        }
+    }
+
+    if (fsync(fd) < 0) {
+        ret = errno;
+        virReportSystemError(errno, _("cannot sync data to file '%s'"),
+                             hdata->vol->target.path);
+        goto cleanup;
     }
 
 cleanup:
