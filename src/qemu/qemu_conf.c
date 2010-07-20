@@ -2239,7 +2239,33 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
     return -1;
 }
 
-
+/*
+ * This assigns static PCI slots to all configured devices.
+ * The ordering here is chosen to match the ordering used
+ * with old QEMU < 0.12, so that if a user updates a QEMU
+ * host from old QEMU to QEMU >= 0.12, their guests should
+ * get PCI addresses in the same order as before.
+ *
+ * NB, if they previously hotplugged devices then all bets
+ * are off. Hotplug for old QEMU was unfixably broken wrt
+ * to stable PCI addressing.
+ *
+ * Order is:
+ *
+ *  - Host bridge (slot 0)
+ *  - PIIX3 ISA bridge, IDE controller, something else unknown, USB controller (slot 1)
+ *  - Video (slot 2)
+ *
+ * Incrementally assign slots from 3 onwards:
+ *
+ *  - Net
+ *  - Sound
+ *  - SCSI controllers
+ *  - VirtIO block
+ *  - VirtIO balloon
+ *  - Host device passthrough
+ *  - Watchdog
+ */
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 {
@@ -2299,31 +2325,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
         }
     }
 
-    /* VirtIO balloon always at slot 3 by default */
-    if (def->memballoon &&
-        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
-        def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        def->memballoon->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        def->memballoon->info.addr.pci.domain = 0;
-        def->memballoon->info.addr.pci.bus = 0;
-        def->memballoon->info.addr.pci.slot = 3;
-        def->memballoon->info.addr.pci.function = 0;
-        if (qemuDomainPCIAddressReserveSlot(addrs, 3) < 0)
-            goto error;
-    }
-
-    for (i = 0; i < def->ndisks ; i++) {
-        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
-
-        /* Only VirtIO disks use PCI addrs */
-        if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
-            continue;
-
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->disks[i]->info) < 0)
-            goto error;
-    }
-
+    /* Network interfaces */
     for (i = 0; i < def->nnets ; i++) {
         if (def->nets[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
@@ -2331,6 +2333,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
+    /* Sound cards */
     for (i = 0; i < def->nsounds ; i++) {
         if (def->sounds[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
@@ -2343,23 +2346,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
             goto error;
     }
 
-    for (i = 0; i < def->nhostdevs ; i++) {
-        if (def->hostdevs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
-        if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->hostdevs[i]->info) < 0)
-            goto error;
-    }
-    /* Start from 1, since first VGA was dealt with earlier */
-    for (i = 1; i < def->nvideos ; i++) {
-        if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            continue;
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
-            goto error;
-    }
+    /* Disk controllers (SCSI only for now) */
     for (i = 0; i < def->ncontrollers ; i++) {
         /* FDC lives behind the ISA bridge */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_FDC)
@@ -2376,6 +2363,54 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
         if (qemuDomainPCIAddressSetNextAddr(addrs, &def->controllers[i]->info) < 0)
             goto error;
     }
+
+    /* Disks (VirtIO only for now */
+    for (i = 0; i < def->ndisks ; i++) {
+        if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        /* Only VirtIO disks use PCI addrs */
+        if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
+            continue;
+
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->disks[i]->info) < 0)
+            goto error;
+    }
+
+    /* Host PCI devices */
+    for (i = 0; i < def->nhostdevs ; i++) {
+        if (def->hostdevs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        if (def->hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            def->hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->hostdevs[i]->info) < 0)
+            goto error;
+    }
+
+    /* VirtIO balloon */
+    if (def->memballoon &&
+        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
+        def->memballoon->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->memballoon->info) < 0)
+            goto error;
+    }
+
+    /* A watchdog */
+    if (def->watchdog &&
+        def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->watchdog->info) < 0)
+            goto error;
+    }
+
+    /* Further non-primary video cards */
+    for (i = 1; i < def->nvideos ; i++) {
+        if (def->videos[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->videos[i]->info) < 0)
+            goto error;
+    }
     for (i = 0; i < def->ninputs ; i++) {
         /* Nada - none are PCI based (yet) */
     }
@@ -2387,11 +2422,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
     }
     for (i = 0; i < def->nchannels ; i++) {
         /* Nada - none are PCI based (yet) */
-    }
-    if (def->watchdog &&
-        def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (qemuDomainPCIAddressSetNextAddr(addrs, &def->watchdog->info) < 0)
-            goto error;
     }
 
     return 0;
