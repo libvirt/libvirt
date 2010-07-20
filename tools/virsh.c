@@ -9771,7 +9771,7 @@ vshCommandOptString(const vshCmd *cmd, const char *name, int *found)
     if (arg && arg->data && *arg->data)
         return arg->data;
 
-    if ((arg->def->flag) & VSH_OFLAG_REQ)
+    if (arg && arg->def && ((arg->def->flag) & VSH_OFLAG_REQ))
         vshError(NULL, _("Missing required option '%s'"), name);
 
     return NULL;
