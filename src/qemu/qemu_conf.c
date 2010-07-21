@@ -2265,19 +2265,23 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
  *  - VirtIO balloon
  *  - Host device passthrough
  *  - Watchdog
+ *
+ * Prior to this function being invoked, qemuCollectPCIAddress() will have
+ * added all existing PCI addresses from the 'def' to 'addrs'. Thus this
+ * function must only try to reserve addresses if info.type == NONE and
+ * skip over info.type == PCI
  */
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
 {
     int i;
+    bool reservedIDE = false;
 
     /* Host bridge */
     if (qemuDomainPCIAddressReserveSlot(addrs, 0) < 0)
         goto error;
 
-    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
-     * hardcoded slot=1, multifunction device
-     */
+    /* Verify that first IDE controller (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers ; i++) {
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
@@ -2291,17 +2295,25 @@ qemuAssignDevicePCISlots(virDomainDefPtr def, qemuDomainPCIAddressSetPtr addrs)
                                     _("Primary IDE controller must have PCI address 0:0:1.1"));
                     goto error;
                 }
+                /* If TYPE==PCI, then then qemuCollectPCIAddress() function
+                 * has already reserved the address, so we must skip */
+                reservedIDE = true;
             } else {
                 def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                 def->controllers[i]->info.addr.pci.domain = 0;
                 def->controllers[i]->info.addr.pci.bus = 0;
                 def->controllers[i]->info.addr.pci.slot = 1;
                 def->controllers[i]->info.addr.pci.function = 1;
-                if (qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
-                    goto error;
             }
         }
     }
+
+    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
+     * hardcoded slot=1, multifunction device
+     */
+    if (!reservedIDE &&
+        qemuDomainPCIAddressReserveSlot(addrs, 1) < 0)
+        goto error;
 
     /* First VGA is hardcoded slot=2 */
     if (def->nvideos > 0) {
