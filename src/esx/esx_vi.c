@@ -378,9 +378,16 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
             ctx->apiVersion = esxVI_APIVersion_25;
         } else if (STRPREFIX(ctx->service->about->apiVersion, "4.0")) {
             ctx->apiVersion = esxVI_APIVersion_40;
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.1")) {
+            ctx->apiVersion = esxVI_APIVersion_41;
+        } else if (STRPREFIX(ctx->service->about->apiVersion, "4.")) {
+            ctx->apiVersion = esxVI_APIVersion_4x;
+
+            VIR_WARN("Found untested VI API major/minor version '%s'",
+                     ctx->service->about->apiVersion);
         } else {
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Expecting VI API major/minor version '2.5' or '4.0' "
+                         _("Expecting VI API major/minor version '2.5' or '4.x' "
                            "but found '%s'"), ctx->service->about->apiVersion);
             goto cleanup;
         }
@@ -400,10 +407,17 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                 ctx->productVersion = esxVI_ProductVersion_ESX35;
             } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
                 ctx->productVersion = esxVI_ProductVersion_ESX40;
+            } else if (STRPREFIX(ctx->service->about->version, "4.1")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX41;
+            } else if (STRPREFIX(ctx->service->about->version, "4.")) {
+                ctx->productVersion = esxVI_ProductVersion_ESX4x;
+
+                VIR_WARN("Found untested ESX major/minor version '%s'",
+                         ctx->service->about->version);
             } else {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
                              _("Expecting ESX major/minor version '3.5' or "
-                               "'4.0' but found '%s'"),
+                               "'4.x' but found '%s'"),
                              ctx->service->about->version);
                 goto cleanup;
             }
@@ -412,9 +426,16 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                 ctx->productVersion = esxVI_ProductVersion_VPX25;
             } else if (STRPREFIX(ctx->service->about->version, "4.0")) {
                 ctx->productVersion = esxVI_ProductVersion_VPX40;
+            } else if (STRPREFIX(ctx->service->about->version, "4.1")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX41;
+            } else if (STRPREFIX(ctx->service->about->version, "4.")) {
+                ctx->productVersion = esxVI_ProductVersion_VPX4x;
+
+                VIR_WARN("Found untested VPX major/minor version '%s'",
+                         ctx->service->about->version);
             } else {
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                             _("Expecting VPX major/minor version '2.5' or '4.0' "
+                             _("Expecting VPX major/minor version '2.5' or '4.x' "
                                "but found '%s'"), ctx->service->about->version);
                 goto cleanup;
             }

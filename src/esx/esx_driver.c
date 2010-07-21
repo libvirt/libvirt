@@ -353,9 +353,11 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
 
     if (expectedProductVersion == esxVI_ProductVersion_ESX) {
         if (priv->host->productVersion != esxVI_ProductVersion_ESX35 &&
-            priv->host->productVersion != esxVI_ProductVersion_ESX40) {
+            priv->host->productVersion != esxVI_ProductVersion_ESX40 &&
+            priv->host->productVersion != esxVI_ProductVersion_ESX41 &&
+            priv->host->productVersion != esxVI_ProductVersion_ESX4x) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("%s is neither an ESX 3.5 host nor an ESX 4.0 host"),
+                      _("%s is neither an ESX 3.5 host nor an ESX 4.x host"),
                       hostname);
             goto cleanup;
         }
@@ -462,10 +464,12 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     }
 
     if (priv->vCenter->productVersion != esxVI_ProductVersion_VPX25 &&
-        priv->vCenter->productVersion != esxVI_ProductVersion_VPX40) {
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX40 &&
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX41 &&
+        priv->vCenter->productVersion != esxVI_ProductVersion_VPX4x) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("%s is neither a vCenter 2.5 server nor a vCenter "
-                    "4.0 server"), hostname);
+                    "4.x server"), hostname);
         goto cleanup;
     }
 

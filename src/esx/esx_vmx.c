@@ -1184,6 +1184,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
      *              4 7    API
      *   ESX 3.5    +      2.5
      *   ESX 4.0    + +    4.0
+     *   ESX 4.1    + +    4.1
      *   GSX 2.0    + +    2.5
      */
     switch (productVersion) {
@@ -1201,7 +1202,9 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
       case esxVI_ProductVersion_GSX20:
       case esxVI_ProductVersion_ESX40:
+      case esxVI_ProductVersion_ESX41:
       case esxVI_ProductVersion_VPX40:
+      case esxVI_ProductVersion_VPX41:
         if (virtualHW_version != 4 && virtualHW_version != 7) {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Expecting VMX entry 'virtualHW.version' to be 4 or 7 "
@@ -1210,6 +1213,10 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
             goto cleanup;
         }
 
+        break;
+
+      case esxVI_ProductVersion_ESX4x:
+      case esxVI_ProductVersion_VPX4x:
         break;
 
       default:
@@ -2702,6 +2709,8 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
 
       case esxVI_ProductVersion_GSX20:
       case esxVI_ProductVersion_ESX40:
+      case esxVI_ProductVersion_ESX41:
+      case esxVI_ProductVersion_ESX4x:
         virBufferAddLit(&buffer, "virtualHW.version = \"7\"\n");
         break;
 
