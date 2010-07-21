@@ -285,6 +285,38 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 # endif
 
 /**
+ * ifSetInterfaceMac:
+ * @ctl: bridge control pointer
+ * @ifname: interface name to set MTU for
+ * @macaddr: MAC address (VIR_MAC_BUFLEN in size)
+ *
+ * This function sets the @macaddr for a given interface @ifname. This
+ * gets rid of the kernel's automatically assigned random MAC.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+static int ifSetInterfaceMac(brControl *ctl, const char *ifname,
+                             const unsigned char *macaddr)
+{
+    struct ifreq ifr;
+
+    if (!ctl || !ifname)
+        return EINVAL;
+
+    memset(&ifr, 0, sizeof(struct ifreq));
+    if (virStrcpyStatic(ifr.ifr_name, ifname) == NULL)
+        return EINVAL;
+
+    /* To fill ifr.ifr_hdaddr.sa_family field */
+    if (ioctl(ctl->fd, SIOCGIFHWADDR, &ifr) != 0)
+        return errno;
+
+    memcpy(ifr.ifr_hwaddr.sa_data, macaddr, VIR_MAC_BUFLEN);
+
+    return ioctl(ctl->fd, SIOCSIFHWADDR, &ifr) == 0 ? 0 : errno;
+}
+
+/**
  * ifGetMtu
  * @ctl: bridge control pointer
  * @ifname: interface name get MTU for
@@ -430,6 +462,7 @@ brProbeVnetHdr(int tapfd)
  * @ctl: bridge control pointer
  * @bridge: the bridge name
  * @ifname: the interface name (or name template)
+ * @macaddr: desired MAC address (VIR_MAC_BUFLEN long)
  * @vnet_hdr: whether to try enabling IFF_VNET_HDR
  * @tapfd: file descriptor return value for the new tap device
  *
@@ -447,6 +480,7 @@ int
 brAddTap(brControl *ctl,
          const char *bridge,
          char **ifname,
+         const unsigned char *macaddr,
          int vnet_hdr,
          int *tapfd)
 {
@@ -478,6 +512,14 @@ brAddTap(brControl *ctl,
     if (ioctl(fd, TUNSETIFF, &ifr) < 0)
         goto error;
 
+    /* We need to set the interface MAC before adding it
+     * to the bridge, because the bridge assumes the lowest
+     * MAC of all enslaved interfaces & we don't want it
+     * seeing the kernel allocate random MAC for the TAP
+     * device before we set our static MAC.
+     */
+    if ((errno = ifSetInterfaceMac(ctl, ifr.ifr_name, macaddr)))
+        goto error;
     /* We need to set the interface MTU before adding it
      * to the bridge, because the bridge will have its
      * MTU adjusted automatically when we add the new interface.

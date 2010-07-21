@@ -68,7 +68,8 @@ enum {
 int     brAddTap                (brControl *ctl,
                                  const char *bridge,
                                  char **ifname,
-                                 int features,
+                                 const unsigned char *macaddr,
+                                 int vnet_hdr,
                                  int *tapfd);
 
 int     brDeleteTap             (brControl *ctl,

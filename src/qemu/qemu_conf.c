@@ -1608,6 +1608,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     int tapfd = -1;
     int vnet_hdr = 0;
     int template_ifname = 0;
+    unsigned char tapmac[VIR_MAC_BUFLEN];
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         int active, fail = 0;
@@ -1675,8 +1676,14 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
-    if ((err = brAddTap(driver->brctl, brname,
-                        &net->ifname, vnet_hdr, &tapfd))) {
+    memcpy(tapmac, net->mac, VIR_MAC_BUFLEN);
+    tapmac[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
+    if ((err = brAddTap(driver->brctl,
+                        brname,
+                        &net->ifname,
+                        tapmac,
+                        vnet_hdr,
+                        &tapfd))) {
         if (errno == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
