@@ -1506,6 +1506,53 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h4><a name="elementsMemBalloon">Memory balloon device</a></h4>
+
+    <p>
+      A virtual memory balloon device is added to all Xen and KVM/QEMU
+      guests. It will be seen as <code>memballoon</code> element.
+      It will be automatically added when appropriate, so there is no
+      need to explicitly add this element in the guest XML unless a
+      specific PCI slot needs to be assigned.
+      <span class="since">Since 0.8.3, Xen, QEMU and KVM only</span>
+    </p>
+
+    <p>
+      Example automatically added device with KVM
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;memballoon model='virtio'/&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      Example manually added device with static PCI slot 2 requested
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;watchdog model='virtio'/&gt;
+    &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>
+        <p>
+          The required <code>model</code> attribute specifies what type
+	  of balloon device is provided. Valid values are specific to
+	  the virtualization platform
+        </p>
+        <ul>
+          <li>'virtio' &mdash; default with QEMU/KVM</li>
+          <li>'xen' &mdash; default with Xen</li>
+        </ul>
+      </dd>
+    </dl>
+
     <h2><a name="examples">Example configs</a></h2>
 
     <p>
