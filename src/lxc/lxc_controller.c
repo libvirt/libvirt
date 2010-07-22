@@ -663,7 +663,11 @@ cleanup:
         close(containerPty);
 
     if (container > 1) {
+        int status;
         kill(container, SIGTERM);
+        if (!(waitpid(container, &status, WNOHANG) == 0 &&
+            WIFEXITED(status)))
+            kill(container, SIGKILL);
         waitpid(container, NULL, 0);
     }
     return rc;
