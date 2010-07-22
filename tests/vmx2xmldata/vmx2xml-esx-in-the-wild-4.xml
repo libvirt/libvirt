@@ -36,7 +36,7 @@
     </parallel>
     <console type='file'>
       <source path='[498076b2-02796c1a-ef5b-000ae484a6a3] virtMonServ1/serial1.file'/>
-      <target port='0'/>
+      <target type='serial' port='0'/>
     </console>
   </devices>
 </domain>

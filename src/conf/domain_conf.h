@@ -330,6 +330,14 @@ enum virDomainChrChannelTargetType {
     VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
 };
 
+enum virDomainChrConsoleTargetType {
+    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL = 0,
+    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN,
+    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML,
+
+    VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
+};
+
 enum virDomainChrType {
     VIR_DOMAIN_CHR_TYPE_NULL,
     VIR_DOMAIN_CHR_TYPE_VC,
@@ -1143,6 +1151,7 @@ VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainNet)
 VIR_ENUM_DECL(virDomainChrDevice)
 VIR_ENUM_DECL(virDomainChrChannelTarget)
+VIR_ENUM_DECL(virDomainChrConsoleTarget)
 VIR_ENUM_DECL(virDomainChr)
 VIR_ENUM_DECL(virDomainSoundModel)
 VIR_ENUM_DECL(virDomainMemballoonModel)

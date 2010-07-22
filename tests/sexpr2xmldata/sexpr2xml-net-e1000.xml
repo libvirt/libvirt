@@ -28,7 +28,7 @@
       <model type='e1000'/>
     </interface>
     <console type='pty'>
-      <target port='0'/>
+      <target type='xen' port='0'/>
     </console>
   </devices>
 </domain>

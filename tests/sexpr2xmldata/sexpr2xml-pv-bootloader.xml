@@ -20,7 +20,7 @@
       <target dev='xvda' bus='xen'/>
     </disk>
     <console type='pty'>
-      <target port='0'/>
+      <target type='xen' port='0'/>
     </console>
   </devices>
 </domain>

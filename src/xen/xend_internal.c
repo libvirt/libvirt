@@ -2367,6 +2367,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
         if (!(def->console = xenDaemonParseSxprChar("pty", tty)))
             goto error;
         def->console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+        def->console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
     }
     VIR_FREE(tty);
 

@@ -55,7 +55,7 @@ cat <<\EOF > D.xml || fail=1
       <target port='2'/>
     </parallel>
     <console type='pty'>
-      <target port='0'/>
+      <target type='serial' port='0'/>
     </console>
     <sound model='pcspk'/>
     <sound model='es1370'/>

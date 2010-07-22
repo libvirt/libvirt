@@ -169,6 +169,12 @@ VIR_ENUM_IMPL(virDomainChrChannelTarget,
               "guestfwd",
               "virtio")
 
+VIR_ENUM_IMPL(virDomainChrConsoleTarget,
+              VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
+              "serial",
+              "xen",
+              "uml")
+
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "monitor",
               "parallel",
@@ -2374,7 +2380,7 @@ error:
 }
 
 static int
-virDomainChrDefaultTargetType(int devtype) {
+virDomainChrDefaultTargetType(virCapsPtr caps, int devtype) {
 
     int target = -1;
 
@@ -2386,6 +2392,9 @@ virDomainChrDefaultTargetType(int devtype) {
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        target = caps->defaultConsoleTargetType;
+        break;
+
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     default:
@@ -2398,14 +2407,15 @@ virDomainChrDefaultTargetType(int devtype) {
 }
 
 static int
-virDomainChrTargetTypeFromString(int devtype,
+virDomainChrTargetTypeFromString(virCapsPtr caps,
+                                 int devtype,
                                  const char *targetType)
 {
     int ret = -1;
     int target = 0;
 
     if (!targetType) {
-        target = virDomainChrDefaultTargetType(devtype);
+        target = virDomainChrDefaultTargetType(caps, devtype);
         goto out;
     }
 
@@ -2413,6 +2423,10 @@ virDomainChrTargetTypeFromString(int devtype,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         target = virDomainChrChannelTargetTypeFromString(targetType);
         break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        target = virDomainChrConsoleTargetTypeFromString(targetType);
+        /* Fall through */
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
@@ -2437,6 +2451,9 @@ virDomainChrTargetTypeToString(int deviceType,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         type = virDomainChrChannelTargetTypeToString(targetType);
         break;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        type = virDomainChrConsoleTargetTypeToString(targetType);
+        break;
     default:
         break;
     }
@@ -2445,7 +2462,8 @@ virDomainChrTargetTypeToString(int deviceType,
 }
 
 static int
-virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
+virDomainChrDefParseTargetXML(virCapsPtr caps,
+                              virDomainChrDefPtr def,
                               xmlNodePtr cur,
                               int flags ATTRIBUTE_UNUSED)
 {
@@ -2456,7 +2474,8 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     const char *portStr = NULL;
 
     if ((def->targetType =
-        virDomainChrTargetTypeFromString(def->deviceType, targetType)) < 0) {
+        virDomainChrTargetTypeFromString(caps,
+                                         def->deviceType, targetType)) < 0) {
         goto error;
     }
 
@@ -2586,7 +2605,8 @@ error:
  *
  */
 static virDomainChrDefPtr
-virDomainChrDefParseXML(xmlNodePtr node,
+virDomainChrDefParseXML(virCapsPtr caps,
+                        xmlNodePtr node,
                         int flags) {
     xmlNodePtr cur;
     char *type = NULL;
@@ -2664,7 +2684,7 @@ virDomainChrDefParseXML(xmlNodePtr node,
                 if (protocol == NULL)
                     protocol = virXMLPropString(cur, "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
-                if (virDomainChrDefParseTargetXML(def, cur, flags) < 0) {
+                if (virDomainChrDefParseTargetXML(caps, def, cur, flags) < 0) {
                     goto error;
                 }
             }
@@ -4515,7 +4535,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(nodes[i],
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         nodes[i],
                                                          flags);
         if (!chr)
             goto error;
@@ -4534,7 +4555,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(nodes[i],
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         nodes[i],
                                                          flags);
         if (!chr)
             goto error;
@@ -4545,7 +4567,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     VIR_FREE(nodes);
 
     if ((node = virXPathNode("./devices/console[1]", ctxt)) != NULL) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(node,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         node,
                                                          flags);
         if (!chr)
             goto error;
@@ -4581,7 +4604,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
         goto no_memory;
 
     for (i = 0 ; i < n ; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(nodes[i],
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(caps,
+                                                         nodes[i],
                                                          flags);
         if (!chr)
             goto error;
@@ -5831,8 +5855,17 @@ virDomainChrDefFormat(virBufferPtr buf,
         /* Nothing to format */
         break;
 
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        virBufferVSprintf(buf,
+                          "      <target type='%s' port='%d'/>\n",
+                          virDomainChrTargetTypeToString(def->deviceType,
+                                                         def->targetType),
+                          def->target.port);
+        break;
+
     default:
-        virBufferVSprintf(buf, "      <target port='%d'/>\n", def->target.port);
+        virBufferVSprintf(buf, "      <target port='%d'/>\n",
+                          def->target.port);
         break;
     }
 

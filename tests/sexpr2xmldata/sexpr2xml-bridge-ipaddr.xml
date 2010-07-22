@@ -28,7 +28,7 @@
       <target dev='vif6.0'/>
     </interface>
     <console type='pty'>
-      <target port='0'/>
+      <target type='xen' port='0'/>
     </console>
   </devices>
 </domain>

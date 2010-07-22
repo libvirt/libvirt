@@ -17,7 +17,7 @@
     </serial>
     <console type='pipe'>
       <source path='serial0.pipe'/>
-      <target port='0'/>
+      <target type='serial' port='0'/>
     </console>
   </devices>
 </domain>

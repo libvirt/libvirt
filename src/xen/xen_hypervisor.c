@@ -2342,6 +2342,8 @@ xenHypervisorBuildCapabilities(virConnectPtr conn,
         }
     }
 
+    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
+
     return caps;
 
  no_memory:

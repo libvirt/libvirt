@@ -97,6 +97,8 @@ virCapsPtr umlCapsInit(void) {
                                       NULL) == NULL)
         goto error;
 
+    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML;
+
     return caps;
 
  error:

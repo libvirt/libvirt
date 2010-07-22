@@ -140,6 +140,7 @@ struct _virCaps {
     unsigned int emulatorRequired : 1;
     const char *defaultDiskDriverName;
     const char *defaultDiskDriverType;
+    int defaultConsoleTargetType;
     void *(*privateDataAllocFunc)(void);
     void (*privateDataFreeFunc)(void *);
     int (*privateDataXMLFormat)(virBufferPtr, void *);

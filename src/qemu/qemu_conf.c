@@ -1137,6 +1137,8 @@ virCapsPtr qemudCapsInit(virCapsPtr old_caps) {
     /* QEMU Requires an emulator in the XML */
     virCapabilitiesSetEmulatorRequired(caps);
 
+    caps->defaultConsoleTargetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+
     return caps;
 
  no_memory:

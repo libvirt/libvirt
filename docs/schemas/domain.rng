@@ -1212,17 +1212,37 @@
     <interleave>
       <ref name="qemucdevSrcDef"/>
       <optional>
-        <element name="target">
-          <optional>
-            <attribute name="port"/>
-          </optional>
-        </element>
+        <ref name="qemucdevTgtDef"/>
       </optional>
       <optional>
         <ref name="address"/>
       </optional>
     </interleave>
   </define>
+
+  <define name="qemucdevConsoleTgtType">
+    <attribute name="type">
+      <choice>
+        <value>xen</value>
+        <value>serial</value>
+        <value>uml</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define  name="qemucdevTgtDef">
+    <element name="target">
+      <interleave>
+        <optional>
+          <ref name="qemucdevConsoleTgtType"/>
+        </optional>
+        <optional>
+          <attribute name="port"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name="qemucdevSrcType">
     <attribute name="type">
       <choice>
