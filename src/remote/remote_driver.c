@@ -4067,7 +4067,7 @@ remoteNetworkIsActive(virNetworkPtr network)
     int rv = -1;
     remote_network_is_active_args args;
     remote_network_is_active_ret ret;
-    struct private_data *priv = network->conn->privateData;
+    struct private_data *priv = network->conn->networkPrivateData;
 
     remoteDriverLock(priv);
 
@@ -4091,7 +4091,7 @@ remoteNetworkIsPersistent(virNetworkPtr network)
     int rv = -1;
     remote_network_is_persistent_args args;
     remote_network_is_persistent_ret ret;
-    struct private_data *priv = network->conn->privateData;
+    struct private_data *priv = network->conn->networkPrivateData;
 
     remoteDriverLock(priv);
 
@@ -4622,7 +4622,7 @@ remoteInterfaceIsActive(virInterfacePtr iface)
     int rv = -1;
     remote_interface_is_active_args args;
     remote_interface_is_active_ret ret;
-    struct private_data *priv = iface->conn->privateData;
+    struct private_data *priv = iface->conn->interfacePrivateData;
 
     remoteDriverLock(priv);
 
@@ -5127,7 +5127,7 @@ remoteStoragePoolIsActive(virStoragePoolPtr pool)
     int rv = -1;
     remote_storage_pool_is_active_args args;
     remote_storage_pool_is_active_ret ret;
-    struct private_data *priv = pool->conn->privateData;
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     remoteDriverLock(priv);
 
@@ -5151,7 +5151,7 @@ remoteStoragePoolIsPersistent(virStoragePoolPtr pool)
     int rv = -1;
     remote_storage_pool_is_persistent_args args;
     remote_storage_pool_is_persistent_ret ret;
-    struct private_data *priv = pool->conn->privateData;
+    struct private_data *priv = pool->conn->storagePrivateData;
 
     remoteDriverLock(priv);
 
