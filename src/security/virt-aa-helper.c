@@ -844,9 +844,13 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->ndisks; i++) {
+        /* XXX passing ignoreOpenFailure = true to get back to the behavior
+         * from before using virDomainDiskDefForeachPath. actually we should
+         * be passing ignoreOpenFailure = false and handle open errors more
+         * careful than just ignoring them */
         int ret = virDomainDiskDefForeachPath(ctl->def->disks[i],
                                               ctl->allowDiskFormatProbing,
-                                              false,
+                                              true,
                                               add_file_path,
                                               &buf);
         if (ret != 0)
