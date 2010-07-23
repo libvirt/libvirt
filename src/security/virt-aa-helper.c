@@ -818,6 +818,9 @@ add_file_path(virDomainDiskDefPtr disk,
         ret = vah_add_file(buf, path, "r");
     }
 
+    if (ret != 0)
+        ret = -1;
+
     return ret;
 }
 
