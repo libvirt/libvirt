@@ -964,7 +964,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
         {0, 0, 0, 0}
     };
 
-    while ((arg = getopt_long(argc, argv, "acdDhrRH:b:u:f:", opt,
+    while ((arg = getopt_long(argc, argv, "acdDhrRH:b:u:p:f:", opt,
             &idx)) != -1) {
         switch (arg) {
             case 'a':
