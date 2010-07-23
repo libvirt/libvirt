@@ -182,6 +182,16 @@ pciOpenConfig(pciDevice *dev)
     return 0;
 }
 
+static void
+pciCloseConfig(pciDevice *dev)
+{
+    if (!dev)
+        return;
+
+    if (dev->fd >= 0)
+        close(dev->fd);
+}
+
 static int
 pciRead(pciDevice *dev, unsigned pos, uint8_t *buf, unsigned buflen)
 {
@@ -379,11 +389,16 @@ pciFindExtendedCapabilityOffset(pciDevice *dev, unsigned capability)
     return 0;
 }
 
-static unsigned
+/* detects whether this device has FLR.  Returns 0 if the device does
+ * not have FLR, 1 if it does, and -1 on error
+ */
+static int
 pciDetectFunctionLevelReset(pciDevice *dev)
 {
     uint32_t caps;
     uint8_t pos;
+    char *path;
+    int found;
 
     /* The PCIe Function Level Reset capability allows
      * individual device functions to be reset without
@@ -410,6 +425,25 @@ pciDetectFunctionLevelReset(pciDevice *dev)
             VIR_DEBUG("%s %s: detected PCI FLR capability", dev->id, dev->name);
             return 1;
         }
+    }
+
+    /* there are some buggy devices that do support FLR, but forget to
+     * advertise that fact in their capabilities.  However, FLR is *required*
+     * to be present for virtual functions (VFs), so if we see that this
+     * device is a VF, we just assume FLR works
+     */
+
+    if (virAsprintf(&path, PCI_SYSFS "devices/%s/physfn", dev->name) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+
+    found = virFileExists(path);
+    VIR_FREE(path);
+    if (found) {
+        VIR_DEBUG("%s %s: buggy device didn't advertise FLR, but is a VF; forcing flr on",
+                  dev->id, dev->name);
+        return 1;
     }
 
     VIR_DEBUG("%s %s: no FLR capability found", dev->id, dev->name);
@@ -626,6 +660,8 @@ pciTryPowerManagementReset(pciDevice *dev)
 static int
 pciInitDevice(pciDevice *dev)
 {
+    int flr;
+
     if (pciOpenConfig(dev) < 0) {
         virReportSystemError(errno,
                              _("Failed to open config space file '%s'"),
@@ -635,7 +671,12 @@ pciInitDevice(pciDevice *dev)
 
     dev->pcie_cap_pos   = pciFindCapabilityOffset(dev, PCI_CAP_ID_EXP);
     dev->pci_pm_cap_pos = pciFindCapabilityOffset(dev, PCI_CAP_ID_PM);
-    dev->has_flr        = pciDetectFunctionLevelReset(dev);
+    flr = pciDetectFunctionLevelReset(dev);
+    if (flr < 0) {
+        pciCloseConfig(dev);
+        return flr;
+    }
+    dev->has_flr        = flr;
     dev->has_pm_reset   = pciDetectPowerManagementReset(dev);
     dev->initted        = 1;
     return 0;
@@ -1099,8 +1140,7 @@ pciFreeDevice(pciDevice *dev)
     if (!dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
-    if (dev->fd >= 0)
-        close(dev->fd);
+    pciCloseConfig(dev);
     VIR_FREE(dev);
 }
 
