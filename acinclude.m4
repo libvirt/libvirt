@@ -36,9 +36,19 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 	try_compiler_flags="-Wall -Wformat -Wformat-security -Wmissing-prototypes $common_flags"
 	;;
     maximum|error)
-	try_compiler_flags="-Wall -Wformat -Wformat-security -Wmissing-prototypes -Wnested-externs -Wpointer-arith"
-	try_compiler_flags="$try_compiler_flags -Wextra -Wshadow -Wcast-align -Wwrite-strings -Waggregate-return"
-	try_compiler_flags="$try_compiler_flags -Wstrict-prototypes -Winline -Wredundant-decls -Wno-sign-compare"
+	try_compiler_flags="-Wall -Wformat -Wformat-security"
+	try_compiler_flags="$try_compiler_flags -Wmissing-prototypes"
+	try_compiler_flags="$try_compiler_flags -Wnested-externs "
+	try_compiler_flags="$try_compiler_flags -Wpointer-arith"
+	try_compiler_flags="$try_compiler_flags -Wextra -Wshadow"
+	try_compiler_flags="$try_compiler_flags -Wcast-align"
+	try_compiler_flags="$try_compiler_flags -Wwrite-strings"
+	try_compiler_flags="$try_compiler_flags -Waggregate-return"
+	try_compiler_flags="$try_compiler_flags -Wstrict-prototypes"
+	try_compiler_flags="$try_compiler_flags -Winline"
+	try_compiler_flags="$try_compiler_flags -Wredundant-decls"
+	try_compiler_flags="$try_compiler_flags -Wno-sign-compare"
+	try_compiler_flags="$try_compiler_flags -Wlogical-op"
 	try_compiler_flags="$try_compiler_flags $common_flags"
 	if test "$enable_compile_warnings" = "error" ; then
 	    try_compiler_flags="$try_compiler_flags -Werror"
