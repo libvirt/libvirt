@@ -8156,6 +8156,7 @@ remoteStreamPacket(virStreamPtr st,
     XDR xdr;
     struct remote_thread_call *thiscall;
     remote_message_header hdr;
+    int ret;
 
     memset(&hdr, 0, sizeof hdr);
 
@@ -8225,8 +8226,9 @@ remoteStreamPacket(virStreamPtr st,
     }
     xdr_destroy (&xdr);
 
-    /* remoteIO frees 'thiscall' for us (XXX that's dubious semantics) */
-    if (remoteIO(st->conn, priv, 0, thiscall) < 0)
+    ret = remoteIO(st->conn, priv, 0, thiscall);
+    VIR_FREE(thiscall);
+    if (ret < 0)
         return -1;
 
     return nbytes;
@@ -8334,6 +8336,7 @@ remoteStreamRecv(virStreamPtr st,
 
     if (!privst->incomingOffset) {
         struct remote_thread_call *thiscall;
+        int ret;
 
         if (VIR_ALLOC(thiscall) < 0) {
             virReportOOMError();
@@ -8354,8 +8357,9 @@ remoteStreamRecv(virStreamPtr st,
             goto cleanup;
         }
 
-        /* remoteIO frees 'thiscall' for us (XXX that's dubious semantics) */
-        if (remoteIO(st->conn, priv, 0, thiscall) < 0)
+        ret = remoteIO(st->conn, priv, 0, thiscall);
+        VIR_FREE(thiscall);
+        if (ret < 0)
             goto cleanup;
     }
 
@@ -10056,12 +10060,10 @@ remoteIO(virConnectPtr conn,
             remoteError(VIR_ERR_INTERNAL_ERROR,
                         _("failed to wake up polling thread: %s"),
                         virStrerror(errno, errout, sizeof errout));
-            VIR_FREE(thiscall);
             return -1;
         } else if (s != sizeof(ignore)) {
             remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("failed to wake up polling thread"));
-            VIR_FREE(thiscall);
             return -1;
         }
 
@@ -10081,7 +10083,6 @@ remoteIO(virConnectPtr conn,
             }
             remoteError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("failed to wait on condition"));
-            VIR_FREE(thiscall);
             return -1;
         }
 
@@ -10132,10 +10133,8 @@ remoteIO(virConnectPtr conn,
     if (priv->watch >= 0)
         virEventUpdateHandle(priv->watch, VIR_EVENT_HANDLE_READABLE);
 
-    if (rv < 0) {
-        VIR_FREE(thiscall);
+    if (rv < 0)
         return -1;
-    }
 
 cleanup:
     DEBUG("All done with our call %d %p %p", thiscall->proc_nr, priv->waitDispatch, thiscall);
@@ -10188,7 +10187,6 @@ cleanup:
     } else {
         rv = 0;
     }
-    VIR_FREE(thiscall);
     return rv;
 }
 
@@ -10205,6 +10203,7 @@ call (virConnectPtr conn, struct private_data *priv,
       xdrproc_t ret_filter, char *ret)
 {
     struct remote_thread_call *thiscall;
+    int rv;
 
     thiscall = prepareCall(priv, flags, proc_nr, args_filter, args,
                            ret_filter, ret);
@@ -10214,7 +10213,9 @@ call (virConnectPtr conn, struct private_data *priv,
         return -1;
     }
 
-    return remoteIO(conn, priv, flags, thiscall);
+    rv = remoteIO(conn, priv, flags, thiscall);
+    VIR_FREE(thiscall);
+    return rv;
 }
 
 
