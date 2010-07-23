@@ -446,10 +446,11 @@ pciSharesBusWithActive(pciDevice *dev, pciDevice *check, void *data)
 {
     pciDeviceList *activeDevs = data;
 
+    /* Different domain, different bus, or simply identical device */
     if (dev->domain != check->domain ||
         dev->bus != check->bus ||
-        (check->slot == check->slot &&
-         check->function == check->function))
+        (dev->slot == check->slot &&
+         dev->function == check->function))
         return 0;
 
     if (activeDevs && !pciDeviceListFind(activeDevs, check))
