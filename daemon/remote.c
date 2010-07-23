@@ -6907,6 +6907,58 @@ qemuDispatchMonitorCommand (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchDomainOpenConsole(struct qemud_server *server ATTRIBUTE_UNUSED,
+                                struct qemud_client *client,
+                                virConnectPtr conn,
+                                remote_message_header *hdr,
+                                remote_error *rerr,
+                                remote_domain_open_console_args *args,
+                                void *ret ATTRIBUTE_UNUSED)
+{
+    int r;
+    struct qemud_client_stream *stream;
+    virDomainPtr dom;
+
+    CHECK_CONN (client);
+
+    dom = get_nonnull_domain (conn, args->domain);
+    if (dom == NULL) {
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    stream = remoteCreateClientStream(conn, hdr);
+    if (!stream) {
+        virDomainFree(dom);
+        remoteDispatchOOMError(rerr);
+        return -1;
+    }
+
+    r = virDomainOpenConsole(dom,
+                             args->devname ? *args->devname : NULL,
+                             stream->st,
+                             args->flags);
+    if (r == -1) {
+        virDomainFree(dom);
+        remoteFreeClientStream(client, stream);
+        remoteDispatchConnError(rerr, conn);
+        return -1;
+    }
+
+    if (remoteAddClientStream(client, stream, 1) < 0) {
+        virDomainFree(dom);
+        remoteDispatchConnError(rerr, conn);
+        virStreamAbort(stream->st);
+        remoteFreeClientStream(client, stream);
+        return -1;
+    }
+
+    virDomainFree(dom);
+    return 0;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

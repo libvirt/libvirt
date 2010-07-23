@@ -2097,6 +2097,13 @@ struct remote_domain_snapshot_delete_args {
         int flags;
 };
 typedef struct remote_domain_snapshot_delete_args remote_domain_snapshot_delete_args;
+
+struct remote_domain_open_console_args {
+        remote_nonnull_domain domain;
+        remote_string devname;
+        u_int flags;
+};
+typedef struct remote_domain_open_console_args remote_domain_open_console_args;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -2301,6 +2308,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_MEMORY_PARAMETERS = 198,
         REMOTE_PROC_DOMAIN_SET_VCPUS_FLAGS = 199,
         REMOTE_PROC_DOMAIN_GET_VCPUS_FLAGS = 200,
+        REMOTE_PROC_DOMAIN_OPEN_CONSOLE = 201,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -2670,6 +2678,7 @@ extern  bool_t xdr_remote_domain_snapshot_current_args (XDR *, remote_domain_sna
 extern  bool_t xdr_remote_domain_snapshot_current_ret (XDR *, remote_domain_snapshot_current_ret*);
 extern  bool_t xdr_remote_domain_revert_to_snapshot_args (XDR *, remote_domain_revert_to_snapshot_args*);
 extern  bool_t xdr_remote_domain_snapshot_delete_args (XDR *, remote_domain_snapshot_delete_args*);
+extern  bool_t xdr_remote_domain_open_console_args (XDR *, remote_domain_open_console_args*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_type (XDR *, remote_message_type*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -3013,6 +3022,7 @@ extern bool_t xdr_remote_domain_snapshot_current_args ();
 extern bool_t xdr_remote_domain_snapshot_current_ret ();
 extern bool_t xdr_remote_domain_revert_to_snapshot_args ();
 extern bool_t xdr_remote_domain_snapshot_delete_args ();
+extern bool_t xdr_remote_domain_open_console_args ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_type ();
 extern bool_t xdr_remote_message_status ();

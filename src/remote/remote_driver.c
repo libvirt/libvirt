@@ -8152,11 +8152,16 @@ remoteStreamEventTimerUpdate(struct private_stream_data *privst)
     if (!privst->cb)
         return;
 
-    if (!privst->cbEvents)
-        virEventUpdateTimeout(privst->cbTimer, -1);
-    else if (privst->incoming &&
-             (privst->cbEvents & VIR_STREAM_EVENT_READABLE))
+    VIR_DEBUG("Check timer offset=%d %d", privst->incomingOffset, privst->cbEvents);
+    if ((privst->incomingOffset &&
+         (privst->cbEvents & VIR_STREAM_EVENT_READABLE)) ||
+        (privst->cbEvents & VIR_STREAM_EVENT_WRITABLE)) {
+        VIR_DEBUG0("Enabling event timer");
         virEventUpdateTimeout(privst->cbTimer, 0);
+    } else {
+        VIR_DEBUG0("Disabling event timer");
+        virEventUpdateTimeout(privst->cbTimer, -1);
+    }
 }
 
 
@@ -8422,24 +8427,33 @@ remoteStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     virStreamPtr st = opaque;
     struct private_data *priv = st->conn->privateData;
     struct private_stream_data *privst = st->privateData;
+    int events = 0;
 
     remoteDriverLock(priv);
+
     if (privst->cb &&
         (privst->cbEvents & VIR_STREAM_EVENT_READABLE) &&
-        privst->incomingOffset) {
+        privst->incomingOffset)
+        events |= VIR_STREAM_EVENT_READABLE;
+    if (privst->cb &&
+        (privst->cbEvents & VIR_STREAM_EVENT_WRITABLE))
+        events |= VIR_STREAM_EVENT_WRITABLE;
+    VIR_DEBUG("Got Timer dispatch %d %d offset=%d", events, privst->cbEvents, privst->incomingOffset);
+    if (events) {
         virStreamEventCallback cb = privst->cb;
         void *cbOpaque = privst->cbOpaque;
         virFreeCallback cbFree = privst->cbFree;
 
         privst->cbDispatch = 1;
         remoteDriverUnlock(priv);
-        (cb)(st, VIR_STREAM_EVENT_READABLE, cbOpaque);
+        (cb)(st, events, cbOpaque);
         remoteDriverLock(priv);
         privst->cbDispatch = 0;
 
         if (!privst->cb && cbFree)
             (cbFree)(cbOpaque);
     }
+
     remoteDriverUnlock(priv);
 }
 
@@ -8465,12 +8479,6 @@ remoteStreamEventAddCallback(virStreamPtr st,
 
     remoteDriverLock(priv);
 
-    if (events & ~VIR_STREAM_EVENT_READABLE) {
-        remoteError(VIR_ERR_INTERNAL_ERROR,
-                    _("unsupported stream events %d"), events);
-        goto cleanup;
-    }
-
     if (privst->cb) {
         remoteError(VIR_ERR_INTERNAL_ERROR,
                     _("multiple stream callbacks not supported"));
@@ -8492,6 +8500,8 @@ remoteStreamEventAddCallback(virStreamPtr st,
     privst->cbFree = ff;
     privst->cbEvents = events;
 
+    remoteStreamEventTimerUpdate(privst);
+
     ret = 0;
 
 cleanup:
@@ -8508,12 +8518,6 @@ remoteStreamEventUpdateCallback(virStreamPtr st,
     int ret = -1;
 
     remoteDriverLock(priv);
-
-    if (events & ~VIR_STREAM_EVENT_READABLE) {
-        remoteError(VIR_ERR_INTERNAL_ERROR,
-                    _("unsupported stream events %d"), events);
-        goto cleanup;
-    }
 
     if (!privst->cb) {
         remoteError(VIR_ERR_INTERNAL_ERROR,
@@ -9193,6 +9197,46 @@ static int remoteDomainEventDeregisterAny(virConnectPtr conn,
 done:
     remoteDriverUnlock(priv);
     return rv;
+}
+
+
+static int
+remoteDomainOpenConsole(virDomainPtr dom,
+                        const char *devname,
+                        virStreamPtr st,
+                        unsigned int flags)
+{
+    struct private_data *priv = dom->conn->privateData;
+    struct private_stream_data *privst = NULL;
+    int rv = -1;
+    remote_domain_open_console_args args;
+
+    remoteDriverLock(priv);
+
+    if (!(privst = remoteStreamOpen(st, 1, REMOTE_PROC_DOMAIN_OPEN_CONSOLE, priv->counter)))
+        goto done;
+
+    st->driver = &remoteStreamDrv;
+    st->privateData = privst;
+
+    make_nonnull_domain (&args.domain, dom);
+    args.devname = devname ? (char **)&devname : NULL;
+    args.flags = flags;
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_OPEN_CONSOLE,
+             (xdrproc_t) xdr_remote_domain_open_console_args, (char *) &args,
+             (xdrproc_t) xdr_void, NULL) == -1) {
+        remoteStreamRelease(st);
+        goto done;
+    }
+
+    rv = 0;
+
+done:
+    remoteDriverUnlock(priv);
+
+    return rv;
+
 }
 
 
@@ -10691,7 +10735,7 @@ static virDriver remote_driver = {
     remoteQemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
     remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
-    NULL, /* domainOpenConsole */
+    remoteDomainOpenConsole, /* domainOpenConsole */
 };
 
 static virNetworkDriver network_driver = {

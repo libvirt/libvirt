@@ -1352,6 +1352,11 @@ struct remote_domain_snapshot_delete_args {
 	remote_nonnull_domain_snapshot snap;
 	int                        flags;
 };
+struct remote_domain_open_console_args {
+	remote_nonnull_domain      domain;
+	remote_string              devname;
+	u_int                      flags;
+};
 struct remote_message_header {
 	u_int                      prog;
 	u_int                      vers;

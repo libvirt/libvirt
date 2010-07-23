@@ -3709,6 +3709,19 @@ xdr_remote_domain_snapshot_delete_args (XDR *xdrs, remote_domain_snapshot_delete
 }
 
 bool_t
+xdr_remote_domain_open_console_args (XDR *xdrs, remote_domain_open_console_args *objp)
+{
+
+         if (!xdr_remote_nonnull_domain (xdrs, &objp->domain))
+                 return FALSE;
+         if (!xdr_remote_string (xdrs, &objp->devname))
+                 return FALSE;
+         if (!xdr_u_int (xdrs, &objp->flags))
+                 return FALSE;
+        return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 
