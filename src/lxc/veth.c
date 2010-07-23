@@ -13,12 +13,21 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "veth.h"
 #include "internal.h"
 #include "logging.h"
 #include "memory.h"
 #include "util.h"
+#include "virterror_internal.h"
+
+#define VIR_FROM_THIS VIR_FROM_LXC
+
+#define vethError(code, ...)                                  \
+    virReportErrorHelper(NULL, VIR_FROM_LXC, code, __FILE__,  \
+                         __FUNCTION__, __LINE__, __VA_ARGS__)
 
 /* Functions */
 /**
@@ -76,16 +85,12 @@ static int getFreeVethName(char *veth, int maxLen, int startDev)
 int vethCreate(char* veth1, int veth1MaxLen,
                char* veth2, int veth2MaxLen)
 {
-    int rc = -1;
+    int rc;
     const char *argv[] = {
         "ip", "link", "add", veth1, "type", "veth", "peer", "name", veth2, NULL
     };
-    int cmdResult;
+    int cmdResult = 0;
     int vethDev = 0;
-
-    if ((NULL == veth1) || (NULL == veth2)) {
-        goto error_out;
-    }
 
     DEBUG("veth1: %s veth2: %s", veth1, veth2);
 
@@ -104,11 +109,14 @@ int vethCreate(char* veth1, int veth1MaxLen,
     DEBUG("veth1: %s veth2: %s", veth1, veth2);
     rc = virRun(argv, &cmdResult);
 
-    if (0 == rc) {
-       rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        vethError(VIR_ERR_INTERNAL_ERROR,
+                  _("Failed to create veth device pair '%s', '%s': %d"),
+                  veth1, veth2, WEXITSTATUS(cmdResult));
+        rc = -1;
     }
 
-error_out:
     return rc;
 }
 
@@ -125,23 +133,25 @@ error_out:
  */
 int vethDelete(const char *veth)
 {
-    int rc = -1;
+    int rc;
     const char *argv[] = {"ip", "link", "del", veth, NULL};
-    int cmdResult;
-
-    if (NULL == veth) {
-        goto error_out;
-    }
+    int cmdResult = 0;
 
     DEBUG("veth: %s", veth);
 
     rc = virRun(argv, &cmdResult);
 
-    if (0 == rc) {
-       rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        /*
+         * Prevent overwriting an error log which may be set
+         * where an actual failure occurs.
+         */
+        VIR_DEBUG(_("Failed to delete '%s' (%d)"),
+                  veth, WEXITSTATUS(cmdResult));
+        rc = -1;
     }
 
-error_out:
     return rc;
 }
 
@@ -157,13 +167,9 @@ error_out:
  */
 int vethInterfaceUpOrDown(const char* veth, int upOrDown)
 {
-    int rc = -1;
+    int rc;
     const char *argv[] = {"ifconfig", veth, NULL, NULL};
-    int cmdResult;
-
-    if (NULL == veth) {
-        goto error_out;
-    }
+    int cmdResult = 0;
 
     if (0 == upOrDown)
         argv[2] = "down";
@@ -172,11 +178,22 @@ int vethInterfaceUpOrDown(const char* veth, int upOrDown)
 
     rc = virRun(argv, &cmdResult);
 
-    if (0 == rc) {
-       rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        if (0 == upOrDown)
+            /*
+             * Prevent overwriting an error log which may be set
+             * where an actual failure occurs.
+             */
+            VIR_DEBUG(_("Failed to disable '%s' (%d)"),
+                      veth, WEXITSTATUS(cmdResult));
+        else
+            vethError(VIR_ERR_INTERNAL_ERROR,
+                      _("Failed to enable '%s' (%d)"),
+                      veth, WEXITSTATUS(cmdResult));
+        rc = -1;
     }
 
-error_out:
     return rc;
 }
 
@@ -193,26 +210,28 @@ error_out:
  */
 int moveInterfaceToNetNs(const char* iface, int pidInNs)
 {
-    int rc = -1;
+    int rc;
     char *pid = NULL;
     const char *argv[] = {
         "ip", "link", "set", iface, "netns", NULL, NULL
     };
-    int cmdResult;
+    int cmdResult = 0;
 
-    if (NULL == iface) {
-        goto error_out;
+    if (virAsprintf(&pid, "%d", pidInNs) == -1) {
+        virReportOOMError();
+        return -1;
     }
-
-    if (virAsprintf(&pid, "%d", pidInNs) == -1)
-        goto error_out;
 
     argv[5] = pid;
     rc = virRun(argv, &cmdResult);
-    if (0 == rc)
-        rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        vethError(VIR_ERR_INTERNAL_ERROR,
+                  _("Failed to move '%s' into NS(pid=%d) (%d)"),
+                  iface, pidInNs, WEXITSTATUS(cmdResult));
+        rc = -1;
+    }
 
-error_out:
     VIR_FREE(pid);
     return rc;
 }
@@ -230,21 +249,21 @@ error_out:
  */
 int setMacAddr(const char* iface, const char* macaddr)
 {
-    int rc = -1;
+    int rc;
     const char *argv[] = {
         "ip", "link", "set", iface, "address", macaddr, NULL
     };
-    int cmdResult;
-
-    if (NULL == iface) {
-        goto error_out;
-    }
+    int cmdResult = 0;
 
     rc = virRun(argv, &cmdResult);
-    if (0 == rc)
-        rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        vethError(VIR_ERR_INTERNAL_ERROR,
+                  _("Failed to set '%s' to '%s' (%d)"),
+                  macaddr, iface, WEXITSTATUS(cmdResult));
+        rc = -1;
+    }
 
-error_out:
     return rc;
 }
 
@@ -261,20 +280,20 @@ error_out:
  */
 int setInterfaceName(const char* iface, const char* new)
 {
-    int rc = -1;
+    int rc;
     const char *argv[] = {
         "ip", "link", "set", iface, "name", new, NULL
     };
-    int cmdResult;
-
-    if (NULL == iface || NULL == new) {
-        goto error_out;
-    }
+    int cmdResult = 0;
 
     rc = virRun(argv, &cmdResult);
-    if (0 == rc)
-        rc = cmdResult;
+    if (rc != 0 ||
+        (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
+        vethError(VIR_ERR_INTERNAL_ERROR,
+                  _("Failed to set '%s' to '%s' (%d)"),
+                  new, iface, WEXITSTATUS(cmdResult));
+        rc = -1;
+    }
 
-error_out:
     return rc;
 }

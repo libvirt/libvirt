@@ -722,7 +722,7 @@ cleanup:
 static int lxcVmCleanup(lxc_driver_t *driver,
                         virDomainObjPtr  vm)
 {
-    int rc = -1;
+    int rc = 0;
     int waitRc;
     int childStatus = -1;
     virCgroupPtr cgroup;
@@ -737,13 +737,10 @@ static int lxcVmCleanup(lxc_driver_t *driver,
         virReportSystemError(errno,
                              _("waitpid failed to wait for container %d: %d"),
                              vm->pid, waitRc);
-    }
-
-    rc = 0;
-
-    if (WIFEXITED(childStatus)) {
-        rc = WEXITSTATUS(childStatus);
-        DEBUG("container exited with rc: %d", rc);
+        rc = -1;
+    } else if (WIFEXITED(childStatus)) {
+        DEBUG("container exited with rc: %d", WEXITSTATUS(childStatus));
+        rc = -1;
     }
 
     /* now that we know it's stopped call the hook if present */
@@ -859,11 +856,9 @@ static int lxcSetupInterfaces(virConnectPtr conn,
             strcpy(parentVeth, def->nets[i]->ifname);
         }
         DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
-        if (0 != (rc = vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX))) {
-            lxcError(VIR_ERR_INTERNAL_ERROR,
-                     _("Failed to create veth device pair: %d"), rc);
+        if (vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX) < 0)
             goto error_exit;
-        }
+
         if (NULL == def->nets[i]->ifname) {
             def->nets[i]->ifname = strdup(parentVeth);
         }
@@ -885,28 +880,20 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         {
             char macaddr[VIR_MAC_STRING_BUFLEN];
             virFormatMacAddr(def->nets[i]->mac, macaddr);
-            if (0 != (rc = setMacAddr(containerVeth, macaddr))) {
-                virReportSystemError(rc,
-                                     _("Failed to set %s to %s"),
-                                     macaddr, containerVeth);
+            if (setMacAddr(containerVeth, macaddr) < 0)
                 goto error_exit;
-            }
         }
 
         if (0 != (rc = brAddInterface(brctl, bridge, parentVeth))) {
             virReportSystemError(rc,
                                  _("Failed to add %s device to %s"),
                                  parentVeth, bridge);
+            rc = -1;
             goto error_exit;
         }
 
-        if (0 != (rc = vethInterfaceUpOrDown(parentVeth, 1))) {
-            virReportSystemError(rc,
-                                 _("Failed to enable %s device"),
-                                 parentVeth);
+        if (vethInterfaceUpOrDown(parentVeth, 1) < 0)
             goto error_exit;
-        }
-
     }
 
     rc = 0;

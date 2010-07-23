@@ -33,6 +33,7 @@ src/lxc/lxc_container.c
 src/lxc/lxc_conf.c
 src/lxc/lxc_controller.c
 src/lxc/lxc_driver.c
+src/lxc/veth.c
 src/network/bridge_driver.c
 src/node_device/node_device_driver.c
 src/node_device/node_device_hal.c
