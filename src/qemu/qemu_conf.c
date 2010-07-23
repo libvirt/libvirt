@@ -1156,6 +1156,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
 
     if (strstr(help, "-no-kqemu"))
         flags |= QEMUD_CMD_FLAG_KQEMU;
+    if (strstr(help, "-enable-kqemu"))
+        flags |= QEMUD_CMD_FLAG_ENABLE_KQEMU;
     if (strstr(help, "-no-kvm"))
         flags |= QEMUD_CMD_FLAG_KVM;
     if (strstr(help, "-enable-kvm"))
@@ -3663,6 +3665,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     char boot[VIR_DOMAIN_BOOT_LAST];
     struct utsname ut;
     int disableKQEMU = 0;
+    int enableKQEMU = 0;
     int disableKVM = 0;
     int enableKVM = 0;
     int qargc = 0, qarga = 0;
@@ -3712,38 +3715,59 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     emulator = def->emulator;
 
-    /* Need to explicitly disable KQEMU if
-     * 1. Guest domain is 'qemu'
-     * 2. The qemu binary has the -no-kqemu flag
-     */
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
-        def->virtType == VIR_DOMAIN_VIRT_QEMU)
-        disableKQEMU = 1;
-
-    /* Need to explicitly disable KVM if
-     * 1. Guest domain is 'qemu'
-     * 2. The qemu binary has the -no-kvm flag
+    /*
+     * do not use boot=on for drives when not using KVM since this
+     * is not supported at all in upstream QEmu.
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
-        def->virtType == VIR_DOMAIN_VIRT_QEMU) {
-        disableKVM = 1;
+        (def->virtType == VIR_DOMAIN_VIRT_QEMU) &&
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT))
+        qemuCmdFlags -= QEMUD_CMD_FLAG_DRIVE_BOOT;
 
-        /*
-         * do not use boot=on for drives when not using KVM since this
-         * is not supported at all in upstream QEmu.
-         */
-        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT)
-            qemuCmdFlags -= QEMUD_CMD_FLAG_DRIVE_BOOT;
+    switch (def->virtType) {
+    case VIR_DOMAIN_VIRT_QEMU:
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU)
+            disableKQEMU = 1;
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_KVM)
+            disableKVM = 1;
+        break;
+
+    case VIR_DOMAIN_VIRT_KQEMU:
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_KVM)
+            disableKVM = 1;
+
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_ENABLE_KQEMU) {
+            enableKQEMU = 1;
+        } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("the QEMU binary %s does not support kqemu"),
+                            emulator);
+        }
+        break;
+
+    case VIR_DOMAIN_VIRT_KVM:
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU)
+            disableKQEMU = 1;
+
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_ENABLE_KVM) {
+            enableKVM = 1;
+        } else if (!(qemuCmdFlags & QEMUD_CMD_FLAG_KVM)) {
+            qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("the QEMU binary %s does not support kvm"),
+                            emulator);
+        }
+        break;
+
+    case VIR_DOMAIN_VIRT_XEN:
+        /* XXX better check for xenner */
+        break;
+
+    default:
+        qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("the QEMU binary %s does not support %s"),
+                        emulator, virDomainVirtTypeToString(def->virtType));
+        break;
     }
-
-    /* Should explicitly enable KVM if
-     * 1. Guest domain is 'kvm'
-     * 2. The qemu binary has the -enable-kvm flag
-     * NOTE: user must be responsible for loading the kvm modules
-     */
-    if ((qemuCmdFlags & QEMUD_CMD_FLAG_ENABLE_KVM) &&
-        def->virtType == VIR_DOMAIN_VIRT_KVM)
-        enableKVM = 1;
 
 #define ADD_ARG_SPACE                                                   \
     do { \
@@ -3858,6 +3882,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
 
     if (disableKQEMU)
         ADD_ARG_LIT("-no-kqemu");
+    else if (enableKQEMU) {
+        ADD_ARG_LIT("-enable-kqemu");
+        ADD_ARG_LIT("-kernel-kqemu");
+    }
     if (disableKVM)
         ADD_ARG_LIT("-no-kvm");
     if (enableKVM)

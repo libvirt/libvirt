@@ -92,6 +92,7 @@ enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_PCI_CONFIGFD  = (1LL << 36), /* pci-assign.configfd */
     QEMUD_CMD_FLAG_NODEFCONFIG   = (1LL << 37), /* -nodefconfig */
     QEMUD_CMD_FLAG_BOOT_MENU     = (1LL << 38), /* -boot menu=on support */
+    QEMUD_CMD_FLAG_ENABLE_KQEMU  = (1LL << 39), /* -enable-kqemu flag */
 };
 
 /* Main driver state */
