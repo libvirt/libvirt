@@ -1869,6 +1869,7 @@ static virDriver xenapiDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 /**

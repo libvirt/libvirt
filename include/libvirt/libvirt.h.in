@@ -2402,6 +2402,12 @@ int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
                                                   int flags);
 
+
+int virDomainOpenConsole(virDomainPtr dom,
+                         const char *devname,
+                         virStreamPtr st,
+                         unsigned int flags);
+
 #ifdef __cplusplus
 }
 #endif

@@ -2035,6 +2035,7 @@ static virDriver xenUnifiedDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 /**

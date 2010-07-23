@@ -4382,6 +4382,7 @@ static virDriver esxDriver = {
     NULL,                            /* qemuDomainMonitorCommand */
     esxDomainSetMemoryParameters,    /* domainSetMemoryParameters */
     esxDomainGetMemoryParameters,    /* domainGetMemoryParameters */
+    NULL,                            /* domainOpenConsole */
 };
 
 

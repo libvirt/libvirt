@@ -413,4 +413,9 @@ LIBVIRT_0.8.5 {
         virDomainSetVcpusFlags;
 } LIBVIRT_0.8.2;
 
+LIBVIRT_0.8.6 {
+    global:
+        virDomainOpenConsole;
+} LIBVIRT_0.8.5;
+
 # .... define new API here using predicted next version number ....

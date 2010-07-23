@@ -1691,6 +1691,7 @@ static virDriver openvzDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 int openvzRegister(void) {

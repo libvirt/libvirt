@@ -13428,6 +13428,7 @@ static virDriver qemuDriver = {
     qemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     qemuDomainSetMemoryParameters, /* domainSetMemoryParameters */
     qemuDomainGetMemoryParameters, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 

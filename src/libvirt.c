@@ -13114,3 +13114,56 @@ virDomainSnapshotFree(virDomainSnapshotPtr snapshot)
     }
     return 0;
 }
+
+/**
+ * virDomainOpenConsole:
+ * @dom: a domain object
+ * @devname: the console, serial or parallel port device alias, or NULL
+ * @st: a stream to associate with the console
+ * @flags: unused, pass 0
+ *
+ * This opens the backend associated with a console, serial or
+ * parallel port device on a guest, if the backend is supported.
+ * If the @devname is omitted, then the first console or serial
+ * device is opened. The console is associated with the passed
+ * in @st stream, which should have been opened in non-blocking
+ * mode for bi-directional I/O.
+ *
+ * returns 0 if the console was opened, -1 on error
+ */
+int virDomainOpenConsole(virDomainPtr dom,
+                         const char *devname,
+                         virStreamPtr st,
+                         unsigned int flags)
+{
+    virConnectPtr conn;
+    DEBUG("dom=%p devname=%s, st=%p flags=%u", dom, NULLSTR(devname), st, flags);
+
+    virResetLastError();
+
+    if (!VIR_IS_DOMAIN(dom)) {
+        virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    conn = dom->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(dom, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        goto error;
+    }
+
+    if (conn->driver->domainOpenConsole) {
+        int ret;
+        ret = conn->driver->domainOpenConsole(dom, devname, st, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virLibConnError(conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+
+error:
+    virDispatchError(conn);
+    return -1;
+}

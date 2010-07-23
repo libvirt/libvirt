@@ -5443,6 +5443,7 @@ static virDriver testDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 static virNetworkDriver testNetworkDriver = {

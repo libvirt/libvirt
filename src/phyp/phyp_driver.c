@@ -4045,6 +4045,7 @@ static virDriver phypDriver = {
     NULL,                       /* qemuMonitorCommand */
     NULL,                       /* domainSetMemoryParameters */
     NULL,                       /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 static virStorageDriver phypStorageDriver = {

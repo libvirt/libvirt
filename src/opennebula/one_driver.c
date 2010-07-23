@@ -822,6 +822,7 @@ static virDriver oneDriver = {
     NULL, /* qemuDomainMonitorCommand */
     NULL, /* domainSetMemoryParameters */
     NULL, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 static virStateDriver oneStateDriver = {

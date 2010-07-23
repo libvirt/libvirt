@@ -10691,6 +10691,7 @@ static virDriver remote_driver = {
     remoteQemuDomainMonitorCommand, /* qemuDomainMonitorCommand */
     remoteDomainSetMemoryParameters, /* domainSetMemoryParameters */
     remoteDomainGetMemoryParameters, /* domainGetMemoryParameters */
+    NULL, /* domainOpenConsole */
 };
 
 static virNetworkDriver network_driver = {
