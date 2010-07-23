@@ -76,6 +76,7 @@ cat > "$template_xml" <<EOM
   <devices>
     <emulator>/usr/bin/kvm</emulator>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='###DISK###'/>
       <target dev='hda' bus='ide'/>
     </disk>
@@ -195,7 +196,7 @@ cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" |
 testme "0" "create (ppc)" "-c -u $valid_uuid" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###,$disk1,g" | sed "s,</disk>,</disk><disk type='file' device='disk'><source file='$disk2'/><target dev='hdb' bus='ide'/></disk>,g" > "$test_xml"
-testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create multiple disks" "-c -u $valid_uuid -p 1" "$test_xml"
 
 cat "$template_xml" | sed "s,###UUID###,$uuid,g" | sed "s,###DISK###',${disk1}'/><readonly,g" > "$test_xml"
 testme "0" "create (readonly)" "-c -u $valid_uuid" "$test_xml"
