@@ -43,6 +43,7 @@ EXTRA_DIST =		\
         oomtrace.pl     \
 	test-lib.sh	\
 	qemuxml2argvdata \
+	qemuxml2xmloutdata \
 	nodeinfodata     \
 	schematestutils.sh \
 	capabilityschematest \

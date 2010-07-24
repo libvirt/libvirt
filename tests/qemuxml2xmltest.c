@@ -22,41 +22,63 @@ static struct qemud_driver driver;
 # define MAX_FILE 4096
 
 
-static int testCompareXMLToXMLFiles(const char *xml) {
-    char xmlData[MAX_FILE];
-    char *xmlPtr = &(xmlData[0]);
+static int testCompareXMLToXMLFiles(const char *inxml, const char *outxml) {
+    char inXmlData[MAX_FILE];
+    char *inXmlPtr = &(inXmlData[0]);
+    char outXmlData[MAX_FILE];
+    char *outXmlPtr = &(outXmlData[0]);
     char *actual = NULL;
     int ret = -1;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr def = NULL;
 
-    if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
+    if (virtTestLoadFile(inxml, &inXmlPtr, MAX_FILE) < 0)
+        goto fail;
+    if (virtTestLoadFile(outxml, &outXmlPtr, MAX_FILE) < 0)
         goto fail;
 
-    if (!(vmdef = virDomainDefParseString(driver.caps, xmlData,
+    if (!(def = virDomainDefParseString(driver.caps, inXmlData,
                                           VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
-    if (!(actual = virDomainDefFormat(vmdef, 0)))
+    if (!(actual = virDomainDefFormat(def, 0)))
         goto fail;
 
-    if (STRNEQ(xmlData, actual)) {
-        virtTestDifference(stderr, xmlData, actual);
+
+    if (STRNEQ(outXmlData, actual)) {
+        virtTestDifference(stderr, outXmlData, actual);
         goto fail;
     }
 
     ret = 0;
-
  fail:
     free(actual);
-    virDomainDefFree(vmdef);
+    virDomainDefFree(def);
     return ret;
 }
 
+struct testInfo {
+    const char *name;
+    int different;
+};
+
 static int testCompareXMLToXMLHelper(const void *data) {
-    char xml[PATH_MAX];
-    snprintf(xml, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-             abs_srcdir, (const char*)data);
-    return testCompareXMLToXMLFiles(xml);
+    const struct testInfo *info = data;
+    char xml_in[PATH_MAX];
+    char xml_out[PATH_MAX];
+    int ret;
+
+    snprintf(xml_in, PATH_MAX, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+             abs_srcdir, info->name);
+    snprintf(xml_out, PATH_MAX, "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+             abs_srcdir, info->name);
+
+    if (info->different) {
+        ret = testCompareXMLToXMLFiles(xml_in, xml_out);
+    } else {
+        ret = testCompareXMLToXMLFiles(xml_in, xml_in);
+    }
+
+    return ret;
 }
 
 
@@ -80,10 +102,24 @@ mymain(int argc, char **argv)
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return (EXIT_FAILURE);
 
+# define DO_TEST_FULL(name, is_different)                               \
+    do {                                                                \
+        const struct testInfo info = {name, is_different};              \
+        if (virtTestRun("QEMU XML-2-XML " name,                         \
+                        1, testCompareXMLToXMLHelper, &info) < 0)       \
+            ret = -1;                                                   \
+    } while (0)
+
 # define DO_TEST(name) \
-    if (virtTestRun("QEMU XML-2-XML " name, \
-                    1, testCompareXMLToXMLHelper, (name)) < 0) \
-        ret = -1
+    DO_TEST_FULL(name, 0)
+
+# define DO_TEST_DIFFERENT(name) \
+    DO_TEST_FULL(name, 1)
+
+    /* Unset or set all envvars here that are copied in qemudBuildCommandLine
+     * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
+     * values for these envvars */
+    setenv("PATH", "/bin", 1);
 
     DO_TEST("minimal");
     DO_TEST("boot-cdrom");
@@ -107,6 +143,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drive-cache-v1-wt");
     DO_TEST("disk-drive-cache-v1-wb");
     DO_TEST("disk-drive-cache-v1-none");
+    DO_TEST("disk-scsi-device");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-sasl");
     DO_TEST("graphics-vnc-tls");
@@ -141,6 +178,12 @@ mymain(int argc, char **argv)
     DO_TEST("hostdev-pci-address");
 
     DO_TEST("encrypted-disk");
+
+    /* These tests generate different XML */
+    DO_TEST_DIFFERENT("balloon-device-auto");
+    DO_TEST_DIFFERENT("channel-virtio-auto");
+    DO_TEST_DIFFERENT("console-compat-auto");
+    DO_TEST_DIFFERENT("disk-scsi-device-auto");
 
     virCapabilitiesFree(driver.caps);
 

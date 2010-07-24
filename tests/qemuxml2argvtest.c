@@ -275,6 +275,10 @@ mymain(int argc, char **argv)
     DO_TEST("disk-usb", 0);
     DO_TEST("disk-usb-device", QEMUD_CMD_FLAG_DRIVE |
             QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("disk-scsi-device", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("disk-scsi-device-auto", QEMUD_CMD_FLAG_DRIVE |
+            QEMUD_CMD_FLAG_DEVICE | QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("graphics-vnc", 0);
 
     driver.vncSASL = 1;
@@ -320,6 +324,7 @@ mymain(int argc, char **argv)
     DO_TEST("serial-many", 0);
     DO_TEST("parallel-tcp", 0);
     DO_TEST("console-compat", 0);
+    DO_TEST("console-compat-auto", 0);
 
     DO_TEST("serial-vc-chardev", QEMUD_CMD_FLAG_CHARDEV|QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG);
@@ -355,6 +360,8 @@ mymain(int argc, char **argv)
     DO_TEST("watchdog-device", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("balloon-device", QEMUD_CMD_FLAG_DEVICE |
+            QEMUD_CMD_FLAG_NODEFCONFIG);
+    DO_TEST("balloon-device-auto", QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_NODEFCONFIG);
     DO_TEST("sound", 0);
     DO_TEST("sound-device", QEMUD_CMD_FLAG_DEVICE |

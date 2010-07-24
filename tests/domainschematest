@@ -4,7 +4,7 @@
 . $srcdir/test-lib.sh
 . $abs_srcdir/schematestutils.sh
 
-DIRS="domainschemadata qemuxml2argvdata sexpr2xmldata xmconfigdata xml2sexprdata"
+DIRS="domainschemadata qemuxml2argvdata sexpr2xmldata xmconfigdata xml2sexprdata qemuxml2xmloutdata"
 SCHEMA="domain.rng"
 
 check_schema "$DIRS" "$SCHEMA"
