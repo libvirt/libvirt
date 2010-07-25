@@ -1409,6 +1409,7 @@ esxDomainSuspend(virDomainPtr domain)
 
     if (esxVI_SuspendVM_Task(priv->primary, virtualMachine->obj, &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -1462,6 +1463,7 @@ esxDomainResume(virDomainPtr domain)
     if (esxVI_PowerOnVM_Task(priv->primary, virtualMachine->obj, NULL,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -1607,8 +1609,9 @@ esxDomainDestroy(virDomainPtr domain)
     }
 
     if (esxVI_PowerOffVM_Task(ctx, virtualMachine->obj, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(ctx, task, domain->uuid, priv->autoAnswer,
-                                    &taskInfoState) < 0) {
+        esxVI_WaitForTaskCompletion(ctx, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
+                                    priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
 
@@ -1724,6 +1727,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -1775,6 +1779,7 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -2104,6 +2109,7 @@ esxDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -2505,6 +2511,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     if (esxVI_PowerOnVM_Task(priv->primary, virtualMachine->obj, NULL,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -2702,6 +2709,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
                               datastoreRelatedPath, NULL, esxVI_Boolean_False,
                               resourcePool, hostSystem->obj, &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->host, task, def->uuid,
+                                    esxVI_Occurrence_OptionalItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -3069,6 +3077,7 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
     if (esxVI_ReconfigVM_Task(priv->primary, virtualMachine->obj, spec,
                               &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -3223,6 +3232,7 @@ esxDomainMigratePerform(virDomainPtr domain,
                              esxVI_VirtualMachinePowerState_Undefined,
                              &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->vCenter, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -3465,6 +3475,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
                                   esxVI_Boolean_True,
                                   esxVI_Boolean_False, &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -3721,6 +3732,7 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     if (esxVI_RevertToSnapshot_Task(priv->primary, snapshotTree->snapshot, NULL,
                                     &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, snapshot->domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }
@@ -3775,6 +3787,7 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
     if (esxVI_RemoveSnapshot_Task(priv->primary, snapshotTree->snapshot,
                                   removeChildren, &task) < 0 ||
         esxVI_WaitForTaskCompletion(priv->primary, task, snapshot->domain->uuid,
+                                    esxVI_Occurrence_RequiredItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
     }

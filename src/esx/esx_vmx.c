@@ -811,8 +811,8 @@ esxVMX_AutodetectSCSIControllerModel(esxVI_Context *ctx,
     /* Search datastore for file */
     if (esxVI_SearchDatastore_Task(ctx, hostDatastoreBrowser, datastorePath,
                                    searchSpec, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Boolean_False,
-                                    &taskInfoState) < 0) {
+        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
+                                    esxVI_Boolean_False, &taskInfoState) < 0) {
         goto cleanup;
     }
 

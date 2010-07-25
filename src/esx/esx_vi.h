@@ -367,7 +367,9 @@ int esxVI_LookupPendingTaskInfoListByVirtualMachine
 
 int esxVI_LookupAndHandleVirtualMachineQuestion(esxVI_Context *ctx,
                                                 const unsigned char *uuid,
-                                                esxVI_Boolean autoAnswer);
+                                                esxVI_Occurrence occurrence,
+                                                esxVI_Boolean autoAnswer,
+                                                esxVI_Boolean *blocked);
 
 int esxVI_LookupRootSnapshotTreeList
       (esxVI_Context *ctx, const unsigned char *virtualMachineUuid,
@@ -382,11 +384,12 @@ int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,
        esxVI_VirtualMachineQuestionInfo *questionInfo,
-       esxVI_Boolean autoAnswer);
+       esxVI_Boolean autoAnswer, esxVI_Boolean *blocked);
 
 int esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *task,
                                 const unsigned char *virtualMachineUuid,
+                                esxVI_Occurrence virtualMachineOccurrence,
                                 esxVI_Boolean autoAnswer,
                                 esxVI_TaskInfoState *finalState);
 
