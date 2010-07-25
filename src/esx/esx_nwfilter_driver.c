@@ -43,7 +43,7 @@ esxNWFilterOpen(virConnectPtr conn,
                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                 int flags ATTRIBUTE_UNUSED)
 {
-    if (STRNEQ(conn->driver->name, "ESX")) {
+    if (conn->driver->no != VIR_DRV_ESX) {
         return VIR_DRV_OPEN_DECLINED;
     }
 
