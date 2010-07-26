@@ -3070,14 +3070,15 @@ cleanup:
 
 
 static int
-qemuPrepareHostPCIDevices(struct qemud_driver *driver,
-                          virDomainDefPtr def)
+qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs)
 {
     pciDeviceList *pcidevs;
     int i;
     int ret = -1;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs)))
+    if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs)))
         return -1;
 
     /* We have to use 3 loops here. *All* devices must
@@ -3125,6 +3126,13 @@ qemuPrepareHostPCIDevices(struct qemud_driver *driver,
 cleanup:
     pciDeviceListFree(pcidevs);
     return ret;
+}
+
+static int
+qemuPrepareHostPCIDevices(struct qemud_driver *driver,
+                          virDomainDefPtr def)
+{
+    return qemuPrepareHostdevPCIDevices(driver, def->hostdevs, def->nhostdevs);
 }
 
 
@@ -3220,16 +3228,14 @@ qemudReattachManagedDevice(pciDevice *dev, struct qemud_driver *driver)
 }
 
 static void
-qemuDomainReAttachHostDevices(struct qemud_driver *driver,
-                              virDomainDefPtr def)
+qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
 {
     pciDeviceList *pcidevs;
     int i;
 
-    if (!def->nhostdevs)
-        return;
-
-    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs))) {
+    if (!(pcidevs = qemuGetPciHostDeviceList(hostdevs, nhostdevs))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : _("unknown error"));
@@ -3261,6 +3267,16 @@ qemuDomainReAttachHostDevices(struct qemud_driver *driver,
     }
 
     pciDeviceListFree(pcidevs);
+}
+
+static void
+qemuDomainReAttachHostDevices(struct qemud_driver *driver,
+                              virDomainDefPtr def)
+{
+    if (!def->nhostdevs)
+        return;
+
+    qemuDomainReAttachHostdevDevices(driver, def->hostdevs, def->nhostdevs);
 }
 
 static const char *const defaultDeviceACL[] = {
