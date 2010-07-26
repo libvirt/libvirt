@@ -35,7 +35,8 @@ void       pciFreeDevice     (pciDevice     *dev);
 int        pciDettachDevice  (pciDevice     *dev, pciDeviceList *activeDevs);
 int        pciReAttachDevice (pciDevice     *dev, pciDeviceList *activeDevs);
 int        pciResetDevice    (pciDevice     *dev,
-                              pciDeviceList *activeDevs);
+                              pciDeviceList *activeDevs,
+                              pciDeviceList *inactiveDevs);
 void      pciDeviceSetManaged(pciDevice     *dev,
                               unsigned       managed);
 unsigned  pciDeviceGetManaged(pciDevice     *dev);

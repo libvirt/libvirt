@@ -1892,7 +1892,7 @@ xenUnifiedNodeDeviceReset (virNodeDevicePtr dev)
     if (!pci)
         return -1;
 
-    if (pciResetDevice(pci, NULL) < 0)
+    if (pciResetDevice(pci, NULL, NULL) < 0)
         goto out;
 
     ret = 0;

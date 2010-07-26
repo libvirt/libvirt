@@ -440,11 +440,11 @@ pciDetectPowerManagementReset(pciDevice *dev)
     return 0;
 }
 
-/* Any active devices other than the one supplied on the same domain/bus ? */
+/* Any active devices on the same domain/bus ? */
 static int
 pciSharesBusWithActive(pciDevice *dev, pciDevice *check, void *data)
 {
-    pciDeviceList *activeDevs = data;
+    pciDeviceList *inactiveDevs = data;
 
     /* Different domain, different bus, or simply identical device */
     if (dev->domain != check->domain ||
@@ -453,7 +453,8 @@ pciSharesBusWithActive(pciDevice *dev, pciDevice *check, void *data)
          dev->function == check->function))
         return 0;
 
-    if (activeDevs && !pciDeviceListFind(activeDevs, check))
+    /* same bus, but inactive, i.e. about to be assigned to guest */
+    if (inactiveDevs && pciDeviceListFind(inactiveDevs, check))
         return 0;
 
     return 1;
@@ -461,11 +462,11 @@ pciSharesBusWithActive(pciDevice *dev, pciDevice *check, void *data)
 
 static pciDevice *
 pciBusContainsActiveDevices(pciDevice *dev,
-                            pciDeviceList *activeDevs)
+                            pciDeviceList *inactiveDevs)
 {
     pciDevice *active = NULL;
     if (pciIterDevices(pciSharesBusWithActive,
-                       dev, &active, activeDevs) < 0)
+                       dev, &active, inactiveDevs) < 0)
         return NULL;
     return active;
 }
@@ -512,7 +513,7 @@ pciGetParentDevice(pciDevice *dev)
  */
 static int
 pciTrySecondaryBusReset(pciDevice *dev,
-                        pciDeviceList *activeDevs)
+                        pciDeviceList *inactiveDevs)
 {
     pciDevice *parent, *conflict;
     uint8_t config_space[PCI_CONF_LEN];
@@ -524,7 +525,7 @@ pciTrySecondaryBusReset(pciDevice *dev,
      * In future, we could allow it so long as those devices
      * are not in use by the host or other guests.
      */
-    if ((conflict = pciBusContainsActiveDevices(dev, activeDevs))) {
+    if ((conflict = pciBusContainsActiveDevices(dev, inactiveDevs))) {
         pciReportError(VIR_ERR_NO_SUPPORT,
                        _("Active %s devices on bus with %s, not doing bus reset"),
                        conflict->name, dev->name);
@@ -642,7 +643,8 @@ pciInitDevice(pciDevice *dev)
 
 int
 pciResetDevice(pciDevice *dev,
-               pciDeviceList *activeDevs)
+               pciDeviceList *activeDevs,
+               pciDeviceList *inactiveDevs)
 {
     int ret = -1;
 
@@ -670,7 +672,7 @@ pciResetDevice(pciDevice *dev,
 
     /* Bus reset is not an option with the root bus */
     if (ret < 0 && dev->bus != 0)
-        ret = pciTrySecondaryBusReset(dev, activeDevs);
+        ret = pciTrySecondaryBusReset(dev, inactiveDevs);
 
     if (ret < 0) {
         virErrorPtr err = virGetLastError();

@@ -3107,7 +3107,7 @@ qemuPrepareHostdevPCIDevices(struct qemud_driver *driver,
      * reset them */
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(dev, driver->activePciHostdevs) < 0)
+        if (pciResetDevice(dev, driver->activePciHostdevs, pcidevs) < 0)
             goto cleanup;
     }
 
@@ -3253,7 +3253,7 @@ qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        if (pciResetDevice(dev, driver->activePciHostdevs) < 0) {
+        if (pciResetDevice(dev, driver->activePciHostdevs, pcidevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s"),
                       err ? err->message : _("unknown error"));
@@ -8995,7 +8995,7 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
     else {
         pciDeviceSetManaged(pci, detach->managed);
         pciDeviceListDel(driver->activePciHostdevs, pci);
-        if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
+        if (pciResetDevice(pci, driver->activePciHostdevs, NULL) < 0)
             ret = -1;
         qemudReattachManagedDevice(pci, driver);
         pciFreeDevice(pci);
@@ -11620,7 +11620,7 @@ qemudNodeDeviceReset (virNodeDevicePtr dev)
 
     qemuDriverLock(driver);
 
-    if (pciResetDevice(pci, driver->activePciHostdevs) < 0)
+    if (pciResetDevice(pci, driver->activePciHostdevs, NULL) < 0)
         goto out;
 
     ret = 0;
