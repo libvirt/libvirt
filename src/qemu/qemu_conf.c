@@ -4542,6 +4542,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
         }
     }
 
+    if (def->ngraphics > 1) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                        "%s", _("only 1 graphics device is supported"));
+        goto error;
+    }
+
     if ((def->ngraphics == 1) &&
         def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -4641,6 +4647,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
          * default, since the default changes :-( */
         if (qemuCmdFlags & QEMUD_CMD_FLAG_SDL)
             ADD_ARG_LIT("-sdl");
+
+    } else if ((def->ngraphics == 1)) {
+        qemuReportError(VIR_ERR_INTERNAL_ERROR,
+                    _("unsupported graphics type '%s'"),
+                    virDomainGraphicsTypeToString(def->graphics[0]->type));
+        goto error;
     }
 
     if (def->nvideos) {
