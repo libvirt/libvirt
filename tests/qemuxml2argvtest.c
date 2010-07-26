@@ -223,6 +223,8 @@ mymain(int argc, char **argv)
     DO_TEST("boot-cdrom", 0);
     DO_TEST("boot-network", 0);
     DO_TEST("boot-floppy", 0);
+    DO_TEST("boot-multi", QEMUD_CMD_FLAG_BOOT_MENU);
+    DO_TEST("boot-menu-disable", QEMUD_CMD_FLAG_BOOT_MENU);
     DO_TEST("bootloader", QEMUD_CMD_FLAG_DOMID);
     DO_TEST("clock-utc", 0);
     DO_TEST("clock-localtime", 0);

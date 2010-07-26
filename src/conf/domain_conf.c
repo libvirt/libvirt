@@ -4300,6 +4300,8 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
     }
 
     if (STREQ(def->os.type, "hvm")) {
+        char *bootstr;
+
         /* analysis of the boot devices */
         if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0) {
             virDomainReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4329,6 +4331,15 @@ static virDomainDefPtr virDomainDefParseXML(virCapsPtr caps,
             def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
         }
         VIR_FREE(nodes);
+
+        bootstr = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
+        if (bootstr) {
+            if (STREQ(bootstr, "yes"))
+                def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_ENABLED;
+            else
+                def->os.bootmenu = VIR_DOMAIN_BOOT_MENU_DISABLED;
+            VIR_FREE(bootstr);
+        }
     }
 
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
@@ -6274,6 +6285,13 @@ char *virDomainDefFormat(virDomainDefPtr def,
                 goto cleanup;
             }
             virBufferVSprintf(&buf, "    <boot dev='%s'/>\n", boottype);
+        }
+
+        if (def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
+            const char *enabled = (def->os.bootmenu ==
+                                   VIR_DOMAIN_BOOT_MENU_ENABLED ? "yes"
+                                                                : "no");
+            virBufferVSprintf(&buf, "    <bootmenu enable='%s'/>\n", enabled);
         }
     }
 

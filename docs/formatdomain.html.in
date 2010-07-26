@@ -79,6 +79,8 @@
     &lt;type&gt;hvm&lt;/type&gt;
     &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
     &lt;boot dev='hd'/&gt;
+    &lt;boot dev='cdrom'/&gt;
+    &lt;bootmenu enable='yes'/&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -103,6 +105,12 @@
         to consider. The <code>boot</code> element can be repeated multiple
         times to setup a priority list of boot devices to try in turn.
         <span class="since">Since 0.1.3</span>
+      </dd>
+      <dt><code>bootmenu</code></dt>
+      <dd> Whether or not to enable an interactive boot menu prompt on guest
+      startup. The <code>enable</code> attribute can be either "yes" or "no".
+      If not specified, the hypervisor default is used. <span class="since">
+      Since 0.8.3</span>
       </dd>
     </dl>
 

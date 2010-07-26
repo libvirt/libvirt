@@ -1205,6 +1205,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_NO_KVM_PIT;
     if (strstr(help, "-tdf"))
         flags |= QEMUD_CMD_FLAG_TDF;
+    if (strstr(help, ",menu=on"))
+        flags |= QEMUD_CMD_FLAG_BOOT_MENU;
 
     /* Keep disabled till we're actually ready to turn on netdev mode
      * The plan is todo it in 0.13.0 QEMU, but lets wait & see... */
@@ -4078,9 +4080,27 @@ int qemudBuildCommandLine(virConnectPtr conn,
             }
         }
         if (def->os.nBootDevs) {
-            boot[def->os.nBootDevs] = '\0';
+            virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
             ADD_ARG_LIT("-boot");
-            ADD_ARG_LIT(boot);
+
+            boot[def->os.nBootDevs] = '\0';
+
+            if (qemuCmdFlags & QEMUD_CMD_FLAG_BOOT_MENU &&
+                def->os.bootmenu != VIR_DOMAIN_BOOT_MENU_DEFAULT) {
+                if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_ENABLED)
+                    virBufferVSprintf(&boot_buf, "order=%s,menu=on", boot);
+                else if (def->os.bootmenu == VIR_DOMAIN_BOOT_MENU_DISABLED)
+                    virBufferVSprintf(&boot_buf, "order=%s,menu=off", boot);
+            } else {
+                virBufferVSprintf(&boot_buf, "%s", boot);
+            }
+
+            if (virBufferError(&boot_buf)) {
+                virReportOOMError();
+                goto error;
+            }
+
+            ADD_ARG_LIT(virBufferContentAndReset(&boot_buf));
         }
 
         if (def->os.kernel) {
@@ -6207,8 +6227,13 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
                     def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_CDROM;
                 else if (val[n] == 'n')
                     def->os.bootDevs[b++] = VIR_DOMAIN_BOOT_NET;
+                else if (val[n] == ',')
+                    break;
             }
             def->os.nBootDevs = b;
+
+            if (strstr(val, "menu=on"))
+                def->os.bootmenu = 1;
         } else if (STREQ(arg, "-name")) {
             WANT_VALUE();
             if (!(def->name = strdup(val)))

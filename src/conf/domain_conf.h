@@ -615,7 +615,6 @@ struct _virDomainDeviceDef {
 
 # define VIR_DOMAIN_MAX_BOOT_DEVS 4
 
-/* 3 possible boot devices */
 enum virDomainBootOrder {
     VIR_DOMAIN_BOOT_FLOPPY,
     VIR_DOMAIN_BOOT_CDROM,
@@ -623,6 +622,12 @@ enum virDomainBootOrder {
     VIR_DOMAIN_BOOT_NET,
 
     VIR_DOMAIN_BOOT_LAST,
+};
+
+enum virDomainBootMenu {
+    VIR_DOMAIN_BOOT_MENU_DEFAULT = 0,
+    VIR_DOMAIN_BOOT_MENU_ENABLED,
+    VIR_DOMAIN_BOOT_MENU_DISABLED,
 };
 
 enum virDomainFeature {
@@ -651,6 +656,7 @@ struct _virDomainOSDef {
     char *machine;
     int nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
+    int bootmenu;
     char *init;
     char *kernel;
     char *initrd;

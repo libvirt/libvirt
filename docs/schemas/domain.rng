@@ -122,6 +122,16 @@
             <ref name="osbootdev"/>
           </oneOrMore>
         </choice>
+        <optional>
+          <element name="bootmenu">
+            <attribute name="enable">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

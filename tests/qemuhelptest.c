@@ -220,7 +220,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_RTC_TD_HACK |
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
-            QEMUD_CMD_FLAG_TDF,
+            QEMUD_CMD_FLAG_TDF |
+            QEMUD_CMD_FLAG_BOOT_MENU,
             10092, 1,  0);
     DO_TEST("qemu-0.12.1",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -244,7 +245,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_DEVICE |
             QEMUD_CMD_FLAG_SMP_TOPOLOGY |
             QEMUD_CMD_FLAG_RTC |
-            QEMUD_CMD_FLAG_NO_HPET,
+            QEMUD_CMD_FLAG_NO_HPET |
+            QEMUD_CMD_FLAG_BOOT_MENU,
             12001, 0,  0);
     DO_TEST("qemu-kvm-0.12.3",
             QEMUD_CMD_FLAG_VNC_COLON |
@@ -274,7 +276,8 @@ mymain(int argc, char **argv)
             QEMUD_CMD_FLAG_VNET_HOST |
             QEMUD_CMD_FLAG_NO_HPET |
             QEMUD_CMD_FLAG_NO_KVM_PIT |
-            QEMUD_CMD_FLAG_TDF,
+            QEMUD_CMD_FLAG_TDF |
+            QEMUD_CMD_FLAG_BOOT_MENU,
             12003, 1,  0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

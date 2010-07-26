@@ -89,6 +89,8 @@ mymain(int argc, char **argv)
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
+    DO_TEST("boot-multi");
+    DO_TEST("boot-menu-disable");
     DO_TEST("bootloader");
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
