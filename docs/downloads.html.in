@@ -43,6 +43,35 @@
 
       <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a>
     </pre>
+
+    <h1>Installation</h1>
+    <h2>
+      <a name="Compilatio" id="Compilatio">Compilation</a>
+    </h2>
+        <p>As most UNIX libraries libvirt follows the "standard":</p>
+        <p>
+          <code>gunzip -c libvirt-xxx.tar.gz | tar xvf -</code>
+        </p>
+        <p>
+          <code>cd libvirt-xxxx</code>
+        </p>
+        <p>
+          <code>./configure --help</code>
+        </p>
+        <p>to see the options, then the compilation/installation proper</p>
+        <p>
+          <code>./configure [possible options]</code>
+        </p>
+        <p>
+          <code>make</code>
+        </p>
+        <p>
+          <code>make install</code>
+        </p>
+        <p>At that point you may have to rerun ldconfig or a similar utility to
+    update your list of installed shared libs.</p>
+        </p>
+
        <h2>Building from a source code checkout</h2>
     <p> The libvirt build process uses GNU autotools, so after obtaining a
     checkout it is necessary to generate the configure script and Makefile.in

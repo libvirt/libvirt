@@ -258,7 +258,7 @@
           </li><li>
             <a title="User contributed content" class="inactive" href="http://wiki.libvirt.org">Wiki</a>
           </li><li>
-            <a title="Frequently asked questions" class="inactive" href="FAQ.html">FAQ</a>
+            <a title="Frequently asked questions" class="inactive" href="http://wiki.libvirt.org/page/FAQ">FAQ</a>
           </li><li>
             <a title="How and where to report bugs and request features" class="inactive" href="bugs.html">Bug reports</a>
           </li><li>
