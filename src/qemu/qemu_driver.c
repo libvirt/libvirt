@@ -3000,7 +3000,7 @@ cleanup:
 
 
 static pciDeviceList *
-qemuGetPciHostDeviceList(virDomainDefPtr def)
+qemuGetPciHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
     pciDeviceList *list;
     int i;
@@ -3008,8 +3008,8 @@ qemuGetPciHostDeviceList(virDomainDefPtr def)
     if (!(list = pciDeviceListNew()))
         return NULL;
 
-    for (i = 0 ; i < def->nhostdevs ; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+    for (i = 0 ; i < nhostdevs ; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
         pciDevice *dev;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -3049,7 +3049,7 @@ qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
     if (!def->nhostdevs)
         return 0;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(def)))
+    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs)))
         return -1;
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
@@ -3077,7 +3077,7 @@ qemuPrepareHostPCIDevices(struct qemud_driver *driver,
     int i;
     int ret = -1;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(def)))
+    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs)))
         return -1;
 
     /* We have to use 3 loops here. *All* devices must
@@ -3229,7 +3229,7 @@ qemuDomainReAttachHostDevices(struct qemud_driver *driver,
     if (!def->nhostdevs)
         return;
 
-    if (!(pcidevs = qemuGetPciHostDeviceList(def))) {
+    if (!(pcidevs = qemuGetPciHostDeviceList(def->hostdevs, def->nhostdevs))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate pciDeviceList: %s"),
                   err ? err->message : _("unknown error"));
