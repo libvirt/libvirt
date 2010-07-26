@@ -1833,7 +1833,7 @@ CYGWIN_EXTRA_PYTHON_LIBADD=
 MINGW_EXTRA_LDFLAGS=
 WIN32_EXTRA_CFLAGS=
 LIBVIRT_SYMBOL_FILE=libvirt.syms
-LIBVIRT_QEMU_SYMBOL_FILE=libvirt_qemu.syms
+LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
