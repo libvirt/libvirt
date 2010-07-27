@@ -8017,7 +8017,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
     }
 
     if (qemuPrepareHostdevPCIDevices(driver, &hostdev, 1))
-    return -1;
+        return -1;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {
         if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
