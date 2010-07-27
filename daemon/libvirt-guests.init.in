@@ -25,6 +25,7 @@
 
 sysconfdir=@sysconfdir@
 localstatedir=@localstatedir@
+libvirtd=@sbindir@/libvirtd
 
 # Source function library.
 . "$sysconfdir"/rc.d/init.d/functions
@@ -232,6 +233,12 @@ stop() {
     : >"$LISTFILE"
     for uri in $URIS; do
         echo -n $"Running guests on $uri URI: "
+
+        if [ "x$uri" = xdefault ] && [ ! -x "$libvirtd" ]; then
+            echo $"libvirtd not installed; skipping this URI."
+            continue
+        fi
+
         list=$(list_guests $uri)
         if [ $? -eq 0 ]; then
             empty=true
