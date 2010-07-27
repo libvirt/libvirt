@@ -52,6 +52,7 @@
 #include "xml.h"
 #include "libvirt/libvirt-qemu.h"
 #include "files.h"
+#include "../daemon/event.h"
 
 static char *progname;
 
@@ -678,35 +679,15 @@ static const vshCmdInfo info_console[] = {
 
 static const vshCmdOptDef opts_console[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, N_("domain name, id or uuid")},
+    {"devname", VSH_OT_STRING, 0, N_("character device name")},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdRunConsole(vshControl *ctl, virDomainPtr dom)
+cmdRunConsole(vshControl *ctl, virDomainPtr dom, const char *devname)
 {
-    xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     int ret = FALSE;
-    char *doc;
-    char *thatHost = NULL;
-    char *thisHost = NULL;
     virDomainInfo dominfo;
-
-    if (!(thisHost = virGetHostname(ctl->conn))) {
-        vshError(ctl, "%s", _("Failed to get local hostname"));
-        goto cleanup;
-    }
-
-    if (!(thatHost = virConnectGetHostname(ctl->conn))) {
-        vshError(ctl, "%s", _("Failed to get connection hostname"));
-        goto cleanup;
-    }
-
-    if (STRNEQ(thisHost, thatHost)) {
-        vshError(ctl, "%s", _("Cannot connect to a remote console device"));
-        goto cleanup;
-    }
 
     if (virDomainGetInfo(dom, &dominfo) < 0) {
         vshError(ctl, "%s", _("Unable to get domain status"));
@@ -718,38 +699,12 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom)
         goto cleanup;
     }
 
-    doc = virDomainGetXMLDesc(dom, 0);
-    if (!doc)
-        goto cleanup;
-
-    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOWARNING);
-    VIR_FREE(doc);
-    if (!xml)
-        goto cleanup;
-    ctxt = xmlXPathNewContext(xml);
-    if (!ctxt)
-        goto cleanup;
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
-    if ((obj != NULL) && ((obj->type == XPATH_STRING) &&
-                          (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
-        vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
-        vshPrintExtra(ctl, "%s", _("Escape character is ^]\n"));
-        if (vshRunConsole((const char *)obj->stringval) == 0)
-            ret = TRUE;
-    } else {
-        vshPrintExtra(ctl, "%s", _("No console available for domain\n"));
-    }
-    xmlXPathFreeObject(obj);
+    vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
+    vshPrintExtra(ctl, "%s", _("Escape character is ^]\n"));
+    if (vshRunConsole(dom, devname) == 0)
+        ret = TRUE;
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    if (xml)
-        xmlFreeDoc(xml);
-    VIR_FREE(thisHost);
-    VIR_FREE(thatHost);
 
     return ret;
 }
@@ -759,6 +714,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int ret;
+    const char *devname;
 
     if (!vshConnectionUsability(ctl, ctl->conn))
         return FALSE;
@@ -766,7 +722,9 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return FALSE;
 
-    ret = cmdRunConsole(ctl, dom);
+    devname = vshCommandOptString(cmd, "devname", NULL);
+
+    ret = cmdRunConsole(ctl, dom, devname);
 
     virDomainFree(dom);
     return ret;
@@ -1243,7 +1201,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
                  virDomainGetName(dom), from);
 #ifndef WIN32
         if (console)
-            cmdRunConsole(ctl, dom);
+            cmdRunConsole(ctl, dom, NULL);
 #endif
         virDomainFree(dom);
     } else {
@@ -1408,7 +1366,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
                  virDomainGetName(dom));
 #ifndef WIN32
         if (console)
-            cmdRunConsole(ctl, dom);
+            cmdRunConsole(ctl, dom, NULL);
 #endif
     } else {
         vshError(ctl, _("Failed to start domain %s"), virDomainGetName(dom));
@@ -11134,6 +11092,14 @@ vshInit(vshControl *ctl)
 
     /* set up the signals handlers to catch disconnections */
     vshSetupSignals();
+
+    virEventRegisterImpl(virEventAddHandleImpl,
+                         virEventUpdateHandleImpl,
+                         virEventRemoveHandleImpl,
+                         virEventAddTimeoutImpl,
+                         virEventUpdateTimeoutImpl,
+                         virEventRemoveTimeoutImpl);
+    virEventInit();
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,

@@ -316,9 +316,12 @@ Configure a domain to be automatically started at boot.
 
 The option I<--disable> disables autostarting.
 
-=item B<console> I<domain-id>
+=item B<console> I<domain-id> [I<devname>]
 
-Connect the virtual serial console for the guest.
+Connect the virtual serial console for the guest. The optional
+I<devname> parameter refers to the device alias of an alternate
+console, serial or parallel device configured for the guest.
+If omitted, the primary console will be opened.
 
 =item B<create> I<FILE> optional I<--console> I<--paused>
 
