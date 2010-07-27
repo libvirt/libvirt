@@ -1170,7 +1170,8 @@ static unsigned long long qemudComputeCmdFlags(const char *help,
         flags |= QEMUD_CMD_FLAG_DOMID;
     if (strstr(help, "-drive")) {
         flags |= QEMUD_CMD_FLAG_DRIVE;
-        if (strstr(help, "cache=writethrough|writeback|none"))
+        if (strstr(help, "cache=") &&
+            !strstr(help, "cache=on|off"))
             flags |= QEMUD_CMD_FLAG_DRIVE_CACHE_V2;
         if (strstr(help, "format="))
             flags |= QEMUD_CMD_FLAG_DRIVE_FORMAT;
