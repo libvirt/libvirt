@@ -282,10 +282,28 @@ gueststatus() {
     done
 }
 
+# rh_status
+# Display current status: whether saved state exists, and whether start
+# has been executed.  We cannot use status() from the functions library,
+# since there is no external daemon process matching this init script.
+rh_status() {
+    if [ -f "$LISTFILE" ]; then
+        echo $"stopped, with saved guests"
+        RETVAL=3
+    else
+        if [ -f "$VAR_SUBSYS_LIBVIRT_GUESTS" ]; then
+            echo $"started"
+        else
+            echo $"stopped, with no saved guests"
+        fi
+        RETVAL=0
+    fi
+}
+
 # usage [val]
 # Display usage string, then exit with VAL (defaults to 2).
 usage() {
-    echo $"Usage: $0 {start|stop|restart|force-reload|gueststatus|shutdown}"
+    echo $"Usage: $0 {start|stop|status|restart|force-reload|gueststatus|shutdown}"
     exit ${1-2}
 }
 
@@ -306,11 +324,7 @@ case "$1" in
     force-reload)
         ;;
     status)
-        if [ -f "$LISTFILE" ]; then
-            RETVAL=3
-        else
-            RETVAL=0
-        fi
+        rh_status
         ;;
     shutdown)
         ON_SHUTDOWN=shutdown
