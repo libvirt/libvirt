@@ -282,8 +282,21 @@ gueststatus() {
     done
 }
 
+# usage [val]
+# Display usage string, then exit with VAL (defaults to 2).
+usage() {
+    echo $"Usage: $0 {start|stop|restart|force-reload|gueststatus|shutdown}"
+    exit ${1-2}
+}
+
 # See how we were called.
+if test $# != 1; then
+    usage
+fi
 case "$1" in
+    --help)
+        usage 0
+        ;;
     start|stop|gueststatus)
         $1
         ;;
@@ -304,8 +317,7 @@ case "$1" in
         stop
         ;;
     *)
-        echo $"Usage: $0 {start|stop|restart|force-reload|gueststatus|shutdown}"
-        exit 3
+        usage
         ;;
 esac
 exit $RETVAL
