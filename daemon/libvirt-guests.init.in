@@ -303,7 +303,7 @@ rh_status() {
 # usage [val]
 # Display usage string, then exit with VAL (defaults to 2).
 usage() {
-    echo $"Usage: $0 {start|stop|status|restart|force-reload|gueststatus|shutdown}"
+    echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|gueststatus|shutdown}"
     exit ${1-2}
 }
 
@@ -321,7 +321,11 @@ case "$1" in
     restart)
         stop && start
         ;;
-    force-reload)
+    condrestart|try-restart)
+        [ -f "$VAR_SUBSYS_LIBVIRT_GUESTS" ] && stop && start
+        ;;
+    reload|force-reload)
+        # Nothing to do; we reread configuration on each invocation
         ;;
     status)
         rh_status
