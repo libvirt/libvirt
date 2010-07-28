@@ -684,7 +684,10 @@ class Object:
             source += "{\n"
 
             if self.features & Object.FEATURE__LIST:
-                source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
+                if self.extends is not None:
+                    source += "    esxVI_%s_Free((esxVI_%s **)&item->_next);\n\n" % (self.extends, self.extends)
+                else:
+                    source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
 
             source += self.generate_free_code()
 
@@ -701,7 +704,10 @@ class Object:
             source += "{\n"
 
             if self.features & Object.FEATURE__LIST:
-                source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
+                if self.extends is not None:
+                    source += "    esxVI_%s_Free((esxVI_%s **)&item->_next);\n\n" % (self.extends, self.extends)
+                else:
+                    source += "    esxVI_%s_Free(&item->_next);\n\n" % self.name
 
             source += self.generate_free_code()
 
@@ -1126,11 +1132,11 @@ additional_object_features = { "DatastoreInfo"              : Object.FEATURE__AN
                                "FileInfo"                   : Object.FEATURE__DYNAMIC_CAST,
                                "FileQuery"                  : Object.FEATURE__DYNAMIC_CAST,
                                "HostCpuIdInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
-                               "HostDatastoreBrowserSearchResults" : Object.FEATURE__ANY_TYPE,
+                               "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
                                "ObjectContent"              : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST,
                                "PerfCounterInfo"            : Object.FEATURE__LIST,
-                               "PerfEntityMetric"           : Object.FEATURE__LIST |  Object.FEATURE__DYNAMIC_CAST,
+                               "PerfEntityMetric"           : Object.FEATURE__LIST | Object.FEATURE__DYNAMIC_CAST,
                                "PerfQuerySpec"              : Object.FEATURE__LIST,
                                "PerfMetricIntSeries"        : Object.FEATURE__DYNAMIC_CAST,
                                "PropertyFilterSpec"         : Object.FEATURE__LIST,
