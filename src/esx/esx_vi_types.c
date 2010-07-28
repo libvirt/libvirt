@@ -333,7 +333,8 @@
             goto cleanup;                                                     \
         }                                                                     \
                                                                               \
-        if (value < (_min) || value > (_max)) {                               \
+        if (((_min) != INT64_MIN && value < (_min))                           \
+            || ((_max) != INT64_MAX && value > (_max))) {                     \
             ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                              \
                          "Value '%s' is not representable as "_xsdType,       \
                          (const char *)string);                               \
@@ -922,7 +923,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
                 goto failure;                                                 \
             }                                                                 \
                                                                               \
-            if (number < (_min) || number > (_max)) {                         \
+            if (((_min) != INT64_MIN && number < (_min))                      \
+                || ((_max) != INT64_MAX && number > (_max))) {                \
                 ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,                          \
                              _("Value '%s' is out of %s range"),              \
                              (*anyType)->value, _xsdType);                    \
