@@ -1020,15 +1020,16 @@ getPortProfileStatus(struct nlattr **tb, int32_t vf,
 
     if (tb_port[IFLA_PORT_RESPONSE]) {
         *status = *(uint16_t *)RTA_DATA(tb_port[IFLA_PORT_RESPONSE]);
-         rc = 0;
+        rc = 0;
     } else {
-         if (is8021Qbg) {
-             /* no in-progress here; may be missing */
-             *status = PORT_PROFILE_RESPONSE_INPROGRESS;
-         } else {
-             msg = _("no IFLA_PORT_RESPONSE found in netlink message");
-             goto err_exit;
-         }
+        if (is8021Qbg) {
+            /* no in-progress here; may be missing */
+            *status = PORT_PROFILE_RESPONSE_INPROGRESS;
+            rc = 0;
+        } else {
+            msg = _("no IFLA_PORT_RESPONSE found in netlink message");
+            goto err_exit;
+        }
     }
 
 err_exit:
