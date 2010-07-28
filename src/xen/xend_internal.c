@@ -3888,7 +3888,7 @@ xenDaemonAttachDeviceFlags(virDomainPtr domain, const char *xml,
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
         if (priv->xendConfigVersion < 3 &&
-            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
@@ -4027,7 +4027,7 @@ xenDaemonUpdateDeviceFlags(virDomainPtr domain, const char *xml,
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
         if (priv->xendConfigVersion < 3 &&
-            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
@@ -4138,7 +4138,7 @@ xenDaemonDetachDeviceFlags(virDomainPtr domain, const char *xml,
     } else {
         /* Only live config can be changed if xendConfigVersion < 3 */
         if (priv->xendConfigVersion < 3 &&
-            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT ||
+            (flags != VIR_DOMAIN_DEVICE_MODIFY_CURRENT &&
              flags != VIR_DOMAIN_DEVICE_MODIFY_LIVE)) {
             virXendError(VIR_ERR_OPERATION_INVALID, "%s",
                          _("Xend version does not support modifying "
