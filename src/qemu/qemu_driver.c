@@ -8018,7 +8018,7 @@ static int qemudDomainAttachHostPciDevice(struct qemud_driver *driver,
         return -1;
     }
 
-    if (qemuPrepareHostdevPCIDevices(driver, &hostdev, 1))
+    if (qemuPrepareHostdevPCIDevices(driver, &hostdev, 1) < 0)
         return -1;
 
     if (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) {

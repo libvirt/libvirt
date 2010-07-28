@@ -188,8 +188,10 @@ pciCloseConfig(pciDevice *dev)
     if (!dev)
         return;
 
-    if (dev->fd >= 0)
+    if (dev->fd >= 0) {
         close(dev->fd);
+        dev->fd = -1;
+    }
 }
 
 static int
@@ -672,10 +674,8 @@ pciInitDevice(pciDevice *dev)
     dev->pcie_cap_pos   = pciFindCapabilityOffset(dev, PCI_CAP_ID_EXP);
     dev->pci_pm_cap_pos = pciFindCapabilityOffset(dev, PCI_CAP_ID_PM);
     flr = pciDetectFunctionLevelReset(dev);
-    if (flr < 0) {
-        pciCloseConfig(dev);
+    if (flr < 0)
         return flr;
-    }
     dev->has_flr        = flr;
     dev->has_pm_reset   = pciDetectPowerManagementReset(dev);
     dev->initted        = 1;
