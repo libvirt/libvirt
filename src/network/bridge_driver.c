@@ -643,12 +643,12 @@ networkAddMasqueradingIptablesRules(struct network_driver *driver,
      *
      * We need to end up with 3 rules in the table in this order
      *
-     *  1. protocol=tcp with sport mapping restricton
-     *  2. protocol=udp with sport mapping restricton
+     *  1. protocol=tcp with sport mapping restriction
+     *  2. protocol=udp with sport mapping restriction
      *  3. generic any protocol
      *
      * The sport mappings are required, because default IPtables
-     * MASQUERADE is maintain port number unchanged where possible.
+     * MASQUERADE maintain port numbers unchanged where possible.
      *
      * NFS can be configured to only "trust" port numbers < 1023.
      *
