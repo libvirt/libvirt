@@ -2044,6 +2044,7 @@ xenUnifiedDomainInfoListFree(xenUnifiedDomainInfoListPtr list)
         VIR_FREE(list->doms[i]->name);
         VIR_FREE(list->doms[i]);
     }
+    VIR_FREE(list->doms);
     VIR_FREE(list);
 }
 
