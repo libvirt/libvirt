@@ -1,6 +1,7 @@
 /*
  * veth.c: Tools for managing veth pairs
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -147,7 +148,7 @@ int vethDelete(const char *veth)
          * Prevent overwriting an error log which may be set
          * where an actual failure occurs.
          */
-        VIR_DEBUG(_("Failed to delete '%s' (%d)"),
+        VIR_DEBUG("Failed to delete '%s' (%d)",
                   veth, WEXITSTATUS(cmdResult));
         rc = -1;
     }
@@ -185,7 +186,7 @@ int vethInterfaceUpOrDown(const char* veth, int upOrDown)
              * Prevent overwriting an error log which may be set
              * where an actual failure occurs.
              */
-            VIR_DEBUG(_("Failed to disable '%s' (%d)"),
+            VIR_DEBUG("Failed to disable '%s' (%d)",
                       veth, WEXITSTATUS(cmdResult));
         else
             vethError(VIR_ERR_INTERNAL_ERROR,
