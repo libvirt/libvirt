@@ -10,6 +10,10 @@ DAEMON_SOURCES =					\
 		remote_dispatch_table.h			\
 		remote_dispatch_args.h			\
 		remote_dispatch_ret.h			\
+		qemu_dispatch_prototypes.h		\
+		qemu_dispatch_table.h			\
+		qemu_dispatch_args.h			\
+		qemu_dispatch_ret.h			\
 		../src/remote/remote_protocol.c		\
 		../src/remote/qemu_protocol.c
 
