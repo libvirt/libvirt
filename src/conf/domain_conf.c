@@ -2441,26 +2441,6 @@ out:
     return ret;
 }
 
-static const char *
-virDomainChrTargetTypeToString(int deviceType,
-                               int targetType)
-{
-    const char *type = NULL;
-
-    switch (deviceType) {
-    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        type = virDomainChrChannelTargetTypeToString(targetType);
-        break;
-    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        type = virDomainChrConsoleTargetTypeToString(targetType);
-        break;
-    default:
-        break;
-    }
-
-    return type;
-}
-
 static int
 virDomainChrDefParseTargetXML(virCapsPtr caps,
                               virDomainChrDefPtr def,
@@ -3951,6 +3931,26 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(virCapsPtr caps,
 }
 #endif /* !PROXY */
 
+
+static const char *
+virDomainChrTargetTypeToString(int deviceType,
+                               int targetType)
+{
+    const char *type = NULL;
+
+    switch (deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+        type = virDomainChrChannelTargetTypeToString(targetType);
+        break;
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        type = virDomainChrConsoleTargetTypeToString(targetType);
+        break;
+    default:
+        break;
+    }
+
+    return type;
+}
 
 static void
 virVirtualPortProfileFormat(virBufferPtr buf,
