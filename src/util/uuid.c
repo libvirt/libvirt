@@ -286,7 +286,8 @@ virSetHostUUIDStr(const char *uuid)
         return EEXIST;
 
     if (!uuid) {
-        if (!getDMISystemUUID(dmiuuid, sizeof(dmiuuid))) {
+        memset(dmiuuid, 0, sizeof(dmiuuid));
+        if (!getDMISystemUUID(dmiuuid, sizeof(dmiuuid) - 1)) {
             if (!virUUIDParse(dmiuuid, host_uuid))
                 return 0;
         }
