@@ -581,7 +581,6 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
     int newstdout = -1;
     char *help = NULL;
     enum { MAX_HELP_OUTPUT_SIZE = 1024*8 };
-    int len;
     char *start;
     char *end;
     char *tmp;
@@ -591,7 +590,7 @@ static int virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
                 &child, -1, &newstdout, NULL, VIR_EXEC_CLEAR_CAPS) < 0)
         goto cleanup;
 
-    if ((len = virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help)) < 0) {
+    if (virFileReadLimFD(newstdout, MAX_HELP_OUTPUT_SIZE, &help) < 0) {
         virReportSystemError(errno,
                              _("Unable to read '%s -h' output"),
                              qemuimg);

@@ -48,7 +48,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-static int
+static int ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                              char **backingStore,
                              int *backingStoreFormat,
@@ -59,10 +59,8 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     int fd, ret;
     virStorageFileMetadata meta;
 
-    if (backingStore)
-        *backingStore = NULL;
-    if (backingStoreFormat)
-        *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
+    *backingStore = NULL;
+    *backingStoreFormat = VIR_STORAGE_FILE_AUTO;
     if (encryption)
         *encryption = NULL;
 
@@ -75,7 +73,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
                                                       allocation,
                                                       capacity)) < 0) {
         close(fd);
-        return -1;
+        return ret;
     }
 
     memset(&meta, 0, sizeof(meta));
@@ -95,20 +93,19 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     close(fd);
 
     if (meta.backingStore) {
-        if (backingStore) {
-            *backingStore = meta.backingStore;
-            meta.backingStore = NULL;
-            if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
-                if ((*backingStoreFormat = virStorageFileProbeFormat(*backingStore)) < 0) {
-                    close(fd);
-                    goto cleanup;
-                }
-            } else {
-                *backingStoreFormat = meta.backingStoreFormat;
+        *backingStore = meta.backingStore;
+        meta.backingStore = NULL;
+        if (meta.backingStoreFormat == VIR_STORAGE_FILE_AUTO) {
+            if ((*backingStoreFormat
+                 = virStorageFileProbeFormat(*backingStore)) < 0) {
+                close(fd);
+                goto cleanup;
             }
         } else {
-            VIR_FREE(meta.backingStore);
+            *backingStoreFormat = meta.backingStoreFormat;
         }
+    } else {
+        VIR_FREE(meta.backingStore);
     }
 
     if (capacity && meta.capacity)
@@ -139,8 +136,7 @@ virStorageBackendProbeTarget(virStorageVolTargetPtr target,
     return 0;
 
 cleanup:
-    if (backingStore)
-        VIR_FREE(*backingStore);
+    VIR_FREE(*backingStore);
     return -1;
 }
 
