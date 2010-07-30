@@ -3707,8 +3707,16 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * 2. The qemu binary has the -no-kvm flag
      */
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_KVM) &&
-        def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        def->virtType == VIR_DOMAIN_VIRT_QEMU) {
         disableKVM = 1;
+
+        /*
+         * do not use boot=on for drives when not using KVM since this
+         * is not supported at all in upstream QEmu.
+         */
+        if (qemuCmdFlags & QEMUD_CMD_FLAG_DRIVE_BOOT)
+            qemuCmdFlags -= QEMUD_CMD_FLAG_DRIVE_BOOT;
+    }
 
     /* Should explicitly enable KVM if
      * 1. Guest domain is 'kvm'
