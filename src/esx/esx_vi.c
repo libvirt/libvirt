@@ -277,7 +277,7 @@ esxVI_CURL_Perform(esxVI_Context *ctx, const char *url)
 int
 esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
-                      const char *password, esxUtil_ParsedQuery *parsedQuery)
+                      const char *password, esxUtil_ParsedUri *parsedUri)
 {
     int result = -1;
     esxVI_String *propertyNameList = NULL;
@@ -329,9 +329,9 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HEADER, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_FOLLOWLOCATION, 0);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYPEER,
-                     parsedQuery->noVerify ? 0 : 1);
+                     parsedUri->noVerify ? 0 : 1);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_SSL_VERIFYHOST,
-                     parsedQuery->noVerify ? 0 : 2);
+                     parsedUri->noVerify ? 0 : 2);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(ctx->curl_handle, CURLOPT_HTTPHEADER, ctx->curl_headers);
     curl_easy_setopt(ctx->curl_handle, CURLOPT_READFUNCTION,
@@ -345,13 +345,13 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     curl_easy_setopt(ctx->curl_handle, CURLOPT_VERBOSE, 1);
 #endif
 
-    if (parsedQuery->proxy) {
+    if (parsedUri->proxy) {
         curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXY,
-                         parsedQuery->proxy_hostname);
+                         parsedUri->proxy_hostname);
         curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYTYPE,
-                         parsedQuery->proxy_type);
+                         parsedUri->proxy_type);
         curl_easy_setopt(ctx->curl_handle, CURLOPT_PROXYPORT,
-                         parsedQuery->proxy_port);
+                         parsedUri->proxy_port);
     }
 
     if (virMutexInit(&ctx->curl_lock) < 0) {

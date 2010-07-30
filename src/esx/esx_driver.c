@@ -294,7 +294,7 @@ static int
 esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
                  const char *hostname, int port,
                  const char *predefinedUsername,
-                 esxUtil_ParsedQuery *parsedQuery,
+                 esxUtil_ParsedUri *parsedUri,
                  esxVI_ProductVersion expectedProductVersion,
                  char **vCenterIpAddress)
 {
@@ -347,7 +347,7 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
 
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, ipAddress, username, password,
-                              parsedQuery) < 0) {
+                              parsedUri) < 0) {
         goto cleanup;
     }
 
@@ -416,7 +416,7 @@ static int
 esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
                     const char *hostname, int port,
                     const char *predefinedUsername,
-                    esxUtil_ParsedQuery *parsedQuery)
+                    esxUtil_ParsedUri *parsedUri)
 {
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
@@ -459,7 +459,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
 
     if (esxVI_Context_Alloc(&priv->vCenter) < 0 ||
         esxVI_Context_Connect(priv->vCenter, url, ipAddress, username,
-                              password, parsedQuery) < 0) {
+                              password, parsedUri) < 0) {
         goto cleanup;
     }
 
@@ -528,7 +528,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
-    esxUtil_ParsedQuery *parsedQuery = NULL;
+    esxUtil_ParsedUri *parsedUri = NULL;
     char *potentialVCenterIpAddress = NULL;
     char vCenterIpAddress[NI_MAXHOST] = "";
 
@@ -545,29 +545,24 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    if (conn->uri->path != NULL && STRNEQ(conn->uri->path, "") &&
-        STRNEQ(conn->uri->path, "/")) {
-        VIR_WARN("Ignoring unexpected path '%s' in URI", conn->uri->path);
-    }
-
     /* Allocate per-connection private data */
     if (VIR_ALLOC(priv) < 0) {
         virReportOOMError();
         goto cleanup;
     }
 
-    if (esxUtil_ParseQuery(&parsedQuery, conn->uri) < 0) {
+    if (esxUtil_ParseUri(&parsedUri, conn->uri) < 0) {
         goto cleanup;
     }
 
-    priv->transport = parsedQuery->transport;
-    parsedQuery->transport = NULL;
+    priv->transport = parsedUri->transport;
+    parsedUri->transport = NULL;
 
     priv->maxVcpus = -1;
     priv->supportsVMotion = esxVI_Boolean_Undefined;
     priv->supportsLongMode = esxVI_Boolean_Undefined;
-    priv->autoAnswer = parsedQuery->autoAnswer ? esxVI_Boolean_True
-                                               : esxVI_Boolean_False;
+    priv->autoAnswer = parsedUri->autoAnswer ? esxVI_Boolean_True
+                                             : esxVI_Boolean_False;
     priv->usedCpuTimeCounterId = -1;
 
     /*
@@ -597,7 +592,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         STRCASEEQ(conn->uri->scheme, "gsx")) {
         /* Connect to host */
         if (esxConnectToHost(priv, auth, conn->uri->server, conn->uri->port,
-                             conn->uri->user, parsedQuery,
+                             conn->uri->user, parsedUri,
                              STRCASEEQ(conn->uri->scheme, "esx")
                                ? esxVI_ProductVersion_ESX
                                : esxVI_ProductVersion_GSX,
@@ -606,8 +601,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         }
 
         /* Connect to vCenter */
-        if (parsedQuery->vCenter != NULL) {
-            if (STREQ(parsedQuery->vCenter, "*")) {
+        if (parsedUri->vCenter != NULL) {
+            if (STREQ(parsedUri->vCenter, "*")) {
                 if (potentialVCenterIpAddress == NULL) {
                     ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                               _("This host is not managed by a vCenter"));
@@ -622,7 +617,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                     goto cleanup;
                 }
             } else {
-                if (esxUtil_ResolveHostname(parsedQuery->vCenter,
+                if (esxUtil_ResolveHostname(parsedUri->vCenter,
                                             vCenterIpAddress, NI_MAXHOST) < 0) {
                     goto cleanup;
                 }
@@ -633,14 +628,14 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
                               _("This host is managed by a vCenter with IP "
                                 "address %s, but a mismachting vCenter '%s' "
                                 "(%s) has been specified"),
-                              potentialVCenterIpAddress, parsedQuery->vCenter,
+                              potentialVCenterIpAddress, parsedUri->vCenter,
                               vCenterIpAddress);
                     goto cleanup;
                 }
             }
 
             if (esxConnectToVCenter(priv, auth, vCenterIpAddress,
-                                    conn->uri->port, NULL, parsedQuery) < 0) {
+                                    conn->uri->port, NULL, parsedUri) < 0) {
                 goto cleanup;
             }
         }
@@ -649,7 +644,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     } else { /* VPX */
         /* Connect to vCenter */
         if (esxConnectToVCenter(priv, auth, conn->uri->server, conn->uri->port,
-                                conn->uri->user, parsedQuery) < 0) {
+                                conn->uri->user, parsedUri) < 0) {
             goto cleanup;
         }
 
@@ -678,7 +673,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
         VIR_FREE(priv);
     }
 
-    esxUtil_FreeParsedQuery(&parsedQuery);
+    esxUtil_FreeParsedUri(&parsedUri);
     VIR_FREE(potentialVCenterIpAddress);
 
     return result;
@@ -3113,14 +3108,14 @@ esxDomainMigratePrepare(virConnectPtr dconn,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
     int result = -1;
-    esxUtil_ParsedQuery *parsedQuery = NULL;
+    esxUtil_ParsedUri *parsedUri = NULL;
 
     if (uri_in == NULL) {
-        if (esxUtil_ParseQuery(&parsedQuery, dconn->uri) < 0) {
+        if (esxUtil_ParseUri(&parsedUri, dconn->uri) < 0) {
             return -1;
         }
 
-        if (virAsprintf(uri_out, "%s://%s:%d/sdk", parsedQuery->transport,
+        if (virAsprintf(uri_out, "%s://%s:%d/sdk", parsedUri->transport,
                         dconn->uri->server, dconn->uri->port) < 0) {
             virReportOOMError();
             goto cleanup;
@@ -3130,7 +3125,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
     result = 0;
 
   cleanup:
-    esxUtil_FreeParsedQuery(&parsedQuery);
+    esxUtil_FreeParsedUri(&parsedUri);
 
     return result;
 }

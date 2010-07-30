@@ -41,7 +41,7 @@
 
 
 int
-esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
+esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, xmlURIPtr uri)
 {
     int result = -1;
     struct qparam_set *queryParamSet = NULL;
@@ -50,13 +50,14 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
     int noVerify;
     int autoAnswer;
     char *tmp;
+    char *saveptr;
 
-    if (parsedQuery == NULL || *parsedQuery != NULL) {
+    if (parsedUri == NULL || *parsedUri != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
 
-    if (VIR_ALLOC(*parsedQuery) < 0) {
+    if (VIR_ALLOC(*parsedUri) < 0) {
         virReportOOMError();
         return -1;
     }
@@ -75,29 +76,29 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
         queryParam = &queryParamSet->p[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
-            VIR_FREE((*parsedQuery)->transport);
+            VIR_FREE((*parsedUri)->transport);
 
-            (*parsedQuery)->transport = strdup(queryParam->value);
+            (*parsedUri)->transport = strdup(queryParam->value);
 
-            if ((*parsedQuery)->transport == NULL) {
+            if ((*parsedUri)->transport == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
 
-            if (STRNEQ((*parsedQuery)->transport, "http") &&
-                STRNEQ((*parsedQuery)->transport, "https")) {
+            if (STRNEQ((*parsedUri)->transport, "http") &&
+                STRNEQ((*parsedUri)->transport, "https")) {
                 ESX_ERROR(VIR_ERR_INVALID_ARG,
                           _("Query parameter 'transport' has unexpected value "
                             "'%s' (should be http|https)"),
-                          (*parsedQuery)->transport);
+                          (*parsedUri)->transport);
                 goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
-            VIR_FREE((*parsedQuery)->vCenter);
+            VIR_FREE((*parsedUri)->vCenter);
 
-            (*parsedQuery)->vCenter = strdup(queryParam->value);
+            (*parsedUri)->vCenter = strdup(queryParam->value);
 
-            if ((*parsedQuery)->vCenter == NULL) {
+            if ((*parsedUri)->vCenter == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
@@ -110,7 +111,7 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
                 goto cleanup;
             }
 
-            (*parsedQuery)->noVerify = noVerify != 0;
+            (*parsedUri)->noVerify = noVerify != 0;
         } else if (STRCASEEQ(queryParam->name, "auto_answer")) {
             if (virStrToLong_i(queryParam->value, NULL, 10, &autoAnswer) < 0 ||
                 (autoAnswer != 0 && autoAnswer != 1)) {
@@ -120,23 +121,23 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
                 goto cleanup;
             }
 
-            (*parsedQuery)->autoAnswer = autoAnswer != 0;
+            (*parsedUri)->autoAnswer = autoAnswer != 0;
         } else if (STRCASEEQ(queryParam->name, "proxy")) {
             /* Expected format: [<type>://]<hostname>[:<port>] */
-            (*parsedQuery)->proxy = true;
-            (*parsedQuery)->proxy_type = CURLPROXY_HTTP;
-            VIR_FREE((*parsedQuery)->proxy_hostname);
-            (*parsedQuery)->proxy_port = 1080;
+            (*parsedUri)->proxy = true;
+            (*parsedUri)->proxy_type = CURLPROXY_HTTP;
+            VIR_FREE((*parsedUri)->proxy_hostname);
+            (*parsedUri)->proxy_port = 1080;
 
             if ((tmp = STRSKIP(queryParam->value, "http://")) != NULL) {
-                (*parsedQuery)->proxy_type = CURLPROXY_HTTP;
+                (*parsedUri)->proxy_type = CURLPROXY_HTTP;
             } else if ((tmp = STRSKIP(queryParam->value, "socks://")) != NULL ||
                        (tmp = STRSKIP(queryParam->value, "socks5://")) != NULL) {
-                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS5;
+                (*parsedUri)->proxy_type = CURLPROXY_SOCKS5;
             } else if ((tmp = STRSKIP(queryParam->value, "socks4://")) != NULL) {
-                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS4;
+                (*parsedUri)->proxy_type = CURLPROXY_SOCKS4;
             } else if ((tmp = STRSKIP(queryParam->value, "socks4a://")) != NULL) {
-                (*parsedQuery)->proxy_type = CURLPROXY_SOCKS4A;
+                (*parsedUri)->proxy_type = CURLPROXY_SOCKS4A;
             } else if ((tmp = strstr(queryParam->value, "://")) != NULL) {
                 *tmp = '\0';
 
@@ -149,15 +150,15 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
                 tmp = queryParam->value;
             }
 
-            (*parsedQuery)->proxy_hostname = strdup(tmp);
+            (*parsedUri)->proxy_hostname = strdup(tmp);
 
-            if ((*parsedQuery)->proxy_hostname == NULL) {
+            if ((*parsedUri)->proxy_hostname == NULL) {
                 virReportOOMError();
                 goto cleanup;
             }
 
-            if ((tmp = strchr((*parsedQuery)->proxy_hostname, ':')) != NULL) {
-                if (tmp == (*parsedQuery)->proxy_hostname) {
+            if ((tmp = strchr((*parsedUri)->proxy_hostname, ':')) != NULL) {
+                if (tmp == (*parsedUri)->proxy_hostname) {
                     ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
                               _("Query parameter 'proxy' doesn't contain a "
                                 "hostname"));
@@ -167,9 +168,9 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
                 *tmp++ = '\0';
 
                 if (virStrToLong_i(tmp, NULL, 10,
-                                   &(*parsedQuery)->proxy_port) < 0 ||
-                    (*parsedQuery)->proxy_port < 1 ||
-                    (*parsedQuery)->proxy_port > 65535) {
+                                   &(*parsedUri)->proxy_port) < 0 ||
+                    (*parsedUri)->proxy_port < 1 ||
+                    (*parsedUri)->proxy_port > 65535) {
                     ESX_ERROR(VIR_ERR_INVALID_ARG,
                               _("Query parameter 'proxy' has unexpected port"
                                 "value '%s' (should be [1..65535])"), tmp);
@@ -182,10 +183,32 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
         }
     }
 
-    if ((*parsedQuery)->transport == NULL) {
-        (*parsedQuery)->transport = strdup("https");
+    /* Expected format: [/]<datacenter>/<computeresource>[/<hostsystem>] */
+    if (uri->path != NULL) {
+        tmp = strdup(uri->path);
 
-        if ((*parsedQuery)->transport == NULL) {
+        if (tmp == NULL) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (esxVI_String_DeepCopyValue(&(*parsedUri)->path_datacenter,
+                                       strtok_r(tmp, "/", &saveptr)) < 0 ||
+            esxVI_String_DeepCopyValue(&(*parsedUri)->path_computeResource,
+                                       strtok_r(NULL, "/", &saveptr)) < 0 ||
+            esxVI_String_DeepCopyValue(&(*parsedUri)->path_hostSystem,
+                                       strtok_r(NULL, "", &saveptr)) < 0) {
+            VIR_FREE(tmp);
+            goto cleanup;
+        }
+
+        VIR_FREE(tmp);
+    }
+
+    if ((*parsedUri)->transport == NULL) {
+        (*parsedUri)->transport = strdup("https");
+
+        if ((*parsedUri)->transport == NULL) {
             virReportOOMError();
             goto cleanup;
         }
@@ -195,7 +218,7 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
 
   cleanup:
     if (result < 0) {
-        esxUtil_FreeParsedQuery(parsedQuery);
+        esxUtil_FreeParsedUri(parsedUri);
     }
 
     if (queryParamSet != NULL) {
@@ -209,17 +232,20 @@ esxUtil_ParseQuery(esxUtil_ParsedQuery **parsedQuery, xmlURIPtr uri)
 
 
 void
-esxUtil_FreeParsedQuery(esxUtil_ParsedQuery **parsedQuery)
+esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
 {
-    if (parsedQuery == NULL || *parsedQuery == NULL) {
+    if (parsedUri == NULL || *parsedUri == NULL) {
         return;
     }
 
-    VIR_FREE((*parsedQuery)->transport);
-    VIR_FREE((*parsedQuery)->vCenter);
-    VIR_FREE((*parsedQuery)->proxy_hostname);
+    VIR_FREE((*parsedUri)->transport);
+    VIR_FREE((*parsedUri)->vCenter);
+    VIR_FREE((*parsedUri)->proxy_hostname);
+    VIR_FREE((*parsedUri)->path_datacenter);
+    VIR_FREE((*parsedUri)->path_computeResource);
+    VIR_FREE((*parsedUri)->path_hostSystem);
 
-    VIR_FREE(*parsedQuery);
+    VIR_FREE(*parsedUri);
 }
 
 
