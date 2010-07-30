@@ -2483,6 +2483,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_VirtualMachinePowerState powerState;
+    int id = -1;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
 
@@ -2497,8 +2498,8 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
         esxVI_LookupVirtualMachineByUuidAndPrepareForTask
           (priv->primary, domain->uuid, propertyNameList, &virtualMachine,
            priv->autoAnswer) < 0 ||
-        esxVI_GetVirtualMachinePowerState(virtualMachine,
-                                          &powerState) < 0) {
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0 ||
+        esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, NULL) < 0) {
         goto cleanup;
     }
 
@@ -2521,6 +2522,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
+    domain->id = id;
     result = 0;
 
   cleanup:
