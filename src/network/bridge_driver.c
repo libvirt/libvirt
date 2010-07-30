@@ -1490,14 +1490,13 @@ static virNetworkPtr networkDefine(virConnectPtr conn, const char *xml) {
     virNetworkDefPtr def;
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
-    int dupNet;
 
     networkDriverLock(driver);
 
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
-    if ((dupNet = virNetworkObjIsDuplicate(&driver->networks, def, 0)) < 0)
+    if (virNetworkObjIsDuplicate(&driver->networks, def, 0) < 0)
         goto cleanup;
 
     if (virNetworkSetBridgeName(&driver->networks, def, 1))
