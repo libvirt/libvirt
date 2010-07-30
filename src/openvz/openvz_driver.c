@@ -992,6 +992,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     vm->pid = strtoI(vm->def->name);
     vm->def->id = vm->pid;
+    dom->id = vm->pid;
     vm->state = VIR_DOMAIN_RUNNING;
     ret = 0;
 
