@@ -1587,6 +1587,7 @@ static int vboxDomainDestroy(virDomainPtr dom) {
             }
 #endif
             VBOX_RELEASE(console);
+            dom->id = -1;
             ret = 0;
         }
         data->vboxSession->vtbl->Close(data->vboxSession);

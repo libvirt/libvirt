@@ -1620,6 +1620,7 @@ esxDomainDestroy(virDomainPtr domain)
         goto cleanup;
     }
 
+    domain->id = -1;
     result = 0;
 
   cleanup:

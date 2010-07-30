@@ -531,6 +531,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
+    dom->id = -1;
     ret = 0;
 
 cleanup:

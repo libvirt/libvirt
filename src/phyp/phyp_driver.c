@@ -3688,6 +3688,8 @@ phypDomainDestroy(virDomainPtr dom)
     if (phypUUIDTable_RemLpar(dom->conn, dom->id) == -1)
         goto err;
 
+    dom->id = -1;
+
     VIR_FREE(cmd);
     VIR_FREE(ret);
     return 0;

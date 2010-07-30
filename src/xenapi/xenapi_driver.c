@@ -830,6 +830,7 @@ xenapiDomainDestroy (virDomainPtr dom)
             return -1;
         }
         xen_vm_set_free(vms);
+        dom->id = -1;
         return 0;
     }
     if (vms) xen_vm_set_free(vms);
