@@ -768,6 +768,8 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainWatchdogDefFree(def->watchdog);
 
+    virDomainMemballoonDefFree(def->memballoon);
+
     virSecurityLabelDefFree(def);
 
     virCPUDefFree(def->cpu);
