@@ -1416,7 +1416,6 @@ qemuConnectMonitor(struct qemud_driver *driver, virDomainObjPtr vm)
     ret = qemuMonitorSetCapabilities(priv->mon);
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
-    ret = 0;
 error:
     if (ret < 0)
         qemuMonitorClose(priv->mon);
