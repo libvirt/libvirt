@@ -4110,7 +4110,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            ADD_ARG_LIT(virBufferContentAndReset(&boot_buf));
+            ADD_ARG(virBufferContentAndReset(&boot_buf));
         }
 
         if (def->os.kernel) {
