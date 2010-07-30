@@ -3716,6 +3716,9 @@ virDomainHostdevDefParseXML(const xmlNodePtr node,
                             goto error;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+                /* address is parsed as part of virDomainDeviceInfoParseXML */
+            } else if (xmlStrEqual(cur->name, BAD_CAST "alias")) {
+                /* alias is parsed as part of virDomainDeviceInfoParseXML */
             } else {
                 virDomainReportError(VIR_ERR_INTERNAL_ERROR,
                                      _("unknown node %s"), cur->name);
