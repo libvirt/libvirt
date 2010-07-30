@@ -685,8 +685,6 @@ cleanup:
 
 void qemuMonitorClose(qemuMonitorPtr mon)
 {
-    int refs;
-
     if (!mon)
         return;
 
@@ -706,7 +704,7 @@ void qemuMonitorClose(qemuMonitorPtr mon)
         mon->closed = 1;
     }
 
-    if ((refs = qemuMonitorUnref(mon)) > 0)
+    if (qemuMonitorUnref(mon) > 0)
         qemuMonitorUnlock(mon);
 }
 

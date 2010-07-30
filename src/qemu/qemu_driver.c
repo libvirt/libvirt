@@ -6535,7 +6535,6 @@ qemudDomainSaveImageStartVM(virConnectPtr conn,
     wait_ret = qemudDomainSaveImageClose(fd, read_pid, &status);
     fd = -1;
     if (read_pid != -1) {
-        read_pid = -1;
         if (wait_ret == -1) {
             virReportSystemError(errno,
                                  _("failed to wait for process reading '%s'"),
