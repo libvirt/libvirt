@@ -69,7 +69,7 @@
           <code>make install</code>
         </p>
         <p>At that point you may have to rerun ldconfig or a similar utility to
-    update your list of installed shared libs.</p>
+    update your list of installed shared libs.
         </p>
 
        <h2>Building from a source code checkout</h2>
