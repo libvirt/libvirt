@@ -704,6 +704,15 @@ esxVI_Type_ToString(esxVI_Type type)
       case esxVI_Type_ManagedObjectReference:
         return "ManagedObjectReference";
 
+      case esxVI_Type_Datacenter:
+        return "Datacenter";
+
+      case esxVI_Type_ComputeResource:
+        return "ComputeResource";
+
+      case esxVI_Type_HostSystem:
+        return "HostSystem";
+
 #include "esx_vi_types.generated.typetostring"
 
       case esxVI_Type_Other:
@@ -734,7 +743,14 @@ esxVI_Type_FromString(const char *type)
         return esxVI_Type_Fault;
     } else if (STREQ(type, "ManagedObjectReference")) {
         return esxVI_Type_ManagedObjectReference;
+    } else if (STREQ(type, "Datacenter")) {
+        return esxVI_Type_Datacenter;
+    } else if (STREQ(type, "ComputeResource")) {
+        return esxVI_Type_ComputeResource;
+    } else if (STREQ(type, "HostSystem")) {
+        return esxVI_Type_HostSystem;
     }
+
 
 #include "esx_vi_types.generated.typefromstring"
 
@@ -1528,6 +1544,273 @@ esxVI_ManagedObjectReference_Deserialize
 
 
 #include "esx_vi_types.generated.c"
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: Datacenter
+ *                    extends ManagedEntity
+ */
+
+/* esxVI_Datacenter_Alloc */
+ESX_VI__TEMPLATE__ALLOC(Datacenter)
+
+/* esxVI_Datacenter_Free */
+ESX_VI__TEMPLATE__FREE(Datacenter,
+{
+    esxVI_Datacenter_Free(&item->_next);
+    esxVI_ManagedObjectReference_Free(&item->_reference);
+
+    /* ManagedEntity */
+    VIR_FREE(item->name);
+
+    /* Datacenter */
+    esxVI_ManagedObjectReference_Free(&item->hostFolder);
+    esxVI_ManagedObjectReference_Free(&item->vmFolder);
+})
+
+/* esxVI_Datacenter_Validate */
+ESX_VI__TEMPLATE__VALIDATE(Datacenter,
+{
+    /* ManagedEntity */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+
+    /* Datacenter */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(hostFolder);
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(vmFolder);
+})
+
+int
+esxVI_Datacenter_CastFromObjectContent(esxVI_ObjectContent *objectContent,
+                                       esxVI_Datacenter **datacenter)
+{
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (objectContent == NULL || datacenter == NULL || *datacenter != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_Datacenter_Alloc(datacenter) < 0) {
+        return -1;
+    }
+
+    if (esxVI_ManagedObjectReference_DeepCopy(&(*datacenter)->_reference,
+                                              objectContent->obj) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "name")) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_String) < 0) {
+                goto failure;
+            }
+
+            (*datacenter)->name = strdup(dynamicProperty->val->string);
+
+            if ((*datacenter)->name == NULL) {
+                virReportOOMError();
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "hostFolder")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (dynamicProperty->val, &(*datacenter)->hostFolder) < 0) {
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "vmFolder")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (dynamicProperty->val, &(*datacenter)->vmFolder) < 0) {
+                goto failure;
+            }
+        }
+    }
+
+    if (esxVI_Datacenter_Validate(*datacenter) < 0) {
+        goto failure;
+    }
+
+    return 0;
+
+  failure:
+    esxVI_Datacenter_Free(datacenter);
+
+    return -1;
+}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: ComputeResource
+ *                    extends ManagedEntity
+ */
+
+/* esxVI_ComputeResource_Alloc */
+ESX_VI__TEMPLATE__ALLOC(ComputeResource)
+
+/* esxVI_ComputeResource_Free */
+ESX_VI__TEMPLATE__FREE(ComputeResource,
+{
+    esxVI_ComputeResource_Free(&item->_next);
+    esxVI_ManagedObjectReference_Free(&item->_reference);
+
+    /* ManagedEntity */
+    VIR_FREE(item->name);
+
+    /* ComputeResource */
+    esxVI_ManagedObjectReference_Free(&item->host);
+    esxVI_ManagedObjectReference_Free(&item->resourcePool);
+})
+
+/* esxVI_ComputeResource_Validate */
+ESX_VI__TEMPLATE__VALIDATE(ComputeResource,
+{
+    /* ManagedEntity */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+
+    /* ComputeResource */
+})
+
+int
+esxVI_ComputeResource_CastFromObjectContent
+  (esxVI_ObjectContent *objectContent, esxVI_ComputeResource **computeResource)
+{
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (objectContent == NULL || computeResource == NULL ||
+        *computeResource != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_ComputeResource_Alloc(computeResource) < 0) {
+        return -1;
+    }
+
+    if (esxVI_ManagedObjectReference_DeepCopy(&(*computeResource)->_reference,
+                                              objectContent->obj) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "name")) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_String) < 0) {
+                goto failure;
+            }
+
+            (*computeResource)->name = strdup(dynamicProperty->val->string);
+
+            if ((*computeResource)->name == NULL) {
+                virReportOOMError();
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "host")) {
+            if (esxVI_ManagedObjectReference_CastListFromAnyType
+                  (dynamicProperty->val, &(*computeResource)->host) < 0) {
+                goto failure;
+            }
+        } else if (STREQ(dynamicProperty->name, "resourcePool")) {
+            if (esxVI_ManagedObjectReference_CastFromAnyType
+                  (dynamicProperty->val, &(*computeResource)->resourcePool) < 0) {
+                goto failure;
+            }
+        }
+    }
+
+    if (esxVI_ComputeResource_Validate(*computeResource) < 0) {
+        goto failure;
+    }
+
+    return 0;
+
+  failure:
+    esxVI_ComputeResource_Free(computeResource);
+
+    return -1;
+}
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: HostSystem
+ *                    extends ManagedEntity
+ */
+
+/* esxVI_HostSystem_Alloc */
+ESX_VI__TEMPLATE__ALLOC(HostSystem)
+
+/* esxVI_HostSystem_Free */
+ESX_VI__TEMPLATE__FREE(HostSystem,
+{
+    esxVI_HostSystem_Free(&item->_next);
+    esxVI_ManagedObjectReference_Free(&item->_reference);
+
+    /* ManagedEntity */
+    VIR_FREE(item->name);
+
+    /* HostSystem */
+})
+
+/* esxVI_HostSystem_Validate */
+ESX_VI__TEMPLATE__VALIDATE(HostSystem,
+{
+    /* ManagedEntity */
+    ESX_VI__TEMPLATE__PROPERTY__REQUIRE(name);
+
+    /* HostSystem */
+})
+
+int
+esxVI_HostSystem_CastFromObjectContent(esxVI_ObjectContent *objectContent,
+                                       esxVI_HostSystem **hostSystem)
+{
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+
+    if (objectContent == NULL || hostSystem == NULL || *hostSystem != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_HostSystem_Alloc(hostSystem) < 0) {
+        return -1;
+    }
+
+    if (esxVI_ManagedObjectReference_DeepCopy(&(*hostSystem)->_reference,
+                                              objectContent->obj) < 0) {
+        goto failure;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "name")) {
+            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
+                                         esxVI_Type_String) < 0) {
+                goto failure;
+            }
+
+            (*hostSystem)->name = strdup(dynamicProperty->val->string);
+
+            if ((*hostSystem)->name == NULL) {
+                virReportOOMError();
+                goto failure;
+            }
+        }
+    }
+
+    if (esxVI_HostSystem_Validate(*hostSystem) < 0) {
+        goto failure;
+    }
+
+    return 0;
+
+  failure:
+    esxVI_HostSystem_Free(hostSystem);
+
+    return -1;
+}
 
 
 

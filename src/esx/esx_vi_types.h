@@ -26,6 +26,7 @@
 
 typedef enum _esxVI_Type esxVI_Type;
 typedef struct _esxVI_Object esxVI_Object;
+typedef struct _esxVI_ManagedObject esxVI_ManagedObject;
 
 
 
@@ -48,6 +49,9 @@ typedef struct _esxVI_DateTime esxVI_DateTime;
 
 typedef struct _esxVI_Fault esxVI_Fault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
+typedef struct _esxVI_Datacenter esxVI_Datacenter;
+typedef struct _esxVI_ComputeResource esxVI_ComputeResource;
+typedef struct _esxVI_HostSystem esxVI_HostSystem;
 
 # include "esx_vi_types.generated.typedef"
 
@@ -68,6 +72,9 @@ enum _esxVI_Type {
     esxVI_Type_DateTime,
     esxVI_Type_Fault,
     esxVI_Type_ManagedObjectReference,
+    esxVI_Type_Datacenter,
+    esxVI_Type_ComputeResource,
+    esxVI_Type_HostSystem,
 
 # include "esx_vi_types.generated.typeenum"
 
@@ -86,6 +93,18 @@ esxVI_Type esxVI_Type_FromString(const char *type);
 struct _esxVI_Object {
     esxVI_Object *_next;                                   /* optional */
     esxVI_Type _type;                                      /* required */
+};
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * ManagedObject extends Object
+ */
+
+struct _esxVI_ManagedObject {
+    esxVI_ManagedObject *_next;                            /* optional */
+    esxVI_Type _type;                                      /* required */
+    esxVI_ManagedObjectReference *_reference;              /* required */
 };
 
 
@@ -297,6 +316,83 @@ int esxVI_ManagedObjectReference_Deserialize
 
 
 # include "esx_vi_types.generated.h"
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: Datacenter
+ *                    extends ManagedEntity
+ */
+
+struct _esxVI_Datacenter {
+    esxVI_Datacenter *_next;                               /* optional */
+    esxVI_Type _type;                                      /* required */
+    esxVI_ManagedObjectReference *_reference;              /* required */
+
+    /* ManagedEntity */
+    char *name;                                            /* required */
+
+    /* Datacenter */
+    esxVI_ManagedObjectReference *hostFolder;              /* required */
+    esxVI_ManagedObjectReference *vmFolder;                /* required */
+};
+
+int esxVI_Datacenter_Alloc(esxVI_Datacenter **datacenter);
+void esxVI_Datacenter_Free(esxVI_Datacenter **datacenter);
+int esxVI_Datacenter_Validate(esxVI_Datacenter *datacenter);
+int esxVI_Datacenter_CastFromObjectContent(esxVI_ObjectContent *objectContent,
+                                           esxVI_Datacenter **datacenter);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: ComputeResource
+ *                    extends ManagedEntity
+ */
+
+struct _esxVI_ComputeResource {
+    esxVI_ComputeResource *_next;                          /* optional */
+    esxVI_Type _type;                                      /* required */
+    esxVI_ManagedObjectReference *_reference;              /* required */
+
+    /* ManagedEntity */
+    char *name;                                            /* required */
+
+    /* ComputeResource */
+    esxVI_ManagedObjectReference *host;                    /* optional, list */
+    esxVI_ManagedObjectReference *resourcePool;            /* optional */
+};
+
+int esxVI_ComputeResource_Alloc(esxVI_ComputeResource **computeResource);
+void esxVI_ComputeResource_Free(esxVI_ComputeResource **computeResource);
+int esxVI_ComputeResource_Validate(esxVI_ComputeResource *computeResource);
+int esxVI_ComputeResource_CastFromObjectContent
+      (esxVI_ObjectContent *objectContent,
+       esxVI_ComputeResource **computeResource);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * VI Managed Object: HostSystem
+ *                    extends ManagedEntity
+ */
+
+struct _esxVI_HostSystem {
+    esxVI_HostSystem *_next;                               /* optional */
+    esxVI_Type _type;                                      /* required */
+    esxVI_ManagedObjectReference *_reference;              /* required */
+
+    /* ManagedEntity */
+    char *name;                                            /* required */
+
+    /* HostSystem */
+};
+
+int esxVI_HostSystem_Alloc(esxVI_HostSystem **hostSystem);
+void esxVI_HostSystem_Free(esxVI_HostSystem **hostSystem);
+int esxVI_HostSystem_Validate(esxVI_HostSystem *hostSystem);
+int esxVI_HostSystem_CastFromObjectContent(esxVI_ObjectContent *objectContent,
+                                           esxVI_HostSystem **hostSystem);
 
 
 
