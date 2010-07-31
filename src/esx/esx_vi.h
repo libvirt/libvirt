@@ -158,10 +158,11 @@ struct _esxVI_Context {
     esxVI_APIVersion apiVersion;
     esxVI_ProductVersion productVersion;
     esxVI_UserSession *session;
-    esxVI_ManagedObjectReference *datacenter;
-    esxVI_ManagedObjectReference *vmFolder;
-    esxVI_ManagedObjectReference *hostFolder;
+    esxVI_Datacenter *datacenter;
+    esxVI_ComputeResource *computeResource;
+    esxVI_HostSystem *hostSystem;
     esxVI_SelectionSpec *fullTraversalSpecList;
+    esxVI_SelectionSpec *fullTraversalSpecList2;
 };
 
 int esxVI_Context_Alloc(esxVI_Context **ctx);
@@ -169,6 +170,10 @@ void esxVI_Context_Free(esxVI_Context **ctx);
 int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
                           const char *url, const char *username,
                           const char *password, esxUtil_ParsedUri *parsedUri);
+int esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
+                                      esxUtil_ParsedUri *parsedUri);
+int esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
+                                              const char *hostSystemIpAddress);
 int esxVI_Context_DownloadFile(esxVI_Context *ctx, const char *url,
                                char **content);
 int esxVI_Context_UploadFile(esxVI_Context *ctx, const char *url,
@@ -327,13 +332,13 @@ int esxVI_GetSnapshotTreeBySnapshot
        esxVI_ManagedObjectReference *snapshot,
        esxVI_VirtualMachineSnapshotTree **snapshotTree);
 
-int esxVI_LookupResourcePoolByHostSystem
-      (esxVI_Context *ctx, esxVI_ObjectContent *hostSystem,
-       esxVI_ManagedObjectReference **resourcePool);
+int esxVI_LookupHostSystemProperties(esxVI_Context *ctx,
+                                     esxVI_String *propertyNameList,
+                                     esxVI_ObjectContent **hostSystem);
 
-int esxVI_LookupHostSystemByIp(esxVI_Context *ctx, const char *ipAddress,
-                               esxVI_String *propertyNameList,
-                               esxVI_ObjectContent **hostSystem);
+int esxVI_LookupVirtualMachineList(esxVI_Context *ctx,
+                                   esxVI_String *propertyNameList,
+                                   esxVI_ObjectContent **virtualMachineList);
 
 int esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx,
                                      const unsigned char *uuid,
@@ -350,6 +355,9 @@ int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
       (esxVI_Context *ctx, const unsigned char *uuid,
        esxVI_String *propertyNameList, esxVI_ObjectContent **virtualMachine,
        esxVI_Boolean autoAnswer);
+
+int esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList,
+                              esxVI_ObjectContent **datastoreList);
 
 int esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                                 esxVI_String *propertyNameList,

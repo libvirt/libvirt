@@ -2711,6 +2711,10 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
       case esxVI_ProductVersion_ESX40:
       case esxVI_ProductVersion_ESX41:
       case esxVI_ProductVersion_ESX4x:
+      /* FIXME: Putting VPX* here is a hack until a more fine grained system is in place */
+      case esxVI_ProductVersion_VPX40:
+      case esxVI_ProductVersion_VPX41:
+      case esxVI_ProductVersion_VPX4x:
         virBufferAddLit(&buffer, "virtualHW.version = \"7\"\n");
         break;
 

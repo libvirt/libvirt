@@ -67,20 +67,14 @@ esxSupportsLongMode(esxPrivate *priv)
         return priv->supportsLongMode;
     }
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        return esxVI_Boolean_False;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return esxVI_Boolean_Undefined;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "hardware.cpuFeature") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -153,20 +147,14 @@ esxLookupHostSystemBiosUuid(esxPrivate *priv, unsigned char *uuid)
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        return 0;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "hardware.systemInfo.uuid") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -236,7 +224,7 @@ esxCapsInit(esxPrivate *priv)
     }
 
     virCapabilitiesSetMacPrefix(caps, (unsigned char[]){ 0x00, 0x0c, 0x29 });
-    virCapabilitiesAddHostMigrateTransport(caps, "esx");
+    virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
     caps->hasWideScsiBus = true;
 
@@ -347,7 +335,8 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
 
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, ipAddress, username, password,
-                              parsedUri) < 0) {
+                              parsedUri) < 0 ||
+        esxVI_Context_LookupObjectsByPath(priv->host, parsedUri) < 0) {
         goto cleanup;
     }
 
@@ -373,8 +362,8 @@ esxConnectToHost(esxPrivate *priv, virConnectAuthPtr auth,
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "runtime.inMaintenanceMode\0"
                                            "summary.managementServerIp\0") < 0 ||
-        esxVI_LookupHostSystemByIp(priv->host, ipAddress, propertyNameList,
-                                   &hostSystem) < 0 ||
+        esxVI_LookupHostSystemProperties(priv->host, propertyNameList,
+                                         &hostSystem) < 0 ||
         esxVI_GetBoolean(hostSystem, "runtime.inMaintenanceMode",
                          &inMaintenanceMode,
                          esxVI_Occurrence_RequiredItem) < 0 ||
@@ -416,6 +405,7 @@ static int
 esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
                     const char *hostname, int port,
                     const char *predefinedUsername,
+                    const char *hostSystemIpAddress,
                     esxUtil_ParsedUri *parsedUri)
 {
     int result = -1;
@@ -423,6 +413,14 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
     char *username = NULL;
     char *password = NULL;
     char *url = NULL;
+
+    if (hostSystemIpAddress == NULL &&
+        (parsedUri->path_datacenter == NULL ||
+         parsedUri->path_computeResource == NULL)) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Path has to specify the datacenter and compute resource"));
+        return -1;
+    }
 
     if (esxUtil_ResolveHostname(hostname, ipAddress, NI_MAXHOST) < 0) {
         return -1;
@@ -473,6 +471,17 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
         goto cleanup;
     }
 
+    if (hostSystemIpAddress != NULL) {
+        if (esxVI_Context_LookupObjectsByHostSystemIp(priv->vCenter,
+                                                      hostSystemIpAddress) < 0) {
+            goto cleanup;
+        }
+    } else {
+        if (esxVI_Context_LookupObjectsByPath(priv->vCenter, parsedUri) < 0) {
+            goto cleanup;
+        }
+    }
+
     result = 0;
 
   cleanup:
@@ -486,7 +495,8 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
 
 
 /*
- * URI format: {vpx|esx|gsx}://[<username>@]<hostname>[:<port>]/[<query parameter> ...]
+ * URI format: {vpx|esx|gsx}://[<username>@]<hostname>[:<port>]/[<path>][?<query parameter> ...]
+ *             <path> = <datacenter>/<computeresource>[/<hostsystem>]
  *
  * If no port is specified the default port is set dependent on the scheme and
  * transport parameter:
@@ -496,6 +506,11 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
  * - esx+https 443
  * - gsx+http  8222
  * - gsx+https 8333
+ *
+ * For a vpx:// connection <path> references a host managed by the vCenter.
+ * In case the host is part of a cluster then <computeresource> is the cluster
+ * name. Otherwise <computeresource> and <hostsystem> are equal and the later
+ * can be omitted.
  *
  * Optional query parameters:
  * - transport={http|https}
@@ -508,7 +523,7 @@ esxConnectToVCenter(esxPrivate *priv, virConnectAuthPtr auth,
  *
  * The vcenter parameter is only necessary for migration, because the vCenter
  * server is in charge to initiate a migration between two ESX hosts. The
- * vcenter parameter can be set to an explicity hostname or to *. If set to *,
+ * vcenter parameter can be set to an explicitly hostname or to *. If set to *,
  * the driver will check if the ESX host is managed by a vCenter and connect to
  * it. If the ESX host is not managed by a vCenter an error is reported.
  *
@@ -635,7 +650,8 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
             }
 
             if (esxConnectToVCenter(priv, auth, vCenterIpAddress,
-                                    conn->uri->port, NULL, parsedUri) < 0) {
+                                    conn->uri->port, NULL,
+                                    priv->host->ipAddress, parsedUri) < 0) {
                 goto cleanup;
             }
         }
@@ -644,7 +660,7 @@ esxOpen(virConnectPtr conn, virConnectAuthPtr auth, int flags ATTRIBUTE_UNUSED)
     } else { /* VPX */
         /* Connect to vCenter */
         if (esxConnectToVCenter(priv, auth, conn->uri->server, conn->uri->port,
-                                conn->uri->user, parsedUri) < 0) {
+                                conn->uri->user, NULL, parsedUri) < 0) {
             goto cleanup;
         }
 
@@ -722,26 +738,19 @@ esxSupportsVMotion(esxPrivate *priv)
 {
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
 
     if (priv->supportsVMotion != esxVI_Boolean_Undefined) {
         return priv->supportsVMotion;
     }
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        return esxVI_Boolean_False;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return esxVI_Boolean_Undefined;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "capability.vmotionSupported") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -751,19 +760,10 @@ esxSupportsVMotion(esxPrivate *priv)
         goto cleanup;
     }
 
-    for (dynamicProperty = hostSystem->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "capability.vmotionSupported")) {
-            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                         esxVI_Type_Boolean) < 0) {
-                goto cleanup;
-            }
-
-            priv->supportsVMotion = dynamicProperty->val->boolean;
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-        }
+    if (esxVI_GetBoolean(hostSystem, "capability.vmotionSupported",
+                         &priv->supportsVMotion,
+                         esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
     }
 
   cleanup:
@@ -842,14 +842,7 @@ esxGetHostname(virConnectPtr conn)
     const char *domainName = NULL;
     char *complete = NULL;
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Could not retrieve the hostname for a vpx:// connection"));
-        return NULL;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
@@ -857,9 +850,8 @@ esxGetHostname(virConnectPtr conn)
           (&propertyNameList,
            "config.network.dnsConfig.hostName\0"
            "config.network.dnsConfig.domainName\0") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -944,14 +936,7 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
 
     memset(nodeinfo, 0, sizeof (*nodeinfo));
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Nodeinfo is not available for a vpx:// connection"));
-        return -1;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
@@ -963,9 +948,8 @@ esxNodeGetInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo)
                                            "hardware.memorySize\0"
                                            "hardware.numaInfo.numNodes\0"
                                            "summary.hardware.cpuModel\0") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -1126,10 +1110,8 @@ esxListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "runtime.powerState") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary, priv->primary->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
+        esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
+                                       &virtualMachineList) < 0) {
         goto cleanup;
     }
 
@@ -1209,10 +1191,8 @@ esxDomainLookupByID(virConnectPtr conn, int id)
                                            "name\0"
                                            "runtime.powerState\0"
                                            "config.uuid\0") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary, priv->primary->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
+        esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
+                                       &virtualMachineList) < 0) {
         goto cleanup;
     }
 
@@ -2142,22 +2122,14 @@ esxDomainGetMaxVcpus(virDomainPtr domain)
 
     priv->maxVcpus = -1;
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("MaxVCPUs value is not available for a vpx:// connection"));
-        return -1;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return -1;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "capability.maxSupportedVcpus") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, priv->host->hostFolder,
-                                        "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True, &hostSystem) < 0) {
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -2196,11 +2168,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
 {
     esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datacenter = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    const char *vmPathName = NULL;
-    char *datacenterName = NULL;
+    char *vmPathName = NULL;
     char *datastoreName = NULL;
     char *directoryName = NULL;
     char *fileName = NULL;
@@ -2214,36 +2183,14 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         return NULL;
     }
 
-    if (esxVI_String_AppendValueToList(&propertyNameList, "name") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary, priv->primary->datacenter,
-                                        "Datacenter", propertyNameList,
-                                        esxVI_Boolean_False, &datacenter) < 0 ||
-        esxVI_GetStringValue(datacenter, "name", &datacenterName,
-                             esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    esxVI_String_Free(&propertyNameList);
-
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "config.files.vmPathName") < 0 ||
         esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
                                          propertyNameList, &virtualMachine,
-                                         esxVI_Occurrence_RequiredItem) < 0) {
+                                         esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetStringValue(virtualMachine, "config.files.vmPathName",
+                             &vmPathName, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
-    }
-
-    for (dynamicProperty = virtualMachine->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "config.files.vmPathName")) {
-            if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                         esxVI_Type_String) < 0) {
-                goto cleanup;
-            }
-
-            vmPathName = dynamicProperty->val->string;
-            break;
-        }
     }
 
     if (esxUtil_ParseDatastoreRelatedPath(vmPathName, &datastoreName,
@@ -2261,7 +2208,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
 
     virBufferURIEncodeString(&buffer, fileName);
     virBufferAddLit(&buffer, "?dcPath=");
-    virBufferURIEncodeString(&buffer, datacenterName);
+    virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 
@@ -2289,7 +2236,6 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     }
 
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datacenter);
     esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
@@ -2392,10 +2338,8 @@ esxListDefinedDomains(virConnectPtr conn, char **const names, int maxnames)
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "name\0"
                                            "runtime.powerState\0") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary, priv->primary->vmFolder,
-                                        "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &virtualMachineList) < 0) {
+        esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
+                                       &virtualMachineList) < 0) {
         goto cleanup;
     }
 
@@ -2557,14 +2501,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     esxVI_TaskInfoState taskInfoState;
     virDomainPtr domain = NULL;
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Could not define domain with a vpx:// connection"));
-        return NULL;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
@@ -2577,7 +2514,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     /* Check if an existing domain should be edited */
-    if (esxVI_LookupVirtualMachineByUuid(priv->host, def->uuid, NULL,
+    if (esxVI_LookupVirtualMachineByUuid(priv->primary, def->uuid, NULL,
                                          &virtualMachine,
                                          esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
@@ -2592,8 +2529,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     /* Build VMX from domain XML */
-    vmx = esxVMX_FormatConfig(priv->host, priv->caps, def,
-                              priv->host->productVersion);
+    vmx = esxVMX_FormatConfig(priv->primary, priv->caps, def,
+                              priv->primary->productVersion);
 
     if (vmx == NULL) {
         goto cleanup;
@@ -2657,7 +2594,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     virBufferURIEncodeString(&buffer, def->name);
     virBufferAddLit(&buffer, ".vmx?dcPath=");
-    virBufferURIEncodeString(&buffer, priv->host->datacenter->value);
+    virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
 
@@ -2682,31 +2619,21 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         }
     }
 
-    /* Get resource pool */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "parent") < 0 ||
-        esxVI_LookupHostSystemByIp(priv->host, priv->host->ipAddress,
-                                   propertyNameList, &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (esxVI_LookupResourcePoolByHostSystem(priv->host, hostSystem,
-                                             &resourcePool) < 0) {
-        goto cleanup;
-    }
-
     /* Check, if VMX file already exists */
     /* FIXME */
 
     /* Upload VMX file */
-    if (esxVI_Context_UploadFile(priv->host, url, vmx) < 0) {
+    if (esxVI_Context_UploadFile(priv->primary, url, vmx) < 0) {
         goto cleanup;
     }
 
     /* Register the domain */
-    if (esxVI_RegisterVM_Task(priv->host, priv->host->vmFolder,
+    if (esxVI_RegisterVM_Task(priv->primary, priv->primary->datacenter->vmFolder,
                               datastoreRelatedPath, NULL, esxVI_Boolean_False,
-                              resourcePool, hostSystem->obj, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(priv->host, task, def->uuid,
+                              priv->primary->computeResource->resourcePool,
+                              priv->primary->hostSystem->_reference,
+                              &task) < 0 ||
+        esxVI_WaitForTaskCompletion(priv->primary, task, def->uuid,
                                     esxVI_Occurrence_OptionalItem,
                                     priv->autoAnswer, &taskInfoState) < 0) {
         goto cleanup;
@@ -3102,32 +3029,25 @@ static int
 esxDomainMigratePrepare(virConnectPtr dconn,
                         char **cookie ATTRIBUTE_UNUSED,
                         int *cookielen ATTRIBUTE_UNUSED,
-                        const char *uri_in, char **uri_out,
+                        const char *uri_in ATTRIBUTE_UNUSED,
+                        char **uri_out,
                         unsigned long flags ATTRIBUTE_UNUSED,
                         const char *dname ATTRIBUTE_UNUSED,
                         unsigned long resource ATTRIBUTE_UNUSED)
 {
-    int result = -1;
-    esxUtil_ParsedUri *parsedUri = NULL;
+    esxPrivate *priv = dconn->privateData;
 
     if (uri_in == NULL) {
-        if (esxUtil_ParseUri(&parsedUri, dconn->uri) < 0) {
-            return -1;
-        }
-
-        if (virAsprintf(uri_out, "%s://%s:%d/sdk", parsedUri->transport,
-                        dconn->uri->server, dconn->uri->port) < 0) {
+        if (virAsprintf(uri_out, "vpxmigr://%s/%s/%s",
+                        priv->vCenter->ipAddress,
+                        priv->vCenter->computeResource->resourcePool->value,
+                        priv->vCenter->hostSystem->_reference->value) < 0) {
             virReportOOMError();
-            goto cleanup;
+            return -1;
         }
     }
 
-    result = 0;
-
-  cleanup:
-    esxUtil_FreeParsedUri(&parsedUri);
-
-    return result;
+    return 0;
 }
 
 
@@ -3143,12 +3063,13 @@ esxDomainMigratePerform(virDomainPtr domain,
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
-    xmlURIPtr xmlUri = NULL;
-    char hostIpAddress[NI_MAXHOST] = "";
+    xmlURIPtr parsedUri = NULL;
+    char *saveptr;
+    char *path_resourcePool;
+    char *path_hostSystem;
     esxVI_ObjectContent *virtualMachine = NULL;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *hostSystem = NULL;
-    esxVI_ManagedObjectReference *resourcePool = NULL;
+    esxVI_ManagedObjectReference resourcePool;
+    esxVI_ManagedObjectReference hostSystem;
     esxVI_Event *eventList = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
@@ -3169,39 +3090,57 @@ esxDomainMigratePerform(virDomainPtr domain,
         return -1;
     }
 
-    /* Parse the destination URI and resolve the hostname */
-    xmlUri = xmlParseURI(uri);
+    /* Parse migration URI */
+    parsedUri = xmlParseURI(uri);
 
-    if (xmlUri == NULL) {
+    if (parsedUri == NULL) {
         virReportOOMError();
         return -1;
     }
 
-    if (esxUtil_ResolveHostname(xmlUri->server, hostIpAddress,
-                                NI_MAXHOST) < 0) {
+    if (parsedUri->scheme == NULL || STRCASENEQ(parsedUri->scheme, "vpxmigr")) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Only vpxmigr:// migration URIs are supported"));
         goto cleanup;
     }
 
-    /* Lookup VirtualMachine, HostSystem and ResourcePool */
+    if (STRCASENEQ(priv->vCenter->ipAddress, parsedUri->server)) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Migration source and destination have to refer to "
+                    "the same vCenter"));
+        goto cleanup;
+    }
+
+    path_resourcePool = strtok_r(parsedUri->path, "/", &saveptr);
+    path_hostSystem = strtok_r(NULL, "", &saveptr);
+
+    if (path_resourcePool == NULL || path_hostSystem == NULL) {
+        ESX_ERROR(VIR_ERR_INVALID_ARG, "%s",
+                  _("Migration URI has to specify resource pool and host system"));
+        goto cleanup;
+    }
+
+    resourcePool._next = NULL;
+    resourcePool._type = esxVI_Type_ManagedObjectReference;
+    resourcePool.type = (char *)"ResourcePool";
+    resourcePool.value = path_resourcePool;
+
+    hostSystem._next = NULL;
+    hostSystem._type = esxVI_Type_ManagedObjectReference;
+    hostSystem.type = (char *)"HostSystem";
+    hostSystem.value = path_hostSystem;
+
+    /* Lookup VirtualMachine */
     if (esxVI_LookupVirtualMachineByUuidAndPrepareForTask
           (priv->vCenter, domain->uuid, NULL, &virtualMachine,
-           priv->autoAnswer) < 0 ||
-        esxVI_String_AppendValueToList(&propertyNameList, "parent") < 0 ||
-        esxVI_LookupHostSystemByIp(priv->vCenter, hostIpAddress,
-                                   propertyNameList, &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (esxVI_LookupResourcePoolByHostSystem(priv->vCenter, hostSystem,
-                                             &resourcePool) < 0) {
+           priv->autoAnswer) < 0) {
         goto cleanup;
     }
 
     /* Validate the purposed migration */
     if (esxVI_ValidateMigration(priv->vCenter, virtualMachine->obj,
-                                esxVI_VirtualMachinePowerState_Undefined,
-                                NULL, resourcePool, hostSystem->obj,
-                                &eventList) < 0) {
+                                esxVI_VirtualMachinePowerState_Undefined, NULL,
+                                &resourcePool, &hostSystem, &eventList) < 0) {
         goto cleanup;
     }
 
@@ -3224,8 +3163,8 @@ esxDomainMigratePerform(virDomainPtr domain,
     }
 
     /* Perform the purposed migration */
-    if (esxVI_MigrateVM_Task(priv->vCenter, virtualMachine->obj, resourcePool,
-                             hostSystem->obj,
+    if (esxVI_MigrateVM_Task(priv->vCenter, virtualMachine->obj,
+                             &resourcePool, &hostSystem,
                              esxVI_VirtualMachineMovePriority_DefaultPriority,
                              esxVI_VirtualMachinePowerState_Undefined,
                              &task) < 0 ||
@@ -3245,11 +3184,8 @@ esxDomainMigratePerform(virDomainPtr domain,
     result = 0;
 
   cleanup:
-    xmlFreeURI(xmlUri);
+    xmlFreeURI(parsedUri);
     esxVI_ObjectContent_Free(&virtualMachine);
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&hostSystem);
-    esxVI_ManagedObjectReference_Free(&resourcePool);
     esxVI_Event_Free(&eventList);
     esxVI_ManagedObjectReference_Free(&task);
 
@@ -3276,41 +3212,19 @@ esxNodeGetFreeMemory(virConnectPtr conn)
     unsigned long long result = 0;
     esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *hostSystem = NULL;
-    esxVI_ManagedObjectReference *managedObjectReference = NULL;
     esxVI_ObjectContent *resourcePool = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_ResourcePoolResourceUsage *resourcePoolResourceUsage = NULL;
 
-    if (priv->host == NULL) {
-        /* FIXME: Currently no host for a vpx:// connection */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Could not retrieve free memory for a vpx:// connection"));
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return 0;
     }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
-        return 0;
-    }
-
-    /* Lookup host system with its resource pool */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "parent") < 0 ||
-        esxVI_LookupHostSystemByIp(priv->host, priv->host->ipAddress,
-                                   propertyNameList, &hostSystem) < 0) {
-        goto cleanup;
-    }
-
-    if (esxVI_LookupResourcePoolByHostSystem(priv->host, hostSystem,
-                                             &managedObjectReference) < 0) {
-        goto cleanup;
-    }
-
-    esxVI_String_Free(&propertyNameList);
 
     /* Get memory usage of resource pool */
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "runtime.memory") < 0 ||
-        esxVI_LookupObjectContentByType(priv->host, managedObjectReference,
+        esxVI_LookupObjectContentByType(priv->primary,
+                                        priv->primary->computeResource->resourcePool,
                                         "ResourcePool", propertyNameList,
                                         esxVI_Boolean_False,
                                         &resourcePool) < 0) {
@@ -3341,8 +3255,6 @@ esxNodeGetFreeMemory(virConnectPtr conn)
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&hostSystem);
-    esxVI_ManagedObjectReference_Free(&managedObjectReference);
     esxVI_ObjectContent_Free(&resourcePool);
     esxVI_ResourcePoolResourceUsage_Free(&resourcePoolResourceUsage);
 

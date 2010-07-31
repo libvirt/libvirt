@@ -78,9 +78,7 @@ esxNumberOfStoragePools(virConnectPtr conn)
         return -1;
     }
 
-    if (esxVI_LookupObjectContentByType(priv->primary, priv->primary->datacenter,
-                                        "Datastore", NULL, esxVI_Boolean_True,
-                                        &datastoreList) < 0) {
+    if (esxVI_LookupDatastoreList(priv->primary, NULL, &datastoreList) < 0) {
         return -1;
     }
 
@@ -123,10 +121,8 @@ esxListStoragePools(virConnectPtr conn, char **const names, int maxnames)
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "summary.name") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary, priv->primary->datacenter,
-                                        "Datastore", propertyNameList,
-                                        esxVI_Boolean_True,
-                                        &datastoreList) < 0) {
+        esxVI_LookupDatastoreList(priv->primary, propertyNameList,
+                                  &datastoreList) < 0) {
         goto cleanup;
     }
 
@@ -308,15 +304,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     char *name = NULL;
     virStoragePoolPtr pool = NULL;
 
-    /* FIXME: Need to handle this for a vpx:// connection */
-    if (priv->host == NULL ||
-        ! (priv->host->productVersion & esxVI_ProductVersion_ESX)) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                  _("Lookup by UUID is supported on ESX only"));
-        return NULL;
-    }
-
-    if (esxVI_EnsureSession(priv->host) < 0) {
+    if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
@@ -334,7 +322,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
      * part of the 'summary.url' property if there is no name match.
      */
     if (esxVI_String_AppendValueToList(&propertyNameList, "summary.name") < 0 ||
-        esxVI_LookupDatastoreByName(priv->host, uuid_string,
+        esxVI_LookupDatastoreByName(priv->primary, uuid_string,
                                     propertyNameList, &datastore,
                                     esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
@@ -350,7 +338,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (datastore == NULL && STREQ(uuid_string + 17, "-0000-000000000000")) {
         uuid_string[17] = '\0';
 
-        if (esxVI_LookupDatastoreByName(priv->host, uuid_string,
+        if (esxVI_LookupDatastoreByName(priv->primary, uuid_string,
                                         propertyNameList, &datastore,
                                         esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;

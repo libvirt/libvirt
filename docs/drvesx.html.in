@@ -28,7 +28,7 @@
         Some example remote connection URIs for the driver are:
     </p>
 <pre>
-vpx://example-vcenter.com              (VPX over HTTPS)
+vpx://example-vcenter.com/dc1/srv1     (VPX over HTTPS, select ESX server 'srv1' in datacenter 'dc1')
 esx://example-esx.com                  (ESX over HTTPS)
 gsx://example-gsx.com                  (GSX over HTTPS)
 esx://example-esx.com/?transport=http  (ESX over HTTP)
@@ -48,7 +48,7 @@ esx://example-esx.com/?no_verify=1     (ESX over HTTPS, but doesn't verify the s
         URIs have this general form (<code>[...]</code> marks an optional part).
     </p>
 <pre>
-type://[username@]hostname[:port]/[?extraparameters]
+type://[username@]hostname[:port]/[datacenter[/cluster]/server][?extraparameters]
 </pre>
     <p>
         The <code>type://</code> is either <code>esx://</code> or
@@ -58,6 +58,20 @@ type://[username@]hostname[:port]/[?extraparameters]
         is 443, for <code>gsx://</code> it is 8333.
         If the port parameter is given, it overrides the default port.
     </p>
+    <p>
+        A <code>vpx://</code> connection is currently restricted to a single
+        ESX server. This might be relaxed in the future. The path part of the
+        URI is used to specify the datacenter and the ESX server in it. If the
+        ESX server is part of a cluster then the cluster has to be specified too.
+    </p>
+    <p>
+        An example: ESX server <code>example-esx.com</code> is managed by
+        vCenter <code>example-vcenter.com</code> and part of cluster
+        <code>cluster1</code>. This cluster is part of datacenter <code>dc1</code>.
+    </p>
+<pre>
+vpx://example-vcenter.com/dc1/cluster1/example-esx.com
+</pre>
 
 
     <h4>Extra parameters</h4>
@@ -588,7 +602,7 @@ ethernet0.address = "00:50:56:25:48:C7"
 esx://example.com/?vcenter=example-vcenter.com
 </pre>
     <p>
-        Here an example how to migrate the domain <code>Fedora11</code> from
+        Here's an example how to migrate the domain <code>Fedora11</code> from
         ESX server <code>example-src.com</code> to ESX server
         <code>example-dst.com</code> implicitly involving vCenter
         <code>example-vcenter.com</code> using <code>virsh</code>.
@@ -601,6 +615,19 @@ Enter username for example-vcenter.com [administrator]:
 Enter administrator password for example-vcenter.com:
 Enter username for example-dst.com [root]:
 Enter root password for example-dst.com:
+Enter username for example-vcenter.com [administrator]:
+Enter administrator password for example-vcenter.com:
+</pre>
+    <p>
+        <span class="since">Since 0.8.3</span> you can directly connect to a vCenter.
+        This simplifies migration a bit. Here's the same migration as above but
+        using <code>vpx://</code> connections and assuming both ESX server are in
+        datacenter <code>dc1</code> and aren't part of a cluster.
+    </p>
+<pre>
+$ virsh -c vpx://example-vcenter.com/dc1/example-src.com migrate Fedora11 vpx://example-vcenter.com/dc1/example-dst.com
+Enter username for example-vcenter.com [administrator]:
+Enter administrator password for example-vcenter.com:
 Enter username for example-vcenter.com [administrator]:
 Enter administrator password for example-vcenter.com:
 </pre>
