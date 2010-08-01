@@ -2566,6 +2566,74 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
 
 
 int
+esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
+                               esxVI_ManagedObjectReference *datastore,
+                               esxVI_DatastoreHostMount **hostMount)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *objectContent = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_DatastoreHostMount *hostMountList = NULL;
+    esxVI_DatastoreHostMount *candidate = NULL;
+
+    if (hostMount == NULL || *hostMount != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_String_AppendValueToList(&propertyNameList, "host") < 0 ||
+        esxVI_LookupObjectContentByType(ctx, datastore, "Datastore",
+                                        propertyNameList, esxVI_Boolean_False,
+                                        &objectContent) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "host")) {
+            if (esxVI_DatastoreHostMount_CastListFromAnyType
+                  (dynamicProperty->val, &hostMountList) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+        }
+    }
+
+    for (candidate = hostMountList; candidate != NULL;
+         candidate = candidate->_next) {
+        if (STRNEQ(ctx->hostSystem->_reference->value, candidate->key->value)) {
+            continue;
+        }
+
+        if (esxVI_DatastoreHostMount_DeepCopy(hostMount, candidate) < 0) {
+            goto cleanup;
+        }
+
+        break;
+    }
+
+    if (*hostMount == NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                     _("Could not lookup datastore host mount"));
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&objectContent);
+    esxVI_DatastoreHostMount_Free(&hostMountList);
+
+    return result;
+}
+
+
+int
 esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                            esxVI_ManagedObjectReference *task,
                            esxVI_TaskInfo **taskInfo)

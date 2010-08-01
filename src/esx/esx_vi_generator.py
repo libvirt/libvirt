@@ -1127,7 +1127,7 @@ additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE
                              "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
 
 
-additional_object_features = { "DatastoreHostMount"         : Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+additional_object_features = { "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
                                "DatastoreInfo"              : Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
                                "Event"                      : Object.FEATURE__LIST,
                                "FileInfo"                   : Object.FEATURE__DYNAMIC_CAST,

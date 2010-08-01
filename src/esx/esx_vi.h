@@ -370,6 +370,10 @@ int esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
                                         esxVI_ObjectContent **datastore,
                                         esxVI_Occurrence occurrence);
 
+int esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
+                                   esxVI_ManagedObjectReference *datastore,
+                                   esxVI_DatastoreHostMount **hostMount);
+
 int esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *task,
                                esxVI_TaskInfo **taskInfo);
