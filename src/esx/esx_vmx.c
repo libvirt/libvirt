@@ -749,8 +749,8 @@ esxVMX_AutodetectSCSIControllerModel(esxVI_Context *ctx,
         return 0;
     }
 
-    if (esxUtil_ParseDatastoreRelatedPath(def->src, &datastoreName,
-                                          &directoryName, &fileName) < 0) {
+    if (esxUtil_ParseDatastorePath(def->src, &datastoreName, &directoryName,
+                                   &fileName) < 0) {
         goto cleanup;
     }
 
@@ -986,19 +986,19 @@ esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
 
 
 char *
-esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
-                                          const char *absolutePath)
+esxVMX_AbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath)
 {
     bool success = false;
     char *copyOfAbsolutePath = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
-    char *datastoreRelatedPath = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+
+    char *datastorePath = NULL;
     char *preliminaryDatastoreName = NULL;
     char *directoryAndFileName = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-    const char *datastoreName = NULL;
+    char *datastoreName = NULL;
 
     if (esxVI_String_DeepCopyValue(&copyOfAbsolutePath, absolutePath) < 0) {
         return NULL;
@@ -1015,30 +1015,26 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
     }
 
     if (ctx != NULL) {
-        if (esxVI_LookupDatastoreByName(ctx, preliminaryDatastoreName,
-                                        NULL, &datastore,
-                                        esxVI_Occurrence_OptionalItem) < 0) {
+        if (esxVI_String_AppendValueToList(&propertyNameList,
+                                           "summary.name") < 0 ||
+            esxVI_LookupDatastoreByAbsolutePath(ctx, absolutePath,
+                                                propertyNameList, &datastore,
+                                                esxVI_Occurrence_OptionalItem) < 0) {
             goto cleanup;
         }
 
-        if (datastore != NULL) {
-            for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
-                 dynamicProperty = dynamicProperty->_next) {
-                if (STREQ(dynamicProperty->name, "summary.accessible")) {
-                    /* Ignore it */
-                } else if (STREQ(dynamicProperty->name, "summary.name")) {
-                    if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                                 esxVI_Type_String) < 0) {
-                        goto cleanup;
-                    }
+        if (datastore == NULL) {
+            if (esxVI_LookupDatastoreByName(ctx, preliminaryDatastoreName,
+                                            propertyNameList, &datastore,
+                                            esxVI_Occurrence_OptionalItem) < 0) {
+                goto cleanup;
+            }
+        }
 
-                    datastoreName = dynamicProperty->val->string;
-                    break;
-                } else if (STREQ(dynamicProperty->name, "summary.url")) {
-                    /* Ignore it */
-                } else {
-                    VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-                }
+        if (datastore != NULL) {
+            if (esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
+                                     esxVI_Occurrence_RequiredItem)) {
+                goto cleanup;
             }
         }
 
@@ -1053,7 +1049,7 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
         datastoreName = preliminaryDatastoreName;
     }
 
-    if (virAsprintf(&datastoreRelatedPath, "[%s] %s", datastoreName,
+    if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
                     directoryAndFileName) < 0) {
         virReportOOMError();
         goto cleanup;
@@ -1065,13 +1061,14 @@ esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
 
   cleanup:
     if (! success) {
-        VIR_FREE(datastoreRelatedPath);
+        VIR_FREE(datastorePath);
     }
 
     VIR_FREE(copyOfAbsolutePath);
+    esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
 
-    return datastoreRelatedPath;
+    return datastorePath;
 }
 
 
@@ -1088,7 +1085,7 @@ esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
 
     if (STRPREFIX(fileName, "/vmfs/volumes/")) {
         /* Found absolute path referencing a file inside a datastore */
-        return esxVMX_AbsolutePathToDatastoreRelatedPath(ctx, fileName);
+        return esxVMX_AbsolutePathToDatastorePath(ctx, fileName);
     } else if (STRPREFIX(fileName, "/")) {
         /* Found absolute path referencing a file outside a datastore */
         src = strdup(fileName);
@@ -2625,8 +2622,8 @@ esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
 
     if (STRPREFIX(src, "[")) {
         /* Found potential datastore related path */
-        if (esxUtil_ParseDatastoreRelatedPath(src, &datastoreName,
-                                              &directoryName, &fileName) < 0) {
+        if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
+                                       &fileName) < 0) {
             goto cleanup;
         }
 

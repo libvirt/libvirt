@@ -56,8 +56,7 @@ esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
                              int virtualDev[4], bool present[4]);
 
 char *
-esxVMX_AbsolutePathToDatastoreRelatedPath(esxVI_Context *ctx,
-                                          const char *absolutePath);
+esxVMX_AbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath);
 
 
 

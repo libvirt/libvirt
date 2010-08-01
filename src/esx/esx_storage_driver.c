@@ -196,61 +196,64 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     esxPrivate *priv = conn->storagePrivateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datastore = NULL;
-    esxVI_Boolean accessible = esxVI_Boolean_Undefined;
-    char *summaryUrl = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_DatastoreHostMount *datastoreHostMountList = NULL;
+    esxVI_DatastoreHostMount *datastoreHostMount = NULL;
     char *suffix = NULL;
     int suffixLength;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "00000000-00000000-0000-000000000000";
     unsigned char uuid[VIR_UUID_BUFLEN];
-    char *realName = NULL;
     virStoragePoolPtr pool = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
-    if (esxVI_String_AppendValueListToList(&propertyNameList,
-                                           "summary.accessible\0"
-                                           "summary.name\0"
-                                           "summary.url\0") < 0 ||
+    if (esxVI_String_AppendValueToList(&propertyNameList, "host") < 0 ||
         esxVI_LookupDatastoreByName(priv->primary, name,
                                     propertyNameList, &datastore,
-                                    esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_GetBoolean(datastore, "summary.accessible",
-                         &accessible, esxVI_Occurrence_RequiredItem) < 0) {
+                                    esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
     /*
-     * Datastores don't have a UUID. We can use the 'summary.url' property as
-     * source for a "UUID" on ESX, because the property value has this format:
+     * Datastores don't have a UUID. We can use the 'host.mountInfo.path'
+     * property as source for a "UUID" on ESX, because the property value has
+     * this format:
      *
-     *   summary.url = /vmfs/volumes/4b0beca7-7fd401f3-1d7f-000ae484a6a3
-     *   summary.url = /vmfs/volumes/b24b7a78-9d82b4f5    (short format)
+     *   host.mountInfo.path = /vmfs/volumes/4b0beca7-7fd401f3-1d7f-000ae484a6a3
+     *   host.mountInfo.path = /vmfs/volumes/b24b7a78-9d82b4f5    (short format)
      *
-     * The 'summary.url' property comes in two forms, with a complete "UUID"
-     * and a short "UUID".
+     * The 'host.mountInfo.path' property comes in two forms, with a complete
+     * "UUID" and a short "UUID".
      *
      * But this trailing "UUID" is not guaranteed to be there. On the other
      * hand we already rely on another implementation detail of the ESX server:
      * The object name of virtual machine contains an integer, we use that as
      * domain ID.
-     *
-     * The 'summary.url' property of an inaccessible datastore is invalid.
      */
-    /* FIXME: Need to handle this for a vpx:// connection */
-    if (accessible == esxVI_Boolean_True && priv->host != NULL &&
-        priv->host->productVersion & esxVI_ProductVersion_ESX) {
-        if (esxVI_GetStringValue(datastore, "summary.url", &summaryUrl,
-                                 esxVI_Occurrence_RequiredItem) < 0) {
-            goto cleanup;
+    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "host")) {
+            if (esxVI_DatastoreHostMount_CastListFromAnyType
+                  (dynamicProperty->val, &datastoreHostMountList) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        }
+    }
+
+    for (datastoreHostMount = datastoreHostMountList; datastoreHostMount != NULL;
+         datastoreHostMount = datastoreHostMount->_next) {
+        if (STRNEQ(priv->primary->hostSystem->_reference->value,
+                   datastoreHostMount->key->value)) {
+            continue;
         }
 
-        if ((suffix = STRSKIP(summaryUrl, "/vmfs/volumes/")) == NULL) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Datastore URL '%s' has unexpected prefix, "
-                           "expecting '/vmfs/volumes/' prefix"), summaryUrl);
-            goto cleanup;
+        if ((suffix = STRSKIP(datastoreHostMount->mountInfo->path,
+                              "/vmfs/volumes/")) == NULL) {
+            break;
         }
 
         suffixLength = strlen(suffix);
@@ -266,8 +269,8 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
              */
             memcpy(uuid_string, suffix, suffixLength);
         } else {
-            VIR_WARN("Datastore URL suffix '%s' has unexpected format, "
-                     "cannot deduce a UUID from it", suffix);
+            VIR_WARN("Datastore host mount path suffix '%s' has unexpected "
+                     "format, cannot deduce a UUID from it", suffix);
         }
     }
 
@@ -278,16 +281,12 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
     }
 
-    if (esxVI_GetStringValue(datastore, "summary.name", &realName,
-                             esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    pool = virGetStoragePool(conn, realName, uuid);
+    pool = virGetStoragePool(conn, name, uuid);
 
   cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
+    esxVI_DatastoreHostMount_Free(&datastoreHostMountList);
 
     return pool;
 }
@@ -301,6 +300,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datastore = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
+    char *absolutePath = NULL;
     char *name = NULL;
     virStoragePoolPtr pool = NULL;
 
@@ -309,7 +309,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
 
     /*
-     * Convert from UUID to datastore URL form by stripping the second '-':
+     * Convert UUID to 'host.mountInfo.path' form by stripping the second '-':
      *
      * <---- 14 ----><-------- 22 -------->    <---- 13 ---><-------- 22 -------->
      * 4b0beca7-7fd4-01f3-1d7f-000ae484a6a3 -> 4b0beca7-7fd401f3-1d7f-000ae484a6a3
@@ -317,14 +317,15 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virUUIDFormat(uuid, uuid_string);
     memmove(uuid_string + 13, uuid_string + 14, 22 + 1);
 
-    /*
-     * Use esxVI_LookupDatastoreByName because it also does try to match "UUID"
-     * part of the 'summary.url' property if there is no name match.
-     */
+    if (virAsprintf(&absolutePath, "/vmfs/volumes/%s", uuid_string) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
     if (esxVI_String_AppendValueToList(&propertyNameList, "summary.name") < 0 ||
-        esxVI_LookupDatastoreByName(priv->primary, uuid_string,
-                                    propertyNameList, &datastore,
-                                    esxVI_Occurrence_OptionalItem) < 0) {
+        esxVI_LookupDatastoreByAbsolutePath(priv->primary, absolutePath,
+                                            propertyNameList, &datastore,
+                                            esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
     }
 
@@ -338,9 +339,16 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (datastore == NULL && STREQ(uuid_string + 17, "-0000-000000000000")) {
         uuid_string[17] = '\0';
 
-        if (esxVI_LookupDatastoreByName(priv->primary, uuid_string,
-                                        propertyNameList, &datastore,
-                                        esxVI_Occurrence_RequiredItem) < 0) {
+        VIR_FREE(absolutePath);
+
+        if (virAsprintf(&absolutePath, "/vmfs/volumes/%s", uuid_string) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (esxVI_LookupDatastoreByAbsolutePath(priv->primary, absolutePath,
+                                                propertyNameList, &datastore,
+                                                esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;
         }
     }
@@ -348,7 +356,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (datastore == NULL) {
         virUUIDFormat(uuid, uuid_string);
 
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+        ESX_VI_ERROR(VIR_ERR_NO_STORAGE_POOL,
                      _("Could not find datastore with UUID '%s'"),
                      uuid_string);
 
@@ -363,6 +371,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     pool = virGetStoragePool(conn, name, uuid);
 
   cleanup:
+    VIR_FREE(absolutePath);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
 

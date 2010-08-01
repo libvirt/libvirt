@@ -364,6 +364,12 @@ int esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                                 esxVI_ObjectContent **datastore,
                                 esxVI_Occurrence occurrence);
 
+int esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
+                                        const char *absolutePath,
+                                        esxVI_String *propertyNameList,
+                                        esxVI_ObjectContent **datastore,
+                                        esxVI_Occurrence occurrence);
+
 int esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *task,
                                esxVI_TaskInfo **taskInfo);

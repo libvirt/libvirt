@@ -2193,8 +2193,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         goto cleanup;
     }
 
-    if (esxUtil_ParseDatastoreRelatedPath(vmPathName, &datastoreName,
-                                          &directoryName, &fileName) < 0) {
+    if (esxUtil_ParseDatastorePath(vmPathName, &datastoreName, &directoryName,
+                                   &fileName) < 0) {
         goto cleanup;
     }
 
@@ -2572,8 +2572,8 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (esxUtil_ParseDatastoreRelatedPath(disk->src, &datastoreName,
-                                          &directoryName, &fileName) < 0) {
+    if (esxUtil_ParseDatastorePath(disk->src, &datastoreName, &directoryName,
+                                   &fileName) < 0) {
         goto cleanup;
     }
 

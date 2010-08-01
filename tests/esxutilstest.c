@@ -95,7 +95,7 @@ testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
 
 
 struct testPath {
-    const char *datastoreRelatedPath;
+    const char *datastorePath;
     int result;
     const char *datastoreName;
     const char *directoryName;
@@ -111,7 +111,7 @@ static struct testPath paths[] = {
 };
 
 static int
-testParseDatastoreRelatedPath(const void *data ATTRIBUTE_UNUSED)
+testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
 {
     int i, result = 0;
     char *datastoreName = NULL;
@@ -123,9 +123,9 @@ testParseDatastoreRelatedPath(const void *data ATTRIBUTE_UNUSED)
         VIR_FREE(directoryName);
         VIR_FREE(fileName);
 
-        if (esxUtil_ParseDatastoreRelatedPath(paths[i].datastoreRelatedPath,
-                                              &datastoreName, &directoryName,
-                                              &fileName) != paths[i].result) {
+        if (esxUtil_ParseDatastorePath(paths[i].datastorePath,
+                                       &datastoreName, &directoryName,
+                                       &fileName) != paths[i].result) {
             goto failure;
         }
 
@@ -242,7 +242,7 @@ mymain(int argc, char **argv)
 
     virSetErrorFunc(NULL, testQuietError);
 
-# define DO_TEST(_name)                                                    \
+# define DO_TEST(_name)                                                       \
         do {                                                                  \
             if (virtTestRun("VMware "#_name, 1, test##_name,                  \
                             NULL) < 0) {                                      \
@@ -252,7 +252,7 @@ mymain(int argc, char **argv)
 
     DO_TEST(IndexToDiskName);
     DO_TEST(DiskNameToIndex);
-    DO_TEST(ParseDatastoreRelatedPath);
+    DO_TEST(ParseDatastorePath);
     DO_TEST(ConvertDateTimeToCalendarTime);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

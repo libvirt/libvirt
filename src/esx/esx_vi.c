@@ -2422,10 +2422,7 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
     esxVI_String *completePropertyNameList = NULL;
     esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *candidate = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_Boolean accessible = esxVI_Boolean_Undefined;
-    size_t offset = 14; /* = strlen("/vmfs/volumes/") */
-    int numInaccessibleDatastores = 0;
+    char *name_candidate;
 
     if (datastore == NULL || *datastore != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -2435,118 +2432,36 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
     /* Get all datastores */
     if (esxVI_String_DeepCopyList(&completePropertyNameList,
                                   propertyNameList) < 0 ||
-        esxVI_String_AppendValueListToList(&completePropertyNameList,
-                                           "summary.accessible\0"
-                                           "summary.name\0"
-                                           "summary.url\0") < 0 ||
+        esxVI_String_AppendValueToList(&completePropertyNameList,
+                                       "summary.name") < 0 ||
         esxVI_LookupDatastoreList(ctx, completePropertyNameList,
                                   &datastoreList) < 0) {
         goto cleanup;
     }
 
-    if (datastoreList == NULL) {
-        if (occurrence == esxVI_Occurrence_OptionalItem) {
-            goto success;
-        } else {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("No datastores available"));
-            goto cleanup;
-        }
-    }
-
     /* Search for a matching datastore */
     for (candidate = datastoreList; candidate != NULL;
          candidate = candidate->_next) {
-        accessible = esxVI_Boolean_Undefined;
+        name_candidate = NULL;
 
-        for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "summary.accessible")) {
-                if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                             esxVI_Type_Boolean) < 0) {
-                    goto cleanup;
-                }
-
-                accessible = dynamicProperty->val->boolean;
-                break;
-            }
-        }
-
-        if (accessible == esxVI_Boolean_Undefined) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                         _("Got incomplete response while querying for the "
-                           "datastore 'summary.accessible' property"));
+        if (esxVI_GetStringValue(candidate, "summary.name", &name_candidate,
+                                 esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;
         }
 
-        if (accessible == esxVI_Boolean_False) {
-            ++numInaccessibleDatastores;
-        }
-
-        for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "summary.name")) {
-                if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                             esxVI_Type_String) < 0) {
-                    goto cleanup;
-                }
-
-                if (STREQ(dynamicProperty->val->string, name)) {
-                    if (esxVI_ObjectContent_DeepCopy(datastore,
-                                                     candidate) < 0) {
-                        goto cleanup;
-                    }
-
-                    /* Found datastore with matching name */
-                    goto success;
-                }
-            } else if (STREQ(dynamicProperty->name, "summary.url") &&
-                       ctx->productVersion & esxVI_ProductVersion_ESX) {
-                if (accessible == esxVI_Boolean_False) {
-                    /*
-                     * The 'summary.url' property of an inaccessible datastore
-                     * is invalid and cannot be used to identify the datastore.
-                     */
-                    continue;
-                }
-
-                if (esxVI_AnyType_ExpectType(dynamicProperty->val,
-                                             esxVI_Type_String) < 0) {
-                    goto cleanup;
-                }
-
-                if (! STRPREFIX(dynamicProperty->val->string,
-                                "/vmfs/volumes/")) {
-                    ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                                 _("Datastore URL '%s' has unexpected prefix, "
-                                   "expecting '/vmfs/volumes/' prefix"),
-                                 dynamicProperty->val->string);
-                    goto cleanup;
-                }
-
-                if (STREQ(dynamicProperty->val->string + offset, name)) {
-                    if (esxVI_ObjectContent_DeepCopy(datastore,
-                                                     candidate) < 0) {
-                        goto cleanup;
-                    }
-
-                    /* Found datastore with matching URL suffix */
-                    goto success;
-                }
+        if (STREQ(name_candidate, name)) {
+            if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0) {
+                goto cleanup;
             }
+
+            // Found datastore with matching name
+            goto success;
         }
     }
 
-    if (occurrence != esxVI_Occurrence_OptionalItem) {
-        if (numInaccessibleDatastores > 0) {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Could not find datastore '%s', maybe it's "
-                           "inaccessible"), name);
-        } else {
-            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
-                         _("Could not find datastore '%s'"), name);
-        }
-
+    if (*datastore == NULL && occurrence != esxVI_Occurrence_OptionalItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find datastore with name '%s'"), name);
         goto cleanup;
     }
 
@@ -2556,6 +2471,94 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
   cleanup:
     esxVI_String_Free(&completePropertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
+
+    return result;
+}
+
+
+int
+esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
+                                    const char *absolutePath,
+                                    esxVI_String *propertyNameList,
+                                    esxVI_ObjectContent **datastore,
+                                    esxVI_Occurrence occurrence)
+{
+    int result = -1;
+    esxVI_String *completePropertyNameList = NULL;
+    esxVI_ObjectContent *datastoreList = NULL;
+    esxVI_ObjectContent *candidate = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_DatastoreHostMount *datastoreHostMountList = NULL;
+    esxVI_DatastoreHostMount *datastoreHostMount = NULL;
+
+    if (datastore == NULL || *datastore != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    /* Get all datastores */
+    if (esxVI_String_DeepCopyList(&completePropertyNameList,
+                                  propertyNameList) < 0 ||
+        esxVI_String_AppendValueToList(&completePropertyNameList, "host") < 0 ||
+        esxVI_LookupDatastoreList(ctx, completePropertyNameList,
+                                  &datastoreList) < 0) {
+        goto cleanup;
+    }
+
+    /* Search for a matching datastore */
+    for (candidate = datastoreList; candidate != NULL;
+         candidate = candidate->_next) {
+        esxVI_DatastoreHostMount_Free(&datastoreHostMountList);
+
+        for (dynamicProperty = candidate->propSet; dynamicProperty != NULL;
+             dynamicProperty = dynamicProperty->_next) {
+            if (STREQ(dynamicProperty->name, "host")) {
+                if (esxVI_DatastoreHostMount_CastListFromAnyType
+                      (dynamicProperty->val, &datastoreHostMountList) < 0) {
+                    goto cleanup;
+                }
+
+                break;
+            }
+        }
+
+        if (datastoreHostMountList == NULL) {
+            continue;
+        }
+
+        for (datastoreHostMount = datastoreHostMountList;
+             datastoreHostMount != NULL;
+             datastoreHostMount = datastoreHostMount->_next) {
+            if (STRNEQ(ctx->hostSystem->_reference->value,
+                       datastoreHostMount->key->value)) {
+                continue;
+            }
+
+            if (STRPREFIX(absolutePath, datastoreHostMount->mountInfo->path)) {
+                if (esxVI_ObjectContent_DeepCopy(datastore, candidate) < 0) {
+                    goto cleanup;
+                }
+
+                /* Found datastore with matching mount path */
+                goto success;
+            }
+        }
+    }
+
+    if (*datastore == NULL && occurrence != esxVI_Occurrence_OptionalItem) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not find datastore containing absolute path '%s'"),
+                     absolutePath);
+        goto cleanup;
+    }
+
+  success:
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&completePropertyNameList);
+    esxVI_ObjectContent_Free(&datastoreList);
+    esxVI_DatastoreHostMount_Free(&datastoreHostMountList);
 
     return result;
 }

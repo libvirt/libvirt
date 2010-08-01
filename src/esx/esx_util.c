@@ -274,12 +274,11 @@ esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 
 
 int
-esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
-                                  char **datastoreName,
-                                  char **directoryName, char **fileName)
+esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
+                           char **directoryName, char **fileName)
 {
     int result = -1;
-    char *copyOfDatastoreRelatedPath = NULL;
+    char *copyOfDatastorePath = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
     char *preliminaryDatastoreName = NULL;
@@ -293,18 +292,17 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
         return -1;
     }
 
-    if (esxVI_String_DeepCopyValue(&copyOfDatastoreRelatedPath,
-                                   datastoreRelatedPath) < 0) {
+    if (esxVI_String_DeepCopyValue(&copyOfDatastorePath, datastorePath) < 0) {
         goto cleanup;
     }
 
     /* Expected format: '[<datastore>] <path>' */
-    if ((tmp = STRSKIP(copyOfDatastoreRelatedPath, "[")) == NULL ||
+    if ((tmp = STRSKIP(copyOfDatastorePath, "[")) == NULL ||
         (preliminaryDatastoreName = strtok_r(tmp, "]", &saveptr)) == NULL ||
         (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Datastore related path '%s' doesn't have expected format "
-                    "'[<datastore>] <path>'"), datastoreRelatedPath);
+                  _("Datastore path '%s' doesn't have expected format "
+                    "'[<datastore>] <path>'"), datastorePath);
         goto cleanup;
     }
 
@@ -323,8 +321,8 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
 
         if (*separator == '\0') {
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Datastore related path '%s' doesn't reference a file"),
-                      datastoreRelatedPath);
+                      _("Datastore path '%s' doesn't reference a file"),
+                      datastorePath);
             goto cleanup;
         }
 
@@ -348,7 +346,7 @@ esxUtil_ParseDatastoreRelatedPath(const char *datastoreRelatedPath,
         VIR_FREE(*fileName);
     }
 
-    VIR_FREE(copyOfDatastoreRelatedPath);
+    VIR_FREE(copyOfDatastorePath);
 
     return result;
 }

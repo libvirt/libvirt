@@ -146,6 +146,12 @@ object ChoiceOption extends OptionType
 end
 
 
+object DatastoreHostMount
+    ManagedObjectReference                   key                            r
+    HostMountInfo                            mountInfo                      r
+end
+
+
 object DatastoreInfo
     String                                   name                           r
     String                                   url                            r
@@ -248,6 +254,13 @@ object HostFileSystemVolume
     String                                   type                           r
     String                                   name                           r
     Long                                     capacity                       r
+end
+
+
+object HostMountInfo
+    String                                   path                           o
+    String                                   accessMode                     r
+    Boolean                                  accessible                     o
 end
 
 
