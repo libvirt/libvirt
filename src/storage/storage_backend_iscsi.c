@@ -230,7 +230,7 @@ virStorageBackendIQNFound(virStoragePoolObjPtr pool,
 
 out:
     if (ret == IQN_MISSING) {
-        VIR_DEBUG("Could not find interface witn IQN '%s'", iqn);
+        VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
     }
 
     VIR_FREE(line);
@@ -293,7 +293,7 @@ virStorageBackendCreateIfaceIQN(virStoragePoolObjPtr pool,
     if (virRun(cmdargv2, &exitstatus) < 0) {
         virStorageReportError(VIR_ERR_INTERNAL_ERROR,
                               _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
-                              cmdargv1[0], pool->def->source.initiator.iqn);
+                              cmdargv2[0], pool->def->source.initiator.iqn);
         goto out;
     }
 
