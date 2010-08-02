@@ -11021,7 +11021,10 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
     while ((arg = getopt_long(end, argv, "d:hqtc:vrl:", opt, &idx)) != -1) {
         switch (arg) {
         case 'd':
-            ctl->debug = atoi(optarg);
+            if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
+                vshError(ctl, _("option -d takes a numeric argument"), arg);
+                exit(EXIT_FAILURE);
+            }
             break;
         case 'h':
             help = 1;
