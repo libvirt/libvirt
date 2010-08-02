@@ -11022,7 +11022,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv)
         switch (arg) {
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &ctl->debug) < 0) {
-                vshError(ctl, _("option -d takes a numeric argument"), arg);
+                vshError(ctl, _("option -d takes a numeric argument: %s"), arg);
                 exit(EXIT_FAILURE);
             }
             break;
