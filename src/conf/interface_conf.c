@@ -84,6 +84,7 @@ void virInterfaceDefFree(virInterfaceDefPtr def)
 
     switch (def->type) {
         case VIR_INTERFACE_TYPE_BRIDGE:
+            VIR_FREE(def->data.bridge.delay);
             for (i = 0;i < def->data.bridge.nbItf;i++) {
                 if (def->data.bridge.itf[i] == NULL)
                     break; /* to cope with half parsed data on errors */
