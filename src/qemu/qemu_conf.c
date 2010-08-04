@@ -2056,7 +2056,6 @@ qemuAssignDeviceAliases(virDomainDefPtr def, unsigned long long qemuCmdFlags)
 struct _qemuDomainPCIAddressSet {
     virHashTablePtr used;
     int nextslot;
-    /* XXX add domain, bus later when QEMU allows > 1 */
 };
 
 
@@ -2148,8 +2147,11 @@ int qemuDomainPCIAddressReserveAddr(qemuDomainPCIAddressSetPtr addrs,
         return -1;
     }
 
-    if (dev->addr.pci.slot > addrs->nextslot)
+    if (dev->addr.pci.slot > addrs->nextslot) {
         addrs->nextslot = dev->addr.pci.slot + 1;
+        if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
+            addrs->nextslot = 0;
+    }
 
     return 0;
 }
@@ -2216,11 +2218,15 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
     int i;
+    int iteration;
 
-    for (i = addrs->nextslot ; i <= QEMU_PCI_ADDRESS_LAST_SLOT ; i++) {
+    for (i = addrs->nextslot, iteration = 0;
+         iteration <= QEMU_PCI_ADDRESS_LAST_SLOT; i++, iteration++) {
         virDomainDeviceInfo maybe;
         char *addr;
 
+        if (QEMU_PCI_ADDRESS_LAST_SLOT < i)
+            i = 0;
         memset(&maybe, 0, sizeof(maybe));
         maybe.addr.pci.domain = 0;
         maybe.addr.pci.bus = 0;
@@ -2228,12 +2234,13 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
 
         addr = qemuPCIAddressAsString(&maybe);
 
-        VIR_DEBUG("Allocating PCI addr %s", addr);
-
         if (virHashLookup(addrs->used, addr)) {
+            VIR_DEBUG("PCI addr %s already in use", addr);
             VIR_FREE(addr);
             continue;
         }
+
+        VIR_DEBUG("Allocating PCI addr %s", addr);
 
         if (virHashAddEntry(addrs->used, addr, addr) < 0) {
             VIR_FREE(addr);
@@ -2246,6 +2253,8 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
         dev->addr.pci.slot = i;
 
         addrs->nextslot = i + 1;
+        if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
+            addrs->nextslot = 0;
 
         return 0;
     }
