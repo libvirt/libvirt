@@ -2647,7 +2647,8 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
     if (bootable &&
-        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
     if (disk->readonly &&
         qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)
