@@ -503,6 +503,86 @@ static void openvzSetProgramSentinal(const char **prog, const char *key)
     }
 }
 
+static int openvzDomainSuspend(virDomainPtr dom) {
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINAL, "--suspend", NULL};
+    int ret = -1;
+
+    openvzDriverLock(driver);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
+
+    if (!vm) {
+        openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+                    _("no domain with matching uuid"));
+        goto cleanup;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        openvzError(VIR_ERR_OPERATION_INVALID, "%s",
+                    _("Domain is not running"));
+        goto cleanup;
+    }
+
+    if (vm->state != VIR_DOMAIN_PAUSED) {
+        openvzSetProgramSentinal(prog, vm->def->name);
+        if (virRun(prog, NULL) < 0) {
+            openvzError(VIR_ERR_OPERATION_FAILED, "%s",
+                        _("Suspend operation failed"));
+            goto cleanup;
+        }
+        vm->state = VIR_DOMAIN_PAUSED;
+    }
+
+    ret = 0;
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    return ret;
+}
+
+static int openvzDomainResume(virDomainPtr dom) {
+  struct openvz_driver *driver = dom->conn->privateData;
+  virDomainObjPtr vm;
+  const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINAL, "--resume", NULL};
+  int ret = -1;
+
+  openvzDriverLock(driver);
+  vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+  openvzDriverUnlock(driver);
+
+  if (!vm) {
+      openvzError(VIR_ERR_INVALID_DOMAIN, "%s",
+                  _("no domain with matching uuid"));
+      goto cleanup;
+  }
+
+  if (!virDomainObjIsActive(vm)) {
+      openvzError(VIR_ERR_OPERATION_INVALID, "%s",
+                  _("Domain is not running"));
+      goto cleanup;
+  }
+
+  if (vm->state == VIR_DOMAIN_PAUSED) {
+      openvzSetProgramSentinal(prog, vm->def->name);
+      if (virRun(prog, NULL) < 0) {
+          openvzError(VIR_ERR_OPERATION_FAILED, "%s",
+                      _("Resume operation failed"));
+          goto cleanup;
+      }
+      vm->state = VIR_DOMAIN_RUNNING;
+  }
+
+  ret = 0;
+
+cleanup:
+  if (vm)
+      virDomainObjUnlock(vm);
+  return ret;
+}
+
 static int openvzDomainShutdown(virDomainPtr dom) {
     struct openvz_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -1492,8 +1572,8 @@ static virDriver openvzDriver = {
     openvzDomainLookupByID, /* domainLookupByID */
     openvzDomainLookupByUUID, /* domainLookupByUUID */
     openvzDomainLookupByName, /* domainLookupByName */
-    NULL, /* domainSuspend */
-    NULL, /* domainResume */
+    openvzDomainSuspend, /* domainSuspend */
+    openvzDomainResume, /* domainResume */
     openvzDomainShutdown, /* domainShutdown */
     openvzDomainReboot, /* domainReboot */
     openvzDomainShutdown, /* domainDestroy */
