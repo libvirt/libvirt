@@ -74,10 +74,14 @@ bootstrap_hash()
 
 # Ensure that whenever we pull in a gnulib update or otherwise change to a
 # different version (i.e., when switching branches), we also rerun ./bootstrap.
+# Also, running 'make rpm' tends to litter the po/ directory, and some people
+# like to run 'git clean -x -f po' to fix it; but only ./bootstrap regenerates
+# the required file po/Makevars.
 curr_status=.git-module-status
 t=$(bootstrap_hash; git diff .gnulib)
-if test "$t" = "$(cat $curr_status 2>/dev/null)"; then
-    : # good, it's up to date, all we need is autoreconf
+if test "$t" = "$(cat $curr_status 2>/dev/null)" \
+    && test -f "$THEDIR/po/Makevars"; then
+    # good, it's up to date, all we need is autoreconf
     autoreconf -if
 else
     echo running bootstrap...

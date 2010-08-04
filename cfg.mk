@@ -459,6 +459,7 @@ ifeq (0,$(MAKELEVEL))
   # b653eda3ac4864de205419d9f41eec267cb89eeb
   _submodule_hash = sed 's/^[ +-]//;s/ .*//'
   _update_required := $(shell						\
+      test -f po/Makevars || { echo 1; exit; };				\
       cd '$(srcdir)';							\
       actual=$$(git submodule status | $(_submodule_hash);		\
 		git hash-object bootstrap.conf;				\
