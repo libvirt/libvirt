@@ -906,6 +906,7 @@ fi
 %endif
 
 %changelog
+* Wed Aug  4 2010 Daniel Veillard <veillard@redhat.com> - 0.8.3-1
 * Mon Jul  5 2010 Daniel Veillard <veillard@redhat.com> - 0.8.2-1
 - phyp: adding support for IVM
 - libvirt: introduce domainCreateWithFlags API
