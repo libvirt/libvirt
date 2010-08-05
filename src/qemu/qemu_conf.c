@@ -1694,6 +1694,13 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Failed to add tap interface to bridge. "
                               "%s is not a bridge device"), brname);
+        } else if (err == ENOENT) {
+            /* When the tun drive is missing, give a better message. */
+            qemuReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Failed to add tap interface to bridge. "
+                              "Your kernel is missing the 'tun' module or "
+                              "CONFIG_TUN, or you need to add the "
+                              "/dev/net/tun device node."));
         } else if (template_ifname) {
             virReportSystemError(err,
                                  _("Failed to add tap interface to bridge '%s'"),
