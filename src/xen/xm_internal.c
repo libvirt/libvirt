@@ -2346,7 +2346,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
             xenXMConfigSetString(conf, "bootloader", def->os.bootloader) < 0)
             goto no_memory;
         if (def->os.bootloaderArgs &&
-            xenXMConfigSetString(conf, "bootloader_args", def->os.bootloaderArgs) < 0)
+            xenXMConfigSetString(conf, "bootargs", def->os.bootloaderArgs) < 0)
             goto no_memory;
         if (def->os.kernel &&
             xenXMConfigSetString(conf, "kernel", def->os.kernel) < 0)
