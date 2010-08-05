@@ -14,6 +14,7 @@
 static char *progname = NULL;
 static char *abs_srcdir = NULL;
 static virCapsPtr caps = NULL;
+static esxVMX_Context ctx;
 
 # define MAX_FILE 4096
 
@@ -87,8 +88,7 @@ testCompareFiles(const char *vmx, const char *xml,
         goto failure;
     }
 
-    def = esxVMX_ParseConfig(NULL, caps, vmxData, "datastore", "directory",
-                             productVersion);
+    def = esxVMX_ParseConfig(&ctx, caps, vmxData, productVersion);
 
     if (def == NULL) {
         err = virGetLastError();
@@ -139,6 +139,49 @@ testCompareHelper(const void *data)
     return testCompareFiles(vmx, xml, info->version);
 }
 
+static char *
+testParseVMXFileName(const char *fileName, void *opaque ATTRIBUTE_UNUSED)
+{
+    char *copyOfFileName = NULL;
+    char *tmp = NULL;
+    char *saveptr = NULL;
+    char *datastoreName = NULL;
+    char *directoryAndFileName = NULL;
+    char *src = NULL;
+
+    if (STRPREFIX(fileName, "/vmfs/volumes/")) {
+        /* Found absolute path referencing a file inside a datastore */
+        copyOfFileName = strdup(fileName);
+
+        if (copyOfFileName == NULL) {
+            goto cleanup;
+        }
+
+        /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
+        if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
+            (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
+            (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
+            goto cleanup;
+        }
+
+        virAsprintf(&src, "[%s] %s", datastoreName, directoryAndFileName);
+    } else if (STRPREFIX(fileName, "/")) {
+        /* Found absolute path referencing a file outside a datastore */
+        src = strdup(fileName);
+    } else if (strchr(fileName, '/') != NULL) {
+        /* Found relative path, this is not supported */
+        src = NULL;
+    } else {
+        /* Found single file name referencing a file inside a datastore */
+        virAsprintf(&src, "[datastore] directory/%s", fileName);
+    }
+
+  cleanup:
+    VIR_FREE(copyOfFileName);
+
+    return src;
+}
+
 static int
 mymain(int argc, char **argv)
 {
@@ -178,6 +221,11 @@ mymain(int argc, char **argv)
     if (caps == NULL) {
         return EXIT_FAILURE;
     }
+
+    ctx.opaque = NULL;
+    ctx.parseFileName = testParseVMXFileName;
+    ctx.formatFileName = NULL;
+    ctx.autodetectSCSIControllerModel = NULL;
 
     DO_TEST("case-insensitive-1", "case-insensitive-1", esxVI_ProductVersion_ESX35);
     DO_TEST("case-insensitive-2", "case-insensitive-2", esxVI_ProductVersion_ESX35);

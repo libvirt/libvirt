@@ -29,9 +29,7 @@
 #include "virterror_internal.h"
 #include "memory.h"
 #include "logging.h"
-#include "esx_vi_methods.h"
 #include "esx_private.h"
-#include "esx_util.h"
 #include "esx_vmx.h"
 
 /*
@@ -441,6 +439,11 @@ VIR_ENUM_IMPL(esxVMX_SCSIControllerModel, VIR_DOMAIN_CONTROLLER_MODEL_LAST,
               "pvscsi");
 
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Helpers
+ */
+
 int
 esxVMX_SCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *unit)
 {
@@ -718,171 +721,7 @@ esxVMX_HandleLegacySCSIDiskDriverName(virDomainDefPtr def,
 
 
 int
-esxVMX_AutodetectSCSIControllerModel(esxVI_Context *ctx,
-                                     virDomainDiskDefPtr def, int *model)
-{
-    int result = -1;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *datastorePath = NULL;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-    esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
-    esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
-    esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
-    esxVI_ManagedObjectReference *task = NULL;
-    esxVI_TaskInfoState taskInfoState;
-    esxVI_TaskInfo *taskInfo = NULL;
-    esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
-    esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
-
-    if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
-        def->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
-        def->type != VIR_DOMAIN_DISK_TYPE_FILE ||
-        def->src == NULL ||
-        ! STRPREFIX(def->src, "[")) {
-        /*
-         * This isn't a file-based SCSI disk device with a datastore related
-         * source path => do nothing.
-         */
-        return 0;
-    }
-
-    if (esxUtil_ParseDatastorePath(def->src, &datastoreName, &directoryName,
-                                   &fileName) < 0) {
-        goto cleanup;
-    }
-
-    if (directoryName == NULL) {
-        if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
-                        directoryName) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
-
-    /* Lookup HostDatastoreBrowser */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
-        esxVI_LookupDatastoreByName(ctx, datastoreName, propertyNameList,
-                                    &datastore,
-                                    esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_GetManagedObjectReference(datastore, "browser",
-                                        &hostDatastoreBrowser,
-                                        esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    /* Build HostDatastoreBrowserSearchSpec */
-    if (esxVI_HostDatastoreBrowserSearchSpec_Alloc(&searchSpec) < 0 ||
-        esxVI_FileQueryFlags_Alloc(&searchSpec->details) < 0) {
-        goto cleanup;
-    }
-
-    searchSpec->details->fileType = esxVI_Boolean_True;
-    searchSpec->details->fileSize = esxVI_Boolean_False;
-    searchSpec->details->modification = esxVI_Boolean_False;
-
-    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
-        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
-        esxVI_FileQuery_AppendToList
-          (&searchSpec->query,
-           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
-        goto cleanup;
-    }
-
-    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
-    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_False;
-    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
-    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
-    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
-
-    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
-        goto cleanup;
-    }
-
-    searchSpec->matchPattern->value = fileName;
-
-    /* Search datastore for file */
-    if (esxVI_SearchDatastore_Task(ctx, hostDatastoreBrowser, datastorePath,
-                                   searchSpec, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState) < 0) {
-        goto cleanup;
-    }
-
-    if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not serach in datastore '%s'"), datastoreName);
-        goto cleanup;
-    }
-
-    if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo) < 0 ||
-        esxVI_HostDatastoreBrowserSearchResults_CastFromAnyType
-          (taskInfo->result, &searchResults) < 0) {
-        goto cleanup;
-    }
-
-    /* Interpret search result */
-    vmDiskFileInfo = esxVI_VmDiskFileInfo_DynamicCast(searchResults->file);
-
-    if (vmDiskFileInfo == NULL || vmDiskFileInfo->controllerType == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not lookup controller model for '%s'"), def->src);
-        goto cleanup;
-    }
-
-    if (STRCASEEQ(vmDiskFileInfo->controllerType,
-                  "VirtualBusLogicController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_BUSLOGIC;
-    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
-                         "VirtualLsiLogicController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC;
-    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
-                         "VirtualLsiLogicSASController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_LSISAS1068;
-    } else if (STRCASEEQ(vmDiskFileInfo->controllerType,
-                         "ParaVirtualSCSIController")) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_VMPVSCSI;
-    } else {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Found unexpected controller model '%s' for disk '%s'"),
-                  vmDiskFileInfo->controllerType, def->src);
-        goto cleanup;
-    }
-
-    result = 0;
-
-  cleanup:
-    /* Don't double free fileName */
-    if (searchSpec != NULL && searchSpec->matchPattern != NULL) {
-        searchSpec->matchPattern->value = NULL;
-    }
-
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(datastorePath);
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
-    esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
-    esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
-    esxVI_ManagedObjectReference_Free(&task);
-    esxVI_TaskInfo_Free(&taskInfo);
-    esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
-
-    return result;
-}
-
-
-
-int
-esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
+esxVMX_GatherSCSIControllers(esxVMX_Context *ctx, virDomainDefPtr def,
                              int virtualDev[4], bool present[4])
 {
     int result = -1;
@@ -923,8 +762,8 @@ esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
             continue;
         }
 
-        if (ctx != NULL &&
-            controller->model == VIR_DOMAIN_CONTROLLER_MODEL_AUTO) {
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_AUTO &&
+            ctx->autodetectSCSIControllerModel != NULL) {
             count = 0;
 
             // try to autodetect the SCSI controller model by collecting
@@ -934,8 +773,9 @@ esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
 
                 if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
                     disk->info.addr.drive.controller == controller->idx) {
-                    if (esxVMX_AutodetectSCSIControllerModel
-                          (ctx, disk, &autodetectedModels[count]) < 0) {
+                    if (ctx->autodetectSCSIControllerModel
+                               (disk, &autodetectedModels[count],
+                                ctx->opaque) < 0) {
                         goto cleanup;
                     }
 
@@ -985,144 +825,12 @@ esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
 
 
 
-char *
-esxVMX_AbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath)
-{
-    bool success = false;
-    char *copyOfAbsolutePath = NULL;
-    char *tmp = NULL;
-    char *saveptr = NULL;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-
-    char *datastorePath = NULL;
-    char *preliminaryDatastoreName = NULL;
-    char *directoryAndFileName = NULL;
-    char *datastoreName = NULL;
-
-    if (esxVI_String_DeepCopyValue(&copyOfAbsolutePath, absolutePath) < 0) {
-        return NULL;
-    }
-
-    /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
-    if ((tmp = STRSKIP(copyOfAbsolutePath, "/vmfs/volumes/")) == NULL ||
-        (preliminaryDatastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
-        (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Absolute path '%s' doesn't have expected format "
-                    "'/vmfs/volumes/<datastore>/<path>'"), absolutePath);
-        goto cleanup;
-    }
-
-    if (ctx != NULL) {
-        if (esxVI_String_AppendValueToList(&propertyNameList,
-                                           "summary.name") < 0 ||
-            esxVI_LookupDatastoreByAbsolutePath(ctx, absolutePath,
-                                                propertyNameList, &datastore,
-                                                esxVI_Occurrence_OptionalItem) < 0) {
-            goto cleanup;
-        }
-
-        if (datastore == NULL) {
-            if (esxVI_LookupDatastoreByName(ctx, preliminaryDatastoreName,
-                                            propertyNameList, &datastore,
-                                            esxVI_Occurrence_OptionalItem) < 0) {
-                goto cleanup;
-            }
-        }
-
-        if (datastore != NULL) {
-            if (esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
-                                     esxVI_Occurrence_RequiredItem)) {
-                goto cleanup;
-            }
-        }
-
-        if (datastoreName == NULL) {
-            VIR_WARN("Could not retrieve datastore name for absolute "
-                     "path '%s', falling back to preliminary name '%s'",
-                     absolutePath, preliminaryDatastoreName);
-
-            datastoreName = preliminaryDatastoreName;
-        }
-    } else {
-        datastoreName = preliminaryDatastoreName;
-    }
-
-    if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
-                    directoryAndFileName) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* FIXME: Check if referenced path/file really exists */
-
-    success = true;
-
-  cleanup:
-    if (! success) {
-        VIR_FREE(datastorePath);
-    }
-
-    VIR_FREE(copyOfAbsolutePath);
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
-
-    return datastorePath;
-}
-
-
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VMX -> Domain XML
  */
 
-char *
-esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
-                     const char *datastoreName, const char *directoryName)
-{
-    char *src = NULL;
-
-    if (STRPREFIX(fileName, "/vmfs/volumes/")) {
-        /* Found absolute path referencing a file inside a datastore */
-        return esxVMX_AbsolutePathToDatastorePath(ctx, fileName);
-    } else if (STRPREFIX(fileName, "/")) {
-        /* Found absolute path referencing a file outside a datastore */
-        src = strdup(fileName);
-
-        if (src == NULL) {
-            virReportOOMError();
-            return NULL;
-        }
-
-        /* FIXME: Check if referenced path/file really exists */
-
-        return src;
-    } else if (strchr(fileName, '/') != NULL) {
-        /* Found relative path, this is not supported */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Found relative path '%s' in VMX file, this is not "
-                    "supported"), fileName);
-        return NULL;
-    } else {
-        /* Found single file name referencing a file inside a datastore */
-        if (virAsprintf(&src, "[%s] %s/%s", datastoreName, directoryName,
-                        fileName) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
-
-        /* FIXME: Check if referenced path/file really exists */
-
-        return src;
-    }
-}
-
-
-
 virDomainDefPtr
-esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
-                   const char *datastoreName, const char *directoryName,
+esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
                    esxVI_ProductVersion productVersion)
 {
     bool success = false;
@@ -1141,6 +849,12 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     bool present;
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     int unit;
+
+    if (ctx->parseFileName == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("esxVMX_Context has no parseFileName function set"));
+        return NULL;
+    }
 
     conf = virConfReadMem(vmx, strlen(vmx), VIR_CONF_FLAG_VMX_FORMAT);
 
@@ -1429,7 +1143,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
             if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                  VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1441,7 +1154,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
             if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                  VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1457,7 +1169,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
         for (unit = 0; unit < 2; ++unit) {
             if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                  VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1469,7 +1180,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
 
             if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                  VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                 datastoreName, directoryName,
                                  &def->disks[def->ndisks]) < 0) {
                 goto cleanup;
             }
@@ -1484,7 +1194,6 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     for (unit = 0; unit < 2; ++unit) {
         if (esxVMX_ParseDisk(ctx, caps, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
                              VIR_DOMAIN_DISK_BUS_FDC, 0, unit,
-                             datastoreName, directoryName,
                              &def->disks[def->ndisks]) < 0) {
             goto cleanup;
         }
@@ -1555,7 +1264,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     def->nserials = 0;
 
     for (port = 0; port < 4; ++port) {
-        if (esxVMX_ParseSerial(ctx, conf, port, datastoreName, directoryName,
+        if (esxVMX_ParseSerial(ctx, conf, port,
                                &def->serials[def->nserials]) < 0) {
             goto cleanup;
         }
@@ -1574,7 +1283,7 @@ esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
     def->nparallels = 0;
 
     for (port = 0; port < 3; ++port) {
-        if (esxVMX_ParseParallel(ctx, conf, port, datastoreName, directoryName,
+        if (esxVMX_ParseParallel(ctx, conf, port,
                                  &def->parallels[def->nparallels]) < 0) {
             goto cleanup;
         }
@@ -1752,9 +1461,8 @@ struct _virDomainDiskDef {
 };*/
 
 int
-esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
+esxVMX_ParseDisk(esxVMX_Context *ctx, virCapsPtr caps, virConfPtr conf,
                  int device, int busType, int controllerOrBus, int unit,
-                 const char *datastoreName, const char *directoryName,
                  virDomainDiskDefPtr *def)
 {
     /*
@@ -1996,8 +1704,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
             }
 
             (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
-            (*def)->src = esxVMX_ParseFileName(ctx, fileName, datastoreName,
-                                               directoryName);
+            (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
             (*def)->cachemode = writeThrough ? VIR_DOMAIN_DISK_CACHE_WRITETHRU
                                              : VIR_DOMAIN_DISK_CACHE_DEFAULT;
 
@@ -2031,8 +1738,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
             }
 
             (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
-            (*def)->src = esxVMX_ParseFileName(ctx, fileName, datastoreName,
-                                               directoryName);
+            (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
 
             if ((*def)->src == NULL) {
                 goto cleanup;
@@ -2068,8 +1774,7 @@ esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
             }
 
             (*def)->type = VIR_DOMAIN_DISK_TYPE_FILE;
-            (*def)->src = esxVMX_ParseFileName(ctx, fileName, datastoreName,
-                                               directoryName);
+            (*def)->src = ctx->parseFileName(fileName, ctx->opaque);
 
             if ((*def)->src == NULL) {
                 goto cleanup;
@@ -2358,8 +2063,7 @@ esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
 
 int
-esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
-                   const char *datastoreName, const char *directoryName,
+esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
                    virDomainChrDefPtr *def)
 {
     int result = -1;
@@ -2439,9 +2143,7 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        (*def)->data.file.path = esxVMX_ParseFileName(ctx, fileName,
-                                                      datastoreName,
-                                                      directoryName);
+        (*def)->data.file.path = ctx->parseFileName(fileName, ctx->opaque);
 
         if ((*def)->data.file.path == NULL) {
             goto cleanup;
@@ -2488,8 +2190,7 @@ esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
 
 
 int
-esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
-                     const char *datastoreName, const char *directoryName,
+esxVMX_ParseParallel(esxVMX_Context *ctx, virConfPtr conf, int port,
                      virDomainChrDefPtr *def)
 {
     int result = -1;
@@ -2569,9 +2270,7 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
         (*def)->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        (*def)->data.file.path = esxVMX_ParseFileName(ctx, fileName,
-                                                      datastoreName,
-                                                      directoryName);
+        (*def)->data.file.path = ctx->parseFileName(fileName, ctx->opaque);
 
         if ((*def)->data.file.path == NULL) {
             goto cleanup;
@@ -2612,70 +2311,7 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
  */
 
 char *
-esxVMX_FormatFileName(esxVI_Context *ctx ATTRIBUTE_UNUSED, const char *src)
-{
-    bool success = false;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *absolutePath = NULL;
-
-    if (STRPREFIX(src, "[")) {
-        /* Found potential datastore related path */
-        if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
-                                       &fileName) < 0) {
-            goto cleanup;
-        }
-
-        if (directoryName == NULL) {
-            if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s",
-                            datastoreName, fileName) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else {
-            if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s/%s",
-                            datastoreName, directoryName, fileName) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
-    } else if (STRPREFIX(src, "/")) {
-        /* Found absolute path */
-        absolutePath = strdup(src);
-
-        if (absolutePath == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        /* Found relative path, this is not supported */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Found relative path '%s' in domain XML, this is not "
-                    "supported"), src);
-        goto cleanup;
-    }
-
-    /* FIXME: Check if referenced path/file really exists */
-
-    success = true;
-
-  cleanup:
-    if (! success) {
-        VIR_FREE(absolutePath);
-    }
-
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-
-    return absolutePath;
-}
-
-
-
-char *
-esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
+esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                     esxVI_ProductVersion productVersion)
 {
     int i;
@@ -2684,6 +2320,12 @@ esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
+
+    if (ctx->formatFileName == NULL) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("esxVMX_Context has no formatFileName function set"));
+        return NULL;
+    }
 
     memset(zero, 0, VIR_UUID_BUFLEN);
 
@@ -2990,7 +2632,7 @@ esxVMX_FormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 
 
 int
-esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatHardDisk(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                       virBufferPtr buffer)
 {
     int controllerOrBus, unit;
@@ -3050,7 +2692,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
             return -1;
         }
 
-        fileName = esxVMX_FormatFileName(ctx, def->src);
+        fileName = ctx->formatFileName(def->src, ctx->opaque);
 
         if (fileName == NULL) {
             return -1;
@@ -3081,7 +2723,7 @@ esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
 
 
 int
-esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatCDROM(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                    virBufferPtr buffer)
 {
     int controllerOrBus, unit;
@@ -3132,7 +2774,7 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
                 return -1;
             }
 
-            fileName = esxVMX_FormatFileName(ctx, def->src);
+            fileName = ctx->formatFileName(def->src, ctx->opaque);
 
             if (fileName == NULL) {
                 return -1;
@@ -3167,7 +2809,7 @@ esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
 
 
 int
-esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatFloppy(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                     virBufferPtr buffer)
 {
     int unit;
@@ -3195,7 +2837,7 @@ esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
                 return -1;
             }
 
-            fileName = esxVMX_FormatFileName(ctx, def->src);
+            fileName = ctx->formatFileName(def->src, ctx->opaque);
 
             if (fileName == NULL) {
                 return -1;
@@ -3331,7 +2973,7 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
 
 
 int
-esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
+esxVMX_FormatSerial(esxVMX_Context *ctx, virDomainChrDefPtr def,
                     virBufferPtr buffer)
 {
     char *fileName = NULL;
@@ -3365,7 +3007,7 @@ esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
         virBufferVSprintf(buffer, "serial%d.fileType = \"file\"\n",
                           def->target.port);
 
-        fileName = esxVMX_FormatFileName(ctx, def->data.file.path);
+        fileName = ctx->formatFileName(def->data.file.path, ctx->opaque);
 
         if (fileName == NULL) {
             return -1;
@@ -3408,7 +3050,7 @@ esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
 
 
 int
-esxVMX_FormatParallel(esxVI_Context *ctx, virDomainChrDefPtr def,
+esxVMX_FormatParallel(esxVMX_Context *ctx, virDomainChrDefPtr def,
                       virBufferPtr buffer)
 {
     char *fileName = NULL;
@@ -3443,7 +3085,7 @@ esxVMX_FormatParallel(esxVI_Context *ctx, virDomainChrDefPtr def,
         virBufferVSprintf(buffer, "parallel%d.fileType = \"file\"\n",
                           def->target.port);
 
-        fileName = esxVMX_FormatFileName(ctx, def->data.file.path);
+        fileName = ctx->formatFileName(def->data.file.path, ctx->opaque);
 
         if (fileName == NULL) {
             return -1;

@@ -30,6 +30,37 @@
 # include "domain_conf.h"
 # include "esx_vi.h"
 
+typedef struct _esxVMX_Context esxVMX_Context;
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Context
+ */
+
+typedef char * (*esxVMX_ParseFileName)(const char *fileName, void *opaque);
+typedef char * (*esxVMX_FormatFileName)(const char *src, void *opaque);
+typedef int (*esxVMX_AutodetectSCSIControllerModel)(virDomainDiskDefPtr def,
+                                                    int *model, void *opaque);
+
+/*
+ * esxVMX_ParseFileName is only used by esxVMX_ParseConfig.
+ * esxVMX_FormatFileName is only used by esxVMX_FormatConfig.
+ * esxVMX_AutodetectSCSIControllerModel is optionally used by esxVMX_FormatConfig.
+ */
+struct _esxVMX_Context {
+    void *opaque;
+    esxVMX_ParseFileName parseFileName;
+    esxVMX_FormatFileName formatFileName;
+    esxVMX_AutodetectSCSIControllerModel autodetectSCSIControllerModel;
+};
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Helpers
+ */
+
 int
 esxVMX_SCSIDiskNameToControllerAndUnit(const char *name, int *controller,
                                        int *unit);
@@ -48,15 +79,8 @@ esxVMX_HandleLegacySCSIDiskDriverName(virDomainDefPtr def,
                                       virDomainDiskDefPtr disk);
 
 int
-esxVMX_AutodetectSCSIControllerModel(esxVI_Context *ctx,
-                                     virDomainDiskDefPtr def, int *model);
-
-int
-esxVMX_GatherSCSIControllers(esxVI_Context *ctx, virDomainDefPtr def,
+esxVMX_GatherSCSIControllers(esxVMX_Context *ctx, virDomainDefPtr def,
                              int virtualDev[4], bool present[4]);
-
-char *
-esxVMX_AbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath);
 
 
 
@@ -64,13 +88,8 @@ esxVMX_AbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath)
  * VMX -> Domain XML
  */
 
-char *
-esxVMX_ParseFileName(esxVI_Context *ctx, const char *fileName,
-                     const char *datastoreName, const char *directoryName);
-
 virDomainDefPtr
-esxVMX_ParseConfig(esxVI_Context *ctx, virCapsPtr caps, const char *vmx,
-                   const char *datastoreName, const char *directoryName,
+esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
                    esxVI_ProductVersion productVersion);
 
 int
@@ -81,21 +100,18 @@ esxVMX_ParseSCSIController(virConfPtr conf, int controller, bool *present,
                            int *virtualDev);
 
 int
-esxVMX_ParseDisk(esxVI_Context *ctx, virCapsPtr caps, virConfPtr conf,
+esxVMX_ParseDisk(esxVMX_Context *ctx, virCapsPtr caps, virConfPtr conf,
                  int device, int busType, int controllerOrBus, int unit,
-                 const char *datastoreName, const char *directoryName,
                  virDomainDiskDefPtr *def);
 int
 esxVMX_ParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def);
 
 int
-esxVMX_ParseSerial(esxVI_Context *ctx, virConfPtr conf, int port,
-                   const char *datastoreName, const char *directoryName,
+esxVMX_ParseSerial(esxVMX_Context *ctx, virConfPtr conf, int port,
                    virDomainChrDefPtr *def);
 
 int
-esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
-                     const char *datastoreName, const char *directoryName,
+esxVMX_ParseParallel(esxVMX_Context *ctx, virConfPtr conf, int port,
                      virDomainChrDefPtr *def);
 
 
@@ -105,25 +121,22 @@ esxVMX_ParseParallel(esxVI_Context *ctx, virConfPtr conf, int port,
  */
 
 char *
-esxVMX_FormatFileName(esxVI_Context *ctx, const char *src);
-
-char *
-esxVMX_FormatConfig(esxVI_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
+esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                     esxVI_ProductVersion productVersion);
 
 int
 esxVMX_FormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);
 
 int
-esxVMX_FormatHardDisk(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatHardDisk(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                       virBufferPtr buffer);
 
 int
-esxVMX_FormatCDROM(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatCDROM(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                    virBufferPtr buffer);
 
 int
-esxVMX_FormatFloppy(esxVI_Context *ctx, virDomainDiskDefPtr def,
+esxVMX_FormatFloppy(esxVMX_Context *ctx, virDomainDiskDefPtr def,
                     virBufferPtr buffer);
 
 int
@@ -131,11 +144,11 @@ esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,
                       virBufferPtr buffer);
 
 int
-esxVMX_FormatSerial(esxVI_Context *ctx, virDomainChrDefPtr def,
+esxVMX_FormatSerial(esxVMX_Context *ctx, virDomainChrDefPtr def,
                     virBufferPtr buffer);
 
 int
-esxVMX_FormatParallel(esxVI_Context *ctx, virDomainChrDefPtr def,
+esxVMX_FormatParallel(esxVMX_Context *ctx, virDomainChrDefPtr def,
                       virBufferPtr buffer);
 
 #endif /* __ESX_VMX_H__ */

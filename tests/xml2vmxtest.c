@@ -14,6 +14,7 @@
 static char *progname = NULL;
 static char *abs_srcdir = NULL;
 static virCapsPtr caps = NULL;
+static esxVMX_Context ctx;
 
 # define MAX_FILE 4096
 
@@ -92,7 +93,7 @@ testCompareFiles(const char *xml, const char *vmx,
         goto failure;
     }
 
-    formatted = esxVMX_FormatConfig(NULL, caps, def, productVersion);
+    formatted = esxVMX_FormatConfig(&ctx, caps, def, productVersion);
 
     if (formatted == NULL) {
         goto failure;
@@ -134,6 +135,60 @@ testCompareHelper(const void *data)
 }
 
 static int
+testAutodetectSCSIControllerModel(virDomainDiskDefPtr def ATTRIBUTE_UNUSED,
+                                  int *model, void *opaque ATTRIBUTE_UNUSED)
+{
+    *model = VIR_DOMAIN_CONTROLLER_MODEL_LSILOGIC;
+
+    return 0;
+}
+
+static char *
+testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
+{
+    bool success = false;
+    char *datastoreName = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
+    char *absolutePath = NULL;
+
+    if (STRPREFIX(src, "[")) {
+        /* Found potential datastore path */
+        if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
+                                       &fileName) < 0) {
+            goto cleanup;
+        }
+
+        if (directoryName == NULL) {
+            virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s", datastoreName,
+                        fileName);
+        } else {
+            virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s/%s", datastoreName,
+                        directoryName, fileName);
+        }
+    } else if (STRPREFIX(src, "/")) {
+        /* Found absolute path */
+        absolutePath = strdup(src);
+    } else {
+        /* Found relative path, this is not supported */
+        goto cleanup;
+    }
+
+    success = true;
+
+  cleanup:
+    if (! success) {
+        VIR_FREE(absolutePath);
+    }
+
+    VIR_FREE(datastoreName);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
+
+    return absolutePath;
+}
+
+static int
 mymain(int argc, char **argv)
 {
     int result = 0;
@@ -157,7 +212,7 @@ mymain(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-# define DO_TEST(_in, _out, _version)                                      \
+# define DO_TEST(_in, _out, _version)                                         \
         do {                                                                  \
             struct testInfo info = { _in, _out, _version };                   \
             virResetLastError();                                              \
@@ -172,6 +227,11 @@ mymain(int argc, char **argv)
     if (caps == NULL) {
         return EXIT_FAILURE;
     }
+
+    ctx.opaque = NULL;
+    ctx.parseFileName = NULL;
+    ctx.formatFileName = testFormatVMXFileName;
+    ctx.autodetectSCSIControllerModel = testAutodetectSCSIControllerModel;
 
     DO_TEST("minimal", "minimal", esxVI_ProductVersion_ESX35);
     DO_TEST("minimal-64bit", "minimal-64bit", esxVI_ProductVersion_ESX35);
