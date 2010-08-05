@@ -1689,7 +1689,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
                         tapmac,
                         vnet_hdr,
                         &tapfd))) {
-        if (errno == ENOTSUP) {
+        if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             qemuReportError(VIR_ERR_INTERNAL_ERROR,
                             _("Failed to add tap interface to bridge. "
