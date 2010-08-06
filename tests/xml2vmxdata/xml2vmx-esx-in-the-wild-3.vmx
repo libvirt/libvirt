@@ -17,6 +17,7 @@ ide0:0.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Isos/debian
 floppy1.present = "true"
 floppy1.fileType = "file"
 floppy1.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/Debian2/dummy.flp"
+floppy0.present = "false"
 ethernet0.present = "true"
 ethernet0.networkName = "VM Network"
 ethernet0.connectionType = "bridged"

@@ -137,7 +137,7 @@ esxVMX_FormatCDROM(esxVMX_Context *ctx, virDomainDiskDefPtr def,
 
 int
 esxVMX_FormatFloppy(esxVMX_Context *ctx, virDomainDiskDefPtr def,
-                    virBufferPtr buffer);
+                    virBufferPtr buffer, bool floppy_present[2]);
 
 int
 esxVMX_FormatEthernet(virDomainNetDefPtr def, int controller,

@@ -30,6 +30,7 @@ ide1:1.fileName = "/vmfs/volumes/498076b2-02796c1a-ef5b-000ae484a6a3/virtDebian1
 floppy0.present = "true"
 floppy0.fileType = "device"
 floppy0.fileName = "/dev/fd0"
+floppy1.present = "false"
 ethernet0.present = "true"
 ethernet0.virtualDev = "vlance"
 ethernet0.networkName = "VM Network"

@@ -215,7 +215,7 @@ def->disks[0]...
 
 ## disks: floppy from .flp image ###############################################
 
-                                        floppy0.present = "true"                # defaults to "false"
+                                        floppy0.present = "true"                # defaults to "true"
                                         floppy0.startConnected = "true"         # defaults to "true"
                                         floppy0.clientDevice = "false"          # defaults to "false"
 
@@ -235,7 +235,7 @@ def->disks[0]...
 
 ## disks: floppy from host device ##############################################
 
-                                        floppy0.present = "true"                # defaults to "false"
+                                        floppy0.present = "true"                # defaults to "true"
                                         floppy0.startConnected = "true"         # defaults to "true"
                                         floppy0.clientDevice = "false"          # defaults to "false"
 
@@ -2320,6 +2320,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
+    bool floppy_present[2] = { false, false };
 
     if (ctx->formatFileName == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2525,7 +2526,8 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
             break;
 
           case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            if (esxVMX_FormatFloppy(ctx, def->disks[i], &buffer) < 0) {
+            if (esxVMX_FormatFloppy(ctx, def->disks[i], &buffer,
+                                    floppy_present) < 0) {
                 goto failure;
             }
 
@@ -2536,6 +2538,13 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                       _("Unsupported disk device type '%s'"),
                       virDomainDiskDeviceTypeToString(def->disks[i]->device));
             goto failure;
+        }
+    }
+
+    for (i = 0; i < 2; ++i) {
+        /* floppy[0..1].present defaults to true, disable it explicitly */
+        if (! floppy_present[i]) {
+            virBufferVSprintf(&buffer, "floppy%d.present = \"false\"\n", i);
         }
     }
 
@@ -2810,7 +2819,7 @@ esxVMX_FormatCDROM(esxVMX_Context *ctx, virDomainDiskDefPtr def,
 
 int
 esxVMX_FormatFloppy(esxVMX_Context *ctx, virDomainDiskDefPtr def,
-                    virBufferPtr buffer)
+                    virBufferPtr buffer, bool floppy_present[2])
 {
     int unit;
     char *fileName = NULL;
@@ -2823,6 +2832,8 @@ esxVMX_FormatFloppy(esxVMX_Context *ctx, virDomainDiskDefPtr def,
     if (esxVMX_FloppyDiskNameToUnit(def->dst, &unit) < 0) {
         return -1;
     }
+
+    floppy_present[unit] = true;
 
     virBufferVSprintf(buffer, "floppy%d.present = \"true\"\n", unit);
 
