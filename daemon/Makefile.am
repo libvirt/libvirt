@@ -41,11 +41,11 @@ EXTRA_DIST =						\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
 
-man_MANS = libvirtd.8
-
 BUILT_SOURCES =
 
 if WITH_LIBVIRTD
+
+man_MANS = libvirtd.8
 
 sbin_PROGRAMS = libvirtd
 
