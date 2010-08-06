@@ -93,7 +93,7 @@
           configuration and triggers the hook script as:<br/>
           <pre>/etc/libvirt/hooks/daemon - reload begin SIGHUP</pre></li>
     </ul>
-    <p>Please note that when the libvirt daemon is restarted, the <i>qemu</i>
+    <p>Please note that when the libvirt daemon is restarted, the <i>daemon</i>
        hook script is called once with the "shutdown" operation, and then once
        with the "start" operation.  There is no specific operation to indicate
        a "restart" is occurring.</p>
