@@ -24,8 +24,6 @@
 
 #include <config.h>
 
-#include <netdb.h>
-
 #include "internal.h"
 #include "domain_conf.h"
 #include "authhelper.h"
@@ -60,177 +58,268 @@ struct _esxVMX_Data {
 
 
 
+/*
+ * Parse a file name from a .vmx file and convert it to datastore path format.
+ * A .vmx file can contain file names in various formats:
+ *
+ * - A single name referencing a file in the same directory as the .vmx file:
+ *
+ *     test1.vmdk
+ *
+ * - An absolute file name referencing a file in a datastore that is mounted at
+ *   /vmfs/volumes/<datastore>:
+ *
+ *     /vmfs/volumes/b24b7a78-9d82b4f5/test1/test1.vmdk
+ *     /vmfs/volumes/datastore1/test1/test1.vmdk
+ *
+ *   The actual mount directory is /vmfs/volumes/b24b7a78-9d82b4f5, the second
+ *   form is a symlink to it using the datastore name. This is the typical
+ *   setup on an ESX(i) server.
+ *
+ * - With GSX installed on Windows there are also Windows style file names
+ *   including UNC file names:
+ *
+ *     C:\Virtual Machines\test1\test1.vmdk
+ *     \\nas1\storage1\test1\test1.vmdk
+ *
+ * The datastore path format typically looks like this:
+ *
+ *  [datastore1] test1/test1.vmdk
+ *
+ * Firstly this functions checks if the given file name contains a separator.
+ * If it doesn't then the referenced file is in the same directory as the .vmx
+ * file. The datastore name and directory of the .vmx file are passed to this
+ * function via the opaque paramater by the caller of esxVMX_ParseConfig.
+ *
+ * Otherwise query for all known datastores and their mount directories. Then
+ * try to find a datastore with a mount directory that is a prefix to the given
+ * file name. This mechanism covers the Windows style file names too.
+ *
+ * The symlinks using the datastore name (/vmfs/volumes/datastore1) are an
+ * exception and need special handling. Parse the datastore name and use it
+ * to lookup the datastore by name to verify that it exists.
+ */
 static char *
-esxAbsolutePathToDatastorePath(esxVI_Context *ctx, const char *absolutePath)
+esxParseVMXFileName(const char *fileName, void *opaque)
 {
-    bool success = false;
-    char *copyOfAbsolutePath = NULL;
-    char *tmp = NULL;
-    char *saveptr = NULL;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-
     char *datastorePath = NULL;
-    char *preliminaryDatastoreName = NULL;
-    char *directoryAndFileName = NULL;
-    char *datastoreName = NULL;
+    esxVMX_Data *data = opaque;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastoreList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_DatastoreHostMount *hostMount = NULL;
+    char *datastoreName;
+    char *tmp;
+    char *saveptr;
+    char *strippedFileName = NULL;
+    char *copyOfFileName = NULL;
+    char *directoryAndFileName;
 
-    if (esxVI_String_DeepCopyValue(&copyOfAbsolutePath, absolutePath) < 0) {
-        return NULL;
-    }
+    if (strchr(fileName, '/') == NULL && strchr(fileName, '\\') == NULL) {
+        /* Plain file name, use same directory as for the .vmx file */
+        if (virAsprintf(&datastorePath, "[%s] %s/%s", data->datastoreName,
+                        data->directoryName, fileName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        if (esxVI_String_AppendValueToList(&propertyNameList,
+                                           "summary.name") < 0 ||
+            esxVI_LookupDatastoreList(data->ctx, propertyNameList,
+                                      &datastoreList) < 0) {
+            return NULL;
+        }
 
-    /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
-    if ((tmp = STRSKIP(copyOfAbsolutePath, "/vmfs/volumes/")) == NULL ||
-        (preliminaryDatastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
-        (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Absolute path '%s' doesn't have expected format "
-                    "'/vmfs/volumes/<datastore>/<path>'"), absolutePath);
-        goto cleanup;
-    }
+        /* Search for datastore by mount path */
+        for (datastore = datastoreList; datastore != NULL;
+             datastore = datastore->_next) {
+            esxVI_DatastoreHostMount_Free(&hostMount);
+            datastoreName = NULL;
 
-    if (esxVI_String_AppendValueToList(&propertyNameList,
-                                       "summary.name") < 0 ||
-        esxVI_LookupDatastoreByAbsolutePath(ctx, absolutePath,
-                                            propertyNameList, &datastore,
+            if (esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
+                                               &hostMount) < 0 ||
+                esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
+                                     esxVI_Occurrence_RequiredItem) < 0) {
+                goto cleanup;
+            }
+
+            tmp = (char *)STRSKIP(fileName, hostMount->mountInfo->path);
+
+            if (tmp == NULL) {
+                continue;
+            }
+
+            /* Found a match. Strip leading separators */
+            while (*tmp == '/' || *tmp == '\\') {
+                ++tmp;
+            }
+
+            if (esxVI_String_DeepCopyValue(&strippedFileName, tmp) < 0) {
+                goto cleanup;
+            }
+
+            tmp = strippedFileName;
+
+            /* Convert \ to / */
+            while (*tmp != '\0') {
+                if (*tmp == '\\') {
+                    *tmp = '/';
+                }
+
+                ++tmp;
+            }
+
+            if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
+                            strippedFileName) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            break;
+        }
+
+        /* Fallback to direct datastore name match */
+        if (datastorePath == NULL && STRPREFIX(fileName, "/vmfs/volumes/")) {
+            if (esxVI_String_DeepCopyValue(&copyOfFileName, fileName) < 0) {
+                goto cleanup;
+            }
+
+            /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
+            if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
+                (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
+                (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
+                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                          _("File name '%s' doesn't have expected format "
+                            "'/vmfs/volumes/<datastore>/<path>'"), fileName);
+                goto cleanup;
+            }
+
+            esxVI_ObjectContent_Free(&datastoreList);
+
+            if (esxVI_LookupDatastoreByName(data->ctx, datastoreName,
+                                            NULL, &datastoreList,
                                             esxVI_Occurrence_OptionalItem) < 0) {
-        goto cleanup;
-    }
+                goto cleanup;
+            }
 
-    if (datastore == NULL) {
-        if (esxVI_LookupDatastoreByName(ctx, preliminaryDatastoreName,
-                                        propertyNameList, &datastore,
-                                        esxVI_Occurrence_OptionalItem) < 0) {
+            if (datastoreList == NULL) {
+                ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                          _("File name '%s' refers to non-existing datastore '%s'"),
+                          fileName, datastoreName);
+                goto cleanup;
+            }
+
+            if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
+                            directoryAndFileName) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+        }
+
+        if (datastorePath == NULL) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                      _("Could not find datastore for '%s'"), fileName);
             goto cleanup;
         }
     }
-
-    if (datastore != NULL) {
-        if (esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
-                                 esxVI_Occurrence_RequiredItem)) {
-            goto cleanup;
-        }
-    }
-
-    if (datastoreName == NULL) {
-        VIR_WARN("Could not retrieve datastore name for absolute "
-                 "path '%s', falling back to preliminary name '%s'",
-                 absolutePath, preliminaryDatastoreName);
-
-        datastoreName = preliminaryDatastoreName;
-    }
-
-    if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
-                    directoryAndFileName) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    /* FIXME: Check if referenced path/file really exists */
-
-    success = true;
 
   cleanup:
-    if (! success) {
-        VIR_FREE(datastorePath);
-    }
-
-    VIR_FREE(copyOfAbsolutePath);
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
+    esxVI_ObjectContent_Free(&datastoreList);
+    esxVI_DatastoreHostMount_Free(&hostMount);
+    VIR_FREE(strippedFileName);
+    VIR_FREE(copyOfFileName);
 
     return datastorePath;
 }
 
 
 
+/*
+ * This function does the inverse of esxParseVMXFileName. It takes an file name
+ * in datastore path format and converts it to a file name that can be used in
+ * a .vmx file.
+ *
+ * The datastore path format and the formats found in a .vmx file are described
+ * in the documentation of esxParseVMXFileName.
+ *
+ * Firstly parse the datastore path. Then use the datastore name to lookup the
+ * datastore and it's mount path. Finally concatenate the mount path, directory
+ * and file name to an absolute path and return it. Detect the seperator type
+ * based on the mount path.
+ */
 static char *
-esxParseVMXFileName(const char *fileName, void *opaque)
-{
-    char *src = NULL;
-    esxVMX_Data *data = opaque;
-
-    if (STRPREFIX(fileName, "/vmfs/volumes/")) {
-        /* Found absolute path referencing a file inside a datastore */
-        return esxAbsolutePathToDatastorePath(data->ctx, fileName);
-    } else if (STRPREFIX(fileName, "/")) {
-        /* Found absolute path referencing a file outside a datastore */
-        src = strdup(fileName);
-
-        if (src == NULL) {
-            virReportOOMError();
-            return NULL;
-        }
-
-        /* FIXME: Check if referenced path/file really exists */
-
-        return src;
-    } else if (strchr(fileName, '/') != NULL) {
-        /* Found relative path, this is not supported */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Found relative path '%s' in VMX file, this is not "
-                    "supported"), fileName);
-        return NULL;
-    } else {
-        /* Found single file name referencing a file inside a datastore */
-        if (virAsprintf(&src, "[%s] %s/%s", data->datastoreName,
-                        data->directoryName, fileName) < 0) {
-            virReportOOMError();
-            return NULL;
-        }
-
-        /* FIXME: Check if referenced path/file really exists */
-
-        return src;
-    }
-}
-
-
-
-static char *
-esxFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
+esxFormatVMXFileName(const char *datastorePath, void *opaque)
 {
     bool success = false;
+    esxVMX_Data *data = opaque;
     char *datastoreName = NULL;
     char *directoryName = NULL;
     char *fileName = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_DatastoreHostMount *hostMount = NULL;
+    char separator = '/';
+    virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    char *tmp;
+    int length;
     char *absolutePath = NULL;
 
-    if (STRPREFIX(src, "[")) {
-        /* Found potential datastore path */
-        if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
-                                       &fileName) < 0) {
-            goto cleanup;
-        }
-
-        if (directoryName == NULL) {
-            if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s",
-                            datastoreName, fileName) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else {
-            if (virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s/%s",
-                            datastoreName, directoryName, fileName) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        }
-    } else if (STRPREFIX(src, "/")) {
-        /* Found absolute path */
-        absolutePath = strdup(src);
-
-        if (absolutePath == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        /* Found relative path, this is not supported */
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Found relative path '%s' in domain XML, this is not "
-                    "supported"), src);
+    /* Parse datastore path and lookup datastore */
+    if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName,
+                                   &directoryName, &fileName) < 0) {
         goto cleanup;
     }
+
+    if (esxVI_LookupDatastoreByName(data->ctx, datastoreName,
+                                    NULL, &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
+                                       &hostMount) < 0) {
+        goto cleanup;
+    }
+
+    /* Detect separator type */
+    if (strchr(hostMount->mountInfo->path, '\\') != NULL) {
+        separator = '\\';
+    }
+
+    /* Strip trailing separators */
+    length = strlen(hostMount->mountInfo->path);
+
+    while (length > 0 && hostMount->mountInfo->path[length - 1] == separator) {
+        --length;
+    }
+
+    /* Format as <mount>[/<directory>]/<file> */
+    virBufferAdd(&buffer, hostMount->mountInfo->path, length);
+
+    if (directoryName != NULL) {
+        /* Convert / to \ when necessary */
+        if (separator != '/') {
+            tmp = directoryName;
+
+            while (*tmp != '\0') {
+                if (*tmp == '/') {
+                    *tmp = separator;
+                }
+
+                ++tmp;
+            }
+        }
+
+        virBufferAddChar(&buffer, separator);
+        virBufferAdd(&buffer, directoryName, -1);
+    }
+
+    virBufferAddChar(&buffer, separator);
+    virBufferAdd(&buffer, fileName, -1);
+
+    if (virBufferError(&buffer)) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    absolutePath = virBufferContentAndReset(&buffer);
 
     /* FIXME: Check if referenced path/file really exists */
 
@@ -238,12 +327,15 @@ esxFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
 
   cleanup:
     if (! success) {
+        virBufferFreeAndReset(&buffer);
         VIR_FREE(absolutePath);
     }
 
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
     VIR_FREE(fileName);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_DatastoreHostMount_Free(&hostMount);
 
     return absolutePath;
 }
