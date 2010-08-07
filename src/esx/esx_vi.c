@@ -2934,6 +2934,285 @@ esxVI_LookupCurrentSnapshotTree
 
 
 int
+esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
+                                    const char *datastorePath,
+                                    esxVI_FileInfo **fileInfo,
+                                    esxVI_Occurrence occurrence)
+{
+    int result = -1;
+    char *datastoreName = NULL;
+    char *directoryName = NULL;
+    char *fileName = NULL;
+    char *datastorePathWithoutFileName = NULL;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
+    esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
+    esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
+    esxVI_IsoImageFileQuery *isoImageFileQuery = NULL;
+    esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    esxVI_TaskInfo *taskInfo = NULL;
+    esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
+
+    if (fileInfo == NULL || *fileInfo != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName,
+                                   &directoryName, &fileName) < 0) {
+        goto cleanup;
+    }
+
+    if (directoryName == NULL) {
+        if (virAsprintf(&datastorePathWithoutFileName, "[%s]",
+                        datastoreName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s",
+                        datastoreName, directoryName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
+
+    /* Lookup HostDatastoreBrowser */
+    if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
+        esxVI_LookupDatastoreByName(ctx, datastoreName, propertyNameList,
+                                    &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetManagedObjectReference(datastore, "browser",
+                                        &hostDatastoreBrowser,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* Build HostDatastoreBrowserSearchSpec */
+    if (esxVI_HostDatastoreBrowserSearchSpec_Alloc(&searchSpec) < 0 ||
+        esxVI_FileQueryFlags_Alloc(&searchSpec->details) < 0) {
+        goto cleanup;
+    }
+
+    searchSpec->details->fileType = esxVI_Boolean_True;
+    searchSpec->details->fileSize = esxVI_Boolean_True;
+    searchSpec->details->modification = esxVI_Boolean_False;
+
+    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
+        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
+    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_True;
+    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
+    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
+    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+
+    if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
+        goto cleanup;
+    }
+
+    searchSpec->matchPattern->value = fileName;
+
+    /* Search datastore for file */
+    if (esxVI_SearchDatastore_Task(ctx, hostDatastoreBrowser,
+                                   datastorePathWithoutFileName, searchSpec,
+                                   &task) < 0 ||
+        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
+                                    esxVI_Boolean_False, &taskInfoState) < 0) {
+        goto cleanup;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not serach in datastore '%s'"), datastoreName);
+        goto cleanup;
+    }
+
+    if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo) < 0 ||
+        esxVI_HostDatastoreBrowserSearchResults_CastFromAnyType
+          (taskInfo->result, &searchResults) < 0) {
+        goto cleanup;
+    }
+
+    /* Interpret search result */
+    if (searchResults->file == NULL) {
+        if (occurrence == esxVI_Occurrence_OptionalItem) {
+            result = 0;
+
+            goto cleanup;
+        } else {
+            ESX_VI_ERROR(VIR_ERR_NO_STORAGE_VOL,
+                         _("No storage volume with key or path '%s'"),
+                         datastorePath);
+            goto cleanup;
+        }
+    }
+
+    *fileInfo = searchResults->file;
+    searchResults->file = NULL;
+
+    result = 0;
+
+  cleanup:
+    /* Don't double free fileName */
+    if (searchSpec != NULL && searchSpec->matchPattern != NULL) {
+        searchSpec->matchPattern->value = NULL;
+    }
+
+    VIR_FREE(datastoreName);
+    VIR_FREE(directoryName);
+    VIR_FREE(fileName);
+    VIR_FREE(datastorePathWithoutFileName);
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
+    esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
+    esxVI_ManagedObjectReference_Free(&task);
+    esxVI_TaskInfo_Free(&taskInfo);
+    esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
+
+    return result;
+}
+
+
+
+int
+esxVI_LookupDatastoreContentByDatastoreName
+  (esxVI_Context *ctx, const char *datastoreName,
+   esxVI_HostDatastoreBrowserSearchResults **searchResultsList)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
+    esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
+    esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
+    esxVI_IsoImageFileQuery *isoImageFileQuery = NULL;
+    esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
+    char *datastorePath = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+    esxVI_TaskInfo *taskInfo = NULL;
+
+    if (searchResultsList == NULL || *searchResultsList != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    /* Lookup Datastore and HostDatastoreBrowser */
+    if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
+        esxVI_LookupDatastoreByName(ctx, datastoreName, propertyNameList,
+                                    &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetManagedObjectReference(datastore, "browser",
+                                        &hostDatastoreBrowser,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    /* Build HostDatastoreBrowserSearchSpec */
+    if (esxVI_HostDatastoreBrowserSearchSpec_Alloc(&searchSpec) < 0 ||
+        esxVI_FileQueryFlags_Alloc(&searchSpec->details) < 0) {
+        goto cleanup;
+    }
+
+    searchSpec->details->fileType = esxVI_Boolean_True;
+    searchSpec->details->fileSize = esxVI_Boolean_True;
+    searchSpec->details->modification = esxVI_Boolean_False;
+
+    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
+        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
+    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_True;
+    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
+    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
+    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+
+    if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
+        esxVI_FileQuery_AppendToList
+          (&searchSpec->query,
+           esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
+        goto cleanup;
+    }
+
+    /* Search datastore for files */
+    if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (esxVI_SearchDatastoreSubFolders_Task(ctx, hostDatastoreBrowser,
+                                             datastorePath, searchSpec,
+                                             &task) < 0 ||
+        esxVI_WaitForTaskCompletion(ctx, task, NULL, esxVI_Occurrence_None,
+                                    esxVI_Boolean_False, &taskInfoState) < 0) {
+        goto cleanup;
+    }
+
+    if (taskInfoState != esxVI_TaskInfoState_Success) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not serach in datastore '%s'"), datastoreName);
+        goto cleanup;
+    }
+
+    if (esxVI_LookupTaskInfoByTask(ctx, task, &taskInfo) < 0 ||
+        esxVI_HostDatastoreBrowserSearchResults_CastListFromAnyType
+          (taskInfo->result, searchResultsList) < 0) {
+        goto cleanup;
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
+    esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
+    VIR_FREE(datastorePath);
+    esxVI_ManagedObjectReference_Free(&task);
+    esxVI_TaskInfo_Free(&taskInfo);
+
+    return result;
+}
+
+
+
+int
 esxVI_HandleVirtualMachineQuestion
   (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,
    esxVI_VirtualMachineQuestionInfo *questionInfo,

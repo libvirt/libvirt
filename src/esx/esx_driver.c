@@ -348,19 +348,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
 {
     int result = -1;
     esxVMX_Data *data = opaque;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *datastorePath = NULL;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
-    esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
-    esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
-    esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
-    esxVI_ManagedObjectReference *task = NULL;
-    esxVI_TaskInfoState taskInfoState;
-    esxVI_TaskInfo *taskInfo = NULL;
-    esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
+    esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
 
     if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
@@ -375,87 +363,12 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
         return 0;
     }
 
-    if (esxUtil_ParseDatastorePath(def->src, &datastoreName, &directoryName,
-                                   &fileName) < 0) {
+    if (esxVI_LookupFileInfoByDatastorePath(data->ctx, def->src, &fileInfo,
+                                            esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
-    if (directoryName == NULL) {
-        if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        if (virAsprintf(&datastorePath, "[%s] %s", datastoreName,
-                        directoryName) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    }
-
-    /* Lookup HostDatastoreBrowser */
-    if (esxVI_String_AppendValueToList(&propertyNameList, "browser") < 0 ||
-        esxVI_LookupDatastoreByName(data->ctx, datastoreName, propertyNameList,
-                                    &datastore,
-                                    esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_GetManagedObjectReference(datastore, "browser",
-                                        &hostDatastoreBrowser,
-                                        esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
-    }
-
-    /* Build HostDatastoreBrowserSearchSpec */
-    if (esxVI_HostDatastoreBrowserSearchSpec_Alloc(&searchSpec) < 0 ||
-        esxVI_FileQueryFlags_Alloc(&searchSpec->details) < 0) {
-        goto cleanup;
-    }
-
-    searchSpec->details->fileType = esxVI_Boolean_True;
-    searchSpec->details->fileSize = esxVI_Boolean_False;
-    searchSpec->details->modification = esxVI_Boolean_False;
-
-    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
-        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
-        esxVI_FileQuery_AppendToList
-          (&searchSpec->query,
-           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
-        goto cleanup;
-    }
-
-    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
-    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_False;
-    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
-    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
-    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
-
-    if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {
-        goto cleanup;
-    }
-
-    searchSpec->matchPattern->value = fileName;
-
-    /* Search datastore for file */
-    if (esxVI_SearchDatastore_Task(data->ctx, hostDatastoreBrowser,
-                                   datastorePath, searchSpec, &task) < 0 ||
-        esxVI_WaitForTaskCompletion(data->ctx, task, NULL, esxVI_Occurrence_None,
-                                    esxVI_Boolean_False, &taskInfoState) < 0) {
-        goto cleanup;
-    }
-
-    if (taskInfoState != esxVI_TaskInfoState_Success) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not serach in datastore '%s'"), datastoreName);
-        goto cleanup;
-    }
-
-    if (esxVI_LookupTaskInfoByTask(data->ctx, task, &taskInfo) < 0 ||
-        esxVI_HostDatastoreBrowserSearchResults_CastFromAnyType
-          (taskInfo->result, &searchResults) < 0) {
-        goto cleanup;
-    }
-
-    /* Interpret search result */
-    vmDiskFileInfo = esxVI_VmDiskFileInfo_DynamicCast(searchResults->file);
+    vmDiskFileInfo = esxVI_VmDiskFileInfo_DynamicCast(fileInfo);
 
     if (vmDiskFileInfo == NULL || vmDiskFileInfo->controllerType == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -485,22 +398,7 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
     result = 0;
 
   cleanup:
-    /* Don't double free fileName */
-    if (searchSpec != NULL && searchSpec->matchPattern != NULL) {
-        searchSpec->matchPattern->value = NULL;
-    }
-
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(datastorePath);
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
-    esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
-    esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
-    esxVI_ManagedObjectReference_Free(&task);
-    esxVI_TaskInfo_Free(&taskInfo);
-    esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
+    esxVI_FileInfo_Free(&fileInfo);
 
     return result;
 }

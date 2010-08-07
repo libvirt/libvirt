@@ -813,6 +813,13 @@ method RevertToSnapshot_Task returns ManagedObjectReference r
 end
 
 
+method SearchDatastoreSubFolders_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this                          r
+    String                                   datastorePath                  r
+    HostDatastoreBrowserSearchSpec           searchSpec                     o
+end
+
+
 method SearchDatastore_Task returns ManagedObjectReference r
     ManagedObjectReference                   _this                          r
     String                                   datastorePath                  r

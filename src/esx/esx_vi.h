@@ -399,6 +399,15 @@ int esxVI_LookupCurrentSnapshotTree
        esxVI_VirtualMachineSnapshotTree **currentSnapshotTree,
        esxVI_Occurrence occurrence);
 
+int esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
+                                        const char *datastorePath,
+                                        esxVI_FileInfo **fileInfo,
+                                        esxVI_Occurrence occurrence);
+
+int esxVI_LookupDatastoreContentByDatastoreName
+      (esxVI_Context *ctx, const char *datastoreName,
+       esxVI_HostDatastoreBrowserSearchResults **searchResultsList);
+
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,
