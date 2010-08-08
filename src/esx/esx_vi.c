@@ -2254,7 +2254,9 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
 
     if (managedObjectReference == NULL) {
         if (occurrence == esxVI_Occurrence_OptionalItem) {
-            return 0;
+            result = 0;
+
+            goto cleanup;
         } else {
             ESX_VI_ERROR(VIR_ERR_NO_DOMAIN,
                          _("Could not find domain with UUID '%s'"),
@@ -2327,7 +2329,9 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
 
     if (*virtualMachine == NULL) {
         if (occurrence == esxVI_Occurrence_OptionalItem) {
-            return 0;
+            result = 0;
+
+            goto cleanup;
         } else {
             ESX_VI_ERROR(VIR_ERR_NO_DOMAIN,
                          _("Could not find domain with name '%s'"), name);
@@ -2454,8 +2458,10 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                 goto cleanup;
             }
 
-            // Found datastore with matching name
-            goto success;
+            /* Found datastore with matching name */
+            result = 0;
+
+            goto cleanup;
         }
     }
 
@@ -2465,7 +2471,6 @@ esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
         goto cleanup;
     }
 
-  success:
     result = 0;
 
   cleanup:
@@ -2540,7 +2545,9 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
                 }
 
                 /* Found datastore with matching mount path */
-                goto success;
+                result = 0;
+
+                goto cleanup;
             }
         }
     }
@@ -2552,7 +2559,6 @@ esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
         goto cleanup;
     }
 
-  success:
     result = 0;
 
   cleanup:
@@ -2890,7 +2896,9 @@ esxVI_LookupCurrentSnapshotTree
 
     if (currentSnapshot == NULL) {
         if (occurrence == esxVI_Occurrence_OptionalItem) {
-            return 0;
+            result = 0;
+
+            goto cleanup;
         } else {
             ESX_VI_ERROR(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
                          _("Domain has no current snapshot"));
