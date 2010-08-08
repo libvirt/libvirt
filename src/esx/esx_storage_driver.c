@@ -24,6 +24,8 @@
 
 #include <config.h>
 
+#include "md5.h"
+#include "verify.h"
 #include "internal.h"
 #include "util.h"
 #include "memory.h"
@@ -37,6 +39,12 @@
 #include "esx_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
+
+/*
+ * The UUID of a storage pool is the MD5 sum of it's mount path. Therefore,
+ * verify that UUID and MD5 sum match in size, because we rely on that.
+ */
+verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);
 
 
 
@@ -196,10 +204,7 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     esxPrivate *priv = conn->storagePrivateData;
     esxVI_ObjectContent *datastore = NULL;
     esxVI_DatastoreHostMount *hostMount = NULL;
-    char *suffix = NULL;
-    int suffixLength;
-    char uuid_string[VIR_UUID_STRING_BUFLEN] = "00000000-00000000-0000-000000000000";
-    unsigned char uuid[VIR_UUID_BUFLEN];
+    unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
     virStoragePoolPtr pool = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
@@ -212,53 +217,22 @@ esxStoragePoolLookupByName(virConnectPtr conn, const char *name)
     }
 
     /*
-     * Datastores don't have a UUID. We can use the 'host.mountInfo.path'
-     * property as source for a "UUID" on ESX, because the property value has
-     * this format:
+     * Datastores don't have a UUID, but we can use the 'host.mountInfo.path'
+     * property as source for a UUID. The mount path is unique per host and
+     * cannot change during the lifetime of the datastore.
      *
-     *   host.mountInfo.path = /vmfs/volumes/4b0beca7-7fd401f3-1d7f-000ae484a6a3
-     *   host.mountInfo.path = /vmfs/volumes/b24b7a78-9d82b4f5    (short format)
-     *
-     * The 'host.mountInfo.path' property comes in two forms, with a complete
-     * "UUID" and a short "UUID".
-     *
-     * But this trailing "UUID" is not guaranteed to be there. On the other
-     * hand we already rely on another implementation detail of the ESX server:
-     * The object name of virtual machine contains an integer, we use that as
-     * domain ID.
+     * The MD5 sum of the mount path can be used as UUID, assuming MD5 is
+     * considered to be collision-free enough for this use case.
      */
     if (esxVI_LookupDatastoreHostMount(priv->primary, datastore->obj,
                                        &hostMount) < 0) {
         goto cleanup;
     }
 
-    if ((suffix = STRSKIP(hostMount->mountInfo->path, "/vmfs/volumes/")) != NULL) {
-        suffixLength = strlen(suffix);
+    md5_buffer(hostMount->mountInfo->path,
+               strlen(hostMount->mountInfo->path), md5);
 
-        if ((suffixLength == 35 && /* = strlen("4b0beca7-7fd401f3-1d7f-000ae484a6a3") */
-             suffix[8] == '-' && suffix[17] == '-' && suffix[22] == '-') ||
-            (suffixLength == 17 && /* = strlen("b24b7a78-9d82b4f5") */
-             suffix[8] == '-')) {
-            /*
-             * Intentionally use memcpy here, because we want to be able to
-             * replace a prefix of the initial Zero-UUID. virStrncpy would
-             * null-terminate the string in an unwanted place.
-             */
-            memcpy(uuid_string, suffix, suffixLength);
-        } else {
-            VIR_WARN("Datastore host mount path suffix '%s' has unexpected "
-                     "format, cannot deduce a UUID from it", suffix);
-        }
-    }
-
-    if (virUUIDParse(uuid_string, uuid) < 0) {
-        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                  _("Could not parse UUID from string '%s'"),
-                  uuid_string);
-        goto cleanup;
-    }
-
-    pool = virGetStoragePool(conn, name, uuid);
+    pool = virGetStoragePool(conn, name, md5);
 
   cleanup:
     esxVI_ObjectContent_Free(&datastore);
@@ -274,9 +248,11 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     esxPrivate *priv = conn->storagePrivateData;
     esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastoreList = NULL;
     esxVI_ObjectContent *datastore = NULL;
+    esxVI_DatastoreHostMount *hostMount = NULL;
+    unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
-    char *absolutePath = NULL;
     char *name = NULL;
     virStoragePoolPtr pool = NULL;
 
@@ -284,48 +260,26 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return NULL;
     }
 
-    /*
-     * Convert UUID to 'host.mountInfo.path' form by stripping the second '-':
-     *
-     * <---- 14 ----><-------- 22 -------->    <---- 13 ---><-------- 22 -------->
-     * 4b0beca7-7fd4-01f3-1d7f-000ae484a6a3 -> 4b0beca7-7fd401f3-1d7f-000ae484a6a3
-     */
-    virUUIDFormat(uuid, uuid_string);
-    memmove(uuid_string + 13, uuid_string + 14, 22 + 1);
-
-    if (virAsprintf(&absolutePath, "/vmfs/volumes/%s", uuid_string) < 0) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     if (esxVI_String_AppendValueToList(&propertyNameList, "summary.name") < 0 ||
-        esxVI_LookupDatastoreByAbsolutePath(priv->primary, absolutePath,
-                                            propertyNameList, &datastore,
-                                            esxVI_Occurrence_OptionalItem) < 0) {
+        esxVI_LookupDatastoreList(priv->primary, propertyNameList,
+                                  &datastoreList) < 0) {
         goto cleanup;
     }
 
-    /*
-     * If the first try didn't succeed and the trailing 16 digits are zero then
-     * the "UUID" could be a short one. Strip the 16 zeros and try again:
-     *
-     * <------ 17 ----->                      <------ 17 ----->
-     * b24b7a78-9d82b4f5-0000-000000000000 -> b24b7a78-9d82b4f5
-     */
-    if (datastore == NULL && STREQ(uuid_string + 17, "-0000-000000000000")) {
-        uuid_string[17] = '\0';
+    for (datastore = datastoreList; datastore != NULL;
+         datastore = datastore->_next) {
+        esxVI_DatastoreHostMount_Free(&hostMount);
 
-        VIR_FREE(absolutePath);
-
-        if (virAsprintf(&absolutePath, "/vmfs/volumes/%s", uuid_string) < 0) {
-            virReportOOMError();
+        if (esxVI_LookupDatastoreHostMount(priv->primary, datastore->obj,
+                                           &hostMount) < 0) {
             goto cleanup;
         }
 
-        if (esxVI_LookupDatastoreByAbsolutePath(priv->primary, absolutePath,
-                                                propertyNameList, &datastore,
-                                                esxVI_Occurrence_RequiredItem) < 0) {
-            goto cleanup;
+        md5_buffer(hostMount->mountInfo->path,
+                   strlen(hostMount->mountInfo->path), md5);
+
+        if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0) {
+            break;
         }
     }
 
@@ -347,9 +301,9 @@ esxStoragePoolLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     pool = virGetStoragePool(conn, name, uuid);
 
   cleanup:
-    VIR_FREE(absolutePath);
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&datastore);
+    esxVI_ObjectContent_Free(&datastoreList);
+    esxVI_DatastoreHostMount_Free(&hostMount);
 
     return pool;
 }
