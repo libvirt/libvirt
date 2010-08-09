@@ -3209,16 +3209,17 @@ qemuPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static void
-qemudReattachManagedDevice(pciDevice *dev, struct qemud_driver *driver)
+qemudReattachPciDevice(pciDevice *dev, struct qemud_driver *driver)
 {
     int retries = 100;
 
+    while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
+           && retries) {
+        usleep(100*1000);
+        retries--;
+    }
+
     if (pciDeviceGetManaged(dev)) {
-        while (pciWaitForDeviceCleanup(dev, "kvm_assigned_device")
-               && retries) {
-            usleep(100*1000);
-            retries--;
-        }
         if (pciReAttachDevice(dev, driver->activePciHostdevs) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to re-attach PCI device: %s"),
@@ -3264,7 +3265,7 @@ qemuDomainReAttachHostdevDevices(struct qemud_driver *driver,
 
     for (i = 0; i < pciDeviceListCount(pcidevs); i++) {
         pciDevice *dev = pciDeviceListGet(pcidevs, i);
-        qemudReattachManagedDevice(dev, driver);
+        qemudReattachPciDevice(dev, driver);
     }
 
     pciDeviceListFree(pcidevs);
@@ -8997,7 +8998,7 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
         pciDeviceListDel(driver->activePciHostdevs, pci);
         if (pciResetDevice(pci, driver->activePciHostdevs, NULL) < 0)
             ret = -1;
-        qemudReattachManagedDevice(pci, driver);
+        qemudReattachPciDevice(pci, driver);
         pciFreeDevice(pci);
     }
 
