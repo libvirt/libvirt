@@ -6164,6 +6164,8 @@ remoteNodeDeviceDettach (virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_dettach_args args;
+    /* This method is unusual in that it uses the HV driver, not the devMon driver
+     * hence its use of privateData, instead of devMonPrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -6187,6 +6189,8 @@ remoteNodeDeviceReAttach (virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_re_attach_args args;
+    /* This method is unusual in that it uses the HV driver, not the devMon driver
+     * hence its use of privateData, instead of devMonPrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -6210,6 +6214,8 @@ remoteNodeDeviceReset (virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_reset_args args;
+    /* This method is unusual in that it uses the HV driver, not the devMon driver
+     * hence its use of privateData, instead of devMonPrivateData */
     struct private_data *priv = dev->conn->privateData;
 
     remoteDriverLock(priv);
@@ -6237,7 +6243,7 @@ remoteNodeDeviceCreateXML(virConnectPtr conn,
     remote_node_device_create_xml_args args;
     remote_node_device_create_xml_ret ret;
     virNodeDevicePtr dev = NULL;
-    struct private_data *priv = conn->privateData;
+    struct private_data *priv = conn->devMonPrivateData;
 
     remoteDriverLock(priv);
 
@@ -6263,7 +6269,7 @@ remoteNodeDeviceDestroy(virNodeDevicePtr dev)
 {
     int rv = -1;
     remote_node_device_destroy_args args;
-    struct private_data *priv = dev->conn->privateData;
+    struct private_data *priv = dev->conn->devMonPrivateData;
 
     remoteDriverLock(priv);
 
