@@ -141,7 +141,7 @@ umlConnectTapDevice(virDomainNetDefPtr net,
                         tapmac,
                         0,
                         &tapfd))) {
-        if (errno == ENOTSUP) {
+        if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to add tap interface to bridge. "
