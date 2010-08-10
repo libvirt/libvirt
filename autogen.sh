@@ -80,7 +80,7 @@ bootstrap_hash()
 curr_status=.git-module-status
 t=$(bootstrap_hash; git diff .gnulib)
 if test "$t" = "$(cat $curr_status 2>/dev/null)" \
-    && test -f "$THEDIR/po/Makevars"; then
+    && test -f "po/Makevars"; then
     # good, it's up to date, all we need is autoreconf
     autoreconf -if
 else
