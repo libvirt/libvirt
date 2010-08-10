@@ -2367,7 +2367,7 @@ const char *virEnumToString(const char *const*types,
 int virDiskNameToIndex(const char *name) {
     const char *ptr = NULL;
     int idx = 0;
-    static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd"};
+    static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
     unsigned int i;
 
     for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
