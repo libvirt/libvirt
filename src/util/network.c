@@ -56,7 +56,7 @@ static int getIPv6Addr(virSocketAddrPtr addr, virIPv6AddrPtr tab) {
 /**
  * virSocketParseAddr:
  * @val: a numeric network address IPv4 or IPv6
- * @addr: where to store the return value.
+ * @addr: where to store the return value, optional.
  * @hint: optional hint to pass down to getaddrinfo
  *
  * Mostly a wrapper for getaddrinfo() extracting the address storage
@@ -70,7 +70,7 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
     struct addrinfo hints;
     struct addrinfo *res = NULL;
 
-    if ((val == NULL) || (addr == NULL))
+    if (val == NULL)
         return(-1);
 
     memset(&hints, 0, sizeof(hints));
@@ -80,7 +80,8 @@ virSocketParseAddr(const char *val, virSocketAddrPtr addr, int hint) {
     }
 
     len = res->ai_addrlen;
-    memcpy(&addr->stor, res->ai_addr, len);
+    if (addr != NULL)
+        memcpy(&addr->stor, res->ai_addr, len);
 
     freeaddrinfo(res);
     return(len);
