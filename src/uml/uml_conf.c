@@ -1,7 +1,7 @@
 /*
  * uml_conf.c: UML driver configuration
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -146,6 +146,11 @@ umlConnectTapDevice(virDomainNetDefPtr net,
             umlReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to add tap interface to bridge. "
                              "%s is not a bridge device"), bridge);
+        } else if (err == ENOENT) {
+            virReportSystemError(err, "%s",
+                    _("Failed to add tap interface to bridge. Your kernel "
+                      "is missing the 'tun' module or CONFIG_TUN, or you need "
+                      "to add the /dev/net/tun device node."));
         } else if (template_ifname) {
             virReportSystemError(err,
                                  _("Failed to add tap interface to bridge '%s'"),
