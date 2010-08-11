@@ -538,6 +538,8 @@ brAddTap(brControl *ctl,
         goto error;
     if (tapfd)
         *tapfd = fd;
+    else
+        close(fd);
     return 0;
 
  error:
