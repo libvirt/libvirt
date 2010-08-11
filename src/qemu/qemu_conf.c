@@ -4958,7 +4958,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * NB: Earlier we declared that VirtIO balloon will always be in
      * slot 0x3 on bus 0x0
      */
-    if (def->memballoon) {
+    if ((def->memballoon) &&
+        (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
         if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
             qemuReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("Memory balloon device type '%s' is not supported by this version of qemu"),
@@ -6575,6 +6576,9 @@ virDomainDefPtr qemuParseCommandLine(virCapsPtr caps,
         def->videos[def->nvideos++] = vid;
     }
 
+    /*
+     * having a balloon is the default, define one with type="none" to avoid it
+     */
     if (!def->memballoon) {
         virDomainMemballoonDefPtr memballoon;
         if (VIR_ALLOC(memballoon) < 0)

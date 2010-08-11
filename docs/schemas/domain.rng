@@ -1354,6 +1354,7 @@
         <choice>
           <value>virtio</value>
           <value>xen</value>
+          <value>none</value>
         </choice>
       </attribute>
       <optional>
