@@ -200,7 +200,7 @@ Requires: %{name}-client = %{version}-%{release}
 Requires: bridge-utils
 %endif
 %if %{with_network}
-Requires: dnsmasq
+Requires: dnsmasq >= 2.41
 Requires: iptables
 %endif
 %if %{with_nwfilter}
@@ -298,7 +298,7 @@ BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
 %endif
 %if %{with_network}
-BuildRequires: dnsmasq
+BuildRequires: dnsmasq >= 2.41
 %endif
 BuildRequires: bridge-utils
 %if %{with_sasl}

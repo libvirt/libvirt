@@ -427,6 +427,8 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /* --dhcp-lease-max=xxx if needed */
         (network->def->nranges ? 1 : 0) +
+        /* --dhcp-no-override if needed */
+        (network->def->nranges ? 1 : 0) +
         /* --dhcp-hostsfile=/var/lib/dnsmasq/$NAME.hostsfile */
         (network->def->nhosts > 0 ? 1 : 0) +
         /* --enable-tftp --tftp-root /srv/tftp */
@@ -497,6 +499,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     if (network->def->nranges > 0) {
         snprintf(buf, sizeof(buf), "--dhcp-lease-max=%d", nbleases);
         APPEND_ARG(*argv, i++, buf);
+        APPEND_ARG(*argv, i++, "--dhcp-no-override");
     }
 
     if (network->def->nhosts > 0) {
