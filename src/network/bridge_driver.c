@@ -426,7 +426,7 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         2 + /* --listen-address 10.0.0.1 */
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /* --dhcp-lease-max=xxx if needed */
-        (network->def->nranges ? 0 : 1) +
+        (network->def->nranges ? 1 : 0) +
         /* --dhcp-hostsfile=/var/lib/dnsmasq/$NAME.hostsfile */
         (network->def->nhosts > 0 ? 1 : 0) +
         /* --enable-tftp --tftp-root /srv/tftp */
