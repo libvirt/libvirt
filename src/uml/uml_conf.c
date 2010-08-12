@@ -513,10 +513,10 @@ int umlBuildCommandLine(virConnectPtr conn,
     }
 
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
-        char *ret;
+        char *ret = NULL;
         if (i == 0 && vm->def->console)
             ret = umlBuildCommandLineChr(vm->def->console, "con");
-        else
+        if (!ret)
             if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;
         ADD_ARG(ret);
@@ -524,13 +524,13 @@ int umlBuildCommandLine(virConnectPtr conn,
 
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
         virDomainChrDefPtr chr = NULL;
-        char *ret;
+        char *ret = NULL;
         for (j = 0 ; j < vm->def->nserials ; j++)
             if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
             ret = umlBuildCommandLineChr(chr, "ssl");
-        else
+        if (!ret)
             if (virAsprintf(&ret, "ssl%d=none", i) < 0)
                 goto no_memory;
         ADD_ARG(ret);
