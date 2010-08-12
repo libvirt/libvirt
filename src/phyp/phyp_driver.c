@@ -3864,9 +3864,9 @@ phypDomainSetCPU(virDomainPtr dom, unsigned int nvcpus)
 }
 
 static virDrvOpenStatus
-phypStorageOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                int flags)
+phypVIOSDriverOpen(virConnectPtr conn,
+                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                   int flags)
 {
     virCheckFlags(0, VIR_DRV_OPEN_ERROR);
 
@@ -3877,7 +3877,7 @@ phypStorageOpen(virConnectPtr conn,
 }
 
 static int
-phypStorageClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+phypVIOSDriverClose(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -3984,8 +3984,8 @@ static virDriver phypDriver = {
 
 static virStorageDriver phypStorageDriver = {
     .name = "PHYP",
-    .open = phypStorageOpen,
-    .close = phypStorageClose,
+    .open = phypVIOSDriverOpen,
+    .close = phypVIOSDriverClose,
 
     .numOfPools = phypNumOfStoragePools,
     .listPools = phypListStoragePools,
@@ -4023,12 +4023,37 @@ static virStorageDriver phypStorageDriver = {
     .poolIsPersistent = NULL
 };
 
+static virNetworkDriver phypNetworkDriver = {
+    .name = "PHYP",
+    .open = phypVIOSDriverOpen,
+    .close = phypVIOSDriverClose,
+    .numOfNetworks = NULL,
+    .listNetworks = NULL,
+    .numOfDefinedNetworks = NULL,
+    .listDefinedNetworks = NULL,
+    .networkLookupByUUID = NULL,
+    .networkLookupByName = NULL,
+    .networkCreateXML = NULL,
+    .networkDefineXML = NULL,
+    .networkUndefine = NULL,
+    .networkCreate = NULL,
+    .networkDestroy = NULL,
+    .networkDumpXML = NULL,
+    .networkGetBridgeName = NULL,
+    .networkGetAutostart = NULL,
+    .networkSetAutostart = NULL,
+    .networkIsActive = NULL,
+    .networkIsPersistent = NULL
+};
+
 int
 phypRegister(void)
 {
     if (virRegisterDriver(&phypDriver) < 0)
         return -1;
     if (virRegisterStorageDriver(&phypStorageDriver) < 0)
+        return -1;
+    if (virRegisterNetworkDriver(&phypNetworkDriver) < 0)
         return -1;
 
     return 0;
