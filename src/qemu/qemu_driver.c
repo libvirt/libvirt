@@ -10985,6 +10985,13 @@ static int doTunnelMigrate(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (chown(unixfile, qemu_driver->user, qemu_driver->group) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot change unix socket '%s' owner"),
+                             unixfile);
+        goto cleanup;
+    }
+
     /* check that this qemu version supports the unix migration */
     if (qemudExtractVersionInfo(vm->def->emulator, NULL, &qemuCmdFlags) < 0) {
         qemuReportError(VIR_ERR_INTERNAL_ERROR,
