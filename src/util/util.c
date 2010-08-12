@@ -941,9 +941,11 @@ virPipeReadUntilEOF(int outfd, int errfd,
 
     fds[0].fd = outfd;
     fds[0].events = POLLIN;
+    fds[0].revents = 0;
     finished[0] = 0;
     fds[1].fd = errfd;
     fds[1].events = POLLIN;
+    fds[1].revents = 0;
     finished[1] = 0;
 
     while(!(finished[0] && finished[1])) {

@@ -2239,6 +2239,7 @@ virNWFilterPoolObjLoad(virConnectPtr conn,
         return NULL;
     }
 
+    VIR_FREE(pool->configFile); // for driver reload
     pool->configFile = strdup(path);
     if (pool->configFile == NULL) {
         virReportOOMError();

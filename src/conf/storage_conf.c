@@ -1403,12 +1403,14 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
         return NULL;
     }
 
+    VIR_FREE(pool->configFile);  // for driver reload
     pool->configFile = strdup(path);
     if (pool->configFile == NULL) {
         virReportOOMError();
         virStoragePoolDefFree(def);
         return NULL;
     }
+    VIR_FREE(pool->autostartLink); // for driver reload
     pool->autostartLink = strdup(autostartLink);
     if (pool->autostartLink == NULL) {
         virReportOOMError();

@@ -1092,6 +1092,12 @@ x86MapFree(struct x86_map *map)
         x86ModelFree(model);
     }
 
+    while (map->vendors != NULL) {
+        struct x86_vendor *vendor = map->vendors;
+        map->vendors = vendor->next;
+        x86VendorFree(vendor);
+    }
+
     VIR_FREE(map);
 }
 
