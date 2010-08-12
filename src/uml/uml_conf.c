@@ -112,7 +112,6 @@ umlConnectTapDevice(virDomainNetDefPtr net,
                     const char *bridge)
 {
     brControl *brctl = NULL;
-    int tapfd = -1;
     int template_ifname = 0;
     int err;
     unsigned char tapmac[VIR_MAC_BUFLEN];
@@ -140,7 +139,7 @@ umlConnectTapDevice(virDomainNetDefPtr net,
                         &net->ifname,
                         tapmac,
                         0,
-                        &tapfd))) {
+                        NULL))) {
         if (err == ENOTSUP) {
             /* In this particular case, give a better diagnostic. */
             umlReportError(VIR_ERR_INTERNAL_ERROR,
@@ -164,7 +163,6 @@ umlConnectTapDevice(virDomainNetDefPtr net,
             VIR_FREE(net->ifname);
         goto error;
     }
-    close(tapfd);
 
     brShutdown(brctl);
 
