@@ -1010,7 +1010,7 @@ EXTRA_DIST += \
   libvirt_daemon.syms		\
   libvirt_nwfilter.syms
 
-BUILT_SOURCES += libvirt.syms libvirt.def
+BUILT_SOURCES += libvirt.syms libvirt.def libvirt_qemu.def
 
 libvirt.syms: libvirt_public.syms $(USED_SYM_FILES)
 	$(AM_V_GEN)rm -f $@-tmp $@ ; \
@@ -1032,6 +1032,13 @@ libvirt.def: libvirt.syms
 	sed -e '/^$$/d; /#/d; /:/d; /\}/d; /\*/d; /LIBVIRT_/d; s/[ \t]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.def
+
+libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
+	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
+	printf 'EXPORTS\n' > $@-tmp && \
+	sed -e '/^$$/d; /#/d; /:/d; /\}/d; /\*/d; /LIBVIRT_/d; s/[ \t]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
+	chmod a-w $@-tmp && \
+	mv $@-tmp libvirt_qemu.def
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =

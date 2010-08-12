@@ -1873,6 +1873,7 @@ case "$host" in
     # Also set the symbol file to .def, so src/Makefile generates libvirt.def
     # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the linker
     LIBVIRT_SYMBOL_FILE=libvirt.def
+    LIBVIRT_QEMU_SYMBOL_FILE=libvirt_qemu.def
     # mingw's ld has the --version-script parameter, but it requires a .def file
     # instead to work properly, therefore clear --version-script here and use
     # -Wl, to pass the .def file to the linker

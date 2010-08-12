@@ -11,6 +11,7 @@ libvirt_parthelper
 libvirt_lxc
 libvirt.def
 libvirt.syms
+libvirt_qemu.def
 *.i
 *.s
 virt-aa-helper
