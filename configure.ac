@@ -111,18 +111,6 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h regex.h sys/syslimits.h \
   termios.h sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h])
 
-dnl Where are the XDR functions?
-dnl If portablexdr is installed, prefer that.
-dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW), -lnsl (Solaris)
-dnl or none (most Unix)
-AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
-	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl],[],
-		[AC_MSG_ERROR([Cannot find a XDR library])])
-	])
-
-dnl check for cygwin's variation in xdr function names
-AC_CHECK_FUNCS([xdr_u_int64_t],[],[],[#include <rpc/xdr.h>])
-
 AC_CHECK_LIB([intl],[gettext],[])
 
 dnl Do we have rpcgen?
@@ -316,6 +304,25 @@ if test "$with_openvz" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
 fi
 AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
+
+
+dnl
+dnl check for XDR
+dnl
+
+if test x"$with_remote" = x"yes" || test x"$with_libvirtd" = x"yes"; then
+    dnl Where are the XDR functions?
+    dnl If portablexdr is installed, prefer that.
+    dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW), -lnsl (Solaris)
+    dnl or none (most Unix)
+    AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
+        AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl],[],
+            [AC_MSG_ERROR([Cannot find a XDR library])])
+        ])
+
+    dnl check for cygwin's variation in xdr function names
+    AC_CHECK_FUNCS([xdr_u_int64_t],[],[],[#include <rpc/xdr.h>])
+fi
 
 
 dnl
