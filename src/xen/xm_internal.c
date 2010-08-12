@@ -803,7 +803,7 @@ xenXMDomainConfigParse(virConnectPtr conn, virConfPtr conf) {
 
     if (xenXMConfigGetString(conf, "on_crash", &str, "restart") < 0)
         goto cleanup;
-    if ((def->onCrash = virDomainLifecycleTypeFromString(str)) < 0) {
+    if ((def->onCrash = virDomainLifecycleCrashTypeFromString(str)) < 0) {
         xenXMError(VIR_ERR_INTERNAL_ERROR,
                    _("unexpected value %s for on_crash"), str);
         goto cleanup;
@@ -2378,7 +2378,7 @@ virConfPtr xenXMDomainConfigFormat(virConnectPtr conn,
         goto no_memory;
 
 
-    if (!(lifecycle = virDomainLifecycleTypeToString(def->onCrash))) {
+    if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
         xenXMError(VIR_ERR_INTERNAL_ERROR,
                    _("unexpected lifecycle action %d"), def->onCrash);
         goto cleanup;

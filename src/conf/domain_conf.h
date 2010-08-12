@@ -663,6 +663,17 @@ enum virDomainLifecycleAction {
     VIR_DOMAIN_LIFECYCLE_LAST
 };
 
+enum virDomainLifecycleCrashAction {
+    VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY,
+    VIR_DOMAIN_LIFECYCLE_CRASH_RESTART,
+    VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME,
+    VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE,
+    VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY,
+    VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART,
+
+    VIR_DOMAIN_LIFECYCLE_CRASH_LAST
+};
+
 /* Operating system configuration data & machine / arch */
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
@@ -1135,10 +1146,14 @@ int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                 virDomainDiskDefPathIterator iter,
                                 void *opaque);
 
+typedef const char* (*virLifecycleToStringFunc)(int type);
+typedef int (*virLifecycleFromStringFunc)(const char *type);
+
 VIR_ENUM_DECL(virDomainVirt)
 VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainLifecycle)
+VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainDevice)
 VIR_ENUM_DECL(virDomainDeviceAddress)
 VIR_ENUM_DECL(virDomainDeviceAddressMode)

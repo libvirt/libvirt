@@ -1177,7 +1177,7 @@
       </optional>
       <optional>
         <element name="on_crash">
-          <ref name="offOptions"/>
+          <ref name="crashOptions"/>
         </element>
       </optional>
     </interleave>
@@ -1196,6 +1196,29 @@
       <value>restart</value>
       <value>preserve</value>
       <value>rename-restart</value>
+    </choice>
+  </define>
+  <!--
+      Options when a domain crashes:
+      destroy: The domain is cleaned up
+      restart: A new domain is started in place of the old one
+      preserve: The domain will remain in memory until it is destroyed manually
+      rename-restart: a variant of the previous one but where the old domain is
+                      renamed before being saved to allow a restart
+      coredump-destroy: The crashed domain's core will be dumped, and then the
+                        domain will be terminated completely and all resources
+                        released
+      coredump-restart: The crashed domain's core will be dumped, and then the
+                        domain will be restarted with the same configuration
+    -->
+  <define name="crashOptions">
+    <choice>
+      <value>destroy</value>
+      <value>restart</value>
+      <value>preserve</value>
+      <value>rename-restart</value>
+      <value>coredump-destroy</value>
+      <value>coredump-restart</value>
     </choice>
   </define>
   <!--

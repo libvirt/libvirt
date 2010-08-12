@@ -46,7 +46,7 @@ enum xen_on_normal_exit
 actionShutdownLibvirt2XenapiEnum(enum virDomainLifecycleAction action);
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(enum virDomainLifecycleAction action);
+actionCrashLibvirt2XenapiEnum(enum virDomainLifecycleCrashAction action);
 
 char *
 createXenAPIBootOrderString(int nboot, int *bootDevs);
@@ -56,7 +56,7 @@ enum virDomainBootOrder map2LibvirtBootOrder(char c);
 enum virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action);
 
-enum virDomainLifecycleAction
+enum virDomainLifecycleCrashAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action);
 
 void getCpuBitMapfromString(char *mask, unsigned char *cpumap, int maplen);

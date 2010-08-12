@@ -366,6 +366,21 @@
         a new name</dd>
     </dl>
 
+    <p>
+      on_crash supports these additional
+      actions <span class="since">since 0.8.4</span>.
+    </p>
+
+    <dl>
+      <dt><code>coredump-destroy</code></dt>
+      <dd>The crashed domain's core will be dumped, and then the
+        domain will be terminated completely and all resources
+        released</dd>
+      <dt><code>coredump-restart</code></dt>
+      <dd>The crashed domain's core will be dumped, and then the
+        domain will be restarted with the same configuration</dd>
+    </dl>
+
     <h3><a name="elementsFeatures">Hypervisor features</a></h3>
 
     <p>

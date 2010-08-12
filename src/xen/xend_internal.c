@@ -2206,7 +2206,7 @@ xenDaemonParseSxpr(virConnectPtr conn,
 
     tmp = sexpr_node(root, "domain/on_crash");
     if (tmp != NULL) {
-        if ((def->onCrash = virDomainLifecycleTypeFromString(tmp)) < 0) {
+        if ((def->onCrash = virDomainLifecycleCrashTypeFromString(tmp)) < 0) {
             virXendError(VIR_ERR_INTERNAL_ERROR,
                          _("unknown lifecycle type %s"), tmp);
             goto error;
@@ -5693,7 +5693,7 @@ xenDaemonFormatSxpr(virConnectPtr conn,
     }
     virBufferVSprintf(&buf, "(on_reboot '%s')", tmp);
 
-    if (!(tmp = virDomainLifecycleTypeToString(def->onCrash))) {
+    if (!(tmp = virDomainLifecycleCrashTypeToString(def->onCrash))) {
         virXendError(VIR_ERR_INTERNAL_ERROR,
                      _("unexpected lifecycle value %d"), def->onCrash);
         goto error;
