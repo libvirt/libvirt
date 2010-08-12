@@ -10482,7 +10482,7 @@ qemudDomainMigratePrepareTunnel(virConnectPtr dconn,
     vm->def->id = -1;
 
     if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.dest.%s",
-                    driver->stateDir, vm->def->name) < 0) {
+                    driver->libDir, vm->def->name) < 0) {
         virReportOOMError();
         goto endjob;
     }
@@ -10951,7 +10951,7 @@ static int doTunnelMigrate(virDomainPtr dom,
     /* Stage 1. setup local support infrastructure */
 
     if (virAsprintf(&unixfile, "%s/qemu.tunnelmigrate.src.%s",
-                    driver->stateDir, vm->def->name) < 0) {
+                    driver->libDir, vm->def->name) < 0) {
         virReportOOMError();
         goto cleanup;
     }
