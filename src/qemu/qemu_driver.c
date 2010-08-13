@@ -9042,7 +9042,7 @@ static int qemudDomainDetachHostPciDevice(struct qemud_driver *driver,
 
     if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
         qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
-        VIR_WARN0("Unable to release PCI address on controller");
+        VIR_WARN0("Unable to release PCI address on host device");
 
     if (vm->def->nhostdevs > 1) {
         memmove(vm->def->hostdevs + i,
