@@ -73,11 +73,11 @@ struct virEventLoop {
     int running;
     virThread leader;
     int wakeupfd[2];
-    int handlesCount;
-    int handlesAlloc;
+    size_t handlesCount;
+    size_t handlesAlloc;
     struct virEventHandle *handles;
-    int timeoutsCount;
-    int timeoutsAlloc;
+    size_t timeoutsCount;
+    size_t timeoutsAlloc;
     struct virEventTimeout *timeouts;
 };
 
@@ -103,14 +103,13 @@ int virEventAddHandleImpl(int fd, int events,
     EVENT_DEBUG("Add handle fd=%d events=%d cb=%p opaque=%p", fd, events, cb, opaque);
     virMutexLock(&eventLoop.lock);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
-        EVENT_DEBUG("Used %d handle slots, adding %d more",
+        EVENT_DEBUG("Used %zu handle slots, adding at least %d more",
                     eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
-        if (VIR_REALLOC_N(eventLoop.handles,
-                          (eventLoop.handlesAlloc + EVENT_ALLOC_EXTENT)) < 0) {
+        if (VIR_RESIZE_N(eventLoop.handles, eventLoop.handlesAlloc,
+                         eventLoop.handlesCount, EVENT_ALLOC_EXTENT) < 0) {
             virMutexUnlock(&eventLoop.lock);
             return -1;
         }
-        eventLoop.handlesAlloc += EVENT_ALLOC_EXTENT;
     }
 
     watch = nextWatch++;
@@ -204,14 +203,13 @@ int virEventAddTimeoutImpl(int frequency,
 
     virMutexLock(&eventLoop.lock);
     if (eventLoop.timeoutsCount == eventLoop.timeoutsAlloc) {
-        EVENT_DEBUG("Used %d timeout slots, adding %d more",
+        EVENT_DEBUG("Used %zu timeout slots, adding at least %d more",
                     eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
-        if (VIR_REALLOC_N(eventLoop.timeouts,
-                          (eventLoop.timeoutsAlloc + EVENT_ALLOC_EXTENT)) < 0) {
+        if (VIR_RESIZE_N(eventLoop.timeouts, eventLoop.timeoutsAlloc,
+                         eventLoop.timeoutsCount, EVENT_ALLOC_EXTENT) < 0) {
             virMutexUnlock(&eventLoop.lock);
             return -1;
         }
-        eventLoop.timeoutsAlloc += EVENT_ALLOC_EXTENT;
     }
 
     eventLoop.timeouts[eventLoop.timeoutsCount].timer = nextTimer++;
@@ -301,7 +299,7 @@ int virEventRemoveTimeoutImpl(int timer) {
 static int virEventCalculateTimeout(int *timeout) {
     unsigned long long then = 0;
     int i;
-    EVENT_DEBUG("Calculate expiry of %d timers", eventLoop.timeoutsCount);
+    EVENT_DEBUG("Calculate expiry of %zu timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
         if (eventLoop.timeouts[i].frequency < 0)
@@ -482,7 +480,7 @@ static int virEventDispatchHandles(int nfds, struct pollfd *fds) {
  */
 static int virEventCleanupTimeouts(void) {
     int i;
-    DEBUG("Cleanup %d", eventLoop.timeoutsCount);
+    DEBUG("Cleanup %zu", eventLoop.timeoutsCount);
 
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
@@ -507,12 +505,10 @@ static int virEventCleanupTimeouts(void) {
 
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT) > eventLoop.timeoutsCount) {
-        EVENT_DEBUG("Releasing %d out of %d timeout slots used, releasing %d",
+        EVENT_DEBUG("Releasing %zu out of %zu timeout slots used, releasing %d",
                    eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
-        if (VIR_REALLOC_N(eventLoop.timeouts,
-                          (eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT)) < 0)
-            return -1;
-        eventLoop.timeoutsAlloc -= EVENT_ALLOC_EXTENT;
+        VIR_SHRINK_N(eventLoop.timeouts, eventLoop.timeoutsAlloc,
+                     EVENT_ALLOC_EXTENT);
     }
     return 0;
 }
@@ -523,7 +519,7 @@ static int virEventCleanupTimeouts(void) {
  */
 static int virEventCleanupHandles(void) {
     int i;
-    DEBUG("Cleanupo %d", eventLoop.handlesCount);
+    DEBUG("Cleanup %zu", eventLoop.handlesCount);
 
     /* Remove deleted entries, shuffling down remaining
      * entries as needed to form contiguous series
@@ -547,12 +543,10 @@ static int virEventCleanupHandles(void) {
 
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT) > eventLoop.handlesCount) {
-        EVENT_DEBUG("Releasing %d out of %d handles slots used, releasing %d",
+        EVENT_DEBUG("Releasing %zu out of %zu handles slots used, releasing %d",
                    eventLoop.handlesCount, eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
-        if (VIR_REALLOC_N(eventLoop.handles,
-                          (eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT)) < 0)
-            return -1;
-        eventLoop.handlesAlloc -= EVENT_ALLOC_EXTENT;
+        VIR_SHRINK_N(eventLoop.handles, eventLoop.handlesAlloc,
+                     EVENT_ALLOC_EXTENT);
     }
     return 0;
 }

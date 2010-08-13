@@ -1333,7 +1333,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         goto error;
     }
 
-    if (VIR_REALLOC_N(server->clients, server->nclients+1) < 0) {
+    if (VIR_RESIZE_N(server->clients, server->nclients_max,
+                     server->nclients, 1) < 0) {
         VIR_ERROR0(_("Out of memory allocating clients"));
         goto error;
     }
@@ -2361,10 +2362,7 @@ static void *qemudRunLoop(void *opaque) {
                             server->clients + i + 1,
                             sizeof (*server->clients) * (server->nclients - i));
 
-                if (VIR_REALLOC_N(server->clients,
-                                  server->nclients) < 0) {
-                    ; /* ignore */
-                }
+                VIR_SHRINK_N(server->clients, server->nclients, 0);
                 goto reprocess;
             }
         }

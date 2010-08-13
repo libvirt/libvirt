@@ -1,7 +1,7 @@
 /*
  * libvirtd.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2009 Red Hat, Inc.
+ * Copyright (C) 2006-2010 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -283,12 +283,13 @@ struct qemud_server {
 
     int privileged;
 
-    int nworkers;
-    int nactiveworkers;
+    size_t nworkers;
+    size_t nactiveworkers;
     struct qemud_worker *workers;
-    int nsockets;
+    size_t nsockets;
     struct qemud_socket *sockets;
-    int nclients;
+    size_t nclients;
+    size_t nclients_max;
     struct qemud_client **clients;
 
     int sigread;
