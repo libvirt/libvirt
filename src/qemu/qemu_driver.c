@@ -5236,12 +5236,11 @@ endjob:
     return ret;
 }
 
-
-static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
+/* this internal function expects the driver lock to already be held on entry */
+static int qemudDomainSaveFlag(struct qemud_driver *driver, virDomainPtr dom,
+                               virDomainObjPtr vm, const char *path,
                                int compressed)
 {
-    struct qemud_driver *driver = dom->conn->privateData;
-    virDomainObjPtr vm = NULL;
     char *xml = NULL;
     struct qemud_save_header header;
     struct fileOpHookData hdata;
@@ -5259,19 +5258,8 @@ static int qemudDomainSaveFlag(virDomainPtr dom, const char *path,
     memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
     header.version = QEMUD_SAVE_VERSION;
 
-    qemuDriverLock(driver);
-
     header.compressed = compressed;
 
-    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        qemuReportError(VIR_ERR_NO_DOMAIN,
-                        _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJobWithDriver(driver, vm) < 0)
@@ -5556,12 +5544,9 @@ cleanup:
     VIR_FREE(xml);
     if (ret != 0 && is_reg)
         unlink(path);
-    if (vm)
-        virDomainObjUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     virCgroupFree(&cgroup);
-    qemuDriverUnlock(driver);
     return ret;
 }
 
@@ -5569,8 +5554,11 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
 {
     struct qemud_driver *driver = dom->conn->privateData;
     int compressed;
+    int ret = -1;
+    virDomainObjPtr vm = NULL;
 
-    /* Hm, is this safe against qemudReload? */
+    qemuDriverLock(driver);
+
     if (driver->saveImageFormat == NULL)
         compressed = QEMUD_SAVE_FORMAT_RAW;
     else {
@@ -5583,7 +5571,23 @@ static int qemudDomainSave(virDomainPtr dom, const char *path)
         }
     }
 
-    return qemudDomainSaveFlag(dom, path, compressed);
+    vm = virDomainFindByUUID(&driver->domains, dom->uuid);
+    if (!vm) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(dom->uuid, uuidstr);
+        qemuReportError(VIR_ERR_NO_DOMAIN,
+                        _("no domain with matching uuid '%s'"), uuidstr);
+        goto cleanup;
+    }
+
+    ret = qemudDomainSaveFlag(driver, dom, vm, path, compressed);
+
+cleanup:
+    if (vm)
+        virDomainObjUnlock(vm);
+    qemuDriverUnlock(driver);
+
+    return ret;
 }
 
 static char *
@@ -5616,48 +5620,25 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
         virUUIDFormat(dom->uuid, uuidstr);
         qemuReportError(VIR_ERR_NO_DOMAIN,
                         _("no domain with matching uuid '%s'"), uuidstr);
-        goto error;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
-        goto error;
+        goto cleanup;
     }
 
     name = qemuDomainManagedSavePath(driver, vm);
     if (name == NULL)
-        goto error;
+        goto cleanup;
 
     VIR_DEBUG("Saving state to %s", name);
 
-    /* FIXME: we should take the flags parameter, and use bits out
-     * of there to control whether we are compressing or not
-     */
     compressed = QEMUD_SAVE_FORMAT_RAW;
-
-    /* we have to drop our locks here because qemudDomainSaveFlag is
-     * going to pick them back up.  Unfortunately it opens a race window
-     * between us dropping and qemudDomainSaveFlag picking it back up, but
-     * if we want to allow other operations to be able to happen while
-     * qemuDomainSaveFlag is running (possibly for a long time), I'm not
-     * sure if there is a better solution
-     */
-    virDomainObjUnlock(vm);
-    qemuDriverUnlock(driver);
-
-    ret = qemudDomainSaveFlag(dom, name, compressed);
+    ret = qemudDomainSaveFlag(driver, dom, vm, name, compressed);
 
 cleanup:
-    VIR_FREE(name);
-
-    return ret;
-
-error:
     if (vm)
         virDomainObjUnlock(vm);
     qemuDriverUnlock(driver);
-    goto cleanup;
+    VIR_FREE(name);
+
+    return ret;
 }
 
 static int
