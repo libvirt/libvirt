@@ -1464,11 +1464,13 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
     if (qemudExtractVersionInfo(obj->def->emulator,
                                 NULL,
                                 &qemuCmdFlags) >= 0 &&
-        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE))
+        (qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE)) {
         priv->persistentAddrs = 1;
 
-    if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)))
-        goto error;
+        if (!(priv->pciaddrs = qemuDomainPCIAddressSetCreate(obj->def)) ||
+            qemuAssignDevicePCISlots(obj->def, priv->pciaddrs) < 0)
+            goto error;
+    }
 
     if (driver->securityDriver &&
         driver->securityDriver->domainReserveSecurityLabel &&
