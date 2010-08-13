@@ -8671,6 +8671,10 @@ static int qemudDomainDetachPciDiskDevice(struct qemud_driver *driver,
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
 
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        VIR_WARN("Unable to release PCI address on %s", dev->data.disk->src);
+
     qemudShrinkDisks(vm->def, i);
 
     virDomainDiskDefFree(detach);
@@ -8911,6 +8915,10 @@ qemudDomainDetachNetDevice(struct qemud_driver *driver,
         }
     }
     qemuDomainObjExitMonitorWithDriver(driver, vm);
+
+    if ((qemuCmdFlags & QEMUD_CMD_FLAG_DEVICE) &&
+        qemuDomainPCIAddressReleaseAddr(priv->pciaddrs, &detach->info) < 0)
+        VIR_WARN0("Unable to release PCI address on NIC");
 
     virDomainConfNWFilterTeardown(detach);
 
