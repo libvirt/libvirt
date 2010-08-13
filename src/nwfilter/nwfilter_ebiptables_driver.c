@@ -104,6 +104,7 @@ static int ebiptablesDriverInit(void);
 static void ebiptablesDriverShutdown(void);
 static int ebtablesCleanAll(const char *ifname);
 
+static virMutex execCLIMutex;
 
 struct ushort_map {
     unsigned short attr;
@@ -2309,7 +2310,12 @@ ebiptablesExecCLI(virBufferPtr buf,
         return 1;
 
     argv[0] = filename;
+
+    virMutexLock(&execCLIMutex);
+
     rc = virRun(argv, status);
+
+    virMutexUnlock(&execCLIMutex);
 
     *status >>= 8;
 
@@ -3163,8 +3169,9 @@ tear_down_tmpebchains:
     ebiptablesExecCLI(&buf, &cli_status);
 
     virNWFilterReportError(VIR_ERR_BUILD_FIREWALL,
-                           "%s",
-                           _("Some rules could not be created."));
+                           _("Some rules could not be created for "
+                             "interface %s."),
+                           ifname);
 
     return 1;
 }
@@ -3363,6 +3370,9 @@ ebiptablesDriverInit(void)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int cli_status;
+
+    if (virMutexInit(&execCLIMutex))
+        return EINVAL;
 
     bash_cmd_path = virFindFileInPath("bash");
     gawk_cmd_path = virFindFileInPath("gawk");
