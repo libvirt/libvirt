@@ -46,14 +46,21 @@
 
 
 /* Don't call these directly - use the macros below */
-int virAlloc(void *ptrptr, size_t size) ATTRIBUTE_RETURN_CHECK;
-int virAllocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
-int virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK;
+int virAlloc(void *ptrptr, size_t size) ATTRIBUTE_RETURN_CHECK
+    ATTRIBUTE_NONNULL(1);
+int virAllocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK
+    ATTRIBUTE_NONNULL(1);
+int virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK
+    ATTRIBUTE_NONNULL(1);
+int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t remove)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virAllocVar(void *ptrptr,
                 size_t struct_size,
                 size_t element_size,
-                size_t count) ATTRIBUTE_RETURN_CHECK;
-void virFree(void *ptrptr);
+                size_t count) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
+void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 
 /**
  * VIR_ALLOC:
@@ -87,11 +94,43 @@ void virFree(void *ptrptr);
  *
  * Re-allocate an array of 'count' elements, each sizeof(*ptr)
  * bytes long and store the address of allocated memory in
- * 'ptr'. Fill the newly allocated memory with zeros
+ * 'ptr'. If 'ptr' grew, the added memory is uninitialized.
  *
  * Returns -1 on failure, 0 on success
  */
 # define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
+
+/**
+ * VIR_EXPAND_N:
+ * @ptr: pointer to hold address of allocated memory
+ * @count: variable tracking number of elements currently allocated
+ * @add: number of elements to add
+ *
+ * Re-allocate an array of 'count' elements, each sizeof(*ptr)
+ * bytes long, to be 'count' + 'add' elements long, then store the
+ * address of allocated memory in 'ptr' and the new size in 'count'.
+ * The new elements are filled with zero.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+# define VIR_EXPAND_N(ptr, count, add) \
+    virExpandN(&(ptr), sizeof(*(ptr)), &(count), add)
+
+/**
+ * VIR_SHRINK_N:
+ * @ptr: pointer to hold address of allocated memory
+ * @count: variable tracking number of elements currently allocated
+ * @remove: number of elements to remove
+ *
+ * Re-allocate an array of 'count' elements, each sizeof(*ptr)
+ * bytes long, to be 'count' - 'remove' elements long, then store the
+ * address of allocated memory in 'ptr' and the new size in 'count'.
+ * If 'count' <= 'remove', the entire array is freed.
+ *
+ * No return value.
+ */
+# define VIR_SHRINK_N(ptr, count, remove) \
+    virShrinkN(&(ptr), sizeof(*(ptr)), &(count), remove)
 
 /*
  * VIR_ALLOC_VAR_OVERSIZED:

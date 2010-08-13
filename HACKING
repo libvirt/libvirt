@@ -280,9 +280,9 @@ Low level memory management
 Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
 codebase, because they encourage a number of serious coding bugs and do not
 enable compile time verification of checks for NULL. Instead of these
-routines, use the macros from memory.h
+routines, use the macros from memory.h.
 
-- e.g. to allocate a single object:
+- To allocate a single object:
 
   virDomainPtr domain;
 
@@ -293,10 +293,10 @@ routines, use the macros from memory.h
 
 
 
-- e.g. to allocate an array of objects
+- To allocate an array of objects:
 
   virDomainPtr domains;
-  int ndomains = 10;
+  size_t ndomains = 10;
 
   if (VIR_ALLOC_N(domains, ndomains) < 0) {
       virReportOOMError();
@@ -305,7 +305,7 @@ routines, use the macros from memory.h
 
 
 
-- e.g. to allocate an array of object pointers
+- To allocate an array of object pointers:
 
   virDomainPtr *domains;
   int ndomains = 10;
@@ -317,18 +317,22 @@ routines, use the macros from memory.h
 
 
 
-- e.g. to re-allocate the array of domains to be longer
+- To re-allocate the array of domains to be longer:
 
-  ndomains = 20
-
-  if (VIR_REALLOC_N(domains, ndomains) < 0) {
+  if (VIR_EXPAND_N(domains, ndomains, 10) < 0) {
       virReportOOMError();
       return NULL;
   }
 
 
 
-- e.g. to free the domain
+- To trim an array of domains to have one less element:
+
+  VIR_SHRINK_N(domains, ndomains, 1);
+
+
+
+- To free the domain:
 
   VIR_FREE(domain);
 
@@ -344,7 +348,7 @@ code base to help avoiding double-closing of files or file descriptors, which
 is particulary dangerous in a multi-threaded applications. Instead of these
 APIs, use the macros from files.h
 
-- eg opening a file from a file descriptor
+- Open a file from a file descriptor:
 
   if ((file = VIR_FDOPEN(fd, "r")) == NULL) {
       virReportSystemError(errno, "%s",
@@ -355,7 +359,7 @@ APIs, use the macros from files.h
 
 
 
-- e.g. close a file descriptor
+- Close a file descriptor:
 
   if (VIR_CLOSE(fd) < 0) {
       virReportSystemError(errno, "%s", _("failed to close file"));
@@ -363,7 +367,7 @@ APIs, use the macros from files.h
 
 
 
-- eg close a file
+- Close a file:
 
   if (VIR_FCLOSE(file) < 0) {
       virReportSystemError(errno, "%s", _("failed to close file"));
@@ -371,8 +375,8 @@ APIs, use the macros from files.h
 
 
 
-- eg close a file or file descriptor in an error path, without losing the
-previous "errno" value
+- Close a file or file descriptor in an error path, without losing the previous
+"errno" value:
 
   VIR_FORCE_CLOSE(fd);
   VIR_FORCE_FCLOSE(file);
@@ -460,7 +464,7 @@ If there is a need for complex string concatenations, avoid using the usual
 sequence of malloc/strcpy/strcat/snprintf functions and make use of the
 virBuffer API described in buf.h
 
-eg typical usage is as follows:
+Typical usage is as follows:
 
   char *
   somefunction(...)
@@ -594,7 +598,7 @@ When using goto, please use one of these standard labels if it makes sense:
       error: A path only taken upon return with an error code
     cleanup: A path taken upon return with success code + optional error
   no_memory: A path only taken upon return with an OOM error code
-      retry: If needing to jump upwards (eg retry on EINTR)
+      retry: If needing to jump upwards (e.g., retry on EINTR)
 
 
 Libvirt committer guidelines

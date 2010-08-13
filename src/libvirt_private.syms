@@ -503,8 +503,10 @@ virLogUnlock;
 # memory.h
 virAlloc;
 virAllocN;
+virExpandN;
 virFree;
 virReallocN;
+virShrinkN;
 
 
 # network.h

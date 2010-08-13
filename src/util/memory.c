@@ -1,6 +1,7 @@
 /*
  * memory.c: safer memory allocation
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -24,6 +25,7 @@
 #include <stddef.h>
 
 #include "memory.h"
+#include "ignore-value.h"
 
 
 #if TEST_OOM
@@ -141,7 +143,7 @@ int virAllocN(void *ptrptr, size_t size, size_t count)
  * 'count' elements, each 'size' bytes in length. Update 'ptrptr'
  * with the address of the newly allocated memory. On failure,
  * 'ptrptr' is not changed and still points to the original memory
- * block. The newly allocated memory is filled with zeros.
+ * block. Any newly allocated memory in 'ptrptr' is uninitialized.
  *
  * Returns -1 on failure to allocate, zero on success
  */
@@ -163,6 +165,61 @@ int virReallocN(void *ptrptr, size_t size, size_t count)
     *(void**)ptrptr = tmp;
     return 0;
 }
+
+/**
+ * virExpandN:
+ * @ptrptr: pointer to pointer for address of allocated memory
+ * @size: number of bytes per element
+ * @countptr: pointer to number of elements in array
+ * @add: number of elements to add
+ *
+ * Resize the block of memory in 'ptrptr' to be an array of
+ * '*countptr' + 'add' elements, each 'size' bytes in length.
+ * Update 'ptrptr' and 'countptr'  with the details of the newly
+ * allocated memory. On failure, 'ptrptr' and 'countptr' are not
+ * changed. Any newly allocated memory in 'ptrptr' is zero-filled.
+ *
+ * Returns -1 on failure to allocate, zero on success
+ */
+int virExpandN(void *ptrptr, size_t size, size_t *countptr, size_t add)
+{
+    int ret;
+
+    if (*countptr + add < *countptr) {
+        errno = ENOMEM;
+        return -1;
+    }
+    ret = virReallocN(ptrptr, size, *countptr + add);
+    if (ret == 0) {
+        memset(*(char **)ptrptr + (size * *countptr), 0, size * add);
+        *countptr += add;
+    }
+    return ret;
+}
+
+/**
+ * virShrinkN:
+ * @ptrptr: pointer to pointer for address of allocated memory
+ * @size: number of bytes per element
+ * @countptr: pointer to number of elements in array
+ * @remove: number of elements to remove
+ *
+ * Resize the block of memory in 'ptrptr' to be an array of
+ * '*countptr' - 'remove' elements, each 'size' bytes in length.
+ * Update 'ptrptr' and 'countptr'  with the details of the newly
+ * allocated memory. If 'remove' is larger than 'countptr', free
+ * the entire array.
+ */
+void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t remove)
+{
+    if (remove < *countptr)
+        ignore_value(virReallocN(ptrptr, size, *countptr -= remove));
+    else {
+        virFree(ptrptr);
+        *countptr = 0;
+    }
+}
+
 
 /**
  * Vir_Alloc_Var:

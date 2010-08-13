@@ -354,11 +354,12 @@
       Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
       codebase, because they encourage a number of serious coding bugs and do
       not enable compile time verification of checks for NULL. Instead of these
-      routines, use the macros from memory.h
+      routines, use the macros from memory.h.
     </p>
 
     <ul>
-      <li><p>e.g. to allocate  a single object:</p>
+      <li><p>To allocate a single object:</p>
+
 <pre>
   virDomainPtr domain;
 
@@ -369,10 +370,10 @@
 </pre>
       </li>
 
-      <li><p>e.g. to allocate an array of objects</p>
+      <li><p>To allocate an array of objects:</p>
 <pre>
   virDomainPtr domains;
-  int ndomains = 10;
+  size_t ndomains = 10;
 
   if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
       virReportOOMError();
@@ -381,7 +382,7 @@
 </pre>
       </li>
 
-      <li><p>e.g. to allocate an array of object pointers</p>
+      <li><p>To allocate an array of object pointers:</p>
 <pre>
   virDomainPtr *domains;
   int ndomains = 10;
@@ -393,18 +394,22 @@
 </pre>
       </li>
 
-      <li><p>e.g. to re-allocate the array of domains to be longer</p>
+      <li><p>To re-allocate the array of domains to be longer:</p>
 <pre>
-  ndomains = 20
-
-  if (VIR_REALLOC_N(domains, ndomains) &lt; 0) {
+  if (VIR_EXPAND_N(domains, ndomains, 10) &lt; 0) {
       virReportOOMError();
       return NULL;
   }
 </pre>
       </li>
 
-      <li><p>e.g. to free the domain</p>
+      <li><p>To trim an array of domains to have one less element:</p>
+
+<pre>
+  VIR_SHRINK_N(domains, ndomains, 1);
+</pre></li>
+
+      <li><p>To free the domain:</p>
 <pre>
   VIR_FREE(domain);
 </pre>
@@ -421,7 +426,7 @@
     </p>
 
    <ul>
-      <li><p>eg opening a file from a file descriptor</p>
+      <li><p>Open a file from a file descriptor:</p>
 
 <pre>
   if ((file = VIR_FDOPEN(fd, "r")) == NULL) {
@@ -432,14 +437,14 @@
   /* fd is now invalid; only access the file using file variable */
 </pre></li>
 
-      <li><p>e.g. close a file descriptor</p>
+      <li><p>Close a file descriptor:</p>
 <pre>
   if (VIR_CLOSE(fd) &lt; 0) {
       virReportSystemError(errno, "%s", _("failed to close file"));
   }
 </pre></li>
 
-      <li><p>eg close a file</p>
+      <li><p>Close a file:</p>
 
 <pre>
   if (VIR_FCLOSE(file) &lt; 0) {
@@ -447,8 +452,8 @@
   }
 </pre></li>
 
-      <li><p>eg close a file or file descriptor in an error path, without losing
-             the previous <code>errno</code> value</p>
+      <li><p>Close a file or file descriptor in an error path, without losing
+             the previous <code>errno</code> value:</p>
 
 <pre>
   VIR_FORCE_CLOSE(fd);
@@ -554,7 +559,7 @@
       make use of the virBuffer API described in buf.h
     </p>
 
-    <p>eg typical usage is as follows:</p>
+    <p>Typical usage is as follows:</p>
 
 <pre>
   char *
@@ -722,7 +727,7 @@
       error: A path only taken upon return with an error code
     cleanup: A path taken upon return with success code + optional error
   no_memory: A path only taken upon return with an OOM error code
-      retry: If needing to jump upwards (eg retry on EINTR)
+      retry: If needing to jump upwards (e.g., retry on EINTR)
 </pre>
 
 
