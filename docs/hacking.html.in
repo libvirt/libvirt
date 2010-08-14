@@ -385,7 +385,7 @@
       <li><p>To allocate an array of object pointers:</p>
 <pre>
   virDomainPtr *domains;
-  int ndomains = 10;
+  size_t ndomains = 10;
 
   if (VIR_ALLOC_N(domains, ndomains) &lt; 0) {
       virReportOOMError();
@@ -394,26 +394,61 @@
 </pre>
       </li>
 
-      <li><p>To re-allocate the array of domains to be longer:</p>
+      <li><p>To re-allocate the array of domains to be 1 element
+      longer (however, note that repeatedly expanding an array by 1
+      scales quadratically, so this is recommended only for smaller
+      arrays):</p>
 <pre>
-  if (VIR_EXPAND_N(domains, ndomains, 10) &lt; 0) {
+  virDomainPtr domains;
+  size_t ndomains = 0;
+
+  if (VIR_EXPAND_N(domains, ndomains, 1) &lt; 0) {
       virReportOOMError();
       return NULL;
   }
+  domains[ndomains - 1] = domain;
+</pre></li>
+
+      <li><p>To ensure an array has room to hold at least one more
+      element (this approach scales better, but requires tracking
+      allocation separately from usage)</p>
+
+<pre>
+  virDomainPtr domains;
+  size_t ndomains = 0;
+  size_t ndomains_max = 0;
+
+  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) &lt; 0) {
+      virReportOOMError();
+      return NULL;
+  }
+  domains[ndomains++] = domain;
 </pre>
       </li>
 
       <li><p>To trim an array of domains to have one less element:</p>
 
 <pre>
-  VIR_SHRINK_N(domains, ndomains, 1);
+  virDomainPtr domains;
+  size_t ndomains = x;
+  size_t ndomains_max = y;
+
+  VIR_SHRINK_N(domains, ndomains_max, 1);
 </pre></li>
 
-      <li><p>To free the domain:</p>
+      <li><p>To free an array of domains:</p>
 <pre>
-  VIR_FREE(domain);
+  virDomainPtr domains;
+  size_t ndomains = x;
+  size_t ndomains_max = y;
+  size_t i;
+
+  for (i = 0; i &lt; ndomains; i++)
+      VIR_FREE(domains[i]);
+  VIR_FREE(domains);
+  ndomains_max = ndomains = 0;
 </pre>
-       </li>
+      </li>
     </ul>
 
     <h2><a name="file_handling">File handling</a></h2>

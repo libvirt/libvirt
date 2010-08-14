@@ -198,6 +198,41 @@ int virExpandN(void *ptrptr, size_t size, size_t *countptr, size_t add)
 }
 
 /**
+ * virResizeN:
+ * @ptrptr: pointer to pointer for address of allocated memory
+ * @size: number of bytes per element
+ * @allocptr: pointer to number of elements allocated in array
+ * @count: number of elements currently used in array
+ * @add: minimum number of additional elements to support in array
+ *
+ * If 'count' + 'add' is larger than '*allocptr', then resize the
+ * block of memory in 'ptrptr' to be an array of at least 'count' +
+ * 'add' elements, each 'size' bytes in length. Update 'ptrptr' and
+ * 'allocptr' with the details of the newly allocated memory. On
+ * failure, 'ptrptr' and 'allocptr' are not changed. Any newly
+ * allocated memory in 'ptrptr' is zero-filled.
+ *
+ * Returns -1 on failure to allocate, zero on success
+ */
+int virResizeN(void *ptrptr, size_t size, size_t *allocptr, size_t count,
+               size_t add)
+{
+    size_t delta;
+
+    if (count + add < count) {
+        errno = ENOMEM;
+        return -1;
+    }
+    if (count + add <= *allocptr)
+        return 0;
+
+    delta = count + add - *allocptr;
+    if (delta < *allocptr / 2)
+        delta = *allocptr / 2;
+    return virExpandN(ptrptr, size, allocptr, delta);
+}
+
+/**
  * virShrinkN:
  * @ptrptr: pointer to pointer for address of allocated memory
  * @size: number of bytes per element

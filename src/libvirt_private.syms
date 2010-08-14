@@ -506,6 +506,7 @@ virAllocN;
 virExpandN;
 virFree;
 virReallocN;
+virResizeN;
 virShrinkN;
 
 

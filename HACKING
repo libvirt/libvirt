@@ -308,7 +308,7 @@ routines, use the macros from memory.h.
 - To allocate an array of object pointers:
 
   virDomainPtr *domains;
-  int ndomains = 10;
+  size_t ndomains = 10;
 
   if (VIR_ALLOC_N(domains, ndomains) < 0) {
       virReportOOMError();
@@ -317,24 +317,57 @@ routines, use the macros from memory.h.
 
 
 
-- To re-allocate the array of domains to be longer:
+- To re-allocate the array of domains to be 1 element longer (however, note that
+repeatedly expanding an array by 1 scales quadratically, so this is
+recommended only for smaller arrays):
 
-  if (VIR_EXPAND_N(domains, ndomains, 10) < 0) {
+  virDomainPtr domains;
+  size_t ndomains = 0;
+
+  if (VIR_EXPAND_N(domains, ndomains, 1) < 0) {
       virReportOOMError();
       return NULL;
   }
+  domains[ndomains - 1] = domain;
+
+
+
+- To ensure an array has room to hold at least one more element (this approach
+scales better, but requires tracking allocation separately from usage)
+
+  virDomainPtr domains;
+  size_t ndomains = 0;
+  size_t ndomains_max = 0;
+
+  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) < 0) {
+      virReportOOMError();
+      return NULL;
+  }
+  domains[ndomains++] = domain;
 
 
 
 - To trim an array of domains to have one less element:
 
-  VIR_SHRINK_N(domains, ndomains, 1);
+  virDomainPtr domains;
+  size_t ndomains = x;
+  size_t ndomains_max = y;
+
+  VIR_SHRINK_N(domains, ndomains_max, 1);
 
 
 
-- To free the domain:
+- To free an array of domains:
 
-  VIR_FREE(domain);
+  virDomainPtr domains;
+  size_t ndomains = x;
+  size_t ndomains_max = y;
+  size_t i;
+
+  for (i = 0; i < ndomains; i++)
+      VIR_FREE(domains[i]);
+  VIR_FREE(domains);
+  ndomains_max = ndomains = 0;
 
 
 

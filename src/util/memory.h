@@ -54,6 +54,9 @@ int virReallocN(void *ptrptr, size_t size, size_t count) ATTRIBUTE_RETURN_CHECK
     ATTRIBUTE_NONNULL(1);
 int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+int virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count,
+               size_t desired)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t remove)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virAllocVar(void *ptrptr,
@@ -115,6 +118,29 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  */
 # define VIR_EXPAND_N(ptr, count, add) \
     virExpandN(&(ptr), sizeof(*(ptr)), &(count), add)
+
+/**
+ * VIR_RESIZE_N:
+ * @ptr: pointer to hold address of allocated memory
+ * @alloc: variable tracking number of elements currently allocated
+ * @count: number of elements currently in use
+ * @add: minimum number of elements to additionally support
+ *
+ * Blindly using VIR_EXPAND_N(array, alloc, 1) in a loop scales
+ * quadratically, because every iteration must copy contents from
+ * all prior iterations.  But amortized linear scaling can be achieved
+ * by tracking allocation size separately from the number of used
+ * elements, and growing geometrically only as needed.
+ *
+ * If 'count' + 'add' is larger than 'alloc', then geometrically reallocate
+ * the array of 'alloc' elements, each sizeof(*ptr) bytes long, and store
+ * the address of allocated memory in 'ptr' and the new size in 'alloc'.
+ * The new elements are filled with zero.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+# define VIR_RESIZE_N(ptr, alloc, count, add) \
+    virResizeN(&(ptr), sizeof(*(ptr)), &(alloc), count, add)
 
 /**
  * VIR_SHRINK_N:
