@@ -71,5 +71,6 @@ void virNWFilterUnlockIface(const char *ifname);
 
 int virNWFilterLearnInit(void);
 void virNWFilterLearnShutdown(void);
+void virNWFilterLearnThreadsTerminate(bool allowNewThreads);
 
 #endif /* __NWFILTER_LEARNIPADDR_H */

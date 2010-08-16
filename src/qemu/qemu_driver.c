@@ -170,6 +170,9 @@ static int qemuDetectVcpuPIDs(struct qemud_driver *driver,
 static int qemuUpdateActivePciHostdevs(struct qemud_driver *driver,
                                        virDomainDefPtr def);
 
+static int qemudVMFiltersInstantiate(virConnectPtr conn,
+                                     virDomainDefPtr def);
+
 static struct qemud_driver *qemu_driver = NULL;
 
 
@@ -1423,6 +1426,10 @@ error:
     return ret;
 }
 
+struct virReconnectDomainData {
+    virConnectPtr conn;
+    struct qemud_driver *driver;
+};
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
  * and re-reserve the security labels in use
@@ -1431,9 +1438,11 @@ static void
 qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaque)
 {
     virDomainObjPtr obj = payload;
-    struct qemud_driver *driver = opaque;
+    struct virReconnectDomainData *data = opaque;
+    struct qemud_driver *driver = data->driver;
     qemuDomainObjPrivatePtr priv;
     unsigned long long qemuCmdFlags;
+    virConnectPtr conn = data->conn;
 
     virDomainObjLock(obj);
 
@@ -1467,6 +1476,9 @@ qemuReconnectDomain(void *payload, const char *name ATTRIBUTE_UNUSED, void *opaq
                                                            obj) < 0)
         goto error;
 
+    if (qemudVMFiltersInstantiate(conn, obj->def))
+        goto error;
+
     if (obj->def->id >= driver->nextvmid)
         driver->nextvmid = obj->def->id + 1;
 
@@ -1491,9 +1503,10 @@ error:
  * about.
  */
 static void
-qemuReconnectDomains(struct qemud_driver *driver)
+qemuReconnectDomains(virConnectPtr conn, struct qemud_driver *driver)
 {
-    virHashForEach(driver->domains.objs, qemuReconnectDomain, driver);
+    struct virReconnectDomainData data = {conn, driver};
+    virHashForEach(driver->domains.objs, qemuReconnectDomain, &data);
 }
 
 
@@ -1691,6 +1704,7 @@ qemudStartup(int privileged) {
     char *base = NULL;
     char driverConf[PATH_MAX];
     int rc;
+    virConnectPtr conn = NULL;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
@@ -1912,7 +1926,11 @@ qemudStartup(int privileged) {
                                 1, NULL, NULL) < 0)
         goto error;
 
-    qemuReconnectDomains(qemu_driver);
+    conn = virConnectOpen(qemu_driver->privileged ?
+                          "qemu:///system" :
+                          "qemu:///session");
+
+    qemuReconnectDomains(conn, qemu_driver);
 
     /* Then inactive persistent configs */
     if (virDomainLoadAllConfigs(qemu_driver->caps,
@@ -1930,6 +1948,8 @@ qemudStartup(int privileged) {
 
     qemudAutostartConfigs(qemu_driver);
 
+    if (conn)
+        virConnectClose(conn);
 
     return 0;
 
@@ -1938,6 +1958,8 @@ out_of_memory:
 error:
     if (qemu_driver)
         qemuDriverUnlock(qemu_driver);
+    if (conn)
+        virConnectClose(conn);
     VIR_FREE(base);
     qemudShutdown();
     return -1;
@@ -12738,6 +12760,28 @@ qemudVMFilterRebuild(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+qemudVMFiltersInstantiate(virConnectPtr conn,
+                          virDomainDefPtr def)
+{
+    int err = 0;
+    int i;
+
+    if (!conn)
+        return 1;
+
+    for (i = 0 ; i < def->nnets ; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        if ((net->filter) && (net->ifname)) {
+           if (virDomainConfNWFilterInstantiate(conn, net)) {
+                err = 1;
+                break;
+            }
+        }
+    }
+
+    return err;
+}
 
 static virNWFilterCallbackDriver qemuCallbackDriver = {
     .name = "QEMU",

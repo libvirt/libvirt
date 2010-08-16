@@ -143,15 +143,26 @@ conf_init_err:
  */
 static int
 nwfilterDriverReload(void) {
+    virConnectPtr conn;
+
     if (!driverState) {
         return -1;
     }
 
-    nwfilterDriverLock(driverState);
-    virNWFilterPoolLoadAllConfigs(NULL,
-                                  &driverState->pools,
-                                  driverState->configDir);
-    nwfilterDriverUnlock(driverState);
+    conn = virConnectOpen("qemu:///system");
+
+    if (conn) {
+        /* shut down all threads -- they will be restarted if necessary */
+        virNWFilterLearnThreadsTerminate(true);
+
+        nwfilterDriverLock(driverState);
+        virNWFilterPoolLoadAllConfigs(conn,
+                                      &driverState->pools,
+                                      driverState->configDir);
+        nwfilterDriverUnlock(driverState);
+
+        virConnectClose(conn);
+    }
 
     return 0;
 }

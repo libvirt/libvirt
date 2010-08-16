@@ -857,6 +857,17 @@ virNWFilterLearnInit(void) {
 }
 
 
+void
+virNWFilterLearnThreadsTerminate(bool allowNewThreads) {
+    threadsTerminate = true;
+
+    while (virHashSize(pendingLearnReq) != 0)
+        usleep((PKT_TIMEOUT_MS * 1000) / 3);
+
+    if (allowNewThreads)
+        threadsTerminate = false;
+}
+
 /**
  * virNWFilterLearnShutdown
  * Shutdown of this layer
@@ -864,10 +875,7 @@ virNWFilterLearnInit(void) {
 void
 virNWFilterLearnShutdown(void) {
 
-    threadsTerminate = true;
-
-    while (virHashSize(pendingLearnReq) != 0)
-        usleep((PKT_TIMEOUT_MS * 1000) / 3);
+    virNWFilterLearnThreadsTerminate(false);
 
     virHashFree(pendingLearnReq, freeLearnReqEntry);
     pendingLearnReq = NULL;
