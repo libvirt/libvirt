@@ -737,12 +737,10 @@ static int umlMonitorCommand(const struct uml_driver *driver,
             virReportSystemError(errno, _("cannot read reply %s"), cmd);
             goto error;
         }
-        if (nbytes < sizeof res) {
+        /* Ensure res.length is safe to read before validating its value.  */
+        if (nbytes < offsetof(struct monitor_request, data) ||
+            nbytes < offsetof(struct monitor_request, data) + res.length) {
             virReportSystemError(0, _("incomplete reply %s"), cmd);
-            goto error;
-        }
-        if (sizeof res.data < res.length) {
-            virReportSystemError(0, _("invalid length in reply %s"), cmd);
             goto error;
         }
 
