@@ -198,6 +198,8 @@ remoteSerializeError(struct qemud_client *client,
     return 0;
 
 xdr_error:
+    VIR_WARN("Failed to serialize remote error '%s' as XDR",
+             rerr->message ? *rerr->message : "<unknown>");
     xdr_destroy(&xdr);
     VIR_FREE(msg);
 fatal_error:
@@ -602,6 +604,8 @@ xdr_error:
     xdr_free (data->ret_filter, (char*)&ret);
     xdr_destroy (&xdr);
 fatal_error:
+    VIR_WARN("Failed to serialize reply for program '%d' proc '%d' as XDR",
+             msg->hdr.prog, msg->hdr.proc);
     return -1;
 }
 
@@ -685,5 +689,7 @@ xdr_error:
     xdr_destroy (&xdr);
 fatal_error:
     VIR_FREE(msg);
+    VIR_WARN("Failed to serialize stream data for proc %d as XDR",
+             stream->procedure);
     return -1;
 }
