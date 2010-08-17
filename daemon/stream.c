@@ -108,6 +108,7 @@ remoteStreamEvent(virStreamPtr st, int events, void *opaque)
         remote_error rerr;
         memset(&rerr, 0, sizeof rerr);
         stream->closed = 1;
+        virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
         if (events & VIR_STREAM_EVENT_HANGUP)
             remoteDispatchFormatError(&rerr, "%s", _("stream had unexpected termination"));
@@ -345,8 +346,10 @@ remoteRemoveClientStream(struct qemud_client *client,
         }
     }
 
-    if (!stream->closed)
+    if (!stream->closed) {
+        virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
+    }
 
     while (curr) {
         if (curr == stream) {
@@ -429,6 +432,7 @@ remoteStreamHandleFinish(struct qemud_client *client,
     memset(&rerr, 0, sizeof rerr);
 
     stream->closed = 1;
+    virStreamEventRemoveCallback(stream->st);
     ret = virStreamFinish(stream->st);
 
     if (ret < 0) {
@@ -462,6 +466,7 @@ remoteStreamHandleAbort(struct qemud_client *client,
     memset(&rerr, 0, sizeof rerr);
 
     stream->closed = 1;
+    virStreamEventRemoveCallback(stream->st);
     virStreamAbort(stream->st);
 
     if (msg->hdr.status == REMOTE_ERROR)
