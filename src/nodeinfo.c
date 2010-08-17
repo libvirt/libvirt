@@ -361,6 +361,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 {
     int n;
     unsigned long *mask = NULL;
+    unsigned long *allonesmask = NULL;
     int *cpus = NULL;
     int ret = -1;
     int max_n_cpus = NUMA_MAX_N_CPUS;
@@ -371,13 +372,23 @@ nodeCapsInitNUMA(virCapsPtr caps)
     int mask_n_bytes = max_n_cpus / 8;
     if (VIR_ALLOC_N(mask, mask_n_bytes / sizeof *mask) < 0)
         goto cleanup;
+    if (VIR_ALLOC_N(allonesmask, mask_n_bytes / sizeof *mask) < 0)
+        goto cleanup;
+    memset(allonesmask, 0xff, mask_n_bytes);
 
     for (n = 0 ; n <= numa_max_node() ; n++) {
         int i;
         int ncpus;
+        /* The first time this returns -1, ENOENT if node doesn't exist... */
         if (numa_node_to_cpus(n, mask, mask_n_bytes) < 0) {
             VIR_WARN("NUMA topology for cell %d of %d not available, ignoring",
-                     n, numa_max_node());
+                     n, numa_max_node()+1);
+            continue;
+        }
+        /* second, third... times it returns an all-1's mask */
+        if (memcmp(mask, allonesmask, mask_n_bytes) == 0) {
+            VIR_DEBUG("NUMA topology for cell %d of %d is all ones, ignoring",
+                      n, numa_max_node()+1);
             continue;
         }
 
@@ -406,6 +417,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 cleanup:
     VIR_FREE(cpus);
     VIR_FREE(mask);
+    VIR_FREE(allonesmask);
     return ret;
 }
 
