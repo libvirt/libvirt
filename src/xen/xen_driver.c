@@ -1588,7 +1588,8 @@ xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
     GET_PRIVATE(dom->conn);
     int i, ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
+    /* do the hypervisor call last to get better error */
+    for (i = XEN_UNIFIED_NR_DRIVERS - 1; i >= 0; i--) {
         if (priv->opened[i] && drivers[i]->domainSetSchedulerParameters) {
            ret = drivers[i]->domainSetSchedulerParameters(dom, params, nparams);
            if (ret == 0)

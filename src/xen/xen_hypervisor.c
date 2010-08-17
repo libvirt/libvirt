@@ -1394,8 +1394,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                 } else if (STREQ (params[i].field, str_cap) &&
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
                     val = params[i].value.ui;
-                    if (val > USHRT_MAX) {
-                        snprintf(buf, sizeof(buf), _("Credit scheduler cap parameter (%d) is out of range (0-65535)"), val);
+                    if (val >= USHRT_MAX) {
+                        snprintf(buf, sizeof(buf), _("Credit scheduler cap parameter (%d) is out of range (0-65534)"), val);
                         virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__, buf, val);
                         return(-1);
                     }
