@@ -284,6 +284,8 @@ virStoragePoolSourceFree(virStoragePoolSourcePtr source) {
     VIR_FREE(source->name);
     VIR_FREE(source->adapter);
     VIR_FREE(source->initiator.iqn);
+    VIR_FREE(source->vendor);
+    VIR_FREE(source->product);
 
     if (source->authType == VIR_STORAGE_POOL_AUTH_CHAP) {
         VIR_FREE(source->auth.chap.login);
@@ -464,6 +466,9 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         if (virStoragePoolDefParseAuthChap(ctxt, &source->auth.chap) < 0)
             goto cleanup;
     }
+
+    source->vendor = virXPathString("string(./vendor/@name)", ctxt);
+    source->product = virXPathString("string(./product/@name)", ctxt);
 
     ret = 0;
 cleanup:
@@ -838,6 +843,15 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferVSprintf(buf,"    <auth type='chap' login='%s' passwd='%s'/>\n",
                           src->auth.chap.login,
                           src->auth.chap.passwd);
+
+    if (src->vendor != NULL) {
+        virBufferEscapeString(buf,"    <vendor name='%s'/>\n", src->vendor);
+    }
+
+    if (src->product != NULL) {
+        virBufferEscapeString(buf,"    <product name='%s'/>\n", src->product);
+    }
+
     virBufferAddLit(buf,"  </source>\n");
 
     return 0;

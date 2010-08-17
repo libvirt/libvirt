@@ -96,6 +96,7 @@ mymain(int argc, char **argv)
     DO_TEST("pool-scsi");
     DO_TEST("pool-mpath");
     DO_TEST("pool-iscsi-multiiqn");
+    DO_TEST("pool-iscsi-vendor-product");
 
     return (ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

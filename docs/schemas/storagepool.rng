@@ -103,6 +103,23 @@
     <ref name='target'/>
   </define>
 
+  <define name='sourceinfovendor'>
+    <optional>
+      <element name='vendor'>
+        <attribute name='name'>
+          <text/>
+        </attribute>
+      </element>
+    </optional>
+    <optional>
+      <element name='product'>
+        <attribute name='name'>
+          <text/>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
   <define name='commonmetadata'>
     <element name='name'>
       <ref name='name'/>
@@ -286,6 +303,9 @@
             <value>nfs</value>
           </choice>
         </attribute>
+        <optional>
+          <ref name='sourceinfovendor'/>
+        </optional>
       </element>
     </optional>
   </define>
@@ -307,6 +327,9 @@
             <value>lvm2</value>
           </choice>
         </attribute>
+        <optional>
+          <ref name='sourceinfovendor'/>
+        </optional>
       </element>
     </optional>
   </define>
@@ -321,6 +344,9 @@
             <value>lvm2</value>
           </choice>
         </attribute>
+        <optional>
+          <ref name='sourceinfovendor'/>
+        </optional>
       </element>
     </optional>
   </define>
@@ -330,13 +356,20 @@
     <optional>
       <element name='source'>
         <empty/>
+        <optional>
+          <ref name='sourceinfovendor'/>
+        </optional>
       </element>
     </optional>
   </define>
+
   <define name='sourcefs'>
     <element name='source'>
       <ref name='sourceinfodev'/>
       <ref name='sourcefmtfs'/>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
     </element>
   </define>
 
@@ -345,6 +378,9 @@
       <ref name='sourceinfohost'/>
       <ref name='sourceinfodir'/>
       <ref name='sourcefmtnetfs'/>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
     </element>
   </define>
 
@@ -359,6 +395,9 @@
         </optional>
       </oneOrMore>
       <ref name='sourcefmtlogical'/>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
     </element>
   </define>
 
@@ -366,6 +405,9 @@
     <element name='source'>
       <ref name='sourceinfodev'/>
       <ref name='sourcefmtdisk'/>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
     </element>
   </define>
 
@@ -379,12 +421,19 @@
       <optional>
         <ref name='sourceinfoauth'/>
       </optional>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
     </element>
   </define>
 
   <define name='sourcescsi'>
     <element name='source'>
       <ref name='sourceinfoadapter'/>
+      <optional>
+        <ref name='sourceinfovendor'/>
+      </optional>
+
     </element>
   </define>
 

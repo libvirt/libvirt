@@ -70,6 +70,8 @@
         &lt;source&gt;
           &lt;host name="iscsi.example.com"/&gt;
           &lt;device path="demo-target"/&gt;
+          &lt;vendor name="Acme"/&gt;
+          &lt;product name="model"/&t;
         &lt;/source&gt;
         ...</pre>
 
@@ -108,6 +110,16 @@
         type, or network filesystem type, or partition table type, or
         LVM metadata type. All drivers are required to have a default
         value for this, so it is optional. <span class="since">Since 0.4.1</span></dd>
+
+      <dt><code>vendor</code></dt>
+      <dd>Provides optional information about the vendor of the
+        storage device. This contains a single
+        attribute <code>name</code> whose value is backend
+        specific. <span class="since">Since 0.8.4</span></dd>
+      <dt><code>product</code></dt>
+      <dd>Provides an optional product name of the storage device.
+        This contains a single attribute <code>name</code> whose value
+        is backend specific.  <span class="since">Since 0.8.4</span></dd>
     </dl>
 
     <h3><a name="StoragePoolTarget">Target elements</a></h3>
