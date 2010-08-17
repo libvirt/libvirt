@@ -3056,6 +3056,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
                             def->disks + i + 1,
                             sizeof(*def->disks) *
                             (def->ndisks - (i + 1)));
+                def->ndisks--;
                 break;
             }
         }
@@ -3074,6 +3075,7 @@ xenXMDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
                             def->nets + i + 1,
                             sizeof(*def->nets) *
                             (def->nnets - (i + 1)));
+                def->nnets--;
                 break;
             }
         }
