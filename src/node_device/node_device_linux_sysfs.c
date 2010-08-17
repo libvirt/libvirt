@@ -119,7 +119,7 @@ int check_fc_host_linux(union _virNodeDevCapData *d)
 
     VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
 
-    if (virAsprintf(&sysfs_path, "%s/host%d",
+    if (virAsprintf(&sysfs_path, "%shost%d",
                     LINUX_SYSFS_FC_HOST_PREFIX,
                     d->scsi_host.host) < 0) {
         virReportOOMError();
@@ -167,20 +167,39 @@ int check_vport_capable_linux(union _virNodeDevCapData *d)
     struct stat st;
     int retval = 0;
 
-    if (virAsprintf(&sysfs_path, "%s/host%d/vport_create",
+    if (virAsprintf(&sysfs_path,
+                    "%shost%d%s",
                     LINUX_SYSFS_FC_HOST_PREFIX,
-                    d->scsi_host.host) < 0) {
+                    d->scsi_host.host,
+                    LINUX_SYSFS_VPORT_CREATE_POSTFIX) < 0) {
         virReportOOMError();
         retval = -1;
         goto out;
     }
 
-    if (stat(sysfs_path, &st) != 0) {
-        /* Not a vport capable HBA; not an error, either. */
+    if (stat(sysfs_path, &st) == 0) {
+        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
         goto out;
     }
 
-    d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
+    VIR_FREE(sysfs_path);
+    if (virAsprintf(&sysfs_path,
+                    "%shost%d%s",
+                    LINUX_SYSFS_SCSI_HOST_PREFIX,
+                    d->scsi_host.host,
+                    LINUX_SYSFS_VPORT_CREATE_POSTFIX) < 0) {
+        virReportOOMError();
+        retval = -1;
+        goto out;
+    }
+
+    if (stat(sysfs_path, &st) == 0) {
+        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
+    } else {
+        /* Not a vport capable HBA; not an error, either. */
+        VIR_DEBUG("No vport operation path found for host%d",
+                  d->scsi_host.host);
+    }
 
 out:
     VIR_FREE(sysfs_path);

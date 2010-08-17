@@ -392,6 +392,7 @@ nodeDeviceVportCreateDelete(const int parent_host,
     int retval = 0;
     char *operation_path = NULL, *vport_name = NULL;
     const char *operation_file = NULL;
+    struct stat st;
 
     switch (operation) {
     case VPORT_CREATE:
@@ -417,6 +418,26 @@ nodeDeviceVportCreateDelete(const int parent_host,
         virReportOOMError();
         retval = -1;
         goto cleanup;
+    }
+
+    if (stat(operation_path, &st) != 0) {
+        VIR_FREE(operation_path);
+        if (virAsprintf(&operation_path,
+                        "%shost%d%s",
+                        LINUX_SYSFS_SCSI_HOST_PREFIX,
+                        parent_host,
+                        operation_file) < 0) {
+            virReportOOMError();
+            retval = -1;
+            goto cleanup;
+        }
+
+        if (stat(operation_path, &st) != 0) {
+            VIR_ERROR(_("No vport operation path found for host%d"),
+                      parent_host);
+            retval = -1;
+            goto cleanup;
+        }
     }
 
     VIR_DEBUG("Vport operation path is '%s'", operation_path);
