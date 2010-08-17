@@ -3759,7 +3759,7 @@ phypDomainCreateAndStart(virConnectPtr conn,
         goto err;
 
     /* checking if this name already exists on this system */
-    if (phypGetLparID(session, managed_system, def->name, conn) == -1) {
+    if (phypGetLparID(session, managed_system, def->name, conn) != -1) {
         VIR_WARN0("LPAR name already exists.");
         goto err;
     }
