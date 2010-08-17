@@ -1283,8 +1283,8 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
         ret = -1;
     } else if (*wwnn == NULL || *wwpn == NULL) {
         /* Free the other one, if allocated... */
-        VIR_FREE(wwnn);
-        VIR_FREE(wwpn);
+        VIR_FREE(*wwnn);
+        VIR_FREE(*wwpn);
         ret = -1;
         virReportOOMError();
     }
