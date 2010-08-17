@@ -548,7 +548,8 @@ remoteDispatchClientCall (struct qemud_server *server,
 
     if (remoteEncodeClientMessageHeader(msg) < 0) {
         xdr_free (data->ret_filter, (char*)&ret);
-        goto fatal_error;
+        remoteDispatchFormatError(&rerr, "%s", _("failed to serialize reply header"));
+        goto xdr_hdr_error;
     }
 
 
@@ -558,22 +559,30 @@ remoteDispatchClientCall (struct qemud_server *server,
                    msg->bufferLength,
                    XDR_ENCODE);
 
-    if (xdr_setpos(&xdr, msg->bufferOffset) == 0)
+    if (xdr_setpos(&xdr, msg->bufferOffset) == 0) {
+        remoteDispatchFormatError(&rerr, "%s", _("failed to change XDR reply offset"));
         goto xdr_error;
+    }
 
     /* If OK, serialise return structure, if error serialise error. */
     /* Serialise reply data */
-    if (!((data->ret_filter) (&xdr, &ret)))
+    if (!((data->ret_filter) (&xdr, &ret))) {
+        remoteDispatchFormatError(&rerr, "%s", _("failed to serialize reply payload (probable message size limit)"));
         goto xdr_error;
+    }
 
     /* Update the length word. */
     msg->bufferOffset += xdr_getpos (&xdr);
     len = msg->bufferOffset;
-    if (xdr_setpos (&xdr, 0) == 0)
+    if (xdr_setpos (&xdr, 0) == 0) {
+        remoteDispatchFormatError(&rerr, "%s", _("failed to change XDR reply offset"));
         goto xdr_error;
+    }
 
-    if (!xdr_u_int (&xdr, &len))
+    if (!xdr_u_int (&xdr, &len)) {
+        remoteDispatchFormatError(&rerr, "%s", _("failed to update reply length header"));
         goto xdr_error;
+    }
 
     xdr_destroy (&xdr);
     xdr_free (data->ret_filter, (char*)&ret);
@@ -588,25 +597,27 @@ remoteDispatchClientCall (struct qemud_server *server,
 
     return 0;
 
+xdr_error:
+    /* Bad stuff serializing reply. Try to send a little info
+     * back to client to assist in bug reporting/diagnosis */
+    xdr_free (data->ret_filter, (char*)&ret);
+    xdr_destroy (&xdr);
+    /* fallthrough */
+
+xdr_hdr_error:
+    VIR_WARN("Failed to serialize reply for program '%d' proc '%d' as XDR",
+             msg->hdr.prog, msg->hdr.proc);
+    /* fallthrough */
+
 rpc_error:
-    /* Semi-bad stuff happened, we can still try to send back
-     * an RPC error message to client */
+    /* Bad stuff (de-)serializing message, but we have an
+     * RPC error message we can send back to the client */
     rv = remoteSerializeReplyError(client, &rerr, &msg->hdr);
 
     if (rv >= 0)
         VIR_FREE(msg);
 
     return rv;
-
-xdr_error:
-    /* Seriously bad stuff happened, so we'll kill off this client
-       and not send back any RPC error */
-    xdr_free (data->ret_filter, (char*)&ret);
-    xdr_destroy (&xdr);
-fatal_error:
-    VIR_WARN("Failed to serialize reply for program '%d' proc '%d' as XDR",
-             msg->hdr.prog, msg->hdr.proc);
-    return -1;
 }
 
 
