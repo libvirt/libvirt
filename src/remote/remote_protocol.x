@@ -51,6 +51,12 @@
 %#ifndef IXDR_GET_INT32
 %# define IXDR_GET_INT32 IXDR_GET_LONG
 %#endif
+%#ifndef IXDR_PUT_U_INT32
+%# define IXDR_PUT_U_INT32 IXDR_PUT_U_LONG
+%#endif
+%#ifndef IXDR_GET_U_INT32
+%# define IXDR_GET_U_INT32 IXDR_GET_U_LONG
+%#endif
 
 /*----- Data types. -----*/
 

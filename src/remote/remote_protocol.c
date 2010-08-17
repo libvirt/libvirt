@@ -16,6 +16,12 @@
 #ifndef IXDR_GET_INT32
 # define IXDR_GET_INT32 IXDR_GET_LONG
 #endif
+#ifndef IXDR_PUT_U_INT32
+# define IXDR_PUT_U_INT32 IXDR_PUT_U_LONG
+#endif
+#ifndef IXDR_GET_U_INT32
+# define IXDR_GET_U_INT32 IXDR_GET_U_LONG
+#endif
 
 bool_t
 xdr_remote_nonnull_string (XDR *xdrs, remote_nonnull_string *objp)
