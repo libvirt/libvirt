@@ -89,6 +89,7 @@ virCapsPtr testQemuCapsInit(void) {
         2,                      /* cores */
         1,                      /* threads */
         ARRAY_CARDINALITY(host_cpu_features), /* nfeatures */
+        ARRAY_CARDINALITY(host_cpu_features), /* nfeatures_max */
         host_cpu_features       /* features */
     };
 

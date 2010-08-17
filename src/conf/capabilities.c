@@ -1,7 +1,7 @@
 /*
  * capabilities.c: hypervisor capabilities
  *
- * Copyright (C) 2006-2008 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -190,8 +190,8 @@ int
 virCapabilitiesAddHostFeature(virCapsPtr caps,
                               const char *name)
 {
-    if (VIR_REALLOC_N(caps->host.features,
-                      caps->host.nfeatures + 1) < 0)
+    if (VIR_RESIZE_N(caps->host.features, caps->host.nfeatures_max,
+                     caps->host.nfeatures, 1) < 0)
         return -1;
 
     if ((caps->host.features[caps->host.nfeatures] = strdup(name)) == NULL)
@@ -213,8 +213,8 @@ int
 virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                                        const char *name)
 {
-    if (VIR_REALLOC_N(caps->host.migrateTrans,
-                      caps->host.nmigrateTrans + 1) < 0)
+    if (VIR_RESIZE_N(caps->host.migrateTrans, caps->host.nmigrateTrans_max,
+                     caps->host.nmigrateTrans, 1) < 0)
         return -1;
 
     if ((caps->host.migrateTrans[caps->host.nmigrateTrans] = strdup(name)) == NULL)
@@ -243,8 +243,8 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
 {
     virCapsHostNUMACellPtr cell;
 
-    if (VIR_REALLOC_N(caps->host.numaCell,
-                      caps->host.nnumaCell + 1) < 0)
+    if (VIR_RESIZE_N(caps->host.numaCell, caps->host.nnumaCell_max,
+                     caps->host.nnumaCell, 1) < 0)
         return -1;
 
     if (VIR_ALLOC(cell) < 0)
@@ -261,8 +261,7 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
     cell->ncpus = ncpus;
     cell->num = num;
 
-    caps->host.numaCell[caps->host.nnumaCell] = cell;
-    caps->host.nnumaCell++;
+    caps->host.numaCell[caps->host.nnumaCell++] = cell;
 
     return 0;
 }
@@ -380,11 +379,10 @@ virCapabilitiesAddGuest(virCapsPtr caps,
         (guest->arch.defaultInfo.loader = strdup(loader)) == NULL)
         goto no_memory;
 
-    if (VIR_REALLOC_N(caps->guests,
-                      caps->nguests + 1) < 0)
+    if (VIR_RESIZE_N(caps->guests, caps->nguests_max,
+                     caps->nguests, 1) < 0)
         goto no_memory;
-    caps->guests[caps->nguests] = guest;
-    caps->nguests++;
+    caps->guests[caps->nguests++] = guest;
 
     if (nmachines) {
         guest->arch.defaultInfo.nmachines = nmachines;
@@ -434,8 +432,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
         (dom->info.loader = strdup(loader)) == NULL)
         goto no_memory;
 
-    if (VIR_REALLOC_N(guest->arch.domains,
-                      guest->arch.ndomains + 1) < 0)
+    if (VIR_RESIZE_N(guest->arch.domains, guest->arch.ndomains_max,
+                     guest->arch.ndomains, 1) < 0)
         goto no_memory;
     guest->arch.domains[guest->arch.ndomains] = dom;
     guest->arch.ndomains++;
@@ -478,11 +476,10 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
     feature->defaultOn = defaultOn;
     feature->toggle = toggle;
 
-    if (VIR_REALLOC_N(guest->features,
-                      guest->nfeatures + 1) < 0)
+    if (VIR_RESIZE_N(guest->features, guest->nfeatures_max,
+                     guest->nfeatures, 1) < 0)
         goto no_memory;
-    guest->features[guest->nfeatures] = feature;
-    guest->nfeatures++;
+    guest->features[guest->nfeatures++] = feature;
 
     return feature;
 
@@ -706,7 +703,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     if (caps->host.nnumaCell) {
         virBufferAddLit(&xml, "    <topology>\n");
-        virBufferVSprintf(&xml, "      <cells num='%d'>\n",
+        virBufferVSprintf(&xml, "      <cells num='%zu'>\n",
                           caps->host.nnumaCell);
         for (i = 0 ; i < caps->host.nnumaCell ; i++) {
             virBufferVSprintf(&xml, "        <cell id='%d'>\n",

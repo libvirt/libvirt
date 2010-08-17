@@ -83,6 +83,7 @@ virCPUDefCopy(const virCPUDefPtr cpu)
         || (cpu->vendor && !(copy->vendor = strdup(cpu->vendor)))
         || VIR_ALLOC_N(copy->features, cpu->nfeatures) < 0)
         goto no_memory;
+    copy->nfeatures_max = cpu->nfeatures;
 
     copy->type = cpu->type;
     copy->match = cpu->match;
@@ -234,7 +235,8 @@ virCPUDefParseXML(const xmlNodePtr node,
             goto error;
         }
 
-        if (VIR_ALLOC_N(def->features, n) < 0)
+        if (VIR_RESIZE_N(def->features, def->nfeatures_max,
+                         def->nfeatures, n) < 0)
             goto no_memory;
         def->nfeatures = n;
     }
@@ -425,7 +427,8 @@ virCPUDefAddFeature(virCPUDefPtr def,
         }
     }
 
-    if (VIR_REALLOC_N(def->features, def->nfeatures + 1) < 0)
+    if (VIR_RESIZE_N(def->features, def->nfeatures_max,
+                     def->nfeatures, 1) < 0)
         goto no_memory;
 
     if (def->type == VIR_CPU_TYPE_HOST)
