@@ -4074,6 +4074,7 @@ virConnectGetCapabilities (virConnectPtr conn)
         ret = conn->driver->getCapabilities (conn);
         if (!ret)
             goto error;
+        DEBUG("conn=%p ret=%s", conn, ret);
         return ret;
     }
 
