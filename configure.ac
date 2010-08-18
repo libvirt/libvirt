@@ -336,6 +336,7 @@ if test "x$with_vbox" = "xyes" || test "x$with_vbox" = "xcheck"; then
 
     for vbox in \
         /usr/lib/virtualbox/VBoxXPCOMC.so \
+        /usr/lib64/virtualbox/VBoxXPCOMC.so \
         /usr/lib/VirtualBox/VBoxXPCOMC.so \
         /opt/virtualbox/VBoxXPCOMC.so \
         /opt/VirtualBox/VBoxXPCOMC.so \
