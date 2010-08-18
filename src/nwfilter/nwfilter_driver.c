@@ -42,9 +42,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
-#define nwfilterLog(msg...) fprintf(stderr, msg)
-
-
 static virNWFilterDriverStatePtr driverState;
 
 static int nwfilterDriverShutdown(void);
@@ -95,7 +92,6 @@ nwfilterDriverStartup(int privileged) {
             goto error;
 
         if (virAsprintf(&base, "%s/.libvirt", userdir) == -1) {
-            nwfilterLog("out of memory in virAsprintf");
             VIR_FREE(userdir);
             goto out_of_memory;
         }
@@ -118,7 +114,7 @@ nwfilterDriverStartup(int privileged) {
     return 0;
 
 out_of_memory:
-    nwfilterLog("virNWFilterStartup: out of memory");
+    virReportOOMError();
 
 error:
     VIR_FREE(base);
