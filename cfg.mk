@@ -238,10 +238,17 @@ sc_prohibit_strcmp_and_strncmp:
 	halt='use STREQ() in place of the above uses of str[n]cmp'	\
 	  $(_sc_search_regexp)
 
-# Use virAsprintf rather than a'sprintf since *strp is undefined on error.
+# Use virAsprintf rather than as'printf since *strp is undefined on error.
 sc_prohibit_asprintf:
-	@prohibit='\<[a]sprintf\>'					\
-	halt='use virAsprintf, not a'sprintf				\
+	@prohibit='\<a[s]printf\>'					\
+	halt='use virAsprintf, not as'printf				\
+	  $(_sc_search_regexp)
+
+# Use snprintf rather than s'printf, even if buffer is provably large enough,
+# since gnulib has more guarantees for snprintf portability
+sc_prohibit_sprintf:
+	@prohibit='\<[s]printf\>'					\
+	halt='use snprintf, not s'printf				\
 	  $(_sc_search_regexp)
 
 sc_prohibit_strncpy:

@@ -657,7 +657,8 @@ restat:
     }
 
     memset(addr.sun_path, 0, sizeof addr.sun_path);
-    sprintf(addr.sun_path + 1, "libvirt-uml-%u", vm->pid);
+    snprintf(addr.sun_path + 1, sizeof(addr.sun_path) - 1,
+             "libvirt-uml-%u", vm->pid);
     VIR_DEBUG("Reply address for monitor is '%s'", addr.sun_path+1);
     if (bind(priv->monitor, (struct sockaddr *)&addr, sizeof addr) < 0) {
         virReportSystemError(errno,

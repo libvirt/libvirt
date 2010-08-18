@@ -538,6 +538,12 @@ virAsprintf, in util.h:
 This makes it so gcc's -Wformat and -Wformat-security options can do their
 jobs and cross-check format strings with the number and types of arguments.
 
+When printing to a string, consider using virBuffer for incremental
+allocations, virAsprintf for a one-shot allocation, and snprintf for
+fixed-width buffers. Do not use sprintf, even if you can prove the buffer
+won't overflow, since gnulib does not provide the same portability guarantees
+for sprintf as it does for snprintf.
+
 
 Use of goto
 ===========

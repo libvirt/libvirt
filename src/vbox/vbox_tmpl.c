@@ -3228,7 +3228,6 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine, vboxIID *iid)
     PRUnichar *valueDisplayUtf16 = NULL;
     char      *valueDisplayUtf8  = NULL;
     IProgress *progress          = NULL;
-    char displayutf8[32]         = {0};
     PRUnichar *env               = NULL;
     PRUnichar *sessionType       = NULL;
     nsresult rc;
@@ -3308,8 +3307,13 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine, vboxIID *iid)
 
     if (guiPresent) {
         if (guiDisplay) {
-            sprintf(displayutf8, "DISPLAY=%.24s", guiDisplay);
-            VBOX_UTF8_TO_UTF16(displayutf8, &env);
+            char *displayutf8;
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", guiDisplay) < 0)
+                virReportOOMError();
+            else {
+                VBOX_UTF8_TO_UTF16(displayutf8, &env);
+                VIR_FREE(displayutf8);
+            }
             VIR_FREE(guiDisplay);
         }
 
@@ -3318,8 +3322,13 @@ vboxStartMachine(virDomainPtr dom, int i, IMachine *machine, vboxIID *iid)
 
     if (sdlPresent) {
         if (sdlDisplay) {
-            sprintf(displayutf8, "DISPLAY=%.24s", sdlDisplay);
-            VBOX_UTF8_TO_UTF16(displayutf8, &env);
+            char *displayutf8;
+            if (virAsprintf(&displayutf8, "DISPLAY=%s", sdlDisplay) < 0)
+                virReportOOMError();
+            else {
+                VBOX_UTF8_TO_UTF16(displayutf8, &env);
+                VIR_FREE(displayutf8);
+            }
             VIR_FREE(sdlDisplay);
         }
 
@@ -4526,19 +4535,22 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     if (def->hostdevs[i]->source.subsys.type ==
                         VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
 
-                        char filtername[11]        = {0};
+                        char *filtername           = NULL;
                         PRUnichar *filternameUtf16 = NULL;
                         IUSBDeviceFilter *filter   = NULL;
 
-                        /* Assuming can't have more then 9999 devices so
-                         * restricting to %04d
+                        /* Zero pad for nice alignment when fewer than 9999
+                         * devices.
                          */
-                        sprintf(filtername, "filter%04d", i);
-                        VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
-
-                        USBController->vtbl->CreateDeviceFilter(USBController,
-                                                                filternameUtf16,
-                                                                &filter);
+                        if (virAsprintf(&filtername, "filter%04d", i) < 0) {
+                            virReportOOMError();
+                        } else {
+                            VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
+                            VIR_FREE(filtername);
+                            USBController->vtbl->CreateDeviceFilter(USBController,
+                                                                    filternameUtf16,
+                                                                    &filter);
+                        }
                         VBOX_UTF16_FREE(filternameUtf16);
 
                         if (filter &&
@@ -4551,13 +4563,15 @@ vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                             char productId[40]        = {0};
 
                             if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
-                                sprintf(vendorId, "%x", def->hostdevs[i]->source.subsys.u.usb.vendor);
+                                snprintf(vendorId, sizeof(vendorId), "%x",
+                                         def->hostdevs[i]->source.subsys.u.usb.vendor);
                                 VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
                                 filter->vtbl->SetVendorId(filter, vendorIdUtf16);
                                 VBOX_UTF16_FREE(vendorIdUtf16);
                             }
                             if (def->hostdevs[i]->source.subsys.u.usb.product) {
-                                sprintf(productId, "%x", def->hostdevs[i]->source.subsys.u.usb.product);
+                                snprintf(productId, sizeof(productId), "%x",
+                                         def->hostdevs[i]->source.subsys.u.usb.product);
                                 VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
                                 filter->vtbl->SetProductId(filter,
                                                            productIdUtf16);

@@ -33,6 +33,7 @@ EXTRA_DIST = \
   .x-sc_prohibit_have_config_h \
   .x-sc_prohibit_HAVE_MBRTOWC \
   .x-sc_prohibit_nonreentrant \
+  .x-sc_prohibit_sprintf \
   .x-sc_prohibit_strcmp \
   .x-sc_prohibit_strcmp_and_strncmp \
   .x-sc_prohibit_strncpy \

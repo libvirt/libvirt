@@ -58,6 +58,7 @@
 #include "memory.h"
 #include "bridge.h"
 #include "files.h"
+#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -104,7 +105,7 @@ openvzDomainDefineCmd(const char *args[],
     int narg;
     int veid;
     int max_veid;
-    char str_id[10];
+    char str_id[INT_BUFSIZE_BOUND(max_veid)];
     FILE *fp;
 
     for (narg = 0; narg < maxarg; narg++)
@@ -162,7 +163,7 @@ openvzDomainDefineCmd(const char *args[],
         max_veid++;
     }
 
-    sprintf(str_id, "%d", max_veid);
+    snprintf(str_id, sizeof(str_id), "%d", max_veid);
     ADD_ARG_LIT(str_id);
 
     ADD_ARG_LIT("--name");

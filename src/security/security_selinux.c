@@ -182,12 +182,12 @@ SELinuxGenSecurityLabel(virSecurityDriverPtr drv ATTRIBUTE_UNUSED,
         c2 = virRandom(1024);
 
         if ( c1 == c2 ) {
-            sprintf(mcs, "s0:c%d", c1);
+            snprintf(mcs, sizeof(mcs), "s0:c%d", c1);
         } else {
             if ( c1 < c2 )
-                sprintf(mcs, "s0:c%d,c%d", c1, c2);
+                snprintf(mcs, sizeof(mcs), "s0:c%d,c%d", c1, c2);
             else
-                sprintf(mcs, "s0:c%d,c%d", c2, c1);
+                snprintf(mcs, sizeof(mcs), "s0:c%d,c%d", c2, c1);
         }
     } while(mcsAdd(mcs) == -1);
 

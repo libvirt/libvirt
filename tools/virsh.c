@@ -8468,7 +8468,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    sprintf(buf, "/domain/devices/interface[@type='%s']", type);
+    snprintf(buf, sizeof(buf), "/domain/devices/interface[@type='%s']", type);
     obj = xmlXPathEval(BAD_CAST buf, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
