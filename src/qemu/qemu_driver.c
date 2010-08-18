@@ -4316,7 +4316,6 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, int pi
     }
 
     if (!(pidinfo = fopen(proc, "r"))) {
-        /*printf("cannot read pid info");*/
         /* VM probably shut down, so fake 0 */
         if (cpuTime)
             *cpuTime = 0;

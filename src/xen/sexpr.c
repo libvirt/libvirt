@@ -320,14 +320,6 @@ _string2sexpr(const char *buffer, size_t * end)
                 sexpr_free(tmp);
                 goto error;
             }
-#if 0
-            if (0) {
-                char buf[4096];
-
-                sexpr2string(ret, buf, sizeof(buf));
-                printf("%s\n", buffer);
-            }
-#endif
             ptr = trim(ptr + tmp_len);
         }
 

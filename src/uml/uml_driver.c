@@ -1070,7 +1070,6 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, int pid) {
     }
 
     if (!(pidinfo = fopen(proc, "r"))) {
-        /*printf("cannot read pid info");*/
         /* VM probably shut down, so fake 0 */
         *cpuTime = 0;
         return 0;
