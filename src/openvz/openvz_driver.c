@@ -740,52 +740,55 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     virCapabilitiesGenerateMac(driver->caps, host_mac);
     virFormatMacAddr(host_mac, host_macaddr);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+        (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+         net->data.ethernet.ipaddr == NULL)) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
-        char *dev_name_ve;
         int veid = openvzGetVEID(vpsid);
 
         //--netif_add ifname[,mac,host_ifname,host_mac]
         ADD_ARG_LIT("--netif_add") ;
 
-        /* generate interface name in ve and copy it to options */
-        dev_name_ve = openvzGenerateContainerVethName(veid);
-        if (dev_name_ve == NULL) {
-           openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not generate eth name for container"));
-           rc = -1;
-           goto exit;
+        /* if user doesn't specify guest interface name,
+         * then we need to generate it */
+        if (net->data.ethernet.dev == NULL) {
+            net->data.ethernet.dev = openvzGenerateContainerVethName(veid);
+            if (net->data.ethernet.dev == NULL) {
+               openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not generate eth name for container"));
+               rc = -1;
+               goto exit;
+            }
         }
 
         /* if user doesn't specified host interface name,
          * than we need to generate it */
         if (net->ifname == NULL) {
-            net->ifname = openvzGenerateVethName(veid, dev_name_ve);
+            net->ifname = openvzGenerateVethName(veid, net->data.ethernet.dev);
             if (net->ifname == NULL) {
                openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not generate veth name"));
                rc = -1;
-               VIR_FREE(dev_name_ve);
                goto exit;
             }
         }
 
-        virBufferAdd(&buf, dev_name_ve, -1); /* Guest dev */
+        virBufferAdd(&buf, net->data.ethernet.dev, -1); /* Guest dev */
         virBufferVSprintf(&buf, ",%s", macaddr); /* Guest dev mac */
         virBufferVSprintf(&buf, ",%s", net->ifname); /* Host dev */
         virBufferVSprintf(&buf, ",%s", host_macaddr); /* Host dev mac */
 
-        if (driver->version >= VZCTL_BRIDGE_MIN_VERSION) {
-            virBufferVSprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
-        } else {
-            virBufferVSprintf(configBuf, "ifname=%s", dev_name_ve);
-            virBufferVSprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
-            virBufferVSprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
-            virBufferVSprintf(configBuf, ",host_mac=%s", host_macaddr); /* Host dev mac */
-            virBufferVSprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
+        if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            if (driver->version >= VZCTL_BRIDGE_MIN_VERSION) {
+                virBufferVSprintf(&buf, ",%s", net->data.bridge.brname); /* Host bridge */
+            } else {
+                virBufferVSprintf(configBuf, "ifname=%s", net->data.ethernet.dev);
+                virBufferVSprintf(configBuf, ",mac=%s", macaddr); /* Guest dev mac */
+                virBufferVSprintf(configBuf, ",host_ifname=%s", net->ifname); /* Host dev */
+                virBufferVSprintf(configBuf, ",host_mac=%s", host_macaddr); /* Host dev mac */
+                virBufferVSprintf(configBuf, ",bridge=%s", net->data.bridge.brname); /* Host bridge */
+            }
         }
-
-        VIR_FREE(dev_name_ve);
 
         if (!(opt = virBufferContentAndReset(&buf)))
             goto no_memory;
