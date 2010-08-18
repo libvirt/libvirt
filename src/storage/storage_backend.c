@@ -636,7 +636,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
                                unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    char size[100];
+    char *size = NULL;
     char *create_tool;
 
     const char *type = virStorageFileFormatTypeToString(vol->target.format);
@@ -726,7 +726,10 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     /* Size in KB */
-    snprintf(size, sizeof(size), "%lluK", vol->capacity/1024);
+    if (virAsprintf(&size, "%lluK", vol->capacity / 1024) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
 
     /* KVM is usually ahead of qemu on features, so try that first */
     create_tool = virFindFileInPath("kvm-img");
@@ -821,6 +824,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     }
 
     cleanup:
+    VIR_FREE(size);
     VIR_FREE(create_tool);
 
     return ret;
@@ -838,7 +842,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   unsigned int flags ATTRIBUTE_UNUSED)
 {
     int ret;
-    char size[100];
+    char *size;
     const char *imgargv[4];
 
     if (inputvol) {
@@ -867,7 +871,10 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     /* Size in MB - yes different units to qemu-img :-( */
-    snprintf(size, sizeof(size), "%llu", vol->capacity/1024/1024);
+    if (virAsprintf(&size, "%llu", vol->capacity / 1024 / 1024) < 0) {
+        virReportOOMError();
+        return -1;
+    }
 
     imgargv[0] = virFindFileInPath("qcow-create");
     imgargv[1] = size;
@@ -876,6 +883,7 @@ virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = virStorageBackendCreateExecCommand(pool, vol, imgargv);
     VIR_FREE(imgargv[0]);
+    VIR_FREE(size);
 
     return ret;
 }
