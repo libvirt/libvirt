@@ -78,8 +78,4 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr defPtr,
 int
 allocStringMap (xen_string_string_map **strings, char *key, char *val);
 
-int
-createVifNetwork(virConnectPtr conn, xen_vm vm, char *device,
-                 char *bridge, char *mac);
-
 #endif /* __VIR_XENAPI_UTILS__ */

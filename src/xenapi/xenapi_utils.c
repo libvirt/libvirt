@@ -387,8 +387,8 @@ xenapiSessionErrorHandle(virConnectPtr conn, virErrorNumber errNum,
 }
 
 /* creates network intereface for VM */
-int
-createVifNetwork (virConnectPtr conn, xen_vm vm, char *device,
+static int
+createVifNetwork (virConnectPtr conn, xen_vm vm, int device,
                   char *bridge, char *mac)
 {
     xen_session *session = ((struct _xenapiPrivate *)(conn->privateData))->session;
@@ -432,7 +432,8 @@ createVifNetwork (virConnectPtr conn, xen_vm vm, char *device,
         vif_record->other_config = xen_string_string_map_alloc(0);
         vif_record->runtime_properties = xen_string_string_map_alloc(0);
         vif_record->qos_algorithm_params = xen_string_string_map_alloc(0);
-        vif_record->device = strdup(device);
+        if (virAsprintf(&vif_record->device, "%d", device) < 0)
+            return -1;
         xen_vif_create(session, &vif, vif_record);
         if (!vif) {
             xen_vif_free(vif);
@@ -553,9 +554,11 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr def,
                 }
             }
             if (mac != NULL && bridge != NULL) {
-                char device[NETWORK_DEVID_SIZE] = "\0";
-                sprintf(device, "%d", device_number);
-                createVifNetwork(conn, *vm, device, bridge, mac);
+                if (createVifNetwork(conn, *vm, device_number, bridge,
+                                     mac) < 0) {
+                    VIR_FREE(bridge);
+                    goto error_cleanup;
+                }
                 VIR_FREE(bridge);
                 device_number++;
             }
