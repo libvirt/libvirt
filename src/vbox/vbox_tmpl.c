@@ -3144,14 +3144,173 @@ cleanup:
     return ret;
 }
 
+
+static int
+vboxStartMachine(virDomainPtr dom, int i, IMachine *machine, vboxIID *iid)
+{
+    VBOX_OBJECT_CHECK(dom->conn, int, -1);
+    int vrdpPresent              = 0;
+    int sdlPresent               = 0;
+    int guiPresent               = 0;
+    char *guiDisplay             = NULL;
+    char *sdlDisplay             = NULL;
+    PRUnichar *keyTypeUtf16      = NULL;
+    PRUnichar *valueTypeUtf16    = NULL;
+    char      *valueTypeUtf8     = NULL;
+    PRUnichar *keyDislpayUtf16   = NULL;
+    PRUnichar *valueDisplayUtf16 = NULL;
+    char      *valueDisplayUtf8  = NULL;
+    IProgress *progress          = NULL;
+    char displayutf8[32]         = {0};
+    PRUnichar *env               = NULL;
+    PRUnichar *sessionType       = NULL;
+    nsresult rc;
+
+    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+    machine->vtbl->GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
+    VBOX_UTF16_FREE(keyTypeUtf16);
+
+    if (valueTypeUtf16) {
+        VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+        if ( STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui") ) {
+
+            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+            machine->vtbl->GetExtraData(machine, keyDislpayUtf16,
+                                        &valueDisplayUtf16);
+            VBOX_UTF16_FREE(keyDislpayUtf16);
+
+            if (valueDisplayUtf16) {
+                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
+                VBOX_UTF16_FREE(valueDisplayUtf16);
+
+                if (strlen(valueDisplayUtf8) <= 0) {
+                    VBOX_UTF8_FREE(valueDisplayUtf8);
+                    valueDisplayUtf8 = NULL;
+                }
+            }
+
+            if (STREQ(valueTypeUtf8, "sdl")) {
+                sdlPresent = 1;
+                if (valueDisplayUtf8) {
+                    sdlDisplay = strdup(valueDisplayUtf8);
+                    if (sdlDisplay == NULL) {
+                        virReportOOMError();
+                        /* just don't go to cleanup yet as it is ok to have
+                         * sdlDisplay as NULL and we check it below if it
+                         * exist and then only use it there
+                         */
+                    }
+                }
+            }
+
+            if (STREQ(valueTypeUtf8, "gui")) {
+                guiPresent = 1;
+                if (valueDisplayUtf8) {
+                    guiDisplay = strdup(valueDisplayUtf8);
+                    if (guiDisplay == NULL) {
+                        virReportOOMError();
+                        /* just don't go to cleanup yet as it is ok to have
+                         * guiDisplay as NULL and we check it below if it
+                         * exist and then only use it there
+                         */
+                    }
+                }
+            }
+        }
+
+        if (STREQ(valueTypeUtf8, "vrdp")) {
+            vrdpPresent = 1;
+        }
+
+        if (!vrdpPresent && !sdlPresent && !guiPresent) {
+            /* if nothing is selected it means either the machine xml
+             * file is really old or some values are missing so fallback
+             */
+            guiPresent = 1;
+        }
+
+        VBOX_UTF8_FREE(valueTypeUtf8);
+
+    } else {
+        guiPresent = 1;
+    }
+    if (valueDisplayUtf8)
+        VBOX_UTF8_FREE(valueDisplayUtf8);
+
+    if (guiPresent) {
+        if (guiDisplay) {
+            sprintf(displayutf8, "DISPLAY=%.24s", guiDisplay);
+            VBOX_UTF8_TO_UTF16(displayutf8, &env);
+            VIR_FREE(guiDisplay);
+        }
+
+        VBOX_UTF8_TO_UTF16("gui", &sessionType);
+    }
+
+    if (sdlPresent) {
+        if (sdlDisplay) {
+            sprintf(displayutf8, "DISPLAY=%.24s", sdlDisplay);
+            VBOX_UTF8_TO_UTF16(displayutf8, &env);
+            VIR_FREE(sdlDisplay);
+        }
+
+        VBOX_UTF8_TO_UTF16("sdl", &sessionType);
+    }
+
+    if (vrdpPresent) {
+        VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
+    }
+
+    rc = data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
+                                                data->vboxSession,
+                                                iid,
+                                                sessionType,
+                                                env,
+                                                &progress );
+    if (NS_FAILED(rc)) {
+        vboxError(VIR_ERR_OPERATION_FAILED, "%s",
+                  _("openremotesession failed, domain can't be started"));
+        ret = -1;
+    } else {
+        PRBool completed = 0;
+#if VBOX_API_VERSION == 2002
+        nsresult resultCode;
+#else
+        PRInt32  resultCode;
+#endif
+        progress->vtbl->WaitForCompletion(progress, -1);
+        rc = progress->vtbl->GetCompleted(progress, &completed);
+        if (NS_FAILED(rc)) {
+            /* error */
+            ret = -1;
+        }
+        progress->vtbl->GetResultCode(progress, &resultCode);
+        if (NS_FAILED(resultCode)) {
+            /* error */
+            ret = -1;
+        } else {
+            /* all ok set the domid */
+            dom->id = i + 1;
+            ret = 0;
+        }
+    }
+
+    VBOX_RELEASE(progress);
+
+    data->vboxSession->vtbl->Close(data->vboxSession);
+
+    VBOX_UTF16_FREE(env);
+    VBOX_UTF16_FREE(sessionType);
+
+    return ret;
+}
+
 static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     VBOX_OBJECT_CHECK(dom->conn, int, -1);
     IMachine **machines    = NULL;
-    IProgress *progress    = NULL;
     PRUint32 machineCnt    = 0;
-    PRUnichar *env         = NULL;
-    PRUnichar *sessionType = NULL;
-    char displayutf8[32]   = {0};
     unsigned char iidl[VIR_UUID_BUFLEN] = {0};
     nsresult rc;
     int i = 0;
@@ -3194,152 +3353,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
                 if ( (state == MachineState_PoweredOff) ||
                      (state == MachineState_Saved) ||
                      (state == MachineState_Aborted) ) {
-                    int vrdpPresent              = 0;
-                    int sdlPresent               = 0;
-                    int guiPresent               = 0;
-                    char *guiDisplay             = NULL;
-                    char *sdlDisplay             = NULL;
-                    PRUnichar *keyTypeUtf16      = NULL;
-                    PRUnichar *valueTypeUtf16    = NULL;
-                    char      *valueTypeUtf8     = NULL;
-                    PRUnichar *keyDislpayUtf16   = NULL;
-                    PRUnichar *valueDisplayUtf16 = NULL;
-                    char      *valueDisplayUtf8  = NULL;
-
-                    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-                    machine->vtbl->GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
-                    VBOX_UTF16_FREE(keyTypeUtf16);
-
-                    if (valueTypeUtf16) {
-                        VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
-                        VBOX_UTF16_FREE(valueTypeUtf16);
-
-                        if ( STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui") ) {
-
-                            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-                            machine->vtbl->GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
-                            VBOX_UTF16_FREE(keyDislpayUtf16);
-
-                            if (valueDisplayUtf16) {
-                                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
-                                VBOX_UTF16_FREE(valueDisplayUtf16);
-
-                                if (strlen(valueDisplayUtf8) <= 0) {
-                                    VBOX_UTF8_FREE(valueDisplayUtf8);
-                                    valueDisplayUtf8 = NULL;
-                                }
-                            }
-
-                            if (STREQ(valueTypeUtf8, "sdl")) {
-                                sdlPresent = 1;
-                                if (valueDisplayUtf8) {
-                                    sdlDisplay = strdup(valueDisplayUtf8);
-                                    if (sdlDisplay == NULL) {
-                                        virReportOOMError();
-                                        /* just don't go to cleanup yet as it is ok to have
-                                         * sdlDisplay as NULL and we check it below if it
-                                         * exist and then only use it there
-                                         */
-                                    }
-                                }
-                            }
-
-                            if (STREQ(valueTypeUtf8, "gui")) {
-                                guiPresent = 1;
-                                if (valueDisplayUtf8) {
-                                    guiDisplay = strdup(valueDisplayUtf8);
-                                    if (guiDisplay == NULL) {
-                                        virReportOOMError();
-                                        /* just don't go to cleanup yet as it is ok to have
-                                         * guiDisplay as NULL and we check it below if it
-                                         * exist and then only use it there
-                                         */
-                                    }
-                                }
-                            }
-                        }
-
-                        if (STREQ(valueTypeUtf8, "vrdp")) {
-                            vrdpPresent = 1;
-                        }
-
-                        if (!vrdpPresent && !sdlPresent && !guiPresent) {
-                            /* if nothing is selected it means either the machine xml
-                             * file is really old or some values are missing so fallback
-                             */
-                            guiPresent = 1;
-                        }
-
-                        VBOX_UTF8_FREE(valueTypeUtf8);
-
-                    } else {
-                        guiPresent = 1;
-                    }
-                    if (valueDisplayUtf8)
-                        VBOX_UTF8_FREE(valueDisplayUtf8);
-
-                    if (guiPresent) {
-                        if (guiDisplay) {
-                            sprintf(displayutf8, "DISPLAY=%.24s", guiDisplay);
-                            VBOX_UTF8_TO_UTF16(displayutf8, &env);
-                            VIR_FREE(guiDisplay);
-                        }
-
-                        VBOX_UTF8_TO_UTF16("gui", &sessionType);
-                    }
-
-                    if (sdlPresent) {
-                        if (sdlDisplay) {
-                            sprintf(displayutf8, "DISPLAY=%.24s", sdlDisplay);
-                            VBOX_UTF8_TO_UTF16(displayutf8, &env);
-                            VIR_FREE(sdlDisplay);
-                        }
-
-                        VBOX_UTF8_TO_UTF16("sdl", &sessionType);
-                    }
-
-                    if (vrdpPresent) {
-                        VBOX_UTF8_TO_UTF16("vrdp", &sessionType);
-                    }
-
-                    rc = data->vboxObj->vtbl->OpenRemoteSession(data->vboxObj,
-                                                                data->vboxSession,
-                                                                iid,
-                                                                sessionType,
-                                                                env,
-                                                                &progress );
-                    if (NS_FAILED(rc)) {
-                        vboxError(VIR_ERR_OPERATION_FAILED, "%s",
-                                  _("openremotesession failed, domain can't be started"));
-                        ret = -1;
-                    } else {
-                        PRBool completed = 0;
-#if VBOX_API_VERSION == 2002
-                        nsresult resultCode;
-#else
-                        PRInt32  resultCode;
-#endif
-                        progress->vtbl->WaitForCompletion(progress, -1);
-                        rc = progress->vtbl->GetCompleted(progress, &completed);
-                        if (NS_FAILED(rc)) {
-                            /* error */
-                            ret = -1;
-                        }
-                        progress->vtbl->GetResultCode(progress, &resultCode);
-                        if (NS_FAILED(resultCode)) {
-                            /* error */
-                            ret = -1;
-                        } else {
-                            /* all ok set the domid */
-                            dom->id = i + 1;
-                            ret = 0;
-                        }
-                    }
-
-                    VBOX_RELEASE(progress);
-
-                    data->vboxSession->vtbl->Close(data->vboxSession);
-
+                    ret = vboxStartMachine(dom, i, machine, iid);
                 } else {
                     vboxError(VIR_ERR_OPERATION_FAILED, "%s",
                               _("machine is not in poweroff|saved|"
@@ -3356,9 +3370,6 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags) {
     /* Do the cleanup and take care you dont leak any memory */
     for (i = 0; i < machineCnt; ++i)
         VBOX_RELEASE(machines[i]);
-
-    VBOX_UTF16_FREE(env);
-    VBOX_UTF16_FREE(sessionType);
 
 cleanup:
     return ret;
