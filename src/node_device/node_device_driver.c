@@ -1,6 +1,7 @@
 /*
  * node_device.c: node device enumeration
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -27,6 +28,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "virterror_internal.h"
 #include "datatypes.h"
