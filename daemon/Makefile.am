@@ -187,14 +187,17 @@ uninstall-data-polkit::
 endif
 
 
-remote.c: remote_dispatch_prototypes.h \
-	  remote_dispatch_table.h \
-	  remote_dispatch_args.h \
-	  remote_dispatch_ret.h \
-	  qemu_dispatch_prototypes.h \
-	  qemu_dispatch_table.h \
-	  qemu_dispatch_args.h \
-	  qemu_dispatch_ret.h
+remote.c: \
+	remote_dispatch_prototypes.h \
+	remote_dispatch_table.h \
+	qemu_dispatch_prototypes.h \
+	qemu_dispatch_table.h
+
+remote.h: \
+	remote_dispatch_args.h \
+	remote_dispatch_ret.h \
+	qemu_dispatch_args.h \
+	qemu_dispatch_ret.h
 
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
