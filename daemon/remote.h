@@ -30,18 +30,22 @@
 typedef union {
 # include "remote_dispatch_args.h"
 } dispatch_args;
+verify(sizeof(dispatch_args) > 0);
 
 typedef union {
 # include "remote_dispatch_ret.h"
 } dispatch_ret;
+verify(sizeof(dispatch_ret) > 0);
 
 typedef union {
 # include "qemu_dispatch_args.h"
 } qemu_dispatch_args;
+verify(sizeof(qemu_dispatch_args) > 0);
 
 typedef union {
 # include "qemu_dispatch_ret.h"
 } qemu_dispatch_ret;
+verify(sizeof(qemu_dispatch_ret) > 0);
 
 
 
