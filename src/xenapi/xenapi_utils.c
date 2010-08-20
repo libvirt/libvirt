@@ -225,7 +225,7 @@ xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 enum virDomainLifecycleCrashAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action)
 {
-    enum virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH__RESTART;
+    enum virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
     if (action == XEN_ON_CRASH_BEHAVIOUR_DESTROY)
         num = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RESTART)
