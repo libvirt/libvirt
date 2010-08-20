@@ -2258,9 +2258,7 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
         }
 
         dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-        dev->addr.pci.domain = 0;
-        dev->addr.pci.bus = 0;
-        dev->addr.pci.slot = i;
+        dev->addr.pci = maybe.addr.pci;
 
         addrs->nextslot = i + 1;
         if (QEMU_PCI_ADDRESS_LAST_SLOT < addrs->nextslot)
