@@ -966,7 +966,7 @@ xenapiDomainGetInfo (virDomainPtr dom, virDomainInfoPtr info)
         vm = vms->contents[0];
         xen_vm_get_memory_static_max(session, &maxmem, vm);
         info->maxMem = (maxmem / 1024);
-        enum xen_vm_power_state state = XEN_VM_POWER_STATE_UNKNOWN;
+        enum xen_vm_power_state state = XEN_VM_POWER_STATE_UNDEFINED;
         xen_vm_get_power_state(session, &state, vm);
         info->state = mapPowerState(state);
         xen_vm_get_record(session, &record, vm);

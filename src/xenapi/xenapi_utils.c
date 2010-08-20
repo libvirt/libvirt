@@ -344,11 +344,10 @@ mapPowerState(enum xen_vm_power_state state)
     case XEN_VM_POWER_STATE_RUNNING:
         virState = VIR_DOMAIN_RUNNING;
         break;
-    case XEN_VM_POWER_STATE_UNKNOWN:
     case XEN_VM_POWER_STATE_UNDEFINED:
-        virState = VIR_DOMAIN_NOSTATE;
-        break;
     default:
+        /* Includes XEN_VM_POWER_STATE_UNKNOWN from libxenserver
+         * 5.5.0, which is gone in 5.6.0.  */
         virState = VIR_DOMAIN_NOSTATE;
         break;
     }
