@@ -2096,6 +2096,8 @@ static int qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
     if (dev->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         char *addr = qemuPCIAddressAsString(dev);
+        if (!addr)
+            return -1;
 
         VIR_DEBUG("Remembering PCI addr %s", addr);
 
@@ -2239,7 +2241,8 @@ int qemuDomainPCIAddressSetNextAddr(qemuDomainPCIAddressSetPtr addrs,
         maybe.addr.pci.bus = 0;
         maybe.addr.pci.slot = i;
 
-        addr = qemuPCIAddressAsString(&maybe);
+        if (!(addr = qemuPCIAddressAsString(&maybe)))
+            return -1;
 
         if (virHashLookup(addrs->used, addr)) {
             VIR_DEBUG("PCI addr %s already in use", addr);
