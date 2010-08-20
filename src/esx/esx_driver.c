@@ -2624,6 +2624,8 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
+    esxVI_VirtualMachinePowerState powerState;
+    int id;
     char *vmPathName = NULL;
     char *datastoreName = NULL;
     char *directoryName = NULL;
@@ -2640,11 +2642,14 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
         return NULL;
     }
 
-    if (esxVI_String_AppendValueToList(&propertyNameList,
-                                       "config.files.vmPathName") < 0 ||
+    if (esxVI_String_AppendValueListToList(&propertyNameList,
+                                           "config.files.vmPathName\0"
+                                           "runtime.powerState\0") < 0 ||
         esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
                                          propertyNameList, &virtualMachine,
                                          esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0 ||
+        esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, NULL) < 0 ||
         esxVI_GetStringValue(virtualMachine, "config.files.vmPathName",
                              &vmPathName, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
@@ -2693,6 +2698,10 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
                              priv->primary->productVersion);
 
     if (def != NULL) {
+        if (powerState != esxVI_VirtualMachinePowerState_PoweredOff) {
+            def->id = id;
+        }
+
         xml = virDomainDefFormat(def, flags);
     }
 
