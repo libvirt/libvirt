@@ -104,8 +104,12 @@ ESX_VI__TEMPLATE__FREE(Context,
     esxVI_Datacenter_Free(&item->datacenter);
     esxVI_ComputeResource_Free(&item->computeResource);
     esxVI_HostSystem_Free(&item->hostSystem);
-    esxVI_SelectionSpec_Free(&item->fullTraversalSpecList);
-    esxVI_SelectionSpec_Free(&item->fullTraversalSpecList2);
+    esxVI_SelectionSpec_Free(&item->selectSet_folderToChildEntity);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToParent);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToVm);
+    esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToDatastore);
+    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToHost);
+    esxVI_SelectionSpec_Free(&item->selectSet_computeResourceToParentToParent);
 });
 
 static size_t
@@ -450,23 +454,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     }
 
     if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0 ||
-        esxVI_BuildFullTraversalSpecList(&ctx->fullTraversalSpecList) < 0) {
-        return -1;
-    }
-
-    /* Folder -> parent (Folder, Datacenter) */
-    if (esxVI_BuildFullTraversalSpecItem(&ctx->fullTraversalSpecList2,
-                                         "managedEntityToParent",
-                                         "ManagedEntity", "parent",
-                                         NULL) < 0) {
-        return -1;
-    }
-
-    /* ComputeResource -> parent (Folder) */
-    if (esxVI_BuildFullTraversalSpecItem(&ctx->fullTraversalSpecList2,
-                                         "computeResourceToParent",
-                                         "ComputeResource", "parent",
-                                         "managedEntityToParent\0") < 0) {
+        esxVI_BuildSelectSetCollection(ctx) < 0) {
         return -1;
     }
 
@@ -495,7 +483,6 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "hostFolder\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->service->rootFolder,
                                         "Datacenter", propertyNameList,
-                                        esxVI_Boolean_True,
                                         &datacenterList) < 0) {
         goto cleanup;
     }
@@ -545,7 +532,6 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "resourcePool\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->datacenter->hostFolder,
                                         "ComputeResource", propertyNameList,
-                                        esxVI_Boolean_True,
                                         &computeResourceList) < 0) {
         goto cleanup;
     }
@@ -607,7 +593,6 @@ esxVI_Context_LookupObjectsByPath(esxVI_Context *ctx,
                                            "name\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->computeResource->_reference,
                                         "HostSystem", propertyNameList,
-                                        esxVI_Boolean_True,
                                         &hostSystemList) < 0) {
         goto cleanup;
     }
@@ -684,7 +669,7 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                        &managedObjectReference) < 0 ||
         esxVI_LookupObjectContentByType(ctx, managedObjectReference,
                                         "HostSystem", propertyNameList,
-                                        esxVI_Boolean_False, &hostSystem) < 0) {
+                                        &hostSystem) < 0) {
         goto cleanup;
     }
 
@@ -708,7 +693,6 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                                            "resourcePool\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, hostSystem->obj,
                                         "ComputeResource", propertyNameList,
-                                        esxVI_Boolean_True,
                                         &computeResource) < 0) {
         goto cleanup;
     }
@@ -733,14 +717,6 @@ esxVI_Context_LookupObjectsByHostSystemIp(esxVI_Context *ctx,
                                            "hostFolder\0") < 0 ||
         esxVI_LookupObjectContentByType(ctx, computeResource->obj,
                                         "Datacenter", propertyNameList,
-                                        /* FIXME: Passing Undefined here is a hack until
-                                         * esxVI_LookupObjectContentByType supports more
-                                         * fine grained traversal configuration. Looking
-                                         * up the Datacenter from the ComputeResource
-                                         * requiers an upward search. Putting this in the
-                                         * list with the other downward traversal rules
-                                         * would result in cyclic searching */
-                                        esxVI_Boolean_Undefined,
                                         &datacenter) < 0) {
         goto cleanup;
     }
@@ -1406,15 +1382,15 @@ esxVI_Alloc(void **ptrptr, size_t size)
 
 
 int
-esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
-                                 const char *name, const char *type,
-                                 const char *path, const char *selectSetNames)
+esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,
+                     const char *name, const char *type,
+                     const char *path, const char *selectSetNames)
 {
     esxVI_TraversalSpec *traversalSpec = NULL;
     esxVI_SelectionSpec *selectionSpec = NULL;
     const char *currentSelectSetName = NULL;
 
-    if (fullTraversalSpecList == NULL) {
+    if (selectSet == NULL || *selectSet != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -1445,7 +1421,7 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
         }
     }
 
-    if (esxVI_SelectionSpec_AppendToList(fullTraversalSpecList,
+    if (esxVI_SelectionSpec_AppendToList(selectSet,
                                          esxVI_SelectionSpec_DynamicCast
                                            (traversalSpec)) < 0) {
         goto failure;
@@ -1461,84 +1437,85 @@ esxVI_BuildFullTraversalSpecItem(esxVI_SelectionSpec **fullTraversalSpecList,
 }
 
 
-
 int
-esxVI_BuildFullTraversalSpecList(esxVI_SelectionSpec **fullTraversalSpecList)
+esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
 {
-    if (fullTraversalSpecList == NULL || *fullTraversalSpecList != NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+    /* Folder -> childEntity (ManagedEntity) */
+    if (esxVI_BuildSelectSet(&ctx->selectSet_folderToChildEntity,
+                             "folderToChildEntity",
+                             "Folder", "childEntity",
+                             "folderToChildEntity\0") < 0) {
         return -1;
     }
 
-    /* Folder -> childEntity (ManagedEntity) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "folderToChildEntity",
-                                         "Folder", "childEntity",
-                                         "folderToChildEntity\0") < 0) {
-        goto failure;
-    }
-
     /* ComputeResource -> host (HostSystem) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "computeResourceToHost",
-                                         "ComputeResource", "host",
-                                         NULL) < 0) {
-        goto failure;
+    if (esxVI_BuildSelectSet(&ctx->selectSet_computeResourceToHost,
+                             "computeResourceToHost",
+                             "ComputeResource", "host", NULL) < 0) {
+        return -1;
     }
 
-    /* ComputeResource -> datastore (Datastore) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "computeResourceToDatastore",
-                                         "ComputeResource", "datastore",
-                                         NULL) < 0) {
-        goto failure;
-    }
+    /* ComputeResource -> datastore (Datastore) *//*
+    if (esxVI_BuildSelectSet(&ctx->selectSet_computeResourceToDatastore,
+                             "computeResourceToDatastore",
+                             "ComputeResource", "datastore", NULL) < 0) {
+        return -1;
+    }*/
 
-    /* ResourcePool -> resourcePool (ResourcePool) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "resourcePoolToResourcePool",
-                                         "ResourcePool", "resourcePool",
-                                         "resourcePoolToResourcePool\0"
-                                         "resourcePoolToVm\0") < 0) {
-        goto failure;
-    }
+    /* ResourcePool -> resourcePool (ResourcePool) *//*
+    if (esxVI_BuildSelectSet(&ctx->selectSet_resourcePoolToVm,
+                             "resourcePoolToResourcePool",
+                             "ResourcePool", "resourcePool",
+                             "resourcePoolToResourcePool\0"
+                             "resourcePoolToVm\0") < 0) {
+        return -1;
+    }*/
 
-    /* ResourcePool -> vm (VirtualMachine) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "resourcePoolToVm",
-                                         "ResourcePool", "vm", NULL) < 0) {
-        goto failure;
-    }
+    /* ResourcePool -> vm (VirtualMachine) *//*
+    if (esxVI_BuildSelectSet(&ctx->selectSet_resourcePoolToVm,
+                             "resourcePoolToVm",
+                             "ResourcePool", "vm", NULL) < 0) {
+        return -1;
+    }*/
 
     /* HostSystem -> parent (ComputeResource) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "hostSystemToParent",
-                                         "HostSystem", "parent", NULL) < 0) {
-        goto failure;
+    if (esxVI_BuildSelectSet(&ctx->selectSet_hostSystemToParent,
+                             "hostSystemToParent",
+                             "HostSystem", "parent", NULL) < 0) {
+        return -1;
     }
 
     /* HostSystem -> vm (VirtualMachine) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "hostSystemToVm",
-                                         "HostSystem", "vm", NULL) < 0) {
-        goto failure;
+    if (esxVI_BuildSelectSet(&ctx->selectSet_hostSystemToVm,
+                             "hostSystemToVm",
+                             "HostSystem", "vm", NULL) < 0) {
+        return -1;
     }
 
     /* HostSystem -> datastore (Datastore) */
-    if (esxVI_BuildFullTraversalSpecItem(fullTraversalSpecList,
-                                         "hostSystemToDatastore",
-                                         "HostSystem", "datastore", NULL) < 0) {
-        goto failure;
+    if (esxVI_BuildSelectSet(&ctx->selectSet_hostSystemToDatastore,
+                             "hostSystemToDatastore",
+                             "HostSystem", "datastore", NULL) < 0) {
+        return -1;
+    }
+
+    /* Folder -> parent (Folder, Datacenter) */
+    if (esxVI_BuildSelectSet(&ctx->selectSet_computeResourceToParentToParent,
+                             "managedEntityToParent",
+                             "ManagedEntity", "parent", NULL) < 0) {
+        return -1;
+    }
+
+    /* ComputeResource -> parent (Folder) */
+    if (esxVI_BuildSelectSet(&ctx->selectSet_computeResourceToParentToParent,
+                             "computeResourceToParent",
+                             "ComputeResource", "parent",
+                             "managedEntityToParent\0") < 0) {
+        return -1;
     }
 
     return 0;
-
-  failure:
-    esxVI_SelectionSpec_Free(fullTraversalSpecList);
-
-    return -1;
 }
-
 
 
 /*
@@ -1591,7 +1568,6 @@ esxVI_EnsureSession(esxVI_Context *ctx)
                                        "currentSession") < 0 ||
         esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
                                         "SessionManager", propertyNameList,
-                                        esxVI_Boolean_False,
                                         &sessionManager) < 0) {
         goto cleanup;
     }
@@ -1642,18 +1618,12 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                                 esxVI_ManagedObjectReference *root,
                                 const char *type,
                                 esxVI_String *propertyNameList,
-                                esxVI_Boolean recurse,
                                 esxVI_ObjectContent **objectContentList)
 {
     int result = -1;
     esxVI_ObjectSpec *objectSpec = NULL;
     esxVI_PropertySpec *propertySpec = NULL;
     esxVI_PropertyFilterSpec *propertyFilterSpec = NULL;
-
-    if (ctx->fullTraversalSpecList == NULL) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));
-        return -1;
-    }
 
     if (objectContentList == NULL || *objectContentList != NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1667,10 +1637,45 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
     objectSpec->obj = root;
     objectSpec->skip = esxVI_Boolean_False;
 
-    if (recurse == esxVI_Boolean_True) {
-        objectSpec->selectSet = ctx->fullTraversalSpecList;
-    } else if (recurse == esxVI_Boolean_Undefined) {
-        objectSpec->selectSet = ctx->fullTraversalSpecList2;
+    if (STRNEQ(root->type, type)) {
+        if (STREQ(root->type, "Folder")) {
+            if (STREQ(type, "Datacenter") || STREQ(type, "ComputeResource")) {
+                objectSpec->selectSet = ctx->selectSet_folderToChildEntity;
+            } else {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                             _("Invalid lookup of '%s' from '%s'"),
+                             type, root->type);
+                goto cleanup;
+            }
+        } else if (STREQ(root->type, "ComputeResource")) {
+            if (STREQ(type, "HostSystem")) {
+                objectSpec->selectSet = ctx->selectSet_computeResourceToHost;
+            } else if (STREQ(type, "Datacenter")) {
+                objectSpec->selectSet = ctx->selectSet_computeResourceToParentToParent;
+            } else {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                             _("Invalid lookup of '%s' from '%s'"),
+                             type, root->type);
+                goto cleanup;
+            }
+        } else if (STREQ(root->type, "HostSystem")) {
+            if (STREQ(type, "ComputeResource")) {
+                objectSpec->selectSet = ctx->selectSet_hostSystemToParent;
+            } else if (STREQ(type, "VirtualMachine")) {
+                objectSpec->selectSet = ctx->selectSet_hostSystemToVm;
+            } else if (STREQ(type, "Datastore")) {
+                objectSpec->selectSet = ctx->selectSet_hostSystemToDatastore;
+            } else {
+                ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                             _("Invalid lookup of '%s' from '%s'"),
+                             type, root->type);
+                goto cleanup;
+            }
+        } else {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid lookup from '%s'"), root->type);
+            goto cleanup;
+        }
     }
 
     if (esxVI_PropertySpec_Alloc(&propertySpec) < 0) {
@@ -2210,7 +2215,7 @@ int esxVI_LookupHostSystemProperties(esxVI_Context *ctx,
 {
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "HostSystem", propertyNameList,
-                                           esxVI_Boolean_False, hostSystem);
+                                           hostSystem);
 }
 
 
@@ -2224,7 +2229,6 @@ esxVI_LookupVirtualMachineList(esxVI_Context *ctx,
      *        for cluster support */
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "VirtualMachine", propertyNameList,
-                                           esxVI_Boolean_True,
                                            virtualMachineList);
 }
 
@@ -2267,7 +2271,6 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
 
     if (esxVI_LookupObjectContentByType(ctx, managedObjectReference,
                                         "VirtualMachine", propertyNameList,
-                                        esxVI_Boolean_False,
                                         virtualMachine) < 0) {
         goto cleanup;
     }
@@ -2411,7 +2414,7 @@ esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList,
      *        support */
     return esxVI_LookupObjectContentByType(ctx, ctx->hostSystem->_reference,
                                            "Datastore", propertyNameList,
-                                           esxVI_Boolean_True, datastoreList);
+                                           datastoreList);
 }
 
 
@@ -2590,8 +2593,7 @@ esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "host") < 0 ||
         esxVI_LookupObjectContentByType(ctx, datastore, "Datastore",
-                                        propertyNameList, esxVI_Boolean_False,
-                                        &objectContent) < 0) {
+                                        propertyNameList, &objectContent) < 0) {
         goto cleanup;
     }
 
@@ -2656,7 +2658,6 @@ esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
 
     if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
         esxVI_LookupObjectContentByType(ctx, task, "Task", propertyNameList,
-                                        esxVI_Boolean_False,
                                         &objectContent) < 0) {
         goto cleanup;
     }

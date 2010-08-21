@@ -3734,7 +3734,6 @@ esxNodeGetFreeMemory(virConnectPtr conn)
         esxVI_LookupObjectContentByType(priv->primary,
                                         priv->primary->computeResource->resourcePool,
                                         "ResourcePool", propertyNameList,
-                                        esxVI_Boolean_False,
                                         &resourcePool) < 0) {
         goto cleanup;
     }
