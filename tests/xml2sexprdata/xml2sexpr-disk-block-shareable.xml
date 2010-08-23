@@ -26,7 +26,6 @@
       <source bridge='xenbr0'/>
       <script path='vif-bridge'/>
     </interface>
-    <graphics type='vnc' port='-1' keymap='en-us'/>
     <console/>
   </devices>
 </domain>

@@ -19,6 +19,5 @@
       <source file='/xen/rhel5.img'/>
       <target dev='xvda'/>
     </disk>
-    <graphics type='vnc' port='5905'/>
   </devices>
 </domain>
