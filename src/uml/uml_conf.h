@@ -71,6 +71,7 @@ virCapsPtr  umlCapsInit               (void);
 int         umlBuildCommandLine       (virConnectPtr conn,
                                        struct uml_driver *driver,
                                        virDomainObjPtr dom,
+                                       fd_set *keepfd,
                                        const char ***retargv,
                                        const char ***retenv);
 

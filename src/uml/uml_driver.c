@@ -869,7 +869,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         return -1;
     }
 
-    if (umlBuildCommandLine(conn, driver, vm,
+    if (umlBuildCommandLine(conn, driver, vm, &keepfd,
                             &argv, &progenv) < 0) {
         close(logfd);
         umlCleanupTapDevices(conn, vm);
@@ -907,6 +907,14 @@ static int umlStartVMDaemon(virConnectPtr conn,
                            VIR_EXEC_CLEAR_CAPS,
                            NULL, NULL, NULL);
     close(logfd);
+
+    /*
+     * At the moment, the only thing that populates keepfd is
+     * umlBuildCommandLineChr. We want to close every fd it opens.
+     */
+    for (i = 0; i < FD_SETSIZE; i++)
+        if (FD_ISSET(i, &keepfd))
+            close(i);
 
     for (i = 0 ; argv[i] ; i++)
         VIR_FREE(argv[i]);

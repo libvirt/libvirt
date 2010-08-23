@@ -295,7 +295,8 @@ error:
 
 static char *
 umlBuildCommandLineChr(virDomainChrDefPtr def,
-                       const char *dev)
+                       const char *dev,
+                       fd_set *keepfd)
 {
     char *ret = NULL;
 
@@ -344,8 +345,27 @@ umlBuildCommandLineChr(virDomainChrDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-        /* XXX could open the file/pipe & just pass the FDs */
+         {
+            int fd_out;
+
+            if ((fd_out = open(def->data.file.path,
+                               O_WRONLY | O_APPEND | O_CREAT, 0660)) < 0) {
+                virReportSystemError(errno,
+                                     _("failed to open chardev file: %s"),
+                                     def->data.file.path);
+                return NULL;
+            }
+            if (virAsprintf(&ret, "%s%d=null,fd:%d", dev, def->target.port, fd_out) < 0) {
+                virReportOOMError();
+                close(fd_out);
+                return NULL;
+            }
+            FD_SET(fd_out, keepfd);
+        }
+        break;
+   case VIR_DOMAIN_CHR_TYPE_PIPE:
+        /* XXX could open the pipe & just pass the FDs. Be wary of
+         * the effects of blocking I/O, though. */
 
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -391,6 +411,7 @@ static char *umlNextArg(char *args)
 int umlBuildCommandLine(virConnectPtr conn,
                         struct uml_driver *driver ATTRIBUTE_UNUSED,
                         virDomainObjPtr vm,
+                        fd_set *keepfd,
                         const char ***retargv,
                         const char ***retenv)
 {
@@ -513,7 +534,7 @@ int umlBuildCommandLine(virConnectPtr conn,
     for (i = 0 ; i < UML_MAX_CHAR_DEVICE ; i++) {
         char *ret = NULL;
         if (i == 0 && vm->def->console)
-            ret = umlBuildCommandLineChr(vm->def->console, "con");
+            ret = umlBuildCommandLineChr(vm->def->console, "con", keepfd);
         if (!ret)
             if (virAsprintf(&ret, "con%d=none", i) < 0)
                 goto no_memory;
@@ -527,7 +548,7 @@ int umlBuildCommandLine(virConnectPtr conn,
             if (vm->def->serials[j]->target.port == i)
                 chr = vm->def->serials[j];
         if (chr)
-            ret = umlBuildCommandLineChr(chr, "ssl");
+            ret = umlBuildCommandLineChr(chr, "ssl", keepfd);
         if (!ret)
             if (virAsprintf(&ret, "ssl%d=none", i) < 0)
                 goto no_memory;
