@@ -35,6 +35,7 @@
       <mac address='00:16:3e:66:92:9c'/>
       <source bridge='xenbr1'/>
       <script path='vif-bridge'/>
+      <model type='e1000'/>
     </interface>
     <parallel type='tcp'>
       <source mode='connect' host='127.0.0.1' service='7777'/>

@@ -21,6 +21,7 @@
       <source bridge='xenbr0'/>
       <mac address='00:16:3e:1b:b1:47'/>
       <script path='vif-bridge'/>
+      <model type='e1000'/>
     </interface>
     <disk type='file' device='cdrom'>
       <source file='/root/boot.iso'/>

@@ -34,6 +34,7 @@
       <mac address='00:16:3e:0a:7b:39'/>
       <source bridge='xenbr0'/>
       <script path='vif-bridge'/>
+      <model type='e1000'/>
     </interface>
     <serial type='pty'>
       <target port='0'/>
