@@ -1,29 +1,22 @@
-TODO:
-- libvirt_virDomainSetMemory should check memory is > 0
-- check how to better handle renaming of domains (xm rename and cache)
+         libvirt TODO list
+         =================
 
-- UUID lookup in hash.c
+The TODO list changes frequently, so is maintained online
+in the libvirt bugzilla
 
-Other environment:
-- support for UML
+  http://bugzilla.redhat.com/
 
-  + UML control layer should be easy at least for one user but incomplete
+Search against
 
-Probable TODOs:
-- event on big domain state change (create, crashed, paused, shutdown, destroy)
-- bindings for more languages
+    Product: Virtualization Tools
+  Component: libvirt
+    Subject: RFE
 
-Would-be-nice TODO:
-- man page for virsh and the libraries entry points
-- more documentation and examples on using the toolkit
-- examples for the error handling code
+Or browse dependent bugs under
 
-Cleanup:
-- now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
-  same for the buffers
+  https://bugzilla.redhat.com/show_bug.cgi?id=libvirtTodo
 
-Autoconf:
-- On Debian and other platforms, C++ compiler is required because
-  autoconf macros to detect libtool depend on it.  (This is probably
-  an autoconf or libtool m4 macro bug, and the fact that it happens
-  on Debian is a red herring).
+Summarized reports automatically generated from bugzilla
+and provided online at
+
+  http://libvirt.org/todo.html
