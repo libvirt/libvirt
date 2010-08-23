@@ -1067,6 +1067,8 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 int virDomainDiskDefAssignAddress(virCapsPtr caps, virDomainDiskDefPtr def);
 
+void virDomainDiskRemove(virDomainDefPtr def, size_t i);
+
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller);
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,

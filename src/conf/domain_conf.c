@@ -4064,6 +4064,24 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
 }
 
 
+void virDomainDiskRemove(virDomainDefPtr def, size_t i)
+{
+    if (def->ndisks > 1) {
+        memmove(def->disks + i,
+                def->disks + i + 1,
+                sizeof(*def->disks) *
+                (def->ndisks - (i + 1)));
+        def->ndisks--;
+        if (VIR_REALLOC_N(def->disks, def->ndisks) < 0) {
+            /* ignore, harmless */
+        }
+    } else {
+        VIR_FREE(def->disks);
+        def->ndisks = 0;
+    }
+}
+
+
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)
 {
