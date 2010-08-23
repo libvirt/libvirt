@@ -172,6 +172,8 @@ mymain(int argc, char **argv)
     DO_TEST("fv-net-ioemu", "fv-net-ioemu", 1);
     DO_TEST("fv-net-netfront", "fv-net-netfront", 1);
 
+    DO_TEST("boot-grub", "boot-grub", 1);
+
     virCapabilitiesFree(caps);
 
     return(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
