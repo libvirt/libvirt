@@ -43,6 +43,12 @@ static int linuxTestCompareFiles(const char *cpuinfofile, const char *outputfile
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
     if (linuxNodeInfoCPUPopulate(cpuinfo, &nodeinfo) < 0) {
+        if (virTestGetDebug()) {
+            virErrorPtr error = virSaveLastError();
+            if (error && error->code != VIR_ERR_OK)
+                fprintf(stderr, "\n%s\n", error->message);
+            virFreeError(error);
+        }
         fclose(cpuinfo);
         return -1;
     }
