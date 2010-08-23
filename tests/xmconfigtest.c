@@ -204,8 +204,8 @@ mymain(int argc, char **argv)
             ret = -1;                                                   \
     } while (0)
 
-    DO_TEST("paravirt-old-pvfb", 2);
-    DO_TEST("paravirt-old-pvfb-vncdisplay", 2);
+    DO_TEST("paravirt-old-pvfb", 1);
+    DO_TEST("paravirt-old-pvfb-vncdisplay", 1);
     DO_TEST("paravirt-new-pvfb", 3);
     DO_TEST("paravirt-new-pvfb-vncdisplay", 3);
     DO_TEST("paravirt-net-e1000", 3);
