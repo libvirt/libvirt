@@ -8267,7 +8267,7 @@ remoteStreamHasError(virStreamPtr st) {
         return 0;
     }
 
-    VIR_WARN0("Raising async error");
+    VIR_DEBUG0("Raising async error");
     virRaiseErrorFull(st->conn,
                       __FILE__, __FUNCTION__, __LINE__,
                       privst->err.domain,
@@ -9887,8 +9887,8 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
         privst = privst->next;
 
     if (!privst) {
-        VIR_WARN("No registered stream matching serial=%d, proc=%d",
-                 hdr->serial, hdr->proc);
+        VIR_DEBUG("No registered stream matching serial=%d, proc=%d",
+                  hdr->serial, hdr->proc);
         return -1;
     }
 
@@ -9907,7 +9907,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
     case REMOTE_CONTINUE: {
         int avail = privst->incomingLength - privst->incomingOffset;
         int need = priv->bufferLength - priv->bufferOffset;
-        VIR_WARN0("Got a stream data packet");
+        VIR_DEBUG0("Got a stream data packet");
 
         /* XXX flag stream as complete somwhere if need==0 */
 
@@ -9915,7 +9915,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             int extra = need - avail;
             if (VIR_REALLOC_N(privst->incoming,
                               privst->incomingLength + extra) < 0) {
-                VIR_WARN0("Out of memory");
+                VIR_DEBUG0("Out of memory handling stream data");
                 return -1;
             }
             privst->incomingLength += extra;
@@ -9927,19 +9927,19 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
         privst->incomingOffset += (priv->bufferLength - priv->bufferOffset);
 
         if (thecall && thecall->want_reply) {
-            VIR_WARN("Got sync data packet offset=%d", privst->incomingOffset);
+            VIR_DEBUG("Got sync data packet offset=%d", privst->incomingOffset);
             thecall->mode = REMOTE_MODE_COMPLETE;
         } else {
-            VIR_WARN("Got aysnc data packet offset=%d", privst->incomingOffset);
+            VIR_DEBUG("Got aysnc data packet offset=%d", privst->incomingOffset);
             remoteStreamEventTimerUpdate(privst);
         }
         return 0;
     }
 
     case REMOTE_OK:
-        VIR_WARN0("Got a synchronous confirm");
+        VIR_DEBUG0("Got a synchronous confirm");
         if (!thecall) {
-            VIR_WARN0("Got unexpected stream finish confirmation");
+            VIR_DEBUG0("Got unexpected stream finish confirmation");
             return -1;
         }
         thecall->mode = REMOTE_MODE_COMPLETE;
@@ -9947,7 +9947,7 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     case REMOTE_ERROR:
         if (thecall && thecall->want_reply) {
-            VIR_WARN0("Got a synchronous error");
+            VIR_DEBUG0("Got a synchronous error");
             /* Give the error straight to this call */
             memset (&thecall->err, 0, sizeof thecall->err);
             if (!xdr_remote_error (xdr, &thecall->err)) {
@@ -9956,16 +9956,16 @@ processCallDispatchStream(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
             thecall->mode = REMOTE_MODE_ERROR;
         } else {
-            VIR_WARN0("Got a asynchronous error");
+            VIR_DEBUG0("Got a asynchronous error");
             /* No call, so queue the error against the stream */
             if (privst->has_error) {
-                VIR_WARN0("Got unexpected duplicate stream error");
+                VIR_DEBUG0("Got unexpected duplicate stream error");
                 return -1;
             }
             privst->has_error = 1;
             memset (&privst->err, 0, sizeof privst->err);
             if (!xdr_remote_error (xdr, &privst->err)) {
-                VIR_WARN0("Failed to unmarshall error");
+                VIR_DEBUG0("Failed to unmarshall error");
                 return -1;
             }
         }
