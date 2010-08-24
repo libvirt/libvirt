@@ -8146,13 +8146,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     mode = vshCommandOptString(cmd, "mode", NULL);
 
     if (driver) {
-        if (STREQ(driver, "file") || STREQ(driver, "tap")) {
+        if (STREQ(driver, "file") || STREQ(driver, "tap"))
             isFile = 1;
-        } else if (STRNEQ(driver, "phy")) {
-            vshError(ctl, _("No support for %s in command 'attach-disk'"),
-                     driver);
-            goto cleanup;
-        }
     }
 
     if (mode) {
