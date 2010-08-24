@@ -1386,7 +1386,8 @@ xenDaemonParseSxprDisks(virDomainDefPtr def,
            but blktap disks ended up in a differently named
            (device (tap ....)) block.... */
         if (sexpr_lookup(node, "device/vbd") ||
-            sexpr_lookup(node, "device/tap")) {
+            sexpr_lookup(node, "device/tap") ||
+            sexpr_lookup(node, "device/tap2")) {
             char *offset;
             const char *src = NULL;
             const char *dst = NULL;
@@ -1397,6 +1398,10 @@ xenDaemonParseSxprDisks(virDomainDefPtr def,
                 src = sexpr_node(node, "device/vbd/uname");
                 dst = sexpr_node(node, "device/vbd/dev");
                 mode = sexpr_node(node, "device/vbd/mode");
+            } else if (sexpr_lookup(node, "device/tap2")) {
+                src = sexpr_node(node, "device/tap2/uname");
+                dst = sexpr_node(node, "device/tap2/dev");
+                mode = sexpr_node(node, "device/tap2/mode");
             } else {
                 src = sexpr_node(node, "device/tap/uname");
                 dst = sexpr_node(node, "device/tap/dev");
@@ -1444,7 +1449,8 @@ xenDaemonParseSxprDisks(virDomainDefPtr def,
 
                 src = offset + 1;
 
-                if (STREQ (disk->driverName, "tap")) {
+                if (STREQ (disk->driverName, "tap") ||
+                    STREQ (disk->driverName, "tap2")) {
                     offset = strchr(src, ':');
                     if (!offset) {
                         virXendError(VIR_ERR_INTERNAL_ERROR,
@@ -5306,9 +5312,10 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Normally disks are in a (device (vbd ...)) block
      * but blktap disks ended up in a differently named
      * (device (tap ....)) block.... */
-    if (def->driverName &&
-        STREQ(def->driverName, "tap")) {
+    if (def->driverName && STREQ(def->driverName, "tap")) {
         virBufferAddLit(buf, "(tap ");
+    } else if (def->driverName && STREQ(def->driverName, "tap2")) {
+        virBufferAddLit(buf, "(tap2 ");
     } else {
         virBufferAddLit(buf, "(vbd ");
     }
@@ -5329,7 +5336,8 @@ xenDaemonFormatSxprDisk(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (def->src) {
         if (def->driverName) {
-            if (STREQ(def->driverName, "tap")) {
+            if (STREQ(def->driverName, "tap") ||
+                STREQ(def->driverName, "tap2")) {
                 virBufferVSprintf(buf, "(uname '%s:%s:%s')",
                                   def->driverName,
                                   def->driverType ? def->driverType : "aio",
@@ -5928,6 +5936,9 @@ virDomainXMLDevID(virDomainPtr domain,
         if (dev->data.disk->driverName &&
             STREQ(dev->data.disk->driverName, "tap"))
             strcpy(class, "tap");
+        else if (dev->data.disk->driverName &&
+            STREQ(dev->data.disk->driverName, "tap2"))
+            strcpy(class, "tap2");
         else
             strcpy(class, "vbd");
 
