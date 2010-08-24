@@ -138,6 +138,7 @@ mymain(int argc, char **argv)
     DO_TEST("disk-block-shareable", "disk-block-shareable", 2);
     DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", 2);
     DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", 2);
+    DO_TEST("disk-drv-blktap2-raw", "disk-drv-blktap2-raw", 2);
 
     DO_TEST("curmem", "curmem", 2);
     DO_TEST("net-routed", "net-routed", 2);

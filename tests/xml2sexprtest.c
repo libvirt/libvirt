@@ -127,6 +127,8 @@ mymain(int argc, char **argv)
     DO_TEST("disk-drv-blktap", "disk-drv-blktap", "pvtest", 2);
     DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", "pvtest", 2);
     DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", "pvtest", 2);
+    DO_TEST("disk-drv-blktap2", "disk-drv-blktap2", "pvtest", 2);
+    DO_TEST("disk-drv-blktap2-raw", "disk-drv-blktap2-raw", "pvtest", 2);
 
     DO_TEST("curmem", "curmem", "rhel5", 2);
     DO_TEST("net-routed", "net-routed", "pvtest", 2);
