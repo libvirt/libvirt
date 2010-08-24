@@ -3662,7 +3662,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
 {
     int i;
     char memory[50];
-    char boot[VIR_DOMAIN_BOOT_LAST];
+    char boot[VIR_DOMAIN_BOOT_LAST+1];
     struct utsname ut;
     int disableKQEMU = 0;
     int enableKQEMU = 0;
