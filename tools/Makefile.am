@@ -8,7 +8,13 @@ ICON_FILES = \
 	libvirt_win_icon_64x64.ico \
 	virsh_win_icon.rc
 
-EXTRA_DIST = $(ICON_FILES) virt-xml-validate.in virt-pki-validate.in virsh.pod
+EXTRA_DIST = \
+	$(ICON_FILES) 					\
+	virt-xml-validate.in 				\
+	virt-pki-validate.in 				\
+	virsh.pod					\
+	libvirt-guests.init.in				\
+	libvirt-guests.sysconf
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh
@@ -117,6 +123,39 @@ endif
 
 virsh.1: virsh.pod
 	$(AM_V_GEN)$(POD2MAN) $< $@
+
+install-data-local: install-init
+
+uninstall-local: uninstall-init
+
+if LIBVIRT_INIT_SCRIPT_RED_HAT
+install-init: libvirt-guests.init
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(INSTALL_SCRIPT) libvirt-guests.init \
+	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
+	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
+	$(INSTALL_SCRIPT) $(srcdir)/libvirt-guests.sysconf \
+	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
+
+uninstall-init:
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests \
+	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
+
+BUILT_SOURCES += libvirt-guests.init
+
+libvirt-guests.init: libvirt-guests.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed					\
+	    -e s!\@localstatedir\@!@localstatedir@!g	\
+	    -e s!\@sbindir\@!@sbindir@!g		\
+	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
+	    < $< > $@-t &&				\
+	    chmod a+x $@-t &&				\
+	    mv $@-t $@
+else
+install-init:
+uninstall-init:
+libvirt-guests.init:
+endif # LIBVIRT_INIT_SCRIPT_RED_HAT
 
 
 CLEANFILES = $(bin_SCRIPTS) $(man1_MANS)

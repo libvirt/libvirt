@@ -35,8 +35,6 @@ EXTRA_DIST =						\
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug                               \
 	THREADING.txt					\
-	libvirt-guests.init.in				\
-	libvirt-guests.sysconf				\
 	libvirtd.pod.in					\
 	$(AVAHI_SOURCES)				\
 	$(DAEMON_SOURCES)
@@ -258,27 +256,21 @@ install-logrotate: $(LOGROTATE_CONFS)
 	$(INSTALL_DATA) libvirtd.uml.logrotate $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
-install-init: libvirtd.init libvirt-guests.init
+install-init: libvirtd.init
 	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
 	$(INSTALL_SCRIPT) libvirtd.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
-	$(INSTALL_SCRIPT) libvirt-guests.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
-	$(INSTALL_SCRIPT) $(srcdir)/libvirt-guests.sysconf \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
 
 uninstall-init:
 	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd \
-		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd \
-		$(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests \
-		$(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
+		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
-BUILT_SOURCES += libvirtd.init libvirt-guests.init
+BUILT_SOURCES += libvirtd.init
 
-%.init: %.init.in $(top_builddir)/config.status
+libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed					\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
 	    -e s!\@sbindir\@!@sbindir@!g		\
