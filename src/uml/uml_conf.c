@@ -409,7 +409,7 @@ static char *umlNextArg(char *args)
  * for a given virtual machine.
  */
 int umlBuildCommandLine(virConnectPtr conn,
-                        struct uml_driver *driver ATTRIBUTE_UNUSED,
+                        struct uml_driver *driver,
                         virDomainObjPtr vm,
                         fd_set *keepfd,
                         const char ***retargv,
@@ -499,7 +499,6 @@ int umlBuildCommandLine(virConnectPtr conn,
     ADD_ENV_COPY("LD_PRELOAD");
     ADD_ENV_COPY("LD_LIBRARY_PATH");
     ADD_ENV_COPY("PATH");
-    ADD_ENV_COPY("HOME");
     ADD_ENV_COPY("USER");
     ADD_ENV_COPY("LOGNAME");
     ADD_ENV_COPY("TMPDIR");
@@ -508,6 +507,7 @@ int umlBuildCommandLine(virConnectPtr conn,
     //ADD_ARG_PAIR("con0", "fd:0,fd:1");
     ADD_ARG_PAIR("mem", memory);
     ADD_ARG_PAIR("umid", vm->def->name);
+    ADD_ARG_PAIR("uml_dir", driver->monitorDir);
 
     if (vm->def->os.root)
         ADD_ARG_PAIR("root", vm->def->os.root);
