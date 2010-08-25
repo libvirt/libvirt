@@ -52,8 +52,7 @@ typedef struct _esxVMX_Data esxVMX_Data;
 
 struct _esxVMX_Data {
     esxVI_Context *ctx;
-    const char *datastoreName;
-    const char *directoryName;
+    char *datastorePathWithoutFileName;
 };
 
 
@@ -117,8 +116,8 @@ esxParseVMXFileName(const char *fileName, void *opaque)
 
     if (strchr(fileName, '/') == NULL && strchr(fileName, '\\') == NULL) {
         /* Plain file name, use same directory as for the .vmx file */
-        if (virAsprintf(&datastorePath, "[%s] %s/%s", data->datastoreName,
-                        data->directoryName, fileName) < 0) {
+        if (virAsprintf(&datastorePath, "%s/%s",
+                        data->datastorePathWithoutFileName, fileName) < 0) {
             virReportOOMError();
             goto cleanup;
         }
@@ -254,24 +253,22 @@ esxFormatVMXFileName(const char *datastorePath, void *opaque)
     bool success = false;
     esxVMX_Data *data = opaque;
     char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
+    char *directoryAndFileName = NULL;
     esxVI_ObjectContent *datastore = NULL;
     esxVI_DatastoreHostMount *hostMount = NULL;
     char separator = '/';
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *tmp;
-    int length;
+    size_t length;
     char *absolutePath = NULL;
 
     /* Parse datastore path and lookup datastore */
-    if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName,
-                                   &directoryName, &fileName) < 0) {
+    if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName, NULL,
+                                   &directoryAndFileName) < 0) {
         goto cleanup;
     }
 
-    if (esxVI_LookupDatastoreByName(data->ctx, datastoreName,
-                                    NULL, &datastore,
+    if (esxVI_LookupDatastoreByName(data->ctx, datastoreName, NULL, &datastore,
                                     esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
                                        &hostMount) < 0) {
@@ -290,29 +287,23 @@ esxFormatVMXFileName(const char *datastorePath, void *opaque)
         --length;
     }
 
-    /* Format as <mount>[/<directory>]/<file> */
+    /* Format as <mount>[/<directory>]/<file>, convert / to \ when necessary */
     virBufferAdd(&buffer, hostMount->mountInfo->path, length);
 
-    if (directoryName != NULL) {
-        /* Convert / to \ when necessary */
-        if (separator != '/') {
-            tmp = directoryName;
+    if (separator != '/') {
+        tmp = directoryAndFileName;
 
-            while (*tmp != '\0') {
-                if (*tmp == '/') {
-                    *tmp = separator;
-                }
-
-                ++tmp;
+        while (*tmp != '\0') {
+            if (*tmp == '/') {
+                *tmp = separator;
             }
-        }
 
-        virBufferAddChar(&buffer, separator);
-        virBufferAdd(&buffer, directoryName, -1);
+            ++tmp;
+        }
     }
 
     virBufferAddChar(&buffer, separator);
-    virBufferAdd(&buffer, fileName, -1);
+    virBufferAdd(&buffer, directoryAndFileName, -1);
 
     if (virBufferError(&buffer)) {
         virReportOOMError();
@@ -332,8 +323,7 @@ esxFormatVMXFileName(const char *datastorePath, void *opaque)
     }
 
     VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
+    VIR_FREE(directoryAndFileName);
     esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreHostMount_Free(&hostMount);
 
@@ -2527,7 +2517,7 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     char *vmPathName = NULL;
     char *datastoreName = NULL;
     char *directoryName = NULL;
-    char *fileName = NULL;
+    char *directoryAndFileName = NULL;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *vmx = NULL;
@@ -2554,19 +2544,13 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     }
 
     if (esxUtil_ParseDatastorePath(vmPathName, &datastoreName, &directoryName,
-                                   &fileName) < 0) {
+                                   &directoryAndFileName) < 0) {
         goto cleanup;
     }
 
     virBufferVSprintf(&buffer, "%s://%s:%d/folder/", priv->transport,
                       domain->conn->uri->server, domain->conn->uri->port);
-
-    if (directoryName != NULL) {
-        virBufferURIEncodeString(&buffer, directoryName);
-        virBufferAddChar(&buffer, '/');
-    }
-
-    virBufferURIEncodeString(&buffer, fileName);
+    virBufferURIEncodeString(&buffer, directoryAndFileName);
     virBufferAddLit(&buffer, "?dcPath=");
     virBufferURIEncodeString(&buffer, priv->primary->datacenter->name);
     virBufferAddLit(&buffer, "&dsName=");
@@ -2584,8 +2568,20 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     }
 
     data.ctx = priv->primary;
-    data.datastoreName = datastoreName;
-    data.directoryName = directoryName;
+
+    if (directoryName == NULL) {
+        if (virAsprintf(&data.datastorePathWithoutFileName, "[%s]",
+                        datastoreName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    } else {
+        if (virAsprintf(&data.datastorePathWithoutFileName, "[%s] %s",
+                        datastoreName, directoryName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+    }
 
     ctx.opaque = &data;
     ctx.parseFileName = esxParseVMXFileName;
@@ -2612,8 +2608,9 @@ esxDomainDumpXML(virDomainPtr domain, int flags)
     esxVI_ObjectContent_Free(&virtualMachine);
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
-    VIR_FREE(fileName);
+    VIR_FREE(directoryAndFileName);
     VIR_FREE(url);
+    VIR_FREE(data.datastorePathWithoutFileName);
     VIR_FREE(vmx);
     virDomainDefFree(def);
 
@@ -2640,8 +2637,7 @@ esxDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     data.ctx = priv->primary;
-    data.datastoreName = "?";
-    data.directoryName = "?";
+    data.datastorePathWithoutFileName = (char *)"[?] ?";
 
     ctx.opaque = &data;
     ctx.parseFileName = esxParseVMXFileName;
@@ -2686,8 +2682,7 @@ esxDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     data.ctx = priv->primary;
-    data.datastoreName = NULL;
-    data.directoryName = NULL;
+    data.datastorePathWithoutFileName = NULL;
 
     ctx.opaque = &data;
     ctx.parseFileName = NULL;
@@ -2887,7 +2882,6 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     esxVMX_Data data;
     char *datastoreName = NULL;
     char *directoryName = NULL;
-    char *fileName = NULL;
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
     char *url = NULL;
     char *datastoreRelatedPath = NULL;
@@ -2927,8 +2921,7 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
 
     /* Build VMX from domain XML */
     data.ctx = priv->primary;
-    data.datastoreName = NULL;
-    data.directoryName = NULL;
+    data.datastorePathWithoutFileName = NULL;
 
     ctx.opaque = &data;
     ctx.parseFileName = NULL;
@@ -2979,11 +2972,11 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     }
 
     if (esxUtil_ParseDatastorePath(disk->src, &datastoreName, &directoryName,
-                                   &fileName) < 0) {
+                                   NULL) < 0) {
         goto cleanup;
     }
 
-    if (! virFileHasSuffix(fileName, ".vmdk")) {
+    if (! virFileHasSuffix(disk->src, ".vmdk")) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting source '%s' of first file-based harddisk to "
                     "be a VMDK image"), disk->src);
@@ -3067,7 +3060,6 @@ esxDomainDefineXML(virConnectPtr conn, const char *xml ATTRIBUTE_UNUSED)
     VIR_FREE(vmx);
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
-    VIR_FREE(fileName);
     VIR_FREE(url);
     VIR_FREE(datastoreRelatedPath);
     esxVI_ObjectContent_Free(&virtualMachine);

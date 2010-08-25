@@ -99,14 +99,18 @@ struct testPath {
     int result;
     const char *datastoreName;
     const char *directoryName;
-    const char *fileName;
+    const char *directoryAndFileName;
 };
 
 static struct testPath paths[] = {
-    { "[datastore] directory/file", 0, "datastore", "directory", "file" },
-    { "[datastore] file", 0, "datastore", NULL, "file" },
+    { "[datastore] directory/file", 0, "datastore", "directory",
+      "directory/file" },
+    { "[datastore] directory1/directory2/file", 0, "datastore",
+      "directory1/directory2", "directory1/directory2/file" },
+    { "[datastore] file", 0, "datastore", "file", "file" },
+    { "[datastore] directory/", 0, "datastore", "directory", "directory/" },
+    { "[datastore]", 0, "datastore", "", "" },
     { "[] directory/file", -1, NULL, NULL, NULL },
-    { "[datastore] directory/", -1, NULL, NULL, NULL },
     { "directory/file", -1, NULL, NULL, NULL },
 };
 
@@ -116,16 +120,16 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
     int i, result = 0;
     char *datastoreName = NULL;
     char *directoryName = NULL;
-    char *fileName = NULL;
+    char *directoryAndFileName = NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(paths); ++i) {
         VIR_FREE(datastoreName);
         VIR_FREE(directoryName);
-        VIR_FREE(fileName);
+        VIR_FREE(directoryAndFileName);
 
-        if (esxUtil_ParseDatastorePath(paths[i].datastorePath,
-                                       &datastoreName, &directoryName,
-                                       &fileName) != paths[i].result) {
+        if (esxUtil_ParseDatastorePath
+             (paths[i].datastorePath, &datastoreName, &directoryName,
+              &directoryAndFileName) != paths[i].result) {
             goto failure;
         }
 
@@ -138,14 +142,14 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
             goto failure;
         }
 
-        if (paths[i].directoryName != NULL &&
-            STRNEQ(paths[i].directoryName, directoryName)) {
+        if (STRNEQ(paths[i].directoryName, directoryName)) {
             virtTestDifference(stderr, paths[i].directoryName, directoryName);
             goto failure;
         }
 
-        if (STRNEQ(paths[i].fileName, fileName)) {
-            virtTestDifference(stderr, paths[i].fileName, fileName);
+        if (STRNEQ(paths[i].directoryAndFileName, directoryAndFileName)) {
+            virtTestDifference(stderr, paths[i].directoryAndFileName,
+                               directoryAndFileName);
             goto failure;
         }
     }
@@ -153,7 +157,7 @@ testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
   cleanup:
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
-    VIR_FREE(fileName);
+    VIR_FREE(directoryAndFileName);
 
     return result;
 

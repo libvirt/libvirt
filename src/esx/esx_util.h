@@ -52,7 +52,7 @@ void esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri);
 int esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id);
 
 int esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
-                               char **directoryName, char **fileName);
+                               char **directoryName, char **directoryAndFileName);
 
 int esxUtil_ResolveHostname(const char *hostname,
                             char *ipAddress, size_t ipAddress_length);

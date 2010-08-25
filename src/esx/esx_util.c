@@ -275,19 +275,19 @@ esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 
 int
 esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
-                           char **directoryName, char **fileName)
+                           char **directoryName, char **directoryAndFileName)
 {
     int result = -1;
     char *copyOfDatastorePath = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
     char *preliminaryDatastoreName = NULL;
-    char *directoryAndFileName = NULL;
-    char *separator = NULL;
+    char *preliminaryDirectoryAndFileName = NULL;
+    char *preliminaryFileName = NULL;
 
-    if (datastoreName == NULL || *datastoreName != NULL ||
-        directoryName == NULL || *directoryName != NULL ||
-        fileName == NULL || *fileName != NULL) {
+    if ((datastoreName != NULL && *datastoreName != NULL) ||
+        (directoryName != NULL && *directoryName != NULL) ||
+        (directoryAndFileName != NULL && *directoryAndFileName != NULL)) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -296,43 +296,46 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         goto cleanup;
     }
 
-    /* Expected format: '[<datastore>] <path>' */
-    if ((tmp = STRSKIP(copyOfDatastorePath, "[")) == NULL ||
-        (preliminaryDatastoreName = strtok_r(tmp, "]", &saveptr)) == NULL ||
-        (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
+    /* Expected format: '[<datastore>] <path>' where <path> is optional */
+    if ((tmp = STRSKIP(copyOfDatastorePath, "[")) == NULL || *tmp == ']' ||
+        (preliminaryDatastoreName = strtok_r(tmp, "]", &saveptr)) == NULL) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Datastore path '%s' doesn't have expected format "
                     "'[<datastore>] <path>'"), datastorePath);
         goto cleanup;
     }
 
-    if (esxVI_String_DeepCopyValue(datastoreName,
+    if (datastoreName != NULL &&
+        esxVI_String_DeepCopyValue(datastoreName,
                                    preliminaryDatastoreName) < 0) {
         goto cleanup;
     }
 
-    directoryAndFileName += strspn(directoryAndFileName, " ");
+    preliminaryDirectoryAndFileName = strtok_r(NULL, "", &saveptr);
 
-    /* Split <path> into <directory>/<file>, where <directory> is optional */
-    separator = strrchr(directoryAndFileName, '/');
+    if (preliminaryDirectoryAndFileName == NULL) {
+        preliminaryDirectoryAndFileName = (char *)"";
+    } else {
+        preliminaryDirectoryAndFileName +=
+          strspn(preliminaryDirectoryAndFileName, " ");
+    }
 
-    if (separator != NULL) {
-        *separator++ = '\0';
+    if (directoryAndFileName != NULL &&
+        esxVI_String_DeepCopyValue(directoryAndFileName,
+                                   preliminaryDirectoryAndFileName) < 0) {
+        goto cleanup;
+    }
 
-        if (*separator == '\0') {
-            ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
-                      _("Datastore path '%s' doesn't reference a file"),
-                      datastorePath);
-            goto cleanup;
+    if (directoryName != NULL) {
+        /* Split <path> into <directory>/<file> */
+        preliminaryFileName = strrchr(preliminaryDirectoryAndFileName, '/');
+
+        if (preliminaryFileName != NULL) {
+            *preliminaryFileName++ = '\0';
         }
 
         if (esxVI_String_DeepCopyValue(directoryName,
-                                       directoryAndFileName) < 0 ||
-            esxVI_String_DeepCopyValue(fileName, separator) < 0) {
-            goto cleanup;
-        }
-    } else {
-        if (esxVI_String_DeepCopyValue(fileName, directoryAndFileName) < 0) {
+                                       preliminaryDirectoryAndFileName) < 0) {
             goto cleanup;
         }
     }
@@ -341,9 +344,17 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
 
   cleanup:
     if (result < 0) {
-        VIR_FREE(*datastoreName);
-        VIR_FREE(*directoryName);
-        VIR_FREE(*fileName);
+        if (datastoreName != NULL) {
+            VIR_FREE(*datastoreName);
+        }
+
+        if (directoryName != NULL) {
+            VIR_FREE(*directoryName);
+        }
+
+        if (directoryAndFileName != NULL) {
+            VIR_FREE(*directoryAndFileName);
+        }
     }
 
     VIR_FREE(copyOfDatastorePath);

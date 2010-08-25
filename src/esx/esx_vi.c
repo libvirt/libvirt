@@ -2946,7 +2946,9 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     int result = -1;
     char *datastoreName = NULL;
     char *directoryName = NULL;
+    char *directoryAndFileName = NULL;
     char *fileName = NULL;
+    size_t length;
     char *datastorePathWithoutFileName = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datastore = NULL;
@@ -2966,20 +2968,43 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     }
 
     if (esxUtil_ParseDatastorePath(datastorePath, &datastoreName,
-                                   &directoryName, &fileName) < 0) {
+                                   &directoryName, &directoryAndFileName) < 0) {
         goto cleanup;
     }
 
-    if (directoryName == NULL) {
+    if (STREQ(directoryName, directoryAndFileName)) {
+        /*
+         * The <path> part of the datatore path didn't contain a '/', assume
+         * that the <path> part is actually the file name.
+         */
         if (virAsprintf(&datastorePathWithoutFileName, "[%s]",
                         datastoreName) < 0) {
             virReportOOMError();
+            goto cleanup;
+        }
+
+        if (esxVI_String_DeepCopyValue(&fileName, directoryAndFileName) < 0) {
             goto cleanup;
         }
     } else {
         if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s",
                         datastoreName, directoryName) < 0) {
             virReportOOMError();
+            goto cleanup;
+        }
+
+        length = strlen(directoryName);
+
+        if (directoryAndFileName[length] != '/' ||
+            directoryAndFileName[length + 1] == '\0') {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                         _("Datastore path '%s' doesn't reference a file"),
+                         datastorePath);
+            goto cleanup;
+        }
+
+        if (esxVI_String_DeepCopyValue(&fileName,
+                                       directoryAndFileName + length + 1) < 0) {
             goto cleanup;
         }
     }
@@ -3087,6 +3112,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
 
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
+    VIR_FREE(directoryAndFileName);
     VIR_FREE(fileName);
     VIR_FREE(datastorePathWithoutFileName);
     esxVI_String_Free(&propertyNameList);

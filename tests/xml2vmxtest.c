@@ -148,24 +148,18 @@ testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
 {
     bool success = false;
     char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
+    char *directoryAndFileName = NULL;
     char *absolutePath = NULL;
 
     if (STRPREFIX(src, "[")) {
         /* Found potential datastore path */
-        if (esxUtil_ParseDatastorePath(src, &datastoreName, &directoryName,
-                                       &fileName) < 0) {
+        if (esxUtil_ParseDatastorePath(src, &datastoreName, NULL,
+                                       &directoryAndFileName) < 0) {
             goto cleanup;
         }
 
-        if (directoryName == NULL) {
-            virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s", datastoreName,
-                        fileName);
-        } else {
-            virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s/%s", datastoreName,
-                        directoryName, fileName);
-        }
+        virAsprintf(&absolutePath, "/vmfs/volumes/%s/%s", datastoreName,
+                    directoryAndFileName);
     } else if (STRPREFIX(src, "/")) {
         /* Found absolute path */
         absolutePath = strdup(src);
@@ -182,8 +176,7 @@ testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
     }
 
     VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
+    VIR_FREE(directoryAndFileName);
 
     return absolutePath;
 }

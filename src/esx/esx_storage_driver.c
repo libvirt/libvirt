@@ -611,10 +611,8 @@ esxStoragePoolListStorageVolumes(virStoragePoolPtr pool, char **const names,
     esxVI_HostDatastoreBrowserSearchResults *searchResultsList = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
     esxVI_FileInfo *fileInfo = NULL;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *prefix = NULL;
+    char *directoryAndFileName = NULL;
+    size_t length;
     int count = 0;
     int i;
 
@@ -639,40 +637,32 @@ esxStoragePoolListStorageVolumes(virStoragePoolPtr pool, char **const names,
     /* Interpret search result */
     for (searchResults = searchResultsList; searchResults != NULL;
          searchResults = searchResults->_next) {
-        VIR_FREE(datastoreName);
-        VIR_FREE(directoryName);
-        VIR_FREE(fileName);
-        VIR_FREE(prefix);
+        VIR_FREE(directoryAndFileName);
 
-        if (esxUtil_ParseDatastorePath(searchResults->folderPath, &datastoreName,
-                                       &directoryName, &fileName) < 0) {
+        if (esxUtil_ParseDatastorePath(searchResults->folderPath, NULL, NULL,
+                                       &directoryAndFileName) < 0) {
             goto cleanup;
         }
 
-        if (directoryName != NULL) {
-            if (virAsprintf(&prefix, "%s/%s", directoryName, fileName) < 0) {
-                virReportOOMError();
-                goto cleanup;
-            }
-        } else {
-            prefix = strdup(fileName);
+        /* Strip trailing separators */
+        length = strlen(directoryAndFileName);
 
-            if (prefix == NULL) {
-                virReportOOMError();
-                goto cleanup;
-            }
+        while (length > 0 && directoryAndFileName[length - 1] == '/') {
+            directoryAndFileName[length - 1] = '\0';
+            --length;
         }
 
+        /* Build volume names */
         for (fileInfo = searchResults->file; fileInfo != NULL;
              fileInfo = fileInfo->_next) {
-            if (*prefix == '\0') {
+            if (length < 1) {
                 names[count] = strdup(fileInfo->path);
 
                 if (names[count] == NULL) {
                     virReportOOMError();
                     goto cleanup;
                 }
-            } else if (virAsprintf(&names[count], "%s/%s", prefix,
+            } else if (virAsprintf(&names[count], "%s/%s", directoryAndFileName,
                                    fileInfo->path) < 0) {
                 virReportOOMError();
                 goto cleanup;
@@ -694,10 +684,7 @@ esxStoragePoolListStorageVolumes(virStoragePoolPtr pool, char **const names,
     }
 
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResultsList);
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(prefix);
+    VIR_FREE(directoryAndFileName);
 
     return count;
 }
@@ -744,32 +731,16 @@ esxStorageVolumeLookupByKeyOrPath(virConnectPtr conn, const char *keyOrPath)
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->storagePrivateData;
     char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *volumeName = NULL;
+    char *directoryAndFileName = NULL;
     esxVI_FileInfo *fileInfo = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
 
-    if (esxUtil_ParseDatastorePath(keyOrPath, &datastoreName, &directoryName,
-                                   &fileName) < 0) {
+    if (esxUtil_ParseDatastorePath(keyOrPath, &datastoreName, NULL,
+                                   &directoryAndFileName) < 0) {
         goto cleanup;
-    }
-
-    if (directoryName != NULL) {
-        if (virAsprintf(&volumeName, "%s/%s", directoryName, fileName) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-    } else {
-        volumeName = strdup(fileName);
-
-        if (volumeName == NULL) {
-            virReportOOMError();
-            goto cleanup;
-        }
     }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, keyOrPath, &fileInfo,
@@ -777,13 +748,12 @@ esxStorageVolumeLookupByKeyOrPath(virConnectPtr conn, const char *keyOrPath)
         goto cleanup;
     }
 
-    volume = virGetStorageVol(conn, datastoreName, volumeName, keyOrPath);
+    volume = virGetStorageVol(conn, datastoreName, directoryAndFileName,
+                              keyOrPath);
 
   cleanup:
     VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(volumeName);
+    VIR_FREE(directoryAndFileName);
     esxVI_FileInfo_Free(&fileInfo);
 
     return volume;
