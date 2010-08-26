@@ -1390,7 +1390,11 @@ esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,
     esxVI_SelectionSpec *selectionSpec = NULL;
     const char *currentSelectSetName = NULL;
 
-    if (selectSet == NULL || *selectSet != NULL) {
+    if (selectSet == NULL) {
+        /*
+         * Don't check for *selectSet != NULL here because selectSet is a list
+         * and might contain items already. This function appends to selectSet.
+         */
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
