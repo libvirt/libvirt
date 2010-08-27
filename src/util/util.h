@@ -194,6 +194,8 @@ int virStrToDouble(char const *s,
                    char **end_ptr,
                    double *result);
 
+int virHexToBin(unsigned char c);
+
 int virMacAddrCompare (const char *mac1, const char *mac2);
 
 void virSkipSpaces(const char **str);
