@@ -1,0 +1,16 @@
+<domain type='vmware'>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <description>Some |text| to test the &quot;escaping&quot;: ||&quot;&quot;||&quot;| Escaped!</description>
+  <memory>32768</memory>
+  <currentMemory>32768</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+  </devices>
+</domain>

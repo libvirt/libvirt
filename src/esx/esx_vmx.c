@@ -843,6 +843,8 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     long long numvcpus = 0;
     char *sched_cpu_affinity = NULL;
     char *guestOS = NULL;
+    char *tmp1;
+    char *tmp2;
     int controller;
     int bus;
     int port;
@@ -945,6 +947,36 @@ esxVMX_ParseConfig(esxVMX_Context *ctx, virCapsPtr caps, const char *vmx,
     /* vmx:displayName -> def:name */
     if (esxUtil_GetConfigString(conf, "displayName", &def->name, true) < 0) {
         goto cleanup;
+    }
+
+    /* vmx:annotation -> def:description */
+    if (esxUtil_GetConfigString(conf, "annotation", &def->description,
+                                true) < 0) {
+        goto cleanup;
+    }
+
+    /* Unescape '|XX' where X is a hex digit */
+    if (def->description != NULL) {
+        tmp1 = def->description; /* reading from this one */
+        tmp2 = def->description; /* writing to this one */
+
+        while (*tmp1 != '\0') {
+            if (*tmp1 == '|') {
+                if (!c_isxdigit(tmp1[1]) || !c_isxdigit(tmp1[2])) {
+                    ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                              _("VMX entry 'annotation' contains invalid "
+                                "escape sequence"));
+                    goto cleanup;
+                }
+
+                *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);
+                tmp1 += 3;
+            } else {
+                *tmp2++ = *tmp1++;
+            }
+        }
+
+        *tmp2 = '\0';
     }
 
     /* vmx:memsize -> def:maxmem */
@@ -2314,10 +2346,15 @@ char *
 esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                     esxVI_ProductVersion productVersion)
 {
+    char *vmx = NULL;
     int i;
     int sched_cpu_affinity_length;
     unsigned char zero[VIR_UUID_BUFLEN];
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
+    size_t length;
+    char *tmp1;
+    char *tmp2;
+    char *annotation = NULL;
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     bool floppy_present[2] = { false, false };
@@ -2361,7 +2398,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
       default:
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
                   _("Unexpected product version"));
-        goto failure;
+        goto cleanup;
     }
 
     /* def:arch -> vmx:guestOS */
@@ -2373,7 +2410,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting domain XML attribute 'arch' of entry 'os/type' "
                     "to be 'i686' or 'x86_64' but found '%s'"), def->os.arch);
-        goto failure;
+        goto cleanup;
     }
 
     /* def:uuid -> vmx:uuid.action, vmx:uuid.bios */
@@ -2392,13 +2429,53 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     /* def:name -> vmx:displayName */
     virBufferVSprintf(&buffer, "displayName = \"%s\"\n", def->name);
 
+    /* def:description -> vmx:annotation */
+    if (def->description != NULL) {
+        /* Escape '"' as '|22' and '|' as '|7C' */
+        length = 1; /* 1 byte for termination */
+        tmp1 = def->description;
+
+        while (*tmp1 != '\0') {
+            if (*tmp1 == '"' || *tmp1 == '|') {
+                length += 2;
+            }
+
+            ++tmp1;
+            ++length;
+        }
+
+        if (VIR_ALLOC_N(annotation, length) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        tmp1 = def->description; /* reading from this one */
+        tmp2 = annotation; /* writing to this one */
+
+        while (*tmp1 != '\0') {
+            if (*tmp1 == '"') {
+                *tmp2++ = '|'; *tmp2++ = '2'; *tmp2++ = '2';
+            } else if (*tmp1 == '|') {
+                *tmp2++ = '|'; *tmp2++ = '7'; *tmp2++ = 'C';
+            } else {
+                *tmp2++ = *tmp1;
+            }
+
+            ++tmp1;
+        }
+
+        *tmp2 = '\0';
+
+        virBufferVSprintf(&buffer, "annotation = \"%s\"\n", annotation);
+    }
+
     /* def:maxmem -> vmx:memsize */
     if (def->maxmem <= 0 || def->maxmem % 4096 != 0) {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                   _("Expecting domain XML entry 'memory' to be an unsigned "
                     "integer (multiple of 4096) but found %lld"),
                   (unsigned long long)def->maxmem);
-        goto failure;
+        goto cleanup;
     }
 
     /* Scale from kilobytes to megabytes */
@@ -2412,7 +2489,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                       _("Expecting domain XML entry 'currentMemory' to be an "
                         "unsigned integer (multiple of 1024) but found %lld"),
                       (unsigned long long)def->memory);
-            goto failure;
+            goto cleanup;
         }
 
         /* Scale from kilobytes to megabytes */
@@ -2426,7 +2503,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                   _("Expecting domain XML entry 'vcpu' to be an unsigned "
                     "integer (1 or a multiple of 2) but found %d"),
                   (int)def->vcpus);
-        goto failure;
+        goto cleanup;
     }
 
     virBufferVSprintf(&buffer, "numvcpus = \"%d\"\n", (int)def->vcpus);
@@ -2448,7 +2525,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
                       _("Expecting domain XML attribute 'cpuset' of entry "
                         "'vcpu' to contains at least %d CPU(s)"),
                       (int)def->vcpus);
-            goto failure;
+            goto cleanup;
         }
 
         for (i = 0; i < def->cpumasklen; ++i) {
@@ -2471,7 +2548,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         switch (def->graphics[i]->type) {
           case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             if (esxVMX_FormatVNC(def->graphics[i], &buffer) < 0) {
-                goto failure;
+                goto cleanup;
             }
 
             break;
@@ -2480,7 +2557,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Unsupported graphics type '%s'"),
                       virDomainGraphicsTypeToString(def->graphics[i]->type));
-            goto failure;
+            goto cleanup;
         }
     }
 
@@ -2488,13 +2565,13 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     for (i = 0; i < def->ndisks; ++i) {
         if (esxVMX_VerifyDiskAddress(caps, def->disks[i]) < 0 ||
             esxVMX_HandleLegacySCSIDiskDriverName(def, def->disks[i]) < 0) {
-            goto failure;
+            goto cleanup;
         }
     }
 
     if (esxVMX_GatherSCSIControllers(ctx, def, scsi_virtualDev,
                                      scsi_present) < 0) {
-        goto failure;
+        goto cleanup;
     }
 
     for (i = 0; i < 4; ++i) {
@@ -2513,14 +2590,14 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
         switch (def->disks[i]->device) {
           case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (esxVMX_FormatHardDisk(ctx, def->disks[i], &buffer) < 0) {
-                goto failure;
+                goto cleanup;
             }
 
             break;
 
           case VIR_DOMAIN_DISK_DEVICE_CDROM:
             if (esxVMX_FormatCDROM(ctx, def->disks[i], &buffer) < 0) {
-                goto failure;
+                goto cleanup;
             }
 
             break;
@@ -2528,7 +2605,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
           case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
             if (esxVMX_FormatFloppy(ctx, def->disks[i], &buffer,
                                     floppy_present) < 0) {
-                goto failure;
+                goto cleanup;
             }
 
             break;
@@ -2537,7 +2614,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
             ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
                       _("Unsupported disk device type '%s'"),
                       virDomainDiskDeviceTypeToString(def->disks[i]->device));
-            goto failure;
+            goto cleanup;
         }
     }
 
@@ -2554,7 +2631,7 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     /* def:nets */
     for (i = 0; i < def->nnets; ++i) {
         if (esxVMX_FormatEthernet(def->nets[i], i, &buffer) < 0) {
-            goto failure;
+            goto cleanup;
         }
     }
 
@@ -2570,29 +2647,33 @@ esxVMX_FormatConfig(esxVMX_Context *ctx, virCapsPtr caps, virDomainDefPtr def,
     /* def:serials */
     for (i = 0; i < def->nserials; ++i) {
         if (esxVMX_FormatSerial(ctx, def->serials[i], &buffer) < 0) {
-            goto failure;
+            goto cleanup;
         }
     }
 
     /* def:parallels */
     for (i = 0; i < def->nparallels; ++i) {
         if (esxVMX_FormatParallel(ctx, def->parallels[i], &buffer) < 0) {
-            goto failure;
+            goto cleanup;
         }
     }
 
     /* Get final VMX output */
     if (virBufferError(&buffer)) {
         virReportOOMError();
-        goto failure;
+        goto cleanup;
     }
 
-    return virBufferContentAndReset(&buffer);
+    vmx = virBufferContentAndReset(&buffer);
 
-  failure:
-    virBufferFreeAndReset(&buffer);
+  cleanup:
+    if (vmx == NULL) {
+        virBufferFreeAndReset(&buffer);
+    }
 
-    return NULL;
+    VIR_FREE(annotation);
+
+    return vmx;
 }
 
 

@@ -280,6 +280,8 @@ mymain(int argc, char **argv)
     DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3", esxVI_ProductVersion_ESX35);
     DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4", esxVI_ProductVersion_ESX35);
 
+    DO_TEST("annotation", "annotation", esxVI_ProductVersion_ESX35);
+
     virCapabilitiesFree(caps);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
