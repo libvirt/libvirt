@@ -353,7 +353,8 @@ esxAutodetectSCSIControllerModel(virDomainDiskDefPtr def, int *model,
         return 0;
     }
 
-    if (esxVI_LookupFileInfoByDatastorePath(data->ctx, def->src, &fileInfo,
+    if (esxVI_LookupFileInfoByDatastorePath(data->ctx, def->src,
+                                            false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }

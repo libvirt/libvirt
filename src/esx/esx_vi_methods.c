@@ -175,6 +175,12 @@
 
 
 
+#define ESX_VI__METHOD__PARAMETER__THIS__fileManager                          \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 fileManager)
+
+
+
 #define ESX_VI__METHOD__PARAMETER__THIS__perfManager                          \
     ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
                                                  perfManager)
@@ -196,6 +202,12 @@
 #define ESX_VI__METHOD__PARAMETER__THIS__sessionManager                       \
     ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
                                                  sessionManager)
+
+
+
+#define ESX_VI__METHOD__PARAMETER__THIS__virtualDiskManager                   \
+    ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(ManagedObjectReference,      \
+                                                 virtualDiskManager)
 
 
 

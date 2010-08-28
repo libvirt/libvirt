@@ -401,6 +401,7 @@ int esxVI_LookupCurrentSnapshotTree
 
 int esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                                         const char *datastorePath,
+                                        bool lookupFolder,
                                         esxVI_FileInfo **fileInfo,
                                         esxVI_Occurrence occurrence);
 

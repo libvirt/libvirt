@@ -709,7 +709,7 @@ esxStorageVolumeLookupByName(virStoragePoolPtr pool, const char *name)
     }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, datastorePath,
-                                            &fileInfo,
+                                            false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
@@ -743,7 +743,8 @@ esxStorageVolumeLookupByKeyOrPath(virConnectPtr conn, const char *keyOrPath)
         goto cleanup;
     }
 
-    if (esxVI_LookupFileInfoByDatastorePath(priv->primary, keyOrPath, &fileInfo,
+    if (esxVI_LookupFileInfoByDatastorePath(priv->primary, keyOrPath,
+                                            false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
@@ -755,6 +756,207 @@ esxStorageVolumeLookupByKeyOrPath(virConnectPtr conn, const char *keyOrPath)
     VIR_FREE(datastoreName);
     VIR_FREE(directoryAndFileName);
     esxVI_FileInfo_Free(&fileInfo);
+
+    return volume;
+}
+
+
+
+static virStorageVolPtr
+esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
+                          unsigned int flags)
+{
+    virStorageVolPtr volume = NULL;
+    esxPrivate *priv = pool->conn->storagePrivateData;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
+    esxVI_DatastoreInfo *datastoreInfo = NULL;
+    virStoragePoolDef poolDef;
+    virStorageVolDefPtr def = NULL;
+    char *tmp;
+    char *datastorePath = NULL;
+    char *directoryName = NULL;
+    char *datastorePathWithoutFileName = NULL;
+    esxVI_FileInfo *fileInfo = NULL;
+    esxVI_FileBackedVirtualDiskSpec *virtualDiskSpec = NULL;
+    esxVI_ManagedObjectReference *task = NULL;
+    esxVI_TaskInfoState taskInfoState;
+
+    virCheckFlags(0, NULL);
+
+    memset(&poolDef, 0, sizeof (poolDef));
+
+    if (esxVI_EnsureSession(priv->primary) < 0) {
+        return NULL;
+    }
+
+    /* Lookup storage pool type */
+    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
+        esxVI_LookupDatastoreByName(priv->primary, pool->name,
+                                    propertyNameList, &datastore,
+                                    esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    for (dynamicProperty = datastore->propSet; dynamicProperty != NULL;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "info")) {
+            if (esxVI_DatastoreInfo_CastFromAnyType(dynamicProperty->val,
+                                                    &datastoreInfo) < 0) {
+                goto cleanup;
+            }
+
+            break;
+        }
+    }
+
+    if (esxVI_LocalDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        poolDef.type = VIR_STORAGE_POOL_DIR;
+    } else if (esxVI_NasDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        poolDef.type = VIR_STORAGE_POOL_NETFS;
+    } else if (esxVI_VmfsDatastoreInfo_DynamicCast(datastoreInfo) != NULL) {
+        poolDef.type = VIR_STORAGE_POOL_FS;
+    } else {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("DatastoreInfo has unexpected type"));
+        goto cleanup;
+    }
+
+    /* Parse config */
+    def = virStorageVolDefParseString(&poolDef, xmldesc);
+
+    if (def == NULL) {
+        goto cleanup;
+    }
+
+    if (def->type != VIR_STORAGE_VOL_FILE) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("Creating non-file volumes is not supported"));
+        goto cleanup;
+    }
+
+    /* Validate config */
+    tmp = strrchr(def->name, '/');
+
+    if (tmp == NULL || *def->name == '/' || tmp[1] == '\0') {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Volume name '%s' doesn't have expected format "
+                    "'<directory>/<file>'"), def->name);
+        goto cleanup;
+    }
+
+    if (! virFileHasSuffix(def->name, ".vmdk")) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Volume name '%s' has unsupported suffix, expecting '.vmdk'"),
+                  def->name);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&datastorePath, "[%s] %s", pool->name, def->name) < 0) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (def->target.format == VIR_STORAGE_FILE_VMDK) {
+        /* Create directory, if it doesn't exist yet */
+        if (esxUtil_ParseDatastorePath(datastorePath, NULL, &directoryName,
+                                       NULL) < 0) {
+            goto cleanup;
+        }
+
+        if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s", pool->name,
+                        directoryName) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (esxVI_LookupFileInfoByDatastorePath
+              (priv->primary, datastorePathWithoutFileName, true, &fileInfo,
+               esxVI_Occurrence_OptionalItem) < 0) {
+            goto cleanup;
+        }
+
+        if (fileInfo == NULL) {
+            if (esxVI_MakeDirectory(priv->primary, datastorePathWithoutFileName,
+                                    priv->primary->datacenter->_reference,
+                                    esxVI_Boolean_True) < 0) {
+                goto cleanup;
+            }
+        }
+
+        /* Create VirtualDisk */
+        if (esxVI_FileBackedVirtualDiskSpec_Alloc(&virtualDiskSpec) < 0 ||
+            esxVI_Long_Alloc(&virtualDiskSpec->capacityKb) < 0) {
+            goto cleanup;
+        }
+
+        /* From the vSphere API documentation about VirtualDiskType ... */
+        if (def->allocation == def->capacity) {
+            /*
+             * "A preallocated disk has all space allocated at creation time
+             *  and the space is zeroed on demand as the space is used."
+             */
+            virtualDiskSpec->diskType = (char *)"preallocated";
+        } else if (def->allocation == 0) {
+            /*
+             * "Space required for thin-provisioned virtual disk is allocated
+             *  and zeroed on demand as the space is used."
+             */
+            virtualDiskSpec->diskType = (char *)"thin";
+        } else {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("Unsupported capacity-to-allocation relation"));
+            goto cleanup;
+        }
+
+        /*
+         * FIXME: The adapter type is a required parameter, but there is no
+         * way to let the user specify it in the volume XML config. Therefore,
+         * default to 'busLogic' here.
+         */
+        virtualDiskSpec->adapterType = (char *)"busLogic";
+
+        virtualDiskSpec->capacityKb->value = def->capacity / 1024; /* Scale from byte to kilobyte */
+
+        if (esxVI_CreateVirtualDisk_Task
+              (priv->primary, datastorePath, priv->primary->datacenter->_reference,
+               esxVI_VirtualDiskSpec_DynamicCast(virtualDiskSpec), &task) < 0 ||
+            esxVI_WaitForTaskCompletion(priv->primary, task, NULL,
+                                        esxVI_Occurrence_None,
+                                        priv->autoAnswer, &taskInfoState) < 0) {
+            goto cleanup;
+        }
+
+        if (taskInfoState != esxVI_TaskInfoState_Success) {
+            ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create volume"));
+            goto cleanup;
+        }
+    } else {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
+                  _("Creation of %s volumes is not supported"),
+                  virStorageFileFormatTypeToString(def->target.format));
+        goto cleanup;
+    }
+
+    volume = virGetStorageVol(pool->conn, pool->name, def->name, datastorePath);
+
+  cleanup:
+    if (virtualDiskSpec != NULL) {
+        virtualDiskSpec->diskType = NULL;
+        virtualDiskSpec->adapterType = NULL;
+    }
+
+    esxVI_String_Free(&propertyNameList);
+    esxVI_ObjectContent_Free(&datastore);
+    esxVI_DatastoreInfo_Free(&datastoreInfo);
+    virStorageVolDefFree(def);
+    VIR_FREE(datastorePath);
+    VIR_FREE(directoryName);
+    VIR_FREE(datastorePathWithoutFileName);
+    esxVI_FileInfo_Free(&fileInfo);
+    esxVI_FileBackedVirtualDiskSpec_Free(&virtualDiskSpec);
+    esxVI_ManagedObjectReference_Free(&task);
 
     return volume;
 }
@@ -782,7 +984,7 @@ esxStorageVolumeGetInfo(virStorageVolPtr volume, virStorageVolInfoPtr info)
     }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, datastorePath,
-                                            &fileInfo,
+                                            false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
@@ -875,7 +1077,7 @@ esxStorageVolumeDumpXML(virStorageVolPtr volume, unsigned int flags)
     }
 
     if (esxVI_LookupFileInfoByDatastorePath(priv->primary, datastorePath,
-                                            &fileInfo,
+                                            false, &fileInfo,
                                             esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
@@ -986,7 +1188,7 @@ static virStorageDriver esxStorageDriver = {
     esxStorageVolumeLookupByName,          /* volLookupByName */
     esxStorageVolumeLookupByKeyOrPath,     /* volLookupByKey */
     esxStorageVolumeLookupByKeyOrPath,     /* volLookupByPath */
-    NULL,                                  /* volCreateXML */
+    esxStorageVolumeCreateXML,             /* volCreateXML */
     NULL,                                  /* volCreateXMLFrom */
     NULL,                                  /* volDelete */
     NULL,                                  /* volWipe */

@@ -45,10 +45,12 @@ valid_occurrences = [OCCURRENCE__REQUIRED_ITEM,
 
 
 class Parameter:
-    autobind_map = { "PerformanceManager" : "perfManager",
+    autobind_map = { "FileManager"        : "fileManager",
+                     "PerformanceManager" : "perfManager",
                      "PropertyCollector"  : "propertyCollector",
                      "SearchIndex"        : "searchIndex",
-                     "SessionManager"     : "sessionManager" }
+                     "SessionManager"     : "sessionManager",
+                     "VirtualDiskManager" : "virtualDiskManager" }
 
     def __init__(self, type, name, occurrence):
         self.type = type
@@ -1158,6 +1160,7 @@ additional_object_features = { "DatastoreHostMount"         : Object.FEATURE__DE
                                "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
                                "TaskInfo"                   : Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
                                "UserSession"                : Object.FEATURE__ANY_TYPE,
+                               "VirtualDiskSpec"            : Object.FEATURE__DYNAMIC_CAST,
                                "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
                                "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY | Object.FEATURE__ANY_TYPE }
 

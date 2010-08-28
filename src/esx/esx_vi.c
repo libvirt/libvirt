@@ -2940,6 +2940,7 @@ esxVI_LookupCurrentSnapshotTree
 int
 esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                                     const char *datastorePath,
+                                    bool lookupFolder,
                                     esxVI_FileInfo **fileInfo,
                                     esxVI_Occurrence occurrence)
 {
@@ -2954,6 +2955,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     esxVI_ObjectContent *datastore = NULL;
     esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
     esxVI_HostDatastoreBrowserSearchSpec *searchSpec = NULL;
+    esxVI_FolderFileQuery *folderFileQuery = NULL;
     esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
     esxVI_IsoImageFileQuery *isoImageFileQuery = NULL;
     esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
@@ -3030,32 +3032,41 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     searchSpec->details->fileSize = esxVI_Boolean_True;
     searchSpec->details->modification = esxVI_Boolean_False;
 
-    if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
-        esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
-        esxVI_FileQuery_AppendToList
-          (&searchSpec->query,
-           esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
-        goto cleanup;
-    }
+    if (lookupFolder) {
+        if (esxVI_FolderFileQuery_Alloc(&folderFileQuery) < 0 ||
+            esxVI_FileQuery_AppendToList
+              (&searchSpec->query,
+               esxVI_FileQuery_DynamicCast(folderFileQuery)) < 0) {
+            goto cleanup;
+        }
+    } else {
+        if (esxVI_VmDiskFileQuery_Alloc(&vmDiskFileQuery) < 0 ||
+            esxVI_VmDiskFileQueryFlags_Alloc(&vmDiskFileQuery->details) < 0 ||
+            esxVI_FileQuery_AppendToList
+              (&searchSpec->query,
+               esxVI_FileQuery_DynamicCast(vmDiskFileQuery)) < 0) {
+            goto cleanup;
+        }
 
-    vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
-    vmDiskFileQuery->details->capacityKb = esxVI_Boolean_True;
-    vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
-    vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
-    vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
+        vmDiskFileQuery->details->diskType = esxVI_Boolean_False;
+        vmDiskFileQuery->details->capacityKb = esxVI_Boolean_True;
+        vmDiskFileQuery->details->hardwareVersion = esxVI_Boolean_False;
+        vmDiskFileQuery->details->controllerType = esxVI_Boolean_True;
+        vmDiskFileQuery->details->diskExtents = esxVI_Boolean_False;
 
-    if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
-        esxVI_FileQuery_AppendToList
-          (&searchSpec->query,
-           esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
-        goto cleanup;
-    }
+        if (esxVI_IsoImageFileQuery_Alloc(&isoImageFileQuery) < 0 ||
+            esxVI_FileQuery_AppendToList
+              (&searchSpec->query,
+               esxVI_FileQuery_DynamicCast(isoImageFileQuery)) < 0) {
+            goto cleanup;
+        }
 
-    if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
-        esxVI_FileQuery_AppendToList
-          (&searchSpec->query,
-           esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
-        goto cleanup;
+        if (esxVI_FloppyImageFileQuery_Alloc(&floppyImageFileQuery) < 0 ||
+            esxVI_FileQuery_AppendToList
+              (&searchSpec->query,
+               esxVI_FileQuery_DynamicCast(floppyImageFileQuery)) < 0) {
+            goto cleanup;
+        }
     }
 
     if (esxVI_String_Alloc(&searchSpec->matchPattern) < 0) {

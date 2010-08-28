@@ -166,6 +166,11 @@ object Description
 end
 
 
+object DeviceBackedVirtualDiskSpec extends VirtualDiskSpec
+    String                                   device                         r
+end
+
+
 object DynamicProperty
     String                                   name                           r
     AnyType                                  val                            r
@@ -187,6 +192,11 @@ object Event
     HostEventArgument                        host                           i
     VmEventArgument                          vm                             i
     String                                   fullFormattedMessage           o
+end
+
+
+object FileBackedVirtualDiskSpec extends VirtualDiskSpec
+    Long                                     capacityKb                     r
 end
 
 
@@ -528,6 +538,12 @@ object UserSession
 end
 
 
+object VirtualDiskSpec
+    String                                   diskType                       r
+    String                                   adapterType                    r
+end
+
+
 object VirtualMachineConfigSpec
     String                                   changeVersion                  o
     String                                   name                           o
@@ -694,6 +710,14 @@ method CreateSnapshot_Task returns ManagedObjectReference r
 end
 
 
+method CreateVirtualDisk_Task returns ManagedObjectReference r
+    ManagedObjectReference                   _this:VirtualDiskManager       r
+    String                                   name                           r
+    ManagedObjectReference                   datacenter                     o
+    VirtualDiskSpec                          spec                           r
+end
+
+
 method DestroyPropertyFilter
     ManagedObjectReference                   _this                          r
 end
@@ -725,6 +749,14 @@ end
 
 method Logout
     ManagedObjectReference                   _this:SessionManager           r
+end
+
+
+method MakeDirectory
+    ManagedObjectReference                   _this:FileManager              r
+    String                                   name                           r
+    ManagedObjectReference                   datacenter                     o
+    Boolean                                  createParentDirectories        o
 end
 
 
