@@ -94,11 +94,11 @@ class Parameter:
 
     def generate_return(self, offset = 0, end_of_line = ";"):
         if self.occurrence == OCCURRENCE__IGNORED:
-            raise ValueError("invalid function parameteroccurrence value '%s'" % self.occurrence)
+            raise ValueError("invalid function parameter occurrence value '%s'" % self.occurrence)
         else:
             string = "       "
             string += " " * offset
-            string += "%s*%s)%s" % (self.get_type_string(), self.name, end_of_line)
+            string += "%s%s)%s" % (self.get_type_string(True), self.name, end_of_line)
 
             while len(string) < 59:
                 string += " "
@@ -124,15 +124,25 @@ class Parameter:
             return "    ESX_VI__METHOD__PARAMETER__SERIALIZE(%s, %s)\n" % (self.type, self.name)
 
 
-    def get_type_string(self):
+    def get_type_string(self, as_return_value = False):
+        string = ""
+
         if self.type == "String" and \
            self.occurrence not in [OCCURRENCE__REQUIRED_LIST,
                                    OCCURRENCE__OPTIONAL_LIST]:
-            return "const char *"
+            if as_return_value:
+                string += "char *"
+            else:
+                string += "const char *"
         elif self.is_enum():
-            return "esxVI_%s " % self.type
+            string += "esxVI_%s " % self.type
         else:
-            return "esxVI_%s *" % self.type
+            string += "esxVI_%s *" % self.type
+
+        if as_return_value:
+            string += "*"
+
+        return string
 
 
     def get_occurrence_comment(self):
@@ -225,9 +235,11 @@ class Method:
             source += "),\n"
 
         if self.returns is None:
-            source += "               void, None,\n"
+            source += "               void, /* nothing */, None,\n"
+        elif self.returns.type == "String":
+            source += "               String, Value, %s,\n" % self.returns.get_occurrence_short_enum()
         else:
-            source += "               %s, %s,\n" % (self.returns.type, self.returns.get_occurrence_short_enum())
+            source += "               %s, /* nothing */, %s,\n" % (self.returns.type, self.returns.get_occurrence_short_enum())
 
         source += "{\n"
 
