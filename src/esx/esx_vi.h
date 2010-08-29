@@ -409,6 +409,10 @@ int esxVI_LookupDatastoreContentByDatastoreName
       (esxVI_Context *ctx, const char *datastoreName,
        esxVI_HostDatastoreBrowserSearchResults **searchResultsList);
 
+int esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
+                                                const char *datastorePath,
+                                                char **key);
+
 int esxVI_HandleVirtualMachineQuestion
       (esxVI_Context *ctx,
        esxVI_ManagedObjectReference *virtualMachine,

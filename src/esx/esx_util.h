@@ -69,4 +69,6 @@ int esxUtil_GetConfigLong(virConfPtr conf, const char *name, long long *number,
 int esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
                              bool default_, bool optional);
 
+int esxUtil_ReformatUuid(const char *input, char *output);
+
 #endif /* __ESX_UTIL_H__ */

@@ -3254,6 +3254,59 @@ esxVI_LookupDatastoreContentByDatastoreName
 
 
 int
+esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
+                                            const char *datastorePath,
+                                            char **key)
+{
+    int result = -1;
+    esxVI_FileInfo *fileInfo = NULL;
+    char *uuid_string = NULL;
+
+    if (key == NULL || *key != NULL) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    if (esxVI_LookupFileInfoByDatastorePath(ctx, datastorePath, false, &fileInfo,
+                                            esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
+
+    if (esxVI_VmDiskFileInfo_DynamicCast(fileInfo) != NULL) {
+        /* VirtualDisks have a UUID, use it as key */
+        if (esxVI_QueryVirtualDiskUuid(ctx, datastorePath,
+                                       ctx->datacenter->_reference,
+                                       &uuid_string) < 0) {
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0) {
+            virReportOOMError();
+            goto cleanup;
+        }
+
+        if (esxUtil_ReformatUuid(uuid_string, *key) < 0) {
+            goto cleanup;
+        }
+    } else {
+        /* Other files don't have a UUID, fall back to the path as key */
+        if (esxVI_String_DeepCopyValue(key, datastorePath) < 0) {
+            goto cleanup;
+        }
+    }
+
+    result = 0;
+
+  cleanup:
+    esxVI_FileInfo_Free(&fileInfo);
+    VIR_FREE(uuid_string);
+
+    return result;
+}
+
+
+
+int
 esxVI_HandleVirtualMachineQuestion
   (esxVI_Context *ctx, esxVI_ManagedObjectReference *virtualMachine,
    esxVI_VirtualMachineQuestionInfo *questionInfo,

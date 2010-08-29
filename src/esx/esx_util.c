@@ -602,3 +602,22 @@ esxUtil_GetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
 
     return 0;
 }
+
+
+
+int
+esxUtil_ReformatUuid(const char *input, char *output)
+{
+    unsigned char uuid[VIR_UUID_BUFLEN];
+
+    if (virUUIDParse(input, uuid) < 0) {
+        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR,
+                     _("Could not parse UUID from string '%s'"),
+                     input);
+        return -1;
+    }
+
+    virUUIDFormat(uuid, output);
+
+    return 0;
+}

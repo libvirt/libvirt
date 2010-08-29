@@ -801,6 +801,13 @@ method QueryPerfCounter returns PerfCounterInfo ol
 end
 
 
+method QueryVirtualDiskUuid returns String r
+    ManagedObjectReference                   _this:VirtualDiskManager       r
+    String                                   name                           r
+    ManagedObjectReference                   datacenter                     o
+end
+
+
 method RebootGuest
     ManagedObjectReference                   _this                          r
 end
