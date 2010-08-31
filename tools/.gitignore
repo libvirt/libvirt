@@ -1,3 +1,4 @@
+libvirt-guests.init
 virt-xml-validate
 virt-pki-validate
 *.1
