@@ -812,14 +812,16 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         return -1;
 
     for (i = 0 ; i < def->nnets ; i++) {
-        char parentVeth[PATH_MAX] = "";
-        char containerVeth[PATH_MAX] = "";
+        char *parentVeth;
+        char *containerVeth = NULL;
 
         switch (def->nets[i]->type) {
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
-            virNetworkPtr network = virNetworkLookupByName(conn,
-                                                           def->nets[i]->data.network.name);
+            virNetworkPtr network;
+
+            network = virNetworkLookupByName(conn,
+                                             def->nets[i]->data.network.name);
             if (!network) {
                 goto error_exit;
             }
@@ -852,30 +854,22 @@ static int lxcSetupInterfaces(virConnectPtr conn,
         }
 
         DEBUG0("calling vethCreate()");
-        if (NULL != def->nets[i]->ifname) {
-            strcpy(parentVeth, def->nets[i]->ifname);
-        }
-        DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
-        if (vethCreate(parentVeth, PATH_MAX, containerVeth, PATH_MAX) < 0)
+        parentVeth = def->nets[i]->ifname;
+        if (vethCreate(&parentVeth, &containerVeth) < 0)
             goto error_exit;
+        DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
 
         if (NULL == def->nets[i]->ifname) {
-            def->nets[i]->ifname = strdup(parentVeth);
+            def->nets[i]->ifname = parentVeth;
         }
+
         if (VIR_REALLOC_N(*veths, (*nveths)+1) < 0) {
             virReportOOMError();
+            VIR_FREE(containerVeth);
             goto error_exit;
         }
-        if (((*veths)[(*nveths)] = strdup(containerVeth)) == NULL) {
-            virReportOOMError();
-            goto error_exit;
-        }
+        (*veths)[(*nveths)] = containerVeth;
         (*nveths)++;
-
-        if (NULL == def->nets[i]->ifname) {
-            virReportOOMError();
-            goto error_exit;
-        }
 
         {
             char macaddr[VIR_MAC_STRING_BUFLEN];

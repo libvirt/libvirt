@@ -13,6 +13,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -33,42 +34,46 @@
 /* Functions */
 /**
  * getFreeVethName:
- * @veth: name for veth device (NULL to find first open)
- * @maxLen: max length of veth name
+ * @veth: pointer to store returned name for veth device
  * @startDev: device number to start at (x in vethx)
  *
  * Looks in /sys/class/net/ to find the first available veth device
  * name.
  *
- * Returns 0 on success or -1 in case of error
+ * Returns non-negative device number on success or -1 in case of error
  */
-static int getFreeVethName(char *veth, int maxLen, int startDev)
+static int getFreeVethName(char **veth, int startDev)
 {
-    int rc = -1;
     int devNum = startDev-1;
-    char path[PATH_MAX];
+    char *path = NULL;
 
     do {
+        VIR_FREE(path);
         ++devNum;
-        snprintf(path, PATH_MAX, "/sys/class/net/veth%d/", devNum);
+        if (virAsprintf(&path, "/sys/class/net/veth%d/", devNum) < 0) {
+            virReportOOMError();
+            return -1;
+        }
     } while (virFileExists(path));
+    VIR_FREE(path);
 
-    snprintf(veth, maxLen, "veth%d", devNum);
-
-    rc = devNum;
-
-    return rc;
+    if (virAsprintf(veth, "veth%d", devNum) < 0) {
+        virReportOOMError();
+        return -1;
+    }
+    return devNum;
 }
 
 /**
  * vethCreate:
- * @veth1: name for one end of veth pair
- * @veth1MaxLen: max length of veth1 name
- * @veth2: name for one end of veth pair
- * @veth2MaxLen: max length of veth1 name
+ * @veth1: pointer to name for parent end of veth pair
+ * @veth2: pointer to return name for container end of veth pair
  *
  * Creates a veth device pair using the ip command:
  * ip link add veth1 type veth peer name veth2
+ * If veth1 points to NULL on entry, it will be a valid interface on
+ * return.  veth2 should point to NULL on entry.
+ *
  * NOTE: If veth1 and veth2 names are not specified, ip will auto assign
  *       names.  There seems to be two problems here -
  *       1) There doesn't seem to be a way to determine the names of the
@@ -78,43 +83,56 @@ static int getFreeVethName(char *veth, int maxLen, int startDev)
  *       2) Once one of the veth devices is moved to another namespace, it
  *          is no longer visible in the parent namespace.  This seems to
  *          confuse the name assignment causing it to fail with File exists.
- *       Because of these issues, this function currently forces the caller
- *       to fully specify the veth device names.
+ *       Because of these issues, this function currently allocates names
+ *       prior to using the ip command, and returns any allocated names
+ *       to the caller.
  *
  * Returns 0 on success or -1 in case of error
  */
-int vethCreate(char* veth1, int veth1MaxLen,
-               char* veth2, int veth2MaxLen)
+int vethCreate(char** veth1, char** veth2)
 {
     int rc;
     const char *argv[] = {
-        "ip", "link", "add", veth1, "type", "veth", "peer", "name", veth2, NULL
+        "ip", "link", "add", NULL, "type", "veth", "peer", "name", NULL, NULL
     };
     int cmdResult = 0;
     int vethDev = 0;
+    bool veth1_alloc = false;
 
-    DEBUG("veth1: %s veth2: %s", veth1, veth2);
+    DEBUG("veth1: %s veth2: %s", NULLSTR(*veth1), NULLSTR(*veth2));
 
-    while ((1 > strlen(veth1)) || STREQ(veth1, veth2)) {
-        vethDev = getFreeVethName(veth1, veth1MaxLen, 0);
-        ++vethDev;
-        DEBUG("Assigned veth1: %s", veth1);
+    if (*veth1 == NULL) {
+        vethDev = getFreeVethName(veth1, vethDev);
+        if (vethDev < 0)
+            return vethDev;
+        DEBUG("Assigned veth1: %s", *veth1);
+        veth1_alloc = true;
     }
+    argv[3] = *veth1;
 
-    while ((1 > strlen(veth2)) || STREQ(veth1, veth2)) {
-        vethDev = getFreeVethName(veth2, veth2MaxLen, vethDev);
-        ++vethDev;
-        DEBUG("Assigned veth2: %s", veth2);
+    while (*veth2 == NULL || STREQ(*veth1, *veth2)) {
+        VIR_FREE(*veth2);
+        vethDev = getFreeVethName(veth2, vethDev + 1);
+        if (vethDev < 0) {
+            if (veth1_alloc)
+                VIR_FREE(*veth1);
+            return vethDev;
+        }
+        DEBUG("Assigned veth2: %s", *veth2);
     }
+    argv[8] = *veth2;
 
-    DEBUG("veth1: %s veth2: %s", veth1, veth2);
+    DEBUG("veth1: %s veth2: %s", *veth1, *veth2);
     rc = virRun(argv, &cmdResult);
 
     if (rc != 0 ||
         (WIFEXITED(cmdResult) && WEXITSTATUS(cmdResult) != 0)) {
         vethError(VIR_ERR_INTERNAL_ERROR,
                   _("Failed to create veth device pair '%s', '%s': %d"),
-                  veth1, veth2, WEXITSTATUS(cmdResult));
+                  *veth1, *veth2, WEXITSTATUS(cmdResult));
+        if (veth1_alloc)
+            VIR_FREE(*veth1);
+        VIR_FREE(*veth2);
         rc = -1;
     }
 

@@ -1,6 +1,7 @@
 /*
  * veth.h: Interface to tools for managing veth pairs
  *
+ * Copyright (C) 2010 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * See COPYING.LIB for the License of this software
@@ -16,9 +17,8 @@
 # include "internal.h"
 
 /* Function declarations */
-int vethCreate(char* veth1, int veth1MaxLen, char* veth2,
-               int veth2MaxLen)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+int vethCreate(char** veth1, char** veth2)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int vethDelete(const char* veth)
     ATTRIBUTE_NONNULL(1);
 int vethInterfaceUpOrDown(const char* veth, int upOrDown)
