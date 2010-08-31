@@ -891,17 +891,14 @@ char *virNetworkAllocateBridge(const virNetworkObjListPtr nets,
         template = "virbr%d";
 
     do {
-        char try[50];
-
-        snprintf(try, sizeof(try), template, id);
-
-        if (!virNetworkBridgeInUse(nets, try, NULL)) {
-            if (!(newname = strdup(try))) {
-                virReportOOMError();
-                return NULL;
-            }
+        if (virAsprintf(&newname, template, id) < 0) {
+            virReportOOMError();
+            return NULL;
+        }
+        if (!virNetworkBridgeInUse(nets, newname, NULL)) {
             return newname;
         }
+        VIR_FREE(newname);
 
         id++;
     } while (id <= MAX_BRIDGE_ID);
