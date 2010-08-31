@@ -3379,6 +3379,1136 @@ static int vboxDomainCreate(virDomainPtr dom) {
     return vboxDomainCreateWithFlags(dom, 0);
 }
 
+static void
+vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
+                       IMachine *machine)
+{
+    ISystemProperties *systemProperties = NULL;
+    PRUint32 maxBootPosition            = 0;
+    int i = 0;
+
+    DEBUG("def->os.type             %s", def->os.type);
+    DEBUG("def->os.arch             %s", def->os.arch);
+    DEBUG("def->os.machine          %s", def->os.machine);
+    DEBUG("def->os.nBootDevs        %d", def->os.nBootDevs);
+    DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);
+    DEBUG("def->os.bootDevs[1]      %d", def->os.bootDevs[1]);
+    DEBUG("def->os.bootDevs[2]      %d", def->os.bootDevs[2]);
+    DEBUG("def->os.bootDevs[3]      %d", def->os.bootDevs[3]);
+    DEBUG("def->os.init             %s", def->os.init);
+    DEBUG("def->os.kernel           %s", def->os.kernel);
+    DEBUG("def->os.initrd           %s", def->os.initrd);
+    DEBUG("def->os.cmdline          %s", def->os.cmdline);
+    DEBUG("def->os.root             %s", def->os.root);
+    DEBUG("def->os.loader           %s", def->os.loader);
+    DEBUG("def->os.bootloader       %s", def->os.bootloader);
+    DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
+
+    data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        systemProperties->vtbl->GetMaxBootPosition(systemProperties,
+                                                   &maxBootPosition);
+        VBOX_RELEASE(systemProperties);
+        systemProperties = NULL;
+    }
+
+    /* Clear the defaults first */
+    for (i = 0; i < maxBootPosition; i++) {
+        machine->vtbl->SetBootOrder(machine, i+1, DeviceType_Null);
+    }
+
+    for (i = 0; (i < def->os.nBootDevs) && (i < maxBootPosition); i++) {
+        PRUint32 device = DeviceType_Null;
+
+        if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_FLOPPY) {
+            device = DeviceType_Floppy;
+        } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_CDROM) {
+            device = DeviceType_DVD;
+        } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_DISK) {
+            device = DeviceType_HardDisk;
+        } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
+            device = DeviceType_Network;
+        }
+        machine->vtbl->SetBootOrder(machine, i+1, device);
+    }
+}
+
+static void
+vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    int i;
+    nsresult rc;
+
+#if VBOX_API_VERSION < 3001
+    if (def->ndisks == 0)
+        return;
+
+    for (i = 0; i < def->ndisks; i++) {
+        DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
+        DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
+        DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
+        DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
+        DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
+        DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
+        DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
+        DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
+                                             ? "True" : "False"));
+        DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
+                                             ? "True" : "False"));
+
+        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                def->disks[i]->src != NULL) {
+                IDVDDrive *dvdDrive = NULL;
+                /* Currently CDROM/DVD Drive is always IDE
+                 * Secondary Master so neglecting the following
+                 * parameters:
+                 *      def->disks[i]->bus
+                 *      def->disks[i]->dst
+                 */
+
+                machine->vtbl->GetDVDDrive(machine, &dvdDrive);
+                if (dvdDrive) {
+                    IDVDImage *dvdImage          = NULL;
+                    PRUnichar *dvdfileUtf16      = NULL;
+                    vboxIID *dvduuid             = NULL;
+# if VBOX_API_VERSION == 2002
+                    nsID dvdemptyuuid;
+
+                    memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
+# else
+                    PRUnichar *dvdemptyuuidUtf16 = NULL;
+# endif
+
+                    VBOX_UTF8_TO_UTF16(def->disks[i]->src, &dvdfileUtf16);
+
+                    data->vboxObj->vtbl->FindDVDImage(data->vboxObj,
+                                                      dvdfileUtf16, &dvdImage);
+                    if (!dvdImage) {
+# if VBOX_API_VERSION == 2002
+                        data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
+                                                          dvdfileUtf16,
+                                                          &dvdemptyuuid,
+                                                          &dvdImage);
+# else
+                        data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
+                                                          dvdfileUtf16,
+                                                          dvdemptyuuidUtf16,
+                                                          &dvdImage);
+# endif
+                    }
+                    if (dvdImage) {
+                        rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage,
+                                                           &dvduuid);
+                        if (NS_FAILED(rc)) {
+                            vboxError(VIR_ERR_INTERNAL_ERROR,
+                                      _("can't get the uuid of the file to "
+                                        "be attached to cdrom: %s, rc=%08x"),
+                                      def->disks[i]->src, (unsigned)rc);
+                        } else {
+                            rc = dvdDrive->vtbl->MountImage(dvdDrive, dvduuid);
+                            if (NS_FAILED(rc)) {
+                                vboxError(VIR_ERR_INTERNAL_ERROR,
+                                          _("could not attach the file to cdrom: %s, rc=%08x"),
+                                          def->disks[i]->src, (unsigned)rc);
+                            } else {
+                                DEBUGIID("CD/DVDImage UUID:", dvduuid);
+                            }
+                        }
+
+                        VBOX_MEDIUM_RELEASE(dvdImage);
+                    }
+                    vboxIIDUnalloc(dvduuid);
+                    VBOX_UTF16_FREE(dvdfileUtf16);
+                    VBOX_RELEASE(dvdDrive);
+                }
+            } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            }
+        } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                def->disks[i]->src != NULL) {
+                IHardDisk *hardDisk     = NULL;
+                PRUnichar *hddfileUtf16 = NULL;
+                vboxIID   *hdduuid      = NULL;
+                PRUnichar *hddEmpty     = NULL;
+                /* Current Limitation: Harddisk can't be connected to
+                 * Secondary Master as Secondary Master is always used
+                 * for CD/DVD Drive, so don't connect the harddisk if it
+                 * is requested to be connected to Secondary master
+                 */
+
+                VBOX_UTF8_TO_UTF16(def->disks[i]->src, &hddfileUtf16);
+                VBOX_UTF8_TO_UTF16("", &hddEmpty);
+
+                data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddfileUtf16,
+                                                  &hardDisk);
+
+                if (!hardDisk) {
+# if VBOX_API_VERSION == 2002
+                    data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
+                                                      hddfileUtf16,
+                                                      AccessMode_ReadWrite,
+                                                      &hardDisk);
+# else
+                    data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
+                                                      hddfileUtf16,
+                                                      AccessMode_ReadWrite,
+                                                      0,
+                                                      hddEmpty,
+                                                      0,
+                                                      hddEmpty,
+                                                      &hardDisk);
+# endif
+                }
+
+                if (hardDisk) {
+                    rc = hardDisk->vtbl->imedium.GetId((IMedium *)hardDisk,
+                                                       &hdduuid);
+                    if (NS_FAILED(rc)) {
+                        vboxError(VIR_ERR_INTERNAL_ERROR,
+                                  _("can't get the uuid of the file to be "
+                                    "attached as harddisk: %s, rc=%08x"),
+                                  def->disks[i]->src, (unsigned)rc);
+                    } else {
+                        if (def->disks[i]->readonly) {
+                            hardDisk->vtbl->SetType(hardDisk,
+                                                    HardDiskType_Immutable);
+                            DEBUG0("setting harddisk to readonly");
+                        } else if (!def->disks[i]->readonly) {
+                            hardDisk->vtbl->SetType(hardDisk,
+                                                    HardDiskType_Normal);
+                            DEBUG0("setting harddisk type to normal");
+                        }
+                        if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+                            if (STREQ(def->disks[i]->dst, "hdc")) {
+                                DEBUG0("Not connecting harddisk to hdc as hdc"
+                                       " is taken by CD/DVD Drive");
+                            } else {
+                                PRInt32 channel          = 0;
+                                PRInt32 device           = 0;
+                                PRUnichar *hddcnameUtf16 = NULL;
+
+                                char *hddcname = strdup("IDE");
+                                VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
+                                VIR_FREE(hddcname);
+
+                                if (STREQ(def->disks[i]->dst, "hda")) {
+                                    channel = 0;
+                                    device  = 0;
+                                } else if (STREQ(def->disks[i]->dst, "hdb")) {
+                                    channel = 0;
+                                    device  = 1;
+                                } else if (STREQ(def->disks[i]->dst, "hdd")) {
+                                    channel = 1;
+                                    device  = 1;
+                                }
+
+                                rc = machine->vtbl->AttachHardDisk(machine,
+                                                                   hdduuid,
+                                                                   hddcnameUtf16,
+                                                                   channel,
+                                                                   device);
+                                VBOX_UTF16_FREE(hddcnameUtf16);
+
+                                if (NS_FAILED(rc)) {
+                                    vboxError(VIR_ERR_INTERNAL_ERROR,
+                                              _("could not attach the file as "
+                                                "harddisk: %s, rc=%08x"),
+                                              def->disks[i]->src, (unsigned)rc);
+                                } else {
+                                    DEBUGIID("Attached HDD with UUID", hdduuid);
+                                }
+                            }
+                        }
+                    }
+                    VBOX_MEDIUM_RELEASE(hardDisk);
+                }
+                vboxIIDUnalloc(hdduuid);
+                VBOX_UTF16_FREE(hddEmpty);
+                VBOX_UTF16_FREE(hddfileUtf16);
+            } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            }
+        } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+                def->disks[i]->src != NULL) {
+                IFloppyDrive *floppyDrive;
+                machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
+                if (floppyDrive) {
+                    rc = floppyDrive->vtbl->SetEnabled(floppyDrive, 1);
+                    if (NS_SUCCEEDED(rc)) {
+                        IFloppyImage *floppyImage   = NULL;
+                        PRUnichar *fdfileUtf16      = NULL;
+                        vboxIID *fduuid             = NULL;
+# if VBOX_API_VERSION == 2002
+                        nsID fdemptyuuid;
+
+                        memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
+# else
+                        PRUnichar *fdemptyuuidUtf16 = NULL;
+# endif
+
+                        VBOX_UTF8_TO_UTF16(def->disks[i]->src, &fdfileUtf16);
+                        rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
+                                                                  fdfileUtf16,
+                                                                  &floppyImage);
+
+                        if (!floppyImage) {
+                            data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
+                                                                 fdfileUtf16,
+# if VBOX_API_VERSION == 2002
+                                                                 &fdemptyuuid,
+# else
+                                                                 fdemptyuuidUtf16,
+# endif
+                                                                 &floppyImage);
+                        }
+
+                        if (floppyImage) {
+                            rc = floppyImage->vtbl->imedium.GetId((IMedium *)floppyImage,
+                                                                  &fduuid);
+                            if (NS_FAILED(rc)) {
+                                vboxError(VIR_ERR_INTERNAL_ERROR,
+                                          _("can't get the uuid of the file to "
+                                            "be attached to floppy drive: %s, rc=%08x"),
+                                          def->disks[i]->src, (unsigned)rc);
+                            } else {
+                                rc = floppyDrive->vtbl->MountImage(floppyDrive,
+                                                                   fduuid);
+                                if (NS_FAILED(rc)) {
+                                    vboxError(VIR_ERR_INTERNAL_ERROR,
+                                              _("could not attach the file to "
+                                                "floppy drive: %s, rc=%08x"),
+                                              def->disks[i]->src, (unsigned)rc);
+                                } else {
+                                    DEBUGIID("floppyImage UUID", fduuid);
+                                }
+                            }
+                            VBOX_MEDIUM_RELEASE(floppyImage);
+                        }
+                        vboxIIDUnalloc(fduuid);
+                        VBOX_UTF16_FREE(fdfileUtf16);
+                    }
+                    VBOX_RELEASE(floppyDrive);
+                }
+            } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
+            }
+        }
+    }
+#else  /* VBOX_API_VERSION >= 3001 */
+    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
+    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    PRUnichar *storageCtlName = NULL;
+    bool error = false;
+
+    /* get the max port/slots/etc for the given storage bus */
+    error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst,
+                                      maxSlotPerPort);
+
+    /* add a storage controller for the mediums to be attached */
+    /* this needs to change when multiple controller are supported for
+     * ver > 3.1 */
+    {
+        IStorageController *storageCtl = NULL;
+        PRUnichar *sName = NULL;
+
+        VBOX_UTF8_TO_UTF16("IDE Controller", &sName);
+        machine->vtbl->AddStorageController(machine,
+                                            sName,
+                                            StorageBus_IDE,
+                                            &storageCtl);
+        VBOX_UTF16_FREE(sName);
+        VBOX_RELEASE(storageCtl);
+
+        VBOX_UTF8_TO_UTF16("SATA Controller", &sName);
+        machine->vtbl->AddStorageController(machine,
+                                            sName,
+                                            StorageBus_SATA,
+                                            &storageCtl);
+        VBOX_UTF16_FREE(sName);
+        VBOX_RELEASE(storageCtl);
+
+        VBOX_UTF8_TO_UTF16("SCSI Controller", &sName);
+        machine->vtbl->AddStorageController(machine,
+                                            sName,
+                                            StorageBus_SCSI,
+                                            &storageCtl);
+        VBOX_UTF16_FREE(sName);
+        VBOX_RELEASE(storageCtl);
+
+        VBOX_UTF8_TO_UTF16("Floppy Controller", &sName);
+        machine->vtbl->AddStorageController(machine,
+                                            sName,
+                                            StorageBus_Floppy,
+                                            &storageCtl);
+        VBOX_UTF16_FREE(sName);
+        VBOX_RELEASE(storageCtl);
+    }
+
+    for (i = 0; i < def->ndisks && !error; i++) {
+        DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
+        DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
+        DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
+        DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
+        DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
+        DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
+        DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
+        DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
+        DEBUG("disk(%d) readonly:   %s", i, (def->disks[i]->readonly
+                                             ? "True" : "False"));
+        DEBUG("disk(%d) shared:     %s", i, (def->disks[i]->shared
+                                             ? "True" : "False"));
+
+        if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
+            def->disks[i]->src != NULL) {
+            IMedium   *medium          = NULL;
+            PRUnichar *mediumUUID      = NULL;
+            PRUnichar *mediumFileUtf16 = NULL;
+            PRUint32   storageBus      = StorageBus_Null;
+            PRUint32   deviceType      = DeviceType_Null;
+            PRInt32    deviceInst      = 0;
+            PRInt32    devicePort      = 0;
+            PRInt32    deviceSlot      = 0;
+
+            VBOX_UTF8_TO_UTF16(def->disks[i]->src, &mediumFileUtf16);
+
+            if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                deviceType = DeviceType_HardDisk;
+                data->vboxObj->vtbl->FindHardDisk(data->vboxObj,
+                                                  mediumFileUtf16, &medium);
+            } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+                deviceType = DeviceType_DVD;
+                data->vboxObj->vtbl->FindDVDImage(data->vboxObj,
+                                                  mediumFileUtf16, &medium);
+            } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+                deviceType = DeviceType_Floppy;
+                data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
+                                                     mediumFileUtf16, &medium);
+            } else {
+                VBOX_UTF16_FREE(mediumFileUtf16);
+                continue;
+            }
+
+            if (!medium) {
+                PRUnichar *mediumEmpty = NULL;
+
+                VBOX_UTF8_TO_UTF16("", &mediumEmpty);
+
+                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                    data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
+                                                      mediumFileUtf16,
+                                                      AccessMode_ReadWrite,
+                                                      false,
+                                                      mediumEmpty,
+                                                      false,
+                                                      mediumEmpty,
+                                                      &medium);
+                } else if (def->disks[i]->device ==
+                           VIR_DOMAIN_DISK_DEVICE_CDROM) {
+                    data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
+                                                      mediumFileUtf16,
+                                                      mediumEmpty,
+                                                      &medium);
+                } else if (def->disks[i]->device ==
+                           VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+                    data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
+                                                         mediumFileUtf16,
+                                                         mediumEmpty,
+                                                         &medium);
+                }
+
+                VBOX_UTF16_FREE(mediumEmpty);
+            }
+
+            if (!medium) {
+                vboxError(VIR_ERR_INTERNAL_ERROR,
+                          _("Failed to attach the following disk/dvd/floppy "
+                            "to the machine: %s, rc=%08x"),
+                          def->disks[i]->src, (unsigned)rc);
+                VBOX_UTF16_FREE(mediumFileUtf16);
+                continue;
+            }
+
+            rc = medium->vtbl->GetId(medium, &mediumUUID);
+            if (NS_FAILED(rc)) {
+                vboxError(VIR_ERR_INTERNAL_ERROR,
+                          _("can't get the uuid of the file to be attached "
+                            "as harddisk/dvd/floppy: %s, rc=%08x"),
+                          def->disks[i]->src, (unsigned)rc);
+                VBOX_RELEASE(medium);
+                VBOX_UTF16_FREE(mediumFileUtf16);
+                continue;
+            }
+
+            if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                if (def->disks[i]->readonly) {
+                    medium->vtbl->SetType(medium, MediumType_Immutable);
+                    DEBUG0("setting harddisk to immutable");
+                } else if (!def->disks[i]->readonly) {
+                    medium->vtbl->SetType(medium, MediumType_Normal);
+                    DEBUG0("setting harddisk type to normal");
+                }
+            }
+
+            if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+                VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
+                storageBus = StorageBus_IDE;
+            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SATA) {
+                VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
+                storageBus = StorageBus_SATA;
+            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+                VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
+                storageBus = StorageBus_SCSI;
+            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+                VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
+                storageBus = StorageBus_Floppy;
+            }
+
+            /* get the device details i.e instance, port and slot */
+            if (!vboxGetDeviceDetails(def->disks[i]->dst,
+                                      maxPortPerInst,
+                                      maxSlotPerPort,
+                                      storageBus,
+                                      &deviceInst,
+                                      &devicePort,
+                                      &deviceSlot)) {
+                vboxError(VIR_ERR_INTERNAL_ERROR,
+                          _("can't get the port/slot number of harddisk/"
+                            "dvd/floppy to be attached: %s, rc=%08x"),
+                          def->disks[i]->src, (unsigned)rc);
+                VBOX_RELEASE(medium);
+                VBOX_UTF16_FREE(mediumUUID);
+                VBOX_UTF16_FREE(mediumFileUtf16);
+                continue;
+            }
+
+            /* attach the harddisk/dvd/Floppy to the storage controller */
+            rc = machine->vtbl->AttachDevice(machine,
+                                             storageCtlName,
+                                             devicePort,
+                                             deviceSlot,
+                                             deviceType,
+                                             mediumUUID);
+
+            if (NS_FAILED(rc)) {
+                vboxError(VIR_ERR_INTERNAL_ERROR,
+                          _("could not attach the file as harddisk/"
+                            "dvd/floppy: %s, rc=%08x"),
+                          def->disks[i]->src, (unsigned)rc);
+            } else {
+                DEBUGIID("Attached HDD/DVD/Floppy with UUID", mediumUUID);
+            }
+
+            VBOX_RELEASE(medium);
+            VBOX_UTF16_FREE(mediumUUID);
+            VBOX_UTF16_FREE(mediumFileUtf16);
+            VBOX_UTF16_FREE(storageCtlName);
+        }
+    }
+#endif /* VBOX_API_VERSION >= 3001 */
+}
+
+static void
+vboxAttachSound(virDomainDefPtr def, IMachine *machine)
+{
+    nsresult rc;
+
+    /* Check if def->nsounds is one as VirtualBox currently supports
+     * only one sound card
+     */
+    if (def->nsounds == 1) {
+        IAudioAdapter *audioAdapter = NULL;
+
+        machine->vtbl->GetAudioAdapter(machine, &audioAdapter);
+        if (audioAdapter) {
+            rc = audioAdapter->vtbl->SetEnabled(audioAdapter, 1);
+            if (NS_SUCCEEDED(rc)) {
+                if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_SB16) {
+                    audioAdapter->vtbl->SetAudioController(audioAdapter,
+                                                           AudioControllerType_SB16);
+                } else if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_AC97) {
+                    audioAdapter->vtbl->SetAudioController(audioAdapter,
+                                                           AudioControllerType_AC97);
+                }
+            }
+            VBOX_RELEASE(audioAdapter);
+        }
+    }
+}
+
+static void
+vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    ISystemProperties *systemProperties = NULL;
+    PRUint32 networkAdapterCount        = 0;
+    int i = 0;
+
+    data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        systemProperties->vtbl->GetNetworkAdapterCount(systemProperties,
+                                                       &networkAdapterCount);
+        VBOX_RELEASE(systemProperties);
+        systemProperties = NULL;
+    }
+
+    DEBUG("Number of Network Cards to be connected: %d", def->nnets);
+    DEBUG("Number of Network Cards available: %d", networkAdapterCount);
+
+    for (i = 0; (i < def->nnets) && (i < networkAdapterCount); i++) {
+        INetworkAdapter *adapter = NULL;
+        PRUint32 adapterType     = NetworkAdapterType_Null;
+        char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
+        char macaddrvbox[VIR_MAC_STRING_BUFLEN - 5] = {0};
+
+        virFormatMacAddr(def->nets[i]->mac, macaddr);
+        snprintf(macaddrvbox, VIR_MAC_STRING_BUFLEN - 5,
+                 "%02X%02X%02X%02X%02X%02X",
+                 def->nets[i]->mac[0],
+                 def->nets[i]->mac[1],
+                 def->nets[i]->mac[2],
+                 def->nets[i]->mac[3],
+                 def->nets[i]->mac[4],
+                 def->nets[i]->mac[5]);
+        macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
+
+        DEBUG("NIC(%d): Type:   %d", i, def->nets[i]->type);
+        DEBUG("NIC(%d): Model:  %s", i, def->nets[i]->model);
+        DEBUG("NIC(%d): Mac:    %s", i, macaddr);
+        DEBUG("NIC(%d): ifname: %s", i, def->nets[i]->ifname);
+        if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.network.name);
+        } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
+            DEBUG("NIC(%d): name:   %s", i, def->nets[i]->data.internal.name);
+        } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
+            DEBUG("NIC(%d): NAT.", i);
+        } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+            DEBUG("NIC(%d): brname: %s", i, def->nets[i]->data.bridge.brname);
+            DEBUG("NIC(%d): script: %s", i, def->nets[i]->data.bridge.script);
+            DEBUG("NIC(%d): ipaddr: %s", i, def->nets[i]->data.bridge.ipaddr);
+        }
+
+        machine->vtbl->GetNetworkAdapter(machine, i, &adapter);
+        if (adapter) {
+            PRUnichar *MACAddress = NULL;
+
+            adapter->vtbl->SetEnabled(adapter, 1);
+
+            if (def->nets[i]->model) {
+                if (STRCASEEQ(def->nets[i]->model , "Am79C970A")) {
+                    adapterType = NetworkAdapterType_Am79C970A;
+                } else if (STRCASEEQ(def->nets[i]->model , "Am79C973")) {
+                    adapterType = NetworkAdapterType_Am79C973;
+                } else if (STRCASEEQ(def->nets[i]->model , "82540EM")) {
+                    adapterType = NetworkAdapterType_I82540EM;
+                } else if (STRCASEEQ(def->nets[i]->model , "82545EM")) {
+                    adapterType = NetworkAdapterType_I82545EM;
+                } else if (STRCASEEQ(def->nets[i]->model , "82543GC")) {
+                    adapterType = NetworkAdapterType_I82543GC;
+#if VBOX_API_VERSION >= 3001
+                } else if (STRCASEEQ(def->nets[i]->model , "virtio")) {
+                    adapterType = NetworkAdapterType_Virtio;
+#endif /* VBOX_API_VERSION >= 3001 */
+                }
+            } else {
+                adapterType = NetworkAdapterType_Am79C973;
+            }
+
+            adapter->vtbl->SetAdapterType(adapter, adapterType);
+
+            if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+                PRUnichar *hostInterface = NULL;
+                /* Bridged Network */
+
+                adapter->vtbl->AttachToBridgedInterface(adapter);
+
+                if (def->nets[i]->data.bridge.brname) {
+                    VBOX_UTF8_TO_UTF16(def->nets[i]->data.bridge.brname,
+                                       &hostInterface);
+                    adapter->vtbl->SetHostInterface(adapter, hostInterface);
+                    VBOX_UTF16_FREE(hostInterface);
+                }
+            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
+                PRUnichar *internalNetwork = NULL;
+                /* Internal Network */
+
+                adapter->vtbl->AttachToInternalNetwork(adapter);
+
+                if (def->nets[i]->data.internal.name) {
+                    VBOX_UTF8_TO_UTF16(def->nets[i]->data.internal.name,
+                                       &internalNetwork);
+                    adapter->vtbl->SetInternalNetwork(adapter, internalNetwork);
+                    VBOX_UTF16_FREE(internalNetwork);
+                }
+            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                PRUnichar *hostInterface = NULL;
+                /* Host Only Networking (currently only vboxnet0 available
+                 * on *nix and mac, on windows you can create and configure
+                 * as many as you want)
+                 */
+                adapter->vtbl->AttachToHostOnlyInterface(adapter);
+
+                if (def->nets[i]->data.network.name) {
+                    VBOX_UTF8_TO_UTF16(def->nets[i]->data.network.name,
+                                       &hostInterface);
+                    adapter->vtbl->SetHostInterface(adapter, hostInterface);
+                    VBOX_UTF16_FREE(hostInterface);
+                }
+            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
+                /* NAT */
+                adapter->vtbl->AttachToNAT(adapter);
+            } else {
+                /* else always default to NAT if we don't understand
+                 * what option is been passed to us
+                 */
+                adapter->vtbl->AttachToNAT(adapter);
+            }
+
+            VBOX_UTF8_TO_UTF16(macaddrvbox, &MACAddress);
+            adapter->vtbl->SetMACAddress(adapter, MACAddress);
+            VBOX_UTF16_FREE(MACAddress);
+        }
+    }
+}
+
+static void
+vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    ISystemProperties *systemProperties = NULL;
+    PRUint32 serialPortCount            = 0;
+    int i = 0;
+
+    data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        systemProperties->vtbl->GetSerialPortCount(systemProperties,
+                                                   &serialPortCount);
+        VBOX_RELEASE(systemProperties);
+        systemProperties = NULL;
+    }
+
+    DEBUG("Number of Serial Ports to be connected: %d", def->nserials);
+    DEBUG("Number of Serial Ports available: %d", serialPortCount);
+    for (i = 0; (i < def->nserials) && (i < serialPortCount); i++) {
+        ISerialPort *serialPort = NULL;
+
+        DEBUG("SerialPort(%d): Type: %d", i, def->serials[i]->type);
+        DEBUG("SerialPort(%d): target.port: %d", i,
+              def->serials[i]->target.port);
+
+        machine->vtbl->GetSerialPort(machine, i, &serialPort);
+        if (serialPort) {
+            PRUnichar *pathUtf16 = NULL;
+
+            serialPort->vtbl->SetEnabled(serialPort, 1);
+
+            if (def->serials[i]->data.file.path) {
+                VBOX_UTF8_TO_UTF16(def->serials[i]->data.file.path, &pathUtf16);
+                serialPort->vtbl->SetPath(serialPort, pathUtf16);
+            }
+
+            /* For now hard code the serial ports to COM1 and COM2,
+             * COM1 (Base Addr: 0x3F8 (decimal: 1016), IRQ: 4)
+             * COM2 (Base Addr: 0x2F8 (decimal:  760), IRQ: 3)
+             * TODO: make this more flexible
+             */
+            /* TODO: to improve the libvirt XMl handling so
+             * that def->serials[i]->target.port shows real port
+             * and not always start at 0
+             */
+            if (def->serials[i]->target.port == 0) {
+                serialPort->vtbl->SetIRQ(serialPort, 4);
+                serialPort->vtbl->SetIOBase(serialPort, 1016);
+                DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
+                      i, 4, 1016, def->serials[i]->data.file.path);
+            } else if (def->serials[i]->target.port == 1) {
+                serialPort->vtbl->SetIRQ(serialPort, 3);
+                serialPort->vtbl->SetIOBase(serialPort, 760);
+                DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
+                      i, 3, 760, def->serials[i]->data.file.path);
+            }
+
+            if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_DEV) {
+                serialPort->vtbl->SetHostMode(serialPort, PortMode_HostDevice);
+            } else if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_PIPE) {
+                serialPort->vtbl->SetHostMode(serialPort, PortMode_HostPipe);
+#if VBOX_API_VERSION >= 3000
+            } else if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_FILE) {
+                serialPort->vtbl->SetHostMode(serialPort, PortMode_RawFile);
+#endif /* VBOX_API_VERSION >= 3000 */
+            } else {
+                serialPort->vtbl->SetHostMode(serialPort,
+                                              PortMode_Disconnected);
+            }
+
+            VBOX_RELEASE(serialPort);
+            if (pathUtf16) {
+                VBOX_UTF16_FREE(pathUtf16);
+                pathUtf16 = NULL;
+            }
+        }
+    }
+}
+
+static void
+vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    ISystemProperties *systemProperties = NULL;
+    PRUint32 parallelPortCount          = 0;
+    int i = 0;
+
+    data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
+    if (systemProperties) {
+        systemProperties->vtbl->GetParallelPortCount(systemProperties,
+                                                     &parallelPortCount);
+        VBOX_RELEASE(systemProperties);
+        systemProperties = NULL;
+    }
+
+    DEBUG("Number of Parallel Ports to be connected: %d", def->nparallels);
+    DEBUG("Number of Parallel Ports available: %d", parallelPortCount);
+    for (i = 0; (i < def->nparallels) && (i < parallelPortCount); i++) {
+        IParallelPort *parallelPort = NULL;
+
+        DEBUG("ParallelPort(%d): Type: %d", i, def->parallels[i]->type);
+        DEBUG("ParallelPort(%d): target.port: %d", i,
+              def->parallels[i]->target.port);
+
+        machine->vtbl->GetParallelPort(machine, i, &parallelPort);
+        if (parallelPort) {
+            PRUnichar *pathUtf16 = NULL;
+
+            VBOX_UTF8_TO_UTF16(def->parallels[i]->data.file.path, &pathUtf16);
+
+            /* For now hard code the parallel ports to
+             * LPT1 (Base Addr: 0x378 (decimal: 888), IRQ: 7)
+             * LPT2 (Base Addr: 0x278 (decimal: 632), IRQ: 5)
+             * TODO: make this more flexible
+             */
+            if ((def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_DEV)  ||
+                (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_PTY)  ||
+                (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_FILE) ||
+                (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_PIPE)) {
+                parallelPort->vtbl->SetPath(parallelPort, pathUtf16);
+                if (i == 0) {
+                    parallelPort->vtbl->SetIRQ(parallelPort, 7);
+                    parallelPort->vtbl->SetIOBase(parallelPort, 888);
+                    DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
+                          i, 7, 888, def->parallels[i]->data.file.path);
+                } else if (i == 1) {
+                    parallelPort->vtbl->SetIRQ(parallelPort, 5);
+                    parallelPort->vtbl->SetIOBase(parallelPort, 632);
+                    DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
+                          i, 5, 632, def->parallels[i]->data.file.path);
+                }
+            }
+
+            /* like serial port, parallel port can't be enabled unless
+             * correct IRQ and IOBase values are specified.
+             */
+            parallelPort->vtbl->SetEnabled(parallelPort, 1);
+
+            VBOX_RELEASE(parallelPort);
+            if (pathUtf16) {
+                VBOX_UTF16_FREE(pathUtf16);
+                pathUtf16 = NULL;
+            }
+        }
+    }
+}
+
+static void
+vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
+{
+    if ((def->nvideos == 1) &&
+        (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VBOX)) {
+        machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram);
+        machine->vtbl->SetMonitorCount(machine, def->videos[0]->heads);
+        if (def->videos[0]->accel) {
+            machine->vtbl->SetAccelerate3DEnabled(machine,
+                                                  def->videos[0]->accel->support3d);
+#if VBOX_API_VERSION >= 3001
+            machine->vtbl->SetAccelerate2DVideoEnabled(machine,
+                                                       def->videos[0]->accel->support2d);
+#endif /* VBOX_API_VERSION >= 3001 */
+        } else {
+            machine->vtbl->SetAccelerate3DEnabled(machine, 0);
+#if VBOX_API_VERSION >= 3001
+            machine->vtbl->SetAccelerate2DVideoEnabled(machine, 0);
+#endif /* VBOX_API_VERSION >= 3001 */
+        }
+    }
+}
+
+static void
+vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    int vrdpPresent  = 0;
+    int sdlPresent   = 0;
+    int guiPresent   = 0;
+    char *guiDisplay = NULL;
+    char *sdlDisplay = NULL;
+    int i = 0;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        IVRDPServer *VRDPServer = NULL;
+
+        if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) &&
+            (vrdpPresent == 0)) {
+
+            vrdpPresent = 1;
+            machine->vtbl->GetVRDPServer(machine, &VRDPServer);
+            if (VRDPServer) {
+                VRDPServer->vtbl->SetEnabled(VRDPServer, PR_TRUE);
+                DEBUG0("VRDP Support turned ON.");
+
+#if VBOX_API_VERSION < 3001
+                if (def->graphics[i]->data.rdp.port) {
+                    VRDPServer->vtbl->SetPort(VRDPServer,
+                                              def->graphics[i]->data.rdp.port);
+                    DEBUG("VRDP Port changed to: %d",
+                          def->graphics[i]->data.rdp.port);
+                } else if (def->graphics[i]->data.rdp.autoport) {
+                    /* Setting the port to 0 will reset its value to
+                     * the default one which is 3389 currently
+                     */
+                    VRDPServer->vtbl->SetPort(VRDPServer, 0);
+                    DEBUG0("VRDP Port changed to default, which is 3389 currently");
+                }
+#else  /* VBOX_API_VERSION >= 3001 */
+                PRUnichar *portUtf16 = NULL;
+                portUtf16 = PRUnicharFromInt(def->graphics[i]->data.rdp.port);
+                VRDPServer->vtbl->SetPorts(VRDPServer, portUtf16);
+                VBOX_UTF16_FREE(portUtf16);
+#endif /* VBOX_API_VERSION >= 3001 */
+
+                if (def->graphics[i]->data.rdp.replaceUser) {
+                    VRDPServer->vtbl->SetReuseSingleConnection(VRDPServer,
+                                                               PR_TRUE);
+                    DEBUG0("VRDP set to reuse single connection");
+                }
+
+                if (def->graphics[i]->data.rdp.multiUser) {
+                    VRDPServer->vtbl->SetAllowMultiConnection(VRDPServer,
+                                                              PR_TRUE);
+                    DEBUG0("VRDP set to allow multiple connection");
+                }
+
+                if (def->graphics[i]->data.rdp.listenAddr) {
+                    PRUnichar *netAddressUtf16 = NULL;
+
+                    VBOX_UTF8_TO_UTF16(def->graphics[i]->data.rdp.listenAddr,
+                                       &netAddressUtf16);
+                    VRDPServer->vtbl->SetNetAddress(VRDPServer,
+                                                    netAddressUtf16);
+                    DEBUG("VRDP listen address is set to: %s",
+                          def->graphics[i]->data.rdp.listenAddr);
+
+                    VBOX_UTF16_FREE(netAddressUtf16);
+                }
+
+                VBOX_RELEASE(VRDPServer);
+            }
+        }
+
+        if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) &&
+            (guiPresent == 0)) {
+            guiPresent = 1;
+            if (def->graphics[i]->data.desktop.display) {
+                guiDisplay = strdup(def->graphics[i]->data.desktop.display);
+                if (guiDisplay == NULL) {
+                    virReportOOMError();
+                    /* just don't go to cleanup yet as it is ok to have
+                     * guiDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+            }
+        }
+
+        if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) &&
+            (sdlPresent == 0)) {
+            sdlPresent = 1;
+            if (def->graphics[i]->data.sdl.display) {
+                sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
+                if (sdlDisplay == NULL) {
+                    virReportOOMError();
+                    /* just don't go to cleanup yet as it is ok to have
+                     * sdlDisplay as NULL and we check it below if it
+                     * exist and then only use it there
+                     */
+                }
+            }
+        }
+    }
+
+    if ((vrdpPresent == 1) && (guiPresent == 0) && (sdlPresent == 0)) {
+        /* store extradata key that frontend is set to vrdp */
+        PRUnichar *keyTypeUtf16   = NULL;
+        PRUnichar *valueTypeUtf16 = NULL;
+
+        VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+        VBOX_UTF8_TO_UTF16("vrdp", &valueTypeUtf16);
+
+        machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+        VBOX_UTF16_FREE(keyTypeUtf16);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+    } else if ((guiPresent == 0) && (sdlPresent == 1)) {
+        /* store extradata key that frontend is set to sdl */
+        PRUnichar *keyTypeUtf16      = NULL;
+        PRUnichar *valueTypeUtf16    = NULL;
+        PRUnichar *keyDislpayUtf16   = NULL;
+        PRUnichar *valueDisplayUtf16 = NULL;
+
+        VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+        VBOX_UTF8_TO_UTF16("sdl", &valueTypeUtf16);
+
+        machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+        VBOX_UTF16_FREE(keyTypeUtf16);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+        if (sdlDisplay) {
+            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+            VBOX_UTF8_TO_UTF16(sdlDisplay, &valueDisplayUtf16);
+
+            machine->vtbl->SetExtraData(machine, keyDislpayUtf16,
+                                        valueDisplayUtf16);
+
+            VBOX_UTF16_FREE(keyDislpayUtf16);
+            VBOX_UTF16_FREE(valueDisplayUtf16);
+        }
+
+    } else {
+        /* if all are set then default is gui, with vrdp turned on */
+        PRUnichar *keyTypeUtf16      = NULL;
+        PRUnichar *valueTypeUtf16    = NULL;
+        PRUnichar *keyDislpayUtf16   = NULL;
+        PRUnichar *valueDisplayUtf16 = NULL;
+
+        VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
+        VBOX_UTF8_TO_UTF16("gui", &valueTypeUtf16);
+
+        machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
+
+        VBOX_UTF16_FREE(keyTypeUtf16);
+        VBOX_UTF16_FREE(valueTypeUtf16);
+
+        if (guiDisplay) {
+            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+            VBOX_UTF8_TO_UTF16(guiDisplay, &valueDisplayUtf16);
+
+            machine->vtbl->SetExtraData(machine, keyDislpayUtf16,
+                                        valueDisplayUtf16);
+
+            VBOX_UTF16_FREE(keyDislpayUtf16);
+            VBOX_UTF16_FREE(valueDisplayUtf16);
+        }
+    }
+
+    VIR_FREE(guiDisplay);
+    VIR_FREE(sdlDisplay);
+}
+
+static void
+vboxAttachUSB(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
+{
+    IUSBController *USBController = NULL;
+    int i = 0;
+    bool isUSB = false;
+
+    if (def->nhostdevs == 0)
+        return;
+
+    /* Loop through the devices first and see if you
+     * have a USB Device, only if you have one then
+     * start the USB controller else just proceed as
+     * usual
+     */
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (def->hostdevs[i]->mode ==
+            VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+            if (def->hostdevs[i]->source.subsys.type ==
+                VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+                if (def->hostdevs[i]->source.subsys.u.usb.vendor ||
+                    def->hostdevs[i]->source.subsys.u.usb.product) {
+                    DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
+                          def->hostdevs[i]->source.subsys.u.usb.vendor,
+                          def->hostdevs[i]->source.subsys.u.usb.product);
+                    isUSB = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (isUSB) {
+        /* First Start the USB Controller and then loop
+         * to attach USB Devices to it
+         */
+        machine->vtbl->GetUSBController(machine, &USBController);
+        if (USBController) {
+            USBController->vtbl->SetEnabled(USBController, 1);
+            USBController->vtbl->SetEnabledEhci(USBController, 1);
+
+            for (i = 0; i < def->nhostdevs; i++) {
+                if (def->hostdevs[i]->mode ==
+                    VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+                    if (def->hostdevs[i]->source.subsys.type ==
+                        VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+
+                        char filtername[11]        = {0};
+                        PRUnichar *filternameUtf16 = NULL;
+                        IUSBDeviceFilter *filter   = NULL;
+
+                        /* Assuming can't have more then 9999 devices so
+                         * restricting to %04d
+                         */
+                        sprintf(filtername, "filter%04d", i);
+                        VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
+
+                        USBController->vtbl->CreateDeviceFilter(USBController,
+                                                                filternameUtf16,
+                                                                &filter);
+                        VBOX_UTF16_FREE(filternameUtf16);
+
+                        if (filter &&
+                            (def->hostdevs[i]->source.subsys.u.usb.vendor ||
+                             def->hostdevs[i]->source.subsys.u.usb.product)) {
+
+                            PRUnichar *vendorIdUtf16  = NULL;
+                            char vendorId[40]         = {0};
+                            PRUnichar *productIdUtf16 = NULL;
+                            char productId[40]        = {0};
+
+                            if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
+                                sprintf(vendorId, "%x", def->hostdevs[i]->source.subsys.u.usb.vendor);
+                                VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
+                                filter->vtbl->SetVendorId(filter, vendorIdUtf16);
+                                VBOX_UTF16_FREE(vendorIdUtf16);
+                            }
+                            if (def->hostdevs[i]->source.subsys.u.usb.product) {
+                                sprintf(productId, "%x", def->hostdevs[i]->source.subsys.u.usb.product);
+                                VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
+                                filter->vtbl->SetProductId(filter,
+                                                           productIdUtf16);
+                                VBOX_UTF16_FREE(productIdUtf16);
+                            }
+                            filter->vtbl->SetActive(filter, 1);
+                            USBController->vtbl->InsertDeviceFilter(USBController,
+                                                                    i,
+                                                                    filter);
+                            VBOX_RELEASE(filter);
+                        }
+
+                    }
+                }
+            }
+            VBOX_RELEASE(USBController);
+        }
+    }
+}
+
 static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     VBOX_OBJECT_CHECK(conn, virDomainPtr, NULL);
     IMachine       *machine     = NULL;
@@ -3501,1064 +4631,15 @@ static virDomainPtr vboxDomainDefineXML(virConnectPtr conn, const char *xml) {
     data->vboxObj->vtbl->OpenSession(data->vboxObj, data->vboxSession, mchiid);
     data->vboxSession->vtbl->GetMachine(data->vboxSession, &machine);
 
-    {   /* Started:Block to set the boot device order */
-        ISystemProperties *systemProperties = NULL;
-        PRUint32 maxBootPosition            = 0;
-        int i = 0;
-
-        DEBUG("def->os.type             %s", def->os.type);
-        DEBUG("def->os.arch             %s", def->os.arch);
-        DEBUG("def->os.machine          %s", def->os.machine);
-        DEBUG("def->os.nBootDevs        %d", def->os.nBootDevs);
-        DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);
-        DEBUG("def->os.bootDevs[1]      %d", def->os.bootDevs[1]);
-        DEBUG("def->os.bootDevs[2]      %d", def->os.bootDevs[2]);
-        DEBUG("def->os.bootDevs[3]      %d", def->os.bootDevs[3]);
-        DEBUG("def->os.init             %s", def->os.init);
-        DEBUG("def->os.kernel           %s", def->os.kernel);
-        DEBUG("def->os.initrd           %s", def->os.initrd);
-        DEBUG("def->os.cmdline          %s", def->os.cmdline);
-        DEBUG("def->os.root             %s", def->os.root);
-        DEBUG("def->os.loader           %s", def->os.loader);
-        DEBUG("def->os.bootloader       %s", def->os.bootloader);
-        DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
-
-        data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-        if (systemProperties) {
-            systemProperties->vtbl->GetMaxBootPosition(systemProperties, &maxBootPosition);
-            VBOX_RELEASE(systemProperties);
-            systemProperties = NULL;
-        }
-
-        /* Clear the defaults first */
-        for (i = 0; i < maxBootPosition; i++) {
-            machine->vtbl->SetBootOrder(machine, i+1, DeviceType_Null);
-        }
-
-        for (i = 0; (i < def->os.nBootDevs) && (i < maxBootPosition); i++) {
-            PRUint32 device = DeviceType_Null;
-
-            if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_FLOPPY) {
-                device = DeviceType_Floppy;
-            } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_CDROM) {
-                device = DeviceType_DVD;
-            } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_DISK) {
-                device = DeviceType_HardDisk;
-            } else if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
-                device = DeviceType_Network;
-            }
-            machine->vtbl->SetBootOrder(machine, i+1, device);
-        }
-    }   /* Finished:Block to set the boot device order */
-
-#if VBOX_API_VERSION < 3001
-    {   /* Started:Block to attach the CDROM/DVD Drive and HardDisks to the VM */
-
-        if (def->ndisks > 0) {
-            int i;
-
-            for (i = 0; i < def->ndisks; i++) {
-                DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
-                DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
-                DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
-                DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
-                DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
-                DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-                DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
-                DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
-                DEBUG("disk(%d) readonly:   %s", i, def->disks[i]->readonly ? "True" : "False");
-                DEBUG("disk(%d) shared:     %s", i, def->disks[i]->shared ? "True" : "False");
-
-                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
-                        def->disks[i]->src != NULL) {
-                        IDVDDrive *dvdDrive = NULL;
-                        /* Currently CDROM/DVD Drive is always IDE
-                         * Secondary Master so neglecting the following
-                         * parameters:
-                         *      def->disks[i]->bus
-                         *      def->disks[i]->dst
-                         */
-
-                        machine->vtbl->GetDVDDrive(machine, &dvdDrive);
-                        if (dvdDrive) {
-                            IDVDImage *dvdImage          = NULL;
-                            PRUnichar *dvdfileUtf16      = NULL;
-                            vboxIID *dvduuid             = NULL;
-# if VBOX_API_VERSION == 2002
-                            nsID dvdemptyuuid;
-
-                            memset(&dvdemptyuuid, 0, sizeof(dvdemptyuuid));
-# else
-                            PRUnichar *dvdemptyuuidUtf16 = NULL;
-# endif
-
-                            VBOX_UTF8_TO_UTF16(def->disks[i]->src, &dvdfileUtf16);
-
-                            data->vboxObj->vtbl->FindDVDImage(data->vboxObj, dvdfileUtf16, &dvdImage);
-                            if (!dvdImage) {
-# if VBOX_API_VERSION == 2002
-                                data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, &dvdemptyuuid, &dvdImage);
-# else
-                                data->vboxObj->vtbl->OpenDVDImage(data->vboxObj, dvdfileUtf16, dvdemptyuuidUtf16, &dvdImage);
-# endif
-                            }
-                            if (dvdImage) {
-                                rc = dvdImage->vtbl->imedium.GetId((IMedium *)dvdImage, &dvduuid);
-                                if (NS_FAILED(rc)) {
-                                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                                              _("can't get the uuid of the file to "
-                                                "be attached to cdrom: %s, rc=%08x"),
-                                              def->disks[i]->src, (unsigned)rc);
-                                } else {
-                                    rc = dvdDrive->vtbl->MountImage(dvdDrive, dvduuid);
-                                    if (NS_FAILED(rc)) {
-                                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                  _("could not attach the file to cdrom: %s, rc=%08x"),
-                                                  def->disks[i]->src, (unsigned)rc);
-                                    } else {
-                                        DEBUGIID("CD/DVDImage UUID:", dvduuid);
-                                    }
-                                }
-
-                                VBOX_MEDIUM_RELEASE(dvdImage);
-                            }
-                            vboxIIDUnalloc(dvduuid);
-                            VBOX_UTF16_FREE(dvdfileUtf16);
-                            VBOX_RELEASE(dvdDrive);
-                        }
-                    } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-                    }
-                } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
-                        def->disks[i]->src != NULL) {
-                        IHardDisk *hardDisk     = NULL;
-                        PRUnichar *hddfileUtf16 = NULL;
-                        vboxIID   *hdduuid      = NULL;
-                        PRUnichar *hddEmpty     = NULL;
-                        /* Current Limitation: Harddisk can't be connected to
-                         * Secondary Master as Secondary Master is always used
-                         * for CD/DVD Drive, so don't connect the harddisk if it
-                         * is requested to be connected to Secondary master
-                         */
-
-                        VBOX_UTF8_TO_UTF16(def->disks[i]->src, &hddfileUtf16);
-                        VBOX_UTF8_TO_UTF16("", &hddEmpty);
-
-                        data->vboxObj->vtbl->FindHardDisk(data->vboxObj, hddfileUtf16, &hardDisk);
-
-                        if (!hardDisk) {
-# if VBOX_API_VERSION == 2002
-                            data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
-                                                              hddfileUtf16,
-                                                              AccessMode_ReadWrite,
-                                                              &hardDisk);
-# else
-                            data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
-                                                              hddfileUtf16,
-                                                              AccessMode_ReadWrite,
-                                                              0,
-                                                              hddEmpty,
-                                                              0,
-                                                              hddEmpty,
-                                                              &hardDisk);
-# endif
-                        }
-
-                        if (hardDisk) {
-                            rc = hardDisk->vtbl->imedium.GetId((IMedium *)hardDisk, &hdduuid);
-                            if (NS_FAILED(rc)) {
-                                vboxError(VIR_ERR_INTERNAL_ERROR,
-                                          _("can't get the uuid of the file to be "
-                                            "attached as harddisk: %s, rc=%08x"),
-                                          def->disks[i]->src, (unsigned)rc);
-                            } else {
-                                if (def->disks[i]->readonly) {
-                                    hardDisk->vtbl->SetType(hardDisk, HardDiskType_Immutable);
-                                    DEBUG0("setting harddisk to readonly");
-                                } else if (!def->disks[i]->readonly) {
-                                    hardDisk->vtbl->SetType(hardDisk, HardDiskType_Normal);
-                                    DEBUG0("setting harddisk type to normal");
-                                }
-                                if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-                                    if (STREQ(def->disks[i]->dst, "hdc")) {
-                                        DEBUG0("Not connecting harddisk to hdc as hdc"
-                                               " is taken by CD/DVD Drive");
-                                    } else {
-                                        PRInt32 channel          = 0;
-                                        PRInt32 device           = 0;
-                                        PRUnichar *hddcnameUtf16 = NULL;
-
-                                        char *hddcname = strdup("IDE");
-                                        VBOX_UTF8_TO_UTF16(hddcname, &hddcnameUtf16);
-                                        VIR_FREE(hddcname);
-
-                                        if (STREQ(def->disks[i]->dst, "hda")) {
-                                            channel = 0;
-                                            device  = 0;
-                                        } else if (STREQ(def->disks[i]->dst, "hdb")) {
-                                            channel = 0;
-                                            device  = 1;
-                                        } else if (STREQ(def->disks[i]->dst, "hdd")) {
-                                            channel = 1;
-                                            device  = 1;
-                                        }
-
-                                        rc = machine->vtbl->AttachHardDisk(machine,
-                                                                           hdduuid,
-                                                                           hddcnameUtf16,
-                                                                           channel,
-                                                                           device);
-                                        VBOX_UTF16_FREE(hddcnameUtf16);
-
-                                        if (NS_FAILED(rc)) {
-                                            vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                      _("could not attach the file as "
-                                                        "harddisk: %s, rc=%08x"),
-                                                      def->disks[i]->src, (unsigned)rc);
-                                        } else {
-                                            DEBUGIID("Attached HDD with UUID", hdduuid);
-                                        }
-                                    }
-                                }
-                            }
-                            VBOX_MEDIUM_RELEASE(hardDisk);
-                        }
-                        vboxIIDUnalloc(hdduuid);
-                        VBOX_UTF16_FREE(hddEmpty);
-                        VBOX_UTF16_FREE(hddfileUtf16);
-                    } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-                    }
-                } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
-                        def->disks[i]->src != NULL) {
-                        IFloppyDrive *floppyDrive;
-                        machine->vtbl->GetFloppyDrive(machine, &floppyDrive);
-                        if (floppyDrive) {
-                            rc = floppyDrive->vtbl->SetEnabled(floppyDrive, 1);
-                            if (NS_SUCCEEDED(rc)) {
-                                IFloppyImage *floppyImage   = NULL;
-                                PRUnichar *fdfileUtf16      = NULL;
-                                vboxIID *fduuid             = NULL;
-# if VBOX_API_VERSION == 2002
-                                nsID fdemptyuuid;
-
-                                memset(&fdemptyuuid, 0, sizeof(fdemptyuuid));
-# else
-                                PRUnichar *fdemptyuuidUtf16 = NULL;
-# endif
-
-                                VBOX_UTF8_TO_UTF16(def->disks[i]->src, &fdfileUtf16);
-                                rc = data->vboxObj->vtbl->FindFloppyImage(data->vboxObj,
-                                                                          fdfileUtf16,
-                                                                          &floppyImage);
-
-                                if (!floppyImage) {
-                                    data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
-                                                                         fdfileUtf16,
-# if VBOX_API_VERSION == 2002
-                                                                         &fdemptyuuid,
-# else
-                                                                         fdemptyuuidUtf16,
-# endif
-                                                                         &floppyImage);
-                                }
-
-                                if (floppyImage) {
-                                    rc = floppyImage->vtbl->imedium.GetId((IMedium *)floppyImage, &fduuid);
-                                    if (NS_FAILED(rc)) {
-                                        vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                  _("can't get the uuid of the file to "
-                                                    "be attached to floppy drive: %s, rc=%08x"),
-                                                  def->disks[i]->src, (unsigned)rc);
-                                    } else {
-                                        rc = floppyDrive->vtbl->MountImage(floppyDrive, fduuid);
-                                        if (NS_FAILED(rc)) {
-                                            vboxError(VIR_ERR_INTERNAL_ERROR,
-                                                      _("could not attach the file to "
-                                                        "floppy drive: %s, rc=%08x"),
-                                                      def->disks[i]->src, (unsigned)rc);
-                                        } else {
-                                            DEBUGIID("floppyImage UUID", fduuid);
-                                        }
-                                    }
-                                    VBOX_MEDIUM_RELEASE(floppyImage);
-                                }
-                                vboxIIDUnalloc(fduuid);
-                                VBOX_UTF16_FREE(fdfileUtf16);
-                            }
-                            VBOX_RELEASE(floppyDrive);
-                        }
-                    } else if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_BLOCK) {
-                    }
-                }
-            }
-        }
-
-    }   /* Finished:Block to attach the CDROM/DVD Drive and HardDisks to the VM */
-
-#else  /* VBOX_API_VERSION >= 3001 */
-    {
-        PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
-        PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
-        PRUnichar *storageCtlName = NULL;
-        bool error = false;
-        int i = 0;
-
-        /* get the max port/slots/etc for the given storage bus */
-        error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort);
-
-        /* add a storage controller for the mediums to be attached */
-        /* this needs to change when multiple controller are supported for ver > 3.1 */
-        {
-            IStorageController *storageCtl = NULL;
-            PRUnichar *sName = NULL;
-
-            VBOX_UTF8_TO_UTF16("IDE Controller", &sName);
-            machine->vtbl->AddStorageController(machine,
-                                                sName,
-                                                StorageBus_IDE,
-                                                &storageCtl);
-            VBOX_UTF16_FREE(sName);
-            VBOX_RELEASE(storageCtl);
-
-            VBOX_UTF8_TO_UTF16("SATA Controller", &sName);
-            machine->vtbl->AddStorageController(machine,
-                                                sName,
-                                                StorageBus_SATA,
-                                                &storageCtl);
-            VBOX_UTF16_FREE(sName);
-            VBOX_RELEASE(storageCtl);
-
-            VBOX_UTF8_TO_UTF16("SCSI Controller", &sName);
-            machine->vtbl->AddStorageController(machine,
-                                                sName,
-                                                StorageBus_SCSI,
-                                                &storageCtl);
-            VBOX_UTF16_FREE(sName);
-            VBOX_RELEASE(storageCtl);
-
-            VBOX_UTF8_TO_UTF16("Floppy Controller", &sName);
-            machine->vtbl->AddStorageController(machine,
-                                                sName,
-                                                StorageBus_Floppy,
-                                                &storageCtl);
-            VBOX_UTF16_FREE(sName);
-            VBOX_RELEASE(storageCtl);
-        }
-
-        /* Started:Block to attach the CDROM/DVD Drive and HardDisks to the VM */
-        for (i = 0; i < def->ndisks && !error; i++) {
-            DEBUG("disk(%d) type:       %d", i, def->disks[i]->type);
-            DEBUG("disk(%d) device:     %d", i, def->disks[i]->device);
-            DEBUG("disk(%d) bus:        %d", i, def->disks[i]->bus);
-            DEBUG("disk(%d) src:        %s", i, def->disks[i]->src);
-            DEBUG("disk(%d) dst:        %s", i, def->disks[i]->dst);
-            DEBUG("disk(%d) driverName: %s", i, def->disks[i]->driverName);
-            DEBUG("disk(%d) driverType: %s", i, def->disks[i]->driverType);
-            DEBUG("disk(%d) cachemode:  %d", i, def->disks[i]->cachemode);
-            DEBUG("disk(%d) readonly:   %s", i, def->disks[i]->readonly ? "True" : "False");
-            DEBUG("disk(%d) shared:     %s", i, def->disks[i]->shared ? "True" : "False");
-
-            if (def->disks[i]->type == VIR_DOMAIN_DISK_TYPE_FILE &&
-                def->disks[i]->src != NULL) {
-                IMedium   *medium          = NULL;
-                PRUnichar *mediumUUID      = NULL;
-                PRUnichar *mediumFileUtf16 = NULL;
-                PRUint32   storageBus      = StorageBus_Null;
-                PRUint32   deviceType      = DeviceType_Null;
-                PRInt32    deviceInst      = 0;
-                PRInt32    devicePort      = 0;
-                PRInt32    deviceSlot      = 0;
-
-                VBOX_UTF8_TO_UTF16(def->disks[i]->src, &mediumFileUtf16);
-
-                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                    deviceType = DeviceType_HardDisk;
-                    data->vboxObj->vtbl->FindHardDisk(data->vboxObj, mediumFileUtf16, &medium);
-                } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    deviceType = DeviceType_DVD;
-                    data->vboxObj->vtbl->FindDVDImage(data->vboxObj, mediumFileUtf16, &medium);
-                } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    deviceType = DeviceType_Floppy;
-                    data->vboxObj->vtbl->FindFloppyImage(data->vboxObj, mediumFileUtf16, &medium);
-                } else {
-                    VBOX_UTF16_FREE(mediumFileUtf16);
-                    continue;
-                }
-
-                if (!medium) {
-                    PRUnichar *mediumEmpty = NULL;
-
-                    VBOX_UTF8_TO_UTF16("", &mediumEmpty);
-
-                    if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                        data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
-                                                          mediumFileUtf16,
-                                                          AccessMode_ReadWrite,
-                                                          false,
-                                                          mediumEmpty,
-                                                          false,
-                                                          mediumEmpty,
-                                                          &medium);
-                    } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                        data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
-                                                          mediumFileUtf16,
-                                                          mediumEmpty,
-                                                          &medium);
-                    } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                        data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
-                                                             mediumFileUtf16,
-                                                             mediumEmpty,
-                                                             &medium);
-                    }
-
-                    VBOX_UTF16_FREE(mediumEmpty);
-                }
-
-                if (!medium) {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("Failed to attach the following disk/dvd/floppy "
-                                "to the machine: %s, rc=%08x"),
-                              def->disks[i]->src, (unsigned)rc);
-                    VBOX_UTF16_FREE(mediumFileUtf16);
-                    continue;
-                }
-
-                rc = medium->vtbl->GetId(medium, &mediumUUID);
-                if (NS_FAILED(rc)) {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("can't get the uuid of the file to be attached "
-                                "as harddisk/dvd/floppy: %s, rc=%08x"),
-                              def->disks[i]->src, (unsigned)rc);
-                    VBOX_RELEASE(medium);
-                    VBOX_UTF16_FREE(mediumFileUtf16);
-                    continue;
-                }
-
-                if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                    if (def->disks[i]->readonly) {
-                        medium->vtbl->SetType(medium, MediumType_Immutable);
-                        DEBUG0("setting harddisk to immutable");
-                    } else if (!def->disks[i]->readonly) {
-                        medium->vtbl->SetType(medium, MediumType_Normal);
-                        DEBUG0("setting harddisk type to normal");
-                    }
-                }
-
-                if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-                    VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
-                    storageBus = StorageBus_IDE;
-                } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SATA) {
-                    VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
-                    storageBus = StorageBus_SATA;
-                } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-                    VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
-                    storageBus = StorageBus_SCSI;
-                } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-                    VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
-                    storageBus = StorageBus_Floppy;
-                }
-
-                /* get the device details i.e instance, port and slot */
-                if (!vboxGetDeviceDetails(def->disks[i]->dst,
-                                          maxPortPerInst,
-                                          maxSlotPerPort,
-                                          storageBus,
-                                          &deviceInst,
-                                          &devicePort,
-                                          &deviceSlot)) {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("can't get the port/slot number of harddisk/"
-                                "dvd/floppy to be attached: %s, rc=%08x"),
-                              def->disks[i]->src, (unsigned)rc);
-                    VBOX_RELEASE(medium);
-                    VBOX_UTF16_FREE(mediumUUID);
-                    VBOX_UTF16_FREE(mediumFileUtf16);
-                    continue;
-                }
-
-                /* attach the harddisk/dvd/Floppy to the storage controller */
-                rc = machine->vtbl->AttachDevice(machine,
-                                                 storageCtlName,
-                                                 devicePort,
-                                                 deviceSlot,
-                                                 deviceType,
-                                                 mediumUUID);
-
-                if (NS_FAILED(rc)) {
-                    vboxError(VIR_ERR_INTERNAL_ERROR,
-                              _("could not attach the file as harddisk/"
-                                "dvd/floppy: %s, rc=%08x"),
-                              def->disks[i]->src, (unsigned)rc);
-                } else {
-                    DEBUGIID("Attached HDD/DVD/Floppy with UUID", mediumUUID);
-                }
-
-                VBOX_RELEASE(medium);
-                VBOX_UTF16_FREE(mediumUUID);
-                VBOX_UTF16_FREE(mediumFileUtf16);
-                VBOX_UTF16_FREE(storageCtlName);
-            }
-        }
-    }
-    /* Finished:Block to attach the CDROM/DVD Drive and HardDisks to the VM */
-#endif /* VBOX_API_VERSION >= 3001 */
-
-    {   /* Started:Block to attach the Sound Controller to the VM */
-        /* Check if def->nsounds is one as VirtualBox currently supports
-         * only one sound card
-         */
-        if (def->nsounds == 1) {
-            IAudioAdapter *audioAdapter = NULL;
-
-            machine->vtbl->GetAudioAdapter(machine, &audioAdapter);
-            if (audioAdapter) {
-                rc = audioAdapter->vtbl->SetEnabled(audioAdapter, 1);
-                if (NS_SUCCEEDED(rc)) {
-                    if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_SB16) {
-                        audioAdapter->vtbl->SetAudioController(audioAdapter, AudioControllerType_SB16);
-                    } else if (def->sounds[0]->model == VIR_DOMAIN_SOUND_MODEL_AC97) {
-                        audioAdapter->vtbl->SetAudioController(audioAdapter, AudioControllerType_AC97);
-                    }
-                }
-                VBOX_RELEASE(audioAdapter);
-            }
-        }
-    }   /* Finished:Block to attach the Sound Controller to the VM */
-
-    {   /* Started:Block to attach the Network Card to the VM */
-        ISystemProperties *systemProperties = NULL;
-        PRUint32 networkAdapterCount        = 0;
-        int i = 0;
-
-        data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-        if (systemProperties) {
-            systemProperties->vtbl->GetNetworkAdapterCount(systemProperties, &networkAdapterCount);
-            VBOX_RELEASE(systemProperties);
-            systemProperties = NULL;
-        }
-
-        DEBUG("Number of Network Cards to be connected: %d", def->nnets);
-        DEBUG("Number of Network Cards available: %d", networkAdapterCount);
-
-        for (i = 0; (i < def->nnets) && (i < networkAdapterCount); i++) {
-            INetworkAdapter *adapter = NULL;
-            PRUint32 adapterType     = NetworkAdapterType_Null;
-            char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
-            char macaddrvbox[VIR_MAC_STRING_BUFLEN - 5] = {0};
-
-            virFormatMacAddr(def->nets[i]->mac, macaddr);
-            snprintf(macaddrvbox, VIR_MAC_STRING_BUFLEN - 5,
-                     "%02X%02X%02X%02X%02X%02X",
-                     def->nets[i]->mac[0],
-                     def->nets[i]->mac[1],
-                     def->nets[i]->mac[2],
-                     def->nets[i]->mac[3],
-                     def->nets[i]->mac[4],
-                     def->nets[i]->mac[5]);
-            macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
-
-            DEBUG("NIC(%d): Type:   %d", i, def->nets[i]->type);
-            DEBUG("NIC(%d): Model:  %s", i, def->nets[i]->model);
-            DEBUG("NIC(%d): Mac:    %s", i, macaddr);
-            DEBUG("NIC(%d): ifname: %s", i, def->nets[i]->ifname);
-            if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-                DEBUG("NIC(%d): name:    %s", i, def->nets[i]->data.network.name);
-            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
-                DEBUG("NIC(%d): name:   %s", i, def->nets[i]->data.internal.name);
-            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
-                DEBUG("NIC(%d): NAT.", i);
-            } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                DEBUG("NIC(%d): brname: %s", i, def->nets[i]->data.bridge.brname);
-                DEBUG("NIC(%d): script: %s", i, def->nets[i]->data.bridge.script);
-                DEBUG("NIC(%d): ipaddr: %s", i, def->nets[i]->data.bridge.ipaddr);
-            }
-
-            machine->vtbl->GetNetworkAdapter(machine, i, &adapter);
-            if (adapter) {
-                PRUnichar *MACAddress = NULL;
-
-                adapter->vtbl->SetEnabled(adapter, 1);
-
-                if (def->nets[i]->model) {
-                    if (STRCASEEQ(def->nets[i]->model , "Am79C970A")) {
-                        adapterType = NetworkAdapterType_Am79C970A;
-                    } else if (STRCASEEQ(def->nets[i]->model , "Am79C973")) {
-                        adapterType = NetworkAdapterType_Am79C973;
-                    } else if (STRCASEEQ(def->nets[i]->model , "82540EM")) {
-                        adapterType = NetworkAdapterType_I82540EM;
-                    } else if (STRCASEEQ(def->nets[i]->model , "82545EM")) {
-                        adapterType = NetworkAdapterType_I82545EM;
-                    } else if (STRCASEEQ(def->nets[i]->model , "82543GC")) {
-                        adapterType = NetworkAdapterType_I82543GC;
-#if VBOX_API_VERSION >= 3001
-                    } else if (STRCASEEQ(def->nets[i]->model , "virtio")) {
-                        adapterType = NetworkAdapterType_Virtio;
-#endif /* VBOX_API_VERSION >= 3001 */
-                    }
-                } else {
-                    adapterType = NetworkAdapterType_Am79C973;
-                }
-
-                adapter->vtbl->SetAdapterType(adapter, adapterType);
-
-                if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-                    PRUnichar *hostInterface = NULL;
-                    /* Bridged Network */
-
-                    adapter->vtbl->AttachToBridgedInterface(adapter);
-
-                    if (def->nets[i]->data.bridge.brname) {
-                        VBOX_UTF8_TO_UTF16(def->nets[i]->data.bridge.brname, &hostInterface);
-                        adapter->vtbl->SetHostInterface(adapter, hostInterface);
-                        VBOX_UTF16_FREE(hostInterface);
-                    }
-                } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_INTERNAL) {
-                    PRUnichar *internalNetwork = NULL;
-                    /* Internal Network */
-
-                    adapter->vtbl->AttachToInternalNetwork(adapter);
-
-                    if (def->nets[i]->data.internal.name) {
-                        VBOX_UTF8_TO_UTF16(def->nets[i]->data.internal.name, &internalNetwork);
-                        adapter->vtbl->SetInternalNetwork(adapter, internalNetwork);
-                        VBOX_UTF16_FREE(internalNetwork);
-                    }
-                } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-                    PRUnichar *hostInterface = NULL;
-                    /* Host Only Networking (currently only vboxnet0 available
-                     * on *nix and mac, on windows you can create and configure
-                     * as many as you want)
-                     */
-                    adapter->vtbl->AttachToHostOnlyInterface(adapter);
-
-                    if (def->nets[i]->data.network.name) {
-                        VBOX_UTF8_TO_UTF16(def->nets[i]->data.network.name, &hostInterface);
-                        adapter->vtbl->SetHostInterface(adapter, hostInterface);
-                        VBOX_UTF16_FREE(hostInterface);
-                    }
-                } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_USER) {
-                    /* NAT */
-                    adapter->vtbl->AttachToNAT(adapter);
-                } else {
-                    /* else always default to NAT if we don't understand
-                     * what option is been passed to us
-                     */
-                    adapter->vtbl->AttachToNAT(adapter);
-                }
-
-                VBOX_UTF8_TO_UTF16(macaddrvbox, &MACAddress);
-                adapter->vtbl->SetMACAddress(adapter, MACAddress);
-                VBOX_UTF16_FREE(MACAddress);
-            }
-        }
-    }   /* Finished:Block to attach the Network Card to the VM */
-
-    {   /* Started:Block to attach the Serial Port to the VM */
-        ISystemProperties *systemProperties = NULL;
-        PRUint32 serialPortCount            = 0;
-        int i = 0;
-
-        data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-        if (systemProperties) {
-            systemProperties->vtbl->GetSerialPortCount(systemProperties, &serialPortCount);
-            VBOX_RELEASE(systemProperties);
-            systemProperties = NULL;
-        }
-
-        DEBUG("Number of Serial Ports to be connected: %d", def->nserials);
-        DEBUG("Number of Serial Ports available: %d", serialPortCount);
-        for (i = 0; (i < def->nserials) && (i < serialPortCount); i++) {
-            ISerialPort *serialPort = NULL;
-
-            DEBUG("SerialPort(%d): Type: %d", i, def->serials[i]->type);
-            DEBUG("SerialPort(%d): target.port: %d", i, def->serials[i]->target.port);
-
-            machine->vtbl->GetSerialPort(machine, i, &serialPort);
-            if (serialPort) {
-                PRUnichar *pathUtf16 = NULL;
-
-                serialPort->vtbl->SetEnabled(serialPort, 1);
-
-                if (def->serials[i]->data.file.path) {
-                    VBOX_UTF8_TO_UTF16(def->serials[i]->data.file.path, &pathUtf16);
-                    serialPort->vtbl->SetPath(serialPort, pathUtf16);
-                }
-
-                /* For now hard code the serial ports to COM1 and COM2,
-                 * COM1 (Base Addr: 0x3F8 (decimal: 1016), IRQ: 4)
-                 * COM2 (Base Addr: 0x2F8 (decimal:  760), IRQ: 3)
-                 * TODO: make this more flexible
-                 */
-                /* TODO: to improve the libvirt XMl handling so
-                 * that def->serials[i]->target.port shows real port
-                 * and not always start at 0
-                 */
-                if (def->serials[i]->target.port == 0) {
-                    serialPort->vtbl->SetIRQ(serialPort, 4);
-                    serialPort->vtbl->SetIOBase(serialPort, 1016);
-                    DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
-                          i, 4, 1016, def->serials[i]->data.file.path);
-                } else if (def->serials[i]->target.port == 1) {
-                    serialPort->vtbl->SetIRQ(serialPort, 3);
-                    serialPort->vtbl->SetIOBase(serialPort, 760);
-                    DEBUG(" serialPort-%d irq: %d, iobase 0x%x, path: %s",
-                          i, 3, 760, def->serials[i]->data.file.path);
-                }
-
-                if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_DEV) {
-                    serialPort->vtbl->SetHostMode(serialPort, PortMode_HostDevice);
-                } else if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_PIPE) {
-                    serialPort->vtbl->SetHostMode(serialPort, PortMode_HostPipe);
-#if VBOX_API_VERSION >= 3000
-                } else if (def->serials[i]->type == VIR_DOMAIN_CHR_TYPE_FILE) {
-                    serialPort->vtbl->SetHostMode(serialPort, PortMode_RawFile);
-#endif /* VBOX_API_VERSION >= 3000 */
-                } else {
-                    serialPort->vtbl->SetHostMode(serialPort, PortMode_Disconnected);
-                }
-
-                VBOX_RELEASE(serialPort);
-                if (pathUtf16) {
-                    VBOX_UTF16_FREE(pathUtf16);
-                    pathUtf16 = NULL;
-                }
-            }
-        }
-    }   /* Finished:Block to attach the Serial Port to the VM */
-
-    {   /* Started:Block to attach the Parallel Port to the VM */
-        ISystemProperties *systemProperties = NULL;
-        PRUint32 parallelPortCount          = 0;
-        int i = 0;
-
-        data->vboxObj->vtbl->GetSystemProperties(data->vboxObj, &systemProperties);
-        if (systemProperties) {
-            systemProperties->vtbl->GetParallelPortCount(systemProperties, &parallelPortCount);
-            VBOX_RELEASE(systemProperties);
-            systemProperties = NULL;
-        }
-
-        DEBUG("Number of Parallel Ports to be connected: %d", def->nparallels);
-        DEBUG("Number of Parallel Ports available: %d", parallelPortCount);
-        for (i = 0; (i < def->nparallels) && (i < parallelPortCount); i++) {
-            IParallelPort *parallelPort = NULL;
-
-            DEBUG("ParallelPort(%d): Type: %d", i, def->parallels[i]->type);
-            DEBUG("ParallelPort(%d): target.port: %d", i, def->parallels[i]->target.port);
-
-            machine->vtbl->GetParallelPort(machine, i, &parallelPort);
-            if (parallelPort) {
-                PRUnichar *pathUtf16 = NULL;
-
-                VBOX_UTF8_TO_UTF16(def->parallels[i]->data.file.path, &pathUtf16);
-
-                /* For now hard code the parallel ports to
-                 * LPT1 (Base Addr: 0x378 (decimal: 888), IRQ: 7)
-                 * LPT2 (Base Addr: 0x278 (decimal: 632), IRQ: 5)
-                 * TODO: make this more flexible
-                 */
-                if ((def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_DEV)  ||
-                    (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_PTY)  ||
-                    (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_FILE) ||
-                    (def->parallels[i]->type == VIR_DOMAIN_CHR_TYPE_PIPE)) {
-                    parallelPort->vtbl->SetPath(parallelPort, pathUtf16);
-                    if (i == 0) {
-                        parallelPort->vtbl->SetIRQ(parallelPort, 7);
-                        parallelPort->vtbl->SetIOBase(parallelPort, 888);
-                        DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
-                              i, 7, 888, def->parallels[i]->data.file.path);
-                    } else if (i == 1) {
-                        parallelPort->vtbl->SetIRQ(parallelPort, 5);
-                        parallelPort->vtbl->SetIOBase(parallelPort, 632);
-                        DEBUG(" parallePort-%d irq: %d, iobase 0x%x, path: %s",
-                              i, 5, 632, def->parallels[i]->data.file.path);
-                    }
-                }
-
-                /* like serial port, parallel port can't be enabled unless
-                 * correct IRQ and IOBase values are specified.
-                 */
-                parallelPort->vtbl->SetEnabled(parallelPort, 1);
-
-                VBOX_RELEASE(parallelPort);
-                if (pathUtf16) {
-                    VBOX_UTF16_FREE(pathUtf16);
-                    pathUtf16 = NULL;
-                }
-            }
-        }
-    }   /* Finished:Block to attach the Parallel Port to the VM */
-
-    {   /* Started:Block to specify video card settings */
-        if ((def->nvideos == 1) && (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VBOX)) {
-            machine->vtbl->SetVRAMSize(machine, def->videos[0]->vram);
-            machine->vtbl->SetMonitorCount(machine, def->videos[0]->heads);
-            if (def->videos[0]->accel) {
-                machine->vtbl->SetAccelerate3DEnabled(machine, def->videos[0]->accel->support3d);
-#if VBOX_API_VERSION >= 3001
-                machine->vtbl->SetAccelerate2DVideoEnabled(machine, def->videos[0]->accel->support2d);
-#endif /* VBOX_API_VERSION >= 3001 */
-            } else {
-                machine->vtbl->SetAccelerate3DEnabled(machine, 0);
-#if VBOX_API_VERSION >= 3001
-                machine->vtbl->SetAccelerate2DVideoEnabled(machine, 0);
-#endif /* VBOX_API_VERSION >= 3001 */
-            }
-        }
-    }   /* Finished:Block to specify video card settings */
-
-    {   /* Started:Block to attach the Remote Display to VM */
-        int vrdpPresent  = 0;
-        int sdlPresent   = 0;
-        int guiPresent   = 0;
-        char *guiDisplay = NULL;
-        char *sdlDisplay = NULL;
-        int i = 0;
-
-        for (i = 0; i < def->ngraphics; i++) {
-            IVRDPServer *VRDPServer = NULL;
-
-            if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) && (vrdpPresent == 0)) {
-
-                vrdpPresent = 1;
-                machine->vtbl->GetVRDPServer(machine, &VRDPServer);
-                if (VRDPServer) {
-                    VRDPServer->vtbl->SetEnabled(VRDPServer, PR_TRUE);
-                    DEBUG0("VRDP Support turned ON.");
-
-#if VBOX_API_VERSION < 3001
-                    if (def->graphics[i]->data.rdp.port) {
-                        VRDPServer->vtbl->SetPort(VRDPServer, def->graphics[i]->data.rdp.port);
-                        DEBUG("VRDP Port changed to: %d", def->graphics[i]->data.rdp.port);
-                    } else if (def->graphics[i]->data.rdp.autoport) {
-                        /* Setting the port to 0 will reset its value to
-                         * the default one which is 3389 currently
-                         */
-                        VRDPServer->vtbl->SetPort(VRDPServer, 0);
-                        DEBUG0("VRDP Port changed to default, which is 3389 currently");
-                    }
-#else  /* VBOX_API_VERSION >= 3001 */
-                    PRUnichar *portUtf16 = NULL;
-                    portUtf16 = PRUnicharFromInt(def->graphics[i]->data.rdp.port);
-                    VRDPServer->vtbl->SetPorts(VRDPServer, portUtf16);
-                    VBOX_UTF16_FREE(portUtf16);
-#endif /* VBOX_API_VERSION >= 3001 */
-
-                    if (def->graphics[i]->data.rdp.replaceUser) {
-                        VRDPServer->vtbl->SetReuseSingleConnection(VRDPServer, PR_TRUE);
-                        DEBUG0("VRDP set to reuse single connection");
-                    }
-
-                    if (def->graphics[i]->data.rdp.multiUser) {
-                        VRDPServer->vtbl->SetAllowMultiConnection(VRDPServer, PR_TRUE);
-                        DEBUG0("VRDP set to allow multiple connection");
-                    }
-
-                    if (def->graphics[i]->data.rdp.listenAddr) {
-                        PRUnichar *netAddressUtf16 = NULL;
-
-                        VBOX_UTF8_TO_UTF16(def->graphics[i]->data.rdp.listenAddr, &netAddressUtf16);
-                        VRDPServer->vtbl->SetNetAddress(VRDPServer, netAddressUtf16);
-                        DEBUG("VRDP listen address is set to: %s", def->graphics[i]->data.rdp.listenAddr);
-
-                        VBOX_UTF16_FREE(netAddressUtf16);
-                    }
-
-                    VBOX_RELEASE(VRDPServer);
-                }
-            }
-
-            if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) && (guiPresent == 0)) {
-                guiPresent = 1;
-                if (def->graphics[i]->data.desktop.display) {
-                    guiDisplay = strdup(def->graphics[i]->data.desktop.display);
-                    if (guiDisplay == NULL) {
-                        virReportOOMError();
-                        /* just don't go to cleanup yet as it is ok to have
-                         * guiDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
-                    }
-                }
-            }
-
-            if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) && (sdlPresent == 0)) {
-                sdlPresent = 1;
-                if (def->graphics[i]->data.sdl.display) {
-                    sdlDisplay = strdup(def->graphics[i]->data.sdl.display);
-                    if (sdlDisplay == NULL) {
-                        virReportOOMError();
-                        /* just don't go to cleanup yet as it is ok to have
-                         * sdlDisplay as NULL and we check it below if it
-                         * exist and then only use it there
-                         */
-                    }
-                }
-            }
-        }
-
-        if ((vrdpPresent == 1) && (guiPresent == 0) && (sdlPresent == 0)) {
-            /* store extradata key that frontend is set to vrdp */
-            PRUnichar *keyTypeUtf16   = NULL;
-            PRUnichar *valueTypeUtf16 = NULL;
-
-            VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-            VBOX_UTF8_TO_UTF16("vrdp", &valueTypeUtf16);
-
-            machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
-
-            VBOX_UTF16_FREE(keyTypeUtf16);
-            VBOX_UTF16_FREE(valueTypeUtf16);
-
-        } else if ((guiPresent == 0) && (sdlPresent == 1)) {
-            /* store extradata key that frontend is set to sdl */
-            PRUnichar *keyTypeUtf16      = NULL;
-            PRUnichar *valueTypeUtf16    = NULL;
-            PRUnichar *keyDislpayUtf16   = NULL;
-            PRUnichar *valueDisplayUtf16 = NULL;
-
-            VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-            VBOX_UTF8_TO_UTF16("sdl", &valueTypeUtf16);
-
-            machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
-
-            VBOX_UTF16_FREE(keyTypeUtf16);
-            VBOX_UTF16_FREE(valueTypeUtf16);
-
-            if (sdlDisplay) {
-                VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-                VBOX_UTF8_TO_UTF16(sdlDisplay, &valueDisplayUtf16);
-
-                machine->vtbl->SetExtraData(machine, keyDislpayUtf16, valueDisplayUtf16);
-
-                VBOX_UTF16_FREE(keyDislpayUtf16);
-                VBOX_UTF16_FREE(valueDisplayUtf16);
-            }
-
-        } else {
-            /* if all are set then default is gui, with vrdp turned on */
-            PRUnichar *keyTypeUtf16      = NULL;
-            PRUnichar *valueTypeUtf16    = NULL;
-            PRUnichar *keyDislpayUtf16   = NULL;
-            PRUnichar *valueDisplayUtf16 = NULL;
-
-            VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-            VBOX_UTF8_TO_UTF16("gui", &valueTypeUtf16);
-
-            machine->vtbl->SetExtraData(machine, keyTypeUtf16, valueTypeUtf16);
-
-            VBOX_UTF16_FREE(keyTypeUtf16);
-            VBOX_UTF16_FREE(valueTypeUtf16);
-
-            if (guiDisplay) {
-                VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-                VBOX_UTF8_TO_UTF16(guiDisplay, &valueDisplayUtf16);
-
-                machine->vtbl->SetExtraData(machine, keyDislpayUtf16, valueDisplayUtf16);
-
-                VBOX_UTF16_FREE(keyDislpayUtf16);
-                VBOX_UTF16_FREE(valueDisplayUtf16);
-            }
-        }
-
-        VIR_FREE(guiDisplay);
-        VIR_FREE(sdlDisplay);
-
-    }   /* Finished:Block to attach the Remote Display to VM */
-
-    {   /* Started:Block to attach USB Devices to VM */
-        if (def->nhostdevs > 0) {
-            IUSBController *USBController = NULL;
-            int i = 0, isUSB = 0;
-            /* Loop through the devices first and see if you
-             * have a USB Device, only if you have one then
-             * start the USB controller else just proceed as
-             * usual
-             */
-            for (i = 0; i < def->nhostdevs; i++) {
-                if (def->hostdevs[i]->mode ==
-                        VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-                    if (def->hostdevs[i]->source.subsys.type ==
-                            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-                        if (def->hostdevs[i]->source.subsys.u.usb.vendor ||
-                            def->hostdevs[i]->source.subsys.u.usb.product) {
-                            DEBUG("USB Device detected, VendorId:0x%x, ProductId:0x%x",
-                                  def->hostdevs[i]->source.subsys.u.usb.vendor,
-                                  def->hostdevs[i]->source.subsys.u.usb.product);
-                            isUSB++;
-                        }
-                    }
-                }
-            }
-
-            if (isUSB > 0) {
-                /* First Start the USB Controller and then loop
-                 * to attach USB Devices to it
-                 */
-                machine->vtbl->GetUSBController(machine, &USBController);
-                if (USBController) {
-                    USBController->vtbl->SetEnabled(USBController, 1);
-                    USBController->vtbl->SetEnabledEhci(USBController, 1);
-
-                    for (i = 0; i < def->nhostdevs; i++) {
-                        if (def->hostdevs[i]->mode ==
-                                VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-                            if (def->hostdevs[i]->source.subsys.type ==
-                                    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-
-                                char filtername[11]        = {0};
-                                PRUnichar *filternameUtf16 = NULL;
-                                IUSBDeviceFilter *filter   = NULL;
-
-                                /* Assuming can't have more then 9999 devices so
-                                 * restricting to %04d
-                                 */
-                                sprintf(filtername, "filter%04d", i);
-                                VBOX_UTF8_TO_UTF16(filtername, &filternameUtf16);
-
-                                USBController->vtbl->CreateDeviceFilter(USBController,
-                                                                        filternameUtf16,
-                                                                        &filter);
-                                VBOX_UTF16_FREE(filternameUtf16);
-
-                                if (filter &&
-                                    (def->hostdevs[i]->source.subsys.u.usb.vendor ||
-                                    def->hostdevs[i]->source.subsys.u.usb.product)) {
-
-                                    PRUnichar *vendorIdUtf16  = NULL;
-                                    char vendorId[40]         = {0};
-                                    PRUnichar *productIdUtf16 = NULL;
-                                    char productId[40]        = {0};
-
-                                    if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
-                                        sprintf(vendorId, "%x", def->hostdevs[i]->source.subsys.u.usb.vendor);
-                                        VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
-                                        filter->vtbl->SetVendorId(filter, vendorIdUtf16);
-                                        VBOX_UTF16_FREE(vendorIdUtf16);
-                                    }
-                                    if (def->hostdevs[i]->source.subsys.u.usb.product) {
-                                        sprintf(productId, "%x", def->hostdevs[i]->source.subsys.u.usb.product);
-                                        VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
-                                        filter->vtbl->SetProductId(filter, productIdUtf16);
-                                        VBOX_UTF16_FREE(productIdUtf16);
-                                    }
-                                    filter->vtbl->SetActive(filter, 1);
-                                    USBController->vtbl->InsertDeviceFilter(USBController,
-                                                                            i,
-                                                                            filter);
-                                    VBOX_RELEASE(filter);
-                                }
-
-                            }
-                        }
-                    }
-                    VBOX_RELEASE(USBController);
-                }
-            }
-        }
-    }   /* Finished:Block to attach USB Devices to VM */
+    vboxSetBootDeviceOrder(def, data, machine);
+    vboxAttachDrives(def, data, machine);
+    vboxAttachSound(def, machine);
+    vboxAttachNetwork(def, data, machine);
+    vboxAttachSerial(def, data, machine);
+    vboxAttachParallel(def, data, machine);
+    vboxAttachVideo(def, machine);
+    vboxAttachDisplay(def, data, machine);
+    vboxAttachUSB(def, data, machine);
 
     /* Save the machine settings made till now and close the
      * session. also free up the mchiid variable used.
