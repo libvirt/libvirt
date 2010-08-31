@@ -88,8 +88,7 @@ struct openvz_driver ovz_driver;
 static void cmdExecFree(const char *cmdExec[])
 {
     int i=-1;
-    while(cmdExec[++i])
-    {
+    while (cmdExec[++i]) {
         VIR_FREE(cmdExec[i]);
     }
 }
@@ -226,7 +225,7 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
         vmdef->fss[0]->type == VIR_DOMAIN_FS_TYPE_MOUNT)
     {
 
-        if(virStrToLong_i(vmdef->name, NULL, 10, &vpsid) < 0) {
+        if (virStrToLong_i(vmdef->name, NULL, 10, &vpsid) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could not convert domain name to VEID"));
             goto cleanup;
@@ -802,7 +801,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
     //TODO: processing NAT and physical device
 
-    if (prog[0] != NULL){
+    if (prog[0] != NULL) {
         ADD_ARG_LIT("--save");
         if (virRun(prog, NULL) < 0) {
            openvzError(VIR_ERR_INTERNAL_ERROR,
@@ -1397,15 +1396,16 @@ static int openvzListDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = virExec(cmd, NULL, NULL,
                   &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
-    if(ret == -1) {
+    if (ret == -1) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not exec %s"), VZLIST);
         return -1;
     }
 
-    while(got < nids){
+    while (got < nids) {
         ret = openvz_readline(outfd, buf, 32);
-        if(!ret) break;
+        if (!ret)
+            break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR,
                         _("Could not parse VPS ID %s"), buf);
@@ -1443,15 +1443,16 @@ static int openvzListDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* the -S options lists only stopped domains */
     ret = virExec(cmd, NULL, NULL,
                   &pid, -1, &outfd, &errfd, VIR_EXEC_NONE);
-    if(ret == -1) {
+    if (ret == -1) {
         openvzError(VIR_ERR_INTERNAL_ERROR,
                     _("Could not exec %s"), VZLIST);
         return -1;
     }
 
-    while(got < nnames){
+    while (got < nnames) {
         ret = openvz_readline(outfd, buf, 32);
-        if(!ret) break;
+        if (!ret)
+            break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             openvzError(VIR_ERR_INTERNAL_ERROR,
                         _("Could not parse VPS ID %s"), buf);
@@ -1491,7 +1492,7 @@ Version: 2.2
         return -1;
 
     /*search line with VEID=vpsid*/
-    while(1) {
+    while (1) {
         ret = openvz_readline(fd, line, sizeof(line));
         if (ret <= 0)
             break;
