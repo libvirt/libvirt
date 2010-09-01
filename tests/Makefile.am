@@ -73,7 +73,7 @@ EXTRA_DIST =		\
 	qemuhelpdata
 
 check_PROGRAMS = virshtest conftest \
-        nodeinfotest statstest qparamtest
+        nodeinfotest statstest qparamtest virbuftest
 
 if WITH_XEN
 check_PROGRAMS += xml2sexprtest sexpr2xmltest \
@@ -151,6 +151,7 @@ TESTS = virshtest \
         nodeinfotest \
 	statstest \
 	qparamtest \
+	virbuftest \
 	$(test_scripts)
 
 if WITH_XEN
@@ -351,6 +352,10 @@ endif
 qparamtest_SOURCES = \
 	qparamtest.c testutils.h testutils.c
 qparamtest_LDADD = $(LDADDS)
+
+virbuftest_SOURCES = \
+	virbuftest.c testutils.h testutils.c
+virbuftest_LDADD = $(LDADDS)
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \

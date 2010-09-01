@@ -224,7 +224,7 @@ void
 virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
 {
     int size, count, grow_size;
-    va_list locarg, argptr;
+    va_list argptr;
 
     if ((format == NULL) || (buf == NULL))
         return;
@@ -236,27 +236,38 @@ virBufferVSprintf(const virBufferPtr buf, const char *format, ...)
         virBufferGrow(buf, 100) < 0)
         return;
 
-    size = buf->size - buf->use - 1;
     va_start(argptr, format);
-    va_copy(locarg, argptr);
-    while (((count = vsnprintf(&buf->content[buf->use], size, format,
-                               locarg)) < 0) || (count >= size - 1)) {
-        buf->content[buf->use] = 0;
-        va_end(locarg);
 
-        grow_size = (count > 1000) ? count : 1000;
+    size = buf->size - buf->use;
+    if ((count = vsnprintf(&buf->content[buf->use],
+                           size, format, argptr)) < 0) {
+        buf->error = 1;
+        goto err;
+    }
+
+    /* Grow buffer if necessary and retry */
+    if (count >= size) {
+        buf->content[buf->use] = 0;
+        va_end(argptr);
+        va_start(argptr, format);
+
+        grow_size = (count + 1 > 1000) ? count + 1 : 1000;
         if (virBufferGrow(buf, grow_size) < 0) {
-            va_end(argptr);
-            return;
+            goto err;
         }
 
-        size = buf->size - buf->use - 1;
-        va_copy(locarg, argptr);
+        size = buf->size - buf->use;
+        if ((count = vsnprintf(&buf->content[buf->use],
+                               size, format, argptr)) < 0) {
+            buf->error = 1;
+            goto err;
+        }
     }
-    va_end(argptr);
-    va_end(locarg);
     buf->use += count;
-    buf->content[buf->use] = '\0';
+
+err:
+    va_end(argptr);
+    return;
 }
 
 /**
@@ -336,23 +347,34 @@ virBufferEscapeString(const virBufferPtr buf, const char *format, const char *st
 
     if ((buf->use >= buf->size) &&
         virBufferGrow(buf, 100) < 0) {
-        VIR_FREE(escaped);
-        return;
+        goto err;
     }
 
-    size = buf->size - buf->use - 1;
-    while (((count = snprintf(&buf->content[buf->use], size, format,
-                              (char *)escaped)) < 0) || (count >= size - 1)) {
+    size = buf->size - buf->use;
+    if ((count = snprintf(&buf->content[buf->use], size,
+                          format, (char *)escaped)) < 0) {
+            buf->error = 1;
+        goto err;
+    }
+
+    /* Grow buffer if necessary and retry */
+    if (count >= size) {
         buf->content[buf->use] = 0;
-        grow_size = (count > 1000) ? count : 1000;
+        grow_size = (count + 1 > 1000) ? count + 1 : 1000;
         if (virBufferGrow(buf, grow_size) < 0) {
-            VIR_FREE(escaped);
-            return;
+            goto err;
         }
-        size = buf->size - buf->use - 1;
+        size = buf->size - buf->use;
+
+        if ((count = snprintf(&buf->content[buf->use], size,
+                              format, (char *)escaped)) < 0) {
+            buf->error = 1;
+            goto err;
+        }
     }
     buf->use += count;
-    buf->content[buf->use] = '\0';
+
+err:
     VIR_FREE(escaped);
 }
 

@@ -21,6 +21,7 @@ storagepoolxml2xmltest
 nodeinfotest
 statstest
 qparamtest
+virbuftest
 seclabeltest
 eventtest
 *.exe
