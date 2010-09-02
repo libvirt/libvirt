@@ -134,7 +134,7 @@ install-init: libvirt-guests.init
 	$(INSTALL_SCRIPT) libvirt-guests.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirt-guests
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_SCRIPT) $(srcdir)/libvirt-guests.sysconf \
+	$(INSTALL_DATA) $(srcdir)/libvirt-guests.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirt-guests
 
 uninstall-init:

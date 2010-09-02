@@ -261,7 +261,7 @@ install-init: libvirtd.init
 	$(INSTALL_SCRIPT) libvirtd.init \
 	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf \
+	$(INSTALL_DATA) $(srcdir)/libvirtd.sysconf \
 	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
 uninstall-init:
