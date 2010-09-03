@@ -3795,26 +3795,28 @@ vboxAttachDrives(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 VBOX_UTF8_TO_UTF16("", &mediumEmpty);
 
                 if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                    data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
-                                                      mediumFileUtf16,
-                                                      AccessMode_ReadWrite,
-                                                      false,
-                                                      mediumEmpty,
-                                                      false,
-                                                      mediumEmpty,
-                                                      &medium);
+                    rc = data->vboxObj->vtbl->OpenHardDisk(data->vboxObj,
+                                                           mediumFileUtf16,
+                                                           AccessMode_ReadWrite,
+                                                           false,
+                                                           mediumEmpty,
+                                                           false,
+                                                           mediumEmpty,
+                                                           &medium);
                 } else if (def->disks[i]->device ==
                            VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
-                                                      mediumFileUtf16,
-                                                      mediumEmpty,
-                                                      &medium);
+                    rc = data->vboxObj->vtbl->OpenDVDImage(data->vboxObj,
+                                                           mediumFileUtf16,
+                                                           mediumEmpty,
+                                                           &medium);
                 } else if (def->disks[i]->device ==
                            VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
-                                                         mediumFileUtf16,
-                                                         mediumEmpty,
-                                                         &medium);
+                    rc = data->vboxObj->vtbl->OpenFloppyImage(data->vboxObj,
+                                                              mediumFileUtf16,
+                                                              mediumEmpty,
+                                                              &medium);
+                } else {
+                    rc = 0;
                 }
 
                 VBOX_UTF16_FREE(mediumEmpty);
