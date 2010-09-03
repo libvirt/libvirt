@@ -276,10 +276,10 @@ AC_ARG_WITH([init-script],
             [AC_HELP_STRING([--with-init-script=@<:@redhat|auto|none@:>@],
 		     [Style of init script to install @<:@default=auto@:>@])])
 if test "x$with_init_script" = "x" || test "x$with_init_script" = "xauto"; then
-    if test -f /etc/redhat-release ; then
-        with_init_script=redhat
-    else
+    if test "$cross_compiling" = yes || test ! -f /etc/redhat-release; then
         with_init_script=none
+    else
+        with_init_script=redhat
     fi
 fi
 AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test x$with_init_script = xredhat)

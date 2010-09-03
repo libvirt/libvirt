@@ -71,6 +71,7 @@ rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/doc/*
 rm -rf $RPM_BUILD_ROOT%{_mingw32_datadir}/gtk-doc/*
 
 rm $RPM_BUILD_ROOT%{_mingw32_libdir}/libvirt.a
+rm $RPM_BUILD_ROOT%{_mingw32_libdir}/libvirt-qemu.a
 
 
 %clean
@@ -83,10 +84,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mingw32_bindir}/virsh.exe
 %{_mingw32_bindir}/virt-xml-validate
 %{_mingw32_bindir}/virt-pki-validate
+%{_mingw32_bindir}/libvirt-qemu-0.dll
 
 %{_mingw32_libdir}/libvirt.dll.a
 %{_mingw32_libdir}/libvirt.la
 %{_mingw32_libdir}/pkgconfig/libvirt.pc
+%{_mingw32_libdir}/libvirt-qemu.dll.a
+%{_mingw32_libdir}/libvirt-qemu.la
 
 %dir %{_mingw32_datadir}/libvirt/
 %dir %{_mingw32_datadir}/libvirt/schemas/
@@ -109,6 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_mingw32_includedir}/libvirt
 %{_mingw32_includedir}/libvirt/libvirt.h
 %{_mingw32_includedir}/libvirt/virterror.h
+%{_mingw32_includedir}/libvirt/libvirt-qemu.h
 
 %{_mingw32_mandir}/man1/virsh.1*
 %{_mingw32_mandir}/man1/virt-xml-validate.1*
