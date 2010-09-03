@@ -783,6 +783,13 @@ esxStorageVolumeLookupByKey(virConnectPtr conn, const char *key)
         return esxStorageVolumeLookupByPath(conn, key);
     }
 
+    if (!priv->primary->hasQueryVirtualDiskUuid) {
+        ESX_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                  _("QueryVirtualDiskUuid not avialable, cannot lookup storage "
+                    "volume by UUID"));
+        return NULL;
+    }
+
     if (esxVI_EnsureSession(priv->primary) < 0) {
         return NULL;
     }
@@ -916,7 +923,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *uuid_string = NULL;
-    char key[VIR_UUID_STRING_BUFLEN] = "";
+    char *key = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -1068,14 +1075,26 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
             goto cleanup;
         }
 
-        if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
-                                       priv->primary->datacenter->_reference,
-                                       &uuid_string) < 0) {
-            goto cleanup;
-        }
+        if (priv->primary->hasQueryVirtualDiskUuid) {
+            if (VIR_ALLOC_N(key, VIR_UUID_STRING_BUFLEN) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
 
-        if (esxUtil_ReformatUuid(uuid_string, key) < 0) {
-            goto cleanup;
+            if (esxVI_QueryVirtualDiskUuid(priv->primary, datastorePath,
+                                           priv->primary->datacenter->_reference,
+                                           &uuid_string) < 0) {
+                goto cleanup;
+            }
+
+            if (esxUtil_ReformatUuid(uuid_string, key) < 0) {
+                goto cleanup;
+            }
+        } else {
+            /* Fall back to the path as key */
+            if (esxVI_String_DeepCopyValue(&key, datastorePath) < 0) {
+                goto cleanup;
+            }
         }
     } else {
         ESX_ERROR(VIR_ERR_INTERNAL_ERROR,
@@ -1103,6 +1122,7 @@ esxStorageVolumeCreateXML(virStoragePoolPtr pool, const char *xmldesc,
     esxVI_FileBackedVirtualDiskSpec_Free(&virtualDiskSpec);
     esxVI_ManagedObjectReference_Free(&task);
     VIR_FREE(uuid_string);
+    VIR_FREE(key);
 
     return volume;
 }

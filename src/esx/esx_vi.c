@@ -453,6 +453,17 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         return -1;
     }
 
+    if (ctx->productVersion & esxVI_ProductVersion_ESX) {
+        /*
+         * FIXME: Actually this should be detected by really calling
+         * QueryVirtualDiskUuid and checking if a NotImplemented fault is
+         * returned. But currently we don't deserialized the details of a
+         * possbile fault and therefore we don't know if the fault was a
+         * NotImplemented fault or not.
+         */
+        ctx->hasQueryVirtualDiskUuid = true;
+    }
+
     if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
         return -1;
@@ -3267,28 +3278,33 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
         return -1;
     }
 
-    if (esxVI_LookupFileInfoByDatastorePath(ctx, datastorePath, false, &fileInfo,
-                                            esxVI_Occurrence_RequiredItem) < 0) {
-        goto cleanup;
+    if (ctx->hasQueryVirtualDiskUuid) {
+        if (esxVI_LookupFileInfoByDatastorePath
+              (ctx, datastorePath, false, &fileInfo,
+               esxVI_Occurrence_RequiredItem) < 0) {
+            goto cleanup;
+        }
+
+        if (esxVI_VmDiskFileInfo_DynamicCast(fileInfo) != NULL) {
+            /* VirtualDisks have a UUID, use it as key */
+            if (esxVI_QueryVirtualDiskUuid(ctx, datastorePath,
+                                           ctx->datacenter->_reference,
+                                           &uuid_string) < 0) {
+                goto cleanup;
+            }
+
+            if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0) {
+                virReportOOMError();
+                goto cleanup;
+            }
+
+            if (esxUtil_ReformatUuid(uuid_string, *key) < 0) {
+                goto cleanup;
+            }
+        }
     }
 
-    if (esxVI_VmDiskFileInfo_DynamicCast(fileInfo) != NULL) {
-        /* VirtualDisks have a UUID, use it as key */
-        if (esxVI_QueryVirtualDiskUuid(ctx, datastorePath,
-                                       ctx->datacenter->_reference,
-                                       &uuid_string) < 0) {
-            goto cleanup;
-        }
-
-        if (VIR_ALLOC_N(*key, VIR_UUID_STRING_BUFLEN) < 0) {
-            virReportOOMError();
-            goto cleanup;
-        }
-
-        if (esxUtil_ReformatUuid(uuid_string, *key) < 0) {
-            goto cleanup;
-        }
-    } else {
+    if (*key == NULL) {
         /* Other files don't have a UUID, fall back to the path as key */
         if (esxVI_String_DeepCopyValue(key, datastorePath) < 0) {
             goto cleanup;
