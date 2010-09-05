@@ -168,6 +168,7 @@ struct _esxVI_Context {
     esxVI_SelectionSpec *selectSet_computeResourceToHost;
     esxVI_SelectionSpec *selectSet_computeResourceToParentToParent;
     bool hasQueryVirtualDiskUuid;
+    bool hasSessionIsActive;
 };
 
 int esxVI_Context_Alloc(esxVI_Context **ctx);

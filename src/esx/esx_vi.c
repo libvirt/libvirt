@@ -464,6 +464,10 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         ctx->hasQueryVirtualDiskUuid = true;
     }
 
+    if (ctx->productVersion & esxVI_ProductVersion_VPX) {
+        ctx->hasSessionIsActive = true;
+    }
+
     if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
         return -1;
@@ -1452,6 +1456,7 @@ esxVI_BuildSelectSet(esxVI_SelectionSpec **selectSet,
 }
 
 
+
 int
 esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
 {
@@ -1533,97 +1538,92 @@ esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
 }
 
 
-/*
- * Can't use the SessionIsActive() function here, because at least
- * 'ESX Server 3.5.0 build-64607' returns an 'method not implemented' fault if
- * you try to call it. Query the session manager for the current session of
- * this connection instead and re-login if there is no current session for this
- * connection.
- *
- * Update: 'ESX 4.0.0 build-171294' doesn't implement this method.
- */
-#define ESX_VI_USE_SESSION_IS_ACTIVE 0
 
 int
 esxVI_EnsureSession(esxVI_Context *ctx)
 {
-#if ESX_VI_USE_SESSION_IS_ACTIVE
-    esxVI_Boolean active = esxVI_Boolean_Undefined;
-#else
     int result = -1;
+    esxVI_Boolean active = esxVI_Boolean_Undefined;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *sessionManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_UserSession *currentSession = NULL;
-#endif
 
     if (ctx->session == NULL) {
         ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));
         return -1;
     }
 
-#if ESX_VI_USE_SESSION_IS_ACTIVE
-    if (esxVI_SessionIsActive(ctx, ctx->session->key, ctx->session->userName,
-                              &active) < 0) {
-        return -1;
-    }
-
-    if (active != esxVI_Boolean_True) {
-        esxVI_UserSession_Free(&ctx->session);
-
-        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
-                        &ctx->session) < 0) {
+    if (ctx->hasSessionIsActive) {
+        /*
+         * Use SessionIsActive to check if there is an active session for this
+         * connection an re-login in there isn't.
+         */
+        if (esxVI_SessionIsActive(ctx, ctx->session->key,
+                                  ctx->session->userName, &active) < 0) {
             return -1;
         }
-    }
 
-    return 0;
-#else
-    if (esxVI_String_AppendValueToList(&propertyNameList,
-                                       "currentSession") < 0 ||
-        esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
-                                        "SessionManager", propertyNameList,
-                                        &sessionManager) < 0) {
-        goto cleanup;
-    }
+        if (active != esxVI_Boolean_True) {
+            esxVI_UserSession_Free(&ctx->session);
 
-    for (dynamicProperty = sessionManager->propSet; dynamicProperty != NULL;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "currentSession")) {
-            if (esxVI_UserSession_CastFromAnyType(dynamicProperty->val,
-                                                  &currentSession) < 0) {
-                goto cleanup;
+            if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
+                            &ctx->session) < 0) {
+                return -1;
             }
-
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
         }
-    }
 
-    if (currentSession == NULL) {
-        esxVI_UserSession_Free(&ctx->session);
-
-        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
-                        &ctx->session) < 0) {
+        return 0;
+    } else {
+        /*
+         * Query the session manager for the current session of this connection
+         * and re-login if there is no current session for this connection.
+         */
+        if (esxVI_String_AppendValueToList(&propertyNameList,
+                                           "currentSession") < 0 ||
+            esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
+                                            "SessionManager", propertyNameList,
+                                            &sessionManager) < 0) {
             goto cleanup;
         }
-    } else if (STRNEQ(ctx->session->key, currentSession->key)) {
-        ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
-                     _("Key of the current session differs from the key at "
-                       "last login"));
-        goto cleanup;
-    }
 
-    result = 0;
+        for (dynamicProperty = sessionManager->propSet; dynamicProperty != NULL;
+             dynamicProperty = dynamicProperty->_next) {
+            if (STREQ(dynamicProperty->name, "currentSession")) {
+                if (esxVI_UserSession_CastFromAnyType(dynamicProperty->val,
+                                                      &currentSession) < 0) {
+                    goto cleanup;
+                }
+
+                break;
+            } else {
+                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
+            }
+        }
+
+        if (currentSession == NULL) {
+            esxVI_UserSession_Free(&ctx->session);
+
+            if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
+                            &ctx->session) < 0) {
+                goto cleanup;
+            }
+        } else if (STRNEQ(ctx->session->key, currentSession->key)) {
+            ESX_VI_ERROR(VIR_ERR_INTERNAL_ERROR, "%s",
+                         _("Key of the current session differs from the key at "
+                           "last login"));
+            goto cleanup;
+        }
+
+        result = 0;
 
   cleanup:
-    esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&sessionManager);
-    esxVI_UserSession_Free(&currentSession);
+        esxVI_String_Free(&propertyNameList);
+        esxVI_ObjectContent_Free(&sessionManager);
+        esxVI_UserSession_Free(&currentSession);
 
-    return result;
-#endif
+        return result;
+    }
 }
 
 
