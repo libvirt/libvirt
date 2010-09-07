@@ -58,6 +58,7 @@
 #include "domain_conf.h"
 #include "datatypes.h"
 #include "logging.h"
+#include "domain_nwfilter.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -876,6 +877,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     if (umlBuildCommandLine(conn, driver, vm, &keepfd,
                             &argv, &progenv) < 0) {
         close(logfd);
+        virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(conn, vm);
         return -1;
     }
@@ -928,8 +930,11 @@ static int umlStartVMDaemon(virConnectPtr conn,
         VIR_FREE(progenv[i]);
     VIR_FREE(progenv);
 
-    if (ret < 0)
+    if (ret < 0) {
+        virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(conn, vm);
+    }
+
 
     /* NB we don't mark it running here - we do that async
        with inotify */
@@ -965,6 +970,7 @@ static void umlShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->def->id = -1;
     vm->state = VIR_DOMAIN_SHUTOFF;
 
+    virDomainConfVMNWFilterTeardown(vm);
     umlCleanupTapDevices(conn, vm);
 
     if (vm->newDef) {

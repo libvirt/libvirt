@@ -46,6 +46,7 @@
 #include "verify.h"
 #include "bridge.h"
 #include "logging.h"
+#include "domain_nwfilter.h"
 
 #define VIR_FROM_THIS VIR_FROM_UML
 
@@ -108,7 +109,8 @@ virCapsPtr umlCapsInit(void) {
 
 
 static int
-umlConnectTapDevice(virDomainNetDefPtr net,
+umlConnectTapDevice(virConnectPtr conn,
+                    virDomainNetDefPtr net,
                     const char *bridge)
 {
     brControl *brctl = NULL;
@@ -162,6 +164,14 @@ umlConnectTapDevice(virDomainNetDefPtr net,
         if (template_ifname)
             VIR_FREE(net->ifname);
         goto error;
+    }
+
+    if (net->filter) {
+        if (virDomainConfNWFilterInstantiate(conn, net)) {
+            if (template_ifname)
+                VIR_FREE(net->ifname);
+            goto error;
+        }
     }
 
     brShutdown(brctl);
@@ -239,7 +249,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
             goto error;
         }
 
-        if (umlConnectTapDevice(def, bridge) < 0) {
+        if (umlConnectTapDevice(conn, def, bridge) < 0) {
             VIR_FREE(bridge);
             goto error;
         }
@@ -250,7 +260,7 @@ umlBuildCommandLineNet(virConnectPtr conn,
     }
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (umlConnectTapDevice(def, def->data.bridge.brname) < 0)
+        if (umlConnectTapDevice(conn, def, def->data.bridge.brname) < 0)
             goto error;
 
         /* ethNNN=tuntap,tapname,macaddr,gateway */
