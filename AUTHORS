@@ -28,6 +28,7 @@ The primary maintainers and people with commit access rights:
   Laine Stump          <laine@redhat.com>
   Stefan Berger        <stefanb@us.ibm.com>
   Eric Blake           <eblake@redhat.com>
+  Justin Clift         <jclift@redhat.com>
 
 Patches have also been contributed by:
 
@@ -124,7 +125,6 @@ Patches have also been contributed by:
   Thomas Treutner      <thomas@scripty.at>
   Jean-Baptiste Rouault <jean-baptiste.rouault@diateam.net>
   Марк Коренберг       <socketpair@gmail.com>
-  Justin Clift         <jclift@redhat.com>
   Alan Pevec           <apevec@redhat.com>
   Aurelien Rougemont   <beorn@binaries.fr>
   Patrick Dignan       <pat_dignan@dell.com>
