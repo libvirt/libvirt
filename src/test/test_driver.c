@@ -706,17 +706,21 @@ static int testOpenVolumesForPool(xmlDocPtr xml,
             goto error;
         }
 
-        if (virAsprintf(&def->target.path, "%s/%s",
-                        pool->def->target.path,
-                        def->name) == -1) {
-            virReportOOMError();
-            goto error;
+        if (def->target.path == NULL) {
+            if (virAsprintf(&def->target.path, "%s/%s",
+                            pool->def->target.path,
+                            def->name) == -1) {
+                virReportOOMError();
+                goto error;
+            }
         }
 
-        def->key = strdup(def->target.path);
         if (def->key == NULL) {
-            virReportOOMError();
-            goto error;
+            def->key = strdup(def->target.path);
+            if (def->key == NULL) {
+                virReportOOMError();
+                goto error;
+            }
         }
 
         pool->def->allocation += def->allocation;
