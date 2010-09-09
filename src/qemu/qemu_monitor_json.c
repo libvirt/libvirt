@@ -1353,7 +1353,7 @@ int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("eject",
                                                      "s:device", devname,
-                                                     "i:force", 0,
+                                                     "b:force", 0,
                                                      NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
