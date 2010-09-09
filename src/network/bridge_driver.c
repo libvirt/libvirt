@@ -394,6 +394,16 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
     int nbleases = 0;
     char *pidfileArg;
     char buf[1024];
+    unsigned int ranges;
+
+    /*
+     * For static-only DHCP, i.e. with no range but at least one host element,
+     * we have to add a special --dhcp-range option to enable the service in
+     * dnsmasq.
+     */
+    ranges = network->def->nranges;
+    if (!ranges && network->def->nhosts)
+        ranges = 1;
 
     /*
      * NB, be careful about syntax for dnsmasq options in long format
@@ -424,11 +434,11 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         /*2 + *//* --interface virbr0 */
         2 + /* --except-interface lo */
         2 + /* --listen-address 10.0.0.1 */
-        (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
+        (2 * ranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         /* --dhcp-lease-max=xxx if needed */
         (network->def->nranges ? 1 : 0) +
         /* --dhcp-no-override if needed */
-        (network->def->nranges ? 1 : 0) +
+        (ranges ? 1 : 0) +
         /* --dhcp-hostsfile=/var/lib/dnsmasq/$NAME.hostsfile */
         (network->def->nhosts > 0 ? 1 : 0) +
         /* --enable-tftp --tftp-root /srv/tftp */
@@ -496,11 +506,21 @@ networkBuildDnsmasqArgv(virNetworkObjPtr network,
         nbleases += network->def->ranges[r].size;
     }
 
+    if (!network->def->nranges && network->def->nhosts) {
+        snprintf(buf, sizeof(buf), "%s,static",
+                 network->def->ipAddress);
+
+        APPEND_ARG(*argv, i++, "--dhcp-range");
+        APPEND_ARG(*argv, i++, buf);
+    }
+
     if (network->def->nranges > 0) {
         snprintf(buf, sizeof(buf), "--dhcp-lease-max=%d", nbleases);
         APPEND_ARG(*argv, i++, buf);
-        APPEND_ARG(*argv, i++, "--dhcp-no-override");
     }
+
+    if (ranges)
+        APPEND_ARG(*argv, i++, "--dhcp-no-override");
 
     if (network->def->nhosts > 0) {
         dnsmasqContext *dctx = dnsmasqContextNew(network->def->name, DNSMASQ_STATE_DIR);
