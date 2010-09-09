@@ -237,13 +237,10 @@ AC_ARG_WITH([libvirtd],
   AC_HELP_STRING([--with-libvirtd], [add libvirtd support @<:@default=yes@:>@]),[],[with_libvirtd=yes])
 
 dnl
-dnl specific tests to setup DV devel environments with debug etc ...
+dnl in case someone want to build static binaries
+dnl STATIC_BINARIES="-static"
 dnl
-if test "${LOGNAME}" = "veillard" && test "`pwd`" = "/u/veillard/libvirt" ; then
-    STATIC_BINARIES="-static"
-else
-    STATIC_BINARIES=
-fi
+STATIC_BINARIES=
 AC_SUBST([STATIC_BINARIES])
 
 dnl --enable-debug=(yes|no)
