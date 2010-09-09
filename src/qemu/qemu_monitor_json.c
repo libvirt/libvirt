@@ -1601,9 +1601,9 @@ static int qemuMonitorJSONMigrate(qemuMonitorPtr mon,
     int ret;
     virJSONValuePtr cmd =
       qemuMonitorJSONMakeCommand("migrate",
-                                 "i:detach", flags & QEMU_MONITOR_MIGRATE_BACKGROUND ? 1 : 0,
-                                 "i:blk", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK ? 1 : 0,
-                                 "i:inc", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC ? 1 : 0,
+                                 "b:detach", flags & QEMU_MONITOR_MIGRATE_BACKGROUND ? 1 : 0,
+                                 "b:blk", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK ? 1 : 0,
+                                 "b:inc", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC ? 1 : 0,
                                  "s:uri", uri,
                                  NULL);
     virJSONValuePtr reply = NULL;
